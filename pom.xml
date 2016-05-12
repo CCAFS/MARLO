@@ -20,7 +20,7 @@
          <email>c.d.garcia@cgiar.org</email>
       </developer>
       <developer>
-         <name>Héctor Fabio Tobón R</name>
+         <name>Hector Fabio Tobon R</name>
          <email>h.f.tobon@cgiar.org</email>
       </developer>
       <developer>
@@ -134,4 +134,7 @@
          <distribution>manual</distribution>
       </license>
    </licenses>
+   <modules>
+   	<module>marlo-web</module>
+   </modules>
 </project>
