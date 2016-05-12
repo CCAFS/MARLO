@@ -7,4 +7,4 @@ target
 bin
 
 # Configuration 
-/configuration/ccafsap.properties
+/configuration/marlo.properties
