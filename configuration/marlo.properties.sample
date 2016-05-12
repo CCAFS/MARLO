@@ -1,0 +1,11 @@
+ ------------------------------------------------
+#             Logger properties
+# ------------------------------------------------
+
+log.folder=D:/Workspace/ccfas-marlo/
+log.console=true
+log.file=false
+!Production log only shows logs of type info, warn and error 
+log.production=true
+!Test log shows logs of all types trace, debug, info, warn and error 
+log.test=false

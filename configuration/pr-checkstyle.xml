@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+            "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+            "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+	<module name="Checker">
+			
+		<module name="Translation">
+			<property name="severity" value="warning"/>
+		</module>
+		
+		<module name="FileLength">
+			<property name="max" value="3500" />
+			<property name="severity" value="warning"/>
+		</module>
+
+		
+		<module name="TreeWalker">
+	
+			<!-- Validates identifiers for methods -->
+			<module name="MethodName">
+				<property name="severity" value="warning"/>
+			</module>
+
+			<!-- Validates identifiers for local, final variables, including catch parameters. -->
+			<module name="LocalFinalVariableName">
+			</module>
+			
+			<!-- Check to allow one character variable name in initialization expressions in FOR loop -->
+			<module name="LocalVariableName">
+			</module>
+			
+			<!-- Validates identifiers for method type parameters -->
+			<module name="MethodTypeParameterName">
+			</module>
+			
+			<!-- Validates identifiers for packages -->
+			<module name="PackageName">
+				<property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+			</module>
+			
+			<!-- Check to accept lines up to 120 characters long -->
+			<module name="LineLength">
+				<property name="max" value="120"/>
+			</module>
+			
+			<!-- Checks for long methods and constructors -->
+			<!-- Rationale: If a method becomes very long it is hard to understand. 
+			Therefore long methods should usually be refactored into several individual 
+			methods that focus on a specific task. -->
+			<module name="MethodLength">
+			</module>
+			
+			<!--  Checks the padding of an empty for initializer; that is whether white space 
+			is required at an empty for initializer, or such white space is forbidden. -->
+			<module name="EmptyForInitializerPad">
+			</module>
+			
+			<!--  Checks the padding of an empty for iterator; that is whether white space is 
+			required at an empty for iterator, or such white space is forbidden. -->
+			<module name="EmptyForIteratorPad">
+			</module>
+			
+			<!-- Checks the padding between the identifier of a method definition, constructor definition, method call, 
+			or constructor invocation; and the left parenthesis of the parameter list -->
+			<module name="MethodParamPad">
+			</module>
+
+		</module>
+		
+	</module>  
