@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 
 /**
+ * Is a class component that can access application security data such as users, roles, and permissions.
+ * 
  * @author Hernán David Carvajal
  * @author Héctor Fabio Tobón
  * @author Chirstian David Garcia
