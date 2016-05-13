@@ -11,25 +11,32 @@
  * You should have received a copy of the GNU General Public License
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
+package org.cgiar.ccafs.marlo.utils;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-package org.cgiar.ccafs.marlo.action;
+public class MD5Convert {
 
-import org.cgiar.ccafs.marlo.utils.APConfig;
+  private static Logger LOG = LoggerFactory.getLogger(MD5Convert.class);
 
-import com.google.inject.Inject;
-
-public class TestAction extends BaseAction {
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -9156139410635760489L;
-
-  @Inject
-  public TestAction(APConfig config) {
-    super(config);
-
+  public static String stringToMD5(String value) {
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("MD5");
+      byte[] b = md.digest(value.getBytes());
+      String md5HashCode = "";
+      for (byte element : b) {
+        md5HashCode += Integer.toString((element & 0xff) + 0x100, 16).substring(1);
+      }
+      return md5HashCode;
+    } catch (NoSuchAlgorithmException e) {
+      LOG.error("There was a problem trying to encript the string. ", e);
+    }
+    return null;
   }
-
 }

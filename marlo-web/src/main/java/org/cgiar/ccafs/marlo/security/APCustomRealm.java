@@ -14,7 +14,8 @@
 
 package org.cgiar.ccafs.marlo.security;
 
-import org.cgiar.ccafs.utils.APConfig;
+
+import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import com.google.inject.Inject;
 import org.apache.shiro.authc.AuthenticationException;

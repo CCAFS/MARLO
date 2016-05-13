@@ -13,7 +13,7 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.action;
 
-import org.cgiar.ccafs.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Locale;
 import java.util.Map;

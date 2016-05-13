@@ -13,8 +13,8 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.config;
 
-import org.cgiar.ccafs.utils.APConfig;
-import org.cgiar.ccafs.utils.PropertiesManager;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
