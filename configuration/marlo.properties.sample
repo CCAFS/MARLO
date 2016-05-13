@@ -1,10 +1,10 @@
 
 # BD
 mysql.host=localhost
-mysql.user=root
-mysql.password=1234
-mysql.database=ccafs_marlo
-mysql.url=jdbc:mysql://localhost:3306/ccafs_marlo
+mysql.user=user
+mysql.password=password
+mysql.database=database_name
+mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
 
 # -----------------------------
@@ -16,11 +16,11 @@ mysql.port=3306
 
 # Mail configuration
 email.notification=ccafsap@gmail.com
-#gmail.password=ccafsap2013
-email.user=ccafs-pr
-email.password=uZ5ahNgu
-email.host=testweb.ciat.cgiar.org
-email.port=25
+#gmail.password=emailpassword
+email.user=user
+email.password=passwor
+email.host=host
+email.port=port
 
 # -----------------------------------------------
 # TEST MODE
@@ -31,7 +31,7 @@ ccafsap.production=false
 # Logger properties
 # ------------------------------------------------
 
-log.folder=D:/Workspace/ccfas-marlo/
+log.folder=C:/logs
 log.console=true
 log.file=false
 !Production log only shows logs of type info, warn and error 
