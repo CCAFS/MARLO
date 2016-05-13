@@ -49,6 +49,12 @@ public class APModule implements Module {
 
     config = new APConfig(properties);
 
+    LOG.info("----- DATABASE CONNECTION -----");
+    LOG.info(properties.getPropertiesAsString(config.MYSQL_USER));
+
+    LOG.info(properties.getPropertiesAsString(config.MYSQL_HOST));
+    LOG.info(properties.getPropertiesAsString(config.MYSQL_DATABASE));
+
 
   }
 

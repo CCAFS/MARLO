@@ -132,22 +132,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
-  public String getBaseUrl() {
-    return config.getBaseUrl();
-  }
-
 
   public APConfig getConfig() {
     return config;
-  }
-
-  public int getCurrentPlanningYear() {
-    return config.getPlanningCurrentYear();
-  }
-
-
-  public int getCurrentReportingYear() {
-    return config.getReportingCurrentYear();
   }
 
 
@@ -216,9 +203,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submit;
   }
 
-  public boolean isSummariesActive() {
-    return config.isSummariesActive();
-  }
 
   public String next() {
     return NEXT;

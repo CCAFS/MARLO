@@ -68,13 +68,13 @@ public class SendMail {
 
     // Get a Properties object
     Properties properties = System.getProperties();
-
-    properties.put("mail.smtp.auth", "true");
-    properties.put("mail.smtp.starttls.enable", "true");
-    properties.put("mail.smtp.ssl.trust", config.getEmailHost());
-    properties.put("mail.smtp.host", config.getEmailHost());
-    properties.put("mail.smtp.port", config.getEmailPort());
-
+    /*
+     * properties.put("mail.smtp.auth", "true");
+     * properties.put("mail.smtp.starttls.enable", "true");
+     * properties.put("mail.smtp.ssl.trust", config.getEmailHost());
+     * properties.put("mail.smtp.host", config.getEmailHost());
+     * properties.put("mail.smtp.port", config.getEmailPort());
+     */
     // Un-comment this line to watch javaMail debug
     // properties.put("mail.debug", "true");
 
