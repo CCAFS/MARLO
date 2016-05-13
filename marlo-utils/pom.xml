@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.cgiar.ccafs</groupId>
+    <artifactId>marlo</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>marlo-utils</artifactId>
+  
+  <developers>
+      <developer>
+         <name>Hernán D. Carvajal B.</name>
+         <email>h.d.carvajal@cgiar.org</email>
+      </developer>
+      <developer>
+         <name>Héctor F. Tobón R.</name>
+         <email>h.f.tobon@cgiar.org</email>
+      </developer>
+   </developers>
+   
+   <issueManagement>
+      <system>Github issue tracker</system>
+      <url>https://github.com/CCAFS/ccafs-ap/issues</url>
+   </issueManagement>
+   
+   <properties>
+      <javax-mail.version>1.5.5</javax-mail.version>
+      <com.sun.mail.version>1.5.5</com.sun.mail.version>
+   </properties>
+   
+   <dependencies>
+      <!-- Java Mail API -->
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>javax.mail-api</artifactId>
+         <version>${javax-mail.version}</version>
+      </dependency>
+      <!-- Java Sun Mail API -->
+      <dependency>
+         <groupId>com.sun.mail</groupId>
+         <artifactId>javax.mail</artifactId>
+         <version>${com.sun.mail.version}</version>
+      </dependency>
+   </dependencies>
+   
+   <licenses>
+    <license>
+      <name>GNU General Public License (GPL)</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+</project>

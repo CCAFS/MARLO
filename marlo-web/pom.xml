@@ -17,13 +17,21 @@
       <guice.version>3.0</guice.version>
       <mysql.version>5.1.39</mysql.version>
       <junit.version>4.12</junit.version>
-      <servlet-api.version>3.0-alpha-1</servlet-api.version>
+      <servlet-api.version>2.5</servlet-api.version>
       <jsp-api.version>2.0</jsp-api.version>
       <janino.version>2.7.8</janino.version>
-      <itext.version>4.2.2</itext.version>
       <poi.version>3.13</poi.version>
       <flyway.version>4.0.1</flyway.version>
       <org.json.version>20160212</org.json.version>
+      <hibbernate-core-version>5.1.0.Final</hibbernate-core-version>
+      <jta-version>1.1</jta-version>
+      <hibernate-c3p0-version>5.0.6.Final</hibernate-c3p0-version>
+      <commons-logging-version>1.2</commons-logging-version>
+      <xml-apis-version>1.4.01</xml-apis-version>
+      <apache-shiro-version>1.2.4</apache-shiro-version>
+      <groovy-version>2.4.6</groovy-version>
+      <jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
+      <jasper-reports-version>6.2.2</jasper-reports-version>
    </properties>
    
    <developers>
@@ -53,7 +61,17 @@
       <url>https://github.com/CCAFS/marlo/issues</url>
    </issueManagement>
    <dependencies>
+   
+   
+   
+   
       <!--  Project dependecies -->
+   
+    <dependency>
+        <groupId>org.cgiar.ccafs</groupId>
+        <artifactId>marlo-utils</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+      </dependency>
       <!--  End of project dependecies -->
       <!-- STRUTS 2 - Framework Core -->
       <dependency>
@@ -154,12 +172,8 @@
          <version>${jsp-api.version}</version>
          <scope>provided</scope>
       </dependency>
-      <!-- iText -->
-      <dependency>
-         <groupId>com.lowagie</groupId>
-         <artifactId>itext</artifactId>
-         <version>${itext.version}</version>
-      </dependency>
+    
+     
       <!--  Apache POI - JAVA API To Access Microsoft XLS Format Files -->
       <dependency>
          <groupId>org.apache.poi</groupId>
@@ -183,64 +197,61 @@
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-core</artifactId>
-         <version>5.1.0.Final</version>
+         <version>${hibbernate-core-version}</version>
       </dependency>
       <!-- Dependency needed for Hibernate -->
       <dependency>
          <groupId>javax.transaction</groupId>
          <artifactId>jta</artifactId>
-         <version>1.1</version>
+         <version>${jta-version}</version>
       </dependency>
       <!-- C3P0 Connection Pool for Hibernate -->
       <dependency>
          <groupId>org.hibernate</groupId>
          <artifactId>hibernate-c3p0</artifactId>
-         <version>5.0.6.Final</version>
+         <version>${hibernate-c3p0-version}</version>
       </dependency>
       <dependency>
          <groupId>commons-logging</groupId>
          <artifactId>commons-logging</artifactId>
-         <version>1.2</version>
+         <version>${commons-logging-version}</version>
       </dependency>
       <!-- END Hibernate -->
       <!-- jasper -->
       <dependency>
          <groupId>net.sf.jasperreports</groupId>
          <artifactId>jasperreports</artifactId>
-         <version>6.2.2</version>
+         <version>${jasper-reports-version}</version>
       </dependency>
       <dependency>
          <groupId>org.codehaus.groovy</groupId>
+         
          <artifactId>groovy-all</artifactId>
-         <version>2.4.6</version>
+         <version>${groovy-version}</version>
       </dependency>
       <dependency>
          <groupId>xml-apis</groupId>
          <artifactId>xml-apis</artifactId>
-         <version>1.4.01</version>
+         <version>${xml-apis-version}</version>
       </dependency>
       <dependency>
          <groupId>net.sf.jasperreports</groupId>
          <artifactId>jasperreports-fonts</artifactId>
-         <version>6.0.0</version>
+         <version>${jasperreports-fonts-version}</version>
       </dependency>
       <!-- End jasper -->
-      <dependency>
-      	<groupId>org.cgiar.ccafs</groupId>
-      	<artifactId>utils</artifactId>
-      	<version>4.0-SNAPSHOT</version>
-      </dependency>
+     
        <!-- Apache shiro -->
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-web</artifactId>
-      <version>1.2.4</version>
+      <version>${apache-shiro-version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-guice</artifactId>
-      <version>1.2.4</version>
+      <version>${apache-shiro-version}</version>
     </dependency>
       
    </dependencies>
