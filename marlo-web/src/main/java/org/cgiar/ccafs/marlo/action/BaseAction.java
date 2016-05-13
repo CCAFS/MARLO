@@ -48,7 +48,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public static final String NOT_FOUND = "404";
 
   public static final String SAVED_STATUS = "savedStatus";
-
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
