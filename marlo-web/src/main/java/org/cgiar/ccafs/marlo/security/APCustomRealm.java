@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * @author Christian Garcia
+ * @author Hernán David Carvajal
+ * @author Héctor Fabio Tobón
+ * @author Chirstian David Garcia
  */
 
 public class APCustomRealm extends AuthorizingRealm {

@@ -25,7 +25,11 @@ import org.apache.shiro.guice.web.ShiroWebModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * @author Hernán David Carvajal
+ * @author Héctor Fabio Tobón
+ * @author Chirstian David Garcia
+ */
 public class APGuiceContextListener extends GuiceServletContextListener {
 
   public static Logger LOG = LoggerFactory.getLogger(APGuiceContextListener.class);

@@ -1,4 +1,3 @@
-package org.cgiar.ccafs.marlo.config;
 /*****************************************************************
  * This file is part of CCAFS Planning and Reporting Platform.
  * CCAFS P&R is free software: you can redistribute it and/or modify
@@ -14,27 +13,23 @@ package org.cgiar.ccafs.marlo.config;
  *****************************************************************/
 
 
-import javax.servlet.ServletContext;
+package org.cgiar.ccafs.marlo.action;
 
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import org.apache.struts2.views.freemarker.FreemarkerManager;
+import org.cgiar.ccafs.utils.APConfig;
 
+import com.google.inject.Inject;
 
-/**
- * @author Hernán David Carvajal
- * @author Héctor Fabio Tobón
- * @author Chirstian David Garcia
- */
+public class TestAction extends BaseAction {
 
-public class APFreemarkerManager extends FreemarkerManager {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -9156139410635760489L;
 
-  @Override
-  protected Configuration createConfiguration(ServletContext servletContext) throws TemplateException {
-    Configuration cfg = super.createConfiguration(servletContext);
-    // fg.setSharedVariable("shiro", new ShiroTags());
-    return cfg;
+  @Inject
+  public TestAction(APConfig config) {
+    super(config);
+
   }
-
 
 }

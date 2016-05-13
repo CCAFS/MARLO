@@ -23,6 +23,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Hernán David Carvajal
+ * @author Héctor Fabio Tobón
+ * @author Chirstian David Garcia
+ */
 public class APModule implements Module {
 
   // Logger

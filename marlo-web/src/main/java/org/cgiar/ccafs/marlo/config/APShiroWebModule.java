@@ -21,6 +21,11 @@ import javax.servlet.ServletContext;
 
 import org.apache.shiro.guice.web.ShiroWebModule;
 
+/**
+ * @author Hernán David Carvajal
+ * @author Héctor Fabio Tobón
+ * @author Chirstian David Garcia
+ */
 public class APShiroWebModule extends ShiroWebModule {
 
   public APShiroWebModule(ServletContext servletContext) {

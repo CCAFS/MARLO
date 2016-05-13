@@ -14,7 +14,7 @@
     <default-action-ref name="defaultAction" />
 
 
-    <action name="defaultAction" >
+    <action name="defaultAction" class="org.cgiar.ccafs.marlo.action.TestAction" >
       <result name="input">/WEB-INF/home/login.ftl</result>
     </action>
     
