@@ -13,7 +13,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.dao.mysql.hibernate;
+package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.config.HibernateListener;
 
@@ -179,6 +179,38 @@ public class StandardDAO {
     } finally {
       session.flush(); // Flushing the changes always.
       this.closeSession(session);
+    }
+  }
+
+  /**
+   * This method make a query that returns a single object result from the model.
+   * This method was implemented in a generic way, so, the object to be returned will depend on how the method
+   * is being called.
+   * 
+   * @param hibernateQuery is a string representing an HQL query.
+   * @return a Object of <T>
+   */
+  protected <T> Object findSingleResult(Class<T> clazz, String hibernateQuery) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession();
+      tx = this.initTransaction(session);
+      Query query = session.createQuery(hibernateQuery);
+      Object object = clazz.cast(query.uniqueResult());
+      this.commitTransaction(tx);
+      return object;
+    } catch (Exception e) {
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      e.printStackTrace();
+      return new ArrayList<T>();
+    } finally {
+      if (session.isOpen()) {
+        session.flush(); // Flushing the changes always.
+        this.closeSession(session);
+      }
     }
   }
 

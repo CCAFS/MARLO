@@ -19,12 +19,12 @@ package org.cgiar.ccafs.marlo.data.model;
 import java.util.Date;
 
 /**
- * Users object, represents the Users table in the Database model.
+ * Users object, represents the Users table of the Database model.
  * 
  * @author Hernán David Carvajal
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class Users implements java.io.Serializable {
+public class User implements java.io.Serializable {
 
 
   private Long id;
@@ -41,7 +41,7 @@ public class Users implements java.io.Serializable {
   /**
    * create a default user object
    */
-  public Users() {
+  public User() {
   }
 
 
@@ -53,7 +53,7 @@ public class Users implements java.io.Serializable {
    * @param isCcafsUser - indicator if is a ccafs user
    * @param isActive - indicator if the user is active in the system
    */
-  public Users(String email, String password, boolean isCcafsUser, boolean isActive) {
+  public User(String email, String password, boolean isCcafsUser, boolean isActive) {
     this.email = email;
     this.password = password;
     this.isCcafsUser = isCcafsUser;
@@ -73,7 +73,7 @@ public class Users implements java.io.Serializable {
    * @param isActive - indicator if the user is active in the system
    * @param lastLogin - date of the last login of the user
    */
-  public Users(String firstName, String lastName, String username, String email, String password, boolean isCcafsUser,
+  public User(String firstName, String lastName, String username, String email, String password, boolean isCcafsUser,
     Long createdBy, boolean isActive, Date lastLogin) {
     this.firstName = firstName;
     this.lastName = lastName;
