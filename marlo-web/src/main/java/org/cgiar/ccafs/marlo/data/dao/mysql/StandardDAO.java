@@ -32,6 +32,7 @@ import org.hibernate.Transaction;
 /**
  * @author Christian David García O. - CIAT/CCAFS
  * @author Héctor F. Tobón R. - CIAT/CCAFS
+ * @author Hermes Jimenez - CIAT/CCAFS
  */
 @Singleton
 public class StandardDAO {

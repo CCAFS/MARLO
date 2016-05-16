@@ -56,4 +56,15 @@ public class UserMySQLDAO implements UserDAO {
     return null;
   }
 
+  @Override
+  public boolean saveLastLogin(User user) {
+    return dao.saveOrUpdate(user);
+  }
+
+  @Override
+  public int saveUser(User user) {
+    dao.saveOrUpdate(user);
+    return user.getId().intValue();
+  }
+
 }
