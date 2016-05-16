@@ -268,7 +268,6 @@
             <activeByDefault>true</activeByDefault>
         </activation>
         <properties>
-           
           <build.profile.id>dev</build.profile.id>
         </properties>
     </profile>
@@ -276,15 +275,13 @@
     <profile>
         <id>prod</id>
         <properties>
-           
-            <build.profile.id>pro</build.profile.id>
+           <build.profile.id>pro</build.profile.id>
         </properties>
     </profile>
     <!-- The configuration of the testing profile -->
     <profile>
         <id>test</id>
         <properties>
-            
             <build.profile.id>test</build.profile.id>
         </properties>
     </profile>
