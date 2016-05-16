@@ -46,4 +46,20 @@ public interface UserDAO {
    */
   public User getUser(String email);
 
+  /**
+   * Save in the database the date and time that the user made its last login.
+   * 
+   * @param userData - User information
+   * @return - True if the information was succesfully saved, false otherwise.
+   */
+  public boolean saveLastLogin(User user);
+
+  /**
+   * Save the user data into the database.
+   * 
+   * @param userData - Information to be saved.
+   * @return the id of the user that was created, 0 if the user was updated or -1 if some error appeared.
+   */
+  public int saveUser(User user);
+
 }
