@@ -102,14 +102,6 @@ public class User implements java.io.Serializable {
     return this.id;
   }
 
-  public boolean getIsActive() {
-    return this.isActive;
-  }
-
-  public boolean getIsCcafsUser() {
-    return this.isCcafsUser;
-  }
-
   public Date getLastLogin() {
     return this.lastLogin;
   }
@@ -124,6 +116,14 @@ public class User implements java.io.Serializable {
 
   public String getUsername() {
     return this.username;
+  }
+
+  public boolean isActive() {
+    return this.isActive;
+  }
+
+  public boolean isCcafsUser() {
+    return this.isCcafsUser;
   }
 
   public void setCreatedBy(Long createdBy) {

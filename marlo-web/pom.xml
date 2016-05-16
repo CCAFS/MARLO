@@ -90,6 +90,11 @@
          <version>${struts2.version}</version>
          <scope>test</scope>
       </dependency>
+      <dependency>
+	      <groupId>org.cgiar.ciat.auth</groupId>
+	      <artifactId>adauth</artifactId>
+	      <version>1.4</version>
+      </dependency>
       <!-- 
       Although struts2-core has its own freemarker dependency, it seems there is an error with its version.
       Thus, we had to use this version (which is higher than the struts2-core).
