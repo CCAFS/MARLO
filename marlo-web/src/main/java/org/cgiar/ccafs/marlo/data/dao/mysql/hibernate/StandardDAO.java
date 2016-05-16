@@ -158,6 +158,12 @@ public class StandardDAO {
     }
   }
 
+  /**
+   * this method make a select * from the class from parameter.
+   * 
+   * @param clazz type of class that is mapping to make the select
+   * @return a list form clazz elements
+   */
   protected <T> List<T> findEveryone(Class<T> clazz) {
     Session session = null;
     Transaction tx = null;
