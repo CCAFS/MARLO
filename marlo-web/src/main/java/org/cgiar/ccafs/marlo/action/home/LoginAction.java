@@ -105,9 +105,9 @@ public class LoginAction extends BaseAction {
           return SUCCESS;
         }
       } else {
-        LOG.info("User " + user.getEmail() + " tried to logged in but failed.");
+        LOG.info("User " + user.getEmail() + " tried to log-in but failed.");
         user.setPassword(null);
-        this.addFieldError("loginMesage", this.getText("home.login.error"));
+        this.addFieldError("loginMessage", this.getText("home.login.error"));
         return INPUT;
       }
     } else {
