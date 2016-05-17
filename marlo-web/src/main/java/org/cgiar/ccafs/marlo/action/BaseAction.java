@@ -13,6 +13,8 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.action;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Locale;
@@ -138,6 +140,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   /**
+   * Get the user that is currently saved in the session.
+   * 
+   * @return a user object or null if no user was found.
+   */
+  public User getCurrentUser() {
+    User u = null;
+    try {
+      u = session.get(APConstants.SESSION_USER) != null ? (User) session.get(APConstants.SESSION_USER) : null;
+    } catch (Exception e) {
+      LOG.warn("There was a problem trying to find the user in the session.");
+    }
+    return u;
+  }
+
+
+  /**
    * Define default locale while we decide to support other languages in the future.
    */
   @Override
@@ -151,7 +169,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -160,19 +177,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
   }
 
+
   public boolean isCanEdit() {
     return canEdit;
   }
-
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -186,6 +203,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return fullEditable;
   }
 
+
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
       return true;
@@ -193,19 +211,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public boolean isSaveable() {
     return saveable;
   }
+
 
   public boolean isSubmit() {
     return submit;
   }
 
-
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -217,7 +235,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String save() {
     return SUCCESS;
   }
-
 
   public void setAdd(boolean add) {
     this.add = true;
@@ -239,19 +256,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.delete = delete;
   }
 
+
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
-
 
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
+
   public void setNext(boolean next) {
     this.next = true;
   }
-
 
   public void setSave(boolean save) {
     this.save = true;

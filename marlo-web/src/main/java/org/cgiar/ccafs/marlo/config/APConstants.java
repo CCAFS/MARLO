@@ -12,25 +12,17 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.data.manager;
+package org.cgiar.ccafs.marlo.config;
 
-import org.cgiar.ccafs.marlo.data.manager.impl.AuthenticationManagerImp;
-
-import com.google.inject.ImplementedBy;
 
 /**
+ * All Constants should be here.
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Héctor Fabio Tobón R.
  */
-@ImplementedBy(AuthenticationManagerImp.class)
-public interface AuthenticationManager {
+public final class APConstants {
 
-  /**
-   * This method verifies if the credentials received as parameter
-   * corresponds with the credentials of some user in the database.
-   * 
-   * @param email
-   * @param password - password encrypted with MD5.
-   * @return true if the credentials are valid. False otherwise.
-   */
-  public boolean veirifyCredentials(String email, String password);
+  public static final String SESSION_USER = "current_user";
+
 }

@@ -13,11 +13,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.config;
 
+import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
+import org.cgiar.ccafs.marlo.security.authentication.DBAuthenticator;
+import org.cgiar.ccafs.marlo.security.authentication.LDAPAuthenticator;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.name.Names;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -39,8 +43,8 @@ public class APModule implements Module {
   @Override
   public void configure(Binder binder) {
     // We are configuring google guice using annotation. However you can do it here if you want.
-    // binder.bind(Authenticator.class).annotatedWith(Names.named("LDAP")).to(LDAPAuthenticator.class);
-    // binder.bind(Authenticator.class).annotatedWith(Names.named("DB")).to(DBAuthenticator.class);
+    binder.bind(Authenticator.class).annotatedWith(Names.named("LDAP")).to(LDAPAuthenticator.class);
+    binder.bind(Authenticator.class).annotatedWith(Names.named("DB")).to(DBAuthenticator.class);
 
     // In addition, we are using this place to configure other stuffs.
     ToStringBuilder.setDefaultStyle(ToStringStyle.MULTI_LINE_STYLE);
@@ -51,7 +55,6 @@ public class APModule implements Module {
 
     LOG.info("----- DATABASE CONNECTION -----");
     LOG.info(properties.getPropertiesAsString(config.MYSQL_USER));
-
     LOG.info(properties.getPropertiesAsString(config.MYSQL_HOST));
     LOG.info(properties.getPropertiesAsString(config.MYSQL_DATABASE));
 

@@ -14,11 +14,15 @@
 
 package org.cgiar.ccafs.marlo.data.manager;
 
+import org.cgiar.ccafs.marlo.data.manager.impl.UserManagerImp;
 import org.cgiar.ccafs.marlo.data.model.User;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@ImplementedBy(UserManagerImp.class)
 public interface UserManager {
 
   /**

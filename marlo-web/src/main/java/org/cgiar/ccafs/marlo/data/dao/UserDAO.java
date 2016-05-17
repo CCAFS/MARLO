@@ -1,6 +1,9 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
+import org.cgiar.ccafs.marlo.data.dao.mysql.UserMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.User;
+
+import com.google.inject.ImplementedBy;
 
 /*****************************************************************
  * This file is part of CCAFS Planning and Reporting Platform.
@@ -20,6 +23,8 @@ import org.cgiar.ccafs.marlo.data.model.User;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+
+@ImplementedBy(UserMySQLDAO.class)
 public interface UserDAO {
 
   /**

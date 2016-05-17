@@ -28,7 +28,6 @@ public class DBAuthenticator implements Authenticator {
 
   @Inject
   public DBAuthenticator(AuthenticationManager authenticationManager) {
-    super();
     this.authenticationManager = authenticationManager;
   }
 

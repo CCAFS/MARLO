@@ -37,9 +37,6 @@ import org.hibernate.Transaction;
 @Singleton
 public class StandardDAO {
 
-
-  ;
-
   private SessionFactory sessionFactory;
 
   public StandardDAO() {

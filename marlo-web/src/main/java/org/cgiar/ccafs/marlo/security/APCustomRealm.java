@@ -18,8 +18,8 @@ package org.cgiar.ccafs.marlo.security;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
-import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author Hernán David Carvajal
  * @author Héctor Fabio Tobón
  * @author Chirstian David Garcia
+ * @author Hermes Jimenez
  */
 
 public class APCustomRealm extends AuthorizingRealm {
@@ -55,8 +56,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
   // Variables
   final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
-  private int userID;
-  private APConfig config;
+
 
   // Managers
   UserManager userManager;
@@ -71,10 +71,10 @@ public class APCustomRealm extends AuthorizingRealm {
 
 
   @Inject
-  public APCustomRealm(APConfig config, UserManager userManager, @Named("DB") Authenticator dbAuthenticator,
+  public APCustomRealm(UserManager userManager, @Named("DB") Authenticator dbAuthenticator,
     @Named("LDAP") Authenticator ldapAuthenticator) {
     super(new MemoryConstrainedCacheManager());
-    this.config = config;
+    injector = Guice.createInjector();
     this.userManager = userManager;
     this.dbAuthenticator = dbAuthenticator;
     this.ldapAuthenticator = ldapAuthenticator;
