@@ -1,5 +1,5 @@
 CREATE TABLE `crp_users` (
-`id`  bigint NOT NULL ,
+`id`  bigint NOT NULL AUTO_INCREMENT ,
 `user_id`  bigint NOT NULL ,
 `crp_id`  bigint NOT NULL ,
 PRIMARY KEY (`id`),
