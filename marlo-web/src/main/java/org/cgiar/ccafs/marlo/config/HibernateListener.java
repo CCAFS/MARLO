@@ -56,10 +56,10 @@ public class HibernateListener implements ServletContextListener {
 
       config.setProperty("hibernate.connection.username", manager.getPropertiesAsString(APConfig.MYSQL_USER));
       config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-      String url_mysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
+      String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
         + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
         + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE);
-      config.setProperty("hibernate.connection.url", url_mysql);
+      config.setProperty("hibernate.connection.url", urlMysql);
       // config.setProperty("hibernate.c3p0.min_size", "5");
       // System.out.println("url_mysql " + url_mysql);
       // System.out.println(url.toString());
