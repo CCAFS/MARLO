@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
 
+import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -45,15 +46,13 @@ public class LoginAction extends BaseAction {
 
   // Variables
   private User user;
-
-
   private String url;
-
 
   // Managers
   private UserManager userManager;
 
 
+  @Inject
   public LoginAction(APConfig config, UserManager userManager) {
     super(config);
     this.userManager = userManager;
