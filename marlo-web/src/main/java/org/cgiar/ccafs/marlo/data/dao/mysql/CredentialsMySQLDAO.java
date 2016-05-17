@@ -31,11 +31,10 @@ public class CredentialsMySQLDAO implements CredentialsDAO {
 
   public static Logger LOG = LoggerFactory.getLogger(CredentialsMySQLDAO.class);
 
-  private final StandardDAO dao;
+  private StandardDAO dao;
 
   @Inject
   public CredentialsMySQLDAO(StandardDAO dao) {
-    super();
     this.dao = dao;
   }
 

@@ -19,9 +19,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -59,22 +57,19 @@ public class APCustomRealm extends AuthorizingRealm {
 
 
   // Managers
-  UserManager userManager;
+  private UserManager userManager;
 
 
   @Named("DB")
-  Authenticator dbAuthenticator;
+  private Authenticator dbAuthenticator;
 
   @Named("LDAP")
-  Authenticator ldapAuthenticator;
-  Injector injector;
-
+  private Authenticator ldapAuthenticator;
 
   @Inject
   public APCustomRealm(UserManager userManager, @Named("DB") Authenticator dbAuthenticator,
     @Named("LDAP") Authenticator ldapAuthenticator) {
     super(new MemoryConstrainedCacheManager());
-    injector = Guice.createInjector();
     this.userManager = userManager;
     this.dbAuthenticator = dbAuthenticator;
     this.ldapAuthenticator = ldapAuthenticator;

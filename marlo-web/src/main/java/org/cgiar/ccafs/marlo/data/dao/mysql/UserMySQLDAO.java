@@ -27,7 +27,7 @@ import com.google.inject.Inject;
  */
 public class UserMySQLDAO implements UserDAO {
 
-  private final StandardDAO dao;
+  private StandardDAO dao;
 
   @Inject
   public UserMySQLDAO(StandardDAO dao) {
