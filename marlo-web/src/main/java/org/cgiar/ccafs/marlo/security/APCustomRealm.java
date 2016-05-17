@@ -110,7 +110,7 @@ public class APCustomRealm extends AuthorizingRealm {
       user = userManager.getUserByUsername(username);
     }
 
-    if (user.isCcafsUser()) {
+    if (user.isCgiarUser()) {
       authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
     } else {
       authenticated = dbAuthenticator.authenticate(user.getEmail(), password);

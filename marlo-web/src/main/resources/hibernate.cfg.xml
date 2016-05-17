@@ -15,7 +15,13 @@
     <!-- *********************************************************** -->
     
     <!-- Model Mappings -->
-    <mapping resource="xmls/User.hbm.xml" />
+    <mapping resource="xmls/Users.hbm.xml" />
+    <mapping resource="xmls/Crps.hbm.xml" />
+    <mapping resource="xmls/CrpUsers.hbm.xml" />
+    <mapping resource="xmls/Roles.hbm.xml" />
+    <mapping resource="xmls/UserRoles.hbm.xml" />
+    <mapping resource="xmls/CrpParameters.hbm.xml" />
+        
   </session-factory>
 </hibernate-configuration>
 
