@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
-  <!-- constant name="struts.enable.DynamicMethodInvocation" value="false"/ -->
+	<!-- constant name="struts.enable.DynamicMethodInvocation" value="false"/ -->
 
-  <!-- Add addition packages and configuration here. -->
-  <package name="marlo-default" namespace="/" extends="struts-default">
-    <result-types>
-      <result-type name="freemarker" class="org.apache.struts2.views.freemarker.FreemarkerResult"
-        default="true" />
-    </result-types>
-    
-   
-    <default-action-ref name="defaultAction" />
+	<!-- Add addition packages and configuration here. -->
+	<package name="marlo-default" namespace="/" extends="struts-default">
+		<result-types>
+			<result-type name="freemarker"
+				class="org.apache.struts2.views.freemarker.FreemarkerResult"
+				default="true" />
+		</result-types>
 
+		<interceptors>
+			<interceptor name="requireUser"
+				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
+		</interceptors>
 
-    <action name="defaultAction" class="org.cgiar.ccafs.marlo.action.TestAction" >
-      <result name="input">/WEB-INF/home/login.ftl</result>
-    </action>
-    
+		<default-action-ref name="defaultAction" />
 
-  </package>
+		<action name="defaultAction" class="org.cgiar.ccafs.marlo.action.TestAction">
+			<result name="input">/WEB-INF/home/login.ftl</result>
+		</action>
+	</package>
 
+	<include file="struts-home.xml" />
 
 </struts>
