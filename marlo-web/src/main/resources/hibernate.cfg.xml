@@ -15,7 +15,7 @@
     <!-- *********************************************************** -->
     
     <!-- Model Mappings -->
-   
+    <mapping resource="xmls/User.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
 

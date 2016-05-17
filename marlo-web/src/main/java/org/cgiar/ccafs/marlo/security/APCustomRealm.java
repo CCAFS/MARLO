@@ -15,13 +15,20 @@
 package org.cgiar.ccafs.marlo.security;
 
 
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -48,18 +55,29 @@ public class APCustomRealm extends AuthorizingRealm {
 
   // Variables
   final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
-  // private SimpleAuthorizationInfo authorizationInfo;
   private int userID;
-
-  // Managers
-
   private APConfig config;
 
-  @Inject
-  public APCustomRealm(APConfig config) {
-    super(new MemoryConstrainedCacheManager());
+  // Managers
+  UserManager userManager;
 
+
+  @Named("DB")
+  Authenticator dbAuthenticator;
+
+  @Named("LDAP")
+  Authenticator ldapAuthenticator;
+  Injector injector;
+
+
+  @Inject
+  public APCustomRealm(APConfig config, UserManager userManager, @Named("DB") Authenticator dbAuthenticator,
+    @Named("LDAP") Authenticator ldapAuthenticator) {
+    super(new MemoryConstrainedCacheManager());
     this.config = config;
+    this.userManager = userManager;
+    this.dbAuthenticator = dbAuthenticator;
+    this.ldapAuthenticator = ldapAuthenticator;
     this.setName("APCustomRealm");
   }
 
@@ -68,18 +86,55 @@ public class APCustomRealm extends AuthorizingRealm {
     super.clearCachedAuthorizationInfo(principals);
   }
 
+  /**
+   * This method check the correct user authentication
+   * 
+   * @param token
+   * @return
+   * @throws AuthenticationException
+   */
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
     // identify account to log to
+    UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
+    final String username = userPassToken.getUsername();
+    final String password = new String(userPassToken.getPassword());
+    User user;
+    boolean authenticated = false;
 
-    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo();
+    // Get user info from db
+    if (username.contains("@")) {
+      user = userManager.getUserByEmail(username);
+    } else {
+      // if user is login with his user name, we must attach the cgiar.org.
+      user = userManager.getUserByUsername(username);
+    }
+
+    if (user.isCcafsUser()) {
+      authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
+    } else {
+      authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
+    }
+
+    if (!authenticated) {
+      throw new IncorrectCredentialsException();
+    }
+
+    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getId(), user.getPassword(), this.getName());
     return info;
   }
 
+  /**
+   * This method check the user session privileges
+   * 
+   * @param principals
+   * @return
+   */
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
+    authorizationInfo.addStringPermission(Permission.FULL_PRIVILEGES);
 
     return authorizationInfo;
   }
