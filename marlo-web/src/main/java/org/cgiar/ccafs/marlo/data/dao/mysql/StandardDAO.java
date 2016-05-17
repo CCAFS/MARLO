@@ -40,8 +40,8 @@ public class StandardDAO {
   private SessionFactory sessionFactory;
 
   public StandardDAO() {
-    this.sessionFactory =
-      (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
+
+
   }
 
   /**
@@ -227,6 +227,12 @@ public class StandardDAO {
    * @return a Session object.
    */
   private Session openSession() {
+
+
+    if (sessionFactory == null) {
+      this.sessionFactory =
+        (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
+    }
     Session session = null;
     session = sessionFactory.openSession();
     // Calling flush when committing change.
