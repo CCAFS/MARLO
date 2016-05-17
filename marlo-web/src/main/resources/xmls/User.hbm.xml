@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated May 13, 2016 3:37:30 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="data.model.User" table="users" catalog="ccafspr_marlo">
+    <class name="org.cgiar.ccafs.marlo.data.model.User" table="users" catalog="ccafspr_marlo">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
