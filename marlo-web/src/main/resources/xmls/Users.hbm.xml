@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated May 13, 2016 3:37:30 PM by Hibernate Tools 3.4.0.CR1 -->
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 17, 2016 9:53:47 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.User" table="users" catalog="ccafspr_marlo">
+    <class name="org.cgiar.ccafs.marlo.data.model.User" table="users" optimistic-lock="version">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
@@ -23,17 +23,29 @@
         <property name="password" type="string">
             <column name="password" not-null="true" />
         </property>
-        <property name="isCcafsUser" type="boolean">
-            <column name="is_ccafs_user" not-null="true" />
+        <property name="cgiarUser" type="boolean">
+            <column name="is_cgiar_user" not-null="true" />
         </property>
         <property name="createdBy" type="java.lang.Long">
             <column name="created_by" />
         </property>
-        <property name="isActive" type="boolean">
+        <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
         <property name="lastLogin" type="timestamp">
             <column name="last_login" length="19" />
         </property>
+        <set name="userRoleses" table="user_roles" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.UserRole" />
+        </set>
+        <set name="crpUserses" table="crp_users" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
+        </set>
     </class>
 </hibernate-mapping>
