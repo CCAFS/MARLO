@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.utils.MD5Convert;
 import com.google.inject.Inject;
 
 /**
+ * validate if the input user is register in the Database
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class DBAuthenticator implements Authenticator {

@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * validate if the input user belongs in CGIAR active directory
+ * 
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class LDAPAuthenticator implements Authenticator {

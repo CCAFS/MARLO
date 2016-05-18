@@ -107,7 +107,7 @@ public class LoginAction extends BaseAction {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed.");
         user.setPassword(null);
         this.addFieldError("loginMessage", this.getText("home.login.error"));
-        return INPUT;
+        return BaseAction.NOT_LOGGED; // TODO change to return INPUT when the login front-end is finished.
       }
     } else {
       // Check if the user exists in the session
