@@ -40,8 +40,8 @@ public class CredentialsMySQLDAO implements CredentialsDAO {
 
   @Override
   public boolean verifiyCredentials(String email, String password) {
-    String query =
-      "from " + User.class + " where email= '" + email + "' and password= '" + password + "' and is_active = TRUE";
+    String query = "from " + User.class.getName() + " where email= '" + email + "' and password= '" + password
+      + "' and is_active = 1";
     List<User> users = dao.findAll(query);
     if (users.size() > 0) {
       return true;

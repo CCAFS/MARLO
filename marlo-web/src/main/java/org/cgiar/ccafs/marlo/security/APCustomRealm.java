@@ -105,18 +105,21 @@ public class APCustomRealm extends AuthorizingRealm {
       user = userManager.getUserByUsername(username);
     }
 
-    if (user.isCgiarUser()) {
-      authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
-    } else {
-      authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
+    if (user != null) {
+      if (user.isCgiarUser()) {
+        authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
+      } else {
+        authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
+      }
+
+      if (!authenticated) {
+        throw new IncorrectCredentialsException();
+      }
+      SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getId(), user.getPassword(), this.getName());
+      return info;
     }
 
-    if (!authenticated) {
-      throw new IncorrectCredentialsException();
-    }
-
-    SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getId(), user.getPassword(), this.getName());
-    return info;
+    return null;
   }
 
   /**

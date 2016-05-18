@@ -20,7 +20,26 @@
 
 		<default-action-ref name="defaultAction" />
 
-		<action name="defaultAction" class="org.cgiar.ccafs.marlo.action.TestAction">
+    <global-results>
+      <result name="savedStatus" >
+        /WEB-INF/global/pages/saveStatus.ftl
+      </result>
+      <result name="401">
+        /WEB-INF/global/pages/error/401.ftl
+      </result>
+      <result name="403">
+        /WEB-INF/global/pages/error/403.ftl
+      </result>
+      <result name="404">
+        /WEB-INF/global/pages/error/404.ftl
+      </result>
+      <result name="unhandledException" type="chain">
+        <param name="actionName">unhandledExceptionAction</param>
+        <param name="namespace">/</param>
+      </result>
+    </global-results>
+
+		<action name="defaultAction" class="org.cgiar.ccafs.marlo.action.home.LoginAction" method="login">
 			<result name="input">/WEB-INF/home/login.ftl</result>
 		</action>
 		 

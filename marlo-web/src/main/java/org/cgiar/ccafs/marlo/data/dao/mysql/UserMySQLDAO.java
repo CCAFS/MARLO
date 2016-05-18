@@ -36,7 +36,7 @@ public class UserMySQLDAO implements UserDAO {
 
   @Override
   public String getEmailByUsername(String username) {
-    String query = "email from " + User.class.getName() + " where username = '" + username + "'";
+    String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
     String email = (String) dao.findSingleResult(String.class, query);
     return email;
   }

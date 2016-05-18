@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.action.home;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import com.google.inject.Inject;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
@@ -24,9 +26,10 @@ public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
 
+  @Inject
   public DashboardAction(APConfig config) {
     super(config);
-    // TODO Auto-generated constructor stub
+    // TODO Prepare the MARLO dashboard after the user logged in.
   }
 
 }
