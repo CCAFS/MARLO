@@ -19,10 +19,19 @@ package org.cgiar.ccafs.marlo.config;
  * All Constants should be here.
  * 
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia.
  * @author Héctor Fabio Tobón R.
  */
 public final class APConstants {
 
   public static final String SESSION_USER = "current_user";
+  public static final String CRP_PARAMETERS = "crp_parameters";
+  public static final String CRP_LANGUAGE = "crp_language";
+  public static final String CRP_CUSTOM_FILE = "crp_custom_file";
+  public static final String CUSTOM_LAGUAGE = "en";
+  public static final String PATH_CUSTOM_FILES = "custom/";
+  public static final String CUSTOM_FILE = "global";
+
 
 }
+

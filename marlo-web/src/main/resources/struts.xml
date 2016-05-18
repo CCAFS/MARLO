@@ -14,6 +14,8 @@
 		<interceptors>
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
+				      <interceptor name="fileCustom"
+        class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
 		</interceptors>
 
 		<default-action-ref name="defaultAction" />
@@ -21,6 +23,7 @@
 		<action name="defaultAction" class="org.cgiar.ccafs.marlo.action.TestAction">
 			<result name="input">/WEB-INF/home/login.ftl</result>
 		</action>
+		 
 	</package>
 
 	<include file="struts-home.xml" />
