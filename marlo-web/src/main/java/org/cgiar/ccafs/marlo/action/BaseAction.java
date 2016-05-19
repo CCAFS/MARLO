@@ -184,24 +184,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
   }
 
+
   public boolean isCanEdit() {
     return canEdit;
   }
 
-
   public boolean isDataSaved() {
     return dataSaved;
   }
+
 
   public boolean isEditable() {
     return isEditable;
@@ -216,6 +215,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return true;
     }
     return false;
+  }
+
+  /**
+   * Validate if the user is already logged in or not.
+   * 
+   * @return true if the user is logged in, false otherwise.
+   */
+  public boolean isLogged() {
+    if (this.getCurrentUser() == null) {
+      return false;
+    }
+    return true;
   }
 
 
