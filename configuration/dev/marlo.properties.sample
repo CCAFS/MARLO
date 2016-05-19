@@ -9,6 +9,7 @@ mysql.port=3306
 
 # -----------------------------
 
+marlo.baseUrl=https://localhost/marlo-web/
 
 # ------------------------------------------------
 # Email account
