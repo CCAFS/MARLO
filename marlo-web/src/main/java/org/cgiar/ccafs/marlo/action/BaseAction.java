@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Locale;
@@ -67,15 +68,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
   private boolean fullEditable; // If user is able to edit all the form.
 
-
   private Map<String, Object> session;
-  private HttpServletRequest request;
 
+  private HttpServletRequest request;
   // Config
   protected APConfig config;
 
-
   private Map<String, Object> parameters;
+
 
   @Inject
   public BaseAction(APConfig config) {
@@ -105,7 +105,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
-
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
@@ -129,10 +128,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
 
+  public String getBaseUrl() {
+    return config.getBaseUrl();
+  }
 
   public APConfig getConfig() {
     return config;
@@ -154,7 +157,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
-
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -164,10 +166,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public int getOnline() {
+    return SessionCounter.users.size();
+  }
+
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
+
 
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
@@ -182,14 +189,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
+
   public Map<String, Object> getSession() {
     return session;
   }
 
-
   public boolean isCanEdit() {
     return canEdit;
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -203,7 +211,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return fullEditable;
   }
 
-
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
       return true;
@@ -211,19 +218,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public boolean isSaveable() {
     return saveable;
   }
-
 
   public boolean isSubmit() {
     return submit;
   }
 
+
   public String next() {
     return NEXT;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -235,6 +242,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String save() {
     return SUCCESS;
   }
+
 
   public void setAdd(boolean add) {
     this.add = true;
@@ -256,15 +264,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.delete = delete;
   }
 
-
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
-
 
   public void setNext(boolean next) {
     this.next = true;

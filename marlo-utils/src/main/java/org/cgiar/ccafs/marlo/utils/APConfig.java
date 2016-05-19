@@ -35,6 +35,8 @@ public class APConfig {
   private static final String EMAIL_HOST = "email.host";
   private static final String EMAIL_PORT = "email.port";
   private static final String PRODUCTION = "ccafsap.production";
+
+  private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
 
@@ -44,6 +46,27 @@ public class APConfig {
   @Inject
   public APConfig(PropertiesManager properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Return the base url previously added in the configuration file.
+   * 
+   * @return The Base Url in the following format: http://baseurl or https://baseurl.
+   */
+  public String getBaseUrl() {
+    String base = properties.getPropertiesAsString(BASE_URL);
+    if (base == null) {
+      LOG.error("There is not a base url configured");
+      return null;
+    }
+    while (base != null && base.endsWith("/")) {
+      base = base.substring(0, base.length() - 1);
+    }
+    if (!base.startsWith("https://")) {
+      base = "http://" + base;
+      return base;
+    }
+    return base;
   }
 
   public String getEmailHost() {
@@ -86,5 +109,6 @@ public class APConfig {
     }
     return variable.equals("true");
   }
+
 
 }
