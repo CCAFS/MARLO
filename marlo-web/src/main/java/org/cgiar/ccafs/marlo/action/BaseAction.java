@@ -18,9 +18,11 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -206,19 +208,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SessionCounter.users;
   }
 
+  /**
+   * Return the artifact version of the Marlo project pom.xml
+   * 
+   * @return the actual Marlo version
+   */
+  public String getVersion() {
+    String version = this.getClass().getPackage().getImplementationVersion();
+    if (version == null) {
+      Properties prop = new Properties();
+      try {
+        prop.load(ServletActionContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
+        version = prop.getProperty("Implementation-Version");
+      } catch (IOException e) {
+        LOG.warn("MAINFEST file Does not exist");
+      }
+    }
+    return version;
+  }
+
+
   public boolean isCanEdit() {
     return canEdit;
   }
-
 
   public boolean isDataSaved() {
     return dataSaved;
   }
 
+
   public boolean isEditable() {
     return isEditable;
   }
-
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -243,24 +264,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isSaveable() {
     return saveable;
   }
-
 
   public boolean isSubmit() {
     return submit;
   }
 
+
   public String next() {
     return NEXT;
   }
-
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
+
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -271,7 +293,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setAdd(boolean add) {
     this.add = true;
   }
-
 
   public void setCancel(boolean cancel) {
     this.cancel = true;
@@ -293,10 +314,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
-
 
   public void setNext(boolean next) {
     this.next = true;

@@ -1,377 +1,384 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.cgiar.ccafs</groupId>
-    <artifactId>marlo</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>marlo-web</artifactId>
-  <packaging>war</packaging>
-  <name>marlo-web</name>
-  <description>Marlo-Web</description>
-  
-  <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <struts2.version>2.3.16</struts2.version>
-      <struts2-json.version>2.3.16</struts2-json.version>
-      <guice.version>3.0</guice.version>
-      <mysql.version>5.1.39</mysql.version>
-      <junit.version>4.12</junit.version>
-      <servlet-api.version>2.5</servlet-api.version>
-      <jsp-api.version>2.0</jsp-api.version>
-      <janino.version>2.7.8</janino.version>
-      <poi.version>3.13</poi.version>
-      <flyway.version>4.0.1</flyway.version>
-      <org.json.version>20160212</org.json.version>
-      <hibbernate-core-version>5.1.0.Final</hibbernate-core-version>
-      <jta-version>1.1</jta-version>
-      <hibernate-c3p0-version>5.0.6.Final</hibernate-c3p0-version>
-      <commons-logging-version>1.2</commons-logging-version>
-      <xml-apis-version>1.4.01</xml-apis-version>
-      <apache-shiro-version>1.2.4</apache-shiro-version>
-      <groovy-version>2.4.6</groovy-version>
-      <jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
-      <jasper-reports-version>6.2.2</jasper-reports-version>
-   </properties>
-   
-   <developers>
-      <developer>
-         <name>Christian David Garcia Oviedo</name>
-         <email>c.d.garcia@cgiar.org</email>
-      </developer>
-         <developer>
-         <name>Héctor F. Tobón R.</name>
-         <email>h.f.tobon@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Hernán D. Carvajal B.</name>
-         <email>h.d.carvajal@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Hermes Jimenez</name>
-         <email>h.jimenez@cgiar.org</email>
-      </developer>
-      <developer>
-         <name>Sebastian Amariles</name>
-         <email>s.amariles@cgiar.org</email>
-      </developer>
-   </developers>
-    <issueManagement>
-      <system>Github issue tracker</system>
-      <url>https://github.com/CCAFS/marlo/issues</url>
-   </issueManagement>
-   <dependencies>
-   
-   
-   
-   
-      <!--  Project dependecies -->
-   
-    <dependency>
-        <groupId>org.cgiar.ccafs</groupId>
-        <artifactId>marlo-utils</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-      </dependency>
-      <!--  End of project dependecies -->
-      <!-- STRUTS 2 - Framework Core -->
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-core</artifactId>
-         <version>${struts2.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-config-browser-plugin</artifactId>
-         <version>${struts2.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-junit-plugin</artifactId>
-         <version>${struts2.version}</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-	      <groupId>org.cgiar.ciat.auth</groupId>
-	      <artifactId>adauth</artifactId>
-	      <version>1.4</version>
-      </dependency>
-      <!-- 
-      Although struts2-core has its own freemarker dependency, it seems there is an error with its version.
-      Thus, we had to use this version (which is higher than the struts2-core).
-      They said they fixed the problem in the struts version 2.3.24. But are still experiencing it:
-      https://issues.apache.org/jira/browse/WW-4437
-     -->
-      <dependency>
-         <groupId>org.freemarker</groupId>
-         <artifactId>freemarker</artifactId>
-         <version>2.3.23</version>
-      </dependency>
-      <!--  Struts JSON library -->
-      <dependency>
-         <groupId>org.apache.struts</groupId>
-         <artifactId>struts2-json-plugin</artifactId>
-         <version>${struts2-json.version}</version>
-      </dependency>
-      <!-- Java JSON Library -->
-      <dependency>
-         <groupId>org.json</groupId>
-         <artifactId>json</artifactId>
-         <version>${org.json.version}</version>
-      </dependency>
-      <!-- Google Guice - connector to use Guice natively with struts2 -->
-      <!-- 2016-01-04: Version 4.0 is not supported by Shiro 1.2.3. Perhaps will be supported later. -->
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-struts2</artifactId>
-         <version>${guice.version}</version>
-         <scope>compile</scope>
-         <exclusions>
-            <!-- clashes with newer version included in struts2.1.6 -->
-            <exclusion>
-               <groupId>opensymphony</groupId>
-               <artifactId>xwork</artifactId>
-            </exclusion>
-            <exclusion>
-               <groupId>ognl</groupId>
-               <artifactId>ognl</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-assistedinject</artifactId>
-         <version>${guice.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>com.google.inject.extensions</groupId>
-         <artifactId>guice-servlet</artifactId>
-         <version>${guice.version}</version>
-      </dependency>
-      <!-- End of Google Guice -->
-      <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-         <version>${mysql.version}</version>
-      </dependency>
-      <!-- This dependency allows conditions in logger configuration -->
-      <dependency>
-         <groupId>org.codehaus.janino</groupId>
-         <artifactId>janino</artifactId>
-         <version>${janino.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>${junit.version}</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-         <version>${servlet-api.version}</version>
-         <scope>provided</scope>
-      </dependency>
-      <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>jsp-api</artifactId>
-         <version>${jsp-api.version}</version>
-         <scope>provided</scope>
-      </dependency>
-    
-     
-      <!--  Apache POI - JAVA API To Access Microsoft XLS Format Files -->
-      <dependency>
-         <groupId>org.apache.poi</groupId>
-         <artifactId>poi</artifactId>
-         <version>${poi.version}</version>
-      </dependency>
-      <!--  Apache POI - JAVA API To Access Microsoft XLSX Format Files -->
-      <dependency>
-         <groupId>org.apache.poi</groupId>
-         <artifactId>poi-ooxml</artifactId>
-         <version>${poi.version}</version>
-      </dependency>
-      <!-- Database version control -->
-      <dependency>
-         <groupId>org.flywaydb</groupId>
-         <artifactId>flyway-core</artifactId>
-         <version>${flyway.version}</version>
-      </dependency>
-      <!-- START Hibernate -->
-      <!-- Hibernate Core -->
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-core</artifactId>
-         <version>${hibbernate-core-version}</version>
-          <exclusions>
-                <exclusion>
-                    <groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-          </exclusions>
-      </dependency>
-      <!-- Dependency needed for Hibernate -->
-      <dependency>
-         <groupId>javax.transaction</groupId>
-         <artifactId>jta</artifactId>
-         <version>${jta-version}</version>
-      </dependency>
-      <!-- C3P0 Connection Pool for Hibernate -->
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-c3p0</artifactId>
-         <version>${hibernate-c3p0-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>commons-logging</groupId>
-         <artifactId>commons-logging</artifactId>
-         <version>${commons-logging-version}</version>
-      </dependency>
-      <!-- END Hibernate -->
-      <!-- jasper -->
-      <dependency>
-         <groupId>net.sf.jasperreports</groupId>
-         <artifactId>jasperreports</artifactId>
-         <version>${jasper-reports-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.codehaus.groovy</groupId>
-         
-         <artifactId>groovy-all</artifactId>
-         <version>${groovy-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>xml-apis</groupId>
-         <artifactId>xml-apis</artifactId>
-         <version>${xml-apis-version}</version>
-      </dependency>
-      <dependency>
-         <groupId>net.sf.jasperreports</groupId>
-         <artifactId>jasperreports-fonts</artifactId>
-         <version>${jasperreports-fonts-version}</version>
-      </dependency>
-      <!-- End jasper -->
-     
-       <!-- Apache shiro -->
-    <dependency>
-      <groupId>org.apache.shiro</groupId>
-      <artifactId>shiro-web</artifactId>
-      <version>${apache-shiro-version}</version>
-    </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.cgiar.ccafs</groupId>
+		<artifactId>marlo</artifactId>
+		<version>4.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>marlo-web</artifactId>
+	<packaging>war</packaging>
+	<name>marlo-web</name>
+	<description>Marlo-Web</description>
 
-    <dependency>
-      <groupId>org.apache.shiro</groupId>
-      <artifactId>shiro-guice</artifactId>
-      <version>${apache-shiro-version}</version>
-    </dependency>
-      
-   </dependencies>
-   
-   
-   
-   <!-- Profile configuration -->
-<profiles>
-    <!-- The configuration of the development profile -->
-    <profile>
-        <id>dev</id>
-        <!-- The development profile is active by default -->
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-        <properties>
-          <build.profile.id>dev</build.profile.id>
-        </properties>
-    </profile>
-    <!-- The configuration of the production profile -->
-    <profile>
-        <id>prod</id>
-        <properties>
-           <build.profile.id>pro</build.profile.id>
-        </properties>
-    </profile>
-    <!-- The configuration of the testing profile -->
-    <profile>
-        <id>test</id>
-        <properties>
-            <build.profile.id>test</build.profile.id>
-        </properties>
-    </profile>
-</profiles>
-   
-  
-   <build>
-      <finalName>${project.artifactId}</finalName>
-      <defaultGoal>tomcat7:run</defaultGoal>
-     
-      <plugins>
-         <!-- Tomcat plugin just to test compatibilities with Tomcat. -->
-         <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <version>2.0</version>
-            <configuration>
-               <port>8080</port>
-               <useTestClasspath>true</useTestClasspath>
-               <httpsPort>8443</httpsPort>
-               <keystoreFile>${project.basedir}/.keystore</keystoreFile>
-               <keystorePass>d5jtY68oBqWj</keystorePass>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-               <source>1.7</source>
-               <target>1.7</target>
-               <debug>true</debug>
-            </configuration>
-         </plugin>
-         <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.3</version>
-            <configuration>
-               <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-               <packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
-            </configuration>
-         </plugin>
-         <!-- Plugin to copy the resources -->
-         <plugin>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>2.7</version>
-            <executions>
-               <!--  Copy properties to impactPathways module -->
-               <execution>
-                  <id>copy-properties-to-module</id>
-                  <phase>compile</phase>
-                  <goals>
-                     <goal>copy-resources</goal>
-                  </goals>
-                  <configuration>
-                     <outputDirectory>target/classes</outputDirectory>
-                     <overwrite>true</overwrite>
-                     <resources>
-                        <resource>
-                            
-                           <directory>${project.basedir}/../configuration/${build.profile.id}</directory>
-                        </resource>
-                     </resources>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
-   <repositories>
-      <repository>
-         <id>Internal project repo</id>
-         <url>file://${basedir}/src/main/resources/libs/</url>
-      </repository>
-   </repositories>
-   <licenses>
-      <license>
-         <name>GNU General Public License (GPL)</name>
-         <url>http://www.gnu.org/licenses/gpl.txt</url>
-         <distribution>manual</distribution>
-      </license>
-   </licenses>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<struts2.version>2.3.16</struts2.version>
+		<struts2-json.version>2.3.16</struts2-json.version>
+		<guice.version>3.0</guice.version>
+		<mysql.version>5.1.39</mysql.version>
+		<junit.version>4.12</junit.version>
+		<servlet-api.version>2.5</servlet-api.version>
+		<jsp-api.version>2.0</jsp-api.version>
+		<janino.version>2.7.8</janino.version>
+		<poi.version>3.13</poi.version>
+		<flyway.version>4.0.1</flyway.version>
+		<org.json.version>20160212</org.json.version>
+		<hibbernate-core-version>5.1.0.Final</hibbernate-core-version>
+		<jta-version>1.1</jta-version>
+		<hibernate-c3p0-version>5.0.6.Final</hibernate-c3p0-version>
+		<commons-logging-version>1.2</commons-logging-version>
+		<xml-apis-version>1.4.01</xml-apis-version>
+		<apache-shiro-version>1.2.4</apache-shiro-version>
+		<groovy-version>2.4.6</groovy-version>
+		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
+		<jasper-reports-version>6.2.2</jasper-reports-version>
+	</properties>
+
+	<developers>
+		<developer>
+			<name>Christian David Garcia Oviedo</name>
+			<email>c.d.garcia@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Héctor F. Tobón R.</name>
+			<email>h.f.tobon@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Hernán D. Carvajal B.</name>
+			<email>h.d.carvajal@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Hermes Jimenez</name>
+			<email>h.jimenez@cgiar.org</email>
+		</developer>
+		<developer>
+			<name>Sebastian Amariles</name>
+			<email>s.amariles@cgiar.org</email>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Github issue tracker</system>
+		<url>https://github.com/CCAFS/marlo/issues</url>
+	</issueManagement>
+	<dependencies>
+
+
+
+
+		<!-- Project dependecies -->
+
+		<dependency>
+			<groupId>org.cgiar.ccafs</groupId>
+			<artifactId>marlo-utils</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
+		</dependency>
+		<!-- End of project dependecies -->
+		<!-- STRUTS 2 - Framework Core -->
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-config-browser-plugin</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-junit-plugin</artifactId>
+			<version>${struts2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.cgiar.ciat.auth</groupId>
+			<artifactId>adauth</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<!-- Although struts2-core has its own freemarker dependency, it seems 
+			there is an error with its version. Thus, we had to use this version (which 
+			is higher than the struts2-core). They said they fixed the problem in the 
+			struts version 2.3.24. But are still experiencing it: https://issues.apache.org/jira/browse/WW-4437 -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.23</version>
+		</dependency>
+		<!-- Struts JSON library -->
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-json-plugin</artifactId>
+			<version>${struts2-json.version}</version>
+		</dependency>
+		<!-- Java JSON Library -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${org.json.version}</version>
+		</dependency>
+		<!-- Google Guice - connector to use Guice natively with struts2 -->
+		<!-- 2016-01-04: Version 4.0 is not supported by Shiro 1.2.3. Perhaps will 
+			be supported later. -->
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-struts2</artifactId>
+			<version>${guice.version}</version>
+			<scope>compile</scope>
+			<exclusions>
+				<!-- clashes with newer version included in struts2.1.6 -->
+				<exclusion>
+					<groupId>opensymphony</groupId>
+					<artifactId>xwork</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ognl</groupId>
+					<artifactId>ognl</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-assistedinject</artifactId>
+			<version>${guice.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-servlet</artifactId>
+			<version>${guice.version}</version>
+		</dependency>
+		<!-- End of Google Guice -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+		<!-- This dependency allows conditions in logger configuration -->
+		<dependency>
+			<groupId>org.codehaus.janino</groupId>
+			<artifactId>janino</artifactId>
+			<version>${janino.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>${jsp-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<!-- Apache POI - JAVA API To Access Microsoft XLS Format Files -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<!-- Apache POI - JAVA API To Access Microsoft XLSX Format Files -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<!-- Database version control -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>${flyway.version}</version>
+		</dependency>
+		<!-- START Hibernate -->
+		<!-- Hibernate Core -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibbernate-core-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.javassist</groupId>
+					<artifactId>javassist</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Dependency needed for Hibernate -->
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>${jta-version}</version>
+		</dependency>
+		<!-- C3P0 Connection Pool for Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>${hibernate-c3p0-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>${commons-logging-version}</version>
+		</dependency>
+		<!-- END Hibernate -->
+		<!-- jasper -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasper-reports-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+
+			<artifactId>groovy-all</artifactId>
+			<version>${groovy-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>${xml-apis-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>${jasperreports-fonts-version}</version>
+		</dependency>
+		<!-- End jasper -->
+
+		<!-- Apache shiro -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>${apache-shiro-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-guice</artifactId>
+			<version>${apache-shiro-version}</version>
+		</dependency>
+
+	</dependencies>
+
+
+
+	<!-- Profile configuration -->
+	<profiles>
+		<!-- The configuration of the development profile -->
+		<profile>
+			<id>dev</id>
+			<!-- The development profile is active by default -->
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<!-- The configuration of the production profile -->
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>pro</build.profile.id>
+			</properties>
+		</profile>
+		<!-- The configuration of the testing profile -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<build.profile.id>test</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<defaultGoal>tomcat7:run</defaultGoal>
+
+		<plugins>
+			<!-- Tomcat plugin just to test compatibilities with Tomcat. -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<port>8080</port>
+					<useTestClasspath>true</useTestClasspath>
+					<httpsPort>8443</httpsPort>
+					<keystoreFile>${project.basedir}/.keystore</keystoreFile>
+					<keystorePass>d5jtY68oBqWj</keystorePass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<debug>true</debug>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+					<archiveClasses>true</archiveClasses>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+					<packagingExcludes>WEB-INF/lib/asm-1.5.3.jar</packagingExcludes>
+				</configuration>
+			</plugin>
+			<!-- Plugin to copy the resources -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<!-- Copy properties to impactPathways module -->
+					<execution>
+						<id>copy-properties-to-module</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/classes</outputDirectory>
+							<overwrite>true</overwrite>
+							<resources>
+								<resource>
+
+									<directory>${project.basedir}/../configuration/${build.profile.id}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>Internal project repo</id>
+			<url>file://${basedir}/src/main/resources/libs/</url>
+		</repository>
+	</repositories>
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL)</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
 </project>
