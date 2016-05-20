@@ -25,16 +25,13 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import org.apache.struts2.ServletActionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class InternationalitazionFileInterceptor extends AbstractInterceptor {
 
   /**
-   * 
+   * @author Christian David Garcia Oviedo
    */
   private static final long serialVersionUID = -3807232981762261100L;
-  private static final Logger LOG = LoggerFactory.getLogger(RequireUserInterceptor.class);
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
