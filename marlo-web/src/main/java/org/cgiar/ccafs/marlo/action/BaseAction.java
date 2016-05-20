@@ -18,8 +18,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -168,7 +166,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
-
+  /**
+   * get the number of users log in in the application
+   * 
+   * @return the number of users online
+   */
   public int getOnline() {
     if (SessionCounter.users != null) {
       return SessionCounter.users.size();
@@ -197,13 +199,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Map<String, Object> getSession() {
     return session;
-  }
-
-  public List<User> getUsersOnline() {
-    if (this.getOnline() > 0) {
-      return SessionCounter.users;
-    }
-    return new ArrayList<>();
   }
 
   public boolean isCanEdit() {
