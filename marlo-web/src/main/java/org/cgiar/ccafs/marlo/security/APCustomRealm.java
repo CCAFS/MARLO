@@ -115,6 +115,7 @@ public class APCustomRealm extends AuthorizingRealm {
       if (!authenticated) {
         throw new IncorrectCredentialsException();
       }
+
       SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getId(), user.getPassword(), this.getName());
       return info;
     }

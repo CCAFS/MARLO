@@ -14,23 +14,27 @@
 
 package org.cgiar.ccafs.marlo.security;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
 
 import com.google.inject.Inject;
 
 /**
+ * This class implements the attributes change of an session.
+ *
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Chirstian David Garcia - CIAT/CCAFS
  */
-public class SessionCounter implements HttpSessionListener {
+public class SessionCounter implements HttpSessionAttributeListener {
 
-  public static List<User> users = new ArrayList<User>();
+  public static List<User> users;
   @Inject
   private UserManager userManager;
 
@@ -38,19 +42,34 @@ public class SessionCounter implements HttpSessionListener {
   private BaseSecurityContext securityContext;
 
   @Override
-  public void sessionCreated(HttpSessionEvent event) {
-
-    // HttpSession session = event.getSession();
-    // int userId = (Integer) SecurityUtils.getSubject().getPrincipals().getPrimaryPrincipal();
-    // User user = userManager.getUser(userId);
-    // session.setAttribute(APConstants.SESSION_USER, user);
-    // users.add(user);
+  public void attributeAdded(HttpSessionBindingEvent se) {
+    if (users == null) {
+      users = new ArrayList<User>();
+    }
+    if (se.getName().equals(APConstants.SESSION_USER)) {
+      if (!users.contains(se.getValue())) {
+        users.add((User) se.getValue());
+      } else {
+        User duplicateUser = new User();
+        duplicateUser.setId(new Long(-1));
+        se.getSession().setAttribute(APConstants.SESSION_USER, duplicateUser);
+      }
+    }
 
   }
 
   @Override
-  public void sessionDestroyed(HttpSessionEvent event) {
-    // TODO Auto-generated method stub
+  public void attributeRemoved(HttpSessionBindingEvent se) {
+    if (se.getName().equals(APConstants.SESSION_USER)) {
+      users.remove(se.getValue());
+    }
   }
+
+  @Override
+  public void attributeReplaced(HttpSessionBindingEvent se) {
+    // TODO Auto-generated method stub
+
+  }
+
 
 }

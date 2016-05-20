@@ -80,14 +80,21 @@ public class LoginAction extends BaseAction {
 
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
+
+
       User loggedUser = userManager.login(userEmail, user.getPassword());
       if (loggedUser != null) {
         loggedUser.setLastLogin(new Date());
+
         userManager.saveLastLogin(loggedUser);
+
 
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         LOG.info("User " + user.getEmail() + " logged in successfully.");
 
+        if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
+          return NOT_LOGGED;
+        }
         /*
          * Save the user url with trying to enter the system to redirect after
          * loged.

@@ -18,6 +18,8 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -70,12 +72,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private Map<String, Object> session;
 
+
   private HttpServletRequest request;
+
   // Config
   protected APConfig config;
 
   private Map<String, Object> parameters;
-
 
   @Inject
   public BaseAction(APConfig config) {
@@ -89,6 +92,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String add() {
     return SUCCESS;
   }
+
 
   /**
    * This function add a flag (--warn--) to the message in order to give
@@ -128,7 +132,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -137,10 +140,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
+
   public APConfig getConfig() {
     return config;
   }
-
 
   /**
    * Get the user that is currently saved in the session.
@@ -167,7 +170,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public int getOnline() {
-    return SessionCounter.users.size();
+    if (SessionCounter.users != null) {
+      return SessionCounter.users.size();
+    }
+    return 0;
   }
 
   public Map<String, Object> getParameters() {
@@ -188,23 +194,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
+
   public Map<String, Object> getSession() {
     return session;
   }
 
+  public List<User> getUsersOnline() {
+    if (this.getOnline() > 0) {
+      return SessionCounter.users;
+    }
+    return new ArrayList<>();
+  }
 
   public boolean isCanEdit() {
     return canEdit;
   }
 
+
   public boolean isDataSaved() {
     return dataSaved;
   }
 
-
   public boolean isEditable() {
     return isEditable;
   }
+
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -229,25 +243,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isSaveable() {
     return saveable;
   }
+
 
   public boolean isSubmit() {
     return submit;
   }
 
-
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
-
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -258,6 +271,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setAdd(boolean add) {
     this.add = true;
   }
+
 
   public void setCancel(boolean cancel) {
     this.cancel = true;
@@ -279,10 +293,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
+
 
   public void setNext(boolean next) {
     this.next = true;

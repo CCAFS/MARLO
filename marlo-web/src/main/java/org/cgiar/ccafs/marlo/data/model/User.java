@@ -70,9 +70,33 @@ public class User implements java.io.Serializable {
     this.crpUserses = crpUserses;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    User other = (User) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Long getCreatedBy() {
     return this.createdBy;
   }
+
 
   public Set<CrpUser> getCrpUserses() {
     return this.crpUserses;
@@ -109,7 +133,6 @@ public class User implements java.io.Serializable {
   public Set<UserRole> getUserRoleses() {
     return this.userRoleses;
   }
-
 
   public boolean isActive() {
     return active;
