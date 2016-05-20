@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -91,7 +92,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   /**
    * This function add a flag (--warn--) to the message in order to give
    * a different style to the success message using javascript once the html is ready.
@@ -101,6 +101,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
+
 
   /* Override this method depending of the cancel action. */
   public String cancel() {
@@ -138,10 +139,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
-
   public APConfig getConfig() {
     return config;
   }
+
 
   /**
    * Get the user that is currently saved in the session.
@@ -183,7 +184,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -192,13 +192,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public HttpServletRequest getRequest() {
     return request;
   }
 
-
   public Map<String, Object> getSession() {
     return session;
+  }
+
+
+  public List<User> getUsersOnline() {
+    return SessionCounter.users;
   }
 
   public boolean isCanEdit() {

@@ -93,7 +93,8 @@ public class LoginAction extends BaseAction {
         LOG.info("User " + user.getEmail() + " logged in successfully.");
 
         if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
-          return NOT_LOGGED;
+          this.addFieldError("loginMessage", this.getText("home.login.duplicated"));
+          return BaseAction.INPUT;
         }
         /*
          * Save the user url with trying to enter the system to redirect after
@@ -114,7 +115,7 @@ public class LoginAction extends BaseAction {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed.");
         user.setPassword(null);
         this.addFieldError("loginMessage", this.getText("home.login.error"));
-        return BaseAction.NOT_LOGGED; // TODO change to return INPUT when the login front-end is finished.
+        return BaseAction.INPUT; // TODO change to return INPUT when the login front-end is finished.
       }
     } else {
       // Check if the user exists in the session
