@@ -1,18 +1,14 @@
 [#ftl]
-[#assign globalLibs = ["jquery", "datatables"] /]
+[#assign title = "Welcome to CCAFS P&R" /]
+[#assign pageLibs = ["select2"] /]
+[#assign customJS = ["${baseUrl}/js/home/login.js" ] /]
+[#assign currentSection = "home" /]
 
+[#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 
-[#include "/WEB-INF/global/header.ftl" /]
+  [#-- Login Form --]
+  [#include "/WEB-INF/global/pages/loginForm.ftl" /]
 
-<form id="login" name="login" method="POST" action="marlo-web/login.do" >
-
-  <h6><label for="user.email" class="editable">Email:<span class="red">*</span></label></h6>
-  <input type="text" id="user.email" name="user.email" value="" class=" required">
-
-  <h6><label for="user.password" class="editable">Password:<span class="red">*</span></label></h6>
-  <input type="password" id="user.password" name="user.password" value="" class=" required">
-
-  <input type="submit" id="login_login" name="login" value="Login">
-</form>
-
-[#include "/WEB-INF/global/footer.ftl" /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]

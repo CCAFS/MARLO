@@ -6,6 +6,7 @@
   [#if libraryName="jReject" ] <link rel="stylesheet" href="${baseUrl}/bower_components/jReject/css/jquery.reject.css" />[/#if]
   [#if libraryName="datatables" ] <link rel="stylesheet" href="${baseUrl}/bower_components/datatables/media/css/jquery.dataTables.css" />[/#if]
   [#if libraryName="dropzone" ] <link rel="stylesheet" href="${baseUrl}/bower_components/dropzone/dist/min/dropzone.min.css" />[/#if]
+  [#if libraryName="animate.css" ] <link rel="stylesheet" href="${baseUrl}/bower_components/animate.css/animate.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 

@@ -5,8 +5,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     wiredep: {
       task: {
-        src: ['src/main/webapp/WEB-INF/global/bowerComponents.ftl'],
-        ignorePath: '../../',
+        src: ['src/main/webapp/WEB-INF/global/pages/bowerComponents.ftl'],
+        ignorePath: '../../../',
         options: {
           fileTypes: {
             ftl: {

@@ -14,7 +14,7 @@
 		<interceptors>
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
-				      <interceptor name="fileCustom"
+				      <interceptor name="i18nFile"
         class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
 		</interceptors>
 
