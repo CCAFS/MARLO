@@ -29,13 +29,10 @@ public class DashboardAction extends BaseAction {
   @Inject
   public DashboardAction(APConfig config) {
     super(config);
-    // TODO Prepare the MARLO dashboard after the user logged in.
-
   }
 
   @Override
   public void prepare() throws Exception {
-
   }
 
 }

@@ -25,6 +25,7 @@ package org.cgiar.ccafs.marlo.config;
 public final class APConstants {
 
   public static final String SESSION_USER = "current_user";
+  public static final String SESSION_CRP = "current_crp";
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_LANGUAGE = "crp_language";
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
