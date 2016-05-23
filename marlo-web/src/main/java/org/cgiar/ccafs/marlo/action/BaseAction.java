@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -65,25 +66,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean submit;
   protected boolean dataSaved;
   protected boolean add;
+  private Map<String, Object> session;
+  private HttpServletRequest request;
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   private boolean canEdit; // If user is able to edit the form.
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
   private boolean fullEditable; // If user is able to edit all the form.
 
-  private Map<String, Object> session;
-
-
-  private HttpServletRequest request;
 
   private String crpUser;
 
-
   // Config
+  @Inject
+  protected BaseSecurityContext securityContext;
   protected APConfig config;
 
-
   private Map<String, Object> parameters;
+
 
   @Inject
   public BaseAction(APConfig config) {
@@ -108,6 +109,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
+
 
   /* Override this method depending of the cancel action. */
   public String cancel() {
@@ -141,7 +143,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
@@ -149,6 +150,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public APConfig getConfig() {
     return config;
   }
+
 
   public String getCrpUser() {
     return crpUser;
@@ -189,7 +191,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return 0;
   }
 
-
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
@@ -203,8 +204,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public HttpServletRequest getRequest() {
     return request;
+  }
+
+  public BaseSecurityContext getSecurityContext() {
+    return securityContext;
   }
 
   public Map<String, Object> getSession() {
@@ -214,7 +220,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<User> getUsersOnline() {
     return SessionCounter.users;
   }
-
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -233,6 +238,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return version;
+  }
+
+
+  /**
+   * @param role
+   * @return true if is the user role
+   */
+  public boolean isAdmin() {
+    return securityContext.hasRole("Admin");
   }
 
 
@@ -342,6 +356,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSaveable(boolean saveable) {
     this.saveable = saveable;
+  }
+
+  public void setSecurityContext(BaseSecurityContext securityContext) {
+    this.securityContext = securityContext;
   }
 
   @Override

@@ -2,7 +2,7 @@
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
-	<package name="login" namespace="/" extends="marlo-default">
+	<package name="home" namespace="/" extends="marlo-default">
 
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">

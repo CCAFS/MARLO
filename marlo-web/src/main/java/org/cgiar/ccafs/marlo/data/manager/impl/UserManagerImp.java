@@ -99,6 +99,7 @@ public class UserManagerImp implements UserManager {
         LOG.info("Trying to log in the user {} against the database.", email);
         try {
           currentUser.login(token);
+
           // If user is logging-in with their email account.
           if (email.contains("@")) {
             userFound = this.getUserByEmail(email);

@@ -117,6 +117,7 @@ public class APCustomRealm extends AuthorizingRealm {
       }
 
       SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getId(), user.getPassword(), this.getName());
+
       return info;
     }
 
@@ -131,6 +132,7 @@ public class APCustomRealm extends AuthorizingRealm {
    */
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
     int userID = (Integer) principals.getPrimaryPrincipal();

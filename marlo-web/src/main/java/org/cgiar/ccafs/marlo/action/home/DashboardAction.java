@@ -33,6 +33,9 @@ public class DashboardAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    if (this.isAdmin()) {
+      System.out.println("Is Admin");
+    }
   }
 
 }

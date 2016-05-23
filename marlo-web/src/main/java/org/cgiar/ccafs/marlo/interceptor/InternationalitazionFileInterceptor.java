@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo.interceptor;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 
 import java.util.Locale;
@@ -53,7 +52,7 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     }
 
 
-    return BaseAction.INPUT;
+    return invocation.invoke();
   }
 
 }
