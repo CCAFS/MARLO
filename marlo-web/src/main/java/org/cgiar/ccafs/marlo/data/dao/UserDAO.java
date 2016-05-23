@@ -3,6 +3,9 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.dao.mysql.UserMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.User;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.inject.ImplementedBy;
 
 /*****************************************************************
@@ -34,6 +37,12 @@ public interface UserDAO {
    * @return a String with the user's email, or null if nothing was found.
    */
   public String getEmailByUsername(String username);
+
+  /**
+   * TODO Comment
+   */
+
+  public List<Map<String, Object>> getPermission(int userId);
 
   /**
    * This method gets the data of a User identified with a given id.

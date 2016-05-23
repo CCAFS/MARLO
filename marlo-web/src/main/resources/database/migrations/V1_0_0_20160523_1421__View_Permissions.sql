@@ -1,4 +1,5 @@
-DROP VIEWIF EXISTS `user_permissions`;CREATE algorithm=undefined definer=`root`@`localhost` sql security definer VIEW `user_permissions` ASSELECT `u`.`id`         AS `id`,
+DROP VIEW IF EXISTS `user_permissions`;
+CREATE  VIEW `user_permissions` AS SELECT `u`.`id`         AS `id`,
        `r`.`acronym`    AS `acronym`, 
        `p`.`permission` AS `permission` 
 FROM   ((((`users` `u` 

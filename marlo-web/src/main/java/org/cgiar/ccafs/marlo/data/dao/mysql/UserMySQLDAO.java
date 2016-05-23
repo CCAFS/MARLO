@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -39,6 +40,12 @@ public class UserMySQLDAO implements UserDAO {
     String query = "select email from " + User.class.getName() + " where username = '" + username + "'";
     String email = (String) dao.findSingleResult(String.class, query);
     return email;
+  }
+
+  @Override
+  public List<Map<String, Object>> getPermission(int userId) {
+    String query = "select * from user_permissions where id=" + userId;
+    return dao.findCustomQuery(query);
   }
 
   @Override

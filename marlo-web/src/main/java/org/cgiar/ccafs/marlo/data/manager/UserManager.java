@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.data.manager;
 import org.cgiar.ccafs.marlo.data.manager.impl.UserManagerImp;
 import org.cgiar.ccafs.marlo.data.model.User;
 
+import java.util.List;
+
 import com.google.inject.ImplementedBy;
 
 /**
@@ -24,6 +26,12 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(UserManagerImp.class)
 public interface UserManager {
+
+  /**
+   * TODO Comment
+   */
+
+  public List<String> getPermission(int userId);
 
   /**
    * This method find an user identify with a given id.
@@ -59,6 +67,7 @@ public interface UserManager {
    * @return a User object representing the user identified by the email provided or Null if login failed.
    */
   public User login(String email, String password);
+
 
   /**
    * Save in the database the date and time that the user made its last login.

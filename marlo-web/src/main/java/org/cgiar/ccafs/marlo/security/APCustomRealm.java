@@ -133,8 +133,9 @@ public class APCustomRealm extends AuthorizingRealm {
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
-    authorizationInfo.addStringPermission(Permission.FULL_PRIVILEGES);
-
+    int userID = (Integer) principals.getPrimaryPrincipal();
+    authorizationInfo.addStringPermissions(userManager.getPermission(userID));
+    System.out.println(authorizationInfo.getStringPermissions());
     return authorizationInfo;
   }
 

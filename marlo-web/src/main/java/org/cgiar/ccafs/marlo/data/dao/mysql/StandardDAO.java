@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.HibernateListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Singleton;
 import org.apache.struts2.ServletActionContext;
@@ -28,6 +29,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
@@ -156,6 +158,37 @@ public class StandardDAO {
     }
   }
 
+  /**
+   * This method make a query that returns a not mapped object result from the model.
+   * 
+   * @param hibernateQuery is a string representing an HQL query.
+   */
+  protected List<Map<String, Object>> findCustomQuery(String hibernateQuery) {
+    Session session = null;
+    Transaction tx = null;
+
+    try {
+      session = this.openSession();
+      tx = this.initTransaction(session);
+      Query query = session.createQuery(hibernateQuery);
+      query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+      List<Map<String, Object>> result = query.list();
+      this.commitTransaction(tx);
+      return result;
+    } catch (Exception e) {
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      e.printStackTrace();
+      return null;
+    } finally {
+      if (session.isOpen()) {
+        session.flush(); // Flushing the changes always.
+        this.closeSession(session);
+      }
+    }
+  }
+
   protected <T> List<T> findEveryone(Class<T> clazz) {
     Session session = null;
     Transaction tx = null;
@@ -179,6 +212,7 @@ public class StandardDAO {
       this.closeSession(session);
     }
   }
+
 
   /**
    * This method make a query that returns a single object result from the model.
@@ -211,6 +245,7 @@ public class StandardDAO {
       }
     }
   }
+
 
   /**
    * This method initializes a transaction.

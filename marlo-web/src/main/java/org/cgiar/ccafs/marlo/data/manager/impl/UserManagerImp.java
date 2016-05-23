@@ -19,7 +19,10 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.MD5Convert;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -46,6 +49,17 @@ public class UserManagerImp implements UserManager {
   @Inject
   public UserManagerImp(UserDAO userDAO) {
     this.userDAO = userDAO;
+  }
+
+  @Override
+  public List<String> getPermission(int userId) {
+    List<String> permissions = new ArrayList<String>();
+
+    List<Map<String, Object>> view = userDAO.getPermission(userId);
+    for (Map<String, Object> map : view) {
+      permissions.add(map.get("permission").toString());
+    }
+    return permissions;
   }
 
   @Override
