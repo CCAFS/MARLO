@@ -30,25 +30,24 @@ public class Role implements java.io.Serializable {
   private Crp crps;
   private String description;
   private String acronym;
-  private String value;
   private Set<UserRole> userRoleses = new HashSet<UserRole>(0);
 
   public Role() {
   }
 
 
-  public Role(Crp crps, String description, String acronym, String value) {
+  public Role(Crp crps, String description, String acronym) {
     this.crps = crps;
     this.description = description;
     this.acronym = acronym;
-    this.value = value;
+
   }
 
-  public Role(Crp crps, String description, String acronym, String value, Set<UserRole> userRoleses) {
+  public Role(Crp crps, String description, String acronym, Set<UserRole> userRoleses) {
     this.crps = crps;
     this.description = description;
     this.acronym = acronym;
-    this.value = value;
+
     this.userRoleses = userRoleses;
   }
 
@@ -72,9 +71,6 @@ public class Role implements java.io.Serializable {
     return this.userRoleses;
   }
 
-  public String getValue() {
-    return this.value;
-  }
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -94,10 +90,6 @@ public class Role implements java.io.Serializable {
 
   public void setUserRoleses(Set<UserRole> userRoleses) {
     this.userRoleses = userRoleses;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
   }
 
 
