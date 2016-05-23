@@ -76,8 +76,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private HttpServletRequest request;
 
+  private String crpUser;
+
+
   // Config
   protected APConfig config;
+
 
   private Map<String, Object> parameters;
 
@@ -88,6 +92,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.fullEditable = true;
 
   }
+
 
   /* Override this method depending of the save action. */
   public String add() {
@@ -103,7 +108,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
-
 
   /* Override this method depending of the cancel action. */
   public String cancel() {
@@ -137,6 +141,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
+
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
@@ -145,6 +150,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config;
   }
 
+  public String getCrpUser() {
+    return crpUser;
+  }
 
   /**
    * Get the user that is currently saved in the session.
@@ -181,6 +189,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return 0;
   }
 
+
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
@@ -194,7 +203,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
-
   public HttpServletRequest getRequest() {
     return request;
   }
@@ -203,10 +211,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return session;
   }
 
-
   public List<User> getUsersOnline() {
     return SessionCounter.users;
   }
+
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -245,6 +253,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return fullEditable;
   }
 
+
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
       return true;
@@ -263,7 +272,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public boolean isSaveable() {
     return saveable;
@@ -289,17 +297,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   public void setAdd(boolean add) {
     this.add = true;
   }
+
 
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
 
+
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
+  }
+
+  public void setCrpUser(String crpUser) {
+    this.crpUser = crpUser;
   }
 
   public void setDataSaved(boolean dataSaved) {
@@ -314,10 +327,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
+
 
   public void setNext(boolean next) {
     this.next = true;

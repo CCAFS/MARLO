@@ -48,6 +48,7 @@ public class LoginAction extends BaseAction {
   private User user;
   private String url;
 
+
   // Managers
   private UserManager userManager;
 
@@ -67,6 +68,7 @@ public class LoginAction extends BaseAction {
     return url;
   }
 
+
   public User getUser() {
     return user;
   }
@@ -84,12 +86,17 @@ public class LoginAction extends BaseAction {
 
       User loggedUser = userManager.login(userEmail, user.getPassword());
       if (loggedUser != null) {
+
+        this.setCrpUser("ccafs"); // Set the Crp that the user has logged on.
+
         loggedUser.setLastLogin(new Date());
 
         userManager.saveLastLogin(loggedUser);
 
 
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
+        this.getSession().put(APConstants.SESSION_CRP, this.getCrpUser());
+
         LOG.info("User " + user.getEmail() + " logged in successfully.");
 
         if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
