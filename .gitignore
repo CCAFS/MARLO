@@ -8,3 +8,6 @@ bin
 
 # Configuration 
 /configuration/marlo.properties
+
+# Mainfest
+*.MF
