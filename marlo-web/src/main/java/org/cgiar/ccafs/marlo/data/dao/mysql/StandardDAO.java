@@ -161,16 +161,16 @@ public class StandardDAO {
   /**
    * This method make a query that returns a not mapped object result from the model.
    * 
-   * @param hibernateQuery is a string representing an HQL query.
+   * @param sqlQuery is a string representing an HQL query.
    */
-  protected List<Map<String, Object>> findCustomQuery(String hibernateQuery) {
+  protected List<Map<String, Object>> findCustomQuery(String sqlQuery) {
     Session session = null;
     Transaction tx = null;
 
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-      Query query = session.createQuery(hibernateQuery);
+      Query query = session.createSQLQuery(sqlQuery);
       query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
       List<Map<String, Object>> result = query.list();
       this.commitTransaction(tx);
