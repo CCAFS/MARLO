@@ -92,8 +92,6 @@ public class LoginAction extends BaseAction {
         loggedUser.setLastLogin(new Date());
 
         userManager.saveLastLogin(loggedUser);
-
-
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, this.getCrpUser());
 

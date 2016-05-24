@@ -116,7 +116,7 @@ public class UserManagerImp implements UserManager {
             + "Please contact your administrator to unlock it.");
         }
       } else {
-        int userID = (Integer) currentUser.getPrincipals().getPrimaryPrincipal();
+        int userID = ((Long) currentUser.getPrincipals().getPrimaryPrincipal()).intValue();
         userFound = this.getUser(userID);
         LOG.info("Already logged in");
       }
