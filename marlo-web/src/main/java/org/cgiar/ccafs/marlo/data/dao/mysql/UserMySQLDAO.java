@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class UserMySQLDAO implements UserDAO {
 
