@@ -25,6 +25,7 @@ import com.google.inject.ImplementedBy;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 
 @ImplementedBy(UserMySQLDAO.class)
@@ -39,7 +40,10 @@ public interface UserDAO {
   public String getEmailByUsername(String username);
 
   /**
-   * TODO Comment
+   * This method gets the data of a Permissions identified with a given id.
+   * 
+   * @param userId: the user id to search permissions
+   * @return a List with the select of the view user_permissions
    */
 
   public List<Map<String, Object>> getPermission(int userId);

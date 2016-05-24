@@ -23,13 +23,18 @@ import com.google.inject.ImplementedBy;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 @ImplementedBy(UserManagerImp.class)
 public interface UserManager {
 
   /**
-   * TODO Comment
+   * This method gets the data of a Permissions identified with a given id.
+   * 
+   * @param userId: the user id to search permissions
+   * @return a List with string permissions
    */
+
 
   public List<String> getPermission(int userId);
 
