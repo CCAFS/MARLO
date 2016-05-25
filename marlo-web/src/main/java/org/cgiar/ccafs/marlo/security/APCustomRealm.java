@@ -15,12 +15,14 @@
 package org.cgiar.ccafs.marlo.security;
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -33,6 +35,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,10 +139,11 @@ public class APCustomRealm extends AuthorizingRealm {
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
     int userID = ((Long) principals.getPrimaryPrincipal()).intValue();
-    /**
-     * TODO missing put the crp witch the user login
-     */
-    authorizationInfo.addStringPermissions(userManager.getPermission(userID, -1));
+
+    Session session = SecurityUtils.getSubject().getSession();
+    String logCrp = (String) session.getAttribute(APConstants.SESSION_CRP);
+
+    authorizationInfo.addStringPermissions(userManager.getPermission(userID, logCrp));
     System.out.println(authorizationInfo.getStringPermissions());
     return authorizationInfo;
   }
