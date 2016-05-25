@@ -153,7 +153,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * 
    * @return the crp that the user has log in
    */
-  public String getcrpUser() {
+  public String getCrpUser() {
     String userCrp = null;
     try {
       userCrp =

@@ -55,7 +55,7 @@ public interface UserDAO {
    * @param userId is the id of the User.
    * @return a Map with the user data.
    */
-  public User getUser(int id);
+  public User getUser(Long id);
 
   /**
    * Get a Users object with the given email.

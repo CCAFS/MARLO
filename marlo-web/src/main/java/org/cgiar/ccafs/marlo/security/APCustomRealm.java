@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.security;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 
 import com.google.inject.Inject;
@@ -128,22 +129,26 @@ public class APCustomRealm extends AuthorizingRealm {
   }
 
   /**
-   * This method check the user session privileges
+   * This method check and get the user session privileges
    * 
    * @param principals
-   * @return
+   * @return SimpleAuthorizationInfo object whit the permissions list of the current user
    */
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
-    int userID = ((Long) principals.getPrimaryPrincipal()).intValue();
+    User user = userManager.getUser((Long) principals.getPrimaryPrincipal());
+
+    for (UserRole userRole : user.getUserRoleses()) {
+      System.out.println(userRole.getRoles().getAcronym());
+    }
 
     Session session = SecurityUtils.getSubject().getSession();
     String logCrp = (String) session.getAttribute(APConstants.SESSION_CRP);
 
-    authorizationInfo.addStringPermissions(userManager.getPermission(userID, logCrp));
+    authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), logCrp));
     return authorizationInfo;
   }
 

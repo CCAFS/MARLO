@@ -66,7 +66,7 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
-  public User getUser(int userId) {
+  public User getUser(Long userId) {
     User user = userDAO.getUser(userId);
     if (user != null) {
       return user;
@@ -119,7 +119,7 @@ public class UserManagerImp implements UserManager {
             + "Please contact your administrator to unlock it.");
         }
       } else {
-        int userID = ((Long) currentUser.getPrincipals().getPrimaryPrincipal()).intValue();
+        Long userID = (Long) currentUser.getPrincipals().getPrimaryPrincipal();
         userFound = this.getUser(userID);
         LOG.info("Already logged in");
       }
