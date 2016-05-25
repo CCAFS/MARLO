@@ -12,14 +12,12 @@
         </li>
         
         [#-- PRE-Planning section --]
-        [#if securityContext.FPL || securityContext.RPL || securityContext.ML || securityContext.CU || securityContext.admin ]
         <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
-          <a [#if preplanningActive ]href="[@s.url namespace="/pre-planning" action='intro'/]">[#else]href="javascript:void(0);" title="[@s.text name="menu.link.disabled" /]" class="disabled">[/#if]
+          <a href="[@s.url namespace="/pre-planning" action='intro'/]">
             [@s.text name="menu.preplanning" /]
           </a>
         </li>
-        [/#if]
-
+        
 	    [#else]
 	      [#-- If the user is not logged show the login element in menu --]
 	      <li [#if currentSection?? && currentSection == "home"] class="currentSection" [/#if]>
@@ -42,10 +40,6 @@
   	[/#if]
   </div>
 </nav> 
-
-<div class="container">
- [#include "/WEB-INF/global/pages/breadcrumb.ftl"]
-</div>
 
 <section id="generalMessages">
   [#-- Messages are going to show using notify plugin (see global.js) --]
