@@ -169,11 +169,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public String getCrpUser() {
     String userCrp = null;
-    try {
-      userCrp =
-        (String) session.get(APConstants.SESSION_CRP) != null ? (String) session.get(APConstants.SESSION_CRP) : null;
-    } catch (Exception e) {
-      LOG.warn("There was a problem trying to find the user crp in the session.");
+    if (!session.isEmpty()) {
+      try {
+        userCrp =
+          (String) session.get(APConstants.SESSION_CRP) != null ? (String) session.get(APConstants.SESSION_CRP) : null;
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user crp in the session.");
+      }
     }
     return userCrp;
   }
@@ -185,10 +187,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public User getCurrentUser() {
     User u = null;
-    try {
-      u = session.get(APConstants.SESSION_USER) != null ? (User) session.get(APConstants.SESSION_USER) : null;
-    } catch (Exception e) {
-      LOG.warn("There was a problem trying to find the user in the session.");
+    if (!session.isEmpty()) {
+      try {
+        u = session.get(APConstants.SESSION_USER) != null ? (User) session.get(APConstants.SESSION_USER) : null;
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user in the session.");
+      }
     }
     return u;
   }
