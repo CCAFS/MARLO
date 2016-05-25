@@ -1,13 +1,18 @@
 $(document).ready(init);
-
 function init() {
   initJreject();
+  
+  if(getCrpFromUrl()){
+    var crp = getCrpFromUrl()
+    $('li#crp-'+crp).addClass('selected');
+    $('#crp').val(crp);
+  }
 
   $('.crpGroup ul li').on('click', function() {
     // Add 'selected' class and removing sibling's class if any
     $(this).addClass('selected').siblings().removeClass('selected');
     // Setting up the CRP value into a hidden input
-    $('#crp').val($(this).find('img').attr('alt'));
+    $('#crp').val($(this).attr('id').split('-')[1]);
   });
 }
 

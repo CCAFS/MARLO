@@ -1109,7 +1109,7 @@ a#userLogOut {
   text-decoration: none;
   background: #444;
   padding: 2px 8px;
-  font-size: 0.85em;
+  font-size: 0.70em;
   font-weight: lighter;
   position: absolute;
   right: 1em;
@@ -1161,6 +1161,7 @@ a#userLogOut {
 #userInfo .name {
   font-size: 1em;
   margin-right: 50px;
+  margin-bottom: 0;
 }
 
 #userInfo .roles {
@@ -1179,12 +1180,13 @@ a#userLogOut {
 }
 
 #userInfo .institution {
-  font-size: 0.8em; 
+  font-size: 0.8em;
   padding-top: 2px;
   min-width: 153px;
   color: #E7E7E7;
   font-weight: lighter;
   /* line-height: 1em; */
+  margin-bottom: 0;
 }
 
 #userInfo .logout {
@@ -5206,6 +5208,7 @@ table.evaluationRank thead th{
 
 .breadcrumb {
   margin: 10px 0;
+  padding: 7px 15px 9px 15px;
 }
 
 .usersInfo {

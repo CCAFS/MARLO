@@ -35,6 +35,12 @@
         "dist/jquery.min.js"
       ]
     },
+    "jquery-ui": {
+      "main": [
+        "jquery-ui.min.js",
+        "themes/base/jquery-ui.min.css"
+      ]
+    },
     "bootstrap": {
       "main": [
         "dist/css/bootstrap.min.css",

@@ -17,7 +17,7 @@
   [/#if]
   <div class="usersInfo">
     [#assign users = action.getUsersOnline()]
-    [#list users as us]${(us.firstName)!} ${(us.lastName)!}[/#list]
-    <button type="button" class="btn btn-default" title="asdasd">Users Online : ${online}</button>
+    
+    <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.firstName)!} ${(us.lastName)!}[/#list]">Users Online : ${online}</button>
   </div>
 </ol>

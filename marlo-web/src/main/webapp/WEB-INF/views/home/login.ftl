@@ -8,7 +8,6 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section> 
-  
   <div class="container">
     <div class="col-md-6">
       <h3>[@s.text name="login.marloTitle" /]</h3>

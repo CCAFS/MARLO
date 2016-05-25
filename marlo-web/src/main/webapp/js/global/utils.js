@@ -59,6 +59,15 @@ function printOut() {
   });
 }
 
+
+function getCrpFromUrl(){
+  var url= window.location.href;
+  var result = (url.split(baseURL)[1]).split('/')[1]
+  if(!(result.indexOf('.do') > -1) && result != ""){
+    return result;
+  }
+}
+
 function getSerializeForm() {
   $("form").each(function(indexForm,form) {
     console.log("--------------------------- Form #" + indexForm + "  ------------------------------");

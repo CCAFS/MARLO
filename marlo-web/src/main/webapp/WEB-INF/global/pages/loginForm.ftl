@@ -14,10 +14,10 @@
       <label for="crp">[@s.text name="login.crp" /]:<span class="red">*</span></label>
       <ul>
         [#list crpList as crp]
-          <li class="[#if crpUser?? && (crp.acronym == crpUser)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.acronym}" /></li>
+          <li id="crp-${crp.acronym}"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.acronym}" /></li>
         [/#list]
       </ul>
-      <input type="hidden" id="crp" name="crp" value="${(crpUser)!-1}" />
+      <input type="hidden" id="crp" name="crp" value="-1" />
     </div>
     [#-- Email --]
     [@customForm.input name="user.email" i18nkey="login.email" required=true /]
