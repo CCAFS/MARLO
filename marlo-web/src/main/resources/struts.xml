@@ -3,10 +3,10 @@
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<constant name="struts.enable.SlashesInActionNames" value="true" />
-  <constant name="struts.mapper.alwaysSelectFullNamespace"
-    value="false" />
-  <constant name="struts.patternMatcher" value="regex" />
-  
+	<constant name="struts.mapper.alwaysSelectFullNamespace"
+		value="false" />
+	<constant name="struts.patternMatcher" value="regex" />
+
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">
 
@@ -17,10 +17,26 @@
 		</result-types>
 
 		<interceptors>
+
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
+
 			<interceptor name="i18nFile"
 				class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
+
+			<!-- Custom interceptor to prevent the unauthorized access of a inactive 
+				section -->
+			<interceptor name="accessibleStage"
+				class="org.cgiar.ccafs.marlo.interceptor.AccessibleStageInterceptor" />
+
+			<!-- custom interceptor to preserve action messages across redirects -->
+			<interceptor name="keepRedirectMessages"
+				class="org.cgiar.ccafs.marlo.interceptor.RedirectMessageInterceptor" />
+
+			<!-- custom interceptor to remove all the whitespace present in the values 
+				received as paramter -->
+			<interceptor name="trimInputs"
+				class="org.cgiar.ccafs.marlo.interceptor.TrimInterceptor" />
 		</interceptors>
 
 		<default-action-ref name="login" />
