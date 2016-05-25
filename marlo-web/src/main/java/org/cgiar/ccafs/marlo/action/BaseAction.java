@@ -14,6 +14,8 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
@@ -69,6 +71,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private Map<String, Object> session;
   private HttpServletRequest request;
 
+  // Managers
+  @Inject
+  private CrpManager crpManager;
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   private boolean canEdit; // If user is able to edit the form.
@@ -87,7 +93,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.config = config;
     this.saveable = true;
     this.fullEditable = true;
-
   }
 
 
@@ -95,6 +100,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String add() {
     return SUCCESS;
   }
+
 
   /**
    * This function add a flag (--warn--) to the message in order to give
@@ -106,11 +112,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
-
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
   }
+
 
   /* Override this method depending of the delete action. */
   public String delete() {
@@ -145,6 +151,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public APConfig getConfig() {
     return config;
+  }
+
+  /**
+   * Get the Crp List
+   * 
+   * @return List<Crp> object
+   */
+  public List<Crp> getCrpList() {
+    return crpManager.getAll();
   }
 
   /**
