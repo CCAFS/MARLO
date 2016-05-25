@@ -1,18 +1,5 @@
-/* 
----------------[Content]---------------
---- 1. GENERAL
---- 2. HEADER
---- 3. MAIN MENU
---- 4. SECONDARY MENU
---- 5. BODY
---- 6. SECTIONS
---- 7. FOOTER
----------------------------------------
-*/
-
 /************* 1. GENERAL ***************/
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);
-@import url(grid-system.css);
 
 .mce-widget.mce-tooltip {
     display: none !important;
@@ -43,7 +30,7 @@ a.addLink {
 }
 
 .select, .input {
-  margin-bottom: 0px;
+  /* margin-bottom: 0px; */
 }
 
 .select .selectList {
@@ -503,18 +490,6 @@ ul#noty_bottomRight_layout_container {
     position: relative;
 }
 
-.create-button {
-}
-
-.addButton:hover {
-  background-color: #239FC5 !important;
-}
-
-input[type="text"] {
-  width: 100%;
-  border-radius: 3px;
-  border: 1px solid #ccc;
-}
 
 input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
   background-color: #fff !important;
@@ -1083,20 +1058,12 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 /************* 2. HEADER ***************/
-body { 
-  text-align: center;
+body {
   font-family: 'Segoe UI', Helvetica, Verdana;
+  color: #4a4a4a;
 }
 header {
   font-family: 'Open Sans', sans-serif;
-}
-.container {
-  background-repeat: no-repeat;
-  display: inline-block;
-  width: 1100px;
-  position: relative;
-  text-align: left;
-  display: inline-block;
 }
 
 .popup_container {
@@ -1127,7 +1094,7 @@ header {
   top: 0;
   background: #57A7B5;
   border-bottom: 6px solid #4C8D99;
-  height: 35px;
+  height: 110%;
   font-size: 0.9em;
   padding: 6px 20px 17px 20px;
   box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);
@@ -1187,7 +1154,6 @@ a#userLogOut {
     line-height: 0.9em;
 }
 
-
 #userInfo .name {
   font-size: 1em;
   margin-right: 50px;
@@ -1235,39 +1201,41 @@ a#userLogOut {
   text-decoration: none;
 }
 
-#mainLogo {
+#marlo-logo {
   float: left;
-  padding: 31px 0px;
-  font-size: 2.5em;
-  color: #444;
-  font-weight: 200;
+  padding: 10px 0px;
+  font-weight: lighter;
 }
 
-#mainLogo p#testingMessage {
+#marlo-logo #title{
+  font-size: 3.9em;
+  color: #7d7d7d;
+  float: left;
+}
+
+#marlo-logo #subTitle{
+  font-size: 1.5em;
+  float: left;
+  color: #b9b6b6;
+  width: 42%;
+  margin-left: 10px;
+  padding: 14px 0;
+  line-height: 25px;
+}
+
+#marlo-logo p#testingMessage {
   color: #FF7474;
   font-weight: bold;
   font-size: 0.7em;
 }
 
-#mainLogo p#infoMessage {
+#marlo-logo p#infoMessage {
   color: #EF8080;
   font-weight: bold;
   font-size: 0.7em;
 }
 
-#mainLogo img {
-  /* margin-left: 75px; */
-  /* margin-top: 20px; */
-}
-
-#ccafsLogo {
-  float: right;
-}
-
-#ccafsLogo img {
-  /* margin-left: 80px; */
-  /* margin-top: 20px; */
-}
+#crp-image {float: right;height: 110px;}
 
 /************* 3. MAIN MENU ***************/
 nav#mainMenu {
@@ -1278,7 +1246,11 @@ nav#mainMenu {
   background-image: url("../../images/global/header-menu-bar.png");
   font-size: 1.2em;
   font-family: 'Open Sans', sans-serif;
-} 
+}
+
+nav#mainMenu .container{
+  position: relative;
+}
 
 nav#mainMenu.positionFixedTop {
   z-index: 999;
@@ -1315,7 +1287,8 @@ nav#mainMenu.positionFixedTop ul li ul.subMenu {
 
 nav#mainMenu ul{
   list-style-type: none;
-  padding: 19px 0px;
+  padding: 0px 0px;
+  margin: 0;
 }
 
 nav#mainMenu ul a{ 
@@ -1325,11 +1298,10 @@ nav#mainMenu ul a{
 } 
 
 nav#mainMenu ul li{
-  display: inline;
-  padding: 16px 0px 19px 0px; 
-  margin: -1px;
+  padding: 16px 0px 19px 0px;
   color: #FFFFFF;
   position: relative;
+  display: inline-block;
 }
 
 nav#mainMenu ul li:hover {
@@ -2334,15 +2306,13 @@ input.userName {
 }
 
 #loginFormContainer {
-  margin: 20px 0 30px 0px;
-  text-align: center;
+  /* margin: 20px 0 30px 0px; */
 }
 
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
   margin: auto;
   padding: 15px;
-  width: 310px;
   border-radius: 7px;
   border: 2px solid #F3F3F3;
   box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
@@ -2350,9 +2320,6 @@ input.userName {
 }
 
 #loginFormContainer .loginForm p {
-    text-align: justify;
-  
-    margin: 5px;
 }
 
 #loginFormContainer .loginForm .fieldError {
@@ -2362,9 +2329,9 @@ input.userName {
 }
 
 #loginFormContainer .loginForm div {
-  margin-bottom: 10px;
-  margin: 15px 0;
-  text-align: left;
+  /* margin-bottom: 10px; */
+  /* margin: 15px 0; */
+  /* text-align: left; */
 }
 #loginFormContainer .loginForm h6 {
     margin: 0px; 
@@ -2404,6 +2371,53 @@ input.userName {
 #reportComponent tbody tr {
   border-bottom: 1px solid #9D9D9D;
 }
+
+
+.crpGroup ul{
+  margin: 0;
+  padding: 0;
+}
+
+.crpGroup li{
+  width: 46%;
+  margin: 2%;
+  float: left;
+  background: #fff;
+  list-style: none;
+  text-align: center;
+  border: 1px dashed #d4d4d4;
+  cursor: pointer;
+
+
+  /* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  /* IE 5-7 */
+  filter: alpha(opacity=40);
+  /* Netscape */
+  -moz-opacity: 0.4;
+  /* Safari 1.x */
+  -khtml-opacity: 0.4;
+  /* Good browsers */
+  opacity: 0.4;
+}
+
+.crpGroup li:hover, .crpGroup li.selected{
+  border: 1px solid #d4d4d4; 
+  
+   /* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  /* IE 5-7 */
+  filter: alpha(opacity=100);
+  /* Netscape */
+  -moz-opacity: 1;
+  /* Safari 1.x */
+  -khtml-opacity: 1;
+  /* Good browsers */
+  opacity: 1;
+
+}
+
+.crpGroup li img{width: 100%;height: 100%;}
 
 /***************** OVERVIEW *******************/
 
@@ -5028,7 +5042,14 @@ background-color: #f1f1f1;font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
 
 /*************** FOOTER ****************/
 footer {
-background: #E0E0E0;
+  margin: 42px 0 0 0;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#d3d3d3+0,e0e0e0+4,e0e0e0+4,e0e0e0+10,e0e0e0+100 */
+  background: #d3d3d3; /* Old browsers */
+  background: -moz-linear-gradient(top,  #d3d3d3 0%, #e0e0e0 4%, #e0e0e0 4%, #e0e0e0 10%, #e0e0e0 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #d3d3d3 0%,#e0e0e0 4%,#e0e0e0 4%,#e0e0e0 10%,#e0e0e0 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #d3d3d3 0%,#e0e0e0 4%,#e0e0e0 4%,#e0e0e0 10%,#e0e0e0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d3d3d3', endColorstr='#e0e0e0',GradientType=0 ); /* IE6-9 */
+
 }
 
 #footerContainer {
@@ -5181,3 +5202,4 @@ table.evaluationRank thead th{
   border-color: #9a9a9a;
   border-style: dashed;
 }
+

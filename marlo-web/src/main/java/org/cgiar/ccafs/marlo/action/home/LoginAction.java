@@ -87,13 +87,13 @@ public class LoginAction extends BaseAction {
       User loggedUser = userManager.login(userEmail, user.getPassword());
       if (loggedUser != null) {
 
-        this.setCrpUser("ccafs"); // Set the Crp that the user has logged on.
+        // Set the Crp that the user has logged on.
 
         loggedUser.setLastLogin(new Date());
 
         userManager.saveLastLogin(loggedUser);
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
-        this.getSession().put(APConstants.SESSION_CRP, this.getCrpUser());
+        this.getSession().put(APConstants.SESSION_CRP, "ccafs");
 
         LOG.info("User " + user.getEmail() + " logged in successfully.");
 

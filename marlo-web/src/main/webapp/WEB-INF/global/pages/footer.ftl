@@ -1,7 +1,6 @@
 [#ftl]
     <!-- ${actionName} Content end-->
     <footer>
-      <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
       <div class="container">
         <div id="footerContainer" class="little">
           <div id="reportIssue">

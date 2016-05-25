@@ -19,7 +19,7 @@
       <meta name="googlebot" content="${robotAccess}" />
     [/#if]
     [#-- Title --]
-    <title>${(title)!"CCAFS Activity Planning"}</title> 
+    <title>${(title)!"MARLO"}</title> 
     [#compress]
   	[#-- Importing Global CSS files --]
   	[#if globalLibs??][#list globalLibs as libraryName][@components.css_imports libraryName=libraryName/][/#list][/#if]
@@ -42,20 +42,18 @@
     [/#compress]
   </head>
   <body>
-  [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
-  [#if !(avoidHeader!false)]
-    <div class="container">  
+    [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
+    [#if !(avoidHeader!false)]
       <header class="clearfix">
-        <div id="mainLogo">MARLO </div>    
-        <div id="autoSavingMessages">
-          <p id="saving" style="display:none;" >
-            <img src="${baseUrl}/images/global/saving.gif" alt="Saving information" />
-            [@s.text name="saving.saving" /]
-          </p>
-          <p id="saved" style="display:none;" >[@s.text name="saving.saved" /]</p>
-          <p id="problemSaving" style="display:none;" >[@s.text name="saving.problem" /] </p>
+        <div class="container">
+          <div id="marlo-logo" class="animated fadeIn">
+            <div id="title" >MARLO</div>    
+            <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
+          </div>
+          [#if crpUser??]
+            <img id="crp-image" src="${baseUrl}/images/global/crps/${crpUser}.png" alt="${crpUser}" />
+          [/#if]
         </div> 
       </header>
-     </div> 
-  [/#if]
-  <!-- ${actionName} Content -->
+    [/#if]
+    <!-- ${actionName} Content -->

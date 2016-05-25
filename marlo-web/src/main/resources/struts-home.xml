@@ -25,7 +25,7 @@
 			<interceptor-ref name="i18nFile" />
 			<interceptor-ref name="requireUser" />
 			<interceptor-ref name="defaultStack" />
-			<result name="input">/WEB-INF/views/home/home.ftl</result>
+			<result name="input">/WEB-INF/views/home/dashboard.ftl</result>
 		</action>
 	</package>
 </struts>

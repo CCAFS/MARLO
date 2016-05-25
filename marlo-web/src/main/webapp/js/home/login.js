@@ -1,4 +1,17 @@
-$(document).ready(function() {
+$(document).ready(init);
+
+function init() {
+  initJreject();
+
+  $('.crpGroup ul li').on('click', function() {
+    // Add 'selected' class and removing sibling's class if any
+    $(this).addClass('selected').siblings().removeClass('selected');
+    // Setting up the CRP value into a hidden input
+    $('#crp').val($(this).find('img').attr('alt'));
+  });
+}
+
+function initJreject() {
   $.reject({
       reject: {
           msie: false,
@@ -25,20 +38,4 @@ $(document).ready(function() {
           'firefox', 'chrome', 'opera', 'msie', 'safari'
       ]
   });
-
-});
-
-function workflowModal() {
-  console.log('asdsa');
-  $("#showPandRWorkflowDialog").dialog({
-      modal: true,
-      width: 700,
-      height: 770,
-      buttons: {
-        Ok: function() {
-          $(this).dialog("close");
-        }
-      }
-  });
-  return false;
 }
