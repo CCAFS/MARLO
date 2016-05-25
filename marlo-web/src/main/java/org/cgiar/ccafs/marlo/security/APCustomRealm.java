@@ -137,9 +137,9 @@ public class APCustomRealm extends AuthorizingRealm {
 
     int userID = ((Long) principals.getPrimaryPrincipal()).intValue();
     /**
-     * TODO missing put the crp witch the user login
+     * TODO missing put the crp acronym witch the user login
      */
-    authorizationInfo.addStringPermissions(userManager.getPermission(userID, -1));
+    authorizationInfo.addStringPermissions(userManager.getPermission(userID, "acronym"));
     System.out.println(authorizationInfo.getStringPermissions());
     return authorizationInfo;
   }
