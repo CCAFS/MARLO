@@ -45,7 +45,7 @@ public class UserMySQLDAO implements UserDAO {
 
   @Override
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
-    String query = "select * from user_permissions where id=" + userId + "and crp_acronym='" + crpId + "'";
+    String query = "select * from user_permissions where id=" + userId + " and crp_acronym='" + crpId + "'";
     return dao.findCustomQuery(query);
   }
 

@@ -13,9 +13,8 @@
     <div class="crpGroup form-group clearfix">
       <label for="crp">[@s.text name="login.crp" /]:<span class="red">*</span></label>
       <ul>
-        [#assign crps= ['ccafs', 'pim', 'wle', 'a4nh'] /]
-        [#list crps as crp]
-          <li class="[#if crpUser?? && (crp == crpUser)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp}.png" alt="${crp}" /></li>
+        [#list crpList as crp]
+          <li class="[#if crpUser?? && (crp.acronym == crpUser)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.acronym}" /></li>
         [/#list]
       </ul>
       <input type="hidden" id="crp" name="crp" value="${(crpUser)!-1}" />

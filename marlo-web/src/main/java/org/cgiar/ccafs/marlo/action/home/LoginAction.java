@@ -16,12 +16,15 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
+import java.util.List;
 
 import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -52,12 +55,14 @@ public class LoginAction extends BaseAction {
 
   // Managers
   private UserManager userManager;
+  private CrpManager crpManager;
 
 
   @Inject
-  public LoginAction(APConfig config, UserManager userManager) {
+  public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager) {
     super(config);
     this.userManager = userManager;
+    this.crpManager = crpManager;
   }
 
   @Override
@@ -70,14 +75,18 @@ public class LoginAction extends BaseAction {
     return crp;
   }
 
+  public List<Crp> getCrpList() {
+    return crpManager.getAll();
+  }
+
   public String getUrl() {
     return url;
   }
 
+
   public User getUser() {
     return user;
   }
-
 
   public UserManager getUserManager() {
     return userManager;
