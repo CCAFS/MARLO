@@ -50,7 +50,7 @@ public class UserMySQLDAO implements UserDAO {
   }
 
   @Override
-  public User getUser(int id) {
+  public User getUser(Long id) {
     return dao.find(User.class, id);
   }
 
