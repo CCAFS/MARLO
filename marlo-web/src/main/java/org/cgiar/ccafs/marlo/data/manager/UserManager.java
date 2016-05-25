@@ -32,11 +32,12 @@ public interface UserManager {
    * This method gets the data of a Permissions identified with a given id.
    * 
    * @param userId: the user id to search permissions
+   * @param crpId: the crp id that user is loggin
    * @return a List with string permissions
    */
 
 
-  public List<String> getPermission(int userId);
+  public List<String> getPermission(int userId, int crpId);
 
   /**
    * This method find an user identify with a given id.

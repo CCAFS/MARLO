@@ -1,0 +1,1 @@
+update permissions set permission=CONCAT('crp:{0}:',REPLACE(REPLACE(permission,'{0}','{1}'),'update','canEdit'))
