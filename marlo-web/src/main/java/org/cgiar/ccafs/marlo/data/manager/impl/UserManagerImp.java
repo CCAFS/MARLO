@@ -52,7 +52,7 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
-  public List<String> getPermission(int userId, int crpId) {
+  public List<String> getPermission(int userId, String crpId) {
     List<String> permissions = new ArrayList<String>();
 
     List<Map<String, Object>> view = userDAO.getPermission(userId, crpId);

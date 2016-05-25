@@ -43,11 +43,11 @@ public interface UserDAO {
    * This method gets the data of a Permissions identified with a given id.
    * 
    * @param userId: the user id to search permissions
-   * @param crpId: the crp id that user is loggin
+   * @param crp: the crp acronym that user is loggin
    * @return a List with the select of the view user_permissions
    */
 
-  public List<Map<String, Object>> getPermission(int userId, int crpId);
+  public List<Map<String, Object>> getPermission(int userId, String crp);
 
   /**
    * This method gets the data of a User identified with a given id.

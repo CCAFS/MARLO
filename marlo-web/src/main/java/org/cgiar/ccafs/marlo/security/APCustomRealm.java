@@ -144,7 +144,6 @@ public class APCustomRealm extends AuthorizingRealm {
     String logCrp = (String) session.getAttribute(APConstants.SESSION_CRP);
 
     authorizationInfo.addStringPermissions(userManager.getPermission(userID, logCrp));
-    System.out.println(authorizationInfo.getStringPermissions());
     return authorizationInfo;
   }
 
