@@ -198,6 +198,10 @@ ul.fieldError li {
     text-transform: capitalize;
 }
 
+.marlo-content{
+  min-height: 400px;
+}
+
 textarea.fieldError, input.fieldError,textarea.fieldError:focus, input.fieldError:focus{
   border-color: #F44 !important;
   background-color: #FFFAFA;
@@ -1273,11 +1277,11 @@ nav#mainMenu.positionFixedTop #userInfo .roles{
 
 nav#mainMenu.positionFixedTop ul{
   list-style-type: none;
-  padding: 8px 0px;
+  /* padding: 8px 0px; */
 } 
 
 nav#mainMenu.positionFixedTop ul li {
-  padding: 16px 0 10px 0;
+  padding: 7px 0 6px 0;
 }
 
 nav#mainMenu.positionFixedTop ul li ul.subMenu {
@@ -2312,10 +2316,10 @@ input.userName {
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
   margin: auto;
-  padding: 15px;
+  padding: 18px 24px;
   border-radius: 7px;
   border: 2px solid #F3F3F3;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
   margin-top: 10px;
 }
 
@@ -2334,11 +2338,11 @@ input.userName {
   /* text-align: left; */
 }
 #loginFormContainer .loginForm h6 {
-    margin: 0px; 
+    margin: 0px;
 }
 
 #loginFormContainer .loginForm div label {
-  display: block;
+  /* display: block; */
   font-size: 13px;
 }
 
@@ -2379,15 +2383,15 @@ input.userName {
 }
 
 .crpGroup li{
-  width: 46%;
-  margin: 2%;
+  width: 48%;
+  margin: 1%;
   float: left;
   background: #fff;
   list-style: none;
   text-align: center;
-  border: 1px dashed #d4d4d4;
+  border: 1px dashed #9e9e9e;
   cursor: pointer;
-
+  transition:opacity 0.2s linear;
 
   /* IE 8 */
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
@@ -2399,6 +2403,7 @@ input.userName {
   -khtml-opacity: 0.4;
   /* Good browsers */
   opacity: 0.4;
+  border-radius: 2px;
 }
 
 .crpGroup li:hover, .crpGroup li.selected{
@@ -5042,14 +5047,13 @@ background-color: #f1f1f1;font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
 
 /*************** FOOTER ****************/
 footer {
-  margin: 42px 0 0 0;
+  margin: 15px 0 0 0;
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#d3d3d3+0,e0e0e0+4,e0e0e0+4,e0e0e0+10,e0e0e0+100 */
   background: #d3d3d3; /* Old browsers */
   background: -moz-linear-gradient(top,  #d3d3d3 0%, #e0e0e0 4%, #e0e0e0 4%, #e0e0e0 10%, #e0e0e0 100%); /* FF3.6-15 */
   background: -webkit-linear-gradient(top,  #d3d3d3 0%,#e0e0e0 4%,#e0e0e0 4%,#e0e0e0 10%,#e0e0e0 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(to bottom,  #d3d3d3 0%,#e0e0e0 4%,#e0e0e0 4%,#e0e0e0 10%,#e0e0e0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d3d3d3', endColorstr='#e0e0e0',GradientType=0 ); /* IE6-9 */
-
 }
 
 #footerContainer {
@@ -5061,9 +5065,9 @@ footer {
 }
 
 #footerContainer p.lighter {
-  font-size: 1.1em;
+  font-size: 1.05em;
   font-weight:lighter;
-  margin-top: 2px;
+  margin: 0;
 }
 
 #centres-logos {
