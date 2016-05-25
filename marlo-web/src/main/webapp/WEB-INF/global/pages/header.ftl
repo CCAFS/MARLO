@@ -46,11 +46,14 @@
     [#if !(avoidHeader!false)]
       <header class="clearfix">
         <div class="container">
-        <div id="marlo-logo" class="animated fadeIn">
-          <div id="title" >MARLO</div>    
-          <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
-        </div>
-         </div> 
+          <div id="marlo-logo" class="animated fadeIn">
+            <div id="title" >MARLO</div>    
+            <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
+          </div>
+          [#if crpUser??]
+            <img id="crp-image" src="${baseUrl}/images/global/crps/${crpUser}.png" alt="${crpUser}" />
+          [/#if]
+        </div> 
       </header>
     [/#if]
     <!-- ${actionName} Content -->

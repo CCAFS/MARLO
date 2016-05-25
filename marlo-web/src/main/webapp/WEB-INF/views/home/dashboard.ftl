@@ -15,17 +15,15 @@
   </div>
   
   <div class="container">
-    You are logged in. 
-    <br>
+    ${crpUser}
     <p> Users Online : ${online} </p>
     
-    <h3> users list </h3>
+    <h3> Users list </h3>
     [#assign users = action.getUsersOnline()]
     [#list users as us]
     <p>${(us.firstName)!'null'}</p>
     [/#list]
     
-    <a id="userLogOut" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>
   </div>
 </section>
 

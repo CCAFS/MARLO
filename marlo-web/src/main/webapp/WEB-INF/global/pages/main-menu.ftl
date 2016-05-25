@@ -11,13 +11,12 @@
   	      </a>
         </li>
         
-        [#-- PRE-Planning section --]
+        [#-- PRE-Planning section 
         <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/pre-planning" action='intro'/]">
-            [@s.text name="menu.preplanning" /]
+          <a href="[@s.url namespace="/pre-planning" action='intro'/]">[@s.text name="menu.preplanning" /]
           </a>
         </li>
-        
+        --]
 	    [#else]
 	      [#-- If the user is not logged show the login element in menu --]
 	      <li [#if currentSection?? && currentSection == "home"] class="currentSection" [/#if]>
