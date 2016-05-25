@@ -44,8 +44,8 @@ public class UserMySQLDAO implements UserDAO {
   }
 
   @Override
-  public List<Map<String, Object>> getPermission(int userId) {
-    String query = "select * from user_permissions where id=" + userId;
+  public List<Map<String, Object>> getPermission(int userId, int crpId) {
+    String query = "select * from user_permissions where id=" + userId + "and crp_id=" + crpId;
     return dao.findCustomQuery(query);
   }
 
