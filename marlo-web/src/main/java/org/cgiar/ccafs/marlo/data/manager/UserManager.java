@@ -45,7 +45,7 @@ public interface UserManager {
    * @param userId is the id of the user.
    * @return a User object.
    */
-  public User getUser(int userId);
+  public User getUser(Long userId);
 
   /**
    * Get the user identified by the specified email parameter.

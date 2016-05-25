@@ -41,7 +41,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.UserRole" />
         </set>
-        <set name="crpUserses" table="crp_users" inverse="true"  lazy="false" fetch="select">
+        <set name="crpUserses" table="crp_users" inverse="true" lazy="false" fetch="select">
             <key>
                 <column name="user_id" not-null="true" />
             </key>

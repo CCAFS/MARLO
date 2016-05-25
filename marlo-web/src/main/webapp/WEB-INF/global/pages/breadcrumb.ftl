@@ -1,20 +1,18 @@
 [#ftl]
-<ul id="breadcrumb">
+<ol class="breadcrumb">
   [#if breadCrumb?has_content] 
     [#list breadCrumb as item]
-      <li>
+      <li class="[#if !item_has_next]active[/#if]">
         [#if item.action?has_content]
           [#if item.param?exists]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}" >
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}" >[@s.text name="breadCrumb.menu.${item.label}" /]</a>
           [#else]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do" >
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do" >[@s.text name="breadCrumb.menu.${item.label}" /]</a>
           [/#if]
         [#else]
-          <a href="#" />
+          [@s.text name="breadCrumb.menu.${item.label}" /]</a>
         [/#if]
-        [@s.text name="breadCrumb.menu.${item.label}" /]
-        </a>[#if item_has_next]>[/#if]
       </li> 
     [/#list]
   [/#if]
-</ul>
+</ol>
