@@ -75,10 +75,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
   private boolean fullEditable; // If user is able to edit all the form.
 
-
-  private String crpUser;
-
-  // Config
+  // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
   protected APConfig config;
@@ -151,9 +148,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config;
   }
 
-
-  public String getCrpUser() {
-    return crpUser;
+  /**
+   * Get the crp that is currently save in the session
+   * 
+   * @return the crp that the user has log in
+   */
+  public String getcrpUser() {
+    String userCrp = null;
+    try {
+      userCrp =
+        (String) session.get(APConstants.SESSION_CRP) != null ? (String) session.get(APConstants.SESSION_CRP) : null;
+    } catch (Exception e) {
+      LOG.warn("There was a problem trying to find the user crp in the session.");
+    }
+    return userCrp;
   }
 
   /**
@@ -323,10 +331,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
-  }
-
-  public void setCrpUser(String crpUser) {
-    this.crpUser = crpUser;
   }
 
   public void setDataSaved(boolean dataSaved) {
