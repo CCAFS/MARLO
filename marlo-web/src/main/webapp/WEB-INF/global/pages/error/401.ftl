@@ -1,21 +1,20 @@
 [#ftl]
 [#assign title = "Unauthorized Access!" /]
+[#assign customJS = ["${baseUrl}/js/home/login.js" ] /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
+
 <section class="content">
-  <article class="fullContent">
-    <div class="content center">
-      <div class="borderBox">
-        [#--<h1 id="error">401</h1>--]
-        [#--<img src="${baseUrl}/images/global/page-404-icon.png" />--]
+    <div class="container"> 
+      <div class="borderBox center">
         <p class="errorText primary">[@s.text name="server.error.401" /]</p> 
-        [#-- Login Form --]
-        [#include "/WEB-INF/global/pages/loginForm.ftl" /]
-        [#--<a id="backHome" href="${baseUrl}">[@s.text name="server.error.404.back" /]</a>--]
+        <div class="col-md-4 col-md-offset-4">
+          [#-- Login Form --]
+          [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+        </div>
       </div>
     </div>
-  </article>
 </section>
 [#include "/WEB-INF/global/pages/footer.ftl"]
