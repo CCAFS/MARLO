@@ -82,7 +82,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private Map<String, Object> parameters;
 
-
   @Inject
   public BaseAction(APConfig config) {
     this.config = config;

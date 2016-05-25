@@ -47,6 +47,7 @@ public class LoginAction extends BaseAction {
   // Variables
   private User user;
   private String url;
+  private String crp;
 
 
   // Managers
@@ -64,14 +65,19 @@ public class LoginAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public String getCrp() {
+    return crp;
+  }
+
   public String getUrl() {
     return url;
   }
 
-
   public User getUser() {
     return user;
   }
+
 
   public UserManager getUserManager() {
     return userManager;
@@ -88,12 +94,12 @@ public class LoginAction extends BaseAction {
       if (loggedUser != null) {
 
         // Set the Crp that the user has logged on.
-
+        System.out.println(this.crp);
         loggedUser.setLastLogin(new Date());
 
         userManager.saveLastLogin(loggedUser);
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
-        this.getSession().put(APConstants.SESSION_CRP, "ccafs");
+        this.getSession().put(APConstants.SESSION_CRP, this.crp);
 
         LOG.info("User " + user.getEmail() + " logged in successfully.");
 
@@ -145,6 +151,10 @@ public class LoginAction extends BaseAction {
     }
 
     return SUCCESS;
+  }
+
+  public void setCrp(String crp) {
+    this.crp = crp;
   }
 
   public void setUrl(String url) {
