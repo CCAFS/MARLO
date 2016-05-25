@@ -28,9 +28,11 @@ public class Crp implements java.io.Serializable {
   private static final long serialVersionUID = 6299077992797380051L;
   private Long id;
   private String name;
+  private String acronym;
   private Set<CrpUser> crpUserses = new HashSet<CrpUser>(0);
   private Set<Role> roleses = new HashSet<Role>(0);
   private Set<CrpParameter> crpParameterses = new HashSet<CrpParameter>(0);
+
 
   public Crp() {
   }
@@ -40,11 +42,19 @@ public class Crp implements java.io.Serializable {
     this.name = name;
   }
 
-  public Crp(String name, Set<CrpUser> crpUserses, Set<Role> roleses, Set<CrpParameter> crpParameterses) {
+
+  public Crp(String name, String acronym, Set<CrpUser> crpUserses, Set<Role> roleses,
+    Set<CrpParameter> crpParameterses) {
     this.name = name;
+    this.acronym = acronym;
     this.crpUserses = crpUserses;
     this.roleses = roleses;
     this.crpParameterses = crpParameterses;
+  }
+
+
+  public String getAcronym() {
+    return acronym;
   }
 
   public Set<CrpParameter> getCrpParameterses() {
@@ -65,6 +75,10 @@ public class Crp implements java.io.Serializable {
 
   public Set<Role> getRoleses() {
     return this.roleses;
+  }
+
+  public void setAcronym(String acronym) {
+    this.acronym = acronym;
   }
 
   public void setCrpParameterses(Set<CrpParameter> crpParameterses) {
