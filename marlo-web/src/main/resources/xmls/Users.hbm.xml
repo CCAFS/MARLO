@@ -47,5 +47,17 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
         </set>
+         <set name="crpProgramLeaders" table="crp_program_leaders" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramLeader" />
+        </set>
+        <set name="crpSitesLeaders" table="crp_sites_leaders" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpSitesLeader" />
+        </set>
     </class>
 </hibernate-mapping>

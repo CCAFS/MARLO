@@ -42,6 +42,10 @@ public class User implements java.io.Serializable {
   private Date lastLogin;
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
+  private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
+
+  private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+
 
   public User() {
   }
@@ -53,6 +57,7 @@ public class User implements java.io.Serializable {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
+
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     Long createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -92,19 +97,28 @@ public class User implements java.io.Serializable {
     return true;
   }
 
-
   public Long getCreatedBy() {
     return this.createdBy;
   }
 
 
+  public Set<CrpProgramLeader> getCrpProgramLeaders() {
+    return crpProgramLeaders;
+  }
+
+  public Set<CrpSitesLeader> getCrpSitesLeaders() {
+    return crpSitesLeaders;
+  }
+
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
 
+
   public String getEmail() {
     return this.email;
   }
+
 
   public String getFirstName() {
     return this.firstName;
@@ -152,6 +166,14 @@ public class User implements java.io.Serializable {
 
   public void setCreatedBy(Long createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
+    this.crpProgramLeaders = crpProgramLeaders;
+  }
+
+  public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
+    this.crpSitesLeaders = crpSitesLeaders;
   }
 
 

@@ -21,7 +21,27 @@
     <mapping resource="xmls/Roles.hbm.xml" />
     <mapping resource="xmls/UserRoles.hbm.xml" />
     <mapping resource="xmls/CrpParameters.hbm.xml" />
-        
+    <mapping resource="xmls/SrfIdos.hbm.xml" />
+		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
+		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
+		<mapping resource="xmls/CrpSitesLeaders.hbm.xml" />
+		<mapping resource="xmls/SrfSloIndicatorTargets.hbm.xml" />
+		<mapping resource="xmls/CrpMilestones.hbm.xml" />
+		<mapping resource="xmls/CrpAssumptions.hbm.xml" />
+		<mapping resource="xmls/CrpPrograms.hbm.xml" />
+		<mapping resource="xmls/SrfSubIdos.hbm.xml" />
+		<mapping resource="xmls/CrpOutcomeSubIdos.hbm.xml" />
+		<mapping resource="xmls/SrfTargetUnits.hbm.xml" />
+		<mapping resource="xmls/SrfSloIdos.hbm.xml" />
+		<mapping resource="xmls/LocElementTypes.hbm.xml" />
+		<mapping resource="xmls/CrpClusterOfActivities.hbm.xml" />
+		<mapping resource="xmls/SrfCrossCuttingIssues.hbm.xml" />
+		<mapping resource="xmls/CrpProgramOutcomes.hbm.xml" />
+		<mapping resource="xmls/SrfSlos.hbm.xml" />
+		<mapping resource="xmls/CrpSubIdosContributions.hbm.xml" />
+		<mapping resource="xmls/LocElements.hbm.xml" />
+		<mapping resource="xmls/LocGeopositions.hbm.xml" />
+		<mapping resource="xmls/SrfSloIndicators.hbm.xml" />        
   </session-factory>
 </hibernate-configuration>
 
