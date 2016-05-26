@@ -29,9 +29,12 @@ public class Crp implements java.io.Serializable {
   private Long id;
   private String name;
   private String acronym;
-  private Set<CrpUser> crpUserses = new HashSet<CrpUser>(0);
-  private Set<Role> roleses = new HashSet<Role>(0);
-  private Set<CrpParameter> crpParameterses = new HashSet<CrpParameter>(0);
+  private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
+  private Set<Role> roles = new HashSet<Role>(0);
+  private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
+  private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
+  private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+  private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
 
   public Crp() {
@@ -43,13 +46,13 @@ public class Crp implements java.io.Serializable {
   }
 
 
-  public Crp(String name, String acronym, Set<CrpUser> crpUserses, Set<Role> roleses,
-    Set<CrpParameter> crpParameterses) {
+  public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles,
+    Set<CrpParameter> crpParameters) {
     this.name = name;
     this.acronym = acronym;
-    this.crpUserses = crpUserses;
-    this.roleses = roleses;
-    this.crpParameterses = crpParameterses;
+    this.crpUsers = crpUsers;
+    this.roles = roles;
+    this.crpParameters = crpParameters;
   }
 
 
@@ -57,13 +60,31 @@ public class Crp implements java.io.Serializable {
     return acronym;
   }
 
-  public Set<CrpParameter> getCrpParameterses() {
-    return this.crpParameterses;
+
+  public Set<CrpParameter> getCrpParameters() {
+    return this.crpParameters;
   }
 
-  public Set<CrpUser> getCrpUserses() {
-    return this.crpUserses;
+
+  public Set<CrpProgram> getCrpPrograms() {
+    return crpPrograms;
   }
+
+
+  public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
+    return crpsSitesIntegrations;
+  }
+
+
+  public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
+    return crpSubIdosContributions;
+  }
+
+
+  public Set<CrpUser> getCrpUsers() {
+    return this.crpUsers;
+  }
+
 
   public Long getId() {
     return this.id;
@@ -73,20 +94,32 @@ public class Crp implements java.io.Serializable {
     return this.name;
   }
 
-  public Set<Role> getRoleses() {
-    return this.roleses;
+  public Set<Role> getRoles() {
+    return this.roles;
   }
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
-  public void setCrpParameterses(Set<CrpParameter> crpParameterses) {
-    this.crpParameterses = crpParameterses;
+  public void setCrpParameters(Set<CrpParameter> crpParameters) {
+    this.crpParameters = crpParameters;
   }
 
-  public void setCrpUserses(Set<CrpUser> crpUserses) {
-    this.crpUserses = crpUserses;
+  public void setCrpPrograms(Set<CrpProgram> crpPrograms) {
+    this.crpPrograms = crpPrograms;
+  }
+
+  public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
+    this.crpsSitesIntegrations = crpsSitesIntegrations;
+  }
+
+  public void setCrpSubIdosContributions(Set<CrpSubIdosContribution> crpSubIdosContributions) {
+    this.crpSubIdosContributions = crpSubIdosContributions;
+  }
+
+  public void setCrpUsers(Set<CrpUser> crpUsers) {
+    this.crpUsers = crpUsers;
   }
 
   public void setId(Long id) {
@@ -97,8 +130,8 @@ public class Crp implements java.io.Serializable {
     this.name = name;
   }
 
-  public void setRoleses(Set<Role> roleses) {
-    this.roleses = roleses;
+  public void setRoles(Set<Role> roles) {
+    this.roles = roles;
   }
 
 

@@ -28,8 +28,7 @@
         <a href="[@s.url namespace="/planning" action='addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
         [#--<p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>--]
       </div>
-    </div>
-    
+    </div>  
   </div>
 </section>
 

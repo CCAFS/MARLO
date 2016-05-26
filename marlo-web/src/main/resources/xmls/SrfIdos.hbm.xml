@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.SrfIdo" table="srf_idos" catalog="ccafs_marlo" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="srfCrossCuttingIssues" class="org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue" fetch="select">
+            <column name="cross_cutting_issue" />
+        </many-to-one>
+        <property name="description" type="string">
+            <column name="description" length="65535" not-null="true" />
+        </property>
+        <property name="isCrossCutting" type="boolean">
+            <column name="is_cross_cutting" not-null="true" />
+        </property>
+        <set name="srfSloIdos" table="srf_slo_idos" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ido_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.SrfSloIdo" />
+        </set>
+        <set name="srfSubIdos" table="srf_sub_idos" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="ido_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" />
+        </set>
+    </class>
+</hibernate-mapping>

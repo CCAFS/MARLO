@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" table="crp_cluster_of_activities" catalog="ccafs_marlo" optimistic-lock="version">
+        <id name="id" type="string">
+            <column name="id" length="50" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="crpPrograms" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+            <column name="crp_program_id" not-null="true" />
+        </many-to-one>
+        <property name="description" type="string">
+            <column name="description" length="65535" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

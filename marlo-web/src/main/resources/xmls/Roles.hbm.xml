@@ -18,7 +18,7 @@
             <column name="acronym" length="50" not-null="true" />
         </property>
         
-        <set name="userRoleses" table="user_roles" inverse="true" fetch="select">
+        <set name="userRoles" table="user_roles" inverse="true" fetch="select">
             <key>
                 <column name="role_id" not-null="true" />
             </key>
