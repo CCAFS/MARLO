@@ -21,16 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import java.util.List;
 
 import com.google.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Garcia
  */
 public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
 
-  // LOG
-  private static Logger LOG = LoggerFactory.getLogger(CrpAssumptionManagerImpl.class);
+
   private CrpAssumptionDAO crpAssumptionDAO;
   // Managers
 
