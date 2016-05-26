@@ -40,7 +40,7 @@
 		</interceptors>
 
 		<default-action-ref name="login" />
-		
+
 		<global-results>
 			<result name="savedStatus">
 				/WEB-INF/global/pages/saveStatus.ftl
@@ -60,6 +60,15 @@
 			</result>
 		</global-results>
 
+		<action name="unhandledExceptionAction"
+			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
+			<result name="success">/WEB-INF/global/pages/error/500.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
+		</action>
+
+		<action name="*" class="org.cgiar.ccafs.marlo.action.BaseAction">
+			<result name="input">/WEB-INF/global/pages/error/404.ftl</result>
+		</action>
 	</package>
 
 	<include file="struts-home.xml" />
