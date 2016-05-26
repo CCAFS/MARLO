@@ -163,7 +163,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get the crp that is currently save in the session, if the user access to the plataform whit a diferent url, get the
+   * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
    * current action to catch the crp
    * 
    * @return the crp that the user has log in
