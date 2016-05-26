@@ -16,18 +16,17 @@
   </div>
   <div class="container">
     [#-- What do you want to do --]
-    <div class="homeTitle"><b>What do you want to do ?</b></div>
+    <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">
-      <div id="newProject" class="option"><p>Enter a new project</p></div>
-      <div id="updatePlanning" class="option disabled" title="This link is disabled"><p>Update an ongoing project</p></div>
-      <div id="reportProject" class="option disabled" title="This link is disabled"><p>Evaluate a submitted project</p></div>
+      <div id="newProject" class="option"><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
+      <div id="updatePlanning" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
+      <div id="reportProject" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p></div>
       <div class="clearfix"></div>
       <div class="addProjectButtons clearfix" style="display:none">
-        <p class="title">What type of project do you want to enter?</p>
-        <a href="[@s.url namespace="/planning" action='addNewCoreProject'/]"><div class="addProject"><p>CCAFS <br />Core Project</p></div></a>
-        <a href="[@s.url namespace="/planning" action='addNewBilateralProject'/]"><div class="addProject"><p>Bilateral <br />Project</p></div></a>
-        [#-- <p>You don't have sufficient permissions to add a project</p> --]
-
+        <p class="title">[@s.text name="dashboard.decisionTree.typeProjectQuestion" /]</p>
+        <a href="[@s.url namespace="/planning" action='addNewCoreProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.coreProject" /]</p></div></a>
+        <a href="[@s.url namespace="/planning" action='addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
+        <p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>
       </div>
     </div>
     

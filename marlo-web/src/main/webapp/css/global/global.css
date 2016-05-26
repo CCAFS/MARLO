@@ -2422,7 +2422,10 @@ input.userName {
   -khtml-opacity: 1;
   /* Good browsers */
   opacity: 1;
+}
 
+.crpGroup li.selected{
+  border-color: #8dd490;
 }
 
 .crpGroup li img{width: 100%;height: 100%;}
