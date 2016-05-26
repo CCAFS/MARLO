@@ -29,6 +29,7 @@ public class CrpParameter implements java.io.Serializable {
   private Crp crp;
   private String key;
   private String value;
+  private boolean active;
 
   public CrpParameter() {
   }
@@ -53,6 +54,14 @@ public class CrpParameter implements java.io.Serializable {
 
   public String getValue() {
     return this.value;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrp(Crp crp) {

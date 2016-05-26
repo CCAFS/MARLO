@@ -28,6 +28,7 @@ public class CrpClusterOfActivity implements java.io.Serializable {
   private String id;
   private CrpProgram crpProgram;
   private String description;
+  private boolean active;
 
   public CrpClusterOfActivity() {
   }
@@ -48,6 +49,14 @@ public class CrpClusterOfActivity implements java.io.Serializable {
 
   public String getId() {
     return this.id;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpProgram(CrpProgram crpProgram) {

@@ -33,23 +33,23 @@ public class SrfSlo implements java.io.Serializable {
   private String description;
   private Set<SrfSloIndicator> srfSloIndicators = new HashSet<SrfSloIndicator>(0);
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
+  private boolean active;
 
   public SrfSlo() {
   }
-
 
   public SrfSlo(String title, String description) {
     this.title = title;
     this.description = description;
   }
 
-  public SrfSlo(String title, String description, Set<SrfSloIndicator> srfSloIndicators,
-    Set<SrfSloIdo> srfSloIdos) {
+  public SrfSlo(String title, String description, Set<SrfSloIndicator> srfSloIndicators, Set<SrfSloIdo> srfSloIdos) {
     this.title = title;
     this.description = description;
     this.srfSloIndicators = srfSloIndicators;
     this.srfSloIdos = srfSloIdos;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -69,6 +69,14 @@ public class SrfSlo implements java.io.Serializable {
 
   public String getTitle() {
     return this.title;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setDescription(String description) {

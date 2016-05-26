@@ -34,10 +34,10 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
   private SrfSubIdo srfSubIdo;
   private BigDecimal contribution;
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
+  private boolean active;
 
   public CrpOutcomeSubIdo() {
   }
-
 
   public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcome, SrfSubIdo srfSubIdo, BigDecimal contribution) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -52,6 +52,7 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     this.contribution = contribution;
     this.crpAssumptions = crpAssumptions;
   }
+
 
   public BigDecimal getContribution() {
     return this.contribution;
@@ -71,6 +72,14 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
 
   public SrfSubIdo getSrfSubIdo() {
     return this.srfSubIdo;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setContribution(BigDecimal contribution) {

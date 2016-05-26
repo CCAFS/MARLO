@@ -27,6 +27,46 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(CrpMySQLDAO.class)
 public interface CrpDAO {
 
-  public List<Crp> getAll();
+  /**
+   * This method removes a specific crp value from the database.
+   * 
+   * @param crpId is the crp identifier.
+   * @return true if the crp was successfully deleted, false otherwise.
+   */
+  public boolean deleteCrp(long crpId);
+
+  /**
+   * This method validate if the crp identify with the given id exists in the system.
+   * 
+   * @param crpID is a crp identifier.
+   * @return true if the crp exists, false otherwise.
+   */
+  public boolean existCrp(long crpID);
+
+  /**
+   * This method gets a crp object by a given crp identifier.
+   * 
+   * @param crpID is the crp identifier.
+   * @return a Crp object.
+   */
+  public Crp find(long id);
+
+  /**
+   * This method gets a list of crp that are active
+   * 
+   * @return a list from Crp null if no exist records
+   */
+  public List<Crp> findAll();
+
+
+  /**
+   * This method saves the information of the given crp
+   * 
+   * @param crp - is the crp object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the crp was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public long save(Crp crp);
 
 }

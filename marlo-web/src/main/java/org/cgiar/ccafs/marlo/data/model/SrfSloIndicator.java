@@ -33,10 +33,10 @@ public class SrfSloIndicator implements java.io.Serializable {
   private String title;
   private String description;
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
+  private boolean active;
 
   public SrfSloIndicator() {
   }
-
 
   public SrfSloIndicator(SrfSlo srfSlos, String title, String description) {
     this.srfSlo = srfSlos;
@@ -52,6 +52,7 @@ public class SrfSloIndicator implements java.io.Serializable {
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
   }
 
+
   public String getDescription() {
     return this.description;
   }
@@ -60,16 +61,24 @@ public class SrfSloIndicator implements java.io.Serializable {
     return this.id;
   }
 
-  public Set<SrfSloIndicatorTarget> getSrfSloIndicatorTargets() {
-    return this.srfSloIndicatorTargets;
-  }
-
   public SrfSlo getSrfSlo() {
     return this.srfSlo;
   }
 
+  public Set<SrfSloIndicatorTarget> getSrfSloIndicatorTargets() {
+    return this.srfSloIndicatorTargets;
+  }
+
   public String getTitle() {
     return this.title;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setDescription(String description) {
@@ -80,12 +89,12 @@ public class SrfSloIndicator implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setSrfSloIndicatorTargets(Set<SrfSloIndicatorTarget> srfSloIndicatorTargets) {
-    this.srfSloIndicatorTargets = srfSloIndicatorTargets;
-  }
-
   public void setSrfSlo(SrfSlo srfSlos) {
     this.srfSlo = srfSlos;
+  }
+
+  public void setSrfSloIndicatorTargets(Set<SrfSloIndicatorTarget> srfSloIndicatorTargets) {
+    this.srfSloIndicatorTargets = srfSloIndicatorTargets;
   }
 
   public void setTitle(String title) {

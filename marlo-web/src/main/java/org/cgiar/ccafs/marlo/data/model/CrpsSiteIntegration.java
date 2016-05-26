@@ -32,10 +32,10 @@ public class CrpsSiteIntegration implements java.io.Serializable {
   private Crp crp;
   private LocElement locElement;
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+  private boolean active;
 
   public CrpsSiteIntegration() {
   }
-
 
   public CrpsSiteIntegration(Crp crps, LocElement locElements) {
     this.crp = crps;
@@ -47,6 +47,7 @@ public class CrpsSiteIntegration implements java.io.Serializable {
     this.locElement = locElements;
     this.crpSitesLeaders = crpSitesLeaders;
   }
+
 
   public Crp getCrp() {
     return this.crp;
@@ -62,6 +63,14 @@ public class CrpsSiteIntegration implements java.io.Serializable {
 
   public LocElement getLocElement() {
     return this.locElement;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrp(Crp crps) {

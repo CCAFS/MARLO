@@ -34,10 +34,10 @@ public class SrfIdo implements java.io.Serializable {
   private boolean isCrossCutting;
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
   private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
+  private boolean active;
 
   public SrfIdo() {
   }
-
 
   public SrfIdo(SrfCrossCuttingIssue srfCrossCuttingIssues, String description, boolean isCrossCutting,
     Set<SrfSloIdo> srfSloIdos, Set<SrfSubIdo> srfSubIdos) {
@@ -52,6 +52,7 @@ public class SrfIdo implements java.io.Serializable {
     this.description = description;
     this.isCrossCutting = isCrossCutting;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -73,8 +74,16 @@ public class SrfIdo implements java.io.Serializable {
     return this.srfSubIdos;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
   public boolean isIsCrossCutting() {
     return this.isCrossCutting;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setDescription(String description) {

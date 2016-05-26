@@ -29,6 +29,7 @@ public class CrpAssumption implements java.io.Serializable {
   private Long id;
   private CrpOutcomeSubIdo crpOutcomeSubIdo;
   private String description;
+  private boolean active;
 
   public CrpAssumption() {
   }
@@ -48,6 +49,14 @@ public class CrpAssumption implements java.io.Serializable {
 
   public Long getId() {
     return this.id;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo) {

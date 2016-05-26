@@ -37,10 +37,10 @@ public class CrpProgramOutcome implements java.io.Serializable {
   private BigDecimal value;
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
+  private boolean active;
 
   public CrpProgramOutcome() {
   }
-
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value) {
@@ -61,6 +61,7 @@ public class CrpProgramOutcome implements java.io.Serializable {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpMilestones = crpMilestones;
   }
+
 
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
@@ -92,6 +93,14 @@ public class CrpProgramOutcome implements java.io.Serializable {
 
   public int getYear() {
     return this.year;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {

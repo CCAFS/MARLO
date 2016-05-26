@@ -28,6 +28,7 @@ public class SrfSloIdo implements java.io.Serializable {
   private Long id;
   private SrfIdo srfIdo;
   private SrfSlo srfSlo;
+  private boolean active;
 
   public SrfSloIdo() {
   }
@@ -47,6 +48,14 @@ public class SrfSloIdo implements java.io.Serializable {
 
   public SrfSlo getSrfSlo() {
     return this.srfSlo;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setId(Long id) {

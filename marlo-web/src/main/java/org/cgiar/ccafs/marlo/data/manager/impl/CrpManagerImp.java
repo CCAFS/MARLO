@@ -28,16 +28,42 @@ import com.google.inject.Inject;
  */
 public class CrpManagerImp implements CrpManager {
 
-  private CrpDAO crpDao;
+  private CrpDAO crpDAO;
 
   @Inject
-  public CrpManagerImp(CrpDAO crpDao) {
-    this.crpDao = crpDao;
+  public CrpManagerImp(CrpDAO crpDAO) {
+    this.crpDAO = crpDAO;
   }
 
   @Override
-  public List<Crp> getAll() {
-    return crpDao.getAll();
+  public boolean deleteCrp(long crpId) {
+
+    return crpDAO.deleteCrp(crpId);
+  }
+
+  @Override
+  public boolean existCrp(long crpID) {
+
+    return crpDAO.existCrp(crpID);
+  }
+
+  @Override
+  public List<Crp> findAll() {
+
+    return crpDAO.findAll();
+
+  }
+
+  @Override
+  public Crp getCrpById(long crpID) {
+
+    return crpDAO.find(crpID);
+  }
+
+  @Override
+  public long saveCrp(Crp crp) {
+
+    return crpDAO.save(crp);
   }
 
 }

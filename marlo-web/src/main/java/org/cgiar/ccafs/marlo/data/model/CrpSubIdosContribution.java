@@ -28,6 +28,7 @@ public class CrpSubIdosContribution implements java.io.Serializable {
   private Long id;
   private Crp crp;
   private SrfSubIdo srfSubIdo;
+  private boolean active;
 
   public CrpSubIdosContribution() {
   }
@@ -47,6 +48,14 @@ public class CrpSubIdosContribution implements java.io.Serializable {
 
   public SrfSubIdo getSrfSubIdo() {
     return this.srfSubIdo;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrp(Crp crps) {

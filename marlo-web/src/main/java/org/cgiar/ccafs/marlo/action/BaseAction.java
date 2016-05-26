@@ -159,7 +159,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<Crp> getCrpList() {
-    return crpManager.getAll();
+    return crpManager.findAll();
   }
 
   /**

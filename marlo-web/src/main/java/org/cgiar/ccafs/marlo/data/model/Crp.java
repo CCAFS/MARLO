@@ -35,19 +35,16 @@ public class Crp implements java.io.Serializable {
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
-
+  private boolean active;
 
   public Crp() {
   }
-
 
   public Crp(String name) {
     this.name = name;
   }
 
-
-  public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles,
-    Set<CrpParameter> crpParameters) {
+  public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles, Set<CrpParameter> crpParameters) {
     this.name = name;
     this.acronym = acronym;
     this.crpUsers = crpUsers;
@@ -90,16 +87,26 @@ public class Crp implements java.io.Serializable {
     return this.id;
   }
 
+
   public String getName() {
     return this.name;
   }
+
 
   public Set<Role> getRoles() {
     return this.roles;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpParameters(Set<CrpParameter> crpParameters) {

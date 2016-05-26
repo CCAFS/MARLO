@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class CrpMySQLDAO implements CrpDAO {
 
@@ -33,10 +34,43 @@ public class CrpMySQLDAO implements CrpDAO {
     this.dao = dao;
   }
 
-
   @Override
-  public List<Crp> getAll() {
-    return dao.findEveryone(Crp.class);
+  public boolean deleteCrp(long crpId) {
+    Crp crp = this.find(crpId);
+    crp.setActive(false);
+    return this.save(crp) > 0;
   }
 
+  @Override
+  public boolean existCrp(long crpID) {
+    Crp crp = this.find(crpID);
+    if (crp == null) {
+      return false;
+    }
+    return true;
+
+  }
+
+  @Override
+  public Crp find(long id) {
+    return dao.find(Crp.class, id);
+
+  }
+
+  @Override
+  public List<Crp> findAll() {
+    String query = "from " + Crp.class.getName() + " where is_active=1";
+    List<Crp> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
+  public long save(Crp crp) {
+    dao.saveOrUpdate(crp);
+    return crp.getId();
+  }
 }
