@@ -18,17 +18,52 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.dao.mysql.CrpAssumptionMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 
+import java.util.List;
+
 import com.google.inject.ImplementedBy;
 
 @ImplementedBy(CrpAssumptionMySQLDAO.class)
 public interface CrpAssumptionDAO {
 
-  public boolean deleteCrpAssumption(long crpAssumptionId, long userID, String justification);
+  /**
+   * This method removes a specific crpAssumption value from the database.
+   * 
+   * @param crpAssumptionId is the crpAssumption identifier.
+   * @return true if the crpAssumption was successfully deleted, false otherwise.
+   */
+  public boolean deleteCrpAssumption(long crpAssumptionId);
 
-
+  /**
+   * This method validate if the crpAssumption identify with the given id exists in the system.
+   * 
+   * @param crpAssumptionID is a crpAssumption identifier.
+   * @return true if the crpAssumption exists, false otherwise.
+   */
   public boolean existCrpAssumption(long crpAssumptionID);
 
+  /**
+   * This method gets a crpAssumption object by a given crpAssumption identifier.
+   * 
+   * @param crpAssumptionID is the crpAssumption identifier.
+   * @return a CrpAssumption object.
+   */
   public CrpAssumption find(long id);
 
+  /**
+   * This method gets a list of crpAssumption that are active
+   * 
+   * @return a list from CrpAssumption null if no exist records
+   */
+  public List<CrpAssumption> findAll();
+
+
+  /**
+   * This method saves the information of the given crpAssumption
+   * 
+   * @param crpAssumption - is the crpAssumption object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the crpAssumption was
+   *         updated
+   *         or -1 is some error occurred.
+   */
   public long save(CrpAssumption casesStudies);
 }

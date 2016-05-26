@@ -14,10 +14,13 @@
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
+import org.cgiar.ccafs.marlo.data.dao.CrpAssumptionDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
-import org.cgiar.ccafs.marlo.data.model.User;
 
+import java.util.List;
+
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,32 +31,47 @@ public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(CrpAssumptionManagerImpl.class);
+  private CrpAssumptionDAO crpAssumptionDAO;
+  // Managers
+
+
+  @Inject
+  public CrpAssumptionManagerImpl(CrpAssumptionDAO crpAssumptionDAO) {
+    this.crpAssumptionDAO = crpAssumptionDAO;
+
+
+  }
 
   @Override
-  public boolean deleteCrpAssumption(long crpAssumptionId, User user, String justification) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean deleteCrpAssumption(long crpAssumptionId) {
+
+    return crpAssumptionDAO.deleteCrpAssumption(crpAssumptionId);
   }
 
   @Override
   public boolean existCrpAssumption(long crpAssumptionID) {
-    // TODO Auto-generated method stub
-    return false;
+
+    return crpAssumptionDAO.existCrpAssumption(crpAssumptionID);
+  }
+
+  @Override
+  public List<CrpAssumption> findAll() {
+
+    return crpAssumptionDAO.findAll();
+
   }
 
   @Override
   public CrpAssumption getCrpAssumptionById(long crpAssumptionID) {
-    // TODO Auto-generated method stub
-    return null;
+
+    return crpAssumptionDAO.find(crpAssumptionID);
   }
 
   @Override
-  public long saveCrpAssumption(CrpAssumption crpAssumption, User user, String justification) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+  public long saveCrpAssumption(CrpAssumption crpAssumption) {
 
-  // DAO's
+    return crpAssumptionDAO.save(crpAssumption);
+  }
 
 
 }

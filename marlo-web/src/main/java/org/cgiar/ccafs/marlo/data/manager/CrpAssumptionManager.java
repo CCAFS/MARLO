@@ -15,7 +15,8 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.CrpAssumptionManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
-import org.cgiar.ccafs.marlo.data.model.User;
+
+import java.util.List;
 
 import com.google.inject.ImplementedBy;
 
@@ -30,11 +31,9 @@ public interface CrpAssumptionManager {
    * This method removes a specific crpAssumption value from the database.
    * 
    * @param crpAssumptionId is the crpAssumption identifier.
-   * @param user - the user that is deleting the crpAssumption.
-   * @param justification - the justification statement.
    * @return true if the crpAssumption was successfully deleted, false otherwise.
    */
-  public boolean deleteCrpAssumption(long crpAssumptionId, User user, String justification);
+  public boolean deleteCrpAssumption(long crpAssumptionId);
 
 
   /**
@@ -45,6 +44,15 @@ public interface CrpAssumptionManager {
    */
   public boolean existCrpAssumption(long crpAssumptionID);
 
+
+  /**
+   * This method gets a list of crpAssumption that are active
+   * 
+   * @return a list from CrpAssumption null if no exist records
+   */
+  public List<CrpAssumption> findAll();
+
+
   /**
    * This method gets a crpAssumption object by a given crpAssumption identifier.
    * 
@@ -53,18 +61,15 @@ public interface CrpAssumptionManager {
    */
   public CrpAssumption getCrpAssumptionById(long crpAssumptionID);
 
-
   /**
    * This method saves the information of the given crpAssumption
    * 
    * @param crpAssumption - is the crpAssumption object with the new information to be added/updated.
-   * @param user - is the user that is making the change.
-   * @param justification - is the justification statement.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the crpAssumption was
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveCrpAssumption(CrpAssumption crpAssumption, User user, String justification);
+  public long saveCrpAssumption(CrpAssumption crpAssumption);
 
 
 }

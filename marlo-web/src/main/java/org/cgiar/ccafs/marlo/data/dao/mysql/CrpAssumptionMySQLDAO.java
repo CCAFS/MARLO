@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.CrpAssumptionDAO;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 
+import java.util.List;
+
 import com.google.inject.Inject;
 
 public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
@@ -30,27 +32,43 @@ public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
   }
 
   @Override
-  public boolean deleteCrpAssumption(long crpAssumptionId, long userID, String justification) {
+  public boolean deleteCrpAssumption(long crpAssumptionId) {
     CrpAssumption crpAssumption = this.find(crpAssumptionId);
-    return dao.delete(crpAssumption);
+    crpAssumption.setActive(false);
+    return this.save(crpAssumption) > 0;
   }
 
   @Override
   public boolean existCrpAssumption(long crpAssumptionID) {
-    // TODO Auto-generated method stub
-    return false;
+    CrpAssumption crpAssumption = this.find(crpAssumptionID);
+    if (crpAssumption == null) {
+      return false;
+    }
+    return true;
+
   }
 
   @Override
   public CrpAssumption find(long id) {
-    // TODO Auto-generated method stub
+    return dao.find(CrpAssumption.class, id);
+
+  }
+
+  @Override
+  public List<CrpAssumption> findAll() {
+    String query = "from " + CrpAssumption.class.getName() + " where is_active=1";
+    List<CrpAssumption> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
     return null;
+
   }
 
   @Override
   public long save(CrpAssumption casesStudies) {
-    // TODO Auto-generated method stub
-    return 0;
+    dao.saveOrUpdate(casesStudies);
+    return casesStudies.getId();
   }
 
 
