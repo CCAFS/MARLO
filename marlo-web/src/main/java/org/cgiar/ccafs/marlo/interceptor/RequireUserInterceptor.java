@@ -46,8 +46,10 @@ public class RequireUserInterceptor extends AbstractInterceptor {
     User user = (User) session.get(APConstants.SESSION_USER);
     if (user != null) {
       return invocation.invoke();
+    } else {
+      return BaseAction.NOT_LOGGED;
     }
-    return BaseAction.NOT_LOGGED;
+
   }
 
 }

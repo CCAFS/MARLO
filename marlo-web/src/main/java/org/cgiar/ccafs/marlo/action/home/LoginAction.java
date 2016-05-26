@@ -95,8 +95,8 @@ public class LoginAction extends BaseAction {
         // Set the Crp that the user has logged on.
         System.out.println(this.crp);
         loggedUser.setLastLogin(new Date());
-
         userManager.saveLastLogin(loggedUser);
+
         this.getSession().put(APConstants.SESSION_USER, loggedUser);
         this.getSession().put(APConstants.SESSION_CRP, this.crp);
 
@@ -113,7 +113,7 @@ public class LoginAction extends BaseAction {
         String urlAction = ServletActionContext.getRequest().getHeader("Referer");
         /*
          * take the ".do" pattern in the url to differentiate the main page.
-         * also discard the "logut" url beacause this action close the user session.
+         * also discard the "logout" url beacause this action close the user session.
          */
         if (urlAction.contains(".do") && !urlAction.contains("logout")) {
           this.url = urlAction;

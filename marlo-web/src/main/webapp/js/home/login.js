@@ -2,12 +2,6 @@ $(document).ready(init);
 function init() {
   initJreject();
   
-  if(getCrpFromUrl()){
-    var crp = getCrpFromUrl()
-    $('li#crp-'+crp).addClass('selected');
-    $('#crp').val(crp);
-  }
-
   $('.crpGroup ul li').on('click', function() {
     // Add 'selected' class and removing sibling's class if any
     $(this).addClass('selected').siblings().removeClass('selected');
