@@ -40,7 +40,7 @@
 		</interceptors>
 
 		<default-action-ref name="login" />
-
+		
 		<global-results>
 			<result name="savedStatus">
 				/WEB-INF/global/pages/saveStatus.ftl
@@ -63,5 +63,6 @@
 	</package>
 
 	<include file="struts-home.xml" />
+	<include file="struts-admin.xml" />
 
 </struts>
