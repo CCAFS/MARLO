@@ -163,18 +163,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get the crp that is currently save in the session
+   * Get the crp that is currently save in the session, if the user access to the plataform whit a diferent url, get the
+   * current action to catch the crp
    * 
    * @return the crp that the user has log in
    */
-  public String getCrpUser() {
+  public String getCrpSession() {
     String userCrp = null;
-    if (!session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         userCrp =
           (String) session.get(APConstants.SESSION_CRP) != null ? (String) session.get(APConstants.SESSION_CRP) : null;
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
+      }
+    } else {
+      String actionName = ActionContext.getContext().getName();
+      if (actionName.split("/").length > 1) {
+        userCrp = actionName.split("/")[0];
       }
     }
     return userCrp;
@@ -187,7 +193,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public User getCurrentUser() {
     User u = null;
-    if (!session.isEmpty()) {
+    if (session != null && !session.isEmpty()) {
       try {
         u = session.get(APConstants.SESSION_USER) != null ? (User) session.get(APConstants.SESSION_USER) : null;
       } catch (Exception e) {

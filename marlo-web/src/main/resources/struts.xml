@@ -40,7 +40,7 @@
 		</interceptors>
 
 		<default-action-ref name="login" />
-
+		
 		<global-results>
 			<result name="savedStatus">
 				/WEB-INF/global/pages/saveStatus.ftl
