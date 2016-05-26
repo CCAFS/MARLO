@@ -27,39 +27,39 @@ public class CrpUser implements java.io.Serializable {
    */
   private static final long serialVersionUID = -1140371637324045336L;
   private Long id;
-  private Crp crps;
-  private User users;
+  private Crp crp;
+  private User user;
 
   public CrpUser() {
   }
 
   public CrpUser(Crp crps, User users) {
-    this.crps = crps;
-    this.users = users;
+    this.crp = crps;
+    this.user = users;
   }
 
-  public Crp getCrps() {
-    return this.crps;
+  public Crp getCrp() {
+    return this.crp;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public User getUsers() {
-    return this.users;
+  public User getUser() {
+    return this.user;
   }
 
-  public void setCrps(Crp crps) {
-    this.crps = crps;
+  public void setCrp(Crp crps) {
+    this.crp = crps;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setUsers(User users) {
-    this.users = users;
+  public void setUser(User users) {
+    this.user = users;
   }
 
 

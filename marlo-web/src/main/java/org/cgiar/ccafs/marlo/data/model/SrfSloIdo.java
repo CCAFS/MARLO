@@ -26,39 +26,39 @@ public class SrfSloIdo implements java.io.Serializable {
    */
   private static final long serialVersionUID = 7970017895961827691L;
   private Long id;
-  private SrfIdo srfIdos;
-  private SrfSlo srfSlos;
+  private SrfIdo srfIdo;
+  private SrfSlo srfSlo;
 
   public SrfSloIdo() {
   }
 
   public SrfSloIdo(SrfIdo srfIdos, SrfSlo srfSlos) {
-    this.srfIdos = srfIdos;
-    this.srfSlos = srfSlos;
+    this.srfIdo = srfIdos;
+    this.srfSlo = srfSlos;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public SrfIdo getSrfIdos() {
-    return this.srfIdos;
+  public SrfIdo getSrfIdo() {
+    return this.srfIdo;
   }
 
-  public SrfSlo getSrfSlos() {
-    return this.srfSlos;
+  public SrfSlo getSrfSlo() {
+    return this.srfSlo;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setSrfIdos(SrfIdo srfIdos) {
-    this.srfIdos = srfIdos;
+  public void setSrfIdo(SrfIdo srfIdos) {
+    this.srfIdo = srfIdos;
   }
 
-  public void setSrfSlos(SrfSlo srfSlos) {
-    this.srfSlos = srfSlos;
+  public void setSrfSlo(SrfSlo srfSlos) {
+    this.srfSlo = srfSlos;
   }
 
 

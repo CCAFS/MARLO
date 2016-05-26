@@ -26,7 +26,7 @@ public class CrpParameter implements java.io.Serializable {
    */
   private static final long serialVersionUID = -2885918950939142573L;
   private Long id;
-  private Crp crps;
+  private Crp crp;
   private String key;
   private String value;
 
@@ -34,13 +34,13 @@ public class CrpParameter implements java.io.Serializable {
   }
 
   public CrpParameter(Crp crps, String key, String value) {
-    this.crps = crps;
+    this.crp = crps;
     this.key = key;
     this.value = value;
   }
 
-  public Crp getCrps() {
-    return this.crps;
+  public Crp getCrp() {
+    return this.crp;
   }
 
   public Long getId() {
@@ -55,8 +55,8 @@ public class CrpParameter implements java.io.Serializable {
     return this.value;
   }
 
-  public void setCrps(Crp crps) {
-    this.crps = crps;
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setId(Long id) {

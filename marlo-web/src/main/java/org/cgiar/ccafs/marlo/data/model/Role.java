@@ -27,7 +27,7 @@ public class Role implements java.io.Serializable {
 
   private static final long serialVersionUID = 8679238437361759448L;
   private Long id;
-  private Crp crps;
+  private Crp crp;
   private String description;
   private String acronym;
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
@@ -37,14 +37,14 @@ public class Role implements java.io.Serializable {
 
 
   public Role(Crp crps, String description, String acronym) {
-    this.crps = crps;
+    this.crp = crps;
     this.description = description;
     this.acronym = acronym;
 
   }
 
   public Role(Crp crps, String description, String acronym, Set<UserRole> userRoles) {
-    this.crps = crps;
+    this.crp = crps;
     this.description = description;
     this.acronym = acronym;
 
@@ -55,8 +55,8 @@ public class Role implements java.io.Serializable {
     return this.acronym;
   }
 
-  public Crp getCrps() {
-    return this.crps;
+  public Crp getCrp() {
+    return this.crp;
   }
 
   public String getDescription() {
@@ -76,8 +76,8 @@ public class Role implements java.io.Serializable {
     this.acronym = acronym;
   }
 
-  public void setCrps(Crp crps) {
-    this.crps = crps;
+  public void setCrp(Crp crps) {
+    this.crp = crps;
   }
 
   public void setDescription(String description) {

@@ -26,39 +26,39 @@ public class CrpProgramLeader implements java.io.Serializable {
    */
   private static final long serialVersionUID = 7345327536072331541L;
   private Long id;
-  private CrpProgram crpPrograms;
-  private User users;
+  private CrpProgram crpProgram;
+  private User user;
 
   public CrpProgramLeader() {
   }
 
-  public CrpProgramLeader(CrpProgram crpPrograms, User users) {
-    this.crpPrograms = crpPrograms;
-    this.users = users;
+  public CrpProgramLeader(CrpProgram crpProgram, User user) {
+    this.crpProgram = crpProgram;
+    this.user = user;
   }
 
-  public CrpProgram getCrpPrograms() {
-    return this.crpPrograms;
+  public CrpProgram getCrpProgram() {
+    return this.crpProgram;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public User getUsers() {
-    return this.users;
+  public User getUser() {
+    return this.user;
   }
 
-  public void setCrpPrograms(CrpProgram crpPrograms) {
-    this.crpPrograms = crpPrograms;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setUsers(User users) {
-    this.users = users;
+  public void setUser(User user) {
+    this.user = user;
   }
 
 

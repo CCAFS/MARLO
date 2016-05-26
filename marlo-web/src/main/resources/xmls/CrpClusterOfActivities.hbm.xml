@@ -8,7 +8,7 @@
             <column name="id" length="50" />
             <generator class="assigned" />
         </id>
-        <many-to-one name="crpPrograms" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
             <column name="crp_program_id" not-null="true" />
         </many-to-one>
         <property name="description" type="string">

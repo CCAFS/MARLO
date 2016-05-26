@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crpProgramOutcomes" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
+        <many-to-one name="crpProgramOutcome" class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
             <column name="crp_program_outcome_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="srfTargetUnits" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+        <many-to-one name="srfTargetUnit" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
             <column name="target_unit_id" not-null="true" />
         </many-to-one>
         <property name="title" type="string">

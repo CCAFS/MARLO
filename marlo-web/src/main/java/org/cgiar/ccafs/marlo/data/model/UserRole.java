@@ -24,39 +24,39 @@ public class UserRole implements java.io.Serializable {
 
   private static final long serialVersionUID = -4464617364263332726L;
   private Long id;
-  private Role roles;
-  private User users;
+  private Role role;
+  private User user;
 
   public UserRole() {
   }
 
   public UserRole(Role roles, User users) {
-    this.roles = roles;
-    this.users = users;
+    this.role = roles;
+    this.user = users;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public Role getRoles() {
-    return this.roles;
+  public Role getRole() {
+    return this.role;
   }
 
-  public User getUsers() {
-    return this.users;
+  public User getUser() {
+    return this.user;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setRoles(Role roles) {
-    this.roles = roles;
+  public void setRole(Role roles) {
+    this.role = roles;
   }
 
-  public void setUsers(User users) {
-    this.users = users;
+  public void setUser(User users) {
+    this.user = users;
   }
 
 

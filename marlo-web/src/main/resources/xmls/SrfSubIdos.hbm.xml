@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfIdos" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select">
+        <many-to-one name="srfIdo" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select">
             <column name="ido_id" not-null="true" />
         </many-to-one>
         <property name="description" type="string">

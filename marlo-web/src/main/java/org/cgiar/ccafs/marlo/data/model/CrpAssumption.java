@@ -27,19 +27,19 @@ public class CrpAssumption implements java.io.Serializable {
    */
   private static final long serialVersionUID = 5392601449095678314L;
   private Long id;
-  private CrpOutcomeSubIdo crpOutcomeSubIdos;
+  private CrpOutcomeSubIdo crpOutcomeSubIdo;
   private String description;
 
   public CrpAssumption() {
   }
 
-  public CrpAssumption(CrpOutcomeSubIdo crpOutcomeSubIdos, String description) {
-    this.crpOutcomeSubIdos = crpOutcomeSubIdos;
+  public CrpAssumption(CrpOutcomeSubIdo crpOutcomeSubIdo, String description) {
+    this.crpOutcomeSubIdo = crpOutcomeSubIdo;
     this.description = description;
   }
 
-  public CrpOutcomeSubIdo getCrpOutcomeSubIdos() {
-    return this.crpOutcomeSubIdos;
+  public CrpOutcomeSubIdo getCrpOutcomeSubIdo() {
+    return this.crpOutcomeSubIdo;
   }
 
   public String getDescription() {
@@ -50,8 +50,8 @@ public class CrpAssumption implements java.io.Serializable {
     return this.id;
   }
 
-  public void setCrpOutcomeSubIdos(CrpOutcomeSubIdo crpOutcomeSubIdos) {
-    this.crpOutcomeSubIdos = crpOutcomeSubIdos;
+  public void setCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo) {
+    this.crpOutcomeSubIdo = crpOutcomeSubIdo;
   }
 
   public void setDescription(String description) {

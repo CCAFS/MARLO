@@ -29,8 +29,8 @@ public class LocElement implements java.io.Serializable {
    */
   private static final long serialVersionUID = -5589133827714008187L;
   private Long id;
-  private LocElementType locElementTypes;
-  private LocGeoposition locGeopositions;
+  private LocElementType locElementType;
+  private LocGeoposition locGeoposition;
   private String name;
   private String code;
   private Long parentId;
@@ -43,8 +43,8 @@ public class LocElement implements java.io.Serializable {
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String code,
     Long parentId, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
-    this.locElementTypes = locElementTypes;
-    this.locGeopositions = locGeopositions;
+    this.locElementType = locElementTypes;
+    this.locGeoposition = locGeopositions;
     this.name = name;
     this.code = code;
     this.parentId = parentId;
@@ -53,7 +53,7 @@ public class LocElement implements java.io.Serializable {
   }
 
   public LocElement(LocElementType locElementTypes, String name) {
-    this.locElementTypes = locElementTypes;
+    this.locElementType = locElementTypes;
     this.name = name;
   }
 
@@ -73,12 +73,12 @@ public class LocElement implements java.io.Serializable {
     return this.isSiteIntegration;
   }
 
-  public LocElementType getLocElementTypes() {
-    return this.locElementTypes;
+  public LocElementType getLocElementType() {
+    return this.locElementType;
   }
 
-  public LocGeoposition getLocGeopositions() {
-    return this.locGeopositions;
+  public LocGeoposition getLocGeoposition() {
+    return this.locGeoposition;
   }
 
   public String getName() {
@@ -105,12 +105,12 @@ public class LocElement implements java.io.Serializable {
     this.isSiteIntegration = isSiteIntegration;
   }
 
-  public void setLocElementTypes(LocElementType locElementTypes) {
-    this.locElementTypes = locElementTypes;
+  public void setLocElementType(LocElementType locElementTypes) {
+    this.locElementType = locElementTypes;
   }
 
-  public void setLocGeopositions(LocGeoposition locGeopositions) {
-    this.locGeopositions = locGeopositions;
+  public void setLocGeoposition(LocGeoposition locGeopositions) {
+    this.locGeoposition = locGeopositions;
   }
 
   public void setName(String name) {

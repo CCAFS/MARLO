@@ -26,20 +26,20 @@ public class CrpClusterOfActivity implements java.io.Serializable {
    */
   private static final long serialVersionUID = -6392709700346014366L;
   private String id;
-  private CrpProgram crpPrograms;
+  private CrpProgram crpProgram;
   private String description;
 
   public CrpClusterOfActivity() {
   }
 
-  public CrpClusterOfActivity(String id, CrpProgram crpPrograms, String description) {
+  public CrpClusterOfActivity(String id, CrpProgram crpProgram, String description) {
     this.id = id;
-    this.crpPrograms = crpPrograms;
+    this.crpProgram = crpProgram;
     this.description = description;
   }
 
-  public CrpProgram getCrpPrograms() {
-    return this.crpPrograms;
+  public CrpProgram getCrpProgram() {
+    return this.crpProgram;
   }
 
   public String getDescription() {
@@ -50,8 +50,8 @@ public class CrpClusterOfActivity implements java.io.Serializable {
     return this.id;
   }
 
-  public void setCrpPrograms(CrpProgram crpPrograms) {
-    this.crpPrograms = crpPrograms;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
   public void setDescription(String description) {
