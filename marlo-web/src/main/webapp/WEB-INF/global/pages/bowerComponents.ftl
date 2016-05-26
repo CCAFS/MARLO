@@ -7,6 +7,7 @@
 
 [#macro css_imports libraryName]
   [#-- bower:css --]
+  [#if libraryName="jquery-ui" ]<link rel="stylesheet" href="${baseUrl}/bower_components/jquery-ui/themes/base/jquery-ui.min.css" />[/#if]
   [#if libraryName="jReject" ]<link rel="stylesheet" href="${baseUrl}/bower_components/jReject/css/jquery.reject.css" />[/#if]
   [#if libraryName="datatables" ]<link rel="stylesheet" href="${baseUrl}/bower_components/datatables/media/css/jquery.dataTables.css" />[/#if]
   [#if libraryName="dropzone" ]<link rel="stylesheet" href="${baseUrl}/bower_components/dropzone/dist/min/dropzone.min.css" />[/#if]
@@ -18,7 +19,7 @@
 [#macro js_imports libraryName]
   [#-- bower:js --]
   [#if libraryName="jquery"]<script src="${baseUrl}/bower_components/jquery/dist/jquery.min.js"></script>[/#if]
-  [#if libraryName="jquery-ui"]<script src="${baseUrl}/bower_components/jquery-ui/jquery-ui.js"></script>[/#if]
+  [#if libraryName="jquery-ui"]<script src="${baseUrl}/bower_components/jquery-ui/jquery-ui.min.js"></script>[/#if]
   [#if libraryName="html5shiv"]<script src="${baseUrl}/bower_components/html5shiv/dist/html5shiv.js"></script>[/#if]
   [#if libraryName="jReject"]<script src="${baseUrl}/bower_components/jReject/js/jquery.reject.js"></script>[/#if]
   [#if libraryName="noty"]<script src="${baseUrl}/bower_components/noty/js/noty/packaged/jquery.noty.packaged.js"></script>[/#if]

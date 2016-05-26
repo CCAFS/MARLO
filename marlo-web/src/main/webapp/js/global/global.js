@@ -1,10 +1,3 @@
-var baseURL, editable, production, currentPlanningYear, currentReportingYear;
-var formBefore;
-var justificationLimitWords = 100;
-var errorMessages = [];
-var forceChange = false;
-var hashScroll = true;
-var Tawk_API, Tawk_LoadStart;
 var notyDefaultOptions = {
     text: '',
     layout: 'bottomRight',
@@ -22,12 +15,6 @@ var notyDefaultOptions = {
 
 // Global javascript must be here.
 $(document).ready(function() {
-  baseURL = $("#baseURL").val();
-  editable = ($("#editable").val() === "true");
-  production = ($("#production").val() === "true");
-  currentPlanningYear = $("#currentPlanningYear").val();
-  currentReportingYear = $("#currentReportingYear").val();
-
   showNotificationMessages();
   showHelpText();
   applyWordCounter($("#justification"), justificationLimitWords);

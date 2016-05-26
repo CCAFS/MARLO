@@ -33,7 +33,7 @@
         <p class="name">${currentUser.firstName} ${currentUser.lastName}</p>  
         <p class="institution">${currentUser.email}</p>
         <p class="roles">${(securityContext.roles)!}
-         [#if currentUser.liaisonInstitution??][#list currentUser.liaisonInstitution as liaison]${(liaison.acronym)!}[#sep], [/#list] [/#if]
+         [#if currentUser.liaisonInstitution??][#list currentUser.liaisonInstitution as liaison]${(liaison.acronym)!}[#if liaison_has_next],[/#if] [/#list] [/#if]
         </p>
       </div>
   	[/#if]

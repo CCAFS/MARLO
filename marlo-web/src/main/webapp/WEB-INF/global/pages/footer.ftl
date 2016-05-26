@@ -15,8 +15,8 @@
         </div>
       </div> <!-- end container -->   
     </footer> 
-    [#-- Importing JavaScript files --]
     [#compress]
+    [#-- Importing JavaScript files --]
     [#if globalLibs??]
       [#list globalLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
     [/#if]
@@ -27,11 +27,21 @@
     [/#if]
     
     [#-- Second, import global javascripts and templates. --]
-    <script>
-      var baseURL = '${baseUrl}';
+    <script type="text/javascript">
+      var baseURL, editable, production, currentPlanningYear, currentReportingYear;
+      var formBefore;
+      var justificationLimitWords = 100;
+      var errorMessages = [];
+      var forceChange = false;
+      var hashScroll = true;
+      var Tawk_API, Tawk_LoadStart;
+      
+      baseURL = "${baseUrl}";
     </script>
+    
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
+    <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     

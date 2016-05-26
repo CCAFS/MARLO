@@ -1109,7 +1109,7 @@ a#userLogOut {
   text-decoration: none;
   background: #444;
   padding: 2px 8px;
-  font-size: 0.85em;
+  font-size: 0.70em;
   font-weight: lighter;
   position: absolute;
   right: 1em;
@@ -1161,6 +1161,7 @@ a#userLogOut {
 #userInfo .name {
   font-size: 1em;
   margin-right: 50px;
+  margin-bottom: 0;
 }
 
 #userInfo .roles {
@@ -1179,12 +1180,13 @@ a#userLogOut {
 }
 
 #userInfo .institution {
-  font-size: 0.8em; 
+  font-size: 0.8em;
   padding-top: 2px;
   min-width: 153px;
   color: #E7E7E7;
   font-weight: lighter;
   /* line-height: 1em; */
+  margin-bottom: 0;
 }
 
 #userInfo .logout {
@@ -1206,9 +1208,10 @@ a#userLogOut {
 }
 
 #marlo-logo {
-  float: left;
   padding: 10px 0px;
   font-weight: lighter;
+  float: left;
+  width: 66%;
 }
 
 #marlo-logo #title{
@@ -1221,7 +1224,7 @@ a#userLogOut {
   font-size: 1.5em;
   float: left;
   color: #b9b6b6;
-  width: 42%;
+  width: 52%;
   margin-left: 10px;
   padding: 14px 0;
   line-height: 25px;
@@ -1868,7 +1871,7 @@ h1#error{
 
 p.errorText{
     color: #444;
-    margin-bottom: 40px;
+    margin-bottom: 25px;
 }
 
 p.errorText.primary {
@@ -4756,12 +4759,10 @@ ul#deliverablesFilesMessages > li {
 .borderBox, .publication, .caseStudy, .outcome, .output, .midOutcome, .deliverable, .activityPartner, .otherSite {
   border: 1px solid #D1D1D1;
   padding: 20px 15px 19px 15px;
+  margin: 20px 0px 17px 0;
   border-radius: 4px;
-  margin: 16px 0 15px 0;
   position: relative;
   transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);*
-  
-;
   background: #fff;
 }
 
@@ -4822,10 +4823,6 @@ span.elementId{
 
 .borderBox:after {
   clear: both;
-}
-
-.borderBox {
-  *zoom: 1;
 }
 
 .simpleBox {
@@ -5207,3 +5204,13 @@ table.evaluationRank thead th{
   border-style: dashed;
 }
 
+
+
+.breadcrumb {
+  margin: 10px 0;
+  padding: 7px 15px 9px 15px;
+}
+
+.usersInfo {
+  float: right;
+}

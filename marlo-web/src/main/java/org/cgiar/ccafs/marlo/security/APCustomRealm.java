@@ -141,7 +141,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
     User user = userManager.getUser((Long) principals.getPrimaryPrincipal());
 
-    for (UserRole userRole : user.getUserRoleses()) {
+    for (UserRole userRole : user.getUserRoles()) {
       authorizationInfo.addRole(userRole.getRoles().getAcronym());
     }
 

@@ -6,8 +6,8 @@
 
 <section class="content">
   <article class="fullContent">
-    <div class="content center">
-      <div class="borderBox">
+    <div class="content">
+      <div class="borderBox center">
         <h1 id="error">404</h1>
         <img src="${baseUrl}/images/global/page-404-icon.png" />
         <p class="errorText primary">[@s.text name="server.error.404.1" /]</p> 
