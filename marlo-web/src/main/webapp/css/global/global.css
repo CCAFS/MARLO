@@ -2495,14 +2495,14 @@ input.userName {
 
 
 #decisionTree .addProjectButtons{
-  width: 28%;
+  width: 34%;
   padding: 0px 36px;
   margin-bottom: 20px;
 }
 
 #decisionTree .addProjectButtons .title{
-  font-size: 1.1em
-;text-align: center;
+  font-size: 0.9em;
+  text-align: center;
   margin-bottom: 8px;
 }
 
@@ -2516,7 +2516,8 @@ input.userName {
     padding: 6px 2px 0px 2px;
     margin: 0 3px;
     height: 36px;
-    font-size: 1.05em;
+    line-height: 13px;
+    font-size: 0.95em;
 }
 
 #decisionTree .addProjectButtons .addProject:hover{

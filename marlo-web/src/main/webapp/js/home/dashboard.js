@@ -1,12 +1,11 @@
-$.fn.dataTableExt.sErrMode = 'throw';
+//$.fn.dataTableExt.sErrMode = 'throw';
 $(document).ready(initDashboard);
 
 function initDashboard() {
   // Set timeline dates completion
-  setCompletionDates();
+  //setCompletionDates();
 
   $('#newProject').on('click', function(e) {
-    console.log(e.target);
     $('#decisionTree .addProjectButtons').show(0, function() {
       $(this).addClass('animated flipInX');
     });
@@ -15,10 +14,10 @@ function initDashboard() {
   $('.loadingBlock').hide().next().fadeIn(500);
 
   // Initialize tabs
-  initTabs();
+  //initTabs();
 
   // Initialize datatable of projects
-  initDatatable();
+  //initDatatable();
 
 }
 

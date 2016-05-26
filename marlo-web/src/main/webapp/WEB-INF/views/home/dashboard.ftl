@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/home/login.js" ] /]
+[#assign customJS = ["${baseUrl}/js/home/dashboard.js" ] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
@@ -26,7 +26,7 @@
         <p class="title">[@s.text name="dashboard.decisionTree.typeProjectQuestion" /]</p>
         <a href="[@s.url namespace="/planning" action='addNewCoreProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.coreProject" /]</p></div></a>
         <a href="[@s.url namespace="/planning" action='addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
-        <p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>
+        [#--<p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>--]
       </div>
     </div>
     
