@@ -12,39 +12,36 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpDAO;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- * @author Christian Garcia - CIAT/CCAFS
- */
-public class CrpMySQLDAO implements CrpDAO {
+public class CrpMilestoneMySQLDAO implements CrpMilestoneDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public CrpMySQLDAO(StandardDAO dao) {
+  public CrpMilestoneMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
-    Crp crp = this.find(crpId);
-    crp.setActive(false);
-    return this.save(crp) > 0;
+  public boolean deleteCrpMilestone(long crpMilestoneId) {
+    CrpMilestone crpMilestone = this.find(crpMilestoneId);
+    crpMilestone.setActive(false);
+    return this.save(crpMilestone) > 0;
   }
 
   @Override
-  public boolean existCrp(long crpID) {
-    Crp crp = this.find(crpID);
-    if (crp == null) {
+  public boolean existCrpMilestone(long crpMilestoneID) {
+    CrpMilestone crpMilestone = this.find(crpMilestoneID);
+    if (crpMilestone == null) {
       return false;
     }
     return true;
@@ -52,15 +49,15 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
-  public Crp find(long id) {
-    return dao.find(Crp.class, id);
+  public CrpMilestone find(long id) {
+    return dao.find(CrpMilestone.class, id);
 
   }
 
   @Override
-  public List<Crp> findAll() {
-    String query = "from " + Crp.class.getName() + " where is_active=1";
-    List<Crp> list = dao.findAll(query);
+  public List<CrpMilestone> findAll() {
+    String query = "from " + CrpMilestone.class.getName() + " where is_active=1";
+    List<CrpMilestone> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,8 +66,10 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
-  public long save(Crp crp) {
-    dao.saveOrUpdate(crp);
-    return crp.getId();
+  public long save(CrpMilestone crpMilestone) {
+    dao.saveOrUpdate(crpMilestone);
+    return crpMilestone.getId();
   }
+
+
 }

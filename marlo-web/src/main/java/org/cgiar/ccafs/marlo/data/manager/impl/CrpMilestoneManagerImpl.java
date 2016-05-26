@@ -11,59 +11,64 @@
  * You should have received a copy of the GNU General Public License
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpDAO;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+
+import org.cgiar.ccafs.marlo.data.dao.CrpMilestoneDAO;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia
  */
-public class CrpManagerImp implements CrpManager {
+public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
 
-  private CrpDAO crpDAO;
+
+  private CrpMilestoneDAO crpAssumptionDAO;
+  // Managers
+
 
   @Inject
-  public CrpManagerImp(CrpDAO crpDAO) {
-    this.crpDAO = crpDAO;
-  }
+  public CrpMilestoneManagerImpl(CrpMilestoneDAO crpAssumptionDAO) {
+    this.crpAssumptionDAO = crpAssumptionDAO;
 
-  @Override
-  public boolean deleteCrp(long crpId) {
-
-    return crpDAO.deleteCrp(crpId);
-  }
-
-  @Override
-  public boolean existCrp(long crpID) {
-
-    return crpDAO.existCrp(crpID);
-  }
-
-  @Override
-  public List<Crp> findAll() {
-
-    return crpDAO.findAll();
 
   }
 
   @Override
-  public Crp getCrpById(long crpID) {
+  public boolean deleteCrpMilestone(long crpAssumptionId) {
 
-    return crpDAO.find(crpID);
+    return crpAssumptionDAO.deleteCrpMilestone(crpAssumptionId);
   }
 
   @Override
-  public long saveCrp(Crp crp) {
+  public boolean existCrpMilestone(long crpAssumptionID) {
 
-    return crpDAO.save(crp);
+    return crpAssumptionDAO.existCrpMilestone(crpAssumptionID);
   }
+
+  @Override
+  public List<CrpMilestone> findAll() {
+
+    return crpAssumptionDAO.findAll();
+
+  }
+
+  @Override
+  public CrpMilestone getCrpMilestoneById(long crpAssumptionID) {
+
+    return crpAssumptionDAO.find(crpAssumptionID);
+  }
+
+  @Override
+  public long saveCrpMilestone(CrpMilestone crpAssumption) {
+
+    return crpAssumptionDAO.save(crpAssumption);
+  }
+
 
 }

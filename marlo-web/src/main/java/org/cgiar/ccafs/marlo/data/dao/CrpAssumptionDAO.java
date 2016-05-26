@@ -65,5 +65,5 @@ public interface CrpAssumptionDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(CrpAssumption casesStudies);
+  public long save(CrpAssumption crpAssumption);
 }

@@ -12,39 +12,36 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpDAO;
-import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.dao.CrpClusterOfActivityDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- * @author Christian Garcia - CIAT/CCAFS
- */
-public class CrpMySQLDAO implements CrpDAO {
+public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public CrpMySQLDAO(StandardDAO dao) {
+  public CrpClusterOfActivityMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteCrp(long crpId) {
-    Crp crp = this.find(crpId);
-    crp.setActive(false);
-    return this.save(crp) > 0;
+  public boolean deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
+    CrpClusterOfActivity crpClusterOfActivity = this.find(crpClusterOfActivityId);
+    crpClusterOfActivity.setActive(false);
+    return this.save(crpClusterOfActivity).length() > 0;
   }
 
   @Override
-  public boolean existCrp(long crpID) {
-    Crp crp = this.find(crpID);
-    if (crp == null) {
+  public boolean existCrpClusterOfActivity(long crpClusterOfActivityID) {
+    CrpClusterOfActivity crpClusterOfActivity = this.find(crpClusterOfActivityID);
+    if (crpClusterOfActivity == null) {
       return false;
     }
     return true;
@@ -52,15 +49,15 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
-  public Crp find(long id) {
-    return dao.find(Crp.class, id);
+  public CrpClusterOfActivity find(long id) {
+    return dao.find(CrpClusterOfActivity.class, id);
 
   }
 
   @Override
-  public List<Crp> findAll() {
-    String query = "from " + Crp.class.getName() + " where is_active=1";
-    List<Crp> list = dao.findAll(query);
+  public List<CrpClusterOfActivity> findAll() {
+    String query = "from " + CrpClusterOfActivity.class.getName() + " where is_active=1";
+    List<CrpClusterOfActivity> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -69,8 +66,10 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
-  public long save(Crp crp) {
-    dao.saveOrUpdate(crp);
-    return crp.getId();
+  public String save(CrpClusterOfActivity crpClusterOfActivity) {
+    dao.saveOrUpdate(crpClusterOfActivity);
+    return crpClusterOfActivity.getId();
   }
+
+
 }
