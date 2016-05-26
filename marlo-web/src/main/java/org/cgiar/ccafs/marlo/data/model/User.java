@@ -40,8 +40,8 @@ public class User implements java.io.Serializable {
   private Long createdBy;
   private boolean active;
   private Date lastLogin;
-  private Set<UserRole> userRoleses = new HashSet<UserRole>(0);
-  private Set<CrpUser> crpUserses = new HashSet<CrpUser>(0);
+  private Set<UserRole> userRoles = new HashSet<UserRole>(0);
+  private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
 
   public User() {
   }
@@ -55,7 +55,7 @@ public class User implements java.io.Serializable {
   }
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
-    Long createdBy, boolean active, Date lastLogin, Set<UserRole> userRoleses, Set<CrpUser> crpUserses) {
+    Long createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.username = username;
@@ -66,8 +66,8 @@ public class User implements java.io.Serializable {
     this.createdBy = createdBy;
 
     this.lastLogin = lastLogin;
-    this.userRoleses = userRoleses;
-    this.crpUserses = crpUserses;
+    this.userRoles = userRoles;
+    this.crpUsers = crpUsers;
   }
 
   @Override
@@ -98,8 +98,8 @@ public class User implements java.io.Serializable {
   }
 
 
-  public Set<CrpUser> getCrpUserses() {
-    return this.crpUserses;
+  public Set<CrpUser> getCrpUsers() {
+    return this.crpUsers;
   }
 
   public String getEmail() {
@@ -130,8 +130,8 @@ public class User implements java.io.Serializable {
     return this.username;
   }
 
-  public Set<UserRole> getUserRoleses() {
-    return this.userRoleses;
+  public Set<UserRole> getUserRoles() {
+    return this.userRoles;
   }
 
   public boolean isActive() {
@@ -155,8 +155,8 @@ public class User implements java.io.Serializable {
   }
 
 
-  public void setCrpUserses(Set<CrpUser> crpUserses) {
-    this.crpUserses = crpUserses;
+  public void setCrpUsers(Set<CrpUser> crpUsers) {
+    this.crpUsers = crpUsers;
   }
 
 
@@ -192,8 +192,8 @@ public class User implements java.io.Serializable {
     this.username = username;
   }
 
-  public void setUserRoleses(Set<UserRole> userRoleses) {
-    this.userRoleses = userRoleses;
+  public void setUserRoles(Set<UserRole> userRoles) {
+    this.userRoles = userRoles;
   }
 
 
