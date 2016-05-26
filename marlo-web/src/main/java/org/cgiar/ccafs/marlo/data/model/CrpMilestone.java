@@ -28,8 +28,8 @@ public class CrpMilestone implements java.io.Serializable {
    */
   private static final long serialVersionUID = 4398175741401855358L;
   private Long id;
-  private CrpProgramOutcome crpProgramOutcomes;
-  private SrfTargetUnit srfTargetUnits;
+  private CrpProgramOutcome crpProgramOutcome;
+  private SrfTargetUnit srfTargetUnit;
   private String title;
   private int year;
   private BigDecimal value;
@@ -37,25 +37,25 @@ public class CrpMilestone implements java.io.Serializable {
   public CrpMilestone() {
   }
 
-  public CrpMilestone(CrpProgramOutcome crpProgramOutcomes, SrfTargetUnit srfTargetUnits, String title, int year,
+  public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, int year,
     BigDecimal value) {
-    this.crpProgramOutcomes = crpProgramOutcomes;
-    this.srfTargetUnits = srfTargetUnits;
+    this.crpProgramOutcome = crpProgramOutcome;
+    this.srfTargetUnit = srfTargetUnit;
     this.title = title;
     this.year = year;
     this.value = value;
   }
 
-  public CrpProgramOutcome getCrpProgramOutcomes() {
-    return this.crpProgramOutcomes;
+  public CrpProgramOutcome getCrpProgramOutcome() {
+    return this.crpProgramOutcome;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public SrfTargetUnit getSrfTargetUnits() {
-    return this.srfTargetUnits;
+  public SrfTargetUnit getSrfTargetUnit() {
+    return this.srfTargetUnit;
   }
 
   public String getTitle() {
@@ -70,16 +70,16 @@ public class CrpMilestone implements java.io.Serializable {
     return this.year;
   }
 
-  public void setCrpProgramOutcomes(CrpProgramOutcome crpProgramOutcomes) {
-    this.crpProgramOutcomes = crpProgramOutcomes;
+  public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
+    this.crpProgramOutcome = crpProgramOutcome;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setSrfTargetUnits(SrfTargetUnit srfTargetUnits) {
-    this.srfTargetUnits = srfTargetUnits;
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
   public void setTitle(String title) {

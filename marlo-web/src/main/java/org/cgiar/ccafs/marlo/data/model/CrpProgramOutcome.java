@@ -30,8 +30,8 @@ public class CrpProgramOutcome implements java.io.Serializable {
    */
   private static final long serialVersionUID = 3014520962149158601L;
   private Long id;
-  private CrpProgram crpPrograms;
-  private SrfTargetUnit srfTargetUnits;
+  private CrpProgram crpProgram;
+  private SrfTargetUnit srfTargetUnit;
   private String description;
   private int year;
   private BigDecimal value;
@@ -42,19 +42,19 @@ public class CrpProgramOutcome implements java.io.Serializable {
   }
 
 
-  public CrpProgramOutcome(CrpProgram crpPrograms, SrfTargetUnit srfTargetUnits, String description, int year,
+  public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value) {
-    this.crpPrograms = crpPrograms;
-    this.srfTargetUnits = srfTargetUnits;
+    this.crpProgram = crpProgram;
+    this.srfTargetUnit = srfTargetUnit;
     this.description = description;
     this.year = year;
     this.value = value;
   }
 
-  public CrpProgramOutcome(CrpProgram crpPrograms, SrfTargetUnit srfTargetUnits, String description, int year,
+  public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value, Set<CrpOutcomeSubIdo> crpOutcomeSubIdos, Set<CrpMilestone> crpMilestones) {
-    this.crpPrograms = crpPrograms;
-    this.srfTargetUnits = srfTargetUnits;
+    this.crpProgram = crpProgram;
+    this.srfTargetUnit = srfTargetUnit;
     this.description = description;
     this.year = year;
     this.value = value;
@@ -70,8 +70,8 @@ public class CrpProgramOutcome implements java.io.Serializable {
     return this.crpOutcomeSubIdos;
   }
 
-  public CrpProgram getCrpPrograms() {
-    return this.crpPrograms;
+  public CrpProgram getCrpProgram() {
+    return this.crpProgram;
   }
 
   public String getDescription() {
@@ -82,8 +82,8 @@ public class CrpProgramOutcome implements java.io.Serializable {
     return this.id;
   }
 
-  public SrfTargetUnit getSrfTargetUnits() {
-    return this.srfTargetUnits;
+  public SrfTargetUnit getSrfTargetUnit() {
+    return this.srfTargetUnit;
   }
 
   public BigDecimal getValue() {
@@ -102,8 +102,8 @@ public class CrpProgramOutcome implements java.io.Serializable {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
   }
 
-  public void setCrpPrograms(CrpProgram crpPrograms) {
-    this.crpPrograms = crpPrograms;
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
   public void setDescription(String description) {
@@ -114,8 +114,8 @@ public class CrpProgramOutcome implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setSrfTargetUnits(SrfTargetUnit srfTargetUnits) {
-    this.srfTargetUnits = srfTargetUnits;
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
+    this.srfTargetUnit = srfTargetUnit;
   }
 
   public void setValue(BigDecimal value) {

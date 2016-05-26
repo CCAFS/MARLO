@@ -2319,15 +2319,14 @@ input.userName {
 #loginFormContainer .loginForm {
   background-color: #f1f1f1;
   margin: auto;
-  padding: 18px 24px;
+  padding: 8px 24px;
   border-radius: 7px;
-  border: 2px solid #F3F3F3;
-  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  border: 1px solid #ededed;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
 }
 
-#loginFormContainer .loginForm p {
-}
+#loginFormContainer .loginForm p {margin: 0;}
 
 #loginFormContainer .loginForm .fieldError {
   font-weight: bold;
@@ -2349,8 +2348,8 @@ input.userName {
   font-size: 13px;
 }
 
-#loginFormContainer .loginForm div input {
-  width: 98%;
+#loginFormContainer .loginForm div input[type=submit] {
+  width: 35%;
 }
 
 #loginFormContainer .alreadyLogged {
@@ -2495,14 +2494,14 @@ input.userName {
 
 
 #decisionTree .addProjectButtons{
-  width: 28%;
+  width: 34%;
   padding: 0px 36px;
   margin-bottom: 20px;
 }
 
 #decisionTree .addProjectButtons .title{
-  font-size: 1.1em
-;text-align: center;
+  font-size: 0.9em;
+  text-align: center;
   margin-bottom: 8px;
 }
 
@@ -2516,7 +2515,8 @@ input.userName {
     padding: 6px 2px 0px 2px;
     margin: 0 3px;
     height: 36px;
-    font-size: 1.05em;
+    line-height: 13px;
+    font-size: 0.95em;
 }
 
 #decisionTree .addProjectButtons .addProject:hover{

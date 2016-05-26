@@ -29,7 +29,7 @@ public class CrpProgram implements java.io.Serializable {
    */
   private static final long serialVersionUID = -799819119525448185L;
   private Long id;
-  private Crp crps;
+  private Crp crp;
   private String name;
   private String acronym;
   private int programType;
@@ -42,7 +42,7 @@ public class CrpProgram implements java.io.Serializable {
 
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
-    this.crps = crps;
+    this.crp = crps;
     this.name = name;
     this.acronym = acronym;
     this.programType = programType;
@@ -51,7 +51,7 @@ public class CrpProgram implements java.io.Serializable {
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
-    this.crps = crps;
+    this.crp = crps;
     this.name = name;
     this.acronym = acronym;
     this.programType = programType;
@@ -64,6 +64,10 @@ public class CrpProgram implements java.io.Serializable {
     return this.acronym;
   }
 
+  public Crp getCrp() {
+    return this.crp;
+  }
+
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
@@ -74,10 +78,6 @@ public class CrpProgram implements java.io.Serializable {
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
-  }
-
-  public Crp getCrps() {
-    return this.crps;
   }
 
   public Long getId() {
@@ -96,6 +96,10 @@ public class CrpProgram implements java.io.Serializable {
     this.acronym = acronym;
   }
 
+  public void setCrp(Crp crp) {
+    this.crp = crp;
+  }
+
   public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
     this.crpClusterOfActivities = crpClusterOfActivities;
   }
@@ -106,10 +110,6 @@ public class CrpProgram implements java.io.Serializable {
 
   public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crpProgramOutcomes = crpProgramOutcomes;
-  }
-
-  public void setCrps(Crp crps) {
-    this.crps = crps;
   }
 
   public void setId(Long id) {

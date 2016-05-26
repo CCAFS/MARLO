@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="locElementTypes" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+        <many-to-one name="locElementType" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
             <column name="element_type_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="locGeopositions" class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
+        <many-to-one name="locGeoposition" class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
             <column name="geoposition_id" />
         </many-to-one>
         <property name="name" type="string">

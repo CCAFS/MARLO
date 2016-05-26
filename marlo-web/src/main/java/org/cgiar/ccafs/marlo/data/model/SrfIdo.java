@@ -29,7 +29,7 @@ public class SrfIdo implements java.io.Serializable {
    */
   private static final long serialVersionUID = 8353586687845581811L;
   private Long id;
-  private SrfCrossCuttingIssue srfCrossCuttingIssues;
+  private SrfCrossCuttingIssue srfCrossCuttingIssue;
   private String description;
   private boolean isCrossCutting;
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
@@ -41,7 +41,7 @@ public class SrfIdo implements java.io.Serializable {
 
   public SrfIdo(SrfCrossCuttingIssue srfCrossCuttingIssues, String description, boolean isCrossCutting,
     Set<SrfSloIdo> srfSloIdos, Set<SrfSubIdo> srfSubIdos) {
-    this.srfCrossCuttingIssues = srfCrossCuttingIssues;
+    this.srfCrossCuttingIssue = srfCrossCuttingIssues;
     this.description = description;
     this.isCrossCutting = isCrossCutting;
     this.srfSloIdos = srfSloIdos;
@@ -61,8 +61,8 @@ public class SrfIdo implements java.io.Serializable {
     return this.id;
   }
 
-  public SrfCrossCuttingIssue getSrfCrossCuttingIssues() {
-    return this.srfCrossCuttingIssues;
+  public SrfCrossCuttingIssue getSrfCrossCuttingIssue() {
+    return this.srfCrossCuttingIssue;
   }
 
   public Set<SrfSloIdo> getSrfSloIdos() {
@@ -89,8 +89,8 @@ public class SrfIdo implements java.io.Serializable {
     this.isCrossCutting = isCrossCutting;
   }
 
-  public void setSrfCrossCuttingIssues(SrfCrossCuttingIssue srfCrossCuttingIssues) {
-    this.srfCrossCuttingIssues = srfCrossCuttingIssues;
+  public void setSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssues) {
+    this.srfCrossCuttingIssue = srfCrossCuttingIssues;
   }
 
   public void setSrfSloIdos(Set<SrfSloIdo> srfSloIdos) {

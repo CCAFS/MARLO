@@ -29,7 +29,7 @@ public class SrfSubIdo implements java.io.Serializable {
    */
   private static final long serialVersionUID = -6590673724952913143L;
   private Long id;
-  private SrfIdo srfIdos;
+  private SrfIdo srfIdo;
   private String description;
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
@@ -39,13 +39,13 @@ public class SrfSubIdo implements java.io.Serializable {
 
 
   public SrfSubIdo(SrfIdo srfIdos, String description) {
-    this.srfIdos = srfIdos;
+    this.srfIdo = srfIdos;
     this.description = description;
   }
 
   public SrfSubIdo(SrfIdo srfIdos, String description, Set<CrpOutcomeSubIdo> crpOutcomeSubIdos,
     Set<CrpSubIdosContribution> crpSubIdosContributions) {
-    this.srfIdos = srfIdos;
+    this.srfIdo = srfIdos;
     this.description = description;
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpSubIdosContributions = crpSubIdosContributions;
@@ -67,8 +67,8 @@ public class SrfSubIdo implements java.io.Serializable {
     return this.id;
   }
 
-  public SrfIdo getSrfIdos() {
-    return this.srfIdos;
+  public SrfIdo getSrfIdo() {
+    return this.srfIdo;
   }
 
   public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
@@ -87,8 +87,8 @@ public class SrfSubIdo implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setSrfIdos(SrfIdo srfIdos) {
-    this.srfIdos = srfIdos;
+  public void setSrfIdo(SrfIdo srfIdos) {
+    this.srfIdo = srfIdos;
   }
 
 

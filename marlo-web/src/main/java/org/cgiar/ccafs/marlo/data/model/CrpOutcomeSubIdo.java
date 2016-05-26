@@ -30,8 +30,8 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
    */
   private static final long serialVersionUID = 7556470694083733136L;
   private Long id;
-  private CrpProgramOutcome crpProgramOutcomes;
-  private SrfSubIdo srfSubIdos;
+  private CrpProgramOutcome crpProgramOutcome;
+  private SrfSubIdo srfSubIdo;
   private BigDecimal contribution;
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
 
@@ -39,16 +39,16 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
   }
 
 
-  public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcomes, SrfSubIdo srfSubIdos, BigDecimal contribution) {
-    this.crpProgramOutcomes = crpProgramOutcomes;
-    this.srfSubIdos = srfSubIdos;
+  public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcome, SrfSubIdo srfSubIdo, BigDecimal contribution) {
+    this.crpProgramOutcome = crpProgramOutcome;
+    this.srfSubIdo = srfSubIdo;
     this.contribution = contribution;
   }
 
-  public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcomes, SrfSubIdo srfSubIdos, BigDecimal contribution,
+  public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcomes, SrfSubIdo srfSubIdo, BigDecimal contribution,
     Set<CrpAssumption> crpAssumptions) {
-    this.crpProgramOutcomes = crpProgramOutcomes;
-    this.srfSubIdos = srfSubIdos;
+    this.crpProgramOutcome = crpProgramOutcomes;
+    this.srfSubIdo = srfSubIdo;
     this.contribution = contribution;
     this.crpAssumptions = crpAssumptions;
   }
@@ -61,16 +61,16 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     return this.crpAssumptions;
   }
 
-  public CrpProgramOutcome getCrpProgramOutcomes() {
-    return this.crpProgramOutcomes;
+  public CrpProgramOutcome getCrpProgramOutcome() {
+    return this.crpProgramOutcome;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public SrfSubIdo getSrfSubIdos() {
-    return this.srfSubIdos;
+  public SrfSubIdo getSrfSubIdo() {
+    return this.srfSubIdo;
   }
 
   public void setContribution(BigDecimal contribution) {
@@ -81,16 +81,16 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     this.crpAssumptions = crpAssumptions;
   }
 
-  public void setCrpProgramOutcomes(CrpProgramOutcome crpProgramOutcomes) {
-    this.crpProgramOutcomes = crpProgramOutcomes;
+  public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
+    this.crpProgramOutcome = crpProgramOutcome;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setSrfSubIdos(SrfSubIdo srfSubIdos) {
-    this.srfSubIdos = srfSubIdos;
+  public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
+    this.srfSubIdo = srfSubIdo;
   }
 
 

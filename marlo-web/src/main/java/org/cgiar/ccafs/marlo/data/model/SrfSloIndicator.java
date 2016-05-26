@@ -29,7 +29,7 @@ public class SrfSloIndicator implements java.io.Serializable {
    */
   private static final long serialVersionUID = 3683018263832155505L;
   private Long id;
-  private SrfSlo srfSlos;
+  private SrfSlo srfSlo;
   private String title;
   private String description;
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
@@ -39,14 +39,14 @@ public class SrfSloIndicator implements java.io.Serializable {
 
 
   public SrfSloIndicator(SrfSlo srfSlos, String title, String description) {
-    this.srfSlos = srfSlos;
+    this.srfSlo = srfSlos;
     this.title = title;
     this.description = description;
   }
 
   public SrfSloIndicator(SrfSlo srfSlos, String title, String description,
     Set<SrfSloIndicatorTarget> srfSloIndicatorTargets) {
-    this.srfSlos = srfSlos;
+    this.srfSlo = srfSlos;
     this.title = title;
     this.description = description;
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
@@ -64,8 +64,8 @@ public class SrfSloIndicator implements java.io.Serializable {
     return this.srfSloIndicatorTargets;
   }
 
-  public SrfSlo getSrfSlos() {
-    return this.srfSlos;
+  public SrfSlo getSrfSlo() {
+    return this.srfSlo;
   }
 
   public String getTitle() {
@@ -84,8 +84,8 @@ public class SrfSloIndicator implements java.io.Serializable {
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
   }
 
-  public void setSrfSlos(SrfSlo srfSlos) {
-    this.srfSlos = srfSlos;
+  public void setSrfSlo(SrfSlo srfSlos) {
+    this.srfSlo = srfSlos;
   }
 
   public void setTitle(String title) {

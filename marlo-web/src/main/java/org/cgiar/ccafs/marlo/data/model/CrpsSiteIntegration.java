@@ -29,8 +29,8 @@ public class CrpsSiteIntegration implements java.io.Serializable {
    */
   private static final long serialVersionUID = -7674530393075404476L;
   private Long id;
-  private Crp crps;
-  private LocElement locElements;
+  private Crp crp;
+  private LocElement locElement;
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
   public CrpsSiteIntegration() {
@@ -38,18 +38,18 @@ public class CrpsSiteIntegration implements java.io.Serializable {
 
 
   public CrpsSiteIntegration(Crp crps, LocElement locElements) {
-    this.crps = crps;
-    this.locElements = locElements;
+    this.crp = crps;
+    this.locElement = locElements;
   }
 
   public CrpsSiteIntegration(Crp crps, LocElement locElements, Set<CrpSitesLeader> crpSitesLeaders) {
-    this.crps = crps;
-    this.locElements = locElements;
+    this.crp = crps;
+    this.locElement = locElements;
     this.crpSitesLeaders = crpSitesLeaders;
   }
 
-  public Crp getCrps() {
-    return this.crps;
+  public Crp getCrp() {
+    return this.crp;
   }
 
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
@@ -60,12 +60,12 @@ public class CrpsSiteIntegration implements java.io.Serializable {
     return this.id;
   }
 
-  public LocElement getLocElements() {
-    return this.locElements;
+  public LocElement getLocElement() {
+    return this.locElement;
   }
 
-  public void setCrps(Crp crps) {
-    this.crps = crps;
+  public void setCrp(Crp crps) {
+    this.crp = crps;
   }
 
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
@@ -76,8 +76,8 @@ public class CrpsSiteIntegration implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setLocElements(LocElement locElements) {
-    this.locElements = locElements;
+  public void setLocElement(LocElement locElements) {
+    this.locElement = locElements;
   }
 
 

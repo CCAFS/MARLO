@@ -28,8 +28,8 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
    */
   private static final long serialVersionUID = -6059800120149718264L;
   private Long id;
-  private SrfSloIndicator srfSloIndicators;
-  private SrfTargetUnit srfTargetUnits;
+  private SrfSloIndicator srfSloIndicator;
+  private SrfTargetUnit srfTargetUnit;
   private BigDecimal value;
   private int year;
 
@@ -38,8 +38,8 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
 
   public SrfSloIndicatorTarget(SrfSloIndicator srfSloIndicators, SrfTargetUnit srfTargetUnits, BigDecimal value,
     int year) {
-    this.srfSloIndicators = srfSloIndicators;
-    this.srfTargetUnits = srfTargetUnits;
+    this.srfSloIndicator = srfSloIndicators;
+    this.srfTargetUnit = srfTargetUnits;
     this.value = value;
     this.year = year;
   }
@@ -48,12 +48,12 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
     return this.id;
   }
 
-  public SrfSloIndicator getSrfSloIndicators() {
-    return this.srfSloIndicators;
+  public SrfSloIndicator getSrfSloIndicator() {
+    return this.srfSloIndicator;
   }
 
-  public SrfTargetUnit getSrfTargetUnits() {
-    return this.srfTargetUnits;
+  public SrfTargetUnit getSrfTargetUnit() {
+    return this.srfTargetUnit;
   }
 
   public BigDecimal getValue() {
@@ -68,12 +68,12 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setSrfSloIndicators(SrfSloIndicator srfSloIndicators) {
-    this.srfSloIndicators = srfSloIndicators;
+  public void setSrfSloIndicator(SrfSloIndicator srfSloIndicators) {
+    this.srfSloIndicator = srfSloIndicators;
   }
 
-  public void setSrfTargetUnits(SrfTargetUnit srfTargetUnits) {
-    this.srfTargetUnits = srfTargetUnits;
+  public void setSrfTargetUnit(SrfTargetUnit srfTargetUnits) {
+    this.srfTargetUnit = srfTargetUnits;
   }
 
   public void setValue(BigDecimal value) {

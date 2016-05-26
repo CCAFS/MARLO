@@ -3,7 +3,7 @@
   [#if !config.production]
   <div class="loginForm instructions">
     [#-- @s.text name="home.login.message.nonCgiar" / --]
-    <p>Thank you for being part of the <strong>exclusive group of testers</strong>; you are in the right place! Please enter your credentials below.</p>
+    <p>[@s.text name="login.testersMessage"/]</p>
   </div>
   [/#if]
   [@s.form method="POST" namespace="/" action="login" cssClass="loginForm"]
@@ -24,6 +24,9 @@
     [#-- Password --]
     [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
     [#-- Login (Submit button) --]
-    [@s.submit key="login.button" name="login" /]      
+    <div class="center">[@s.submit key="login.button" name="login" /]</div>
   [/@s.form]
+  <br />
+  [#-- Disclaimer --]
+  <div class="alert alert-warning" role="alert">[@s.text name="login.disclaimer"/]</div>
 </div><!-- End loginFormContainer -->

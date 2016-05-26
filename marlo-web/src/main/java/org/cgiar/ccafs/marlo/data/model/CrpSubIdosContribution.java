@@ -26,39 +26,39 @@ public class CrpSubIdosContribution implements java.io.Serializable {
    */
   private static final long serialVersionUID = 230325008971164952L;
   private Long id;
-  private Crp crps;
-  private SrfSubIdo srfSubIdos;
+  private Crp crp;
+  private SrfSubIdo srfSubIdo;
 
   public CrpSubIdosContribution() {
   }
 
   public CrpSubIdosContribution(Crp crps, SrfSubIdo srfSubIdos) {
-    this.crps = crps;
-    this.srfSubIdos = srfSubIdos;
+    this.crp = crps;
+    this.srfSubIdo = srfSubIdos;
   }
 
-  public Crp getCrps() {
-    return this.crps;
+  public Crp getCrp() {
+    return this.crp;
   }
 
   public Long getId() {
     return this.id;
   }
 
-  public SrfSubIdo getSrfSubIdos() {
-    return this.srfSubIdos;
+  public SrfSubIdo getSrfSubIdo() {
+    return this.srfSubIdo;
   }
 
-  public void setCrps(Crp crps) {
-    this.crps = crps;
+  public void setCrp(Crp crps) {
+    this.crp = crps;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setSrfSubIdos(SrfSubIdo srfSubIdos) {
-    this.srfSubIdos = srfSubIdos;
+  public void setSrfSubIdo(SrfSubIdo srfSubIdos) {
+    this.srfSubIdo = srfSubIdos;
   }
 
 

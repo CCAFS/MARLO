@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfSloIndicators" class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
+        <many-to-one name="srfSloIndicator" class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" fetch="select">
             <column name="indicador_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="srfTargetUnits" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+        <many-to-one name="srfTargetUnit" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
             <column name="target_unit_id" not-null="true" />
         </many-to-one>
         <property name="value" type="big_decimal">

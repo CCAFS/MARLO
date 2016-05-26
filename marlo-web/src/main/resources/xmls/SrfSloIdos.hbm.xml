@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfIdos" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select">
+        <many-to-one name="srfIdo" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select">
             <column name="ido_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="srfSlos" class="org.cgiar.ccafs.marlo.data.model.SrfSlo" fetch="select">
+        <many-to-one name="srfSlo" class="org.cgiar.ccafs.marlo.data.model.SrfSlo" fetch="select">
             <column name="slo_id" not-null="true" />
         </many-to-one>
     </class>

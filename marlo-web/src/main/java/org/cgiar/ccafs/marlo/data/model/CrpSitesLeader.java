@@ -26,19 +26,19 @@ public class CrpSitesLeader implements java.io.Serializable {
    */
   private static final long serialVersionUID = 1702272624319778464L;
   private Long id;
-  private CrpsSiteIntegration crpsSitesIntegration;
+  private CrpsSiteIntegration crpsSiteIntegration;
   private User users;
 
   public CrpSitesLeader() {
   }
 
   public CrpSitesLeader(CrpsSiteIntegration crpsSitesIntegration, User users) {
-    this.crpsSitesIntegration = crpsSitesIntegration;
+    this.crpsSiteIntegration = crpsSitesIntegration;
     this.users = users;
   }
 
-  public CrpsSiteIntegration getCrpsSitesIntegration() {
-    return this.crpsSitesIntegration;
+  public CrpsSiteIntegration getCrpsSiteIntegration() {
+    return this.crpsSiteIntegration;
   }
 
   public Long getId() {
@@ -49,8 +49,8 @@ public class CrpSitesLeader implements java.io.Serializable {
     return this.users;
   }
 
-  public void setCrpsSitesIntegration(CrpsSiteIntegration crpsSitesIntegration) {
-    this.crpsSitesIntegration = crpsSitesIntegration;
+  public void setCrpsSiteIntegration(CrpsSiteIntegration crpsSitesIntegration) {
+    this.crpsSiteIntegration = crpsSitesIntegration;
   }
 
   public void setId(Long id) {
