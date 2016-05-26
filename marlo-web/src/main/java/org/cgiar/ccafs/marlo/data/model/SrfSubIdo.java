@@ -33,10 +33,10 @@ public class SrfSubIdo implements java.io.Serializable {
   private String description;
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
+  private boolean active;
 
   public SrfSubIdo() {
   }
-
 
   public SrfSubIdo(SrfIdo srfIdos, String description) {
     this.srfIdo = srfIdos;
@@ -50,6 +50,7 @@ public class SrfSubIdo implements java.io.Serializable {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
+
 
   public Set<CrpOutcomeSubIdo> getCrpOutcomeSubIdos() {
     return this.crpOutcomeSubIdos;
@@ -69,6 +70,14 @@ public class SrfSubIdo implements java.io.Serializable {
 
   public SrfIdo getSrfIdo() {
     return this.srfIdo;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {

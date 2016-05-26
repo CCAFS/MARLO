@@ -29,6 +29,7 @@ public class CrpUser implements java.io.Serializable {
   private Long id;
   private Crp crp;
   private User user;
+  private boolean active;
 
   public CrpUser() {
   }
@@ -48,6 +49,14 @@ public class CrpUser implements java.io.Serializable {
 
   public User getUser() {
     return this.user;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrp(Crp crps) {

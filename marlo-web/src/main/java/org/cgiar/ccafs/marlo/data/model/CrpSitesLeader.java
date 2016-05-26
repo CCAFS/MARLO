@@ -28,6 +28,7 @@ public class CrpSitesLeader implements java.io.Serializable {
   private Long id;
   private CrpsSiteIntegration crpsSiteIntegration;
   private User users;
+  private boolean active;
 
   public CrpSitesLeader() {
   }
@@ -47,6 +48,14 @@ public class CrpSitesLeader implements java.io.Serializable {
 
   public User getUsers() {
     return this.users;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpsSiteIntegration(CrpsSiteIntegration crpsSitesIntegration) {

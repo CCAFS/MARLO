@@ -34,10 +34,10 @@ public class SrfTargetUnit implements java.io.Serializable {
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+  private boolean active;
 
   public SrfTargetUnit() {
   }
-
 
   public SrfTargetUnit(String name, String acronym) {
     this.name = name;
@@ -52,6 +52,7 @@ public class SrfTargetUnit implements java.io.Serializable {
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -77,8 +78,16 @@ public class SrfTargetUnit implements java.io.Serializable {
     return this.srfSloIndicatorTargets;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {

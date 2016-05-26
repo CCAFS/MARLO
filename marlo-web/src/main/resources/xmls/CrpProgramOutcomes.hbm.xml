@@ -35,5 +35,8 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
         </set>
+		  <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

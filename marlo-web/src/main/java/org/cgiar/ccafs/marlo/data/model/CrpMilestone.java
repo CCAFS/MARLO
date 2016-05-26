@@ -33,6 +33,7 @@ public class CrpMilestone implements java.io.Serializable {
   private String title;
   private int year;
   private BigDecimal value;
+  private boolean active;
 
   public CrpMilestone() {
   }
@@ -68,6 +69,14 @@ public class CrpMilestone implements java.io.Serializable {
 
   public int getYear() {
     return this.year;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {

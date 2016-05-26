@@ -28,6 +28,7 @@ public class CrpProgramLeader implements java.io.Serializable {
   private Long id;
   private CrpProgram crpProgram;
   private User user;
+  private boolean active;
 
   public CrpProgramLeader() {
   }
@@ -47,6 +48,14 @@ public class CrpProgramLeader implements java.io.Serializable {
 
   public User getUser() {
     return this.user;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrpProgram(CrpProgram crpProgram) {

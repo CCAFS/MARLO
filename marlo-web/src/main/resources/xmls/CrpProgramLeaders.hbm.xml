@@ -14,5 +14,8 @@
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="user_id" not-null="true" />
         </many-to-one>
+		  <property name="active" type="boolean">
+            <column name="is_active" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>

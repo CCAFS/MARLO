@@ -36,10 +36,10 @@ public class CrpProgram implements java.io.Serializable {
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+  private boolean active;
 
   public CrpProgram() {
   }
-
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -59,6 +59,7 @@ public class CrpProgram implements java.io.Serializable {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -92,8 +93,16 @@ public class CrpProgram implements java.io.Serializable {
     return this.programType;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setCrp(Crp crp) {

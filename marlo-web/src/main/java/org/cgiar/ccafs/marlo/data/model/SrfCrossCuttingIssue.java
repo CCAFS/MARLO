@@ -31,10 +31,10 @@ public class SrfCrossCuttingIssue implements java.io.Serializable {
   private Long id;
   private String name;
   private Set<SrfIdo> srfIdos = new HashSet<SrfIdo>(0);
+  private boolean active;
 
   public SrfCrossCuttingIssue() {
   }
-
 
   public SrfCrossCuttingIssue(String name) {
     this.name = name;
@@ -44,6 +44,7 @@ public class SrfCrossCuttingIssue implements java.io.Serializable {
     this.name = name;
     this.srfIdos = srfIdos;
   }
+
 
   public Long getId() {
     return this.id;
@@ -55,6 +56,14 @@ public class SrfCrossCuttingIssue implements java.io.Serializable {
 
   public Set<SrfIdo> getSrfIdos() {
     return this.srfIdos;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setId(Long id) {

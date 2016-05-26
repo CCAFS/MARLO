@@ -32,6 +32,7 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
   private SrfTargetUnit srfTargetUnit;
   private BigDecimal value;
   private int year;
+  private boolean active;
 
   public SrfSloIndicatorTarget() {
   }
@@ -62,6 +63,14 @@ public class SrfSloIndicatorTarget implements java.io.Serializable {
 
   public int getYear() {
     return this.year;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public void setId(Long id) {
