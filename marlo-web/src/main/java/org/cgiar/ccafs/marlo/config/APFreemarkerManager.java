@@ -22,6 +22,8 @@ import org.apache.struts2.views.freemarker.FreemarkerManager;
 
 
 /**
+ * .
+ * 
  * @author Hernán David Carvajal
  * @author Héctor Fabio Tobón
  * @author Chirstian David Garcia
