@@ -25,5 +25,8 @@ package org.cgiar.ccafs.marlo.security;
 public class Permission {
 
   public static final String FULL_PRIVILEGES = "*"; // path full privileges
+  public static final String CRP_ADMIN_VISIBLE_PRIVILEGES = "crp:{0}:admin:canAcess"; // path full privileges
+  public static final String CRP_ADMIN_EDIT_PRIVILEGES = "crp:{0}:admin:*"; // path full privileges
+
 
 }

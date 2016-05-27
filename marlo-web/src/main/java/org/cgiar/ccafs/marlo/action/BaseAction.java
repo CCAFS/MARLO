@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -70,6 +71,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean add;
   private Map<String, Object> session;
   private HttpServletRequest request;
+  private String basePermission;
 
   // Variables
   private String crpSession;
@@ -82,13 +84,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // User actions
   private boolean isEditable; // If user is able to edit the form.
 
+
   private boolean canEdit; // If user is able to edit the form.
+
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
   private boolean fullEditable; // If user is able to edit all the form.
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   protected APConfig config;
   private Map<String, Object> parameters;
 
@@ -104,7 +108,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   /**
    * This function add a flag (--warn--) to the message in order to give
    * a different style to the success message using javascript once the html is ready.
@@ -115,11 +118,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
+  public boolean canAcessCrpAdmin() {
+    return this.hasPermission(this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession()));
+  }
+
 
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
   }
+
 
   /* Override this method depending of the delete action. */
   public String delete() {
@@ -145,8 +153,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
+  public String generatePermission(String permission, String... params) {
+    return this.getText(permission, params);
+
+  }
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
+  }
+
+
+  public String getBasePermission() {
+    return basePermission;
   }
 
   public String getBaseUrl() {
@@ -165,6 +184,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -189,7 +209,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
-
 
   /**
    * Get the user that is currently saved in the session.
@@ -249,10 +268,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
+
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
@@ -281,14 +300,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
-  public boolean hasPermission(String fieldName) {
-    StringBuffer permissionString = new StringBuffer();
-    permissionString.append(this.getNamespace() + ":");
-    permissionString.append(this.getActionName());
-    permissionString.append(":");
-    permissionString.append(fieldName);
 
-    return securityContext.hasPermission(permissionString.toString());
+  public boolean hasPermission(String fieldName) {
+    if (basePermission == null) {
+      return securityContext.hasPermission(fieldName);
+    } else {
+      return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
+    }
+
   }
 
   /**
@@ -299,7 +318,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
-
   public boolean isCanEdit() {
     return canEdit;
   }
@@ -309,14 +327,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return dataSaved;
   }
 
+
   public boolean isEditable() {
     return isEditable;
   }
 
-
   public boolean isFullEditable() {
     return fullEditable;
   }
+
 
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
@@ -324,7 +343,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   /**
    * Validate if the user is already logged in or not.
@@ -338,6 +356,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isSaveable() {
     return saveable;
   }
@@ -350,20 +369,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
-
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
+
 
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
 
-
   public void setAdd(boolean add) {
     this.add = true;
+  }
+
+
+  public void setBasePermission(String basePermission) {
+    this.basePermission = basePermission;
   }
 
   public void setCancel(boolean cancel) {

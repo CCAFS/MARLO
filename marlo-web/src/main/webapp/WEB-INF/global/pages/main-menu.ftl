@@ -10,12 +10,17 @@
 	         <span class="text">[@s.text name="menu.home" /]</span>
   	      </a>
         </li>
-        
-        [#-- Admin --]
-        <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
+                [#-- Admin --]
+        [#if action.canAcessCrpAdmin() ]
+         <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
           <a href="[@s.url namespace="/${crpSession}" action='adminManagement'/]">[@s.text name="menu.admin" /]
           </a>
         </li>
+        
+        
+        [/#if]
+
+       
         
         [#-- PRE-Planning section 
         <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
