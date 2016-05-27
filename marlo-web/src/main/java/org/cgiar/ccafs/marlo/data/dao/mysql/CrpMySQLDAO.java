@@ -69,6 +69,16 @@ public class CrpMySQLDAO implements CrpDAO {
   }
 
   @Override
+  public Crp findCrpByAcronym(String acronym) {
+    String query = "from " + Crp.class.getName() + " where acronym='" + acronym + "'";
+    List<Crp> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public long save(Crp crp) {
     dao.saveOrUpdate(crp);
     return crp.getId();

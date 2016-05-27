@@ -55,6 +55,11 @@ public class CrpManagerImp implements CrpManager {
   }
 
   @Override
+  public Crp findCrpByAcronym(String acronym) {
+    return crpDAO.findCrpByAcronym(acronym);
+  }
+
+  @Override
   public Crp getCrpById(long crpID) {
 
     return crpDAO.find(crpID);

@@ -42,6 +42,15 @@ public interface CrpUserDAO {
   public boolean existCrpUser(long crpUserID);
 
   /**
+   * This method get the crpUser if the user and crp relation exist.
+   * 
+   * @param userId - The user id.
+   * @param crpId - the crp id.
+   * @return true if the CrpUser exist, false otherwise.
+   */
+  public boolean existCrpUser(long userId, long crpId);
+
+  /**
    * This method gets a crpUser object by a given crpUser identifier.
    * 
    * @param crpUserID is the crpUser identifier.

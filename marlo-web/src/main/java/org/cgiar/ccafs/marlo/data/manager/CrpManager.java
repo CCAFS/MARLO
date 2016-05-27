@@ -53,6 +53,13 @@ public interface CrpManager {
    */
   public List<Crp> findAll();
 
+  /**
+   * This method get a crp by it acronym
+   * 
+   * @param acronym
+   * @return a Crp object or null if the input acronym is invalid.
+   */
+  public Crp findCrpByAcronym(String acronym);
 
   /**
    * This method gets a crp object by a given crp identifier.

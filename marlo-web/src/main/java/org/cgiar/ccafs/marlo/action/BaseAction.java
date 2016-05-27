@@ -172,8 +172,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String userCrp = null;
     if (session != null && !session.isEmpty()) {
       try {
-        userCrp =
-          (String) session.get(APConstants.SESSION_CRP) != null ? (String) session.get(APConstants.SESSION_CRP) : null;
+        Crp crp =
+          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        userCrp = crp.getAcronym();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }

@@ -52,6 +52,11 @@ public class CrpUserManagerImpl implements CrpUserManager {
   }
 
   @Override
+  public boolean existCrpUser(long userId, long crpId) {
+    return crpUserDAO.existCrpUser(userId, crpId);
+  }
+
+  @Override
   public List<CrpUser> findAll() {
 
     return crpUserDAO.findAll();

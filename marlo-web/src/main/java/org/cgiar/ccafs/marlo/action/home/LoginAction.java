@@ -16,7 +16,10 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -52,11 +55,15 @@ public class LoginAction extends BaseAction {
 
   // Managers
   private UserManager userManager;
+  private CrpManager crpManager;
+  private CrpUserManager crpUserManager;
 
   @Inject
-  public LoginAction(APConfig config, UserManager userManager) {
+  public LoginAction(APConfig config, UserManager userManager, CrpManager crpManager, CrpUserManager crpUserManager) {
     super(config);
     this.userManager = userManager;
+    this.crpManager = crpManager;
+    this.crpUserManager = crpUserManager;
   }
 
 
@@ -87,25 +94,36 @@ public class LoginAction extends BaseAction {
 
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
-
-
       User loggedUser = userManager.login(userEmail, user.getPassword());
+
       if (loggedUser != null) {
+        // Obtain the crp selected
+        Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
 
-        // Set the Crp that the user has logged on.
-        System.out.println(this.crp);
-        loggedUser.setLastLogin(new Date());
-        userManager.saveLastLogin(loggedUser);
+        // Validate if the user belongs to the selected crp
+        if (crp != null) {
+          if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
+            loggedUser.setLastLogin(new Date());
+            userManager.saveLastLogin(loggedUser);
+            this.getSession().put(APConstants.SESSION_USER, loggedUser);
+            this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
+          } else {
+            this.addFieldError("loginMessage", this.getText("home.login.invalidUserCrp"));
+            user.setPassword(null);
+            return BaseAction.INPUT;
+          }
+        }
 
-        this.getSession().put(APConstants.SESSION_USER, loggedUser);
-        this.getSession().put(APConstants.SESSION_CRP, this.crp);
-
-        LOG.info("User " + user.getEmail() + " logged in successfully.");
-
+        // Validate if the user already logged in other session.
         if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
           this.addFieldError("loginMessage", this.getText("home.login.duplicated"));
+          this.getSession().clear();
+          SecurityUtils.getSubject().logout();
+          user.setPassword(null);
           return BaseAction.INPUT;
         }
+
+        LOG.info("User " + user.getEmail() + " logged in successfully.");
         /*
          * Save the user url with trying to enter the system to redirect after
          * loged.

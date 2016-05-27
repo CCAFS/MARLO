@@ -58,6 +58,14 @@ public interface CrpDAO {
    */
   public List<Crp> findAll();
 
+  /**
+   * This method find a crp from it acronym
+   * 
+   * @param acronym - the crp acronym
+   * @return a Crp object or null if the Crp does not exist
+   */
+  public Crp findCrpByAcronym(String acronym);
+
 
   /**
    * This method saves the information of the given crp

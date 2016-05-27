@@ -49,6 +49,16 @@ public class CrpUserMySQLDAO implements CrpUserDAO {
   }
 
   @Override
+  public boolean existCrpUser(long userId, long crpId) {
+    String query = "from " + CrpUser.class.getName() + " where user_id=" + userId + " and crp_id=" + crpId;
+    List<CrpUser> crpUser = dao.findAll(query);
+    if (crpUser != null && crpUser.size() > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
   public CrpUser find(long id) {
     return dao.find(CrpUser.class, id);
 

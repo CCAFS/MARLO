@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.security;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
@@ -138,17 +139,16 @@ public class APCustomRealm extends AuthorizingRealm {
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
     SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+    Session session = SecurityUtils.getSubject().getSession();
 
     User user = userManager.getUser((Long) principals.getPrimaryPrincipal());
+    Crp crp = (Crp) session.getAttribute(APConstants.SESSION_CRP);
 
     for (UserRole userRole : user.getUserRoles()) {
       authorizationInfo.addRole(userRole.getRole().getAcronym());
     }
 
-    Session session = SecurityUtils.getSubject().getSession();
-    String logCrp = (String) session.getAttribute(APConstants.SESSION_CRP);
-
-    authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), logCrp));
+    authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), crp.getAcronym()));
     return authorizationInfo;
   }
 

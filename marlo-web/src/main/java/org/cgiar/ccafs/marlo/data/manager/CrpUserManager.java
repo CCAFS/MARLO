@@ -44,6 +44,14 @@ public interface CrpUserManager {
    */
   public boolean existCrpUser(long crpUserID);
 
+  /**
+   * This method get the crpUser if the user and crp relation exist.
+   * 
+   * @param userId is the user id
+   * @param crpId is the crp id
+   * @return true if the CrpUser exists; false otherwise
+   */
+  public boolean existCrpUser(long userId, long crpId);
 
   /**
    * This method gets a list of crpUser that are active
