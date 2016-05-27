@@ -51,8 +51,8 @@
             <div id="title" >MARLO</div>    
             <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
           </div>
-          [#if crpUser??]
-            <img id="crp-image" src="${baseUrl}/images/global/crps/${crpUser}.png" alt="${crpUser}" />
+          [#if crpSession??]
+            <img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />
           [/#if]
         </div> 
       </header>

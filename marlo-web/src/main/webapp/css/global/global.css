@@ -2,7 +2,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);
 
 .mce-widget.mce-tooltip {
-    display: none !important;
+  display: none !important;
 }
 
 table{
@@ -1541,10 +1541,10 @@ nav#mainMenu ul li a.disabled{
 }
 /*************** SECONDARY MENU ***********/
 #secondaryMenu {
-  /* background-color: #FFFFFF; */
+  background-color: #FFFFFF;
   float: left;
   padding: 0px;
-  width: 210px;
+  width: 100%;
   margin-top: 31px;
   font-family: 'Open Sans', sans-serif;
 }
@@ -1564,6 +1564,7 @@ nav#mainMenu ul li a.disabled{
   border-radius: 5px 5px 5px 5px;
   background: #fff;
   box-shadow: 0px 0px 7px rgba(0,0,0,0.1);
+  padding: 0;
 }
 
 #secondaryMenuBar {
@@ -1671,9 +1672,8 @@ color: #949292;
   /* background-image: url("../../images/global/reportingMenuMarker.png"); */
   background-repeat: no-repeat;
   background-position-y: -2px;
-  margin-left: -13px;
-  width: 197px;
-  padding: 0px 0px 0px 13px;
+  /* margin-left: -13px; */
+  /* padding: 0px 0px 0px 13px; */
 }
 
 #secondaryMenu ul li ul li{
@@ -1688,11 +1688,11 @@ color: #949292;
 }
 
 #secondaryMenu ul li ul li {
-  padding: 0;
   border-bottom: 1px solid rgba(219, 219, 219, 0.78);
-  padding: 10px 0 2px 0px;
-  height: 27px;
-  width: 208px;
+  padding: 3px 0 9px 29px;
+  height: 30px;
+  list-style: none;
+  font-size: 0.95em;
 }
 
 #secondaryMenu ul li ul li.submitted a{
@@ -1730,6 +1730,7 @@ color: #949292;
 #secondaryMenu ul li ul {
   /* display:none; */
   /* margin-top: 5px; */
+  padding: 0;
 }
 
 #secondaryMenu a.goBack {
@@ -1781,10 +1782,10 @@ color: #949292;
   color: #FFFFFF;
   font-weight: bold;
   background-color: #47939C;
-  height: 16px;
-  width: 198px;
+  height: 30px;
   border-radius: 1px;
   /* display: none; */
+  margin-bottom: 5px;
 }
 
 #secondaryMenu.BILATERAL > ul > li > p{
@@ -4762,7 +4763,7 @@ ul#deliverablesFilesMessages > li {
 .borderBox, .publication, .caseStudy, .outcome, .output, .midOutcome, .deliverable, .activityPartner, .otherSite {
   border: 1px solid #D1D1D1;
   padding: 20px 15px 19px 15px;
-  margin: 20px 0px 17px 0;
+  /* margin: 20px 0px 17px 0; */
   border-radius: 4px;
   position: relative;
   transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);*

@@ -11,6 +11,12 @@
   	      </a>
         </li>
         
+        [#-- Admin --]
+        <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
+          <a href="[@s.url namespace="/${crpSession}" action='adminManagement'/]">[@s.text name="menu.admin" /]
+          </a>
+        </li>
+        
         [#-- PRE-Planning section 
         <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
           <a href="[@s.url namespace="/pre-planning" action='intro'/]">[@s.text name="menu.preplanning" /]
@@ -33,7 +39,7 @@
         <p class="name">${currentUser.firstName} ${currentUser.lastName}</p>  
         <p class="institution">${currentUser.email}</p>
         <p class="roles">${(securityContext.roles)!}
-         [#if currentUser.liaisonInstitution??][#list currentUser.liaisonInstitution as liaison]${(liaison.acronym)!}[#if liaison_has_next],[/#if] [/#list] [/#if]
+         [#if currentUser.liaisonInstitution??][#list currentUser.liaisonInstitution as liaison]${(liaison.acronym)!}[#if liaison_has_next], [/#if][/#list] [/#if]
         </p>
       </div>
   	[/#if]
