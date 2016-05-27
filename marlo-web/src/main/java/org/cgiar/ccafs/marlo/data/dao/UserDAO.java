@@ -81,4 +81,12 @@ public interface UserDAO {
    */
   public int saveUser(User user);
 
+  /**
+   * This method looks for the active users that contains the
+   * searchValue in its name, last name or email
+   * 
+   * @param searchValue
+   * @return a list of maps with the information of the users found.
+   */
+  public List<User> searchUser(String searchValue);
 }

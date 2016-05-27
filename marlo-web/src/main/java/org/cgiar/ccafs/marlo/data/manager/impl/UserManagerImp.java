@@ -141,4 +141,9 @@ public class UserManagerImp implements UserManager {
     return userDAO.saveUser(user);
   }
 
+  @Override
+  public List<User> searchUser(String searchValue) {
+    return userDAO.searchUser(searchValue);
+  }
+
 }

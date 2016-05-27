@@ -75,4 +75,30 @@ public class UserMySQLDAO implements UserDAO {
     return user.getId().intValue();
   }
 
+  @Override
+  public List<User> searchUser(String searchValue) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("from " + User.class.getName());
+    query.append(" WHERE ");
+    query.append("first_name like '%" + searchValue + "%' ");
+    query.append("OR last_name like '%" + searchValue + "%' ");
+    query.append("OR email like '%" + searchValue + "%' ");
+    query.append("GROUP BY email ");
+    query.append("ORDER BY CASE ");
+    query.append("WHEN email like '" + searchValue + "%' THEN 0 ");
+    query.append("WHEN email like '% %" + searchValue + "% %' THEN 1 ");
+    query.append("WHEN email like '%" + searchValue + "' THEN 2 ");
+    query.append("WHEN last_name like '" + searchValue + "%' THEN 3 ");
+    query.append("WHEN last_name like '% %" + searchValue + "% %' THEN 4 ");
+    query.append("WHEN last_name like '%" + searchValue + "' THEN 5 ");
+    query.append("WHEN first_name like '" + searchValue + "%' THEN 6 ");
+    query.append("WHEN first_name like '% %" + searchValue + "% %' THEN 7 ");
+    query.append("WHEN first_name like '%" + searchValue + "' THEN 8 ");
+    query.append("ELSE 9 ");
+    query.append("END, email, last_name, first_name ");
+
+    return dao.findAll(query.toString());
+  }
+
 }
