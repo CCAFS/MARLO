@@ -101,24 +101,30 @@ public class LoginAction extends BaseAction {
         Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
 
         // Validate if the user belongs to the selected crp
-        if (crp != null) {
+        if (loggedCrp != null) {
           if (crpUserManager.existCrpUser(loggedUser.getId(), loggedCrp.getId())) {
             loggedUser.setLastLogin(new Date());
             userManager.saveLastLogin(loggedUser);
             this.getSession().put(APConstants.SESSION_USER, loggedUser);
             this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
+
+            // Validate if the user already logged in other session.
+            if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
+              this.addFieldError("loginMessage", this.getText("home.login.duplicated"));
+              this.getSession().clear();
+              SecurityUtils.getSubject().logout();
+              user.setPassword(null);
+              return BaseAction.INPUT;
+            }
+
           } else {
             this.addFieldError("loginMessage", this.getText("home.login.invalidUserCrp"));
+            this.setCrpSession(loggedCrp.getAcronym());
             user.setPassword(null);
             return BaseAction.INPUT;
           }
-        }
-
-        // Validate if the user already logged in other session.
-        if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
-          this.addFieldError("loginMessage", this.getText("home.login.duplicated"));
-          this.getSession().clear();
-          SecurityUtils.getSubject().logout();
+        } else {
+          this.addFieldError("loginMessage", this.getText("home.login.selectCrp"));
           user.setPassword(null);
           return BaseAction.INPUT;
         }
