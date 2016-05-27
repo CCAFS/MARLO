@@ -26,12 +26,14 @@
         <h4 class="sectionTitle">Program Management Team</h4>
         <div class="borderBox clearfix">
           [#-- PMU Users List --]
-          <div class="simpleBox">
-           
+          <div class="users-list simpleBox">
+           <ul>
+            
+           </ul>
+           <p class="text-center">There are not users added yet.</p>
           </div>
           [#-- Add Person--]
           <div class="partnerPerson-email userField">
-            <input class="userId" type="hidden" name="{contactName}[{contactIndex}].user" value="{(contact.user.id)!'-1'}" />
             [#if editable][/#if]<div class="searchUser">[@s.text name="form.buttons.searchUser" /]</div>
           </div>
 
@@ -50,5 +52,15 @@
 [#-- Search users Interface --]
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
+
+[#-- PMU User template --]
+<ul style="display:none">
+  <li id="user-template" class="user">
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+    <span class="name">{user.name}</span>
+    <input class="id" type="hidden" name="user.id" value="{user.ïd}"/>
+    <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
+  </li>
+</ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]

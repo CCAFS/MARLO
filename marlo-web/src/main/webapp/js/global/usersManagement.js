@@ -4,9 +4,8 @@ var $elementSelected, $dialogContent, $searchInput;
 var addUser, addUserMessage;
 
 $(document).ready(function() {
-  console.log('usersManagement');
-  /** Initialize */
 
+  /** Initialize */
   $dialogContent = $("#dialog-searchUsers");
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
@@ -172,7 +171,7 @@ $(document).ready(function() {
 
   function getData(query) {
     $.ajax({
-        'url': '../../searchUsers.do',
+        'url': baseURL + '/searchUsers.do',
         'data': {
           q: query
         },
