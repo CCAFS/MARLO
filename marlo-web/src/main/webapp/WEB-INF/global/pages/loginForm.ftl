@@ -20,9 +20,13 @@
       <input type="hidden" id="crp" name="crp" value="${(crpSession)!-1}" />
     </div>
     [#-- Email --]
-    [@customForm.input name="user.email" i18nkey="login.email" required=true /]
+    <div class="form-group">
+      [@customForm.input name="user.email" i18nkey="login.email" required=true /]
+    </div>
     [#-- Password --]
-    [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
+    <div class="form-group">
+      [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
+    </div>
     [#-- Login (Submit button) --]
     <div class="center">[@s.submit key="login.button" name="login" /]</div>
   [/@s.form]

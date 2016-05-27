@@ -5,7 +5,7 @@
       <form class="pure-form">
         [#-- Search Users Form --]
         <div id="search-users" class="accordion">
-          <span class="ui-icon ui-icon-triangle-1-s"></span><h6>[@s.text name="users.searchUsers" /]</h6>
+          <span class="ui-icon ui-icon-triangle-1-s"></span>[@s.text name="users.searchUsers" /]
         </div>
         <div class="accordion-block">
           <div class="search-content clearfix">
@@ -30,7 +30,7 @@
         
         [#-- Create User Form --]    
         <div id="create-user" class="accordion active">
-          <span class="ui-icon ui-icon-triangle-1-e"></span><h6>[@s.text name="users.createUser" /]</h6>
+          <span class="ui-icon ui-icon-triangle-1-e"></span>[@s.text name="users.createUser" /]
         </div>
         <div class="accordion-block create-user clearfix" style="display:none">
           <div class="loading" style="display:none"></div>
@@ -38,14 +38,13 @@
           <div id="" class="tickBox-wrapper fullBlock">
             [@customForm.checkbox name="isCCAFS" value="" i18nkey="users.isCCAFS" /]
             <div class="tickBox-toggle">
-              <br />
               <div class="halfPartBlock">[@customForm.input name="firstName" type="text" i18nkey="users.firstName"/] </div>
               <div class="halfPartBlock">[@customForm.input name="lastName" type="text" i18nkey="users.lastName"/] </div>
             </div>  
           </div> 
           <div class="fullPartBlock">[@customForm.input name="email" type="text" i18nkey="users.email"/] </div> 
           <input id="isActive" value="${isActive?string('1','0')}" type="hidden"/>
-          <div class="button create-button">[@s.text name="users.createUser" /]</div> 
+          <div class="button create-button">[@s.text name="users.createUser" /]</div>
         </div> 
         
         <!-- Allow form submission with keyboard without duplicating the dialog button -->

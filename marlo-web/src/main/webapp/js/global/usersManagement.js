@@ -9,10 +9,9 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 400,
+      height: 420,
       width: 600,
       modal: true,
-
       buttons: {
         Cancel: function() {
           $(this).dialog("close");
@@ -142,6 +141,7 @@ $(document).ready(function() {
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
+  /* Particular function that can be replaced */
   function addUser(composedName,userId) {
     $elementSelected.find("input.userName").val(composedName).addClass('animated flash');
     $elementSelected.find("input.userId").val(userId);
@@ -170,8 +170,9 @@ $(document).ready(function() {
   }
 
   function getData(query) {
+    var tempURL = 'http://davinci.ciat.cgiar.org:8080/test/searchUsers.do' // '../../searchUsers.do'
     $.ajax({
-        'url': '../../searchUsers.do',
+        'url': tempURL,
         'data': {
           q: query
         },

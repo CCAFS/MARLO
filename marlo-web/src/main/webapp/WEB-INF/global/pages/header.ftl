@@ -37,6 +37,7 @@
     
     [#-- Second, import global javascripts and templates. --]
     <link rel="stylesheet" type="text/css" href="${baseUrl}/css/global/global.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/css/global/jquery-ui.custom.css" />
     
     [#-- Import the custom CSS --]
     [#if customCSS??][#list customCSS as css]<link rel="stylesheet" type="text/css" href="${css}" />[/#list][/#if] 
@@ -54,7 +55,16 @@
           [#if crpSession??]
             <img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />
           [/#if]
-        </div> 
+        </div>
+        [#if !config.production]
+          <div class="debugPanel" style="display:none">
+            <strong>Debug Panel</strong>
+            <ul class="list-unstyled">
+              <li>Editable: ${editable?string}</li>
+              <li>canEdit: ${canEdit?string}</li>
+            </ul> 
+          </div>
+          [/#if]
       </header>
     [/#if]
     <!-- ${actionName} Content -->
