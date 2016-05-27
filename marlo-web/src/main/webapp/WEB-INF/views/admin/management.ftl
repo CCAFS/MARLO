@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Management" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/admin/management.js", "${baseUrl}/js/global/usersManagement.js"] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
 
@@ -9,7 +9,6 @@
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
   {"label":"management", "nameSpace":"", "action":""}
 ]/]
-
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
