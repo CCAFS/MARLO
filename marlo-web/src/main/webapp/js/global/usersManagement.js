@@ -203,14 +203,6 @@ $(document).ready(function() {
         }
     });
 
-    /* JUST FOR TESTING ... PLEASE DELETE */
-    $dialogContent.find(".search-loader").show();
-    $dialogContent.find(".panel-body ul").empty();
-    var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-    $item.find('.name').html(escapeHtml('PEPITOPEREZ'));
-    $item.find('.contactId').html('1');
-    $dialogContent.find(".panel-body ul").append($item);
-    $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
 });

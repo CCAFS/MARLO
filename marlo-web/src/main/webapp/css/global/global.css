@@ -11,10 +11,11 @@ table{
 
 .container {
   position: relative;
+  /*width: 1100px;*/
 }
 
 a,a:active,a:visited {
-  color: #1DA5CE;
+  /* color: #1DA5CE; */
 }
 a:hover {
   color: #A9A9A9;
@@ -2183,9 +2184,13 @@ p.projectSubmitted {
 }
 
 .searchUser {
-  padding: 2px 6px 6px 0;
+  
+}
+
+.button-blue{
+  padding: 5px 8px 5px 8px;
   text-align: center;
-  background: #668FDA;
+  background: #668fda;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
@@ -5174,11 +5179,15 @@ table.evaluationRank thead th{
   background: #f5f5f5;
   padding: 6px 18px;
   margin-bottom: 4px;
+  border-radius: 2px;
+  border: 1px dashed #e2e0e0;
 }
 
 .users-list ul li .glyphicon-remove{
-  color: #E53935;
-  cursor: pointer;
+  
+color: #E53935;
+  
+cursor: pointer;
 }
 
 

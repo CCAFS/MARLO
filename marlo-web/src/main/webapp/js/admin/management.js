@@ -13,6 +13,7 @@ function init() {
     $li.find('.name').html(escapeHtml(composedName));
     $li.find('.id').val(userId);
     $usersList.find("ul").append($li);
+    $li.show('slow');
     checkItems();
     dialog.dialog("close");
   }
@@ -21,6 +22,14 @@ function init() {
 
 function attachEvents() {
   $('.glyphicon-remove').on('click', removeUser);
+
+  $('.addFlagship').on('click', addItem);
+}
+
+function addItem() {
+  var $parent = $(this).parents('.row');
+  var itemAcronym = $('#acronym-input').val();
+  var itemName = $('#acronym-name').val();
 }
 
 function removeUser() {
