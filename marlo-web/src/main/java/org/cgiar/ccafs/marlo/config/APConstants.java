@@ -34,5 +34,12 @@ public final class APConstants {
   public static final String CUSTOM_FILE = "global";
 
 
+  // Query parameter
+  public static final String QUERY_PARAMETER = "q";
+
+  // Outlook institutional email
+  public static final String OUTLOOK_EMAIL = "cgiar.org";
+
+
 }
 

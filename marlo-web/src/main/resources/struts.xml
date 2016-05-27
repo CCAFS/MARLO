@@ -86,5 +86,6 @@
 
 	<include file="struts-home.xml" />
 	<include file="struts-admin.xml" />
+	<include file="struts-json.xml" />
 
 </struts>

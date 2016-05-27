@@ -91,4 +91,13 @@ public interface UserManager {
    * @return the id of the user id that was created, 0 if the user was updated and -1 if some error occurred.
    */
   public int saveUser(User user, User modifiedBy);
+
+  /**
+   * This method looks for the active users that contains the
+   * searchValue in its name, last name or email
+   * 
+   * @param searchValue
+   * @return the list of users that match the search parameter or an empty list.
+   */
+  public List<User> searchUser(String searchValue);
 }

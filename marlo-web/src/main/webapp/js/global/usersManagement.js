@@ -1,8 +1,10 @@
 var dialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
-$(document).ready(function() {
+var addUser, addUserMessage;
 
+$(document).ready(function() {
+  console.log('usersManagement');
   /** Initialize */
 
   $dialogContent = $("#dialog-searchUsers");
@@ -141,14 +143,13 @@ $(document).ready(function() {
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
-  /* Particular function that can be replaced */
-  function addUser(composedName,userId) {
+  addUser = function(composedName,userId) {
     $elementSelected.find("input.userName").val(composedName).addClass('animated flash');
     $elementSelected.find("input.userId").val(userId);
     dialog.dialog("close");
   }
 
-  function addUserMessage(message) {
+  addUserMessage = function(message) {
     $elementSelected.parent().find('.username-message').remove();
     $elementSelected.after("<p class='username-message note animated flipInX'>" + message + "</p>");
   }
@@ -170,9 +171,8 @@ $(document).ready(function() {
   }
 
   function getData(query) {
-    var tempURL = 'http://davinci.ciat.cgiar.org:8080/test/searchUsers.do' // '../../searchUsers.do'
     $.ajax({
-        'url': tempURL,
+        'url': '../../searchUsers.do',
         'data': {
           q: query
         },
@@ -204,6 +204,14 @@ $(document).ready(function() {
         }
     });
 
+    /* JUST FOR TESTING ... PLEASE DELETE */
+    $dialogContent.find(".search-loader").show();
+    $dialogContent.find(".panel-body ul").empty();
+    var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
+    $item.find('.name').html(escapeHtml('PEPITOPEREZ'));
+    $item.find('.contactId').html('1');
+    $dialogContent.find(".panel-body ul").append($item);
+    $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
 });
