@@ -182,13 +182,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
     } else {
-      String actionName = ActionContext.getContext().getName();
+      String actionName = this.getActionName();
       if (actionName.split("/").length > 1) {
         this.crpSession = actionName.split("/")[0];
       }
     }
     return this.crpSession;
   }
+
 
   /**
    * Get the user that is currently saved in the session.
@@ -213,6 +214,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Override
   public Locale getLocale() {
     return Locale.ENGLISH;
+  }
+
+  public String getNamespace() {
+    return ServletActionContext.getActionMapping().getNamespace();
   }
 
   /**
@@ -244,10 +249,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
-
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
+
 
   public Map<String, Object> getSession() {
     return session;
@@ -274,6 +279,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return version;
+  }
+
+  public boolean hasPermission(String fieldName) {
+    StringBuffer permissionString = new StringBuffer();
+    permissionString.append(this.getNamespace() + ":");
+    permissionString.append(this.getActionName());
+    permissionString.append(":");
+    permissionString.append(fieldName);
+
+    return securityContext.hasPermission(permissionString.toString());
   }
 
   /**
