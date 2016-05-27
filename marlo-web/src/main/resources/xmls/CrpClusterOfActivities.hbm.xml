@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated May 26, 2016 9:42:29 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" table="crp_cluster_of_activities" catalog="ccafs_marlo" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" table="crp_cluster_of_activities"  optimistic-lock="version">
         <id name="id" type="string">
             <column name="id" length="50" />
             <generator class="assigned" />
