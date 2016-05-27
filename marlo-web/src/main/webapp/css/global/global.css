@@ -5163,3 +5163,22 @@ table.evaluationRank thead th{
   top: 0;
   right: 0;
 }
+
+/* CRP ADMIN - Management*/
+.users-list ul {
+  margin: 0;
+  padding: 0;
+}
+.users-list ul li{
+  list-style: none;
+  background: #f5f5f5;
+  padding: 6px 18px;
+  margin-bottom: 4px;
+}
+
+.users-list ul li .glyphicon-remove{
+  color: #E53935;
+  cursor: pointer;
+}
+
+
