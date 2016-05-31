@@ -1,61 +1,93 @@
 $(document).ready(init);
-/* Initializing variables */
-var $usersList;
 
 function init() {
-  /* Declaring variables */
-  $usersList = $(".users-list");
 
+  /* Declaring Events */
   attachEvents();
 
-  addUser = function(composedName,userId) {
-    var $li = $("#user-template").clone(true).removeAttr("id");
-    $li.find('.name').html(escapeHtml(composedName));
-    $li.find('.id').val(userId);
-    $usersList.find("ul").append($li);
-    $li.show('slow');
-    checkItems();
-    dialog.dialog("close");
-  }
+  /* Override function from userManagement.js */
+  addUser = addUserItem;
 
 }
 
 function attachEvents() {
-  $('.glyphicon-remove').on('click', removeUser);
-  $('.addFlagship').on('click', addItem);
-}
 
-function addItem() {
-  var $parent = $(this).parents('.row');
-  var itemAcronym = $('#acronym-input').val();
-  var itemName = $('#acronym-name').val();
-}
+  // Remove an item
+  $('.glyphicon-remove').on('click', function() {
+    var $parent = $(this).parent();
+    var $block = $parent.parent().parent();
+    $parent.hide(function() {
+      $parent.remove();
+      checkItems($block);
+      updateUsersIndex($block);
+      updateProgramIndex($block)
+    });
+  });
 
-function removeUser() {
-  var $parent = $(this).parent();
-  $parent.hide(function() {
-    $parent.remove();
-    checkItems();
+  $('.addProgram').on('click', function() {
+    addProgram($(this));
   });
 }
 
-function checkItems() {
-  updateUserMessage();
-  updateIndexses();
+function addUserItem(composedName,userId) {
+  var $usersList = $(".users.items-list");
+  var $li = $("#user-template").clone(true).removeAttr("id");
+  $li.find('.name').html(escapeHtml(composedName));
+  $li.find('.id').val(userId);
+  $usersList.find("ul").append($li);
+  $li.show('slow');
+  checkItems($usersList);
+  updateUsersIndex($usersList);
+  dialog.dialog("close");
 }
 
-function updateUserMessage() {
-  var items = $usersList.find('li').length;
+function addProgram(element) {
+  var $parent = $(element).parents('.program-block')
+  var $programList = $parent.find(".items-list");
+  var $li = $("#program-template").clone(true).removeAttr("id");
+  var item = {
+      acronym: $parent.find('.acronym-input').val(),
+      name: $parent.find('.name-input').val(),
+      type: $parent.find('.type-input').html(),
+      composedName: function() {
+        return this.acronym + ' - ' + this.name;
+      }
+  }
+  console.log(item);
+  $li.find('.composedName').html(item.composedName());
+  $li.find('.acronym').val(item.acronym);
+  $li.find('.name').val(item.name);
+  $li.find('.type').val(item.type);
+  $programList.find("ul").append($li);
+  $li.show('slow');
+
+  $parent.find('input:text').val('');
+  checkItems($programList);
+  updateProgramIndex($programList)
+}
+
+function checkItems(block) {
+  var items = $(block).find('li').length;
   if(items == 0) {
-    $usersList.find('p').fadeIn();
+    $(block).find('p').fadeIn();
   } else {
-    $usersList.find('p').fadeOut();
+    $(block).find('p').fadeOut();
   }
 }
 
-function updateIndexses() {
-  $usersList.find('li').each(function(i,item) {
-    var customName = 'programManagmentTeam[' + i + ']'
+function updateUsersIndex(list) {
+  $(list).find('li').each(function(i,item) {
+    var customName = 'programManagmentTeam[' + i + ']';
+    $(item).find('.id').attr('name', customName + '.id');
+  });
+}
+
+function updateProgramIndex(list) {
+  $(list).find('li').each(function(i,item) {
+    var customName = 'program[' + i + ']';
+    $(item).find('.acronym').attr('name', customName + '.acronym');
+    $(item).find('.name').attr('name', customName + '.name');
+    $(item).find('.type').attr('name', customName + '.type');
     $(item).find('.id').attr('name', customName + '.id');
   });
 }

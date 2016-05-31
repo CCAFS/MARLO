@@ -5170,11 +5170,11 @@ table.evaluationRank thead th{
 }
 
 /* CRP ADMIN - Management*/
-.users-list ul {
+.items-list ul {
   margin: 0;
   padding: 0;
 }
-.users-list ul li{
+.items-list ul li{
   list-style: none;
   background: #f5f5f5;
   padding: 6px 18px;
@@ -5183,11 +5183,9 @@ table.evaluationRank thead th{
   border: 1px dashed #e2e0e0;
 }
 
-.users-list ul li .glyphicon-remove{
-  
-color: #E53935;
-  
-cursor: pointer;
+.items-list ul li .glyphicon-remove{
+  color: #E53935;
+  cursor: pointer;
 }
 
 
