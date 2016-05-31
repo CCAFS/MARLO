@@ -12,9 +12,6 @@
 
 <section class="marlo-content">
   <div class="container">
-    [#include "/WEB-INF/global/pages/breadCrumb.ftl" /]
-  </div>
-  <div class="container">
     [#-- What do you want to do --]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">

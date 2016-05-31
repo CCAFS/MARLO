@@ -14,9 +14,6 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
-  <div class="container">
-    [#include "/WEB-INF/global/pages/breadCrumb.ftl" /]
-  </div>
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
