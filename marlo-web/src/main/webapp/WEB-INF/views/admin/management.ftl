@@ -23,6 +23,8 @@
         [#include "/WEB-INF/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
+        [@s.form action=actionName enctype="multipart/form-data" ]  
+        
         <h4 class="sectionTitle">Program Management Team</h4>
         <div class="borderBox clearfix">
           [#-- PMU Users List --]
@@ -53,6 +55,10 @@
         
         <h4 class="sectionTitle">Regional program Managers</h4>
         <div class="borderBox">Content</div>
+
+        [@s.submit type="button" name="save" cssClass="btn btn-success"][@s.text name="form.buttons.save" /][/@s.submit]
+        
+        [/@s.form]
       </div>
     </div>
   </div>
