@@ -51,6 +51,10 @@
   </div>
 </nav> 
 
+${actionMessages}
+
+${errorMessages}
+
 <section id="generalMessages">
   [#-- Messages are going to show using notify plugin (see global.js) --]
   <ul id="messages" style="display: none;">

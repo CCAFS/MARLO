@@ -127,6 +127,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
+
       return INPUT;
     } else
 
