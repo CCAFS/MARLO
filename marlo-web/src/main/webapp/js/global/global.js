@@ -41,7 +41,7 @@ $(document).ready(function() {
   }
 
   function showNotificationMessages() {
-    $('#generalMessages #messages').children("li").each(function(index) {
+    $('#generalMessages .messages').children("li").each(function(index) {
       // Validate if the notification is a warning checking if the text contains --warn--
       var message = $(this).html();
       var messageType;
@@ -51,6 +51,7 @@ $(document).ready(function() {
       } else {
         messageType = $(this).attr("class");
       }
+      
       $('#generalMessages').noty({
           theme: 'relax',
           layout: 'top',
