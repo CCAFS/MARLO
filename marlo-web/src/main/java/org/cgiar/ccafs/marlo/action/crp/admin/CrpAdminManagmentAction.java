@@ -43,7 +43,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private Crp loggedCrp;
   private Role rolePmu;
+
   private long pmuRol;
+
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -56,9 +58,12 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public Role getRolePmu() {
+    return rolePmu;
   }
 
 
@@ -119,8 +124,13 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setRolePmu(Role rolePmu) {
+    this.rolePmu = rolePmu;
   }
 
 
