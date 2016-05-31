@@ -383,8 +383,8 @@ input[type="submit"], button, .addButton {
   background-color: #2BA6CB;
   color: #fff;
   border: 0;
-  padding: 4px 20px 4px 20px;
-  font-weight: bold;
+  padding: 5px 26px;
+  /* font-weight: bold; */
   border-bottom: 3px solid #1E94B8;
   border-radius: 2px;
 }
@@ -1616,13 +1616,17 @@ a.currentReportingSection li, a.currentSection li {
   margin-bottom: 5px;
   list-style: none;
   font-size: 0.95em;
-  border: 1px solid #f5f5f5;
+  border: 1px solid #e8e7e7;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
   /* background-image: url("../../images/global/list-icon.png"); */
   /* background-repeat: no-repeat; */
   /* background-size: 11px; */
   /* background-position: 9px 45%; */
   background: #fff;
+}
+
+#secondaryMenu ul li ul li.disabled{
+  opacity : 0.5;
 }
 
 #secondaryMenu ul li ul li.submitted a{
@@ -1865,6 +1869,14 @@ h3.contentSubTitle {
   margin-top: 30px;
 }
 
+.sectionSubTitle {
+  font-family: 'Open Sans', sans-serif;
+  border-bottom: 1px solid #95a5ce;
+  color: #95a5ce;
+  padding-bottom: 3px;
+}
+
+
 h1.simpleTitle {
   border: none;
 }
@@ -1999,8 +2011,8 @@ h1.simpleTitle span {
 .buttons {
   display: block;
   text-align: right;
-  margin: 17px 0 10px 0;
-  float: right;
+  margin: 30px 0 10px 0;
+  /* float: right; */
 }
 
 .borderBox .buttons, .simpleBox .buttons{
@@ -2195,6 +2207,16 @@ p.projectSubmitted {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.button-green{
+  padding: 5px 8px 5px 8px;
+  text-align: center;
+  /* background: #668fda; */
+  color: #8ea786;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 
 .fullPartBlock .searchUser{
   bottom: 0.65em; 

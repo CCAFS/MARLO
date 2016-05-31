@@ -1,4 +1,5 @@
 [#ftl]
+[#if breadCrumb??]
 <ol class="breadcrumb">
   [#if breadCrumb?has_content] 
     [#list breadCrumb as item]
@@ -15,9 +16,11 @@
       </li> 
     [/#list]
   [/#if]
+  [#if action.getUsersOnline()??]
   <div class="usersInfo">
     [#assign users = action.getUsersOnline()]
-    
     <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.firstName)!} ${(us.lastName)!}[/#list]">Users Online : ${online}</button>
   </div>
+  [/#if]
 </ol>
+[/#if]

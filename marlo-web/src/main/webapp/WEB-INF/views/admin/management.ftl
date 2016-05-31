@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Management" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = [] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
@@ -72,7 +72,7 @@
            </ul>
            <p class="text-center">There are not Flagships added yet.</p>
           </div>
-          [#-- Add Region--] 
+          [#-- Add Region--]
           <div class="row">
             <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
             <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Region name"></div>
@@ -83,7 +83,9 @@
           </div>
         </div>
 
-        [@s.submit type="button" name="save" cssClass="btn btn-success"][@s.text name="form.buttons.save" /][/@s.submit]
+        <div class="buttons">
+          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+        </div>
         
         [/@s.form]
       </div>
