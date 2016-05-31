@@ -27,13 +27,13 @@
           [#-- PMU Users List --]
           <div class="users items-list simpleBox">
             <ul>
-            [#if rolePmu.userRoles?has_content]
-              [#list rolePmu.userRoles as item]
-                [@userItem element=item index=item_index name="rolePmu.userRoles" /]
+            [#if loggedCrp.programManagmenTeam?has_content]
+              [#list loggedCrp.programManagmenTeam as item]
+                [@userItem element=item index=item_index name="loggedCrp.programManagmenTeam" /]
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center" style="display:${(programManagmentTeam?has_content)?string('none','block')}">There are not users added yet.</p>
+            <p class="text-center" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">There are not users added yet.</p>
           </div>
           [#-- Add Person--] 
           <div class="searchUser button-blue pull-right"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
@@ -110,9 +110,10 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-    <span class="name"> ${(element.user.composedName?html)!'Unknown user'}</span>
-    <input class="id" type="hidden" name="${customName}.user" value="${(element.user)!}"/>
-     <input class="id" type="hidden" name="${customName}.role" value="${(element.role)!}"/>
+    <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+     <input class="role" type="hidden" name="${customName}.role.id" value="${pmuRol}"/>
+          <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
   </li>
 [/#macro]

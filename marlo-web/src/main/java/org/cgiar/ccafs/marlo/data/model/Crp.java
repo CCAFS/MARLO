@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,9 +37,12 @@ public class Crp implements java.io.Serializable {
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
   private boolean active;
+  private List<UserRole> programManagmenTeam;
+
 
   public Crp() {
   }
+
 
   public Crp(String name) {
     this.name = name;
@@ -52,11 +56,9 @@ public class Crp implements java.io.Serializable {
     this.crpParameters = crpParameters;
   }
 
-
   public String getAcronym() {
     return acronym;
   }
-
 
   public Set<CrpParameter> getCrpParameters() {
     return this.crpParameters;
@@ -93,9 +95,15 @@ public class Crp implements java.io.Serializable {
   }
 
 
+  public List<UserRole> getProgramManagmenTeam() {
+    return programManagmenTeam;
+  }
+
+
   public Set<Role> getRoles() {
     return this.roles;
   }
+
 
   public boolean isActive() {
     return active;
@@ -135,6 +143,10 @@ public class Crp implements java.io.Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setProgramManagmenTeam(List<UserRole> programManagmenTeam) {
+    this.programManagmenTeam = programManagmenTeam;
   }
 
   public void setRoles(Set<Role> roles) {
