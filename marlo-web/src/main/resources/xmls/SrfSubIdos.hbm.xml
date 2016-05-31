@@ -8,19 +8,19 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfIdo" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select">
+        <many-to-one name="srfIdo" class="org.cgiar.ccafs.marlo.data.model.SrfIdo" fetch="select" >
             <column name="ido_id" not-null="true" />
         </many-to-one>
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />
         </property>
-        <set name="crpOutcomeSubIdos" table="crp_outcome_sub_idos" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos" inverse="true"  fetch="select" >
             <key>
                 <column name="srf_sub_ido_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo" />
         </set>
-        <set name="crpSubIdosContributions" table="crp_sub_idos_contributions" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpSubIdosContributions" table="crp_sub_idos_contributions" inverse="true"  fetch="select" >
             <key>
                 <column name="srf_sub_ido_id" not-null="true" />
             </key>

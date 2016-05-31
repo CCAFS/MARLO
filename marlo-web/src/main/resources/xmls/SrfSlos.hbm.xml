@@ -14,13 +14,13 @@
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />
         </property>
-        <set name="srfSloIndicators" table="srf_slo_indicators" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSloIndicators" table="srf_slo_indicators" inverse="true"  fetch="select" >
             <key>
                 <column name="slo_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicator" />
         </set>
-        <set name="srfSloIdos" table="srf_slo_idos" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSloIdos" table="srf_slo_idos" inverse="true"  fetch="select" >
             <key>
                 <column name="slo_id" not-null="true" />
             </key>

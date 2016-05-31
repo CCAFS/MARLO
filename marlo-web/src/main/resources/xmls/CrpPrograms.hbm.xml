@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
+        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select" >
             <column name="crp_id" not-null="true" />
         </many-to-one>
         <property name="name" type="string">
@@ -20,19 +20,19 @@
         <property name="programType" type="int">
             <column name="program_type" not-null="true" />
         </property>
-        <set name="crpClusterOfActivities" table="crp_cluster_of_activities" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpClusterOfActivities" table="crp_cluster_of_activities" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_program_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" />
         </set>
-        <set name="crpProgramLeaders" table="crp_program_leaders" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpProgramLeaders" table="crp_program_leaders" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_program_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramLeader" />
         </set>
-        <set name="crpProgramOutcomes" table="crp_program_outcomes" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpProgramOutcomes" table="crp_program_outcomes" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_program_id" not-null="true" />
             </key>

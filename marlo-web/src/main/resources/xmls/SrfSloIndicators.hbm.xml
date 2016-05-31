@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfSlo" class="org.cgiar.ccafs.marlo.data.model.SrfSlo" fetch="select">
+        <many-to-one name="srfSlo" class="org.cgiar.ccafs.marlo.data.model.SrfSlo" fetch="select" >
             <column name="slo_id" not-null="true" />
         </many-to-one>
         <property name="title" type="string">
@@ -17,7 +17,7 @@
         <property name="description" type="string">
             <column name="description" length="65535" not-null="true" />
         </property>
-        <set name="srfSloIndicatorTargets" table="srf_slo_indicator_targets" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSloIndicatorTargets" table="srf_slo_indicator_targets" inverse="true"  fetch="select" >
             <key>
                 <column name="indicador_id" not-null="true" />
             </key>

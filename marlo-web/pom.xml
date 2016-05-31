@@ -24,9 +24,8 @@
 		<poi.version>3.13</poi.version>
 		<flyway.version>4.0.1</flyway.version>
 		<org.json.version>20160212</org.json.version>
-		<hibbernate-core-version>5.1.0.Final</hibbernate-core-version>
+		<hibbernate-core-version>3.6.3.Final</hibbernate-core-version>
 		<jta-version>1.1</jta-version>
-		<hibernate-c3p0-version>5.0.6.Final</hibernate-c3p0-version>
 		<commons-logging-version>1.2</commons-logging-version>
 		<xml-apis-version>1.4.01</xml-apis-version>
 		<apache-shiro-version>1.2.4</apache-shiro-version>
@@ -203,24 +202,17 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibbernate-core-version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.javassist</groupId>
-					<artifactId>javassist</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
+		<dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.12.1.GA</version>
+        </dependency>
 		<!-- Dependency needed for Hibernate -->
 		<dependency>
 			<groupId>javax.transaction</groupId>
 			<artifactId>jta</artifactId>
 			<version>${jta-version}</version>
-		</dependency>
-		<!-- C3P0 Connection Pool for Hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>${hibernate-c3p0-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>

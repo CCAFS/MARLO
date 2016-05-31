@@ -24,7 +24,10 @@ import org.cgiar.ccafs.marlo.utils.SendMail;
 import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
@@ -52,9 +55,10 @@ public class ManageUsersAction extends BaseAction {
   private SendMail sendMail;
 
   private String queryParameter;
-  private List<User> users;
+  private List<Map<String, Object>> users;
   private User newUser;
   private String message;
+
 
   @Inject
   public ManageUsersAction(APConfig config, UserManager userManager, SendMail sendMail) {
@@ -62,6 +66,7 @@ public class ManageUsersAction extends BaseAction {
     this.userManager = userManager;
     this.sendMail = sendMail;
   }
+
 
   /**
    * Add a new user into the database;
@@ -157,9 +162,11 @@ public class ManageUsersAction extends BaseAction {
     return this.newUser;
   }
 
-  public List<User> getUsers() {
+
+  public List<Map<String, Object>> getUsers() {
     return users;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -178,6 +185,7 @@ public class ManageUsersAction extends BaseAction {
 
   }
 
+
   /**
    * Search a user in the database
    * 
@@ -185,10 +193,22 @@ public class ManageUsersAction extends BaseAction {
    * @throws Exception if some error appear.
    */
   public String search() throws Exception {
-    users = userManager.searchUser(queryParameter);
+    List<User> users = userManager.searchUser(queryParameter);
+    this.users = new ArrayList<>();
+    for (User user : users) {
+      Map<String, Object> userMap = new HashMap<>();
+      userMap.put("id", user.getId());
+      userMap.put("composedName", user.getComposedName());
+      this.users.add(userMap);
+    }
 
     LOG.info("The search of users by '{}' was made successfully.", queryParameter);
     return SUCCESS;
+  }
+
+
+  public void setUsers(List<Map<String, Object>> users) {
+    this.users = users;
   }
 
   /**

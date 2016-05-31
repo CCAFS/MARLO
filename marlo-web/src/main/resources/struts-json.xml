@@ -4,7 +4,7 @@
 	<package name="json" namespace="/" extends="json-default">
 
 		<action name="searchUsers"
-			class="org.cgiar.ccafs.ap.action.json.global.ManageUsersAction"
+			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
 			method="search">
 			<result type="json">
 				<param name="noCache">true</param>
@@ -13,7 +13,7 @@
 		</action>
 
 		<action name="createUser"
-			class="org.cgiar.ccafs.ap.action.json.global.ManageUsersAction"
+			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
 			method="create">
 			<result type="json">
 				<param name="noCache">true</param>

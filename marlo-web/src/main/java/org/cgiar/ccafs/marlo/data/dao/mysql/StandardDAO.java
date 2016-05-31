@@ -24,7 +24,6 @@ import java.util.Map;
 
 import com.google.inject.Singleton;
 import org.apache.struts2.ServletActionContext;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -44,14 +43,6 @@ public class StandardDAO {
   public StandardDAO() {
 
 
-  }
-
-  /**
-   * This method closes the session to the database.
-   */
-  private void closeSession(Session session) {
-    // Close caches and connection pools
-    session.close();
   }
 
   /**
@@ -86,7 +77,6 @@ public class StandardDAO {
       return false;
     } finally {
       session.flush(); // Flushing the changes always.
-      this.closeSession(session);
     }
   }
 
@@ -105,7 +95,7 @@ public class StandardDAO {
       session = this.openSession();
 
       tx = this.initTransaction(session);
-      obj = session.get(clazz, (Serializable) id);
+      obj = (T) session.get(clazz, (Serializable) id);
       this.commitTransaction(tx);
     } catch (Exception e) {
       if (tx != null) {
@@ -114,7 +104,6 @@ public class StandardDAO {
       e.printStackTrace();
     } finally {
       session.flush(); // Flushing the changes always.
-      this.closeSession(session);
     }
     return obj;
   }
@@ -152,7 +141,6 @@ public class StandardDAO {
     } finally {
       if (session.isOpen()) {
         session.flush(); // Flushing the changes always.
-        this.closeSession(session);
       }
 
     }
@@ -184,7 +172,6 @@ public class StandardDAO {
     } finally {
       if (session.isOpen()) {
         session.flush(); // Flushing the changes always.
-        this.closeSession(session);
       }
     }
   }
@@ -209,7 +196,6 @@ public class StandardDAO {
       return null;
     } finally {
       session.flush(); // Flushing the changes always.
-      this.closeSession(session);
     }
   }
 
@@ -241,7 +227,6 @@ public class StandardDAO {
     } finally {
       if (session.isOpen()) {
         session.flush(); // Flushing the changes always.
-        this.closeSession(session);
       }
     }
   }
@@ -262,18 +247,11 @@ public class StandardDAO {
    * @return a Session object.
    */
   private Session openSession() {
-
-
     if (sessionFactory == null) {
       this.sessionFactory =
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
     }
-    Session session = null;
-    session = sessionFactory.openSession();
-    // Calling flush when committing change.
-    session.setFlushMode(FlushMode.COMMIT);
-    return session;
-
+    return sessionFactory.openSession();
   }
 
   /**
@@ -306,20 +284,12 @@ public class StandardDAO {
       if (tx != null) {
         this.rollBackTransaction(tx);
       }
-
-
       session.clear();
       if (e instanceof org.hibernate.exception.ConstraintViolationException) {
         Transaction tx1 = session.beginTransaction();
-
-
         tx1.commit();
-
       }
       return false;
-    } finally {
-
-      this.closeSession(session);
     }
   }
 

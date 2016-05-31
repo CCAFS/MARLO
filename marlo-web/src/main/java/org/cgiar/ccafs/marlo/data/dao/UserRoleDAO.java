@@ -58,6 +58,14 @@ public interface UserRoleDAO {
 
 
   /**
+   * This method gets a list of userRoles belongs of the user
+   * 
+   * @param userId - the user id
+   * @return List of UserRoles or null if the user is invalid or not have roles.
+   */
+  public List<UserRole> getUserRolesByUserId(long userId);
+
+  /**
    * This method saves the information of the given userRole
    * 
    * @param userRole - is the userRole object with the new information to be added/updated.

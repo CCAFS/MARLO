@@ -65,6 +65,11 @@ public class UserRoleManagerImpl implements UserRoleManager {
   }
 
   @Override
+  public List<UserRole> getUserRolesByUserId(Long userId) {
+    return userRoleDAO.getUserRolesByUserId(userId);
+  }
+
+  @Override
   public long saveUserRole(UserRole userRole) {
 
     return userRoleDAO.save(userRole);

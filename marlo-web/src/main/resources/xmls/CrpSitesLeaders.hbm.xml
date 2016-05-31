@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crpsSiteIntegration" class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" fetch="select">
+        <many-to-one name="crpsSiteIntegration" class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" fetch="select" >
             <column name="crp_site_integration" not-null="true" />
         </many-to-one>
-        <many-to-one name="users" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+        <many-to-one name="users" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" >
             <column name="user_id" not-null="true" />
         </many-to-one>
 		  <property name="active" type="boolean">

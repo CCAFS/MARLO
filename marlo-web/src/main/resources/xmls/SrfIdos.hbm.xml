@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="srfCrossCuttingIssue" class="org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue" fetch="select">
+        <many-to-one name="srfCrossCuttingIssue" class="org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue" fetch="select" >
             <column name="cross_cutting_issue" />
         </many-to-one>
         <property name="description" type="string">
@@ -17,13 +17,13 @@
         <property name="isCrossCutting" type="boolean">
             <column name="is_cross_cutting" not-null="true" />
         </property>
-        <set name="srfSloIdos" table="srf_slo_idos" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSloIdos" table="srf_slo_idos" inverse="true"  fetch="select" >
             <key>
                 <column name="ido_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.SrfSloIdo" />
         </set>
-        <set name="srfSubIdos" table="srf_sub_idos" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSubIdos" table="srf_sub_idos" inverse="true"  fetch="select" >
             <key>
                 <column name="ido_id" not-null="true" />
             </key>

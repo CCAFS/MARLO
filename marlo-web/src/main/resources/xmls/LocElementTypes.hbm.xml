@@ -8,19 +8,19 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="locElementType" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+        <many-to-one name="locElementType" class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select" >
             <column name="parent_id" />
         </many-to-one>
         <property name="name" type="string">
             <column name="name" length="245" />
         </property>
-        <set name="locElements" table="loc_elements" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="locElements" table="loc_elements" inverse="true"  fetch="select" >
             <key>
                 <column name="element_type_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
         </set>
-        <set name="locElementTypes" table="loc_element_types" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="locElementTypes" table="loc_element_types" inverse="true"  fetch="select" >
             <key>
                 <column name="parent_id" />
             </key>

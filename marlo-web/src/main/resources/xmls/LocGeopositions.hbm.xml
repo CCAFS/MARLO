@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="locGeoposition" class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
+        <many-to-one name="locGeoposition" class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select" >
             <column name="parent_id" />
         </many-to-one>
         <property name="latitude" type="double">
@@ -17,13 +17,13 @@
         <property name="longitude" type="double">
             <column name="longitude" precision="22" scale="0" not-null="true" />
         </property>
-        <set name="locElements" table="loc_elements" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="locElements" table="loc_elements" inverse="true"  fetch="select" >
             <key>
                 <column name="geoposition_id" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
         </set>
-        <set name="locGeopositions" table="loc_geopositions" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="locGeopositions" table="loc_geopositions" inverse="true"  fetch="select" >
             <key>
                 <column name="parent_id" />
             </key>

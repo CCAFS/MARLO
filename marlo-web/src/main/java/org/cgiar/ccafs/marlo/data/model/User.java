@@ -97,10 +97,33 @@ public class User implements java.io.Serializable {
     return true;
   }
 
+  /**
+   * This method returns the user's full name.
+   * 
+   * @return a String that represents the user's full name.
+   *         e.g. Héctor Tobón
+   */
+  public String getComposedCompleteName() {
+    return this.firstName + " " + this.lastName;
+  }
+
+  /**
+   * This method returns a composed way to show a User.
+   * 
+   * @return a String that represents a User.
+   *         e.g. Tobón, Héctor <h.f.tobon@cgiar.org>
+   */
+  public String getComposedName() {
+    if (this.id == -1) {
+      return "";
+    }
+    return this.lastName + ", " + this.firstName + " <" + this.email + ">";
+  }
+
+
   public Long getCreatedBy() {
     return this.createdBy;
   }
-
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
@@ -110,6 +133,7 @@ public class User implements java.io.Serializable {
     return crpSitesLeaders;
   }
 
+
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
@@ -118,7 +142,6 @@ public class User implements java.io.Serializable {
   public String getEmail() {
     return this.email;
   }
-
 
   public String getFirstName() {
     return this.firstName;
@@ -172,6 +195,7 @@ public class User implements java.io.Serializable {
     this.crpProgramLeaders = crpProgramLeaders;
   }
 
+
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
   }
@@ -201,7 +225,6 @@ public class User implements java.io.Serializable {
     this.lastLogin = lastLogin;
   }
 
-
   public void setLastName(String lastName) {
     this.lastName = lastName;
   }
@@ -218,6 +241,9 @@ public class User implements java.io.Serializable {
     this.userRoles = userRoles;
   }
 
-
+  @Override
+  public String toString() {
+    return this.firstName;
+  }
 }
 

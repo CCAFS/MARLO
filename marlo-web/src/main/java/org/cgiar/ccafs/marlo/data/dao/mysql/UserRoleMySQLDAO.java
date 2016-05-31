@@ -65,6 +65,12 @@ public class UserRoleMySQLDAO implements UserRoleDAO {
   }
 
   @Override
+  public List<UserRole> getUserRolesByUserId(long userId) {
+    String query = "from " + UserRole.class.getName() + " where user_id=" + userId;
+    return dao.findAll(query);
+  }
+
+  @Override
   public long save(UserRole userRole) {
     dao.saveOrUpdate(userRole);
     return userRole.getId();

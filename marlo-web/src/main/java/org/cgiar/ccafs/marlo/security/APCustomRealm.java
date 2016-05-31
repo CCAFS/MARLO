@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.security;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
@@ -63,6 +64,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
   // Managers
   private UserManager userManager;
+  private UserRoleManager userRoleManager;
 
 
   @Named("DB")
@@ -72,10 +74,11 @@ public class APCustomRealm extends AuthorizingRealm {
   private Authenticator ldapAuthenticator;
 
   @Inject
-  public APCustomRealm(UserManager userManager, @Named("DB") Authenticator dbAuthenticator,
-    @Named("LDAP") Authenticator ldapAuthenticator) {
+  public APCustomRealm(UserManager userManager, UserRoleManager userRoleManager,
+    @Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator) {
     super(new MemoryConstrainedCacheManager());
     this.userManager = userManager;
+    this.userRoleManager = userRoleManager;
     this.dbAuthenticator = dbAuthenticator;
     this.ldapAuthenticator = ldapAuthenticator;
     this.setName("APCustomRealm");

@@ -8,13 +8,13 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
+        <many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select" >
             <column name="crp_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+        <many-to-one name="locElement" class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select" >
             <column name="location_id" not-null="true" />
         </many-to-one>
-        <set name="crpSitesLeaders" table="crp_sites_leaders" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpSitesLeaders" table="crp_sites_leaders" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_site_integration" not-null="true" />
             </key>

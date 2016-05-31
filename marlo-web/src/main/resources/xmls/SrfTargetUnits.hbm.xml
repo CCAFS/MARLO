@@ -14,19 +14,19 @@
         <property name="acronym" type="string">
             <column name="acronym" length="50" not-null="true" />
         </property>
-        <set name="crpMilestones" table="crp_milestones" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpMilestones" table="crp_milestones" inverse="true"  fetch="select" >
             <key>
                 <column name="target_unit_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
         </set>
-        <set name="srfSloIndicatorTargets" table="srf_slo_indicator_targets" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="srfSloIndicatorTargets" table="srf_slo_indicator_targets" inverse="true"  fetch="select" >
             <key>
                 <column name="target_unit_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget" />
         </set>
-        <set name="crpProgramOutcomes" table="crp_program_outcomes" inverse="true" lazy="true" fetch="select">
+        <set lazy="true" name="crpProgramOutcomes" table="crp_program_outcomes" inverse="true"  fetch="select" >
             <key>
                 <column name="target_unit_id" not-null="true" />
             </key>

@@ -8,10 +8,10 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="role" class="org.cgiar.ccafs.marlo.data.model.Role" lazy="false" fetch="select">
+        <many-to-one name="role" class="org.cgiar.ccafs.marlo.data.model.Role"  fetch="select" >
             <column name="role_id" not-null="true" />
         </many-to-one>
-        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" lazy="false" fetch="select">
+        <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User"  fetch="select" >
             <column name="user_id" not-null="true" />
         </many-to-one>
 		  
