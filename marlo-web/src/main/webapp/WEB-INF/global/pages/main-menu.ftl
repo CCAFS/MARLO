@@ -13,7 +13,7 @@
                 [#-- Admin --]
         [#if action.canAcessCrpAdmin() ]
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/${crpSession}" action='adminManagement'/]">[@s.text name="menu.admin" /]
+          <a href="[@s.url namespace="/admin" action='${crpSession}/management'/]">[@s.text name="menu.admin" /]
           </a>
         </li>
         

@@ -65,7 +65,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   public void prepare() throws Exception {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    long pmu_permission = (long) this.getSession().get(APConstants.CRP_PMU_ROLE);
+    long pmu_permission = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role role_pmue = roleManager.getRoleById(pmu_permission);
     for (UserRole userRole : role_pmue.getUserRoles()) {
       programManagmentTeam.add(userRole.getUser());

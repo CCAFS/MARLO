@@ -139,8 +139,7 @@
       </license>
    </licenses>
    <modules>
-   	<module>marlo-web</module>
-   	
+   	<module>marlo-web</module>   	
    	<module>marlo-utils</module>
    </modules>
 </project>

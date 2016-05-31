@@ -78,6 +78,20 @@ public class APConfig {
     return null;
   }
 
+  /**
+   * get the email.configuration tag in the configuration file
+   * 
+   * @return string whit the email that is in the configuration file.
+   */
+  public String getEmailNotification() {
+    try {
+      return properties.getPropertiesAsString(EMAIL_NOTIFICATION);
+    } catch (Exception e) {
+      LOG.error("there is not an email user configured.");
+    }
+    return null;
+  }
+
   public String getEmailPassword() {
     try {
       return properties.getPropertiesAsString(EMAIL_PASSWORD);
