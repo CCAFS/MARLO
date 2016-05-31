@@ -131,7 +131,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
