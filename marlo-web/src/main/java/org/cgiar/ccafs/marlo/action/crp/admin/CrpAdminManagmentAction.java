@@ -22,14 +22,11 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Role;
-import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.google.inject.Inject;
 
@@ -40,13 +37,15 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
 
-  private List<User> programManagmentTeam;
   private RoleManager roleManager;
   private UserRoleManager userRoleManager;
   private UserManager userManager;
 
   private Crp loggedCrp;
-  private Role role_pmue;
+  private Role rolePmu;
+
+  private long pmuRol;
+
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -59,14 +58,12 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
-
-  public List<User> getProgramManagmentTeam() {
-    return programManagmentTeam;
+  public Role getRolePmu() {
+    return rolePmu;
   }
 
 
@@ -74,16 +71,14 @@ public class CrpAdminManagmentAction extends BaseAction {
   public void prepare() throws Exception {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    long pmu_permission = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-    role_pmue = roleManager.getRoleById(pmu_permission);
-    programManagmentTeam = new ArrayList<User>();
-    for (UserRole userRole : role_pmue.getUserRoles()) {
-      programManagmentTeam.add(userRole.getUser());
-    }
+    pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
+    rolePmu = roleManager.getRoleById(pmuRol);
+
+
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      programManagmentTeam.clear();
+      rolePmu.getUserRoles().clear();
     }
   }
 
@@ -91,32 +86,25 @@ public class CrpAdminManagmentAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      /*
-       * Load all bd infomartion
-       */
-      // for (int i = 0; i < programManagmentTeam.size(); i++) {
-      // programManagmentTeam.set(i, userManager.getUser(programManagmentTeam.get(i).getId()));
-      //
-      // }
 
+      Role rolePreview = roleManager.getRoleById(pmuRol);
       /*
        * Removing users roles
        */
-      for (UserRole userRole : role_pmue.getUserRoles()) {
-        if (!programManagmentTeam.contains(userRole.getUser())) {
+      for (UserRole userRole : rolePreview.getUserRoles()) {
+        if (!rolePmu.getUserRoles().contains(userRole.getUser())) {
           userRoleManager.deleteUserRole(userRole.getId());
         }
       }
       /*
        * Add new Users roles
        */
-      for (User user : programManagmentTeam) {
+      for (UserRole userRole : rolePmu.getUserRoles()) {
 
-        UserRole userRole = new UserRole(role_pmue, user);
-
-        if (!user.getUserRoles().contains(userRole)) {
+        if (userRole.getId() == null) {
           userRoleManager.saveUserRole(userRole);
         }
+
       }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -140,8 +128,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setProgramManagmentTeam(List<User> programManagmentTeam) {
-    this.programManagmentTeam = programManagmentTeam;
+  public void setRolePmu(Role rolePmu) {
+    this.rolePmu = rolePmu;
   }
+
 
 }
