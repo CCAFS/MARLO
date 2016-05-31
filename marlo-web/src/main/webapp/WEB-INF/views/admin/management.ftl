@@ -30,8 +30,8 @@
           [#-- PMU Users List --]
           <div class="users-list simpleBox">
            <ul>
-            [#list 1..2 as item]
-              [@userItem element={} index=item_index /]
+            [#list programManagmentTeam as item]
+              [@userItem element=item index=item_index /]
             [/#list]
            </ul>
            <p class="text-center">There are not users added yet.</p>
@@ -89,7 +89,7 @@
 [#macro userItem element index template=false]
   <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-    <span class="name">${(element.name)!'Unknown user'}</span>
+    <span class="name">${(element.composedName?html)!'Unknown user'}</span>
     <input class="id" type="hidden" name="user.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
   </li>
