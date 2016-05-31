@@ -40,6 +40,7 @@ public class UserConverter extends StrutsTypeConverter {
   @SuppressWarnings("rawtypes")
   @Override
   public Object convertFromString(Map context, String[] values, Class toClass) {
+    System.out.println("Hola");
     if (toClass == User.class) {
       String id = values[0];
       try {
@@ -56,6 +57,7 @@ public class UserConverter extends StrutsTypeConverter {
   @SuppressWarnings("rawtypes")
   @Override
   public String convertToString(Map context, Object o) {
+    System.out.println("Hola");
     User user = (User) o;
     LOG.debug(">> convertToString > id = {} ", user.getId());
     return user.getId() + "";
