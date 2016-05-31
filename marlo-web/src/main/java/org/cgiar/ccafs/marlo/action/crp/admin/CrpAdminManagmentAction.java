@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -67,11 +68,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     long pmu_permission = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     Role role_pmue = roleManager.getRoleById(pmu_permission);
+    programManagmentTeam = new ArrayList<User>();
     for (UserRole userRole : role_pmue.getUserRoles()) {
       programManagmentTeam.add(userRole.getUser());
     }
-    this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, loggedCrp.getId().toString()));
-
+    String params[] = {loggedCrp.getAcronym()};
+    this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
+    System.out.println(this.getBasePermission());
   }
 
 
