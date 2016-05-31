@@ -30,6 +30,9 @@
           [#-- PMU Users List --]
           <div class="users-list simpleBox">
            <ul>
+            [#list 1..2 as item]
+              [@userItem element={} index=item_index /]
+            [/#list]
            </ul>
            <p class="text-center">There are not users added yet.</p>
           </div>
@@ -42,6 +45,9 @@
           [#-- Flagships List --]
           <div class="flagships-list simpleBox">
            <ul>
+            [#list 1..2 as item]
+              [@programItem element={} index=item_index /]
+            [/#list]
            </ul>
            <p class="text-center">There are not Flagships added yet.</p>
           </div>
@@ -70,22 +76,30 @@
 
 [#-- PMU User template --]
 <ul style="display:none">
-  <li id="user-template" class="user" style="display:none">
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-    <span class="name">{user.name}</span>
-    <input class="id" type="hidden" name="user.id" value="{user.ïd}"/>
-    <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
-  </li>
+  [@userItem element={} index=0 template=true /]
 </ul>
 
 [#-- Flagship template --]
 <ul style="display:none">
-  <li id="flagship-template" class="user" style="display:none">
-    <span class="acronym">{user.acronym}</span>
-    <span class="name">{user.name}</span>
-    <input class="id" type="hidden" name="user.id" value="-1"/>
-    <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
-  </li>
+  [@programItem element={} index=0 template=true /]
 </ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
+
+[#macro userItem element index template=false]
+  <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+    <span class="name">${(element.name)!'Unknown user'}</span>
+    <input class="id" type="hidden" name="user.id" value="${(element.id)!}"/>
+    <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
+  </li>
+[/#macro]
+
+[#macro programItem element index template=false]
+  <li id="program-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
+    <span class="acronym">${(element.acronym)!'Unknown acronym'}</span>
+    <span class="name">${(element.name)!'Unknown name'}</span>
+    <input class="id" type="hidden" name="user.id" value="${(element.id)!}"/>
+    <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
+  </li>
+[/#macro]
