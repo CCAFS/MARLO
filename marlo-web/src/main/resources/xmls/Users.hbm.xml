@@ -35,7 +35,7 @@
         <property name="lastLogin" type="timestamp">
             <column name="last_login" length="19" />
         </property>
-        <set lazy="true" name="userRoles" table="user_roles" inverse="true"  fetch="select" >
+        <set lazy="true" name="userRoles" order-by="user_id" table="user_roles" inverse="true"  fetch="select" >
             <key>
                 <column name="user_id" not-null="true" />
             </key>

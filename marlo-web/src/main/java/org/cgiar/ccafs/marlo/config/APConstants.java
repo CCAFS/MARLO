@@ -34,7 +34,6 @@ public final class APConstants {
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";
 
-
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
 

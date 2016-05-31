@@ -110,7 +110,10 @@ public class LoginAction extends BaseAction {
             this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
             // put the crp parameters in the session
             for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
-              this.getSession().put(parameter.getKey(), parameter.getValue());
+              if (parameter.isActive()) {
+                this.getSession().put(parameter.getKey(), parameter.getValue());
+              }
+
             }
             // Validate if the user already logged in other session.
             if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {

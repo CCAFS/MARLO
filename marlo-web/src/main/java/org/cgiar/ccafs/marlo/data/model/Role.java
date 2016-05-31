@@ -26,7 +26,10 @@ public class Role implements java.io.Serializable {
 
 
   private static final long serialVersionUID = 8679238437361759448L;
+
+
   private Long id;
+
   private Crp crp;
   private String description;
   private String acronym;
@@ -34,7 +37,6 @@ public class Role implements java.io.Serializable {
 
   public Role() {
   }
-
 
   public Role(Crp crps, String description, String acronym) {
     this.crp = crps;
@@ -49,6 +51,29 @@ public class Role implements java.io.Serializable {
     this.acronym = acronym;
 
     this.userRoles = userRoles;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    Role other = (Role) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public String getAcronym() {
@@ -69,6 +94,14 @@ public class Role implements java.io.Serializable {
 
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

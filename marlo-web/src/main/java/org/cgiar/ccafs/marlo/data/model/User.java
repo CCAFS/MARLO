@@ -97,6 +97,7 @@ public class User implements java.io.Serializable {
     return true;
   }
 
+
   /**
    * This method returns the user's full name.
    * 
@@ -120,10 +121,10 @@ public class User implements java.io.Serializable {
     return this.lastName + ", " + this.firstName + " <" + this.email + ">";
   }
 
-
   public Long getCreatedBy() {
     return this.createdBy;
   }
+
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
@@ -133,7 +134,6 @@ public class User implements java.io.Serializable {
     return crpSitesLeaders;
   }
 
-
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
@@ -142,6 +142,7 @@ public class User implements java.io.Serializable {
   public String getEmail() {
     return this.email;
   }
+
 
   public String getFirstName() {
     return this.firstName;
@@ -170,6 +171,7 @@ public class User implements java.io.Serializable {
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
   }
+
 
   public boolean isActive() {
     return active;
@@ -241,9 +243,6 @@ public class User implements java.io.Serializable {
     this.userRoles = userRoles;
   }
 
-  @Override
-  public String toString() {
-    return this.firstName;
-  }
+
 }
 

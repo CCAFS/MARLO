@@ -65,8 +65,9 @@ public class StandardDAO {
     Transaction tx = null;
     try {
       session = this.openSession();
+      Object newEntityRef = session.merge(obj);
       tx = this.initTransaction(session);
-      session.delete(obj);
+      session.delete(newEntityRef);
       this.commitTransaction(tx);
       return true;
     } catch (Exception e) {

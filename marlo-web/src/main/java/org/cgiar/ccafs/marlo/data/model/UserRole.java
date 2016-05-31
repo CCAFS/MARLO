@@ -23,7 +23,9 @@ public class UserRole implements java.io.Serializable {
 
 
   private static final long serialVersionUID = -4464617364263332726L;
+
   private Long id;
+
   private Role role;
   private User user;
 
@@ -33,6 +35,35 @@ public class UserRole implements java.io.Serializable {
   public UserRole(Role roles, User users) {
     this.role = roles;
     this.user = users;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    UserRole other = (UserRole) obj;
+    if (role == null) {
+      if (other.role != null) {
+        return false;
+      }
+    } else if (!role.getId().equals(other.getRole().getId())) {
+      return false;
+    }
+    if (user == null) {
+      if (other.user != null) {
+        return false;
+      }
+    } else if (!user.equals(other.getUser())) {
+      return false;
+    }
+    return true;
   }
 
   public Long getId() {
@@ -45,6 +76,15 @@ public class UserRole implements java.io.Serializable {
 
   public User getUser() {
     return this.user;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((role == null) ? 0 : role.hashCode());
+    result = prime * result + ((user == null) ? 0 : user.hashCode());
+    return result;
   }
 
   public void setId(Long id) {

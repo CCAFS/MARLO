@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -26,6 +28,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -39,15 +42,20 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private List<User> programManagmentTeam;
   private RoleManager roleManager;
-  private Crp loggedCrp;
+  private UserRoleManager userRoleManager;
+  private UserManager userManager;
 
+  private Crp loggedCrp;
+  private Role role_pmue;
 
   @Inject
-  public CrpAdminManagmentAction(APConfig config, RoleManager roleManager) {
+  public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
+    UserManager userManager) {
 
     super(config);
     this.roleManager = roleManager;
-
+    this.userRoleManager = userRoleManager;
+    this.userManager = userManager;
 
   }
 
@@ -67,21 +75,66 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     long pmu_permission = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-    Role role_pmue = roleManager.getRoleById(pmu_permission);
+    role_pmue = roleManager.getRoleById(pmu_permission);
     programManagmentTeam = new ArrayList<User>();
     for (UserRole userRole : role_pmue.getUserRoles()) {
       programManagmentTeam.add(userRole.getUser());
     }
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
-    System.out.println(this.getBasePermission());
+    if (this.isHttpPost()) {
+      programManagmentTeam.clear();
+    }
   }
 
 
   @Override
   public String save() {
+    if (this.hasPermission("*")) {
+      /*
+       * Load all bd infomartion
+       */
+      for (int i = 0; i < programManagmentTeam.size(); i++) {
+        programManagmentTeam.set(i, userManager.getUser(programManagmentTeam.get(i).getId()));
 
-    return SUCCESS;
+      }
+
+      /*
+       * Removing users roles
+       */
+      for (UserRole userRole : role_pmue.getUserRoles()) {
+        if (!programManagmentTeam.contains(userRole.getUser())) {
+          userRoleManager.deleteUserRole(userRole.getId());
+        }
+      }
+      /*
+       * Add new Users roles
+       */
+      for (User user : programManagmentTeam) {
+
+        UserRole userRole = new UserRole(role_pmue, user);
+
+        if (!user.getUserRoles().contains(userRole)) {
+          userRoleManager.saveUserRole(userRole);
+        }
+      }
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else
+
+    {
+
+
+      return NOT_AUTHORIZED;
+    }
+
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

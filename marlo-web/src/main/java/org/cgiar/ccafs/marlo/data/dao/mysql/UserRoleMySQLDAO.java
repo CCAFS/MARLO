@@ -34,7 +34,7 @@ public class UserRoleMySQLDAO implements UserRoleDAO {
   @Override
   public boolean deleteUserRole(long userRoleId) {
     UserRole userRole = this.find(userRoleId);
-    return this.save(userRole) > 0;
+    return dao.delete(userRole);
   }
 
   @Override
