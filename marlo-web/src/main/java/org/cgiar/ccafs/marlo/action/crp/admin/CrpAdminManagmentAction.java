@@ -16,7 +16,18 @@
 package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.List;
+
+import com.google.inject.Inject;
 
 /**
  * @author Christian Garcia
@@ -25,10 +36,58 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
 
+  private List<User> programManagmentTeam;
+  private RoleManager roleManager;
+  private Crp loggedCrp;
 
-  public CrpAdminManagmentAction(APConfig config) {
+
+  @Inject
+  public CrpAdminManagmentAction(APConfig config, RoleManager roleManager) {
+
     super(config);
-    // TODO Auto-generated constructor stub
+    this.roleManager = roleManager;
+
+
+  }
+
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
+  public List<User> getProgramManagmentTeam() {
+    return programManagmentTeam;
+  }
+
+
+  @Override
+  public void prepare() throws Exception {
+
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    long pmu_permission = (long) this.getSession().get(APConstants.CRP_PMU_ROLE);
+    Role role_pmue = roleManager.getRoleById(pmu_permission);
+    for (UserRole userRole : role_pmue.getUserRoles()) {
+      programManagmentTeam.add(userRole.getUser());
+    }
+    this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, loggedCrp.getId().toString()));
+
+  }
+
+
+  @Override
+  public String save() {
+
+    return SUCCESS;
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setProgramManagmentTeam(List<User> programManagmentTeam) {
+    this.programManagmentTeam = programManagmentTeam;
   }
 
 }
