@@ -108,28 +108,26 @@ public class LoginAction extends BaseAction {
             userManager.saveLastLogin(loggedUser);
             this.getSession().put(APConstants.SESSION_USER, loggedUser);
             this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
+            // put the crp parameters in the session
             for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
               this.getSession().put(parameter.getKey(), parameter.getValue());
             }
-
-
             // Validate if the user already logged in other session.
             if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
-              this.addFieldError("loginMessage", this.getText("home.login.duplicated"));
+              this.addFieldError("loginMessage", this.getText("login.error.duplicated"));
               this.getSession().clear();
               SecurityUtils.getSubject().logout();
               user.setPassword(null);
               return BaseAction.INPUT;
             }
-
           } else {
-            this.addFieldError("loginMessage", this.getText("home.login.invalidUserCrp"));
+            this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
             this.setCrpSession(loggedCrp.getAcronym());
             user.setPassword(null);
             return BaseAction.INPUT;
           }
         } else {
-          this.addFieldError("loginMessage", this.getText("home.login.selectCrp"));
+          this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
           user.setPassword(null);
           return BaseAction.INPUT;
         }
@@ -153,7 +151,7 @@ public class LoginAction extends BaseAction {
       } else {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed.");
         user.setPassword(null);
-        this.addFieldError("loginMessage", this.getText("home.login.error"));
+        this.addFieldError("loginMessage", this.getText("login.error.userOrPass"));
         return BaseAction.INPUT; // TODO change to return INPUT when the login front-end is finished.
       }
     } else {
