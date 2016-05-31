@@ -22,7 +22,6 @@ function init() {
 
 function attachEvents() {
   $('.glyphicon-remove').on('click', removeUser);
-
   $('.addFlagship').on('click', addItem);
 }
 
@@ -41,10 +40,22 @@ function removeUser() {
 }
 
 function checkItems() {
+  updateUserMessage();
+  updateIndexses();
+}
+
+function updateUserMessage() {
   var items = $usersList.find('li').length;
   if(items == 0) {
     $usersList.find('p').fadeIn();
   } else {
     $usersList.find('p').fadeOut();
   }
+}
+
+function updateIndexses() {
+  $usersList.find('li').each(function(i,item) {
+    var customName = 'programManagmentTeam[' + i + ']'
+    $(item).find('.id').attr('name', customName + 'id');
+  });
 }
