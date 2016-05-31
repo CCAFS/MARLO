@@ -18,7 +18,7 @@
             <column name="acronym" length="50" not-null="true" />
         </property>
         
-        <set lazy="true" name="userRoles" table="user_roles" inverse="true" fetch="select" >
+        <set lazy="true" name="userRoles" order-by="user_id" table="user_roles" inverse="true" fetch="select" >
             <key>
                 <column name="role_id" not-null="true" />
             </key>
