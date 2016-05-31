@@ -56,6 +56,6 @@ function updateUserMessage() {
 function updateIndexses() {
   $usersList.find('li').each(function(i,item) {
     var customName = 'programManagmentTeam[' + i + ']'
-    $(item).find('.id').attr('name', customName + 'id');
+    $(item).find('.id').attr('name', customName + '.id');
   });
 }

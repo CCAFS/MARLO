@@ -48,7 +48,7 @@
           <div class="flagships-list simpleBox">
            <ul>
             [#list 1..2 as item]
-              [@programItem element={} index=item_index /]
+              [@programItem element={} index=item_index name=""/]
             [/#list]
            </ul>
            <p class="text-center">There are not Flagships added yet.</p>
@@ -79,8 +79,8 @@
 <ul style="display:none">
   [#-- PMU User template --]
   [@userItem element={} index=0 name="programManagmentTeam" template=true /]
-  [#-- Flagship template --]
-  [@programItem element={} index=0 template=true /]
+  [#-- Program template --]
+  [@programItem element={} index=0 name="flagships" template=true /]
 </ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
@@ -95,7 +95,8 @@
   </li>
 [/#macro]
 
-[#macro programItem element index template=false]
+[#macro programItem element index name template=false]
+  [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
     <span class="acronym">${(element.acronym)!'Unknown acronym'}</span>
     <span class="name">${(element.name)!'Unknown name'}</span>
