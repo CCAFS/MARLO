@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 /**
  * @author Christian Garcia
@@ -141,8 +140,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
-  @TypeConversion(converter = "org.cgiar.ccafs.marlo.converter.UserConverter")
   public void setProgramManagmentTeam(List<User> programManagmentTeam) {
     this.programManagmentTeam = programManagmentTeam;
   }
