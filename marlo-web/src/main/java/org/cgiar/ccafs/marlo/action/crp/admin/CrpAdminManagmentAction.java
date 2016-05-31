@@ -126,12 +126,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
-      return SUCCESS;
+      return INPUT;
     } else
 
     {
-
-
       return NOT_AUTHORIZED;
     }
 

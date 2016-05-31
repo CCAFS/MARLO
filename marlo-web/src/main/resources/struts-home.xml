@@ -24,16 +24,6 @@
 			<interceptor-ref name="homeStack" />
 			<result name="input">/WEB-INF/views/home/dashboard.ftl</result>
 		</action>
-		
-		<!-- THIS IS TEMPORALY (JUST FOR DEVELOPING WHILE THE WILDCARD IS FIXED) -->
-		<action name="{crpSession}/adminManagement"
-      class="org.cgiar.ccafs.marlo.action.BaseAction">
-      <!-- interceptor-ref name="autoLogin" / -->
-      <interceptor-ref name="i18nFile" />
-      <interceptor-ref name="requireUser" />
-      <interceptor-ref name="defaultStack" />
-      <result name="input">/WEB-INF/views/admin/management.ftl</result>
-    </action>
 	</package>
 	
 </struts>
