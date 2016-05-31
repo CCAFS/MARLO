@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -107,6 +108,10 @@ public class LoginAction extends BaseAction {
             userManager.saveLastLogin(loggedUser);
             this.getSession().put(APConstants.SESSION_USER, loggedUser);
             this.getSession().put(APConstants.SESSION_CRP, loggedCrp);
+            for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
+              this.getSession().put(parameter.getKey(), parameter.getValue());
+            }
+
 
             // Validate if the user already logged in other session.
             if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
