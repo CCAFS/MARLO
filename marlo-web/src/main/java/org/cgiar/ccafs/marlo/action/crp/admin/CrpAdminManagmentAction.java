@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 /**
  * @author Christian Garcia
@@ -94,10 +95,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       /*
        * Load all bd infomartion
        */
-      for (int i = 0; i < programManagmentTeam.size(); i++) {
-        programManagmentTeam.set(i, userManager.getUser(programManagmentTeam.get(i).getId()));
-
-      }
+      // for (int i = 0; i < programManagmentTeam.size(); i++) {
+      // programManagmentTeam.set(i, userManager.getUser(programManagmentTeam.get(i).getId()));
+      //
+      // }
 
       /*
        * Removing users roles
@@ -140,6 +141,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  @TypeConversion(converter = "org.cgiar.ccafs.marlo.converter.UserConverter")
   public void setProgramManagmentTeam(List<User> programManagmentTeam) {
     this.programManagmentTeam = programManagmentTeam;
   }
