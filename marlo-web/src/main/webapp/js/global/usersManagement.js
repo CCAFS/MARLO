@@ -1,7 +1,7 @@
 var dialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
-var addUser, addUserMessage;
+var openSearchDialog, addUser, addUserMessage;
 
 $(document).ready(function() {
 
@@ -23,7 +23,10 @@ $(document).ready(function() {
         // $dialogContent.find("#search-users").trigger('click');
         $dialogContent.find(".tickBox-toggle").hide();
         $dialogContent.find('.warning-info').hide();
-        getData('');
+
+        $dialogContent.find(".panel-body ul").empty();
+        $dialogContent.find(".panel-body .userMessage").show();
+        // getData('');
       }
   };
 
@@ -31,7 +34,7 @@ $(document).ready(function() {
   dialog = $dialogContent.dialog(dialogOptions);
 
   // Loading initial data with all users
-  getData('');
+  // getData('');
 
   /** Events */
 
@@ -46,7 +49,9 @@ $(document).ready(function() {
   });
 
   // Event to open dialog box and search an contact person
-  $(".searchUser, input.userName").on("click", openSearchDialog);
+  $(".searchUser, input.userName").on("click", function(e) {
+    openSearchDialog(e);
+  });
 
   // Event when the user select the contact person
   $dialogContent.find("span.select, span.name").on("click", function() {
@@ -135,9 +140,9 @@ $(document).ready(function() {
 
   /** Functions * */
 
-  function openSearchDialog(e) {
+  openSearchDialog = function(e) {
     e.preventDefault();
-    $elementSelected = $(this).parents('.userField').find('.searchUser').parent();
+    $elementSelected = $(e.target);
     dialog.dialog("open");
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
@@ -162,9 +167,9 @@ $(document).ready(function() {
       // Start a timer that will search when finished
       timeoutID = setTimeout(function() {
         getData(query);
-      }, 500);
+      }, 400);
     } else {
-      getData('');
+      // getData('');
     }
 
   }

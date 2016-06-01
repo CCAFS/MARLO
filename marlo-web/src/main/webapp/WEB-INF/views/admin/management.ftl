@@ -105,9 +105,9 @@
 
 <ul style="display:none">
   [#-- PMU User template --]
-  [@userItem element={} index=0 name="programManagmentTeam" template=true /]
+  [@userItem element={} index=0 name="" template=true /]
   [#-- Program template --]
-  [@programItem element={} index=0 name="programs" template=true /]
+  [@programItem element={} index=0 name="" template=true /]
 </ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
