@@ -60,11 +60,13 @@ public class HibernateListener implements ServletContextListener {
         + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
         + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE);
       config.setProperty("hibernate.connection.url", urlMysql);
+      config.setProperty("hibernate.current_session_context_class", "thread");
       // config.setProperty("hibernate.c3p0.min_size", "5");
       // System.out.println("url_mysql " + url_mysql);
       // System.out.println(url.toString());
 
       factory = config.buildSessionFactory();
+
 
       // System.out.println("Build factory " + factory);
 

@@ -134,6 +134,8 @@ public class CrpAdminManagmentAction extends BaseAction {
       List<CrpProgram> fgProgramsRewiev =
         crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
       // Removing crp flagship program type
+
+
       if (fgProgramsRewiev != null) {
         for (CrpProgram crpProgram : fgProgramsRewiev) {
           if (!programs.contains(crpProgram)) {

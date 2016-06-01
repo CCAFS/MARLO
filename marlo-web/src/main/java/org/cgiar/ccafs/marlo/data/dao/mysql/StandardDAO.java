@@ -67,6 +67,7 @@ public class StandardDAO {
       session = this.openSession();
       Object newEntityRef = session.merge(obj);
       tx = this.initTransaction(session);
+      session.clear();
       session.delete(newEntityRef);
       this.commitTransaction(tx);
       return true;
@@ -96,6 +97,7 @@ public class StandardDAO {
       session = this.openSession();
 
       tx = this.initTransaction(session);
+      session.clear();
       obj = (T) session.get(clazz, (Serializable) id);
       this.commitTransaction(tx);
     } catch (Exception e) {
@@ -127,7 +129,7 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-
+      session.clear();
       Query query = session.createQuery(hibernateQuery);
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
@@ -159,6 +161,7 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
+      session.clear();
       Query query = session.createSQLQuery(sqlQuery);
       query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
       List<Map<String, Object>> result = query.list();
@@ -183,7 +186,7 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-
+      session.clear();
       Query query = session.createQuery("from " + clazz.getName());
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
@@ -214,8 +217,10 @@ public class StandardDAO {
     Transaction tx = null;
     try {
       session = this.openSession();
+      session.clear();
       tx = this.initTransaction(session);
       Query query = session.createQuery(hibernateQuery);
+      session.flush();
       Object object = clazz.cast(query.uniqueResult());
       this.commitTransaction(tx);
       return object;
@@ -251,6 +256,7 @@ public class StandardDAO {
     if (sessionFactory == null) {
       this.sessionFactory =
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
+
     }
 
     return sessionFactory.openSession();
@@ -280,8 +286,8 @@ public class StandardDAO {
       session = this.openSession();
 
       tx = this.initTransaction(session);
-      session.merge(obj);
-      session.save(obj);
+      session.clear();
+      session.saveOrUpdate(obj);
       this.commitTransaction(tx);
       session.flush();
       return true;
