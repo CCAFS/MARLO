@@ -67,9 +67,9 @@
         <h4 class="sectionTitle">Regional program Managers</h4>
         <div class="program-block borderBox">
           [#-- Does your CRP have regional program managers?  --]
-          [@customForm.yesNoInput name="crp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="" cssClass="text-left" /]
+          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
          
-          <div id="aditional-hasRegions" style="display:${(crp.hasRegions?string('none','block'))!'none'}">
+          <div id="aditional-hasRegions" style="display:${(loggedCrp.hasRegions?string('none','block'))!'none'}">
             [#-- Regions List --]
             <div class="regions items-list simpleBox">
              <ul>
