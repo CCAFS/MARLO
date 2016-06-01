@@ -44,9 +44,11 @@
           [#-- Flagships List --]
           <div class="flagships items-list simpleBox">
            <ul>
-            [#list 1..2 as item]
-              [@programItem element={} index=item_index name="programs"/]
+           [#if fgPrograms?has_content]
+            [#list fgPrograms as item]
+              [@programItem element=item index=item_index name="programs"/]
             [/#list]
+           [/#if]
            </ul>
            <p class="text-center">There are not Flagships added yet.</p>
           </div>
@@ -130,8 +132,8 @@
     <span class="composedName">${(element.acronym)!'Unknown acronym'} - ${(element.name)!'Unknown name'}</span>
     <input class="acronym" type="hidden" name="${customName}.acronym" value="${(element.acronym)!'Unknown acronym'}"/>
     <input class="name" type="hidden" name="${customName}.name" value="${(element.name)!'Unknown name'}"/>
-    <input class="type" type="hidden" name="${customName}.type" value="${(element.type)!'-1'}"/>
-    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!'-1'}"/>
+    <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
   </li>
 [/#macro]

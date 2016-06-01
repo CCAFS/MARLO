@@ -12,7 +12,7 @@
 			<result name="input">/WEB-INF/views/admin/management.ftl</result>
 		</action>
 		
-		<action name="{*}/leaders" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpAdminManagmentAction">
+		<action name="{*}/leaders" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpLeadersAdminMagmentAction">
       <!-- interceptor-ref name="autoLogin" / -->
       <interceptor-ref name="i18nFile" />
       <interceptor-ref name="requireUser" />

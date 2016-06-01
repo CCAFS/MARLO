@@ -14,6 +14,12 @@
         <property name="acronym" type="string">
             <column name="acronym" length="50" not-null="true" />
         </property>
+        <set lazy="true" name="crpPrograms" table="crp_programs" inverse="true"  fetch="select" >
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
+        </set>
         <set lazy="true" name="crpUsers" table="crp_users" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_id" not-null="true" />
@@ -26,7 +32,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
         </set>
-        <set lazy="true" name="crpParameters" table="crp_parameters" inverse="true"  fetch="select" >
+        <set lazy="true" name="crpParameters" table="crp_parameters" order-by="id" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_id" not-null="true" />
             </key>

@@ -88,7 +88,7 @@ function updateProgramIndex(list) {
     var customName = 'programs[' + i + ']';
     $(item).find('.acronym').attr('name', customName + '.acronym');
     $(item).find('.name').attr('name', customName + '.name');
-    $(item).find('.type').attr('name', customName + '.type');
+    $(item).find('.type').attr('name', customName + '.programType');
     $(item).find('.id').attr('name', customName + '.id');
   });
 }

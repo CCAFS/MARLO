@@ -24,9 +24,9 @@
         
         <h4 class="sectionTitle">(Flagships / Regions) Leaders</h4>
         <div class="row">
-         [#list 1..4 as program]
+         [#list programs as program]
           <div class="col-md-6">
-            <h5 class="sectionSubTitle" > Flagship ${program}</h5>
+            <h5 class="sectionSubTitle" > ${program.name} (${program.acronym})</h5>
             <div class="program-Block borderBox">
               <div class="items-list">
                 <ul>
