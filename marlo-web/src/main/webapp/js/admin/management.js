@@ -5,9 +5,6 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
-  /* Override function from userManagement.js */
-  addUser = addUserItem;
-
 }
 
 function attachEvents() {
@@ -23,16 +20,19 @@ function attachEvents() {
     });
   });
 
-// Remove an item
+  // Remove an item
   $('.remove-programItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
     $parent.hide(function() {
       $parent.remove();
       checkItems($block);
-      updateProgramIndex($block, 'noname')
+      updateProgramIndex($block, $block.parent().find('.inputName-input').html())
     });
   });
+
+  /* Add User - Override function from userManagement.js */
+  addUser = addUserItem;
 
   $('.addProgram').on('click', function() {
     addProgram($(this));
