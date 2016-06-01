@@ -20,7 +20,7 @@ function attachEvents() {
       $parent.remove();
       checkItems($block);
       updateUsersIndex($block);
-      updateProgramIndex($block)
+      //updateProgramIndex($block)
     });
   });
 
@@ -33,7 +33,7 @@ function addUserItem(composedName,userId) {
   var $usersList = $(".users.items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
   $li.find('.name').html(escapeHtml(composedName));
-  $li.find('.id').val(userId);
+  $li.find('.user').val(userId);
   $usersList.find("ul").append($li);
   $li.show('slow');
   checkItems($usersList);
@@ -77,7 +77,9 @@ function checkItems(block) {
 
 function updateUsersIndex(list) {
   $(list).find('li').each(function(i,item) {
-    var customName = 'programManagmentTeam[' + i + ']';
+    var customName = 'loggedCrp.programManagmenTeam[' + i + ']';
+    $(item).find('.user').attr('name', customName + '.user.id');
+    $(item).find('.role').attr('name', customName + '.role.id');
     $(item).find('.id').attr('name', customName + '.id');
   });
 }

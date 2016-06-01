@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.google.inject.Inject;
@@ -58,14 +59,18 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public long getPmuRol() {
+    return pmuRol;
   }
 
   public Role getRolePmu() {
     return rolePmu;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -73,12 +78,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     rolePmu = roleManager.getRoleById(pmuRol);
-
+    loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
 
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
-      rolePmu.getUserRoles().clear();
+      loggedCrp.getProgramManagmenTeam().clear();
     }
   }
 
@@ -92,20 +97,22 @@ public class CrpAdminManagmentAction extends BaseAction {
        * Removing users roles
        */
       for (UserRole userRole : rolePreview.getUserRoles()) {
-        if (!rolePmu.getUserRoles().contains(userRole.getUser())) {
+        if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
           userRoleManager.deleteUserRole(userRole.getId());
         }
       }
       /*
        * Add new Users roles
        */
-      for (UserRole userRole : rolePmu.getUserRoles()) {
+      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
 
         if (userRole.getId() == null) {
           userRoleManager.saveUserRole(userRole);
         }
 
       }
+      rolePmu = roleManager.getRoleById(pmuRol);
+      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -126,6 +133,11 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPmuRol(long pmuRol) {
+    this.pmuRol = pmuRol;
   }
 
   public void setRolePmu(Role rolePmu) {
