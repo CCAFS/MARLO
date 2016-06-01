@@ -18,7 +18,7 @@
             <key>
                 <column name="crp_id" not-null="true" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpUser" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgram" />
         </set>
         <set lazy="true" name="crpUsers" table="crp_users" inverse="true"  fetch="select" >
             <key>
