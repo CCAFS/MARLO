@@ -13,14 +13,24 @@ function init() {
 function attachEvents() {
 
   // Remove an item
-  $('.glyphicon-remove').on('click', function() {
+  $('.remove-userItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
     $parent.hide(function() {
       $parent.remove();
       checkItems($block);
       updateUsersIndex($block);
-      // updateProgramIndex($block)
+    });
+  });
+
+// Remove an item
+  $('.remove-programItem').on('click', function() {
+    var $parent = $(this).parent();
+    var $block = $parent.parent().parent();
+    $parent.hide(function() {
+      $parent.remove();
+      checkItems($block);
+      updateProgramIndex($block, 'noname')
     });
   });
 
@@ -49,6 +59,7 @@ function addProgram(element) {
       acronym: $parent.find('.acronym-input').val(),
       name: $parent.find('.name-input').val(),
       type: $parent.find('.type-input').html(),
+      inputName: $parent.find('.inputName-input').html(),
       composedName: function() {
         return this.acronym + ' - ' + this.name;
       }
@@ -62,7 +73,7 @@ function addProgram(element) {
 
   $parent.find('input:text').val('');
   checkItems($programList);
-  updateProgramIndex($programList)
+  updateProgramIndex($programList, item.inputName);
 }
 
 function checkItems(block) {
@@ -83,9 +94,9 @@ function updateUsersIndex(list) {
   });
 }
 
-function updateProgramIndex(list) {
+function updateProgramIndex(list,name) {
   $(list).find('li').each(function(i,item) {
-    var customName = 'programs[' + i + ']';
+    var customName = name + '[' + i + ']';
     $(item).find('.acronym').attr('name', customName + '.acronym');
     $(item).find('.name').attr('name', customName + '.name');
     $(item).find('.type').attr('name', customName + '.programType');
