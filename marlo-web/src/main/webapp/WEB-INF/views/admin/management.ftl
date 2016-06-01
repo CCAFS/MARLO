@@ -73,9 +73,11 @@
             [#-- Regions List --]
             <div class="regions items-list simpleBox">
              <ul>
-              [#list 1..2 as item]
-                [@programItem element={} index=item_index name="regionsPrograms"/]
+             [#if regionsPrograms?has_content]
+              [#list regionsPrograms as item]
+                [@programItem element=item index=item_index name="regionsPrograms"/]
               [/#list]
+             [/#if]
              </ul>
              <p class="text-center">There are not Flagships added yet.</p>
             </div>
