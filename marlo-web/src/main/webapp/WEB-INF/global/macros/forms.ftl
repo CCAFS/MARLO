@@ -248,13 +248,16 @@
   </div>
 [/#macro]
 
-[#macro yesNoInput name disabled=false editable=true inverse=false value=""]
+[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" cssClass=""]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
     [#assign customValue=value /] 
   [/#if]
-  <div class="onoffswitch">
+  <div class="onoffswitch ${cssClass}">
+    [#if label?has_content]
+      <label for="${name}">${label}</label>
+    [/#if]
     [#if editable]
       <div class="button-wrap">
         [#-- Yes Button --]

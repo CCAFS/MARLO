@@ -19,6 +19,9 @@ $(document).ready(function() {
   showHelpText();
   applyWordCounter($("#justification"), justificationLimitWords);
 
+  // Yes / No Event
+  $('input.onoffswitch-radio').on('change', yesnoEvent);
+
   // hash url animation
   if(window.location.hash) {
     if($(window.location.hash).exists && hashScroll) {
@@ -51,7 +54,7 @@ $(document).ready(function() {
       } else {
         messageType = $(this).attr("class");
       }
-      
+
       $('#generalMessages').noty({
           theme: 'relax',
           layout: 'top',
@@ -80,6 +83,24 @@ $(document).ready(function() {
   $(this).tooltip({
     track: true
   });
+
+  function yesnoEvent() {
+    // var isChecked = $(this).is(':checked');
+    var isChecked = ($(this).val() === "true");
+    $(this).siblings().removeClass('radio-checked');
+    $(this).next().addClass('radio-checked');
+    var array = (this.name).split('.');
+    var $aditional = $('#aditional-' + array[array.length - 1]);
+    if($(this).hasClass('inverse')) {
+      isChecked = !isChecked;
+    }
+    if(isChecked) {
+      $aditional.slideDown("slow");
+    } else {
+      $aditional.slideUp("slow");
+      $aditional.find('input:text,textarea').val('');
+    }
+  }
 
   /**
    * Tick Box functions

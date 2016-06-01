@@ -63,24 +63,30 @@
         
         <h4 class="sectionTitle">Regional program Managers</h4>
         <div class="program-block borderBox">
-          [#-- Regions List --]
-          <div class="flagships items-list simpleBox">
-           <ul>
-            [#list 1..2 as item]
-              [@programItem element={} index=item_index name="programs"/]
-            [/#list]
-           </ul>
-           <p class="text-center">There are not Flagships added yet.</p>
-          </div>
-          [#-- Add Region--]
-          <div class="row">
-            <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
-            <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Region name"></div>
-            <div class="col-sm-2">
-              <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /]</div>
-              <span class="type-input" style="display:none">2</span>
+          [#-- Does your CRP have regional program managers?  --]
+          [@customForm.yesNoInput name="crp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="" cssClass="text-left" /]
+         
+          <div id="aditional-hasRegions" style="display:${(crp.hasRegions?string('none','block'))!'none'}">
+            [#-- Regions List --]
+            <div class="regions items-list simpleBox">
+             <ul>
+              [#list 1..2 as item]
+                [@programItem element={} index=item_index name="programs"/]
+              [/#list]
+             </ul>
+             <p class="text-center">There are not Flagships added yet.</p>
+            </div>
+            [#-- Add Region--]
+            <div class="row">
+              <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
+              <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Region name"></div>
+              <div class="col-sm-2">
+                <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /]</div>
+                <span class="type-input" style="display:none">2</span>
+              </div>
             </div>
           </div>
+          
         </div>
 
         <div class="buttons">
