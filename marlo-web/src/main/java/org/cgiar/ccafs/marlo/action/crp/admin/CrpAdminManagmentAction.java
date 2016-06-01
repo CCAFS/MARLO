@@ -15,12 +15,15 @@
 
 package org.cgiar.ccafs.marlo.action.crp.admin;
 
+
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -28,41 +31,52 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
 /**
+ * This action is part of the CRP admin backend.
+ * 
  * @author Christian Garcia
  */
 public class CrpAdminManagmentAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
 
+  // Managers
   private RoleManager roleManager;
   private UserRoleManager userRoleManager;
-  private UserManager userManager;
+  private CrpProgramManager crpProgramManager;
 
+  // Variables
   private Crp loggedCrp;
   private Role rolePmu;
-
   private long pmuRol;
+
+  private List<CrpProgram> fgPrograms;
 
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    UserManager userManager) {
-
+    CrpProgramManager crpProgramManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
-    this.userManager = userManager;
+    this.crpProgramManager = crpProgramManager;
+  }
 
+
+  public List<CrpProgram> getFgPrograms() {
+    return fgPrograms;
   }
 
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public long getPmuRol() {
     return pmuRol;
@@ -72,47 +86,75 @@ public class CrpAdminManagmentAction extends BaseAction {
     return rolePmu;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
 
+    // Get the Users list that have the pmu role in this crp.
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     rolePmu = roleManager.getRoleById(pmuRol);
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
-
     String params[] = {loggedCrp.getAcronym()};
+
+    // Get the Flagship list of this crp
+    fgPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
+
+
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       loggedCrp.getProgramManagmenTeam().clear();
+      fgPrograms.clear();
     }
   }
-
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
 
       Role rolePreview = roleManager.getRoleById(pmuRol);
-      /*
-       * Removing users roles
-       */
+      // Removing users roles
       for (UserRole userRole : rolePreview.getUserRoles()) {
         if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
           userRoleManager.deleteUserRole(userRole.getId());
         }
       }
-      /*
-       * Add new Users roles
-       */
+      // Add new Users roles
       for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-
         if (userRole.getId() == null) {
           userRoleManager.saveUserRole(userRole);
         }
-
       }
+
+      List<CrpProgram> fgProgramsRewiev =
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+      // Removing crp flagship program type
+      if (fgProgramsRewiev != null) {
+        for (CrpProgram crpProgram : fgProgramsRewiev) {
+          if (!fgPrograms.contains(crpProgram)) {
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
+        }
+      }
+
+      // Add crp flagship program type
+      for (CrpProgram crpProgram : fgPrograms) {
+        if (crpProgram.getId() == null) {
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgramManager.saveCrpProgram(crpProgram);
+        }
+      }
+
       rolePmu = roleManager.getRoleById(pmuRol);
       loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
+      fgPrograms = loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+        .collect(Collectors.toList());
+
+
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -121,14 +163,15 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
-
       return INPUT;
-    } else
-
-    {
+    } else {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void setFgPrograms(List<CrpProgram> fgPrograms) {
+    this.fgPrograms = fgPrograms;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

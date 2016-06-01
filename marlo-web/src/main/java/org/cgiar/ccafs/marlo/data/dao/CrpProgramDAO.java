@@ -56,6 +56,13 @@ public interface CrpProgramDAO {
    */
   public List<CrpProgram> findAll();
 
+  /**
+   * This method gets a list of crpProgram of a specific program type
+   * 
+   * @return a CrpProgram list
+   */
+  public List<CrpProgram> findCrpProgramsByType(long id, int programType);
+
 
   /**
    * This method saves the information of the given crpProgram

@@ -277,9 +277,11 @@ public class StandardDAO {
     Transaction tx = null;
     try {
       session = this.openSession();
+      obj = session.merge(obj);
       tx = this.initTransaction(session);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
+
       return true;
     } catch (Exception e) {
       if (tx != null) {

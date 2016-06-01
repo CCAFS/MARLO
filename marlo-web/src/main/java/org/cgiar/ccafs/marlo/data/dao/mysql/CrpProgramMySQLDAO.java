@@ -66,6 +66,17 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
   }
 
   @Override
+  public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
+    String query = "from " + CrpProgram.class.getName() + " where crp_id=" + id + " and program_type=" + programType
+      + " and is_active=1";
+    List<CrpProgram> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public long save(CrpProgram crpProgram) {
     dao.saveOrUpdate(crpProgram);
     return crpProgram.getId();

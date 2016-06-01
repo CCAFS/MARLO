@@ -59,6 +59,11 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
+  public List<CrpProgram> findCrpProgramsByType(long id, int programType) {
+    return crpProgramDAO.findCrpProgramsByType(id, programType);
+  }
+
+  @Override
   public CrpProgram getCrpProgramById(long crpProgramID) {
 
     return crpProgramDAO.find(crpProgramID);

@@ -54,6 +54,13 @@ public interface CrpProgramManager {
 
 
   /**
+   * This method gets a list of crpProgram of a specific program type
+   * 
+   * @return a CrpProgram list
+   */
+  public List<CrpProgram> findCrpProgramsByType(long id, int programType);
+
+  /**
    * This method gets a crpProgram object by a given crpProgram identifier.
    * 
    * @param crpProgramID is the crpProgram identifier.
