@@ -2195,9 +2195,6 @@ p.projectSubmitted {
   border-radius: 5px;
 }
 
-.searchUser {
-  
-}
 
 .button-blue{
   padding: 5px 8px 5px 8px;
@@ -2208,13 +2205,20 @@ p.projectSubmitted {
   cursor: pointer;
 }
 
+.button-blue:hover { 
+  background: #5980C7; 
+}
+
 .button-green{
   padding: 5px 8px 5px 8px;
-  text-align: center;
-  /* background: #668fda; */
+  text-align: center; 
   color: #8ea786;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.button-green:hover {
+  color: #6e8267;
 }
 
 
@@ -2232,9 +2236,6 @@ input.userName {
   cursor: pointer;
 }
 
-.searchUser:hover { 
-  background: #5980C7; 
-}
 
 
 
