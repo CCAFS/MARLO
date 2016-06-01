@@ -96,9 +96,10 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
-  @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
+
+    super.prepare();
 
     // Get the Users list that have the pmu role in this crp.
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -161,26 +162,29 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
-      /*
-       * List<CrpProgram> rgProgramsRewiev =
-       * crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-       * // Removing crp region program type
-       * if (fgProgramsRewiev != null) {
-       * for (CrpProgram crpProgram : rgProgramsRewiev) {
-       * if (!regionsPrograms.contains(crpProgram)) {
-       * crpProgramManager.deleteCrpProgram(crpProgram.getId());
-       * }
-       * }
-       * }
-       * // Add crp region program type
-       * for (CrpProgram crpProgram : regionsPrograms) {
-       * if (crpProgram.getId() == null) {
-       * crpProgram.setCrp(loggedCrp);
-       * crpProgram.setActive(true);
-       * crpProgramManager.saveCrpProgram(crpProgram);
-       * }
-       * }
-       */
+
+      List<CrpProgram> rgProgramsRewiev =
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+      // Removing crp region program type
+      if (fgProgramsRewiev != null) {
+        for (CrpProgram crpProgram : rgProgramsRewiev) {
+          if (!regionsPrograms.contains(crpProgram)) {
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
+        }
+      }
+      // Add crp region program type
+      for (CrpProgram crpProgram : regionsPrograms) {
+        if (crpProgram.getId() == null) {
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgramManager.saveCrpProgram(crpProgram);
+        }
+      }
+
+
+      rolePmu = roleManager.getRoleById(pmuRol);
+      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -190,7 +194,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
-      return SUCCESS;
+      return INPUT;
     } else {
       return NOT_AUTHORIZED;
     }
