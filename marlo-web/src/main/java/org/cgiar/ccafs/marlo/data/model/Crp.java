@@ -38,6 +38,7 @@ public class Crp implements java.io.Serializable {
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
   private boolean active;
   private List<UserRole> programManagmenTeam;
+  private boolean hasRegions;
 
 
   public Crp() {
@@ -48,6 +49,7 @@ public class Crp implements java.io.Serializable {
     this.name = name;
   }
 
+
   public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles, Set<CrpParameter> crpParameters) {
     this.name = name;
     this.acronym = acronym;
@@ -55,6 +57,7 @@ public class Crp implements java.io.Serializable {
     this.roles = roles;
     this.crpParameters = crpParameters;
   }
+
 
   public String getAcronym() {
     return acronym;
@@ -64,11 +67,9 @@ public class Crp implements java.io.Serializable {
     return this.crpParameters;
   }
 
-
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
-
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return crpsSitesIntegrations;
@@ -109,6 +110,12 @@ public class Crp implements java.io.Serializable {
     return active;
   }
 
+
+  public boolean isHasRegions() {
+    return hasRegions;
+  }
+
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -135,6 +142,10 @@ public class Crp implements java.io.Serializable {
 
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
+  }
+
+  public void setHasRegions(boolean hasRegions) {
+    this.hasRegions = hasRegions;
   }
 
   public void setId(Long id) {

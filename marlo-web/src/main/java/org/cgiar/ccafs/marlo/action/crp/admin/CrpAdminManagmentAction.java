@@ -19,10 +19,12 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -51,6 +53,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
+  private CrpParameterManager crpParameterManager;
   // Variables
   private Crp loggedCrp;
   private Role rolePmu;
@@ -58,16 +61,17 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private List<CrpProgram> flagshipsPrograms;
   private List<CrpProgram> regionsPrograms;
-
+  private List<CrpParameter> parameters;
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager, CrpManager crpManager) {
+    CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.crpManager = crpManager;
     this.crpProgramManager = crpProgramManager;
+    this.crpParameterManager = crpParameterManager;
   }
 
 
@@ -96,10 +100,9 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
-
-    super.prepare();
 
     // Get the Users list that have the pmu role in this crp.
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -113,12 +116,24 @@ public class CrpAdminManagmentAction extends BaseAction {
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
+    regionsPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
 
+    parameters = loggedCrp.getCrpParameters().stream().filter(c -> c.getKey().equals(APConstants.CRP_HAS_REGIONS)
+      && c.isActive() && c.getCrp().getId().equals(loggedCrp.getId())).collect(Collectors.toList());
+    if (parameters.size() == 0) {
+      loggedCrp.setHasRegions(false);
+    } else {
+      boolean param = Boolean.parseBoolean(parameters.get(0).getValue());
+      loggedCrp.setHasRegions(param);
+    }
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       loggedCrp.getProgramManagmenTeam().clear();
       flagshipsPrograms.clear();
+      regionsPrograms.clear();
     }
   }
 
@@ -164,9 +179,9 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
       List<CrpProgram> rgProgramsRewiev =
-        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
       // Removing crp region program type
-      if (fgProgramsRewiev != null) {
+      if (rgProgramsRewiev != null) {
         for (CrpProgram crpProgram : rgProgramsRewiev) {
           if (!regionsPrograms.contains(crpProgram)) {
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
@@ -183,8 +198,18 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
 
-      rolePmu = roleManager.getRoleById(pmuRol);
-      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
+      CrpParameter parameter = null;
+      if (parameters.size() == 0) {
+        parameter = new CrpParameter();
+        parameter.setActive(true);
+        parameter.setCrp(loggedCrp);
+        parameter.setKey(APConstants.CRP_HAS_REGIONS);
+
+      } else {
+        parameter = parameters.get(0);
+      }
+      parameter.setValue(loggedCrp.isHasRegions() + "");
+      crpParameterManager.saveCrpParameter(parameter);
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -194,7 +219,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
-      return INPUT;
+      return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }

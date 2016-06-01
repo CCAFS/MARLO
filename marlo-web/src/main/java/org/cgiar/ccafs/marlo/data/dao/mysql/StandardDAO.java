@@ -322,8 +322,8 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.clear();
 
-      session.merge(obj);
-
+      obj = session.merge(obj);
+      session.saveOrUpdate(obj);
       this.commitTransaction(tx);
       session.flush();
       return true;
