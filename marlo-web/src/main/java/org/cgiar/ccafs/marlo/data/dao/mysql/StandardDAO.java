@@ -252,6 +252,7 @@ public class StandardDAO {
       this.sessionFactory =
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
     }
+
     return sessionFactory.openSession();
   }
 
