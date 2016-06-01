@@ -44,8 +44,8 @@
           [#-- Flagships List --]
           <div class="flagships items-list simpleBox">
            <ul>
-           [#if fgPrograms?has_content]
-            [#list fgPrograms as item]
+           [#if programs?has_content]
+            [#list programs as item]
               [@programItem element=item index=item_index name="programs"/]
             [/#list]
            [/#if]
@@ -73,7 +73,7 @@
             <div class="regions items-list simpleBox">
              <ul>
               [#list 1..2 as item]
-                [@programItem element={} index=item_index name="programs"/]
+                [@programItem element={} index=item_index name="programs2"/]
               [/#list]
              </ul>
              <p class="text-center">There are not Flagships added yet.</p>
@@ -120,8 +120,8 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-     <input class="role" type="hidden" name="${customName}.role.id" value="${pmuRol}"/>
-          <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${(pmuRol)!}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right" aria-hidden="true"></span>
   </li>
 [/#macro]
