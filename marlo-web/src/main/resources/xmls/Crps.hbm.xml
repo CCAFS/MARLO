@@ -32,7 +32,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Role" />
         </set>
-        <set lazy="true" name="crpParameters" table="crp_parameters" inverse="true"  fetch="select" >
+        <set lazy="true" name="crpParameters" table="crp_parameters" order-by="id" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_id" not-null="true" />
             </key>
