@@ -5190,7 +5190,8 @@ table.evaluationRank thead th{
   right: 0;
 }
 
-/* CRP ADMIN - Management*/
+/********************  CRP ADMIN - Management  *********************/
+
 .items-list ul {
   margin: 0;
   padding: 0;
@@ -5207,6 +5208,12 @@ table.evaluationRank thead th{
 .items-list ul li .glyphicon-remove{
   color: #E53935;
   cursor: pointer;
+}
+
+/********************** CRP ADMIN - Leaders  ***********************/
+
+.program-block li {
+  font-size:0.95em;
 }
 
 /* Switch  */
