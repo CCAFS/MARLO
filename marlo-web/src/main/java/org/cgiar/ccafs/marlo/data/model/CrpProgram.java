@@ -28,7 +28,9 @@ public class CrpProgram implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = -799819119525448185L;
+
   private Long id;
+
   private Crp crp;
   private String name;
   private String acronym;
@@ -60,10 +62,32 @@ public class CrpProgram implements java.io.Serializable {
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpProgram other = (CrpProgram) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
 
   public String getAcronym() {
     return this.acronym;
   }
+
 
   public Crp getCrp() {
     return this.crp;
@@ -91,6 +115,14 @@ public class CrpProgram implements java.io.Serializable {
 
   public int getProgramType() {
     return this.programType;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   public boolean isActive() {
