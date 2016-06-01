@@ -50,7 +50,7 @@
             [/#list]
            [/#if]
            </ul>
-           <p class="text-center">There are not Flagships added yet.</p>
+        
           </div>
           [#-- Add Flagship--] 
           <div class="row">
@@ -79,7 +79,7 @@
               [/#list]
              [/#if]
              </ul>
-             <p class="text-center">There are not Flagships added yet.</p>
+           
             </div>
             [#-- Add Region--]
             <div class="row">

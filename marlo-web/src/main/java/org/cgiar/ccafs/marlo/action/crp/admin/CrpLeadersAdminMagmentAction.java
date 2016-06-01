@@ -17,12 +17,13 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -36,14 +37,15 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
 
 
   private Crp loggedCrp;
-
+  private CrpManager crpManager;
 
   private List<CrpProgram> programs;
 
 
   @Inject
-  public CrpLeadersAdminMagmentAction(APConfig config) {
+  public CrpLeadersAdminMagmentAction(APConfig config, CrpManager crpManager) {
     super(config);
+    this.crpManager = crpManager;
   }
 
   public Crp getLoggedCrp() {
@@ -57,8 +59,10 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    programs = new ArrayList<CrpProgram>();
-    programs.addAll(loggedCrp.getCrpPrograms());
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    programs = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

@@ -112,12 +112,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
-
+    regionsPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       loggedCrp.getProgramManagmenTeam().clear();
       flagshipsPrograms.clear();
+      regionsPrograms.clear();
     }
   }
 
@@ -161,26 +164,26 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
-      /*
-       * List<CrpProgram> rgProgramsRewiev =
-       * crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-       * // Removing crp region program type
-       * if (fgProgramsRewiev != null) {
-       * for (CrpProgram crpProgram : rgProgramsRewiev) {
-       * if (!regionsPrograms.contains(crpProgram)) {
-       * crpProgramManager.deleteCrpProgram(crpProgram.getId());
-       * }
-       * }
-       * }
-       * // Add crp region program type
-       * for (CrpProgram crpProgram : regionsPrograms) {
-       * if (crpProgram.getId() == null) {
-       * crpProgram.setCrp(loggedCrp);
-       * crpProgram.setActive(true);
-       * crpProgramManager.saveCrpProgram(crpProgram);
-       * }
-       * }
-       */
+
+      List<CrpProgram> rgProgramsRewiev =
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
+      // Removing crp region program type
+      if (fgProgramsRewiev != null) {
+        for (CrpProgram crpProgram : rgProgramsRewiev) {
+          if (!regionsPrograms.contains(crpProgram)) {
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
+        }
+      }
+      // Add crp region program type
+      for (CrpProgram crpProgram : regionsPrograms) {
+        if (crpProgram.getId() == null) {
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgramManager.saveCrpProgram(crpProgram);
+        }
+      }
+
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
