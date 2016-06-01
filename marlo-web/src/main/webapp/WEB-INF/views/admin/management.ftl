@@ -46,7 +46,7 @@
            <ul>
            [#if fgPrograms?has_content]
             [#list fgPrograms as item]
-              [@programItem element=item index=item_index name="fgPrograms"/]
+              [@programItem element=item index=item_index name="programs"/]
             [/#list]
            [/#if]
            </ul>

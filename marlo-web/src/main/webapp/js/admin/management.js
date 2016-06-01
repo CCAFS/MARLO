@@ -86,7 +86,7 @@ function updateUsersIndex(list) {
 
 function updateProgramIndex(list) {
   $(list).find('li').each(function(i,item) {
-    var customName = 'fgPrograms[' + i + ']';
+    var customName = 'programs[' + i + ']';
     $(item).find('.acronym').attr('name', customName + '.acronym');
     $(item).find('.name').attr('name', customName + '.name');
     $(item).find('.type').attr('name', customName + '.programType');
