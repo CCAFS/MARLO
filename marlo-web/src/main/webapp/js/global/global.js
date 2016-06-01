@@ -31,8 +31,9 @@ $(document).ready(function() {
     }
   }
 
+  var mainMenuPosition = $('#mainMenu').position().top;
   $(window).scroll(function() {
-    if($(window).scrollTop() >= 103) {
+    if($(window).scrollTop() >= mainMenuPosition) {
       $('#mainMenu').addClass('positionFixedTop');
     } else {
       $('#mainMenu').removeClass('positionFixedTop');

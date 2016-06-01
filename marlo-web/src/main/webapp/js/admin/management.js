@@ -20,7 +20,7 @@ function attachEvents() {
       $parent.remove();
       checkItems($block);
       updateUsersIndex($block);
-      //updateProgramIndex($block)
+      // updateProgramIndex($block)
     });
   });
 
@@ -30,7 +30,7 @@ function attachEvents() {
 }
 
 function addUserItem(composedName,userId) {
-  var $usersList = $(".users.items-list");
+  $usersList = $elementSelected.parent().find(".items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
   $li.find('.name').html(escapeHtml(composedName));
   $li.find('.user').val(userId);
@@ -53,7 +53,6 @@ function addProgram(element) {
         return this.acronym + ' - ' + this.name;
       }
   }
-  console.log(item);
   $li.find('.composedName').html(item.composedName());
   $li.find('.acronym').val(item.acronym);
   $li.find('.name').val(item.name);
