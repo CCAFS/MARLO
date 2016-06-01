@@ -67,7 +67,13 @@ public class CrpAssumptionMySQLDAO implements CrpAssumptionDAO {
 
   @Override
   public long save(CrpAssumption crpAssumption) {
-    dao.saveOrUpdate(crpAssumption);
+    if (crpAssumption.getId() == null) {
+      dao.save(crpAssumption);
+    } else {
+      dao.update(crpAssumption);
+    }
+
+
     return crpAssumption.getId();
   }
 

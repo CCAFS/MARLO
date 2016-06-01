@@ -44,8 +44,8 @@
           [#-- Flagships List --]
           <div class="flagships items-list simpleBox">
            <ul>
-           [#if programs?has_content]
-            [#list programs as item]
+           [#if flagshipsPrograms?has_content]
+            [#list flagshipsPrograms as item]
               [@programItem element=item index=item_index name="flagshipsPrograms"/]
             [/#list]
            [/#if]

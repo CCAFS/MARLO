@@ -67,7 +67,11 @@ public class CrpSubIdosContributionMySQLDAO implements CrpSubIdosContributionDAO
 
   @Override
   public long save(CrpSubIdosContribution crpSubIdosContribution) {
-    dao.saveOrUpdate(crpSubIdosContribution);
+    if (crpSubIdosContribution.getId() == null) {
+      dao.save(crpSubIdosContribution);
+    } else {
+      dao.update(crpSubIdosContribution);
+    }
     return crpSubIdosContribution.getId();
   }
 

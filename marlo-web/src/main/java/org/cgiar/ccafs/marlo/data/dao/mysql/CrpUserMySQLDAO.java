@@ -77,7 +77,11 @@ public class CrpUserMySQLDAO implements CrpUserDAO {
 
   @Override
   public long save(CrpUser crpUser) {
-    dao.saveOrUpdate(crpUser);
+    if (crpUser.getId() == null) {
+      dao.save(crpUser);
+    } else {
+      dao.update(crpUser);
+    }
     return crpUser.getId();
   }
 

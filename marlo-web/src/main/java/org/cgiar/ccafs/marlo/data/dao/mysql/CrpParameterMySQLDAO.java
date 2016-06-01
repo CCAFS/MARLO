@@ -67,7 +67,11 @@ public class CrpParameterMySQLDAO implements CrpParameterDAO {
 
   @Override
   public long save(CrpParameter crpParameter) {
-    dao.saveOrUpdate(crpParameter);
+    if (crpParameter.getId() == null) {
+      dao.save(crpParameter);
+    } else {
+      dao.update(crpParameter);
+    }
     return crpParameter.getId();
   }
 

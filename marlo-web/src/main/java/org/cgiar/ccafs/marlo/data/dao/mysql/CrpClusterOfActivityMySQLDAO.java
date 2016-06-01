@@ -67,7 +67,11 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
 
   @Override
   public String save(CrpClusterOfActivity crpClusterOfActivity) {
-    dao.saveOrUpdate(crpClusterOfActivity);
+    if (crpClusterOfActivity.getId() == null) {
+      dao.save(crpClusterOfActivity);
+    } else {
+      dao.update(crpClusterOfActivity);
+    }
     return crpClusterOfActivity.getId();
   }
 

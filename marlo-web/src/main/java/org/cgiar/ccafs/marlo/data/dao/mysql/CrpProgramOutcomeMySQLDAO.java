@@ -67,7 +67,11 @@ public class CrpProgramOutcomeMySQLDAO implements CrpProgramOutcomeDAO {
 
   @Override
   public long save(CrpProgramOutcome crpProgramOutcome) {
-    dao.saveOrUpdate(crpProgramOutcome);
+    if (crpProgramOutcome.getId() == null) {
+      dao.save(crpProgramOutcome);
+    } else {
+      dao.update(crpProgramOutcome);
+    }
     return crpProgramOutcome.getId();
   }
 

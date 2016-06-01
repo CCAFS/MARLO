@@ -67,7 +67,11 @@ public class SrfSubIdoMySQLDAO implements SrfSubIdoDAO {
 
   @Override
   public long save(SrfSubIdo srfSubIdo) {
-    dao.saveOrUpdate(srfSubIdo);
+    if (srfSubIdo.getId() == null) {
+      dao.save(srfSubIdo);
+    } else {
+      dao.update(srfSubIdo);
+    }
     return srfSubIdo.getId();
   }
 

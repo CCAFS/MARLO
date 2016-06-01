@@ -67,7 +67,11 @@ public class CrpOutcomeSubIdoMySQLDAO implements CrpOutcomeSubIdoDAO {
 
   @Override
   public long save(CrpOutcomeSubIdo crpOutcomeSubIdo) {
-    dao.saveOrUpdate(crpOutcomeSubIdo);
+    if (crpOutcomeSubIdo.getId() == null) {
+      dao.save(crpOutcomeSubIdo);
+    } else {
+      dao.update(crpOutcomeSubIdo);
+    }
     return crpOutcomeSubIdo.getId();
   }
 

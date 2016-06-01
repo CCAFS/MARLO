@@ -67,7 +67,11 @@ public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
 
   @Override
   public long save(LocGeoposition locGeoposition) {
-    dao.saveOrUpdate(locGeoposition);
+    if (locGeoposition.getId() == null) {
+      dao.save(locGeoposition);
+    } else {
+      dao.update(locGeoposition);
+    }
     return locGeoposition.getId();
   }
 

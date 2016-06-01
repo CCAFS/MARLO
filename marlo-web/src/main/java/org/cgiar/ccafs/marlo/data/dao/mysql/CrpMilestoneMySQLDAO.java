@@ -67,7 +67,11 @@ public class CrpMilestoneMySQLDAO implements CrpMilestoneDAO {
 
   @Override
   public long save(CrpMilestone crpMilestone) {
-    dao.saveOrUpdate(crpMilestone);
+    if (crpMilestone.getId() == null) {
+      dao.save(crpMilestone);
+    } else {
+      dao.update(crpMilestone);
+    }
     return crpMilestone.getId();
   }
 

@@ -67,7 +67,11 @@ public class CrpsSiteIntegrationMySQLDAO implements CrpsSiteIntegrationDAO {
 
   @Override
   public long save(CrpsSiteIntegration crpsSiteIntegration) {
-    dao.saveOrUpdate(crpsSiteIntegration);
+    if (crpsSiteIntegration.getId() == null) {
+      dao.save(crpsSiteIntegration);
+    } else {
+      dao.update(crpsSiteIntegration);
+    }
     return crpsSiteIntegration.getId();
   }
 

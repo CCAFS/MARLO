@@ -67,7 +67,11 @@ public class SrfCrossCuttingIssueMySQLDAO implements SrfCrossCuttingIssueDAO {
 
   @Override
   public long save(SrfCrossCuttingIssue srfCrossCuttingIssue) {
-    dao.saveOrUpdate(srfCrossCuttingIssue);
+    if (srfCrossCuttingIssue.getId() == null) {
+      dao.save(srfCrossCuttingIssue);
+    } else {
+      dao.update(srfCrossCuttingIssue);
+    }
     return srfCrossCuttingIssue.getId();
   }
 

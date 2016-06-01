@@ -67,7 +67,11 @@ public class SrfSloIndicatorMySQLDAO implements SrfSloIndicatorDAO {
 
   @Override
   public long save(SrfSloIndicator srfSloIndicator) {
-    dao.saveOrUpdate(srfSloIndicator);
+    if (srfSloIndicator.getId() == null) {
+      dao.save(srfSloIndicator);
+    } else {
+      dao.update(srfSloIndicator);
+    }
     return srfSloIndicator.getId();
   }
 

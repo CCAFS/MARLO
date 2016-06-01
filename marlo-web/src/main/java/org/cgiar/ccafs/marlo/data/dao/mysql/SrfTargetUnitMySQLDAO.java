@@ -67,7 +67,11 @@ public class SrfTargetUnitMySQLDAO implements SrfTargetUnitDAO {
 
   @Override
   public long save(SrfTargetUnit srfTargetUnit) {
-    dao.saveOrUpdate(srfTargetUnit);
+    if (srfTargetUnit.getId() == null) {
+      dao.save(srfTargetUnit);
+    } else {
+      dao.update(srfTargetUnit);
+    }
     return srfTargetUnit.getId();
   }
 

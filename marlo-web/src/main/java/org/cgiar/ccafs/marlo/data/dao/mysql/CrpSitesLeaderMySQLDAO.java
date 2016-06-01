@@ -67,7 +67,11 @@ public class CrpSitesLeaderMySQLDAO implements CrpSitesLeaderDAO {
 
   @Override
   public long save(CrpSitesLeader crpSitesLeader) {
-    dao.saveOrUpdate(crpSitesLeader);
+    if (crpSitesLeader.getId() == null) {
+      dao.save(crpSitesLeader);
+    } else {
+      dao.update(crpSitesLeader);
+    }
     return crpSitesLeader.getId();
   }
 

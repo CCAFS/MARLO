@@ -80,7 +80,11 @@ public class CrpMySQLDAO implements CrpDAO {
 
   @Override
   public long save(Crp crp) {
-    dao.saveOrUpdate(crp);
+    if (crp.getId() == null) {
+      dao.save(crp);
+    } else {
+      dao.update(crp);
+    }
     return crp.getId();
   }
 }

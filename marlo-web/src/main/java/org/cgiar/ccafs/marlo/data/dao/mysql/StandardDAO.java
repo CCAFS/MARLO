@@ -279,7 +279,7 @@ public class StandardDAO {
    * @param obj is the Object to be saved/updated.
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean saveOrUpdate(Object obj) {
+  protected boolean save(Object obj) {
     Session session = null;
     Transaction tx = null;
     try {
@@ -287,11 +287,13 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
       session.clear();
-      session.saveOrUpdate(obj);
+
+      session.save(obj);
       this.commitTransaction(tx);
       session.flush();
       return true;
     } catch (Exception e) {
+      e.printStackTrace();
       if (tx != null) {
         this.rollBackTransaction(tx);
       }
@@ -304,4 +306,38 @@ public class StandardDAO {
     }
   }
 
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected boolean update(Object obj) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession();
+
+      tx = this.initTransaction(session);
+      session.clear();
+
+      session.merge(obj);
+
+      this.commitTransaction(tx);
+      session.flush();
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
+      }
+      return false;
+    }
+  }
 }

@@ -67,7 +67,11 @@ public class SrfSloIdoMySQLDAO implements SrfSloIdoDAO {
 
   @Override
   public long save(SrfSloIdo srfSloIdo) {
-    dao.saveOrUpdate(srfSloIdo);
+    if (srfSloIdo.getId() == null) {
+      dao.save(srfSloIdo);
+    } else {
+      dao.update(srfSloIdo);
+    }
     return srfSloIdo.getId();
   }
 

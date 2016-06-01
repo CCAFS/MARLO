@@ -67,7 +67,11 @@ public class RoleMySQLDAO implements RoleDAO {
 
   @Override
   public long save(Role role) {
-    dao.saveOrUpdate(role);
+    if (role.getId() == null) {
+      dao.save(role);
+    } else {
+      dao.update(role);
+    }
     return role.getId();
   }
 

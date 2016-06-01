@@ -161,27 +161,26 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
-
-      List<CrpProgram> rgProgramsRewiev =
-        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-      // Removing crp region program type
-      if (fgProgramsRewiev != null) {
-        for (CrpProgram crpProgram : rgProgramsRewiev) {
-          if (!regionsPrograms.contains(crpProgram)) {
-            crpProgramManager.deleteCrpProgram(crpProgram.getId());
-          }
-        }
-      }
-
-      // Add crp region program type
-      for (CrpProgram crpProgram : regionsPrograms) {
-        if (crpProgram.getId() == null) {
-          crpProgram.setCrp(loggedCrp);
-          crpProgram.setActive(true);
-          crpProgramManager.saveCrpProgram(crpProgram);
-        }
-      }
-
+      /*
+       * List<CrpProgram> rgProgramsRewiev =
+       * crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+       * // Removing crp region program type
+       * if (fgProgramsRewiev != null) {
+       * for (CrpProgram crpProgram : rgProgramsRewiev) {
+       * if (!regionsPrograms.contains(crpProgram)) {
+       * crpProgramManager.deleteCrpProgram(crpProgram.getId());
+       * }
+       * }
+       * }
+       * // Add crp region program type
+       * for (CrpProgram crpProgram : regionsPrograms) {
+       * if (crpProgram.getId() == null) {
+       * crpProgram.setCrp(loggedCrp);
+       * crpProgram.setActive(true);
+       * crpProgramManager.saveCrpProgram(crpProgram);
+       * }
+       * }
+       */
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {

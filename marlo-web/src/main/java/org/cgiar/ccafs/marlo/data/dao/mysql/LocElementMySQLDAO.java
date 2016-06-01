@@ -67,7 +67,11 @@ public class LocElementMySQLDAO implements LocElementDAO {
 
   @Override
   public long save(LocElement locElement) {
-    dao.saveOrUpdate(locElement);
+    if (locElement.getId() == null) {
+      dao.save(locElement);
+    } else {
+      dao.update(locElement);
+    }
     return locElement.getId();
   }
 
