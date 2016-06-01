@@ -44,8 +44,8 @@
           [#-- Flagships List --]
           <div class="flagships items-list simpleBox">
            <ul>
-           [#if fgPrograms?has_content]
-            [#list fgPrograms as item]
+           [#if programs?has_content]
+            [#list programs as item]
               [@programItem element=item index=item_index name="programs"/]
             [/#list]
            [/#if]
@@ -73,7 +73,7 @@
             <div class="regions items-list simpleBox">
              <ul>
               [#list 1..2 as item]
-                [@programItem element={} index=item_index name="programs"/]
+                [@programItem element={} index=item_index name="programs2"/]
               [/#list]
              </ul>
              <p class="text-center">There are not Flagships added yet.</p>

@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -49,27 +50,23 @@ public class CrpAdminManagmentAction extends BaseAction {
   private RoleManager roleManager;
   private UserRoleManager userRoleManager;
   private CrpProgramManager crpProgramManager;
-
+  private CrpManager crpManager;
   // Variables
   private Crp loggedCrp;
   private Role rolePmu;
   private long pmuRol;
 
-  private List<CrpProgram> fgPrograms;
+  private List<CrpProgram> programs;
 
 
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
-    CrpProgramManager crpProgramManager) {
+    CrpProgramManager crpProgramManager, CrpManager crpManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
+    this.crpManager = crpManager;
     this.crpProgramManager = crpProgramManager;
-  }
-
-
-  public List<CrpProgram> getFgPrograms() {
-    return fgPrograms;
   }
 
 
@@ -82,6 +79,11 @@ public class CrpAdminManagmentAction extends BaseAction {
     return pmuRol;
   }
 
+
+  public List<CrpProgram> getPrograms() {
+    return programs;
+  }
+
   public Role getRolePmu() {
     return rolePmu;
   }
@@ -92,13 +94,14 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // Get the Users list that have the pmu role in this crp.
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
     rolePmu = roleManager.getRoleById(pmuRol);
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
     String params[] = {loggedCrp.getAcronym()};
 
     // Get the Flagship list of this crp
-    fgPrograms = loggedCrp.getCrpPrograms().stream()
+    programs = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
 
@@ -106,7 +109,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       loggedCrp.getProgramManagmenTeam().clear();
-      fgPrograms.clear();
+      programs.clear();
     }
   }
 
@@ -133,26 +136,20 @@ public class CrpAdminManagmentAction extends BaseAction {
       // Removing crp flagship program type
       if (fgProgramsRewiev != null) {
         for (CrpProgram crpProgram : fgProgramsRewiev) {
-          if (!fgPrograms.contains(crpProgram)) {
+          if (!programs.contains(crpProgram)) {
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
         }
       }
 
       // Add crp flagship program type
-      for (CrpProgram crpProgram : fgPrograms) {
+      for (CrpProgram crpProgram : programs) {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);
           crpProgram.setActive(true);
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
-
-      rolePmu = roleManager.getRoleById(pmuRol);
-      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
-      fgPrograms = loggedCrp.getCrpPrograms().stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-        .collect(Collectors.toList());
 
 
       Collection<String> messages = this.getActionMessages();
@@ -170,17 +167,17 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-  public void setFgPrograms(List<CrpProgram> fgPrograms) {
-    this.fgPrograms = fgPrograms;
-  }
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPmuRol(long pmuRol) {
     this.pmuRol = pmuRol;
+  }
+
+
+  public void setPrograms(List<CrpProgram> fgPrograms) {
+    this.programs = fgPrograms;
   }
 
   public void setRolePmu(Role rolePmu) {
