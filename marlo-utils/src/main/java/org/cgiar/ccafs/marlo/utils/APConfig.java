@@ -36,6 +36,8 @@ public class APConfig {
   private static final String EMAIL_PORT = "email.port";
   private static final String PRODUCTION = "ccafsap.production";
 
+  private static final String ADMIN_ACTIVE = "marlo.admin.active";
+
   private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
@@ -109,6 +111,22 @@ public class APConfig {
     }
     return null;
   }
+
+  /**
+   * Get the flag that indicate if the admin section is active
+   * according to the variable in the configuration file.
+   * 
+   * @return a boolean indicating if it is active.
+   */
+  public boolean isAdminActive() {
+    String adminActive = properties.getPropertiesAsString(ADMIN_ACTIVE);
+    if (adminActive == null) {
+      LOG.error("There is not a Admin active configured");
+      return false;
+    }
+    return adminActive.equals("true");
+  }
+
 
   /**
    * If we are running P&R in production or testing mode.
