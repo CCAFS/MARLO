@@ -26,19 +26,22 @@
         <div class="row">
           [#if programs?has_content]
             [#list programs as program]
+            [#assign customName = "programs[${program_index}].leaders" /]
             <div class="col-md-6">
               <h5 class="sectionSubTitle" > ${program.name} (${program.acronym})</h5>
               <div class="program-block borderBox">
                 <div class="items-list">
                   <ul>
-             
                   [#list program.leaders as item]
-                    [@userItem element=item index=item_index name="programs[${program_index}].leaders" /]
+                    [@userItem element=item index=item_index name=customName /]
                   [/#list]
                   </ul>
                   <p class="text-center" style="display:${(program.leaders?has_content)?string('none','block')}">There are not users added yet.</p>
                 </div>
-                <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+                <div class="searchUser button-green">
+                  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
+                  <span class="inputName-input" style="display:none">${customName}</span>
+                </div>
               </div>
             </div>
             [#if (program_index%2) = 1] <div class="clearfix"></div> [/#if]
