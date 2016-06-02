@@ -6,10 +6,11 @@
 
 		<action name="{crp}/management" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpAdminManagmentAction">
 			<!-- interceptor-ref name="autoLogin" / -->
-			<interceptor-ref name="i18nFile" />
-			<interceptor-ref name="requireUser" />
-			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="adminStack" />
 			<result name="input">/WEB-INF/views/admin/management.ftl</result>
+			<result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/management</param>
+      </result>
 		</action>
 		
 		<action name="{crp}/leaders" class="org.cgiar.ccafs.marlo.action.crp.admin.CrpLeadersAdminMagmentAction">
