@@ -27,7 +27,7 @@ function addUserItem(composedName,userId) {
   $usersList = $elementSelected.parent().find(".items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
   $li.find('.name').html(escapeHtml(composedName));
-  $li.find('.id').val(userId);
+  $li.find('.user').val(userId);
   $usersList.find("ul").append($li);
   $li.show('slow');
   checkItems($usersList);
@@ -46,6 +46,8 @@ function checkItems(block) {
 
 function updateUsersIndex(list,name) {
   $(list).find('li').each(function(i,item) {
+
+
     var customName = name + '[' + i + ']';
     $(item).find('.user').attr('name', customName + '.user.id');
     $(item).find('.role').attr('name', customName + '.role.id');
