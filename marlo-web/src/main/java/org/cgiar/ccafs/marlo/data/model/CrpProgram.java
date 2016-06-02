@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,10 +39,14 @@ public class CrpProgram implements java.io.Serializable {
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+
   private boolean active;
+  private List<CrpProgramLeader> leaders;
+
 
   public CrpProgram() {
   }
+
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -88,7 +93,6 @@ public class CrpProgram implements java.io.Serializable {
     return this.acronym;
   }
 
-
   public Crp getCrp() {
     return this.crp;
   }
@@ -96,6 +100,7 @@ public class CrpProgram implements java.io.Serializable {
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
+
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
@@ -107,6 +112,10 @@ public class CrpProgram implements java.io.Serializable {
 
   public Long getId() {
     return this.id;
+  }
+
+  public List<CrpProgramLeader> getLeaders() {
+    return leaders;
   }
 
   public String getName() {
@@ -147,6 +156,10 @@ public class CrpProgram implements java.io.Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setLeaders(List<CrpProgramLeader> leaders) {
+    this.leaders = leaders;
   }
 
   public void setName(String name) {

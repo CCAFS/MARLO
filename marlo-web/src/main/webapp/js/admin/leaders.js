@@ -50,7 +50,6 @@ function updateUsersIndex(list) {
   $(list).find('li').each(function(i,item) {
     var customName = 'programUsers[' + i + ']';
     $(item).find('.user').attr('name', customName + '.user.id');
-    $(item).find('.role').attr('name', customName + '.role.id');
     $(item).find('.id').attr('name', customName + '.id');
   });
 }
