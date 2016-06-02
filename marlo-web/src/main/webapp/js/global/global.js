@@ -31,12 +31,12 @@ $(document).ready(function() {
     }
   }
 
-  var mainMenuPosition = $('#mainMenu').position().top;
+  var mainMenuPosition = $('#mainMenu').position().top + 20;
   $(window).scroll(function() {
     if($(window).scrollTop() >= mainMenuPosition) {
-      $('#mainMenu').addClass('positionFixedTop');
+      $('#mainMenu .menuContent').addClass('positionFixedTop');
     } else {
-      $('#mainMenu').removeClass('positionFixedTop');
+      $('#mainMenu .menuContent').removeClass('positionFixedTop');
     }
   });
 
