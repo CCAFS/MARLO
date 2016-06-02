@@ -1,4 +1,4 @@
-#configuration for production server
+#configuration for developer machine
 # BD
 mysql.host=localhost
 mysql.user=user
@@ -8,8 +8,12 @@ mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
 
 # -----------------------------
-
-
+marlo.baseUrl=https://localhost/marlo-web/
+# ----------------------------------------------------
+#                   Sections Variables
+# ----------------------------------------------------
+# Is Admin Section active? 
+marlo.admin.active=true
 # ------------------------------------------------
 # Email account
 # ------------------------------------------------
@@ -25,7 +29,7 @@ email.port=port
 # -----------------------------------------------
 # TEST MODE
 # ------------------------------------------------
-ccafsap.production=true
+ccafsap.production=false
 
 # ------------------------------------------------
 # Logger properties
