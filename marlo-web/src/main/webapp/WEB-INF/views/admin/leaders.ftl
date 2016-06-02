@@ -26,21 +26,21 @@
         <div class="row">
           [#if programs?has_content]
             [#list programs as program]
-            [#assign customName = "programs[${program_index}].leaders" /]
+            [#assign customNameProgram = "programs[${program_index}].leaders" /]
             <div class="col-md-6">
               <h5 class="sectionSubTitle" > ${program.name} (${program.acronym})</h5>
               <div class="program-block borderBox">
                 <div class="items-list">
                   <ul>
                   [#list program.leaders as item]
-                    [@userItem element=item index=item_index name=customName /]
+                    [@userItem element=item index=item_index name=customNameProgram /]
                   [/#list]
                   </ul>
                   <p class="text-center" style="display:${(program.leaders?has_content)?string('none','block')}">There are not users added yet.</p>
                 </div>
                 <div class="searchUser button-green">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
-                  <span class="inputName-input" style="display:none">${customName}</span>
+                  <span class="inputName-input" style="display:none">${customNameProgram}</span>${customNameProgram}
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${(pmuRol)!}"/>
+
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
