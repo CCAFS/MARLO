@@ -40,7 +40,7 @@
                 </div>
                 <div class="searchUser button-green">
                   <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
-                  <span class="inputName-input" style="display:none">${customNameProgram}</span>${customNameProgram}
+                  <span class="inputName-input" style="display:none">${customNameProgram}</span>
                 </div>
               </div>
             </div>
@@ -79,7 +79,6 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
