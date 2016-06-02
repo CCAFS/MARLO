@@ -69,7 +69,7 @@
           [#-- Does your CRP have regional program managers?  --]
           [@customForm.yesNoInput name="loggedCrp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
          
-          <div id="aditional-hasRegions" style="display:${(loggedCrp.hasRegions?string('none','block'))!'none'}">
+          <div id="aditional-hasRegions" style="display:${(loggedCrp.hasRegions?string('block','none'))!'block'}">
             [#-- Regions List --]
             <div class="regions items-list simpleBox">
              <ul>

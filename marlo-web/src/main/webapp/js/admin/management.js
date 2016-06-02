@@ -9,7 +9,7 @@ function init() {
 
 function attachEvents() {
 
-  // Remove an item
+  // Remove an user item
   $('.remove-userItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
@@ -20,7 +20,7 @@ function attachEvents() {
     });
   });
 
-  // Remove an item
+  // Remove an program item
   $('.remove-programItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
