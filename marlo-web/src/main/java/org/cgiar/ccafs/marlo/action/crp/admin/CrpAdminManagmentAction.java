@@ -211,6 +211,9 @@ public class CrpAdminManagmentAction extends BaseAction {
       parameter.setValue(loggedCrp.isHasRegions() + "");
       crpParameterManager.saveCrpParameter(parameter);
 
+      rolePmu = roleManager.getRoleById(pmuRol);
+      loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
+
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -219,6 +222,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
+      messages = this.getActionMessages();
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
