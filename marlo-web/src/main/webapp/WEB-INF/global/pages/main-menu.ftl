@@ -1,5 +1,6 @@
 [#ftl]
-<nav id="mainMenu">  
+<nav id="mainMenu"> 
+<div class="menuContent">
 	<div class="container">
 	  <ul>
 	    [#if logged?? && logged]
@@ -15,12 +16,8 @@
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
           <a href="[@s.url namespace="/admin" action='${crpSession}/management'/]">[@s.text name="menu.admin" /]
           </a>
-        </li>
-        
-        
-        [/#if]
-
-       
+        </li> 
+        [/#if] 
         
         [#-- PRE-Planning section 
         <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
@@ -49,6 +46,7 @@
       </div>
   	[/#if]
   </div>
+</div> 
 </nav> 
 
 <div class="container">
