@@ -41,6 +41,10 @@ public final class APConstants {
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
+  // Request variables
+  public static final String CRP_REQUEST = "crp";
+  public static final String PROJECT_REQUEST_ID = "projectID";
+
 
 }
 

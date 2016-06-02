@@ -42,6 +42,10 @@
 			<interceptor name="validCrp"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidCrpActionInterceptor" />
 
+			<!-- Crp Admin interceptors -->
+			<interceptor name="canEditCrpAdmin"
+				class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
+
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
 				<interceptor-ref name="i18nFile" />
@@ -49,16 +53,17 @@
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
-			
-			<interceptor-stack name="adminStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="keepRedirectMessages"/>
-        <interceptor-ref name="accessibleStage"/>
-        <interceptor-ref name="trimInputs"/>
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+
+			<interceptor-stack name="crpAdminStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="canEditCrpAdmin" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
 		</interceptors>
 
