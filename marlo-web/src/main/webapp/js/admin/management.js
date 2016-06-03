@@ -54,26 +54,39 @@ function addUserItem(composedName,userId) {
 function addProgram(element) {
   var $parent = $(element).parents('.program-block')
   var $programList = $parent.find(".items-list");
-  var $li = $("#program-template").clone(true).removeAttr("id");
+  // Getting item parameters
   var item = {
-      acronym: $parent.find('.acronym-input').val(),
-      name: $parent.find('.name-input').val(),
+      acronym: $.trim($parent.find('.acronym-input').val()),
+      name: $.trim($parent.find('.name-input').val()),
       type: $parent.find('.type-input').html(),
       inputName: $parent.find('.inputName-input').html(),
       composedName: function() {
         return this.acronym + ' - ' + this.name;
       }
   }
-  $li.find('.composedName').html(item.composedName());
-  $li.find('.acronym').val(item.acronym);
-  $li.find('.name').val(item.name);
-  $li.find('.type').val(item.type);
-  $programList.find("ul").append($li);
-  $li.show('slow');
-
-  $parent.find('input:text').val('');
-  checkItems($programList);
-  updateProgramIndex($programList, item.inputName);
+  if((item.acronym == '') || (item.name == '')) {
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'Acronym and name are required';
+    noty(notyOptions);
+  } else {
+    // Create a program item from a template
+    var $li = $("#program-template").clone(true).removeAttr("id");
+    // Assign parameters to template created
+    $li.find('.composedName').html(item.composedName());
+    $li.find('.acronym').val(item.acronym);
+    $li.find('.name').val(item.name);
+    $li.find('.type').val(item.type);
+    // Append item into program list
+    $programList.find("ul").append($li);
+    // Show item
+    $li.show('slow');
+    // Reset program form
+    $parent.find('input:text').val('');
+    // Check program items
+    checkItems($programList);
+    // Update program index
+    updateProgramIndex($programList, item.inputName);
+  }
 }
 
 function checkItems(block) {
