@@ -32,7 +32,7 @@
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
-                [#assign leaders = [{},{}] /]
+                [#assign leaders = [] /]
                 [#list leaders as item]
                   [@userItem element=item index=item_index name=customNameCountry /]
                 [/#list]
