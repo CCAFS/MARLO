@@ -47,6 +47,8 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
 
     boolean canEdit = false;
+    boolean hasPermissionToEdit = false;
+    boolean editParameter = false;
 
 
     // If user is admin, it should have privileges to edit all projects.
@@ -57,6 +59,21 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
         .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()))) {
         canEdit = true;
       }
+    }
+
+    if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+      String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      editParameter = stringEditable.equals("true");
+      // If the user is not asking for edition privileges we don't need to validate them.
+      if (!editParameter) {
+        baseAction.setEditableParameter(hasPermissionToEdit);
+      }
+    }
+
+    // Check the permission if user want to edit or save the form
+    if (editParameter || parameters.get("save") != null) {
+      hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
+        .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()));
     }
 
     // Set the variable that indicates if the user can edit the section
