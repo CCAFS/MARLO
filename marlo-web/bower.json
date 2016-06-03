@@ -47,6 +47,12 @@
         "dist/css/bootstrap.min.css",
         "dist/js/bootstrap.min.js"
       ]
+    },
+    "select2": {
+      "main": [
+        "dist/css/select2.min.css",
+        "dist/js/select2.min.js"
+      ]
     }
   }
 }

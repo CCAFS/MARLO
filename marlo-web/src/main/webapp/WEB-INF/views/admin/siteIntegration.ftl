@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Site Integration" /]
-[#assign pageLibs = [] /]
+[#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = ["${baseUrl}/js/admin/siteIntegration.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "siteIntegration" /]
@@ -23,16 +23,38 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Site Integration</h4>
-        [#assign crpCountries = [{'name': 'CO'},{'name': 'CN'}] /]
+        [#assign crpCountries = [{'name': 'Colombia','code': 'co'},{'name':'China','code': 'cn'}] /]
         [#if crpCountries?has_content]
           [#list crpCountries as crpCountry]
-            <div class="borderBox">
-              ${crpCountry.name}
+          [#assign customNameCountry = "programs[${crpCountry_index}].leaders" /]
+          <h5 class="sectionSubTitle" > <span class="flag-icon flag-icon-${crpCountry.code}"></span> ${crpCountry.name}</h5>
+          <div class="borderBox"> 
+            <div class="crpCountry-block">
+              <div class="items-list simpleBox">
+                <ul>
+                [#assign usersItems = [{},{}] /]
+                [#list usersItems as item]
+                  [@userItem element=item index=item_index name=customNameCountry /]
+                [/#list]
+                </ul>
+                <p class="text-center" style="display:${(usersItems?has_content)?string('none','block')}">There are not users added yet.</p>
+              </div>
+              <div class="searchUser button-green">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
+                <span class="inputName-input" style="display:none">${customNameCountry}</span>
+              </div>
             </div>
+          </div>
           [/#list]
         [#else]
-          <p class="text-center">There are not countries added yet.</p>
+          <p class="text-center">There are not countries added yet</p>
         [/#if] 
+        
+        <br />
+        [#-- List of countries --]
+        [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="id" displayFieldName="" value="" /]
+
+       
         
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
@@ -45,3 +67,14 @@
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
+
+[#macro userItem element index name template=false]
+  [#assign customName = "${name}[${index}]" /]
+  <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+    <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+  </li>
+[/#macro]

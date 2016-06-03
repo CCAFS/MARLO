@@ -5360,3 +5360,12 @@ table.evaluationRank thead th{
   display: none;
 }
 
+
+
+span.flag-icon {
+  font-size: 1.2em;
+  border-radius: 4px;
+  opacity: 0.8;
+  vertical-align: middle;
+  margin: 0px 7px;
+}
