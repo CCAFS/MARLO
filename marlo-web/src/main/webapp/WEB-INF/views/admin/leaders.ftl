@@ -48,8 +48,7 @@
             [/#list]
           [#else]
             <p class="text-center">There are not programs added yet.</p>
-          [/#if]
-          
+          [/#if] 
         </div>
         
         <div class="buttons">

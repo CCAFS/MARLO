@@ -128,10 +128,10 @@
   <div class="select" [#if !display]style="display: none;"[/#if]>
     [#assign placeholderText][@s.text name="form.select.placeholder" /][/#assign]
     [#if showTitle]
-      
-        [#if i18nkey==""]${label} [#else][@s.text name="${i18nkey}" /]:[/#if][#if required && editable]<span class="red">*</span>[/#if]
+    <label for="">
+        [#if i18nkey==""]${label} [#else][@s.text name="${i18nkey}" /]:[/#if][@req required=required && editable /]
         [#if help != ""]<img src="${baseUrl}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
-      
+    </label>
     [/#if]
     [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     <div class="selectList">   
@@ -145,15 +145,15 @@
       [#if editable]
         [#if keyFieldName == ""]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className}" multiple="true" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText  /]
+            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText  /]
           [#else]
-            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className}" tooltip="${helpText}" headerKey="-1" headerValue="${placeholderText}"  /]
+            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue="${placeholderText}"  /]
           [/#if]
         [#else]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className}" multiple="true" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
           [#else]
-            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className}" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
           [/#if]
         [/#if] 
       [#else]

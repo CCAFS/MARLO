@@ -1,11 +1,17 @@
+$(function() {
+  if(debugMode) {
+    $("#debugPanel").draggable();
+  }
+});
+
 jQuery.fn.exists = function() {
   return this.length > 0;
 };
+
 /*
  * This function takes the links whit popup class and add a click event. That event takes the href and open it in a
  * popUp window This method must be called in ready function
  */
-
 function popups() {
   $("a.popup").click(function(event) {
     event.preventDefault();
@@ -59,11 +65,10 @@ function printOut() {
   });
 }
 
-
-function getCrpFromUrl(){
-  var url= window.location.href;
+function getCrpFromUrl() {
+  var url = window.location.href;
   var result = (url.split(baseURL)[1]).split('/')[1]
-  if(!(result.indexOf('.do') > -1) && result != ""){
+  if(!(result.indexOf('.do') > -1) && result != "") {
     return result;
   }
 }

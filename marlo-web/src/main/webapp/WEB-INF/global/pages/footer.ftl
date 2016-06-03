@@ -28,7 +28,7 @@
     
     [#-- Second, import global javascripts and templates. --]
     <script type="text/javascript">
-      var baseURL, editable, production, currentPlanningYear, currentReportingYear;
+      var baseURL, editable, canEdit, production, currentPlanningYear, currentReportingYear;
       var formBefore;
       var justificationLimitWords = 100;
       var errorMessages = [];
@@ -37,6 +37,10 @@
       var Tawk_API, Tawk_LoadStart;
       
       baseURL = "${baseUrl}";
+      debugMode = ${config.debug?string};
+      editable = ${editable?string};
+      canEdit = ${canEdit?string};
+      
     </script>
     
     [#-- Global Javascript --]
@@ -46,5 +50,15 @@
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [/#compress]
+    
+    [#if !config.production && config.debug]
+      <div id="debugPanel" class="ui-widget-content">
+        <strong>Debug Panel</strong>
+        <ul class="list-unstyled">
+          <li>Editable: ${editable?string}</li>
+          <li>canEdit: ${canEdit?string}</li>
+        </ul> 
+      </div>
+    [/#if]
   </body>
 </html>
