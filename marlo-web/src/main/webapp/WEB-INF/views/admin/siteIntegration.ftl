@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Site Integration" /]
-[#assign pageLibs = ["select2", "flag-icon-css"] /]
+[#assign pageLibs = ["select2", "flat-flags"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/siteIntegration.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "siteIntegration" /]
@@ -27,8 +27,8 @@
         [#if crpCountries?has_content]
           [#list crpCountries as crpCountry]
           [#assign customNameCountry = "crpCountries[${crpCountry_index}].leaders" /]
-          <h5 class="sectionSubTitle" > <span class="flag-icon flag-icon-${crpCountry.code}"></span> ${crpCountry.name}</h5>
           <div class="borderBox"> 
+            <h5><i class="flag-sm flag-sm-${crpCountry.code?upper_case}"></i>  ${crpCountry.name}</h5>
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
