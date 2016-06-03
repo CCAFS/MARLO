@@ -53,11 +53,19 @@
     
     [#if !config.production && config.debug]
       <div id="debugPanel" class="ui-widget-content">
-        <strong>Debug Panel</strong>
-        <ul class="list-unstyled">
-          <li>Editable: ${editable?string}</li>
-          <li>canEdit: ${canEdit?string}</li>
-        </ul> 
+        <div id="accordion">
+          <h3>Debug Panel</h3>
+          <div>
+            <ul class="list-unstyled">
+              <li>Editable: ${editable?string}</li>
+              <li>canEdit: ${canEdit?string}</li>
+            </ul> 
+          </div>
+          <h3>Form outputs</h3>
+          <div>
+            <div class="getSerializeForm">
+          </div> 
+        </div> 
       </div>
     [/#if]
   </body>

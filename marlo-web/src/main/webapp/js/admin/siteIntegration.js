@@ -14,7 +14,16 @@ function init() {
 }
 
 function attachEvents() {
-
+  // Remove an item
+  $('.glyphicon-remove').on('click', function() {
+    var $parent = $(this).parent();
+    var $block = $parent.parent().parent();
+    $parent.hide(function() {
+      $parent.remove();
+      checkItems($block);
+      updateUsersIndex($block, $block.parent().find('.inputName-input').text());
+    });
+  });
 }
 
 function addUserItem(composedName,userId) {

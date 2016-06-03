@@ -668,17 +668,6 @@ html, body{background-color:#ffffff;}
 
 /* Accordion */
 .ui-accordion-content{border-color:#d4d4d4;background:#ffffff}
-.ui-accordion-header.ui-state-active, .ui-accordion-header.ui-state-active.ui-state-hover{background-color:#ffffff !important;color:#525252;border-color:#d4d4d4 !important;background-image:url(images/ui-icons_d4d4d4_0.png) !important;background-position: -230px -213px !important;}
-.ui-accordion-header.ui-state-active a{ color: #525252 !important;}
-.ui-accordion-header.ui-state-default{border-color:#47939C;background:#47939C;}
-.ui-accordion-header.ui-state-default a{ color: #ffffff;}
-.ui-accordion-header.ui-state-hover{background:#47939C;border-color:#47939C;}
-.ui-accordion-header.ui-state-hover a{color:#ffffff;}
-.ui-accordion-header.ui-state-active .ui-icon{background-image:url(images/ui-icons_ffffff_0.png) !important;}
-.ui-accordion-header.ui-state-default .ui-icon{background-image:url(images/ui-icons_ffffff_0.png);display: none;}
-.ui-accordion-header.ui-state-hover .ui-icon{background-image:url(images/ui-icons_47939C_0.png);}
-.ui-accordion-header{background-image:url(images/ui-icons_ffffff_0.png) !important;background-position: -230px -214px !important;background-repeat:no-repeat !important;}
-.ui-accordion-header.ui-state-hover{background-image:url(images/ui-icons_ffffff_0.png) !important;background-position: -230px -166px !important;}
 
 
 

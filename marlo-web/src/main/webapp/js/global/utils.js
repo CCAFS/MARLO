@@ -1,6 +1,13 @@
 $(function() {
   if(debugMode) {
     $("#debugPanel").draggable();
+    $("#accordion").accordion({
+      heightStyle: "content"
+    });
+    $('body').on('click', function() {
+
+      $('.getSerializeForm').html(getSerializeForm());
+    });
   }
 });
 
@@ -74,14 +81,16 @@ function getCrpFromUrl() {
 }
 
 function getSerializeForm() {
+  var result = '';
   $("form").each(function(indexForm,form) {
-    console.log("--------------------------- Form #" + indexForm + "  ------------------------------");
+    result += "<strong> Form #" + indexForm + "</strong></br>";
     $.each($(form).serializeArray(), function(i,a) {
       if(a.value) {
-        console.log(a.name + ": " + a.value);
+        result += "<p>" + a.name + " : " + a.value + "</p>";
       }
     });
   });
+  return result
 }
 
 function setCurrencyFormat(stringNumber) {

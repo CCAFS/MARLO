@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Site Integration" /]
 [#assign pageLibs = ["select2", "flag-icon-css"] /]
-[#assign customJS = ["${baseUrl}/js/admin/siteIntegration.js" ] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/siteIntegration.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "siteIntegration" /]
 
@@ -26,18 +26,18 @@
         [#assign crpCountries = [{'name': 'Colombia','code': 'co'},{'name':'China','code': 'cn'}] /]
         [#if crpCountries?has_content]
           [#list crpCountries as crpCountry]
-          [#assign customNameCountry = "programs[${crpCountry_index}].leaders" /]
+          [#assign customNameCountry = "crpCountries[${crpCountry_index}].leaders" /]
           <h5 class="sectionSubTitle" > <span class="flag-icon flag-icon-${crpCountry.code}"></span> ${crpCountry.name}</h5>
           <div class="borderBox"> 
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
-                [#assign usersItems = [{},{}] /]
-                [#list usersItems as item]
+                [#assign leaders = [{},{}] /]
+                [#list leaders as item]
                   [@userItem element=item index=item_index name=customNameCountry /]
                 [/#list]
                 </ul>
-                <p class="text-center" style="display:${(usersItems?has_content)?string('none','block')}">There are not users added yet.</p>
+                <p class="text-center" style="display:${(leaders?has_content)?string('none','block')}">There are not users added yet.</p>
               </div>
               <div class="searchUser button-green">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
@@ -65,6 +65,15 @@
     </div>
   </div>
 </section>
+
+[#-- Search users Interface --]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[@usersForm.searchUsers/]
+
+<ul style="display:none">
+  [#-- User Item template --]
+  [@userItem element={} index=0 name="" template=true /]
+</ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
