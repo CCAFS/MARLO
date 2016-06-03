@@ -20,8 +20,11 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,10 +65,51 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     programs = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (CrpProgram crpProgram : programs) {
+
       crpProgram
         .setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
+    String params[] = {loggedCrp.getAcronym()};
+    this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
+    if (this.isHttpPost()) {
+      for (CrpProgram crpProgram : programs) {
+        crpProgram.getLeaders().clear();
+      }
+    }
 
+  }
+
+
+  @Override
+  public String save() {
+
+    if (this.hasPermission("*")) {
+
+
+      for (CrpProgram crpProgram : programs) {
+        for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
+          if (crpProgramLeader.getId() == null) {
+            /**
+             * TODO:SAVE
+             */
+          }
+        }
+
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      messages = this.getActionMessages();
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

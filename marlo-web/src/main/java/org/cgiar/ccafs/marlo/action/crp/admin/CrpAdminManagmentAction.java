@@ -210,7 +210,17 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
       parameter.setValue(loggedCrp.isHasRegions() + "");
       crpParameterManager.saveCrpParameter(parameter);
+      /*
+       * Desactive regions
+       */
+      if (!loggedCrp.isHasRegions()) {
+        rgProgramsRewiev =
+          crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
 
+        for (CrpProgram crpProgram : rgProgramsRewiev) {
+          crpProgramManager.deleteCrpProgram(crpProgram.getId());
+        }
+      }
       rolePmu = roleManager.getRoleById(pmuRol);
       loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
 
