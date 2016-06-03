@@ -5180,7 +5180,7 @@ table.evaluationRank thead th{
   float: right;
 }
 
-.debugPanel {
+#debugPanel {
   font-size: 0.9em;
   position: absolute;
   padding: 5px;
@@ -5189,6 +5189,8 @@ table.evaluationRank thead th{
   border-radius: 4px;
   top: 0;
   right: 0;
+  opacity: 0.95;
+  width: 200px;
 }
 
 /********************  CRP ADMIN - Management  *********************/
