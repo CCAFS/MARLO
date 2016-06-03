@@ -44,7 +44,7 @@
                 </div>
               </div>
             </div>
-            [#if (program_index%2) = 1] <div class="clearfix"></div> [/#if]
+            [#if (program_index%2) = 1]<div class="clearfix"></div>[/#if]
             [/#list]
           [#else]
             <p class="text-center">There are not programs added yet.</p>

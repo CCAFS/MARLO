@@ -43,14 +43,14 @@
         <div class="program-block borderBox">
           [#-- Flagships List --]
           <div class="flagships items-list simpleBox">
-           <ul>
-           [#if flagshipsPrograms?has_content]
-            [#list flagshipsPrograms as item]
-              [@programItem element=item index=item_index name="flagshipsPrograms"/]
-            [/#list]
-           [/#if]
-           </ul>
-        
+            <ul>
+            [#if flagshipsPrograms?has_content]
+              [#list flagshipsPrograms as item]
+                [@programItem element=item index=item_index name="flagshipsPrograms"/]
+              [/#list]
+            [/#if]
+            </ul>
+            <p class="text-center" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
           </div>
           [#-- Add Flagship--] 
           <div class="row">
@@ -79,7 +79,7 @@
               [/#list]
              [/#if]
              </ul>
-           
+            <p class="text-center" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
             </div>
             [#-- Add Region--]
             <div class="row">
