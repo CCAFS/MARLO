@@ -34,8 +34,9 @@ public class APConfig {
   private static final String EMAIL_PASSWORD = "email.password";
   private static final String EMAIL_HOST = "email.host";
   private static final String EMAIL_PORT = "email.port";
-  private static final String PRODUCTION = "ccafsap.production";
 
+  private static final String PRODUCTION = "marlo.production";
+  private static final String DEBUG_MODE = "marlo.debug";
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
 
   private static final String BASE_URL = "marlo.baseUrl";
@@ -129,9 +130,23 @@ public class APConfig {
 
 
   /**
-   * If we are running P&R in production or testing mode.
+   * If we are activate the Marlo debug mode.
    * 
-   * @return true if P&R is running in production mode, false if is run in testing mode.
+   * @return true if debug mode in marlo is active, false otherwise.
+   */
+  public boolean isDebug() {
+    String variable = properties.getPropertiesAsString(DEBUG_MODE);
+    if (variable == null) {
+      LOG.error("There is not a debug mode active configured");
+      return false;
+    }
+    return variable.equals("true");
+  }
+
+  /**
+   * If we are running Marlo in production or testing mode.
+   * 
+   * @return true if Marlo is running in production mode, false if is run in testing mode.
    */
   public boolean isProduction() {
     String variable = properties.getPropertiesAsString(PRODUCTION);

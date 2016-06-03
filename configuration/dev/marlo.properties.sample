@@ -31,7 +31,8 @@ email.port=port
 # -----------------------------------------------
 # TEST MODE
 # ------------------------------------------------
-ccafsap.production=false
+marlo.production=false
+marlo.debug=false
 
 # ------------------------------------------------
 # Logger properties

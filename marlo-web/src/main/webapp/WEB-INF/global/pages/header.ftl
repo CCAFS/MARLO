@@ -56,15 +56,15 @@
             <img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />
           [/#if]
         </div>
-        [#if !config.production]
-          <div class="debugPanel" style="display:none">
+        [#if !config.production && config.debug]
+          <div class="debugPanel">
             <strong>Debug Panel</strong>
             <ul class="list-unstyled">
               <li>Editable: ${editable?string}</li>
               <li>canEdit: ${canEdit?string}</li>
             </ul> 
           </div>
-          [/#if]
+        [/#if]
       </header>
     [/#if]
     <!-- ${actionName} Content -->
