@@ -27,7 +27,10 @@ public class Crp implements java.io.Serializable {
 
 
   private static final long serialVersionUID = 6299077992797380051L;
+
+
   private Long id;
+
   private String name;
   private String acronym;
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
@@ -38,12 +41,12 @@ public class Crp implements java.io.Serializable {
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
   private boolean active;
   private List<UserRole> programManagmenTeam;
-  private boolean hasRegions;
+  private List<CrpsSiteIntegration> siteIntegration;
 
+  private boolean hasRegions;
 
   public Crp() {
   }
-
 
   public Crp(String name) {
     this.name = name;
@@ -63,9 +66,11 @@ public class Crp implements java.io.Serializable {
     return acronym;
   }
 
+
   public Set<CrpParameter> getCrpParameters() {
     return this.crpParameters;
   }
+
 
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
@@ -75,11 +80,9 @@ public class Crp implements java.io.Serializable {
     return crpsSitesIntegrations;
   }
 
-
   public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
     return crpSubIdosContributions;
   }
-
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -106,6 +109,11 @@ public class Crp implements java.io.Serializable {
   }
 
 
+  public List<CrpsSiteIntegration> getSiteIntegration() {
+    return siteIntegration;
+  }
+
+
   public boolean isActive() {
     return active;
   }
@@ -119,6 +127,7 @@ public class Crp implements java.io.Serializable {
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -162,6 +171,10 @@ public class Crp implements java.io.Serializable {
 
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
+  }
+
+  public void setSiteIntegration(List<CrpsSiteIntegration> siteIntegration) {
+    this.siteIntegration = siteIntegration;
   }
 
 
