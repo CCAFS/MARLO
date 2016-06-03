@@ -24,16 +24,22 @@ package org.cgiar.ccafs.marlo.config;
  */
 public final class APConstants {
 
-  public static final String SESSION_USER = "current_user";
-  public static final String SESSION_CRP = "current_crp";
-  public static final String CRP_PARAMETERS = "crp_parameters";
-  public static final String CRP_LANGUAGE = "crp_language";
-  public static final String CRP_CUSTOM_FILE = "crp_custom_file";
-  public static final String CRP_PMU_ROLE = "crp_pmu_rol";
-  public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";
+
+  // Session variables
+  public static final String SESSION_USER = "current_user";
+  public static final String SESSION_CRP = "current_crp";
+
+  // Crp Parameters
+  public static final String CRP_PARAMETERS = "crp_parameters";
+  public static final String CRP_LANGUAGE = "crp_language";
+  public static final String CRP_CUSTOM_FILE = "crp_custom_file";
+  public static final String CRP_HAS_REGIONS = "crp_has_regions";
+  public static final String CRP_PMU_ROLE = "crp_pmu_rol";
+  public static final String CRP_FPL_ROLE = "crp_fpl_rol";
+  public static final String CRP_RPL_ROLE = "crp_rpl_rol";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";

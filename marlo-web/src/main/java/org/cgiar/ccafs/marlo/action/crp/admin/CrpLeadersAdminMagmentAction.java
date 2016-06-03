@@ -18,9 +18,17 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -41,14 +49,24 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
 
   private Crp loggedCrp;
   private CrpManager crpManager;
-
+  private CrpProgramLeaderManager crpProgramLeaderManager;
+  private UserManager userManager;
+  private UserRoleManager userRoleManager;
+  private RoleManager roleManager;
   private List<CrpProgram> programs;
-
+  private Role fplRole;
+  private Role rplRole;
 
   @Inject
-  public CrpLeadersAdminMagmentAction(APConfig config, CrpManager crpManager) {
+  public CrpLeadersAdminMagmentAction(APConfig config, CrpManager crpManager,
+    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, RoleManager roleManager,
+    UserRoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
+    this.crpProgramLeaderManager = crpProgramLeaderManager;
+    this.userRoleManager = userRoleManager;
+    this.userManager = userManager;
+    this.roleManager = roleManager;
   }
 
   public Crp getLoggedCrp() {
@@ -63,14 +81,21 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+    fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
+
+    if (this.getSession().containsKey(APConstants.CRP_RPL_ROLE)) {
+      rplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPL_ROLE)));
+    }
+
     programs = loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (CrpProgram crpProgram : programs) {
-
       crpProgram
         .setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
+
     if (this.isHttpPost()) {
       for (CrpProgram crpProgram : programs) {
         crpProgram.getLeaders().clear();
@@ -87,11 +112,62 @@ public class CrpLeadersAdminMagmentAction extends BaseAction {
 
 
       for (CrpProgram crpProgram : programs) {
+
+        for (CrpProgramLeader leaderPreview : crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          if (!crpProgram.getLeaders().contains(leaderPreview)) {
+            crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
+            User user = userManager.getUser(leaderPreview.getUser().getId());
+
+            List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+              .filter(u -> u.isActive() && u.getCrpProgram().getProgramType() == crpProgram.getProgramType())
+              .collect(Collectors.toList());
+
+
+            if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+              if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+                List<UserRole> fplUserRoles =
+                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
+                if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+                  for (UserRole userRole : fplUserRoles) {
+                    userRoleManager.deleteUserRole(userRole.getId());
+                  }
+                }
+              } else if (crpProgram.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+                List<UserRole> rplUserRoles =
+                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(rplRole)).collect(Collectors.toList());
+                if (rplUserRoles != null || !rplUserRoles.isEmpty()) {
+                  for (UserRole userRole : rplUserRoles) {
+                    userRoleManager.deleteUserRole(userRole.getId());
+                  }
+                }
+              }
+            }
+
+          }
+        }
+
+
         for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
           if (crpProgramLeader.getId() == null) {
-            /**
-             * TODO:SAVE
-             */
+            crpProgramLeader.setActive(true);
+            crpProgramLeader.setCrpProgram(crpProgram);
+            crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+
+            User user = userManager.getUser(crpProgramLeader.getUser().getId());
+            UserRole userRole = new UserRole();
+            userRole.setUser(user);
+
+            if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+              userRole.setRole(fplRole);
+            } else if (crpProgram.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+              userRole.setRole(rplRole);
+            }
+
+            if (!user.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+            }
           }
         }
 

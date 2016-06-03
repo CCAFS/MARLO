@@ -159,8 +159,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       List<CrpProgram> fgProgramsRewiev =
         crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
       // Removing crp flagship program type
-
-
       if (fgProgramsRewiev != null) {
         for (CrpProgram crpProgram : fgProgramsRewiev) {
           if (!flagshipsPrograms.contains(crpProgram)) {
@@ -168,7 +166,6 @@ public class CrpAdminManagmentAction extends BaseAction {
           }
         }
       }
-
       // Add crp flagship program type
       for (CrpProgram crpProgram : flagshipsPrograms) {
         if (crpProgram.getId() == null) {

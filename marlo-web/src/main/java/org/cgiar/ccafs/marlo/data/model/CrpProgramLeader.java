@@ -25,7 +25,9 @@ public class CrpProgramLeader implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 7345327536072331541L;
+
   private Long id;
+
   private CrpProgram crpProgram;
   private User user;
   private boolean active;
@@ -36,6 +38,28 @@ public class CrpProgramLeader implements java.io.Serializable {
   public CrpProgramLeader(CrpProgram crpProgram, User user) {
     this.crpProgram = crpProgram;
     this.user = user;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpProgramLeader other = (CrpProgramLeader) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public CrpProgram getCrpProgram() {
