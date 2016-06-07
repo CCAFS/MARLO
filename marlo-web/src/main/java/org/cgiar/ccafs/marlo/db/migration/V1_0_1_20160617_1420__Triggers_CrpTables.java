@@ -42,7 +42,7 @@ public class V1_0_1_20160617_1420__Triggers_CrpTables implements JdbcMigration {
       "crp_parameters", "crp_program_leaders", "crp_program_outcomes", "crp_programs", "crp_sites_leaders",
       "crp_sub_idos_contributions", "crp_users", "crps", "crps_sites_integration", "srf_cross_cutting_issues",
       "srf_idos", "srf_slo_idos", "srf_slo_indicator_targets", "srf_slo_indicators", "srf_slos", "srf_sub_idos",
-      "srf_target_units", "user_permissions", "users"};
+      "srf_target_units", "users"};
 
     String query = "SELECT DATABASE() as dbName ;";
     String dbName = "";
