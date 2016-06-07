@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class FlywayContextListener implements ServletContextListener {
 
   private final String SQL_MIGRATIONS_PATH = "database/migrations";
-  private final String JAVA_MIGRATIONS_PATH = "classpath:/org/cgiar/ccafs/ap/db/migrations";
+  private final String JAVA_MIGRATIONS_PATH = "classpath:/org/cgiar/ccafs/marlo/db/migration";
 
   Logger LOG = LoggerFactory.getLogger(FlywayContextListener.class);
 
