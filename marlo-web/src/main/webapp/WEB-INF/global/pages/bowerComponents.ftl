@@ -14,7 +14,7 @@
   [#if libraryName="dropzone" ]<link rel="stylesheet" href="${baseUrl}/bower_components/dropzone/dist/min/dropzone.min.css" />[/#if]
   [#if libraryName="animate.css" ]<link rel="stylesheet" href="${baseUrl}/bower_components/animate.css/animate.css" />[/#if]
   [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrl}/bower_components/bootstrap/dist/css/bootstrap.min.css" />[/#if]
-  [#if libraryName="flag-icon-css" ]<link rel="stylesheet" href="${baseUrl}/bower_components/flag-icon-css/css/flag-icon.min.css" />[/#if]
+  [#if libraryName="flat-flags" ]<link rel="stylesheet" href="${baseUrl}/bower_components/flat-flags/css/main.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 

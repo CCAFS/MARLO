@@ -2198,7 +2198,8 @@ p.projectSubmitted {
 
 
 .button-blue{
-  padding: 5px 8px 5px 8px;
+  padding: 3px 8px 3px 8px;
+  margin-top: 3px;
   text-align: center;
   background: #668fda;
   color: #fff;
@@ -4723,7 +4724,7 @@ ul#deliverablesFilesMessages > li {
 
 .borderBox {
   border: 1px solid #D1D1D1;
-  padding: 20px 15px 19px 15px;
+  padding: 9px 15px 9px 15px;
   margin: 2px 0px 5px 0;
   border-radius: 4px;
   position: relative;
@@ -5190,12 +5191,16 @@ table.evaluationRank thead th{
   top: 3px;
   left: 3px;
   opacity: 0.95;
-  /* min-width: 148px; */
+  width: 345px;
 }
 
 #debugPanel p{
-  line-height: 0.8em;
   padding-left: 0px;
+  margin: 3px;
+}
+
+#debugPanel p span{
+  color: #8c8888;
 }
 
 /********************  CRP ADMIN - Management  *********************/

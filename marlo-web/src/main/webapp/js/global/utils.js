@@ -86,7 +86,7 @@ function getSerializeForm() {
     result += "<strong> Form #" + indexForm + "</strong></br>";
     $.each($(form).serializeArray(), function(i,a) {
       if(a.value) {
-        result += "<p>" + a.name + " : " + a.value + "</p>";
+        result += '<p>' + a.name + ' : <span>' + a.value + '</span></p>';
       }
     });
   });
