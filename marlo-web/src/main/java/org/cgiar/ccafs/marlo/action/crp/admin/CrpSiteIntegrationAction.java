@@ -74,7 +74,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
       loggedCrp.getSiteIntegration().clear();
     }
 
-
   }
 
   public void setLocElements(List<LocElement> locElements) {
