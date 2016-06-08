@@ -6,6 +6,7 @@
 	<constant name="struts.mapper.alwaysSelectFullNamespace"
 		value="false" />
 	<constant name="struts.patternMatcher" value="regex" />
+	<constant name="struts.multipart.saveDir" value="/tmp" />
 
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/" extends="struts-default">

@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS `auditlog`;
+CREATE TABLE  `auditlog` (
+  `AUDIT_LOG_ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ACTION` varchar(100) NOT NULL,
+  `DETAIL` text NOT NULL,
+  `CREATED_DATE` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `ENTITY_ID` bigint(20) unsigned NOT NULL,
+  `ENTITY_NAME` varchar(255) NOT NULL,
+  `Entity_json` text not null
+  
+ , PRIMARY KEY (`AUDIT_LOG_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;

@@ -16,14 +16,19 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.config.HibernateListener;
+import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Singleton;
 import org.apache.struts2.ServletActionContext;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -45,6 +50,7 @@ public class StandardDAO {
 
   }
 
+
   /**
    * This method commit the changes to hibernate table (in memory) but does not synchronize the changes to the database
    * engine.
@@ -52,7 +58,6 @@ public class StandardDAO {
   private void commitTransaction(Transaction tx) {
     tx.commit();
   }
-
 
   /**
    * This method deletes a record from the database.
@@ -64,7 +69,9 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      session = this.openSession();
+      AuditLogInterceptor interceptor = new AuditLogInterceptor();
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
       Object newEntityRef = session.merge(obj);
       tx = this.initTransaction(session);
       session.clear();
@@ -110,6 +117,7 @@ public class StandardDAO {
     }
     return obj;
   }
+
 
   /**
    * This method make a query that returns a list of objects from the model.
@@ -203,7 +211,6 @@ public class StandardDAO {
     }
   }
 
-
   /**
    * This method make a query that returns a single object result from the model.
    * This method was implemented in a generic way, so, the object to be returned will depend on how the method
@@ -237,13 +244,33 @@ public class StandardDAO {
     }
   }
 
-
   /**
    * This method initializes a transaction.
    */
   private Transaction initTransaction(Session session) {
     Transaction tx = session.beginTransaction();
     return tx;
+  }
+
+
+  public void LogIt(String action, IAuditLog entity, String json) {
+
+    Session tempSession = this.openSession();
+
+    try {
+
+      try {
+        Auditlog auditRecord =
+          new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId(), entity.getClass().toString(), json);
+        tempSession.save(auditRecord);
+        tempSession.flush();
+      } catch (HibernateException e) {
+
+      }
+
+    } finally {
+      tempSession.close();
+    }
   }
 
 
@@ -254,12 +281,28 @@ public class StandardDAO {
    */
   private Session openSession() {
     if (sessionFactory == null) {
-      this.sessionFactory =
+      sessionFactory =
+        (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
+
+    }
+    AuditLogInterceptor interceptor = new AuditLogInterceptor();
+    return sessionFactory.openSession(interceptor);
+  }
+
+
+  /**
+   * This method opens a session to the database.
+   * 
+   * @return a Session object.
+   */
+  private Session openSession(AuditLogInterceptor interceptor) {
+    if (sessionFactory == null) {
+      sessionFactory =
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
 
-    return sessionFactory.openSession();
+    return sessionFactory.openSession(interceptor);
   }
 
   /**
@@ -283,14 +326,13 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      session = this.openSession();
+      AuditLogInterceptor interceptor = new AuditLogInterceptor();
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
 
       tx = this.initTransaction(session);
-      session.clear();
-
       session.save(obj);
       this.commitTransaction(tx);
-      session.flush();
       return true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -317,15 +359,17 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      session = this.openSession();
+      AuditLogInterceptor interceptor = new AuditLogInterceptor();
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
 
       tx = this.initTransaction(session);
-      session.clear();
+
 
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
-      session.flush();
+
       return true;
     } catch (Exception e) {
       e.printStackTrace();

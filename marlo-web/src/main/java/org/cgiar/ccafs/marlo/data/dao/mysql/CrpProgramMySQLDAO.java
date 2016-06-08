@@ -56,6 +56,8 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
 
   @Override
   public List<CrpProgram> findAll() {
+
+
     String query = "from " + CrpProgram.class.getName() + " where is_active=1";
     List<CrpProgram> list = dao.findAll(query);
     if (list.size() > 0) {
@@ -63,6 +65,18 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
     }
     return null;
 
+    /*
+     * Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+     * List<CrpProgram> programs = new ArrayList<CrpProgram>();
+     * String query = "select * from auditlog";
+     * List<Map<String, Object>> lst = dao.findCustomQuery(query);
+     * for (Map<String, Object> map : lst) {
+     * String json = (String) map.get("Entity_json");
+     * CrpProgram prog = gson.fromJson(json, CrpProgram.class);
+     * programs.add(prog);
+     * }
+     * return programs;
+     */
   }
 
   @Override

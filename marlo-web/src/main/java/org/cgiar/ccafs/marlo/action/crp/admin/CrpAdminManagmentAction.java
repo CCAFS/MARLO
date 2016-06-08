@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,8 +113,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
     // Get the Flagship list of this crp
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-      .collect(Collectors.toList());
+
+
+      // flagshipsPrograms = crpProgramManager.findAll().stream()
+      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
     regionsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
@@ -169,6 +172,10 @@ public class CrpAdminManagmentAction extends BaseAction {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);
           crpProgram.setActive(true);
+          crpProgram.setCreatedBy(this.getCurrentUser());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(new Date());
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
@@ -188,6 +195,10 @@ public class CrpAdminManagmentAction extends BaseAction {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);
           crpProgram.setActive(true);
+          crpProgram.setCreatedBy(this.getCurrentUser());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(new Date());
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
@@ -204,6 +215,10 @@ public class CrpAdminManagmentAction extends BaseAction {
         parameter = parameters.get(0);
       }
       parameter.setValue(loggedCrp.isHasRegions() + "");
+      parameter.setCreatedBy(this.getCurrentUser());
+      parameter.setModifiedBy(this.getCurrentUser());
+      parameter.setModificationJustification("");
+      parameter.setActiveSince(new Date());
       crpParameterManager.saveCrpParameter(parameter);
       /*
        * Desactive regions
@@ -212,9 +227,13 @@ public class CrpAdminManagmentAction extends BaseAction {
         rgProgramsRewiev =
           crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
 
-        for (CrpProgram crpProgram : rgProgramsRewiev) {
-          crpProgramManager.deleteCrpProgram(crpProgram.getId());
+        if (rgProgramsRewiev != null) {
+          for (CrpProgram crpProgram : rgProgramsRewiev) {
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
         }
+
+
       }
       rolePmu = roleManager.getRoleById(pmuRol);
       loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));

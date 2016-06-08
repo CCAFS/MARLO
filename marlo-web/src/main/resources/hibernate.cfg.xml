@@ -15,6 +15,7 @@
     <!-- *********************************************************** -->
     
     <!-- Model Mappings -->
+     <mapping resource="xmls/Auditlog.hbm.xml" />
     <mapping resource="xmls/Users.hbm.xml" />
     <mapping resource="xmls/Crps.hbm.xml" />
     <mapping resource="xmls/CrpUsers.hbm.xml" />
