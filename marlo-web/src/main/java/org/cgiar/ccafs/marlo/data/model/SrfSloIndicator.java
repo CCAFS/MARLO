@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,12 +29,31 @@ public class SrfSloIndicator implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 3683018263832155505L;
+
+
   private Long id;
+
+
   private SrfSlo srfSlo;
+
+
   private String title;
+
+
   private String description;
+
+
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
+
+
   private boolean active;
+
+
+  private User createdBy;
+
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
 
   public SrfSloIndicator() {
   }
@@ -52,6 +72,13 @@ public class SrfSloIndicator implements java.io.Serializable {
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public String getDescription() {
     return this.description;
@@ -61,6 +88,14 @@ public class SrfSloIndicator implements java.io.Serializable {
     return this.id;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
   public SrfSlo getSrfSlo() {
     return this.srfSlo;
   }
@@ -68,6 +103,7 @@ public class SrfSloIndicator implements java.io.Serializable {
   public Set<SrfSloIndicatorTarget> getSrfSloIndicatorTargets() {
     return this.srfSloIndicatorTargets;
   }
+
 
   public String getTitle() {
     return this.title;
@@ -81,12 +117,28 @@ public class SrfSloIndicator implements java.io.Serializable {
     this.active = active;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setSrfSlo(SrfSlo srfSlos) {

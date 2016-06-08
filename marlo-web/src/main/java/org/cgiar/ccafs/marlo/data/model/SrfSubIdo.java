@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,12 +29,31 @@ public class SrfSubIdo implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = -6590673724952913143L;
+
+
   private Long id;
+
+
   private SrfIdo srfIdo;
+
+
   private String description;
+
+
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
+
+
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
+
+
   private boolean active;
+
+
+  private User createdBy;
+
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
 
   public SrfSubIdo() {
   }
@@ -51,6 +71,13 @@ public class SrfSubIdo implements java.io.Serializable {
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public Set<CrpOutcomeSubIdo> getCrpOutcomeSubIdos() {
     return this.crpOutcomeSubIdos;
@@ -68,6 +95,15 @@ public class SrfSubIdo implements java.io.Serializable {
     return this.id;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public SrfIdo getSrfIdo() {
     return this.srfIdo;
   }
@@ -78,6 +114,14 @@ public class SrfSubIdo implements java.io.Serializable {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrpOutcomeSubIdos(Set<CrpOutcomeSubIdo> crpOutcomeSubIdos) {
@@ -94,6 +138,14 @@ public class SrfSubIdo implements java.io.Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setSrfIdo(SrfIdo srfIdos) {

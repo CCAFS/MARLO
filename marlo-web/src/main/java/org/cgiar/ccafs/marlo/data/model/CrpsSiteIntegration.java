@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,11 +29,30 @@ public class CrpsSiteIntegration implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = -7674530393075404476L;
+
+
   private Long id;
+
+
   private Crp crp;
+
+
   private LocElement locElement;
+
+
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+
+
   private boolean active;
+
+
+  private User createdBy;
+
+
+  private Date activeSince;
+
+  private User modifiedBy;
+  private String modificationJustification;
 
   public CrpsSiteIntegration() {
   }
@@ -48,6 +68,13 @@ public class CrpsSiteIntegration implements java.io.Serializable {
     this.crpSitesLeaders = crpSitesLeaders;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public Crp getCrp() {
     return this.crp;
@@ -65,12 +92,29 @@ public class CrpsSiteIntegration implements java.io.Serializable {
     return this.locElement;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public boolean isActive() {
     return active;
   }
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrp(Crp crps) {
@@ -87,6 +131,14 @@ public class CrpsSiteIntegration implements java.io.Serializable {
 
   public void setLocElement(LocElement locElements) {
     this.locElement = locElements;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
 

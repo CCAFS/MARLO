@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,15 +30,34 @@ public class CrpProgramOutcome implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 3014520962149158601L;
+
+
   private Long id;
+
+
   private CrpProgram crpProgram;
+
+
   private SrfTargetUnit srfTargetUnit;
+
+
   private String description;
+
+
   private int year;
+
+
   private BigDecimal value;
+
+
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
+
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
   private boolean active;
+  private User createdBy;
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
 
   public CrpProgramOutcome() {
   }
@@ -62,6 +82,13 @@ public class CrpProgramOutcome implements java.io.Serializable {
     this.crpMilestones = crpMilestones;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
@@ -81,6 +108,15 @@ public class CrpProgramOutcome implements java.io.Serializable {
 
   public Long getId() {
     return this.id;
+  }
+
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+
+  public User getModifiedBy() {
+    return modifiedBy;
   }
 
   public SrfTargetUnit getSrfTargetUnit() {
@@ -103,6 +139,14 @@ public class CrpProgramOutcome implements java.io.Serializable {
     this.active = active;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
+  }
+
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {
     this.crpMilestones = crpMilestones;
   }
@@ -121,6 +165,14 @@ public class CrpProgramOutcome implements java.io.Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {

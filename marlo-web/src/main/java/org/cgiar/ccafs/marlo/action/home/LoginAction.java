@@ -113,7 +113,6 @@ public class LoginAction extends BaseAction {
               if (parameter.isActive()) {
                 this.getSession().put(parameter.getKey(), parameter.getValue());
               }
-
             }
             // Validate if the user already logged in other session.
             if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {

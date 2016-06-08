@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,23 +31,39 @@ public class CrpProgram implements java.io.Serializable {
    */
   private static final long serialVersionUID = -799819119525448185L;
 
+
   private Long id;
 
+
   private Crp crp;
+
+
   private String name;
+
+
   private String acronym;
+
+
   private int programType;
+
+
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
+
+
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
+
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
   private boolean active;
-  private List<CrpProgramLeader> leaders;
 
+  private User createdBy;
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
+  private List<CrpProgramLeader> leaders;
 
   public CrpProgram() {
   }
-
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -93,9 +110,18 @@ public class CrpProgram implements java.io.Serializable {
     return this.acronym;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
+
   public Crp getCrp() {
     return this.crp;
   }
+
 
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
@@ -118,6 +144,15 @@ public class CrpProgram implements java.io.Serializable {
     return leaders;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public String getName() {
     return this.name;
   }
@@ -136,6 +171,14 @@ public class CrpProgram implements java.io.Serializable {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrp(Crp crp) {
@@ -160,6 +203,14 @@ public class CrpProgram implements java.io.Serializable {
 
   public void setLeaders(List<CrpProgramLeader> leaders) {
     this.leaders = leaders;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setName(String name) {

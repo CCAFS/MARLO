@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,12 +30,31 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 7556470694083733136L;
+
+
   private Long id;
+
+
   private CrpProgramOutcome crpProgramOutcome;
+
+
   private SrfSubIdo srfSubIdo;
+
+
   private BigDecimal contribution;
+
+
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
+
+
   private boolean active;
+
+
+  private User createdBy;
+
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
 
   public CrpOutcomeSubIdo() {
   }
@@ -53,9 +73,16 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     this.crpAssumptions = crpAssumptions;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
 
   public BigDecimal getContribution() {
     return this.contribution;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
   }
 
   public Set<CrpAssumption> getCrpAssumptions() {
@@ -70,6 +97,15 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     return this.id;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public SrfSubIdo getSrfSubIdo() {
     return this.srfSubIdo;
   }
@@ -82,8 +118,16 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
     this.active = active;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
   public void setContribution(BigDecimal contribution) {
     this.contribution = contribution;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrpAssumptions(Set<CrpAssumption> crpAssumptions) {
@@ -96,6 +140,14 @@ public class CrpOutcomeSubIdo implements java.io.Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {

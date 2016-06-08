@@ -99,8 +99,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     return rolePmu;
   }
 
-
-  @SuppressWarnings("unchecked")
   @Override
   public void prepare() throws Exception {
 

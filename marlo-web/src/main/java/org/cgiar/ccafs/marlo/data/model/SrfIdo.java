@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,13 +29,32 @@ public class SrfIdo implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 8353586687845581811L;
+
+
   private Long id;
+
+
   private SrfCrossCuttingIssue srfCrossCuttingIssue;
+
+
   private String description;
+
+
   private boolean isCrossCutting;
+
+
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
+
+
   private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
+
+
   private boolean active;
+
+  private User createdBy;
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
 
   public SrfIdo() {
   }
@@ -53,6 +73,13 @@ public class SrfIdo implements java.io.Serializable {
     this.isCrossCutting = isCrossCutting;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public String getDescription() {
     return this.description;
@@ -62,6 +89,14 @@ public class SrfIdo implements java.io.Serializable {
     return this.id;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
   public SrfCrossCuttingIssue getSrfCrossCuttingIssue() {
     return this.srfCrossCuttingIssue;
   }
@@ -69,6 +104,7 @@ public class SrfIdo implements java.io.Serializable {
   public Set<SrfSloIdo> getSrfSloIdos() {
     return this.srfSloIdos;
   }
+
 
   public Set<SrfSubIdo> getSrfSubIdos() {
     return this.srfSubIdos;
@@ -86,6 +122,14 @@ public class SrfIdo implements java.io.Serializable {
     this.active = active;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -96,6 +140,14 @@ public class SrfIdo implements java.io.Serializable {
 
   public void setIsCrossCutting(boolean isCrossCutting) {
     this.isCrossCutting = isCrossCutting;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssues) {

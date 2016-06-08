@@ -30,26 +30,41 @@ public class User implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 3674438945983473335L;
+
+
   private Long id;
+
+
   private String firstName;
+
+
   private String lastName;
+
+
   private String username;
+
+
   private String email;
+
+
   private String password;
+
+
   private boolean cgiarUser;
-  private Long createdBy;
+
+  private User createdBy;
+  private Date activeSince;
+  private User modifiedBy;
+  private String modificationJustification;
   private boolean active;
   private Date lastLogin;
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
-
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
-
 
   public User() {
   }
-
 
   public User(String email, String password, boolean cgiarUser, boolean active) {
     this.email = email;
@@ -58,9 +73,8 @@ public class User implements java.io.Serializable {
     this.active = active;
   }
 
-
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
-    Long createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
+    User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.username = username;
@@ -97,6 +111,9 @@ public class User implements java.io.Serializable {
     return true;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
 
   /**
    * This method returns the user's full name.
@@ -121,8 +138,8 @@ public class User implements java.io.Serializable {
     return this.lastName + ", " + this.firstName + " <" + this.email + ">";
   }
 
-  public Long getCreatedBy() {
-    return this.createdBy;
+  public User getCreatedBy() {
+    return createdBy;
   }
 
 
@@ -130,14 +147,15 @@ public class User implements java.io.Serializable {
     return crpProgramLeaders;
   }
 
+
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
   }
 
+
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
-
 
   public String getEmail() {
     return this.email;
@@ -160,6 +178,16 @@ public class User implements java.io.Serializable {
     return this.lastName;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public String getPassword() {
     return this.password;
   }
@@ -171,7 +199,6 @@ public class User implements java.io.Serializable {
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
   }
-
 
   public boolean isActive() {
     return active;
@@ -185,11 +212,16 @@ public class User implements java.io.Serializable {
     this.active = active;
   }
 
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+
   public void setCgiarUser(boolean cgiarUser) {
     this.cgiarUser = cgiarUser;
   }
 
-  public void setCreatedBy(Long createdBy) {
+  public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
@@ -197,11 +229,9 @@ public class User implements java.io.Serializable {
     this.crpProgramLeaders = crpProgramLeaders;
   }
 
-
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
   }
-
 
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
@@ -227,8 +257,18 @@ public class User implements java.io.Serializable {
     this.lastLogin = lastLogin;
   }
 
+
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setPassword(String password) {

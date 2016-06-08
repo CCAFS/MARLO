@@ -137,7 +137,7 @@ public class UserManagerImp implements UserManager {
   @Override
   public int saveUser(User user, User modifiedBy) {
     user.setPassword(MD5Convert.stringToMD5(user.getPassword()));
-    user.setCreatedBy(modifiedBy.getId());
+    user.setCreatedBy(modifiedBy);
     return userDAO.saveUser(user);
   }
 
