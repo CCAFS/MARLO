@@ -32,6 +32,7 @@
 		<groovy-version>2.4.6</groovy-version>
 		<jasperreports-fonts-version>6.0.0</jasperreports-fonts-version>
 		<jasper-reports-version>6.2.2</jasper-reports-version>
+		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 	</properties>
 
 	<developers>
@@ -246,11 +247,12 @@
 
 
 <!-- gson -->
-<dependency>
+  <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.6.2</version>
+      <version>${com.google.code.gson-version}</version>
   </dependency>
+  <!-- End jasper -->
 		<!-- Apache shiro -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
