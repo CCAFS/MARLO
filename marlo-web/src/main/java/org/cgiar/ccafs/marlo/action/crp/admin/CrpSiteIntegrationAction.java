@@ -19,10 +19,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +64,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    loggedCrp.getSiteIntegration().addAll(loggedCrp.getCrpsSitesIntegrations());
+    if (loggedCrp.getCrpsSitesIntegrations() != null) {
+      loggedCrp.setSiteIntegration(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
+    }
 
     locElements = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
       .collect(Collectors.toList());
