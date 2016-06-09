@@ -11,7 +11,14 @@
 	         <span class="text">[@s.text name="menu.home" /]</span>
   	      </a>
         </li>
-                [#-- Admin --]
+        
+        [#-- Impact Pathway section --]
+        <li [#if currentSection?? && currentSection == "impactPathway"] class="currentSection" [/#if]>
+          <a href="[@s.url namespace="/impactPathway" action='${crpSession}/outcomes'/]">[@s.text name="menu.impactPathway" /]
+          </a>
+        </li> 
+        
+        [#-- Admin --]
         [#if action.canAcessCrpAdmin() ]
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
           <a href="[@s.url namespace="/admin" action='${crpSession}/management'/]">[@s.text name="menu.admin" /]

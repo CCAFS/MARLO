@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+  <!-- Add addition packages and configuration here. -->
+  <package name="impactPathway" namespace="/impactPathway" extends="marlo-default">
+    
+    <action name="{crp}/outcomes" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <!-- interceptor-ref name="autoLogin" / -->
+      <interceptor-ref name="impactPathwayStack" />			
+      <result name="input">/WEB-INF/views/impactPathway/outcomes.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/outcomes</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/clusterActivities" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <!-- interceptor-ref name="autoLogin" / -->
+      <interceptor-ref name="impactPathwayStack" />     
+      <result name="input">/WEB-INF/views/impactPathway/clusterActivities.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/clusterActivities</param>
+      </result>
+    </action>
+    
+  </package>
+</struts>

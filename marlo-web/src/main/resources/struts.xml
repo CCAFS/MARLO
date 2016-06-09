@@ -65,6 +65,15 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
+			
+			<!-- TODO: Include necessary interceptor's -->
+			<interceptor-stack name="impactPathwayStack">
+        <interceptor-ref name="i18nFile" />
+        <interceptor-ref name="requireUser" />
+        <interceptor-ref name="keepRedirectMessages" />
+        <interceptor-ref name="trimInputs" />
+        <interceptor-ref name="defaultStack" />
+      </interceptor-stack>
 
 		</interceptors>
 
@@ -100,8 +109,9 @@
 		</action>
 	</package>
 
+	<include file="struts-json.xml" />
 	<include file="struts-home.xml" />
 	<include file="struts-admin.xml" />
-	<include file="struts-json.xml" />
+	<include file="struts-impactPathway.xml" />
 
 </struts>
