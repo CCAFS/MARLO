@@ -28,7 +28,7 @@
           [#list crpCountries as crpCountry]
           [#assign customNameCountry = "crpCountries[${crpCountry_index}].leaders" /]
           <div class="borderBox"> 
-            <h5><i class="flag-sm flag-sm-${crpCountry.code?upper_case}"></i>  ${crpCountry.name}</h5>
+            <h5 class="country-title"><i class="flag-sm flag-sm-${crpCountry.code?upper_case}"></i>  ${crpCountry.name}</h5>
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
