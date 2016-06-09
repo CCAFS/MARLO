@@ -260,8 +260,8 @@ public class StandardDAO {
     try {
 
       try {
-        Auditlog auditRecord =
-          new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId(), entity.getClass().toString(), json);
+        Auditlog auditRecord = new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId().toString(),
+          entity.getClass().toString(), json);
         tempSession.save(auditRecord);
         tempSession.flush();
       } catch (HibernateException e) {

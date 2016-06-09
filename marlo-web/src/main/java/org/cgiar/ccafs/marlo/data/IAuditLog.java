@@ -18,7 +18,7 @@ package org.cgiar.ccafs.marlo.data;
 
 public interface IAuditLog {
 
-  public Long getId();
+  public Object getId();
 
   public String getLogDeatil();
 

@@ -244,14 +244,12 @@
 			<version>${jasperreports-fonts-version}</version>
 		</dependency>
 		<!-- End jasper -->
-
-
-<!-- gson -->
-  <dependency>
+    <!-- gson -->
+    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${com.google.code.gson-version}</version>
-  </dependency>
+    </dependency>
   <!-- End jasper -->
 		<!-- Apache shiro -->
 		<dependency>
