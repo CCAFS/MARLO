@@ -57,7 +57,7 @@
 </nav> 
 
 <div class="container">
-  [#include "/WEB-INF/global/pages/breadCrumb.ftl" /]
+  [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
 
 <section id="generalMessages" class="container">
