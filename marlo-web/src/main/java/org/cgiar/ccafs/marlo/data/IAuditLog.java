@@ -15,12 +15,15 @@
 
 package org.cgiar.ccafs.marlo.data;
 
+import org.cgiar.ccafs.marlo.data.model.User;
 
 public interface IAuditLog {
 
   public Object getId();
 
   public String getLogDeatil();
+
+  public User getModifiedBy();
 
   public boolean isActive();
 }

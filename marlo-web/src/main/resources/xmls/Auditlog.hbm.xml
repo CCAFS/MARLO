@@ -25,6 +25,11 @@
         </property>
         <property name="entityJson" type="string">
             <column name="Entity_json" length="65535" not-null="true" />
+         
+        </property>
+            <property name="userId" type="java.lang.Long">
+            <column name="user_id" not-null="true" />
+
         </property>
     </class>
 </hibernate-mapping>

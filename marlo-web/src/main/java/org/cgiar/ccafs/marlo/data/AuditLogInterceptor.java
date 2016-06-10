@@ -101,21 +101,21 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
         String json = gson.toJson(entity);
-        dao.LogIt("Saved", entity, json);
+        dao.LogIt("Saved", entity, json, entity.getModifiedBy().getId());
       }
 
       for (Iterator it = updates.iterator(); it.hasNext();) {
         IAuditLog entity = (IAuditLog) it.next();
         System.out.println("postFlush - update");
         String json = gson.toJson(entity);
-        dao.LogIt("Updated", entity, json);
+        dao.LogIt("Updated", entity, json, entity.getModifiedBy().getId());
       }
 
       for (Iterator it = deletes.iterator(); it.hasNext();) {
         IAuditLog entity = (IAuditLog) it.next();
         System.out.println("postFlush - delete");
         String json = gson.toJson(entity);
-        dao.LogIt("Deleted", entity, json);
+        dao.LogIt("Deleted", entity, json, entity.getModifiedBy().getId());
       }
 
     } catch (Exception e) {
