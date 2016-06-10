@@ -9,6 +9,26 @@ table{
   width: 100%;
 }
 
+label {
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.input-sm {
+  padding: 3px 10px;
+  height: 25px;
+  font-size: 13px;
+}
+
+select.input-sm {
+  height: 28px;
+  line-height: 25px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
 .container {
   position: relative;
   /*width: 1100px;*/
@@ -354,7 +374,6 @@ textarea#justification {
   text-align: justify;
   width: 98%;
   font-size: 1.1em;
-  margin-top: 1px;
   word-wrap: break-word;
   color: #6D6D6D;
 }
@@ -1057,7 +1076,7 @@ select#partnerSave_activityPartner_partner_type_id {
 /************* 2. HEADER ***************/
 body {
   font-family: 'Segoe UI', Helvetica, Verdana;
-  color: #4a4a4a;
+  color: #5f5e5e;
 }
 header {
   font-family: 'Open Sans', sans-serif;
@@ -2171,8 +2190,8 @@ margin: 0;
 }
 
 .textArea textarea{
-  width: 99%;
-  height: 4em;
+  /* width: 99%; */
+  /* height: 4em; */
 }
 
 .readPrivileges {
@@ -4724,7 +4743,7 @@ ul#deliverablesFilesMessages > li {
 
 .borderBox {
   border: 1px solid #D1D1D1;
-  padding: 9px 15px 9px 15px;
+  padding: 9px 22px 9px 22px;
   margin: 2px 0px 5px 0;
   border-radius: 4px;
   position: relative;
@@ -4776,7 +4795,7 @@ span.elementId{
   border-bottom: 1px solid #CECECE;
   border-radius: 0px 0px 4px 0px;
   background-color: #FBFBF9;
-  padding: 2px 0px 3px 0px;
+  /* padding: 2px 0px 3px 0px; */
   position: absolute;
   top: 0px;
   left: 0px;

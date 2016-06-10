@@ -23,7 +23,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Site Integration</h4>
-        [#assign crpCountries = [{'name': 'Colombia','code': 'co'},{'name':'China','code': 'cn'}] /]
+        [#assign crpCountries = [{'name': 'Nicaragua','code': 'ni'},{'name':'Vietnam','code': 'vn'}] /]
         [#if crpCountries?has_content]
           [#list crpCountries as crpCountry]
           [#assign customNameCountry = "crpCountries[${crpCountry_index}].leaders" /]
