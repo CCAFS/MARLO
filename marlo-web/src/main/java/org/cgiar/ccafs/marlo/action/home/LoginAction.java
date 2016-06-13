@@ -115,13 +115,15 @@ public class LoginAction extends BaseAction {
               }
             }
             // Validate if the user already logged in other session.
-            if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
-              this.addFieldError("loginMessage", this.getText("login.error.duplicated"));
-              this.getSession().clear();
-              SecurityUtils.getSubject().logout();
-              user.setPassword(null);
-              return BaseAction.INPUT;
-            }
+            /*
+             * if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
+             * this.addFieldError("loginMessage", this.getText("login.error.duplicated"));
+             * this.getSession().clear();
+             * SecurityUtils.getSubject().logout();
+             * user.setPassword(null);
+             * return BaseAction.INPUT;
+             * }
+             */
           } else {
             this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
             this.setCrpSession(loggedCrp.getAcronym());

@@ -265,7 +265,9 @@ public class StandardDAO {
         tempSession.save(auditRecord);
         tempSession.flush();
       } catch (HibernateException e) {
-
+        /*
+         * TODO
+         */
       }
 
     } finally {

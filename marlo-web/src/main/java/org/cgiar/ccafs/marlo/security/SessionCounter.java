@@ -49,11 +49,16 @@ public class SessionCounter implements HttpSessionAttributeListener {
     if (se.getName().equals(APConstants.SESSION_USER)) {
       if (!users.contains(se.getValue())) {
         users.add((User) se.getValue());
-      } else {
-        User duplicateUser = new User();
-        duplicateUser.setId(new Long(-1));
-        se.getSession().setAttribute(APConstants.SESSION_USER, duplicateUser);
       }
+
+      // Code To Control Duplicated users
+      /*
+       * else {
+       * User duplicateUser = new User();
+       * duplicateUser.setId(new Long(-1));
+       * se.getSession().setAttribute(APConstants.SESSION_USER, duplicateUser);
+       * }
+       */
     }
 
   }
