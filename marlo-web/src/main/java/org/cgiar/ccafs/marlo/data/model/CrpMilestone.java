@@ -27,36 +27,36 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 4398175741401855358L;
-  private @Expose Long id;
 
+  @Expose
+  private Long id;
 
   private CrpProgramOutcome crpProgramOutcome;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
 
-  private @Expose SrfTargetUnit srfTargetUnit;
+  @Expose
+  private String title;
 
+  @Expose
+  private int year;
 
-  private @Expose String title;
+  @Expose
+  private BigDecimal value;
 
+  @Expose
+  private boolean active;
 
-  private @Expose int year;
+  @Expose
+  private User createdBy;
 
+  @Expose
+  private Date activeSince;
 
-  private @Expose BigDecimal value;
-
-
-  private @Expose boolean active;
-
-
-  private @Expose User createdBy;
-
-  private @Expose Date activeSince;
-  private @Expose User modifiedBy;
+  @Expose
+  private User modifiedBy;
   private String modificationJustification;
 
   public CrpMilestone() {
@@ -99,6 +99,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

@@ -30,28 +30,28 @@ public class CrpProgramLeader implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 7345327536072331541L;
 
-  private @Expose Long id;
-
+  @Expose
+  private Long id;
 
   private CrpProgram crpProgram;
 
+  @Expose
+  private User user;
 
-  private @Expose User user;
+  @Expose
+  private boolean active;
 
+  @Expose
+  private User createdBy;
 
-  private @Expose boolean active;
+  @Expose
+  private Date activeSince;
 
+  @Expose
+  private User modifiedBy;
 
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpProgramLeader() {
   }
@@ -70,7 +70,6 @@ public class CrpProgramLeader implements java.io.Serializable, IAuditLog {
       return false;
     }
     if (this.getClass() != obj.getClass()) {
-      return false;
     }
     CrpProgramLeader other = (CrpProgramLeader) obj;
     if (id == null) {
@@ -111,6 +110,7 @@ public class CrpProgramLeader implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

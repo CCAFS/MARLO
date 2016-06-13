@@ -31,28 +31,28 @@ public class CrpAssumption implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 5392601449095678314L;
 
-  private @Expose Long id;
-
+  @Expose
+  private Long id;
 
   private CrpOutcomeSubIdo crpOutcomeSubIdo;
 
+  @Expose
+  private String description;
 
-  private @Expose String description;
+  @Expose
+  private boolean active;
 
+  @Expose
+  private User createdBy;
 
-  private @Expose boolean active;
+  @Expose
+  private Date activeSince;
 
+  @Expose
+  private User modifiedBy;
 
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpAssumption() {
   }
@@ -94,6 +94,7 @@ public class CrpAssumption implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

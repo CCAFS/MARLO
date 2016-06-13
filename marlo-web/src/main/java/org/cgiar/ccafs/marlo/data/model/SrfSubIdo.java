@@ -28,35 +28,37 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSubIdo implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -6590673724952913143L;
-  private @Expose Long id;
 
+  @Expose
+  private Long id;
 
-  private @Expose SrfIdo srfIdo;
+  @Expose
+  private SrfIdo srfIdo;
 
+  @Expose
+  private String description;
 
-  private @Expose String description;
-
-
-  private @Expose Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
+  @Expose
+  private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
+  @Expose
+  private boolean active;
 
-  private @Expose boolean active;
+  @Expose
+  private User createdBy;
 
+  @Expose
+  private Date activeSince;
 
-  private @Expose User createdBy;
+  @Expose
+  private User modifiedBy;
 
-
-  private @Expose Date activeSince;
-
-  private @Expose User modifiedBy;
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public SrfSubIdo() {
   }
@@ -110,6 +112,7 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

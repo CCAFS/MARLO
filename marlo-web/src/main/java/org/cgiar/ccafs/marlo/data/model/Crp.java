@@ -30,40 +30,42 @@ import com.google.gson.annotations.Expose;
  */
 public class Crp implements java.io.Serializable, IAuditLog {
 
-
   private static final long serialVersionUID = 6299077992797380051L;
 
+  @Expose
+  private Long id;
 
-  private @Expose Long id;
+  @Expose
+  private String name;
 
-
-  private @Expose String name;
-
-
-  private @Expose String acronym;
-
+  @Expose
+  private String acronym;
 
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
 
-
   private Set<Role> roles = new HashSet<Role>(0);
 
-
-  private @Expose Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
-
+  @Expose
+  private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
-  private @Expose Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+  @Expose
+  private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
+  @Expose
+  private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
-  private @Expose Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
-
-  private @Expose boolean active;
-  private @Expose User createdBy;
-  private @Expose Date activeSince;
-  private @Expose User modifiedBy;
-  private @Expose String modificationJustification;
+  @Expose
+  private boolean active;
+  @Expose
+  private User createdBy;
+  @Expose
+  private Date activeSince;
+  @Expose
+  private User modifiedBy;
+  @Expose
+  private String modificationJustification;
   private List<UserRole> programManagmenTeam;
   private List<CrpsSiteIntegration> siteIntegration;
   private boolean hasRegions;
@@ -135,6 +137,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

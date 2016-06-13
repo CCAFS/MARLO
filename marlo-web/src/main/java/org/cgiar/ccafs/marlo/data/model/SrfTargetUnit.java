@@ -28,18 +28,16 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -5929916550523608124L;
 
-  private @Expose Long id;
+  @Expose
+  private Long id;
 
+  @Expose
+  private String name;
 
-  private @Expose String name;
-
-
-  private @Expose String acronym;
+  @Expose
+  private String acronym;
 
 
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
@@ -113,6 +111,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

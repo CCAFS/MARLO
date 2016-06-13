@@ -30,28 +30,28 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 1702272624319778464L;
 
-  private @Expose Long id;
-
+  @Expose
+  private Long id;
 
   private CrpsSiteIntegration crpsSiteIntegration;
 
+  @Expose
+  private User users;
 
-  private @Expose User users;
+  @Expose
+  private boolean active;
 
+  @Expose
+  private User createdBy;
 
-  private @Expose boolean active;
+  @Expose
+  private Date activeSince;
 
+  @Expose
+  private User modifiedBy;
 
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpSitesLeader() {
   }
@@ -89,6 +89,7 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

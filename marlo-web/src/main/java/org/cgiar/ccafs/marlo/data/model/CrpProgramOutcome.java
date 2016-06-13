@@ -34,34 +34,38 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 3014520962149158601L;
 
-  private @Expose Long id;
-
+  @Expose
+  private Long id;
 
   private CrpProgram crpProgram;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
 
-  private @Expose SrfTargetUnit srfTargetUnit;
+  @Expose
+  private String description;
 
+  @Expose
+  private int year;
 
-  private @Expose String description;
-
-
-  private @Expose int year;
-
-
-  private @Expose BigDecimal value;
-
+  @Expose
+  private BigDecimal value;
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
+  @Expose
+  private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
-  private @Expose Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
-
-  private @Expose boolean active;
-  private @Expose User createdBy;
-  private @Expose Date activeSince;
-  private @Expose User modifiedBy;
-  private @Expose String modificationJustification;
+  @Expose
+  private boolean active;
+  @Expose
+  private User createdBy;
+  @Expose
+  private Date activeSince;
+  @Expose
+  private User modifiedBy;
+  @Expose
+  private String modificationJustification;
 
   public CrpProgramOutcome() {
   }
@@ -127,6 +131,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

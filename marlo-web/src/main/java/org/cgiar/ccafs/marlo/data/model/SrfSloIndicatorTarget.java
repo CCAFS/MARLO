@@ -27,35 +27,37 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -6059800120149718264L;
-  private @Expose Long id;
+
+  @Expose
+  private Long id;
 
 
   private SrfSloIndicator srfSloIndicator;
 
+  @Expose
+  private SrfTargetUnit srfTargetUnit;
 
-  private @Expose SrfTargetUnit srfTargetUnit;
+  @Expose
+  private BigDecimal value;
 
+  @Expose
+  private int year;
 
-  private @Expose BigDecimal value;
+  @Expose
+  private boolean active;
 
+  @Expose
+  private User createdBy;
 
-  private @Expose int year;
+  @Expose
+  private Date activeSince;
 
+  @Expose
+  private User modifiedBy;
 
-  private @Expose boolean active;
-
-
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-  private @Expose User modifiedBy;
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public SrfSloIndicatorTarget() {
   }
@@ -92,6 +94,7 @@ public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

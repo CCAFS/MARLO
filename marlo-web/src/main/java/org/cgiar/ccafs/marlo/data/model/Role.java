@@ -29,13 +29,19 @@ public class Role implements java.io.Serializable {
 
   private static final long serialVersionUID = 8679238437361759448L;
 
-
-  private @Expose Long id;
+  @Expose
+  private Long id;
 
   private Crp crp;
-  private @Expose String description;
-  private @Expose String acronym;
-  private @Expose Set<UserRole> userRoles = new HashSet<UserRole>(0);
+
+  @Expose
+  private String description;
+
+  @Expose
+  private String acronym;
+
+  @Expose
+  private Set<UserRole> userRoles = new HashSet<UserRole>(0);
 
   public Role() {
   }

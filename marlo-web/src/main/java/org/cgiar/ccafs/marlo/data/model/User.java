@@ -29,30 +29,28 @@ import com.google.gson.annotations.Expose;
  */
 public class User implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 3674438945983473335L;
 
-  private @Expose Long id;
+  @Expose
+  private Long id;
 
+  @Expose
+  private String firstName;
 
-  private @Expose String firstName;
+  @Expose
+  private String lastName;
 
+  @Expose
+  private String username;
 
-  private @Expose String lastName;
+  @Expose
+  private String email;
 
+  @Expose
+  private String password;
 
-  private @Expose String username;
-
-
-  private @Expose String email;
-
-
-  private @Expose String password;
-
-
-  private @Expose boolean cgiarUser;
+  @Expose
+  private boolean cgiarUser;
 
 
   private User createdBy;
@@ -195,6 +193,7 @@ public class User implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

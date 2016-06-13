@@ -30,13 +30,27 @@ public class LocElement implements java.io.Serializable {
    */
   private static final long serialVersionUID = -5589133827714008187L;
 
-  private @Expose Long id;
-  private @Expose LocElementType locElementType;
-  private @Expose LocGeoposition locGeoposition;
-  private @Expose String name;
-  private @Expose String code;
-  private @Expose Long parentId;
-  private @Expose Boolean isSiteIntegration;
+  @Expose
+  private Long id;
+
+  @Expose
+  private LocElementType locElementType;
+
+  @Expose
+  private LocGeoposition locGeoposition;
+
+  @Expose
+  private String name;
+
+  @Expose
+  private String code;
+
+  @Expose
+  private Long parentId;
+
+  @Expose
+  private Boolean isSiteIntegration;
+
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
   public LocElement() {

@@ -12,15 +12,18 @@ import com.google.gson.annotations.Expose;
  */
 public class LocGeoposition implements java.io.Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -8360072728437813608L;
-  private @Expose Long id;
+
+  @Expose
+  private Long id;
+
   private LocGeoposition locGeoposition;
-  private @Expose double latitude;
-  private @Expose double longitude;
+  @Expose
+  private double latitude;
+
+  @Expose
+  private double longitude;
+
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
   private Set<LocGeoposition> locGeopositions = new HashSet<LocGeoposition>(0);
 

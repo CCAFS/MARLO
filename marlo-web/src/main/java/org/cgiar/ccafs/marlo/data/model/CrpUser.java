@@ -32,16 +32,15 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -1140371637324045336L;
 
-  private @Expose Long id;
-
+  @Expose
+  private Long id;
 
   private Crp crp;
 
-
   private User user;
 
-
-  private @Expose boolean active;
+  @Expose
+  private boolean active;
 
 
   private User createdBy;
@@ -91,6 +90,7 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

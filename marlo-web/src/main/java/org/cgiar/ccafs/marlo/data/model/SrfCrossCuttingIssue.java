@@ -28,32 +28,30 @@ import com.google.gson.annotations.Expose;
  */
 public class SrfCrossCuttingIssue implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -1176189419675828693L;
-  private @Expose Long id;
 
+  @Expose
+  private Long id;
 
-  private @Expose String name;
-
+  @Expose
+  private String name;
 
   private Set<SrfIdo> srfIdos = new HashSet<SrfIdo>(0);
 
+  @Expose
+  private boolean active;
 
-  private @Expose boolean active;
+  @Expose
+  private User createdBy;
 
+  @Expose
+  private Date activeSince;
 
-  private @Expose User createdBy;
+  @Expose
+  private User modifiedBy;
 
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public SrfCrossCuttingIssue() {
   }
@@ -91,6 +89,7 @@ public class SrfCrossCuttingIssue implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

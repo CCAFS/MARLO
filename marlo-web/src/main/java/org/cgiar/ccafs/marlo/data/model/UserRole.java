@@ -25,10 +25,13 @@ public class UserRole implements java.io.Serializable {
 
   private static final long serialVersionUID = -4464617364263332726L;
 
-  private @Expose Long id;
+  @Expose
+  private Long id;
 
   private Role role;
-  private @Expose User user;
+
+  @Expose
+  private User user;
 
   public UserRole() {
   }

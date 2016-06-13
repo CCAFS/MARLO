@@ -30,30 +30,31 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2885918950939142573L;
-  private @Expose Long id;
 
-
+  @Expose
+  private Long id;
   private Crp crp;
 
+  @Expose
+  private String key;
 
-  private @Expose String key;
+  @Expose
+  private String value;
 
+  @Expose
+  private boolean active;
 
-  private @Expose String value;
+  @Expose
+  private User createdBy;
 
+  @Expose
+  private Date activeSince;
 
-  private @Expose boolean active;
+  @Expose
+  private User modifiedBy;
 
-
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpParameter() {
   }
@@ -96,6 +97,7 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

@@ -29,28 +29,30 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -6392709700346014366L;
-  private @Expose String id;
 
+  @Expose
+  private String id;
 
-  private @Expose CrpProgram crpProgram;
+  @Expose
+  private CrpProgram crpProgram;
 
+  @Expose
+  private String description;
 
-  private @Expose String description;
+  @Expose
+  private boolean active;
 
+  @Expose
+  private User createdBy;
 
-  private @Expose boolean active;
+  @Expose
+  private Date activeSince;
 
+  @Expose
+  private User modifiedBy;
 
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpClusterOfActivity() {
   }
@@ -93,6 +95,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }

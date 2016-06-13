@@ -12,14 +12,15 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElementType implements java.io.Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1795563086382428049L;
-  private @Expose Long id;
+
+  @Expose
+  private Long id;
+
+  @Expose
+  private String name;
+
   private LocElementType locElementType;
-  private @Expose String name;
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 

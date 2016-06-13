@@ -33,30 +33,30 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -7674530393075404476L;
 
-  private @Expose Long id;
-
-
+  @Expose
+  private Long id;
   private Crp crp;
 
+  @Expose
+  private LocElement locElement;
 
-  private @Expose LocElement locElement;
+  @Expose
+  private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
+  @Expose
+  private boolean active;
 
-  private @Expose Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+  @Expose
+  private User createdBy;
 
+  @Expose
+  private Date activeSince;
 
-  private @Expose boolean active;
+  @Expose
+  private User modifiedBy;
 
-
-  private @Expose User createdBy;
-
-
-  private @Expose Date activeSince;
-
-
-  private @Expose User modifiedBy;
-
-  private @Expose String modificationJustification;
+  @Expose
+  private String modificationJustification;
 
   public CrpsSiteIntegration() {
   }
@@ -108,6 +108,7 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
