@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.HibernateException;
@@ -44,12 +45,13 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 public class StandardDAO {
 
   private SessionFactory sessionFactory;
+  @Inject
+  private AuditLogInterceptor interceptor;
+
 
   public StandardDAO() {
 
-
   }
-
 
   /**
    * This method commit the changes to hibernate table (in memory) but does not synchronize the changes to the database
@@ -69,7 +71,6 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      AuditLogInterceptor interceptor = new AuditLogInterceptor();
       session = this.openSession(interceptor);
       interceptor.setSession(session);
       Object newEntityRef = session.merge(obj);
@@ -287,7 +288,6 @@ public class StandardDAO {
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
-    AuditLogInterceptor interceptor = new AuditLogInterceptor();
     return sessionFactory.openSession(interceptor);
   }
 
@@ -328,7 +328,6 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      AuditLogInterceptor interceptor = new AuditLogInterceptor();
       session = this.openSession(interceptor);
       interceptor.setSession(session);
 
@@ -361,7 +360,6 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      AuditLogInterceptor interceptor = new AuditLogInterceptor();
       session = this.openSession(interceptor);
       interceptor.setSession(session);
 

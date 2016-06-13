@@ -24,14 +24,19 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.inject.Singleton;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Session;
 import org.hibernate.type.Type;
 
 /**
- * This is a EmptyInterceptor triggered when the data will be change , add and remove and save to audit log table
+ * This is a EmptyInterceptor triggered when the data will be change ,
+ * add and remove and save to audit log table
+ * 
+ * @author Christian Garcia
  */
+@Singleton
 public class AuditLogInterceptor extends EmptyInterceptor {
 
   private static final long serialVersionUID = -900829831186014812L;
@@ -41,7 +46,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private Set<Object> deletes;
   private StandardDAO dao;
 
-
   public AuditLogInterceptor() {
     this.dao = new StandardDAO();
     inserts = new HashSet<Object>();
@@ -49,6 +53,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     deletes = new HashSet<Object>();
   }
 
+  /**
+   * delete an object, the object is not delete into database yet.
+   */
   @Override
   public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
@@ -59,6 +66,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
+  /**
+   * this method triggered when update an object, the object is not update into database yet.
+   */
   @Override
   public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
     String[] propertyNames, Type[] types) throws CallbackException {
@@ -75,6 +85,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
+  /**
+   * this method triggered when save an object, the object is not save into database yet.
+   */
   @Override
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
     throws CallbackException {
@@ -86,7 +99,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-  // called after committed into database
+  /**
+   * this method triggered after the saved, updated or deleted objects are committed to database.
+   */
   @SuppressWarnings("rawtypes")
   @Override
   public void postFlush(Iterator iterator) {
@@ -127,7 +142,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
-  // called before commit into database
+  /**
+   * this method triggered before the saved, updated or deleted objects are committed to database (usually before
+   * postFlush).
+   */
   @SuppressWarnings("rawtypes")
   @Override
   public void preFlush(Iterator iterator) {

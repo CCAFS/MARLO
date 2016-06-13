@@ -23,10 +23,6 @@ import java.util.Date;
  */
 public class Auditlog implements java.io.Serializable {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -5812698307148791654L;
   private Long auditLogId;
   private String action;
