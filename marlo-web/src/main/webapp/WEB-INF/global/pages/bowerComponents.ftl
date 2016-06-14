@@ -15,6 +15,7 @@
   [#if libraryName="animate.css" ]<link rel="stylesheet" href="${baseUrl}/bower_components/animate.css/animate.css" />[/#if]
   [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrl}/bower_components/bootstrap/dist/css/bootstrap.min.css" />[/#if]
   [#if libraryName="flat-flags" ]<link rel="stylesheet" href="${baseUrl}/bower_components/flat-flags/css/main.css" />[/#if]
+  [#if libraryName="bootstrap-select" ]<link rel="stylesheet" href="${baseUrl}/bower_components/bootstrap-select/dist/css/bootstrap-select.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -31,5 +32,6 @@
   [#if libraryName="dropzone"]<script src="${baseUrl}/bower_components/dropzone/dist/min/dropzone.min.js"></script>[/#if]
   [#if libraryName="jsUri"]<script src="${baseUrl}/bower_components/jsUri/Uri.js"></script>[/#if]
   [#if libraryName="bootstrap"]<script src="${baseUrl}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>[/#if]
+  [#if libraryName="bootstrap-select"]<script src="${baseUrl}/bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
