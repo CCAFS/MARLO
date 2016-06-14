@@ -2216,7 +2216,7 @@ p.projectSubmitted {
 }
 
 
-.button-blue{
+.button-blue {
   padding: 3px 8px 3px 8px;
   margin-top: 3px;
   text-align: center;
@@ -2224,15 +2224,15 @@ p.projectSubmitted {
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+  display: inline-block
 }
 
 .button-blue:hover { 
   background: #5980C7; 
 }
 
-.button-green{
+.button-green {
   padding: 5px 8px 5px 8px;
-  text-align: center; 
   color: #8ea786;
   border-radius: 4px;
   cursor: pointer;
@@ -4773,6 +4773,10 @@ ul#deliverablesFilesMessages > li {
   border-radius: 40px;
   font-size: 1.15em;
   color: #5A5A5A;
+}
+
+.leftHead.blue span.index{
+  background: #9ba7d5;
 }
 
 span.index{
