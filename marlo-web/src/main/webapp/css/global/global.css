@@ -659,7 +659,21 @@ img.icon {
   background-repeat: no-repeat;
   background-position: center;
   background-color: #D5504C;
-  position: absolute;    top: 0;    right: 0;        border-radius: 0px 3px  0px 8px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0px 3px  0px 8px;
+  cursor: pointer;
+}
+
+.removeIcon {
+  padding: 12px 13px;
+  background-image: url(../../images/global/icon-remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  right: 0;
   cursor: pointer;
 }
 
@@ -2234,8 +2248,8 @@ p.projectSubmitted {
 .button-green {
   padding: 5px 8px 5px 8px;
   color: #8ea786;
-  border-radius: 4px;
   cursor: pointer;
+  display: inline-block;
 }
 
 .button-green:hover {
@@ -5408,3 +5422,5 @@ span.flag-icon {
   vertical-align: middle;
   margin: 0px 7px;
 }
+
+.addAssumption.button-green {}

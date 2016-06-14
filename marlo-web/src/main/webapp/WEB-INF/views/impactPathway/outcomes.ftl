@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["bootstrap-select"] /]
 [#assign customJS = [ "${baseUrl}/js/impactPathway/outcomes.js" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
@@ -50,7 +50,10 @@
   </div>
 </section>
 
-[#-- Templates --]
+[#-- Sub-Ido Template --]
+[@subIDOMacro subIdo={} name="" subIdo_index=0 isTemplate=true /]
+
+[#-- Assumption Template --]
 [@assumptionMacro assumption={} name="" assumption_index=0 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
@@ -91,12 +94,14 @@
     
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">Sub-IDOs</h5>
-    [#list outcome.subIdos as subIdo]
-      [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" subIdo_index=subIdo_index /]
-    [/#list]
+    <div class="subIdos-list">
+      [#list outcome.subIdos as subIdo]
+        [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" subIdo_index=subIdo_index /]
+      [/#list]
+    </div>
     [#-- Add Sub-IDO Button --]
     <div class="text-right">
-      <div class="button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Sub-IDO</div>
+      <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Sub-IDO</div>
     </div>
   </div>
 [/#macro]
@@ -130,13 +135,13 @@
 
 [#macro subIDOMacro subIdo name subIdo_index isTemplate=false]
   [#assign subIDOCustomName = "${name}[${subIdo_index}]" /]
-  <div class="sub-ido simpleBox">
+  <div id="subIdo-${isTemplate?string('template', subIdo_index)}" class="subIdo simpleBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead blue">
       <span class="index">${subIdo_index+1}</span>
       <span class="elementId">Sub-IDO #${subIdo_index+1}</span>
     </div>
     [#-- Remove Button --]
-    <div class="removeElement" title="Remove Sub IDO"></div>
+    <div class="removeSubIdo removeElement" title="Remove Sub IDO"></div>
     <br />
     <div class="row form-group">
       <div class="col-md-4">[@customForm.select name="" i18nkey="IDO" placeholder="Select an IDO..." listName="" required=true editable=true  /]</div>
@@ -144,25 +149,28 @@
       <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
     </div>
     <label for="">Assumptions:</label>
-    <div class="assumptions">
+    <div class="assumptions-list">
+    [#if subIdo.assumptions?has_content]
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" assumption_index=assumption_index /]
       [/#list]
+    [#else]
+      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" assumption_index=0 /]
+    [/#if]
     </div>
     [#-- Add Assumption Button --]
-    <div class="button-green text-right">
-      <p><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add an assumption</p>
+    <div class="text-right">
+      <div class="addAssumption button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add an assumption</div>
     </div>
   </div>
 [/#macro]
 
 [#macro assumptionMacro assumption name assumption_index isTemplate=false]
   [#assign assumptionCustomName = "${name}[${assumption_index}]" /]
-  <div id="assumption-${isTemplate?string('template', assumption_index)}" class="assumption form-group" style="display:${isTemplate?string('none','block')}">
+  <div id="assumption-${isTemplate?string('template', assumption_index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
+    [#-- Remove Button --]
+    <div class="removeAssumption removeIcon" title="Remove assumption"></div>
     <input type="hidden" name="${assumptionCustomName}.id" value="-1"/>
-    [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${assumption_index+1}" className="" required=true editable=true /]
+    [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${assumption_index+1}" className="statement" required=true editable=true /]
   </div>
 [/#macro]
-
-
-
