@@ -154,7 +154,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       // Add new Users roles
       for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
         if (userRole.getId() == null) {
-          userRoleManager.saveUserRole(userRole);
+          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
+            .collect(Collectors.toList()).isEmpty()) {
+            userRoleManager.saveUserRole(userRole);
+          }
         }
       }
 
