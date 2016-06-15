@@ -1,0 +1,1 @@
+ALTER TABLE institutions DROP COLUMN is_ppa;
