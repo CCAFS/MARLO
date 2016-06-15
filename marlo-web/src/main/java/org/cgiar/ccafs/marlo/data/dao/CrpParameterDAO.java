@@ -39,7 +39,7 @@ public interface CrpParameterDAO {
    * @param crpParameterID is a crpParameter identifier.
    * @return true if the crpParameter exists, false otherwise.
    */
-  public boolean existCrpParameter(long crpParameterID);
+  public boolean existCrpParameter(long crpParameterId);
 
   /**
    * This method gets a crpParameter object by a given crpParameter identifier.

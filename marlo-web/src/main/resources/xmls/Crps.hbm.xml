@@ -50,6 +50,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpParameter" />
         </set>
+        <set name="crpPpaPartners" table="crp_ppa_partners" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
+        </set>
       <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

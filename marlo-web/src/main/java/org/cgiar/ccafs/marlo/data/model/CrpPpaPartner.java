@@ -13,6 +13,8 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
 
+import java.util.Date;
+
 public class CrpPpaPartner implements java.io.Serializable {
 
 
@@ -21,10 +23,27 @@ public class CrpPpaPartner implements java.io.Serializable {
 
   private Long id;
 
+
   private Institution institution;
 
 
+  private boolean active;
+
+
+  private User createdBy;
+
+
+  private Date activeSince;
+
+
+  private User modifiedBy;
+
+
+  private String modificationJustification;
+
+
   private Crp crp;
+
 
   public CrpPpaPartner() {
   }
@@ -32,6 +51,15 @@ public class CrpPpaPartner implements java.io.Serializable {
   public CrpPpaPartner(Institution institution, Crp crp) {
     this.institution = institution;
     this.crp = crp;
+  }
+
+
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
   }
 
   public Crp getCrp() {
@@ -42,8 +70,35 @@ public class CrpPpaPartner implements java.io.Serializable {
     return this.id;
   }
 
+
   public Institution getInstitution() {
     return institution;
+  }
+
+
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrp(Crp crp) {
@@ -56,6 +111,14 @@ public class CrpPpaPartner implements java.io.Serializable {
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
 }
