@@ -11,16 +11,80 @@ function init() {
 
 function attachEvents() {
 
+  // Add an Outcome
+  $('.addOutcome').on('click', addOutcome);
+  // Remove an Outcome
+  $('.removeOutcome').on('click', removeOutcome);
+
+  // Add a Milestone
+  $('.addMilestone').on('click', addMilestone);
+  // Remove a Milestone
+  $('.removeMilestone').on('click', removeMilestone);
+
+  // Add a Sub IDO
+  $('.addSubIdo').on('click', addSubIdo);
+  // Remove a Sub IDO
+  $('.removeSubIdo').on('click', removeSubIdo);
+
   // Add an assumption
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
   $('.removeAssumption').on('click', removeAssumption);
 
-// Add an assumption
-  $('.addSubIdo').on('click', addSubIdo);
-  // Remove assumption
-  $('.removeSubIdo').on('click', removeSubIdo);
+}
 
+/**
+ * Outcome Functions
+ */
+
+function addOutcome() {
+  var $list = $('.outcomes-list');
+  var $item = $('#outcome-template').clone(true).removeAttr("id");
+  $list.append($item);
+  updateOutcomesIndexes($list, "outcome");
+  $item.show('slow');
+}
+
+function removeOutcome() {
+  var $list = $(this).parents('.outcomes-list');
+  var $item = $(this).parents('.outcome');
+  $item.hide(function() {
+    $item.remove();
+    updateOutcomesIndexes($list, "outcome");
+  });
+}
+
+function updateOutcomesIndexes(list,name) {
+  $(list).find('.outcome').each(function(i,item) {
+
+  });
+}
+
+/**
+ * Milestone Functions
+ */
+
+function addMilestone() {
+  var $list = $(this).parents('.outcome').find('.milestones-list');
+  var $item = $('#milestone-template').clone(true).removeAttr("id");
+  $list.append($item);
+  updateMilestonesIndexes($list, "outcome[0].milestones");
+  $item.show('slow');
+}
+
+function removeMilestone() {
+  var $list = $(this).parents('.outcome').find('.milestones-list');
+  var $item = $(this).parents('.milestone');
+  $item.hide(function() {
+    $item.remove();
+    updateMilestonesIndexes($list, "outcome[0].milestone");
+  });
+}
+
+function updateMilestonesIndexes(list,name) {
+  $(list).find('.milestone').each(function(i,item) {
+
+  });
 }
 
 /**

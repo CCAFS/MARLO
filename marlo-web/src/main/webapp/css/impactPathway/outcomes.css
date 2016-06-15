@@ -1,0 +1,15 @@
+.addOutcome {
+  border-style: dashed;
+  border-width: 2px;
+  border-color: #ccc;
+  color: #b1afaf;
+  font-size: 2em;
+  padding: 10px 0;
+  margin: 10px 7px;
+  cursor: pointer;
+}
+
+.addOutcome:hover {
+  border-color: #9c9c9c;
+  color: #757575;
+}

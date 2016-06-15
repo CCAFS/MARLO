@@ -2,6 +2,7 @@
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign pageLibs = ["bootstrap-select"] /]
 [#assign customJS = [ "${baseUrl}/js/impactPathway/outcomes.js" ] /]
+[#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 
@@ -22,10 +23,7 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
-        
-        <h4 class="sectionTitle">Flagship {0} - Outcomes </h4>
-        <div class="outcomes-list">
-          [#assign outcomes= [
+        [#assign outcomes= [
             {
               'name': 'Outcome #1', 
               'milestones': [
@@ -35,11 +33,19 @@
                 { 'assumptions': [ '1', '2'] }
               ]
             }
-          ]  /]
+          ]  
+        /]
+        
+        <h4 class="sectionTitle">Flagship {0} - Outcomes </h4>
+        <div class="outcomes-list">
           [#list outcomes as outcome]
-            [@outcomeMacro outcome=outcome name="outcome" outcome_index=outcome_index /]
+            [@outcomeMacro outcome=outcome name="outcome" index=outcome_index /]
           [/#list]
         </div>
+        [#-- Add Outcome Button --]
+        <div class="addOutcome text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add an Outcome</div>
+        
+        [#-- Save Button --]
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
         </div>
@@ -50,24 +56,30 @@
   </div>
 </section>
 
+[#-- Outcome Template --]
+[@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
+
+[#-- Milestone Template --]
+[@milestoneMacro milestone={} name="" index=0 isTemplate=true /]
+
 [#-- Sub-Ido Template --]
-[@subIDOMacro subIdo={} name="" subIdo_index=0 isTemplate=true /]
+[@subIDOMacro subIdo={} name="" index=0 isTemplate=true /]
 
 [#-- Assumption Template --]
-[@assumptionMacro assumption={} name="" assumption_index=0 isTemplate=true /]
+[@assumptionMacro assumption={} name="" index=0 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#----------------------------------- Outcomes Macros -------------------------------------------]
-[#macro outcomeMacro outcome name outcome_index isTemplate=false]
-  [#assign outcomeCustomName = "${name}[${outcome_index}]" /]
-  <div class="outcome form-group borderBox">
+[#macro outcomeMacro outcome name index isTemplate=false]
+  [#assign outcomeCustomName = "${name}[${index}]" /]
+  <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
-      <span class="index">${outcome_index+1}</span>
-      <span class="elementId">Outcome #${outcome_index+1}</span>
+      <span class="index">${index+1}</span>
+      <span class="elementId">Outcome #${index+1}</span>
     </div>
     [#-- Remove Button --]
-    <div class="removeElement" title="Remove Outcome"></div>
+    <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
@@ -84,20 +96,30 @@
     
     [#-- Outcome Milestones List --]
     <h5 class="sectionSubTitle">Milestones</h5>
-    [#list outcome.milestones as milestone]
-      [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" milestone_index=milestone_index /]
-    [/#list]
+    <div class="milestones-list">
+    [#if outcome.milestones?has_content]
+      [#list outcome.milestones as milestone]
+        [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
+      [/#list]
+    [#else]
+      [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=0 /]
+    [/#if]
+    </div>
     [#-- Add Milestone Button --]
     <div class="text-right">
-      <div class="button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Milestone</div>
+      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Milestone</div>
     </div>
     
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">Sub-IDOs</h5>
     <div class="subIdos-list">
+    [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]
-        [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" subIdo_index=subIdo_index /]
+        [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
       [/#list]
+    [#else]
+      [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+    [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
     <div class="text-right">
@@ -107,15 +129,15 @@
 [/#macro]
 
 
-[#macro milestoneMacro milestone name milestone_index isTemplate=false]
-  [#assign milestoneCustomName = "${name}[${milestone_index}]" /]
-  <div class="milestone simpleBox">
-    <div class="leftHead blue">
-      <span class="index">${milestone_index+1}</span>
-      <span class="elementId">Milestone #${milestone_index+1}</span>
+[#macro milestoneMacro milestone name index isTemplate=false]
+  [#assign milestoneCustomName = "${name}[${index}]" /]
+  <div id="milestone-${isTemplate?string('template', index)}" class="milestone simpleBox" style="display:${isTemplate?string('none','block')}">
+    <div class="leftHead green sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId">Milestone</span>
     </div>
     [#-- Remove Button --]
-    <div class="removeElement" title="Remove Milestone"></div>
+    <div class="removeMilestone removeElement" title="Remove Milestone"></div>
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
@@ -133,12 +155,12 @@
 [/#macro]
 
 
-[#macro subIDOMacro subIdo name subIdo_index isTemplate=false]
-  [#assign subIDOCustomName = "${name}[${subIdo_index}]" /]
-  <div id="subIdo-${isTemplate?string('template', subIdo_index)}" class="subIdo simpleBox" style="display:${isTemplate?string('none','block')}">
-    <div class="leftHead blue">
-      <span class="index">${subIdo_index+1}</span>
-      <span class="elementId">Sub-IDO #${subIdo_index+1}</span>
+[#macro subIDOMacro subIdo name index isTemplate=false]
+  [#assign subIDOCustomName = "${name}[${index}]" /]
+  <div id="subIdo-${isTemplate?string('template', index)}" class="subIdo simpleBox" style="display:${isTemplate?string('none','block')}">
+    <div class="leftHead blue sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId">Sub-IDO</span>
     </div>
     [#-- Remove Button --]
     <div class="removeSubIdo removeElement" title="Remove Sub IDO"></div>
@@ -152,10 +174,10 @@
     <div class="assumptions-list">
     [#if subIdo.assumptions?has_content]
       [#list subIdo.assumptions as assumption]
-        [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" assumption_index=assumption_index /]
+        [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
     [#else]
-      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" assumption_index=0 /]
+      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]
     [/#if]
     </div>
     [#-- Add Assumption Button --]
@@ -165,12 +187,12 @@
   </div>
 [/#macro]
 
-[#macro assumptionMacro assumption name assumption_index isTemplate=false]
-  [#assign assumptionCustomName = "${name}[${assumption_index}]" /]
-  <div id="assumption-${isTemplate?string('template', assumption_index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
+[#macro assumptionMacro assumption name index isTemplate=false]
+  [#assign assumptionCustomName = "${name}[${index}]" /]
+  <div id="assumption-${isTemplate?string('template', index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
     <input type="hidden" name="${assumptionCustomName}.id" value="-1"/>
-    [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${assumption_index+1}" className="statement" required=true editable=true /]
+    [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${index+1}" className="statement" required=true editable=true /]
   </div>
 [/#macro]
