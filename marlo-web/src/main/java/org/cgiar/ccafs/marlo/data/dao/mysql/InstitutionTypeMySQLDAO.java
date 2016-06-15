@@ -14,8 +14,8 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.CrpPpaPartnerDAO;
-import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.dao.InstitutionTypeDAO;
+import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 
 import java.util.List;
 
@@ -25,40 +25,39 @@ import com.google.inject.Inject;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
+public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public CrpPpaPartnerMySQLDAO(StandardDAO dao) {
+  public InstitutionTypeMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteCrpPpaPartner(long crpPpaPartnerId) {
-    CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
-    crpPpaPartner.setActive(false);
-    return this.save(crpPpaPartner) > 0;
+  public boolean deleteInstitutionType(long institutionTypeId) {
+    InstitutionType institutionType = this.find(institutionTypeId);
+    return dao.delete(institutionType);
   }
 
   @Override
-  public boolean existCrpPpaPartner(long crpPpaPartnerId) {
-    CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
-    if (crpPpaPartner == null) {
+  public boolean existInstitutionType(long institutionTypeId) {
+    InstitutionType institutionType = this.find(institutionTypeId);
+    if (institutionType == null) {
       return false;
     }
     return true;
   }
 
   @Override
-  public CrpPpaPartner find(long id) {
-    return dao.find(CrpPpaPartner.class, id);
+  public InstitutionType find(long id) {
+    return dao.find(InstitutionType.class, id);
   }
 
   @Override
-  public List<CrpPpaPartner> findAll() {
-    String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1";
-    List<CrpPpaPartner> list = dao.findAll(query);
+  public List<InstitutionType> findAll() {
+    String query = "from " + InstitutionType.class.getName();
+    List<InstitutionType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,13 +65,13 @@ public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
   }
 
   @Override
-  public long save(CrpPpaPartner crpPpaPartner) {
-    if (crpPpaPartner.getId() == null) {
-      dao.save(crpPpaPartner);
+  public long save(InstitutionType institutionType) {
+    if (institutionType.getId() == null) {
+      dao.save(institutionType);
     } else {
-      dao.update(crpPpaPartner);
+      dao.update(institutionType);
     }
-    return crpPpaPartner.getId();
+    return institutionType.getId();
   }
 
 }

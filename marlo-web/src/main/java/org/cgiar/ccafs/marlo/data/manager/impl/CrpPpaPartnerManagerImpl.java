@@ -12,9 +12,10 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.data.dao.mysql;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpPpaPartnerDAO;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 
 import java.util.List;
@@ -25,54 +26,38 @@ import com.google.inject.Inject;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CrpPpaPartnerMySQLDAO implements CrpPpaPartnerDAO {
+public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
 
-  private StandardDAO dao;
+  private CrpPpaPartnerDAO crpPpaPartnerDao;
 
   @Inject
-  public CrpPpaPartnerMySQLDAO(StandardDAO dao) {
-    this.dao = dao;
+  public CrpPpaPartnerManagerImpl(CrpPpaPartnerDAO crpPpaPartnerDao) {
+    this.crpPpaPartnerDao = crpPpaPartnerDao;
   }
 
   @Override
   public boolean deleteCrpPpaPartner(long crpPpaPartnerId) {
-    CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
-    crpPpaPartner.setActive(false);
-    return this.save(crpPpaPartner) > 0;
+    return crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartnerId);
   }
 
   @Override
   public boolean existCrpPpaPartner(long crpPpaPartnerId) {
-    CrpPpaPartner crpPpaPartner = this.find(crpPpaPartnerId);
-    if (crpPpaPartner == null) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public CrpPpaPartner find(long id) {
-    return dao.find(CrpPpaPartner.class, id);
+    return crpPpaPartnerDao.existCrpPpaPartner(crpPpaPartnerId);
   }
 
   @Override
   public List<CrpPpaPartner> findAll() {
-    String query = "from " + CrpPpaPartner.class.getName() + " where is_active=1";
-    List<CrpPpaPartner> list = dao.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    return crpPpaPartnerDao.findAll();
   }
 
   @Override
-  public long save(CrpPpaPartner crpPpaPartner) {
-    if (crpPpaPartner.getId() == null) {
-      dao.save(crpPpaPartner);
-    } else {
-      dao.update(crpPpaPartner);
-    }
-    return crpPpaPartner.getId();
+  public CrpPpaPartner getCrpPpaPartnerById(long crpPpaPartnerId) {
+    return crpPpaPartnerDao.find(crpPpaPartnerId);
+  }
+
+  @Override
+  public long saveCrpPpaPartner(CrpPpaPartner crpPpaPartner) {
+    return crpPpaPartnerDao.save(crpPpaPartner);
   }
 
 }
