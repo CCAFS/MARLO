@@ -30,7 +30,9 @@ import com.google.gson.annotations.Expose;
  */
 public class Crp implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 6299077992797380051L;
+
 
   @Expose
   private Long id;
@@ -58,14 +60,19 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean active;
+
   @Expose
   private User createdBy;
+
   @Expose
   private Date activeSince;
   @Expose
   private User modifiedBy;
   @Expose
   private String modificationJustification;
+  @Expose
+  private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+
   private List<UserRole> programManagmenTeam;
   private List<CrpsSiteIntegration> siteIntegration;
   private boolean hasRegions;
@@ -101,6 +108,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.crpParameters;
   }
 
+  public Set<CrpPpaPartner> getCrpPpaPartners() {
+    return crpPpaPartners;
+  }
+
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
@@ -112,7 +123,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Set<CrpSubIdosContribution> getCrpSubIdosContributions() {
     return crpSubIdosContributions;
   }
-
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -137,6 +147,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -149,7 +160,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
   }
-
 
   public Set<Role> getRoles() {
     return this.roles;
@@ -194,6 +204,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setCrpParameters(Set<CrpParameter> crpParameters) {
     this.crpParameters = crpParameters;
+  }
+
+
+  public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
+    this.crpPpaPartners = crpPpaPartners;
   }
 
   public void setCrpPrograms(Set<CrpProgram> crpPrograms) {
