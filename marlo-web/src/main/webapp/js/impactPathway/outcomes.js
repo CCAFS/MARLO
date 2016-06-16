@@ -150,7 +150,6 @@ function updateAllIndexes() {
       $(subIdo).find('span.index').text(i + 1);
       $(subIdo).find('.subIdoId').attr('name', subIdoName + 'subIdoId');
       $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
-      contribution
 
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {
