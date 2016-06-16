@@ -2,7 +2,8 @@ $(document).ready(init);
 var partnerSelect, partnerContent;
 
 function init() {
-  partnerSelect = $("#partnerSelect");
+  partnerSelect = $("#ccafs_ppaPartners_");
+  partnerSelect.attr("data-live-search", "true")
   partnerContent = $("#partnerContent");
   /* Declaring Events */
   attachEvents();
@@ -63,7 +64,8 @@ function differences() {
   for(var int3 = 0; int3 < institutionsContent.length; int3++) {
     for(var int4 = 0; int4 < institutionSelect.length; int4++) {
       if(institutionsContent[int3] == institutionSelect[int4]) {
-        $("#partnerSelect option[id='" + institutionSelect[int4] + "'] ").attr('disabled', true);
+        console.log($("#partnerSelect").find('option:contains("' + institutionSelect[int4] + '")'));
+        // $("#partnerSelect option[id='" + institutionSelect[int4] + "'] ").attr('disabled', true);
       } else {
       }
     }

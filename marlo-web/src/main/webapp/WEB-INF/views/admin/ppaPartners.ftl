@@ -34,17 +34,8 @@
 	      	
       		
         		<div class="form-group">
-          		<select id="partnerSelect" class="selectpicker col-md-12"   data-live-search="true" data-show-subtext="true" >
-          		  <option ></option>
-          		  [#list institutions as institution]
-          		  <option data-subtext="" value="${institution.id}" id="${institution.id}">${institution.name}</option>
-          		  [/#list]
-          		  <!--
-        			  <option data-subtext="Netherlands" value="1" id="3R-Acacia Water">3R-Acacia Water</option>
-        			  <option data-subtext="Denmark" value="2" id="Aarhus university">Aarhus university</option>
-        			  <option data-subtext="Mali" value="3" id="Agence Nationale de la Métérologie du Mali">Agence Nationale de la Métérologie du Mali</option>
-        			  --> 
-        			</select>
+        		  [@customForm.select name="" showTitle=false placeholder="Select an option..." className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]
+        		
         			<div class="clearfix"></div>
       			</div>
   						

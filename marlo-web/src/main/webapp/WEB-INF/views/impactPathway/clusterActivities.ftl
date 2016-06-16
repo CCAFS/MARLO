@@ -2,6 +2,7 @@
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [] /]
+[#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
 
@@ -25,6 +26,19 @@
         
         <h4 class="sectionTitle">Flagship {0} - Cluste of Activities</h4>
         <div class="borderBox">
+          <div class="form-group CoA">
+            <div class="form-group">
+              <div class="row">
+                <span class="subtitle col-md-11">Cluster of Activity - Title</span>
+                <span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
+              </div>
+              <div class="col-md-12">
+                <input class="col-md-12" type="text" name="CoATilte" value=""/>
+              </div>
+            </div>
+            <div class="form-group">
+            </div>
+          </div>
         </div>
         
         <div class="buttons">
