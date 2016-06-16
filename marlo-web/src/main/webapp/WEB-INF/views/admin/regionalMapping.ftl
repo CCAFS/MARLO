@@ -1,13 +1,13 @@
 [#ftl]
-[#assign title = "Leaders" /]
+[#assign title = "Regional Mapping" /]
 [#assign pageLibs = [] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/leaders.js" ] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/regionalMapping.js" ] /]
 [#assign currentSection = "admin" /]
-[#assign currentStage = "leaders" /]
+[#assign currentStage = "regionalMapping" /]
 
 [#assign breadCrumb = [
   {"label":"admin", "nameSpace":"", "action":"adminManagement"},
-  {"label":"leaders", "nameSpace":"", "action":""}
+  {"label":"regionalMapping", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -22,34 +22,29 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data"]
         
-        <h4 class="sectionTitle">(Flagships / Regions) Leaders</h4>
-        <div class="row">
-          [#if programs?has_content]
-            [#list programs as program]
-            [#assign customNameProgram = "programs[${program_index}].leaders" /]
-            <div class="col-md-6">
-              <h5 class="sectionSubTitle" > ${program.name} (${program.acronym})</h5>
-              <div class="program-block borderBox">
-                <div class="items-list">
-                  <ul>
-                  [#list program.leaders as item]
-                    [@userItem element=item index=item_index name=customNameProgram /]
-                  [/#list]
-                  </ul>
-                  <p class="text-center" style="display:${(program.leaders?has_content)?string('none','block')}">There are not users added yet.</p>
-                </div>
-                <div class="searchUser button-green">
-                  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
-                  <span class="inputName-input" style="display:none">${customNameProgram}</span>
-                </div>
-              </div>
-            </div>
-            [#if (program_index%2) = 1]<div class="clearfix"></div>[/#if]
-            [/#list]
-          [#else]
-            <p class="text-center">There are not programs added yet.</p>
-          [/#if] 
+        <h4 class="sectionTitle">Regional Mapping</h4>
+        [#-- Regions List --]
+        <div class="regions items-list simpleBox">
+         <ul>
+         [#if regionsPrograms?has_content]
+          [#list regionsPrograms as item]
+            [@programItem element=item index=item_index name="regionsPrograms"/]
+          [/#list]
+         [/#if]
+         </ul>
+        <p class="text-center" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
         </div>
+        [#-- Add Region--]
+        <div class="row">
+          <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
+          <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Region name"></div>
+          <div class="col-sm-2">
+            <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /]</div>
+            <span class="type-input" style="display:none">2</span>
+            <span class="inputName-input" style="display:none">regionsPrograms</span>
+          </div>
+        </div>
+         
         
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]

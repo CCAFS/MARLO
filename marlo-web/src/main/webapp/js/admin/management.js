@@ -9,15 +9,33 @@ function init() {
 
 function attachEvents() {
 
+  // Add User - Override function from userManagement.js
+  addUser = addUserItem;
+
   // Remove an user item
   $('.remove-userItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
+    var item = {
+        type: $parent.parents('.usersBlock').find('.usersType').text(),
+        role: $parent.parents('.usersBlock').find('.usersRole').text()
+    }
+    console.log(item);
     $parent.hide(function() {
       $parent.remove();
-      checkItems($block);
-      updateUsersIndex($block);
+      checkItems($block, 'usersMessage');
+      if(item.type == 'crpUser') {
+        updateProgramManagementTeamIndexes($block);
+      }
+      if(item.type == 'programUser') {
+        updateProgramIndexes($block.parents('.items-list'));
+      }
     });
+  });
+
+  // Add program
+  $('.addProgram').on('click', function() {
+    addProgram($(this));
   });
 
   // Remove an program item
@@ -26,28 +44,36 @@ function attachEvents() {
     var $block = $parent.parent().parent();
     $parent.hide(function() {
       $parent.remove();
-      checkItems($block);
-      updateProgramIndex($block, $block.parent().find('.inputName-input').html())
+      checkItems($block, 'programMessage');
+      updateProgramIndexes($block);
+
     });
   });
 
-  /* Add User - Override function from userManagement.js */
-  addUser = addUserItem;
-
-  $('.addProgram').on('click', function() {
-    addProgram($(this));
-  });
 }
 
 function addUserItem(composedName,userId) {
-  $usersList = $elementSelected.parent().find(".items-list");
+  $usersList = $elementSelected.parent().parent().find(".items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
-  $li.find('.name').html(escapeHtml(composedName));
-  $li.find('.user').val(userId);
+  var item = {
+      name: escapeHtml(composedName),
+      id: userId,
+      type: $elementSelected.parents('.usersBlock').find('.usersType').text(),
+      role: $elementSelected.parents('.usersBlock').find('.usersRole').text()
+  }
+  $li.find('.name').html(item.name);
+  $li.find('.user').val(item.id);
+  $li.find('.role').val(item.role);
+
   $usersList.find("ul").append($li);
   $li.show('slow');
-  checkItems($usersList);
-  updateUsersIndex($usersList);
+  checkItems($usersList, 'usersMessage');
+  if(item.type == 'crpUser') {
+    updateProgramManagementTeamIndexes($usersList);
+  }
+  if(item.type == 'programUser') {
+    updateProgramIndexes($usersList.parents('.items-list'));
+  }
   dialog.dialog("close");
 }
 
@@ -56,63 +82,59 @@ function addProgram(element) {
   var $programList = $parent.find(".items-list");
   // Getting item parameters
   var item = {
-      acronym: $.trim($parent.find('.acronym-input').val()),
-      name: $.trim($parent.find('.name-input').val()),
       type: $parent.find('.type-input').html(),
       inputName: $parent.find('.inputName-input').html(),
-      composedName: function() {
-        return this.acronym + ' - ' + this.name;
-      }
   }
-  if((item.acronym == '') || (item.name == '')) {
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'Acronym and name are required';
-    noty(notyOptions);
-  } else {
-    // Create a program item from a template
-    var $li = $("#program-template").clone(true).removeAttr("id");
-    // Assign parameters to template created
-    $li.find('.composedName').html(item.composedName());
-    $li.find('.acronym').val(item.acronym);
-    $li.find('.name').val(item.name);
-    $li.find('.type').val(item.type);
-    // Append item into program list
-    $programList.find("ul").append($li);
-    // Show item
-    $li.show('slow');
-    // Reset program form
-    $parent.find('input:text').val('');
-    // Check program items
-    checkItems($programList);
-    // Update program index
-    updateProgramIndex($programList, item.inputName);
-  }
+  // Create a program item from a template
+  var $li = $("#program-template").clone(true).removeAttr("id");
+  // Assign parameters to template created
+  $li.find('.type').val(item.type);
+  // Append item into program list
+  $programList.find(".flagships-list").append($li);
+  // Show item
+  $li.show('slow');
+  // Check program items
+  checkItems($programList, 'programMessage');
+  // Update program index
+  updateProgramIndexes($programList);
+
 }
 
-function checkItems(block) {
-  var items = $(block).find('li').length;
+function checkItems(block,target) {
+  var items = $(block).find('> ul li').length;
   if(items == 0) {
-    $(block).find('p').fadeIn();
+    $(block).find('p.' + target).fadeIn();
   } else {
-    $(block).find('p').fadeOut();
+    $(block).find('p.' + target).fadeOut();
   }
 }
 
-function updateUsersIndex(list) {
+function updateProgramManagementTeamIndexes(list) {
   $(list).find('li').each(function(i,item) {
-    var customName = 'loggedCrp.programManagmenTeam[' + i + ']';
-    $(item).find('.user').attr('name', customName + '.user.id');
-    $(item).find('.role').attr('name', customName + '.role.id');
-    $(item).find('.id').attr('name', customName + '.id');
+    var customName = 'loggedCrp.programManagmenTeam[' + i + '].';
+    updateUserItemIndex(list, customName);
   });
 }
 
-function updateProgramIndex(list,name) {
-  $(list).find('li').each(function(i,item) {
-    var customName = name + '[' + i + ']';
-    $(item).find('.acronym').attr('name', customName + '.acronym');
-    $(item).find('.name').attr('name', customName + '.name');
-    $(item).find('.type').attr('name', customName + '.programType');
-    $(item).find('.id').attr('name', customName + '.id');
+function updateProgramIndexes(list) {
+  $(list).find('.program').each(function(i,item) {
+    var programName = 'flagshipsPrograms' + '[' + i + '].';
+    console.log(programName);
+    $(item).find('.acronym').attr('name', programName + 'acronym');
+    $(item).find('.name').attr('name', programName + 'name');
+    $(item).find('.type').attr('name', programName + 'programType');
+    $(item).find('.id').attr('name', programName + 'id');
+
+    // Program Leaders
+    $(item).find('.usersBlock li').each(function(i,leader) {
+      var leaderName = programName + 'leaders[' + i + '].';
+      updateUserItemIndex(leader, leaderName);
+    });
   });
+}
+
+function updateUserItemIndex(element,name) {
+  $(element).find('.user').attr('name', name + 'user.id');
+  $(element).find('.role').attr('name', name + 'role.id');
+  $(element).find('.id').attr('name', name + 'id');
 }
