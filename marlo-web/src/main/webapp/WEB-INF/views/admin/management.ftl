@@ -122,7 +122,7 @@
         <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Flagship Name" className="name-input" required=true editable=true /]</div>
       </div>
     </div>
-    [#-- Hidden Parameters  --]
+    [#-- Hidden inputs  --]
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]

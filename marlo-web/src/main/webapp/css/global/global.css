@@ -5268,7 +5268,6 @@ table.evaluationRank thead th{
   list-style: none;
   margin-bottom: 4px;
   border-radius: 2px;
-  
 }
 
 .items-list ul li.userItem{
@@ -5446,3 +5445,24 @@ span.flag-icon {
 }
 
 .addAssumption.button-green {}
+
+/*Custom Select2*/
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #ffffff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  cursor: default;
+  float: left;
+  margin-right: 5px;
+  margin-top: 6px;
+  padding: 5px 10px;
+}
+
+span.select2-selection.select2-selection--multiple {
+  border: solid #d1d1d1 1px;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+ border: solid #d1d1d1 1px;
+}
