@@ -22,46 +22,46 @@
       </div>
       <div class="col-md-9">
       
-      	<h4 class="text-center">PPA Partners</h4>
-      	<div class=" borderBox formWrapper ">
+        <h4 class="text-center">PPA Partners</h4>
+        <div class=" borderBox formWrapper ">
  
-      		[@s.form action=actionName enctype="multipart/form-data" ]  
+          [@s.form action=actionName enctype="multipart/form-data" ]  
       		
-      		[#assign institutions = [ 
-        	{
-        		'name': '3R-Acacia Water',
-        		'id': 1
-        	},
-        	{
-        		'name': 'Aarhus university',
-        		'id': 2
-        	}
-       		] 
-        /]
+        		[#assign institutions = [ 
+              	{
+              		'name': '3R-Acacia Water',
+              		'id': 1
+              	},
+              	{
+              		'name': 'Aarhus university',
+              		'id': 2
+              	}
+         		   ] 
+            /]
         
-	      	<div class="col-md-12" id="partnerContent">
-	      		[#list institutions as institution]
-	      			[@intitutionMacro institution=institution index=institution_index /]
-	      		 [/#list]
-	      	</div>
+  	      	<div class="col-md-12" id="partnerContent">
+  	      		[#list institutions as institution]
+  	      			[@intitutionMacro institution=institution index=institution_index /]
+  	      		 [/#list]
+  	      	</div>
 	      	
       		
-      		<div class="form-group">
-        		<select id="partnerSelect" class="selectpicker col-md-12"   data-live-search="true" data-show-subtext="true" >
-        		  <option ></option>
-      			  <option data-subtext="Netherlands" value="1" id="3R-Acacia Water">3R-Acacia Water</option>
-      			  <option data-subtext="Denmark" value="2" id="Aarhus university">Aarhus university</option>
-      			  <option data-subtext="Mali" value="3" id="Agence Nationale de la Métérologie du Mali">Agence Nationale de la Métérologie du Mali</option>
-      			</select>
-      			<div class="clearfix"></div>
-    			</div>
-						
-      			  <div class="buttons">
-                [@s.submit  type="button" name="save" cssClass="center-block"][@s.text name="form.buttons.save" /][/@s.submit]
-              </div>
+        		<div class="form-group">
+          		<select id="partnerSelect" class="selectpicker col-md-12"   data-live-search="true" data-show-subtext="true" >
+          		  <option ></option>
+        			  <option data-subtext="Netherlands" value="1" id="3R-Acacia Water">3R-Acacia Water</option>
+        			  <option data-subtext="Denmark" value="2" id="Aarhus university">Aarhus university</option>
+        			  <option data-subtext="Mali" value="3" id="Agence Nationale de la Métérologie du Mali">Agence Nationale de la Métérologie du Mali</option>
+        			</select>
+        			<div class="clearfix"></div>
+      			</div>
+  						
+        		<div class="buttons">
+              [@s.submit  type="button" name="save" cssClass="center-block"][@s.text name="form.buttons.save" /][/@s.submit]
+            </div>
       			
 			
-			[/@s.form]
+          [/@s.form]
       	</div>
       	
       </div>
