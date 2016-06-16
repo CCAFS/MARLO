@@ -101,7 +101,7 @@
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
-    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.getUser().id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
@@ -133,7 +133,7 @@
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]
-            [@programItem element=leader index=leader_index name="${customName}.leaders" pmuRol='{fpRol}'/]
+            [@userItem element=leader index=leader_index name="${customName}.leaders" userRole=fplRole.id /]
           [/#list]
         [/#if]
         </ul>
@@ -145,7 +145,7 @@
       </div>
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">{fpRol}</span>
+      <span class="usersRole" style="display:none">{fpRole.id}</span>
     </div>
   </li>
 [/#macro]

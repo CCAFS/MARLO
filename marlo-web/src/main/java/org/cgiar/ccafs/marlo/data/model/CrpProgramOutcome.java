@@ -37,7 +37,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
   private CrpProgram crpProgram;
 
   @Expose
@@ -54,7 +54,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
-  @Expose
+
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
   @Expose

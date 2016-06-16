@@ -48,15 +48,15 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<Role> roles = new HashSet<Role>(0);
 
-  @Expose
+
   private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
-  @Expose
+
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
-  @Expose
+
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
   @Expose
@@ -71,9 +71,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String modificationJustification;
-  @Expose
+
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
-  @Expose
+
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private List<UserRole> programManagmenTeam;
