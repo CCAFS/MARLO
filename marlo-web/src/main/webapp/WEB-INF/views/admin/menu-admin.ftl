@@ -2,6 +2,7 @@
 [#assign items= [
   { 'slug': 'management',       'name': 'Program Management', 'action': 'management',       'active': true },
   { 'slug': 'leaders',          'name': 'Leaders',            'action': 'leaders',          'active': true },
+  { 'slug': 'ppaPartners',      'name': 'PPA Partners',       'action': 'ppaPartners',      'active': true },
   { 'slug': 'siteIntegration',  'name': 'Site Integration',   'action': 'siteIntegration',  'active': true },
   { 'slug': 'subIdos',          'name': 'Sub IDOs',           'action': '#',                'active': false }
 ]/]
