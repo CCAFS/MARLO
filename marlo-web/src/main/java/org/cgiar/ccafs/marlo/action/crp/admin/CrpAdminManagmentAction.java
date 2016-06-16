@@ -224,6 +224,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       parameter.setModificationJustification("");
       parameter.setActiveSince(new Date());
       crpParameterManager.saveCrpParameter(parameter);
+      this.getSession().put(parameter.getKey(), parameter.getValue());
       /*
        * Desactive regions
        */
