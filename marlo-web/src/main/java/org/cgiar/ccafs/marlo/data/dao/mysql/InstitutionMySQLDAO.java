@@ -16,7 +16,6 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.InstitutionDAO;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
 
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class InstitutionMySQLDAO implements InstitutionDAO {
 
   @Override
   public List<Institution> findAll() {
-    String query = "from " + LocElement.class.getName();
+    String query = "from " + Institution.class.getName();
     List<Institution> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
