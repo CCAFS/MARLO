@@ -40,6 +40,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
+
   @Expose
   private String acronym;
 
@@ -72,9 +73,14 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
   @Expose
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+  @Expose
+  private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private List<UserRole> programManagmenTeam;
+
+
   private List<CrpsSiteIntegration> siteIntegration;
+
   private boolean hasRegions;
 
   public Crp() {
@@ -128,10 +134,13 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.crpUsers;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Set<LocElement> getLocElements() {
+    return locElements;
   }
 
 
@@ -153,6 +162,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
   }
@@ -164,7 +174,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Set<Role> getRoles() {
     return this.roles;
   }
-
 
   public List<CrpsSiteIntegration> getSiteIntegration() {
     return siteIntegration;
@@ -211,6 +220,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
   }
 
+
   public void setCrpPrograms(Set<CrpProgram> crpPrograms) {
     this.crpPrograms = crpPrograms;
   }
@@ -233,6 +243,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setLocElements(Set<LocElement> locElementses) {
+    this.locElements = locElementses;
   }
 
   public void setModificationJustification(String modificationJustification) {

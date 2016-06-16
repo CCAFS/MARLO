@@ -33,6 +33,10 @@ public class LocElement implements java.io.Serializable {
   @Expose
   private Long id;
 
+
+  private Crp crp;
+
+
   @Expose
   private LocElementType locElementType;
 
@@ -72,10 +76,14 @@ public class LocElement implements java.io.Serializable {
     this.name = name;
   }
 
-
   public String getCode() {
     return this.code;
   }
+
+  public Crp getCrp() {
+    return crp;
+  }
+
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
@@ -97,18 +105,22 @@ public class LocElement implements java.io.Serializable {
     return this.locGeoposition;
   }
 
-
   public String getName() {
     return this.name;
   }
+
 
   public Long getParentId() {
     return this.parentId;
   }
 
-
   public void setCode(String code) {
     this.code = code;
+  }
+
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
