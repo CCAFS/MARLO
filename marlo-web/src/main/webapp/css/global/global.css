@@ -666,6 +666,10 @@ img.icon {
   cursor: pointer;
 }
 
+.removeElement.sm {
+  padding: 10px 11px;
+}
+
 .removeIcon {
   padding: 12px 13px;
   background-image: url(../../images/global/icon-remove.png);
@@ -4789,22 +4793,20 @@ ul#deliverablesFilesMessages > li {
   color: #5A5A5A;
 }
 
-.leftHead.sm{
-  font-size: 0.85em;
-}
+
 
 .leftHead.blue span.index{
-  background: #73a9ce;
+  background: #73a9ce91;
 }
 
 .leftHead.green span.index{
-  background: #94a594;
+  background: #81af8199;
 }
 
 span.index{
-  background: #BEC7AB;
+  background: #b0b99d;
   color: #FFF;
-  padding: 1px 16px 1px 16px;
+  padding: 1px 25px 1px 25px;
   font-weight: bold;
   border-radius: 3px 0px 3px 0px;
   /* font-size: 13px; */
@@ -4814,6 +4816,14 @@ span.elementId{
   border-left: none;
   border-top: none;
   padding: 0px 29px 0px 28px; 
+}
+
+.leftHead.sm{
+  font-size: 0.85em;
+}
+
+.leftHead.sm span.index{
+  padding: 0px 15px 0px 15px;
 }
 
 .borderBox .leftHead, .simpleBox .leftHead{

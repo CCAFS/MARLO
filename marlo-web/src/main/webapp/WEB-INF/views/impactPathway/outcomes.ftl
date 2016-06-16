@@ -76,7 +76,7 @@
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">Outcome #${index+1}</span>
+      <span class="elementId">FP{0} Outcome</span>
     </div>
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
@@ -91,9 +91,9 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" showTitle=false placeholder="Target Year" className="targetYear" required=true editable=true /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.unit" showTitle=false placeholder="Select a target Unit..." listName="" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.unit" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="" editable=true  /]</div>
     </div>  
-    
+    <br />
     [#-- Outcome Milestones List --]
     <h5 class="sectionSubTitle">Milestones</h5>
     <div class="milestones-list">
@@ -109,7 +109,6 @@
     <div class="text-right">
       <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Milestone</div>
     </div>
-    
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">Sub-IDOs</h5>
     <div class="subIdos-list">
@@ -125,6 +124,7 @@
     <div class="text-right">
       <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Sub-IDO</div>
     </div>
+    <br />
   </div>
 [/#macro]
 
@@ -137,7 +137,7 @@
       <span class="elementId">Milestone</span>
     </div>
     [#-- Remove Button --]
-    <div class="removeMilestone removeElement" title="Remove Milestone"></div>
+    <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
@@ -149,7 +149,7 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="Target Year" className="targetYear" required=true editable=true /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.unit" showTitle=false placeholder="Select a target Unit..." listName="" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.unit" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="" editable=true  /]</div>
     </div>
   </div>
 [/#macro]
@@ -163,13 +163,14 @@
       <span class="elementId">Sub-IDO</span>
     </div>
     [#-- Remove Button --]
-    <div class="removeSubIdo removeElement" title="Remove Sub IDO"></div>
+    <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
     <div class="row form-group">
       <div class="col-md-4">[@customForm.select name="" i18nkey="IDO" placeholder="Select an IDO..." listName="" required=true editable=true  /]</div>
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.subIdo" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" required=true editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.subIdo" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
       <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
     </div>
+    [#-- Assumptions List --]
     <label for="">Assumptions:</label>
     <div class="assumptions-list">
     [#if subIdo.assumptions?has_content]
@@ -192,7 +193,7 @@
   <div id="assumption-${isTemplate?string('template', index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
-    <input type="hidden" name="${assumptionCustomName}.id" value="-1"/>
+    <input type="hidden" class="id" name="${assumptionCustomName}.id" value="-1"/>
     [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${index+1}" className="statement" required=true editable=true /]
   </div>
 [/#macro]
