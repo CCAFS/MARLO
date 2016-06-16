@@ -25,19 +25,25 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElement implements java.io.Serializable {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -5589133827714008187L;
 
+
   @Expose
   private Long id;
+
+  private Crp crp;
 
   @Expose
   private LocElementType locElementType;
 
+
   @Expose
   private LocGeoposition locGeoposition;
+
 
   @Expose
   private String name;
@@ -50,6 +56,8 @@ public class LocElement implements java.io.Serializable {
 
   @Expose
   private Boolean isSiteIntegration;
+
+  private Long isoCode;
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
@@ -72,9 +80,12 @@ public class LocElement implements java.io.Serializable {
     this.name = name;
   }
 
-
   public String getCode() {
     return this.code;
+  }
+
+  public Crp getCrp() {
+    return crp;
   }
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
@@ -83,6 +94,11 @@ public class LocElement implements java.io.Serializable {
 
   public Long getId() {
     return this.id;
+  }
+
+
+  public Long getIsoCode() {
+    return isoCode;
   }
 
   public Boolean getIsSiteIntegration() {
@@ -97,7 +113,6 @@ public class LocElement implements java.io.Serializable {
     return this.locGeoposition;
   }
 
-
   public String getName() {
     return this.name;
   }
@@ -111,12 +126,21 @@ public class LocElement implements java.io.Serializable {
     this.code = code;
   }
 
+  public void setCrp(Crp crp) {
+    this.crp = crp;
+  }
+
+
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIsoCode(Long isoCode) {
+    this.isoCode = isoCode;
   }
 
   public void setIsSiteIntegration(Boolean isSiteIntegration) {
