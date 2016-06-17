@@ -33,11 +33,11 @@
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center borderBox programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
+            <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
           </div>
           [#-- Add Regions--] 
-          <div class="text-right">
-            <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Region</div>
+          <div class="text-center">
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Region Program</div>
             <span class="type-input" style="display:none">2</span>
             <span class="inputName-input" style="display:none">regionsPrograms</span>
           </div>
@@ -85,7 +85,7 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
-    <span class="glyphicon glyphicon-remove pull-right remove-programItem" aria-hidden="true"></span>
+    <div class="remove-programItem removeElement" title="Remove program"></div>
     [#-- Program Acronym & Name --]
     <div class="form-group">
       <label for="">Program Name:</label>
@@ -127,7 +127,11 @@
       <select class="countriesSelect" name="${customName}.countries" style="width: 100%;" multiple="">
         <option value="CO">Colombia</option>
         <option value="NI" >Nicaragua</option>
+        <option value="HN" >Honduras</option>
         <option value="VN">Vietnam</option>
+        <option value="ET">Etiopía</option>
+        <option value="IN">India</option>
+        <option value="ML">Malí</option>
       </select>
       
       [#-- Hidden Parameters --]

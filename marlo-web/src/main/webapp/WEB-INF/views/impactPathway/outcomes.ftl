@@ -23,17 +23,15 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
-        
-        
-       
+        [#-- Outcomes List --]
+        <h4 class="sectionTitle">Outcomes</h4>
         <div class="outcomes-list">
           [#list outcomes as outcome]
             [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
-         
           [/#list]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addOutcome text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add an Outcome</div>
+        <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add an Outcome</div>
         
         [#-- Save Button --]
         <div class="buttons">
@@ -66,7 +64,7 @@
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">${outcome.crpProgram.acronym}- Outcome</span>
+      <span class="elementId">${(outcome.crpProgram.acronym)!} - Outcome</span>
     </div>
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
