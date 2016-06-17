@@ -105,7 +105,7 @@
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]
-            [@programItem element=leader index=leader_index name="${customName}.leaders" pmuRol='{fpRol}'/]
+            [@userItem element=leader index=leader_index name="${customName}.leaders" userRole=rplRole.id/]
           [/#list]
         [/#if]
         </ul>

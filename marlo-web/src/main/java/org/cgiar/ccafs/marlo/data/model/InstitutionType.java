@@ -16,16 +16,18 @@ package org.cgiar.ccafs.marlo.data.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 public class InstitutionType implements java.io.Serializable {
 
 
   static final long serialVersionUID = -943657365260109270L;
 
-
+  @Expose
   private Long id;
-
+  @Expose
   private String name;
-
+  @Expose
   private String acronym;
   private Set<Institution> institutions = new HashSet<Institution>(0);
 

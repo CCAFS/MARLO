@@ -17,25 +17,31 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 public class Institution implements java.io.Serializable {
 
 
   private static final long serialVersionUID = 3635585962414755020L;
 
-
+  @Expose
   private Long id;
-
+  @Expose
   private InstitutionType institutionType;
-
+  @Expose
   private String name;
 
-
+  @Expose
   private String acronym;
-
+  @Expose
   private String city;
+  @Expose
   private String websiteLink;
+  @Expose
   private Long programId;
+  @Expose
   private Long countryId;
+  @Expose
   private Date added;
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 

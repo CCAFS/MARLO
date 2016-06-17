@@ -33,6 +33,7 @@ public class CrpParameter implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
+  @Expose
   private Crp crp;
 
   @Expose

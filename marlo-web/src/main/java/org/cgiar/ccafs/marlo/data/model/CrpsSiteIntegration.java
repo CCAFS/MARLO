@@ -35,12 +35,13 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
+  @Expose
   private Crp crp;
 
   @Expose
   private LocElement locElement;
 
-  @Expose
+
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
   @Expose

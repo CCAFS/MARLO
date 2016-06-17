@@ -316,7 +316,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasProgramnsRegions() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
+    try {
+      return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   /**

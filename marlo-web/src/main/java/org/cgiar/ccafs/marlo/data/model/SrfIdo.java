@@ -42,7 +42,7 @@ public class SrfIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean isCrossCutting;
 
-  @Expose
+
   private Set<SrfSloIdo> srfSloIdos = new HashSet<SrfSloIdo>(0);
 
   private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);

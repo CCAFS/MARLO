@@ -32,7 +32,7 @@ public class SrfSloIndicatorTarget implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
+  @Expose
   private SrfSloIndicator srfSloIndicator;
 
   @Expose

@@ -49,7 +49,7 @@ import com.google.inject.Inject;
  * 
  * @author Christian Garcia
  */
-public class CrpAdminManagmentAction extends BaseAction {
+public class CrpProgamRegionsAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
 
@@ -64,15 +64,15 @@ public class CrpAdminManagmentAction extends BaseAction {
   private Role rolePmu;
   private long pmuRol;
 
-  private List<CrpProgram> flagshipsPrograms;
 
+  private List<CrpProgram> regionsPrograms;
   private List<CrpParameter> parameters;
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private UserManager userManager;
-  private Role fplRole;
+  private Role rplRole;
 
   @Inject
-  public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
+  public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager) {
     super(config);
@@ -86,16 +86,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
-  public List<CrpProgram> getFlagshipsPrograms() {
-    return flagshipsPrograms;
-  }
-
-
-  public Role getFplRole() {
-    return fplRole;
-  }
-
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -106,8 +96,17 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  public List<CrpProgram> getRegionsPrograms() {
+    return regionsPrograms;
+  }
+
+
   public Role getRolePmu() {
     return rolePmu;
+  }
+
+  public Role getRplRole() {
+    return rplRole;
   }
 
 
@@ -121,36 +120,27 @@ public class CrpAdminManagmentAction extends BaseAction {
     rolePmu = roleManager.getRoleById(pmuRol);
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
     String params[] = {loggedCrp.getAcronym()};
-    fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
+    if (this.getSession().containsKey(APConstants.CRP_RPL_ROLE)) {
+      rplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPL_ROLE)));
+    }
     // Get the Flagship list of this crp
-    flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
 
 
-      // flagshipsPrograms = crpProgramManager.findAll().stream()
-      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+    regionsPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
 
 
-    for (CrpProgram crpProgram : flagshipsPrograms) {
+    for (CrpProgram crpProgram : regionsPrograms) {
       crpProgram
         .setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    }
-
-
-    parameters = loggedCrp.getCrpParameters().stream().filter(c -> c.getKey().equals(APConstants.CRP_HAS_REGIONS)
-      && c.isActive() && c.getCrp().getId().equals(loggedCrp.getId())).collect(Collectors.toList());
-    if (parameters.size() == 0) {
-      loggedCrp.setHasRegions(false);
-    } else {
-      boolean param = Boolean.parseBoolean(parameters.get(0).getValue());
-      loggedCrp.setHasRegions(param);
     }
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       loggedCrp.getProgramManagmenTeam().clear();
-      flagshipsPrograms.clear();
 
+      regionsPrograms.clear();
     }
   }
 
@@ -159,29 +149,12 @@ public class CrpAdminManagmentAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
 
-      Role rolePreview = roleManager.getRoleById(pmuRol);
-      // Removing users roles
-      for (UserRole userRole : rolePreview.getUserRoles()) {
-        if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
-          userRoleManager.deleteUserRole(userRole.getId());
-        }
-      }
-      // Add new Users roles
-      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-        if (userRole.getId() == null) {
-          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-            .collect(Collectors.toList()).isEmpty()) {
-            userRoleManager.saveUserRole(userRole);
-          }
-        }
-      }
-
-      List<CrpProgram> fgProgramsRewiev =
-        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+      List<CrpProgram> rgProgramsRewiev =
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
       // Removing crp flagship program type
-      if (fgProgramsRewiev != null) {
-        for (CrpProgram crpProgram : fgProgramsRewiev) {
-          if (!flagshipsPrograms.contains(crpProgram)) {
+      if (rgProgramsRewiev != null) {
+        for (CrpProgram crpProgram : rgProgramsRewiev) {
+          if (!regionsPrograms.contains(crpProgram)) {
             CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
             if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
               .isEmpty()) {
@@ -192,7 +165,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
       }
       // Add crp flagship program type
-      for (CrpProgram crpProgram : flagshipsPrograms) {
+      for (CrpProgram crpProgram : regionsPrograms) {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);
           crpProgram.setActive(true);
@@ -205,7 +178,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
 
-      for (CrpProgram crpProgram : flagshipsPrograms) {
+      for (CrpProgram crpProgram : regionsPrograms) {
         CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
         for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
@@ -224,9 +197,9 @@ public class CrpAdminManagmentAction extends BaseAction {
 
             if (existsUserLeader == null || existsUserLeader.isEmpty()) {
 
-              if (crpProgramPrev.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+              if (crpProgramPrev.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
                 List<UserRole> fplUserRoles =
-                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
+                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(rplRole)).collect(Collectors.toList());
                 if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
                   for (UserRole userRole : fplUserRoles) {
                     userRoleManager.deleteUserRole(userRole.getId());
@@ -260,8 +233,8 @@ public class CrpAdminManagmentAction extends BaseAction {
               UserRole userRole = new UserRole();
               userRole.setUser(user);
 
-              if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                userRole.setRole(fplRole);
+              if (crpProgram.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+                userRole.setRole(rplRole);
               }
 
               if (!user.getUserRoles().contains(userRole)) {
@@ -273,41 +246,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
 
       }
-      CrpParameter parameter = null;
-      if (parameters.size() == 0) {
-        parameter = new CrpParameter();
-        parameter.setActive(true);
-        parameter.setCrp(loggedCrp);
-        parameter.setKey(APConstants.CRP_HAS_REGIONS);
 
-      } else {
-        parameter = parameters.get(0);
-      }
-      parameter.setValue(loggedCrp.isHasRegions() + "");
-      parameter.setCreatedBy(this.getCurrentUser());
-      parameter.setModifiedBy(this.getCurrentUser());
-      parameter.setModificationJustification("");
-      parameter.setActiveSince(new Date());
-      crpParameterManager.saveCrpParameter(parameter);
-      this.getSession().put(parameter.getKey(), parameter.getValue());
-      /*
-       * Desactive regions
-       */
-      if (!loggedCrp.isHasRegions()) {
-
-        List<CrpProgram> rgProgramsRewiev =
-          crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
-        rgProgramsRewiev =
-          crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
-
-        if (rgProgramsRewiev != null) {
-          for (CrpProgram crpProgram : rgProgramsRewiev) {
-            crpProgramManager.deleteCrpProgram(crpProgram.getId());
-          }
-        }
-
-
-      }
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -326,15 +265,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
-  public void setFlagshipsPrograms(List<CrpProgram> flagshipsPrograms) {
-    this.flagshipsPrograms = flagshipsPrograms;
-  }
-
-
-  public void setFplRole(Role fplRole) {
-    this.fplRole = fplRole;
-  }
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -343,9 +273,16 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.pmuRol = pmuRol;
   }
 
+  public void setRegionsPrograms(List<CrpProgram> regionsPrograms) {
+    this.regionsPrograms = regionsPrograms;
+  }
 
   public void setRolePmu(Role rolePmu) {
     this.rolePmu = rolePmu;
+  }
+
+  public void setRplRole(Role fplRole) {
+    this.rplRole = fplRole;
   }
 
 

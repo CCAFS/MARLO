@@ -34,24 +34,24 @@ public class CrpUser implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
   private Crp crp;
-
+  @Expose
   private User user;
 
   @Expose
   private boolean active;
 
-
+  @Expose
   private User createdBy;
 
-
+  @Expose
   private Date activeSince;
 
-
+  @Expose
   private User modifiedBy;
 
-
+  @Expose
   private String modificationJustification;
 
   public CrpUser() {

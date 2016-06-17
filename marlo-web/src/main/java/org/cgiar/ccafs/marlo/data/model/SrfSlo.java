@@ -39,7 +39,7 @@ public class SrfSlo implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-  @Expose
+
   private Set<SrfSloIndicator> srfSloIndicators = new HashSet<SrfSloIndicator>(0);
 
 

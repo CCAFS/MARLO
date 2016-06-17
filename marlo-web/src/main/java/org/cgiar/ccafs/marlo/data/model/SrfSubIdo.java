@@ -39,7 +39,7 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-  @Expose
+
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
 

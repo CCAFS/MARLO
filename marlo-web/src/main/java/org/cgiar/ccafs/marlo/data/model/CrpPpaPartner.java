@@ -17,28 +17,30 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 9208364810110651075L;
-
+  @Expose
   private Long id;
 
-
+  @Expose
   private Institution institution;
 
-
+  @Expose
   private boolean active;
 
-
+  @Expose
   private User createdBy;
 
-
+  @Expose
   private Date activeSince;
 
-
+  @Expose
   private User modifiedBy;
 
-
+  @Expose
   private String modificationJustification;
 
 
