@@ -118,8 +118,8 @@
     <div class="form-group">
       <label for="">Program Name:</label>
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="Acronym" className="acronym-input" required=true editable=true /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Flagship Name" className="name-input" required=true editable=true /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="Acronym" className="acronym" required=true editable=true /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Flagship Name" className="name" required=true editable=true /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]
