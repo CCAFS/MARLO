@@ -6,12 +6,23 @@ function init() {
   attachEvents();
 
   /* Init Select2 plugin */
-  $('select').select2();
+  $('select').select2({
+    templateResult: formatState
+  });
 
   /* Override function from userManagement.js */
   addUser = addUserItem;
 
 }
+
+function formatState(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state =
+      $('<span><i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i> ' + state.text + '</span>');
+  return $state;
+};
 
 function attachEvents() {
   // Remove an item
