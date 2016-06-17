@@ -80,11 +80,14 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
     targetUnitList = new HashMap<>();
-    List<SrfTargetUnit> targetUnits =
-      srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (SrfTargetUnit srfTargetUnit : targetUnits) {
-      targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
+    if (srfTargetUnitManager.findAll() != null) {
+      List<SrfTargetUnit> targetUnits =
+        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
+      }
     }
+
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
