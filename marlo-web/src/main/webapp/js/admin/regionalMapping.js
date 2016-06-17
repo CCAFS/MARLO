@@ -24,9 +24,7 @@ function attachEvents() {
     $parent.hide(function() {
       $parent.remove();
       checkItems($block, 'usersMessage');
-      if(item.type == 'crpUser') {
-        updateProgramManagementTeamIndexes($block);
-      }
+
       if(item.type == 'programUser') {
         updateProgramIndexes($block.parents('.items-list'));
       }
@@ -68,9 +66,7 @@ function addUserItem(composedName,userId) {
   $usersList.find("ul").append($li);
   $li.show('slow');
   checkItems($usersList, 'usersMessage');
-  if(item.type == 'crpUser') {
-    updateProgramManagementTeamIndexes($usersList);
-  }
+
   if(item.type == 'programUser') {
     updateProgramIndexes($usersList.parents('.items-list'));
   }
@@ -89,8 +85,13 @@ function addProgram(element) {
   var $li = $("#program-template").clone(true).removeAttr("id");
   // Assign parameters to template created
   $li.find('.type').val(item.type);
+  $li.find('.countriesSelect').select2({
+      placeholder: "Select a country",
+      allowClear: true,
+      templateResult: formatState
+  });
   // Append item into program list
-  $programList.find(".flagships-list").append($li);
+  $programList.find(".regions-list").append($li);
   // Show item
   $li.show('slow');
   // Check program items
@@ -99,6 +100,14 @@ function addProgram(element) {
   updateProgramIndexes($programList);
 
 }
+
+function formatState(state) {
+  if(!state.id) {
+    return state.text;
+  }
+  var $state = $('<span><i class="flag-sm flag-sm-' + state.element.value + '"></i> ' + state.text + '</span>');
+  return $state;
+};
 
 function checkItems(block,target) {
   var items = $(block).find('> ul li').length;
@@ -109,21 +118,15 @@ function checkItems(block,target) {
   }
 }
 
-function updateProgramManagementTeamIndexes(list) {
-  $(list).find('li').each(function(i,item) {
-    var customName = 'loggedCrp.programManagmenTeam[' + i + '].';
-    updateUserItemIndex(list, customName);
-  });
-}
-
 function updateProgramIndexes(list) {
   $(list).find('.program').each(function(i,item) {
-    var programName = 'flagshipsPrograms' + '[' + i + '].';
+    var programName = 'regionsPrograms' + '[' + i + '].';
     console.log(programName);
-    $(item).find('.acronym').attr('name', programName + 'acronym');
-    $(item).find('.name').attr('name', programName + 'name');
+    $(item).find('.acronym-input').attr('name', programName + 'acronym');
+    $(item).find('.name-input').attr('name', programName + 'name');
     $(item).find('.type').attr('name', programName + 'programType');
     $(item).find('.id').attr('name', programName + 'id');
+    $(item).find('.countriesSelect').attr('name', programName + 'countries');
 
     // Program Leaders
     $(item).find('.usersBlock li').each(function(i,leader) {

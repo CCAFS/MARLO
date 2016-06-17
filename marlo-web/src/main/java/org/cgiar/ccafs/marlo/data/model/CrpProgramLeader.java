@@ -32,7 +32,7 @@ public class CrpProgramLeader implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
   private CrpProgram crpProgram;
 
   @Expose

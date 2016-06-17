@@ -79,7 +79,7 @@
 
 [#macro userItem element index name template=false]
   [#assign customName = "${name}[${index}]" /]
-  <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
+  <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>

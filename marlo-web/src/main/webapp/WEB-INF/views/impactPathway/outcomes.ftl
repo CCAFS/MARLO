@@ -23,23 +23,13 @@
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
-        [#assign outcomes= [
-            {
-              'name': 'Outcome #1', 
-              'milestones': [
-                {}
-              ],
-              'subIdos': [
-                { 'assumptions': [ '1', '2'] }
-              ]
-            }
-          ]  
-        /]
         
-        <h4 class="sectionTitle">Flagship {0} - Outcomes </h4>
+        
+       
         <div class="outcomes-list">
           [#list outcomes as outcome]
-            [@outcomeMacro outcome=outcome name="outcome" index=outcome_index /]
+            [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
+         
           [/#list]
         </div>
         [#-- Add Outcome Button --]
@@ -72,18 +62,18 @@
 
 [#----------------------------------- Outcomes Macros -------------------------------------------]
 [#macro outcomeMacro outcome name index isTemplate=false]
-  [#assign outcomeCustomName = "${name}[${index}]" /]
+  [#assign outcomeCustomName= "${name}[${index}]" /]
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">FP{0} Outcome</span>
+      <span class="elementId">${outcome.crpProgram.acronym}- Outcome</span>
     </div>
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.statement" i18nkey="Outcome Statement" required=true className="outcome-statement" editable=true /]
+      [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="Outcome Statement" required=true className="outcome-statement" editable=true /]
     </div>
     <div class="row form-group">
       [#-- Target Value --]
@@ -91,7 +81,7 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" showTitle=false placeholder="Target Year" className="targetYear" required=true editable=true /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.unit" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="targetUnitList" editable=true  /]</div>
     </div>  
     <br />
     [#-- Outcome Milestones List --]
@@ -141,7 +131,7 @@
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.statement" i18nkey="Milestone Statement" required=true className="milestone-statement" editable=true /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="Milestone Statement" required=true className="milestone-statement" editable=true /]
     </div>
     <div class="row form-group">
       [#-- Target Value --]
@@ -149,7 +139,7 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="Target Year" className="targetYear" required=true editable=true /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.unit" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="targetUnitList" editable=true  /]</div>
     </div>
   </div>
 [/#macro]
@@ -166,8 +156,8 @@
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
     <div class="row form-group">
-      <div class="col-md-4">[@customForm.select name="" i18nkey="IDO" placeholder="Select an IDO..." listName="" required=true editable=true  /]</div>
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.subIdo" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="" required=true editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
       <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
     </div>
     [#-- Assumptions List --]

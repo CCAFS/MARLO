@@ -52,10 +52,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
 
-  @Expose
+
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
-  @Expose
+
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
   @Expose
@@ -69,7 +69,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String modificationJustification;
-  @Expose
+
   private List<CrpProgramLeader> leaders;
 
   public CrpProgram() {

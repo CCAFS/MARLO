@@ -15,23 +15,94 @@
 package org.cgiar.ccafs.marlo.action.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.inject.Inject;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia - CIAT/CCAFS
  */
 public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+  private Crp loggedCrp;
+  private HashMap<Long, String> targetUnitList;
+  private SrfTargetUnitManager srfTargetUnitManager;
+  private List<CrpProgramOutcome> outcomes;
 
-  public OutcomesAction(APConfig config) {
+
+  @Inject
+  public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
+    this.srfTargetUnitManager = srfTargetUnitManager;
+  }
+
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
+  public List<CrpProgramOutcome> getOutcomes() {
+    return outcomes;
+  }
+
+
+  public HashMap<Long, String> getTargetUnitList() {
+    return targetUnitList;
   }
 
   @Override
   public void prepare() throws Exception {
-    super.prepare();
-
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    outcomes = new ArrayList<CrpProgramOutcome>();
+    List<CrpProgram> programs =
+      loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (CrpProgram crpProgram : programs) {
+      outcomes.addAll(crpProgram.getCrpProgramOutcomes());
+    }
+    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+      crpProgramOutcome.setMilestones(
+        crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      crpProgramOutcome.setSubIdos(
+        crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+      List<SrfTargetUnit> targetUnits =
+        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
+      }
+    }
 
   }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
+    this.outcomes = outcomes;
+  }
+
+
+  public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
+    this.targetUnitList = targetUnitList;
+  }
+
+
 }

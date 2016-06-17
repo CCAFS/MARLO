@@ -23,44 +23,45 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Program Management Team</h4>
-        <div class="borderBox clearfix">
+        <div class="usersBlock clearfix">
           [#-- PMU Users List --]
-          <div class="users items-list simpleBox">
+          <div class="users items-list borderBox">
             <ul>
             [#if loggedCrp.programManagmenTeam?has_content]
               [#list loggedCrp.programManagmenTeam as item]
-                [@userItem element=item index=item_index name="loggedCrp.programManagmenTeam" /]
+                [@userItem element=item index=item_index name="loggedCrp.programManagmenTeam" userRole=pmuRol /]
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">There are not users added yet.</p>
+            <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">There are not users added yet.</p>
           </div>
-          [#-- Add Person--] 
-          <div class="searchUser button-blue pull-right"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
+          [#-- Add Person--]
+          <div class="text-right">
+            <div class="searchUser button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
+          </div>
+          [#-- Hidden Parameters --]
+          <span class="usersType" style="display:none">crpUser</span>
+          <span class="usersRole" style="display:none">${pmuRol}</span>
         </div>
         
         <h4 class="sectionTitle">Flagships</h4>
-        <div class="program-block borderBox">
+        <div class="program-block">
           [#-- Flagships List --]
-          <div class="flagships items-list simpleBox">
-            <ul>
+          <div class="flagships items-list">
+            <ul class="flagships-list">
             [#if flagshipsPrograms?has_content]
               [#list flagshipsPrograms as item]
                 [@programItem element=item index=item_index name="flagshipsPrograms"/]
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
+            <p class="text-center borderBox programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
           </div>
           [#-- Add Flagship--] 
-          <div class="row">
-            <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
-            <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Flagship name"></div>
-            <div class="col-sm-2">
-              <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /]</div>
-              <span class="type-input" style="display:none">1</span>
-              <span class="inputName-input" style="display:none">flagshipsPrograms</span>
-            </div>
+          <div class="text-right">
+            <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Flagship</div>
+            <span class="type-input" style="display:none">1</span>
+            <span class="inputName-input" style="display:none">flagshipsPrograms</span>
           </div>
         </div>
         
@@ -68,31 +69,6 @@
         <div class="program-block borderBox">
           [#-- Does your CRP have regional program managers?  --]
           [@customForm.yesNoInput name="loggedCrp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
-         
-          <div id="aditional-hasRegions" style="display:${(loggedCrp.hasRegions?string('block','none'))!'block'}">
-            [#-- Regions List --]
-            <div class="regions items-list simpleBox">
-             <ul>
-             [#if regionsPrograms?has_content]
-              [#list regionsPrograms as item]
-                [@programItem element=item index=item_index name="regionsPrograms"/]
-              [/#list]
-             [/#if]
-             </ul>
-            <p class="text-center" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
-            </div>
-            [#-- Add Region--]
-            <div class="row">
-              <div class="col-sm-2"><input type="text" class="acronym-input form-control" placeholder="Acronym"></div>
-              <div class="col-sm-8"><input type="text" class="name-input form-control" placeholder="Region name"></div>
-              <div class="col-sm-2">
-                <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /]</div>
-                <span class="type-input" style="display:none">2</span>
-                <span class="inputName-input" style="display:none">regionsPrograms</span>
-              </div>
-            </div>
-          </div>
-          
         </div>
 
         <div class="buttons">
@@ -109,35 +85,67 @@
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
+[#-- Program template --]
+[@programItem element={} index=0 name="" template=true /]
+
 <ul style="display:none">
-  [#-- PMU User template --]
-  [@userItem element={} index=0 name="" template=true /]
-  [#-- Program template --]
-  [@programItem element={} index=0 name="" template=true /]
+  [#-- User template --]
+  [@userItem element={} index=0 name="" userRole="-1" template=true /]
 </ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro userItem element index name template=false]
+[#macro userItem element index name userRole template=false]
   [#assign customName = "${name}[${index}]" /]
-  <li id="user-${template?string('template',index)}" class="user" style="display:${template?string('none','block')}">
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-    <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
-    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${(pmuRol)!}"/>
+  <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
+    [#-- User Name --]
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    [#-- Hidden inputs --]
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.getUser().id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Remove Button --]
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
 
 [#macro programItem element index name template=false]
   [#assign customName = "${name}[${index}]" /]
-  <li id="program-${template?string('template',index)}" class="program" style="display:${template?string('none','block')}">
-    <span class="composedName">${(element.acronym)!'Unknown acronym'} - ${(element.name)!'Unknown name'}</span>
-    <input class="acronym" type="hidden" name="${customName}.acronym" value="${(element.acronym)!'Unknown acronym'}"/>
-    <input class="name" type="hidden" name="${customName}.name" value="${(element.name)!'Unknown name'}"/>
+  <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
+    [#-- Remove Button  --]
+    <span class="glyphicon glyphicon-remove pull-right remove-programItem" aria-hidden="true"></span>
+    [#-- Program Acronym & Name --]
+    <div class="form-group">
+      <label for="">Program Name:</label>
+      <div class="row">
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="Acronym" className="acronym-input" required=true editable=true /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Flagship Name" className="name-input" required=true editable=true /]</div>
+      </div>
+    </div>
+    [#-- Hidden inputs  --]
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    <span class="glyphicon glyphicon-remove pull-right remove-programItem" aria-hidden="true"></span>
+    [#-- Leaders  --]
+    <label for="">Program Leaders:</label>
+    <div class="usersBlock simpleBox">
+      [#-- Leaders List --]
+      <div class="items-list">
+        <ul>
+        [#if element.leaders?has_content]
+          [#list element.leaders as leader]
+            [@userItem element=leader index=leader_index name="${customName}.leaders" userRole=fplRole.id /]
+          [/#list]
+        [/#if]
+        </ul>
+        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">There are not leaders belong to this flagship yet.</p>
+      </div>
+      [#-- Add person Button --]
+      <div class="text-center">
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
+      </div>
+      [#-- Hidden Parameters --]
+      <span class="usersType" style="display:none">programUser</span>
+      <span class="usersRole" style="display:none">{fpRole.id}</span>
+    </div>
   </li>
 [/#macro]

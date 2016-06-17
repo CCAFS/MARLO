@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -36,7 +37,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
   private CrpProgram crpProgram;
 
   @Expose
@@ -53,7 +54,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
-  @Expose
+
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
   @Expose
@@ -66,9 +67,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String modificationJustification;
+  private List<CrpMilestone> milestones;
+  private List<CrpOutcomeSubIdo> subIdos;
+
 
   public CrpProgramOutcome() {
   }
+
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value) {
@@ -78,6 +83,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.year = year;
     this.value = value;
   }
+
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value, Set<CrpOutcomeSubIdo> crpOutcomeSubIdos, Set<CrpMilestone> crpMilestones) {
@@ -89,6 +95,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpMilestones = crpMilestones;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -126,10 +133,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  public List<CrpMilestone> getMilestones() {
+    return milestones;
+  }
+
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -139,6 +149,11 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public SrfTargetUnit getSrfTargetUnit() {
     return this.srfTargetUnit;
   }
+
+  public List<CrpOutcomeSubIdo> getSubIdos() {
+    return subIdos;
+  }
+
 
   public BigDecimal getValue() {
     return this.value;
@@ -185,6 +200,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
+  }
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -195,6 +214,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
+  }
+
+  public void setSubIdos(List<CrpOutcomeSubIdo> subIdos) {
+    this.subIdos = subIdos;
   }
 
   public void setValue(BigDecimal value) {

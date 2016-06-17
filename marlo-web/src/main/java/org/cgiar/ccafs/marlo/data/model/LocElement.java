@@ -34,7 +34,7 @@ public class LocElement implements java.io.Serializable {
 
   @Expose
   private Long id;
-
+  @Expose
   private Crp crp;
 
   @Expose
