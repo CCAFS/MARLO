@@ -117,21 +117,15 @@
       </div>
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">{rpRol}</span>
+      <span class="usersRole" style="display:none">{rplRole.id}</span>
     </div>
     
     [#-- Countries  --]
     <label for="">Program Countries:</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
-      <select class="countriesSelect" name="${customName}.countries" style="width: 100%;" multiple="">
-        <option value="CO">Colombia</option>
-        <option value="NI" >Nicaragua</option>
-        <option value="HN" >Honduras</option>
-        <option value="VN">Vietnam</option>
-        <option value="ET">Etiopía</option>
-        <option value="IN">India</option>
-        <option value="ML">Malí</option>
+      <select class="countriesSelect" name="${customName}.countries" listName="countriesList" style="width: 100%;" multiple="">
+       
       </select>
       
       [#-- Hidden Parameters --]

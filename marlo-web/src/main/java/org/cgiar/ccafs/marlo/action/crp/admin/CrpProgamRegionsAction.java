@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -39,6 +41,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,10 +66,14 @@ public class CrpProgamRegionsAction extends BaseAction {
   private Crp loggedCrp;
   private Role rolePmu;
   private long pmuRol;
+  private HashMap<String, String> countriesList;
 
 
   private List<CrpProgram> regionsPrograms;
+
+
   private List<CrpParameter> parameters;
+  private LocElementManager locElementManger;
   private CrpProgramLeaderManager crpProgramLeaderManager;
   private UserManager userManager;
   private Role rplRole;
@@ -74,7 +81,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
-    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager) {
+    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -82,9 +89,13 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.crpParameterManager = crpParameterManager;
     this.userManager = userManager;
+    this.locElementManger = locElementManger;
     this.crpProgramLeaderManager = crpProgramLeaderManager;
   }
 
+  public HashMap<String, String> getCountriesList() {
+    return countriesList;
+  }
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -105,10 +116,10 @@ public class CrpProgamRegionsAction extends BaseAction {
     return rolePmu;
   }
 
+
   public Role getRplRole() {
     return rplRole;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -123,6 +134,17 @@ public class CrpProgamRegionsAction extends BaseAction {
     if (this.getSession().containsKey(APConstants.CRP_RPL_ROLE)) {
       rplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPL_ROLE)));
     }
+    // countries
+
+
+    List<LocElement> locs =
+      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
+
+    countriesList = new HashMap<>();
+    for (LocElement locElement : locs) {
+      countriesList.put(locElement.getIsoAlpha2(), locElement.getName());
+    }
+
     // Get the Flagship list of this crp
 
 
@@ -262,6 +284,11 @@ public class CrpProgamRegionsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+
+  public void setCountriesList(HashMap<String, String> countriesList) {
+    this.countriesList = countriesList;
   }
 
 
