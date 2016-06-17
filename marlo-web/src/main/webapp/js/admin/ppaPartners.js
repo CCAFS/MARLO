@@ -75,8 +75,8 @@ function differences() {
 
 // Update index and position of property name
 function updateIndex() {
-  $(partnerContent).find('.institution').each(function(i,item) {
-    $(this)[0].children[3].name = "institutions[" + i + "]";
+  $(partnerContent).find('.loggedCrp.crpInstitutionsPartners').each(function(i,item) {
+    $(this)[0].children[3].name = "loggedCrp.crpInstitutionsPartners[" + i + "]";
     $(this)[0].children[0].innerText = i + 1;
     console.log($(this)[0].children[3].name);
   });

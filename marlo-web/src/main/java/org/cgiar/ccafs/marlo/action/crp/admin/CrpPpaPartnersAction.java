@@ -17,14 +17,17 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -40,6 +43,7 @@ public class CrpPpaPartnersAction extends BaseAction {
   private InstitutionManager institutionManager;
 
   private CrpManager crpManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
 
 
   private List<Institution> institutions;
@@ -50,10 +54,12 @@ public class CrpPpaPartnersAction extends BaseAction {
   private Crp loggedCrp;
 
   @Inject
-  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager) {
+  public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, CrpManager crpManager,
+    CrpPpaPartnerManager crpPpaPartnerManager) {
     super(config);
     this.institutionManager = institutionManager;
     this.crpManager = crpManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
   }
 
   public List<Institution> getCrpInstitutions() {
@@ -74,16 +80,48 @@ public class CrpPpaPartnersAction extends BaseAction {
     super.prepare();
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    String params[] = {loggedCrp.getAcronym()};
 
-    crpInstitutions = new ArrayList<>();
-    for (CrpPpaPartner partner : loggedCrp.getCrpPpaPartners()) {
-      crpInstitutions.add(partner.getInstitution());
+    if (loggedCrp.getCrpPpaPartners() != null) {
+      loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
+        loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
     }
-
 
     institutions = institutionManager.findAll();
 
-    System.out.println();
+    this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
+    if (this.isHttpPost()) {
+      loggedCrp.getCrpInstitutionsPartners().clear();
+    }
+  }
+
+  @Override
+  public String save() {
+    if (this.hasPermission("*")) {
+
+      List<CrpPpaPartner> ppaPartnerReview;
+
+      if (crpPpaPartnerManager.findAll() != null) {
+        ppaPartnerReview = crpPpaPartnerManager.findAll().stream()
+          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.isActive()).collect(Collectors.toList());
+
+        for (CrpPpaPartner partner : ppaPartnerReview) {
+          if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
+            crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
+          }
+        }
+      }
+
+      for (CrpPpaPartner partner : loggedCrp.getCrpInstitutionsPartners()) {
+        if (partner.getId() == null) {
+          partner.setActive(true);
+          partner.setCreatedBy(this.getCurrentUser());
+          partner.setModifiedBy(this.getCurrentUser());
+          crpPpaPartnerManager.saveCrpPpaPartner(partner);
+        }
+      }
+    }
+    return null;
 
   }
 

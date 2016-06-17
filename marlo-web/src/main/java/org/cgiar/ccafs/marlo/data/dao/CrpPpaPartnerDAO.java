@@ -58,7 +58,6 @@ public interface CrpPpaPartnerDAO {
    */
   public List<CrpPpaPartner> findAll();
 
-
   /**
    * This method saves the information of the given crpPpaPartner
    * 

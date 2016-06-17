@@ -46,6 +46,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
 
+
   private Set<Role> roles = new HashSet<Role>(0);
 
   @Expose
@@ -67,21 +68,22 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private String modificationJustification;
   @Expose
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
   @Expose
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
-
   private List<UserRole> programManagmenTeam;
-
+  private List<CrpPpaPartner> crpInstitutionsPartners;
 
   private List<CrpsSiteIntegration> siteIntegration;
-
   private boolean hasRegions;
+
 
   public Crp() {
   }
@@ -108,6 +110,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+  public List<CrpPpaPartner> getCrpInstitutionsPartners() {
+    return crpInstitutionsPartners;
   }
 
   public Set<CrpParameter> getCrpParameters() {
@@ -143,7 +149,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return locElements;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -167,6 +172,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
+
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
   }
@@ -178,7 +184,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public List<CrpsSiteIntegration> getSiteIntegration() {
     return siteIntegration;
   }
-
 
   @Override
   public boolean isActive() {
@@ -208,6 +213,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+
+  public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
+    this.crpInstitutionsPartners = crpInstitutionsPartners;
   }
 
 

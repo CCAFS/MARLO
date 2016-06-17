@@ -27,23 +27,18 @@
  
           [@s.form action=actionName enctype="multipart/form-data" ]  
   	      	<div class="col-md-12" id="partnerContent">
-  	      		[#list crpInstitutions as crpInstitution]
-  	      			[@intitutionMacro institution=institution index=institution_index /]
+  	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartners]
+  	      			[@intitutionMacro ppaPartners=ppaPartners index=institution_index /]
   	      		 [/#list]
   	      	</div>
-	      	
-      		
+  	      	
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="Select an option..." className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]
-        		
+        		  [@customForm.select name="" showTitle=false placeholder="Select an option..." className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
         			<div class="clearfix"></div>
       			</div>
-  						
         		<div class="buttons">
               [@s.submit  type="button" name="save" cssClass="center-block"][@s.text name="form.buttons.save" /][/@s.submit]
             </div>
-      			
-			
           [/@s.form]
       	</div>
       	
@@ -52,17 +47,16 @@
   </div>
 </section>
 
-[@intitutionMacro institution={} isTemplate=true /]
+[@intitutionMacro ppaPartners={} isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro intitutionMacro institution index=0 isTemplate=false]
+[#macro intitutionMacro ppaPartners index=0 isTemplate=false]
 	<div id="institution-${isTemplate?string('template','')}" class="institution col-md-12" style="display:${isTemplate?string('none','block')}">
 		<span class="index hidden" >${index+1}</span>
-		<span class="title col-md-11">${(crpInstitution.name)!'Null'} </span>
+		<span class="title col-md-11">${(ppaPartners.institution.name)!'Null'} </span>
+		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
 		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
-		
-		<input type="hidden" class="id" name="institutions[${index}]" value="${(crpInstitution.id)!'-1'}"/>
 	</div>
 [/#macro]
 
