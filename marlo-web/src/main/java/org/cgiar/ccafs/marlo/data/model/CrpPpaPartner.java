@@ -13,9 +13,11 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 
-public class CrpPpaPartner implements java.io.Serializable {
+public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 9208364810110651075L;
@@ -66,6 +68,7 @@ public class CrpPpaPartner implements java.io.Serializable {
     return crp;
   }
 
+  @Override
   public Long getId() {
     return this.id;
   }
@@ -76,15 +79,24 @@ public class CrpPpaPartner implements java.io.Serializable {
   }
 
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+
   public String getModificationJustification() {
     return modificationJustification;
   }
 
-
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+  @Override
   public boolean isActive() {
     return active;
   }
