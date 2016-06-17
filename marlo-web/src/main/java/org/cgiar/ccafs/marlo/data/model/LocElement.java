@@ -26,30 +26,29 @@ import com.google.gson.annotations.Expose;
 public class LocElement implements java.io.Serializable {
 
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -5589133827714008187L;
 
 
   @Expose
   private Long id;
+
   @Expose
   private Crp crp;
 
   @Expose
-  private LocElementType locElementType;
+  private String isoAlpha2;
 
+  @Expose
+  private Long isoNumeric;
+
+  @Expose
+  private LocElementType locElementType;
 
   @Expose
   private LocGeoposition locGeoposition;
 
-
   @Expose
   private String name;
-
-  @Expose
-  private String code;
 
   @Expose
   private Long parentId;
@@ -57,19 +56,19 @@ public class LocElement implements java.io.Serializable {
   @Expose
   private Boolean isSiteIntegration;
 
-  private Long isoCode;
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+
 
   public LocElement() {
   }
 
-  public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String code,
+  public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     Long parentId, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.locElementType = locElementTypes;
     this.locGeoposition = locGeopositions;
     this.name = name;
-    this.code = code;
+    this.isoAlpha2 = isoAlpha2;
     this.parentId = parentId;
     this.isSiteIntegration = isSiteIntegration;
     this.crpsSitesIntegrations = crpsSitesIntegrations;
@@ -80,9 +79,6 @@ public class LocElement implements java.io.Serializable {
     this.name = name;
   }
 
-  public String getCode() {
-    return this.code;
-  }
 
   public Crp getCrp() {
     return crp;
@@ -96,9 +92,12 @@ public class LocElement implements java.io.Serializable {
     return this.id;
   }
 
+  public String getIsoAlpha2() {
+    return isoAlpha2;
+  }
 
-  public Long getIsoCode() {
-    return isoCode;
+  public Long getIsoNumeric() {
+    return isoNumeric;
   }
 
   public Boolean getIsSiteIntegration() {
@@ -121,15 +120,9 @@ public class LocElement implements java.io.Serializable {
     return this.parentId;
   }
 
-
-  public void setCode(String code) {
-    this.code = code;
-  }
-
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
-
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
@@ -139,8 +132,12 @@ public class LocElement implements java.io.Serializable {
     this.id = id;
   }
 
-  public void setIsoCode(Long isoCode) {
-    this.isoCode = isoCode;
+  public void setIsoAlpha2(String isoAlpha2) {
+    this.isoAlpha2 = isoAlpha2;
+  }
+
+  public void setIsoNumeric(Long isoNumeric) {
+    this.isoNumeric = isoNumeric;
   }
 
   public void setIsSiteIntegration(Boolean isSiteIntegration) {
