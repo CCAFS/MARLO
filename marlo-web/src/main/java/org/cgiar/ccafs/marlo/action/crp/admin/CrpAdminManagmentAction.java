@@ -274,7 +274,13 @@ public class CrpAdminManagmentAction extends BaseAction {
               crpProgramLeader.setModifiedBy(this.getCurrentUser());
               crpProgramLeader.setModificationJustification("");
               crpProgramLeader.setActiveSince(new Date());
-              crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+              CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+              if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
+                .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+                  && c.getUser().equals(crpProgramLeader.getUser()))
+                .collect(Collectors.toList()).isEmpty()) {
+                crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+              }
 
               User user = userManager.getUser(crpProgramLeader.getUser().getId());
               UserRole userRole = new UserRole();

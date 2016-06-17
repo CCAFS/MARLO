@@ -133,6 +133,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
+
   @Override
   public String execute() throws Exception {
     if (save) {
@@ -150,7 +151,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return INPUT;
   }
-
 
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
@@ -172,10 +172,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
+
   public APConfig getConfig() {
     return config;
   }
-
 
   /**
    * Get the Crp List
@@ -185,6 +185,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -231,7 +232,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -239,6 +239,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Locale getLocale() {
     return Locale.ENGLISH;
   }
+
 
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
@@ -281,10 +282,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return session;
   }
 
-
   public List<User> getUsersOnline() {
     return SessionCounter.users;
   }
+
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -312,6 +313,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
     }
 
+  }
+
+  public boolean hasProgramnsRegions() {
+    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
   }
 
   /**

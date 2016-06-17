@@ -12,8 +12,18 @@
     <li><p>CRP Admin</p>
       <ul>
         [#list items as item]
-          <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+        
+        [#if item.name =='Regional Mapping' ]
+         [#if action.hasProgramnsRegions() ]
+        <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
             <a href="${item.action}.do">${item.name}</a>
+        [/#if]
+        [#else]
+        <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+            <a href="${item.action}.do">${item.name}</a>
+        [/#if]
+        
+          
           </li>
         [/#list] 
       </ul>
