@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,27 +104,48 @@ public class CrpPpaPartnersAction extends BaseAction {
       List<CrpPpaPartner> ppaPartnerReview;
 
       if (crpPpaPartnerManager.findAll() != null) {
-        ppaPartnerReview = crpPpaPartnerManager.findAll().stream()
-          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.isActive()).collect(Collectors.toList());
+        ppaPartnerReview = crpPpaPartnerManager.findAll();
 
-        for (CrpPpaPartner partner : ppaPartnerReview) {
+        for (CrpPpaPartner partner : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
+          .collect(Collectors.toList())) {
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
             crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
           }
         }
       }
 
+
       for (CrpPpaPartner partner : loggedCrp.getCrpInstitutionsPartners()) {
         if (partner.getId() == null) {
+          partner.setCrp(loggedCrp);
+          partner.setInstitution(institutionManager.getInstitutionById(partner.getInstitution().getId()));
           partner.setActive(true);
           partner.setCreatedBy(this.getCurrentUser());
           partner.setModifiedBy(this.getCurrentUser());
+          partner.setModificationJustification("");
+          partner.setActiveSince(new Date());
           crpPpaPartnerManager.saveCrpPpaPartner(partner);
         }
       }
-    }
-    return null;
 
+      if (loggedCrp.getCrpPpaPartners() != null) {
+        loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
+          loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      messages = this.getActionMessages();
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
   public void setCrpInstitutions(List<Institution> crpInstitutions) {

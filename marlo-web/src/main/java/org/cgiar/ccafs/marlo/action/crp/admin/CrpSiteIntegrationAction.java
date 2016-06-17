@@ -38,11 +38,14 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   private static final long serialVersionUID = 1323996683605051647L;
 
+
   private CrpManager crpManager;
+
+
   private LocElementManager locElementManager;
 
   private Crp loggedCrp;
-  private List<LocElement> locElements;
+  private List<LocElement> countriesList;
 
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager) {
@@ -51,13 +54,14 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.locElementManager = locElementManager;
   }
 
-  public List<LocElement> getLocElements() {
-    return locElements;
+  public List<LocElement> getCountriesList() {
+    return countriesList;
   }
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -68,7 +72,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
       loggedCrp.setSiteIntegration(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
     }
 
-    locElements = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
+    countriesList = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
       .collect(Collectors.toList());
 
     String params[] = {loggedCrp.getAcronym()};
@@ -80,9 +84,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   }
 
-  public void setLocElements(List<LocElement> locElements) {
-    this.locElements = locElements;
+  public void setCountriesList(List<LocElement> countriesList) {
+    this.countriesList = countriesList;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;

@@ -28,7 +28,7 @@ function attachEvents() {
 // Add partner item
 function addPartner(partner) {
   var $item = $('#institution-template').clone(true).removeAttr('id');
-  $item.find('input.id').val(partner.val());
+  $item.find('input.institutionId').val(partner.val());
   $item.find('.title').html(partner.text());
   partnerContent.append($item);
   $item.show("slow");
@@ -59,8 +59,8 @@ function differences() {
 
 // Update index and position of property name
 function updateIndex() {
-  $(partnerContent).find('.loggedCrp.crpInstitutionsPartners').each(function(i,item) {
-    $(this)[0].children[3].name = "loggedCrp.crpInstitutionsPartners[" + i + "]";
-    $(this)[0].children[0].innerText = i + 1;
+  $(partnerContent).find('.institution').each(function(i,item) {
+    console.log($(this));
+    $(item).find('.institutionId').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].institution.id');
   });
 }

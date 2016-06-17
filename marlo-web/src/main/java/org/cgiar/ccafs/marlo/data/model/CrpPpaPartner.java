@@ -13,13 +13,13 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 
-public class CrpPpaPartner implements java.io.Serializable {
-
+public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 9208364810110651075L;
-
 
   private Long id;
 
@@ -48,9 +48,32 @@ public class CrpPpaPartner implements java.io.Serializable {
   public CrpPpaPartner() {
   }
 
+
   public CrpPpaPartner(Institution institution, Crp crp) {
     this.institution = institution;
     this.crp = crp;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpPpaPartner other = (CrpPpaPartner) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -66,6 +89,7 @@ public class CrpPpaPartner implements java.io.Serializable {
     return crp;
   }
 
+  @Override
   public Long getId() {
     return this.id;
   }
@@ -76,15 +100,24 @@ public class CrpPpaPartner implements java.io.Serializable {
   }
 
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+
   public String getModificationJustification() {
     return modificationJustification;
   }
 
-
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+  @Override
   public boolean isActive() {
     return active;
   }
