@@ -87,7 +87,6 @@ function addProgram(element) {
   $li.find('.type').val(item.type);
   $li.find('.countriesSelect').select2({
       placeholder: "Select a country",
-      allowClear: true,
       templateResult: formatState
   });
   // Append item into program list
@@ -121,7 +120,6 @@ function checkItems(block,target) {
 function updateProgramIndexes(list) {
   $(list).find('.program').each(function(i,item) {
     var programName = 'regionsPrograms' + '[' + i + '].';
-    console.log(programName);
     $(item).find('.acronym-input').attr('name', programName + 'acronym');
     $(item).find('.name-input').attr('name', programName + 'name');
     $(item).find('.type').attr('name', programName + 'programType');

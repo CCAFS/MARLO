@@ -55,11 +55,11 @@
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center borderBox programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
+            <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
           </div>
           [#-- Add Flagship--] 
-          <div class="text-right">
-            <div class="addProgram button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Flagship</div>
+          <div class="text-center">
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Flagship Program</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">flagshipsPrograms</span>
           </div>
@@ -113,7 +113,7 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
-    <span class="glyphicon glyphicon-remove pull-right remove-programItem" aria-hidden="true"></span>
+    <div class="remove-programItem removeElement" title="Remove program"></div>
     [#-- Program Acronym & Name --]
     <div class="form-group">
       <label for="">Program Name:</label>
