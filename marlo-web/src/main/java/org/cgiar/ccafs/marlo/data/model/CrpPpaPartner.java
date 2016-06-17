@@ -19,9 +19,7 @@ import java.util.Date;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
-
   private static final long serialVersionUID = 9208364810110651075L;
-
 
   private Long id;
 
@@ -50,9 +48,32 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
   public CrpPpaPartner() {
   }
 
+
   public CrpPpaPartner(Institution institution, Crp crp) {
     this.institution = institution;
     this.crp = crp;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpPpaPartner other = (CrpPpaPartner) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 

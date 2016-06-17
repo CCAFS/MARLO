@@ -104,10 +104,10 @@ public class CrpPpaPartnersAction extends BaseAction {
       List<CrpPpaPartner> ppaPartnerReview;
 
       if (crpPpaPartnerManager.findAll() != null) {
-        ppaPartnerReview = crpPpaPartnerManager.findAll().stream()
-          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.isActive()).collect(Collectors.toList());
+        ppaPartnerReview = crpPpaPartnerManager.findAll();
 
-        for (CrpPpaPartner partner : ppaPartnerReview) {
+        for (CrpPpaPartner partner : ppaPartnerReview.stream().filter(ppa -> ppa.getCrp().equals(loggedCrp))
+          .collect(Collectors.toList())) {
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
             crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
           }
