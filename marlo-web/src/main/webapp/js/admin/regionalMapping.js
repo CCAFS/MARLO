@@ -134,7 +134,7 @@ function updateProgramIndexes(list) {
     $(item).find('.name-input').attr('name', programName + 'name');
     $(item).find('.type').attr('name', programName + 'programType');
     $(item).find('.id').attr('name', programName + 'id');
-    $(item).find('.countriesSelect').attr('name', programName + 'countries');
+    $(item).find('.countriesSelect').attr('name', programName + 'selectedCountries');
 
     // Program Leaders
     $(item).find('.usersBlock li').each(function(i,leader) {

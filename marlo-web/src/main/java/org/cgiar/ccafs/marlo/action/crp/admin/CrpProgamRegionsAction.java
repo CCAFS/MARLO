@@ -186,8 +186,11 @@ public class CrpProgamRegionsAction extends BaseAction {
         for (CrpProgram crpProgram : rgProgramsRewiev) {
           if (!regionsPrograms.contains(crpProgram)) {
             CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
+
             if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-              .isEmpty()) {
+              .isEmpty()
+              && crpProgramBD.getCrpProgramCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+                .isEmpty()) {
               crpProgramManager.deleteCrpProgram(crpProgram.getId());
             }
 
@@ -203,6 +206,16 @@ public class CrpProgamRegionsAction extends BaseAction {
           crpProgram.setModifiedBy(this.getCurrentUser());
           crpProgram.setModificationJustification("");
           crpProgram.setActiveSince(new Date());
+          crpProgramManager.saveCrpProgram(crpProgram);
+
+        } else {
+          CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(crpProgramDb.getActiveSince());
           crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
