@@ -1,0 +1,1 @@
+INSERT INTO `loc_elements` VALUES ('720', 'Curaçao', 'CW', '531', '703', '2', null, '0');
