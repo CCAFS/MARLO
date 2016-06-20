@@ -43,7 +43,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +67,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   private Crp loggedCrp;
   private Role rolePmu;
   private long pmuRol;
-  private HashMap<String, String> countriesList;
+  private List<LocElement> countriesList;
 
 
   private List<CrpProgram> regionsPrograms;
@@ -98,7 +97,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.crpProgramCountryManager = crpProgramCountryManager;
   }
 
-  public HashMap<String, String> getCountriesList() {
+  public List<LocElement> getCountriesList() {
     return countriesList;
   }
 
@@ -145,10 +144,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     List<LocElement> locs =
       locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
 
-    countriesList = new HashMap<>();
-    for (LocElement locElement : locs) {
-      countriesList.put(locElement.getIsoAlpha2(), locElement.getName());
-    }
+    countriesList = locs;
 
     // Get the Flagship list of this crp
 
@@ -285,17 +281,19 @@ public class CrpProgamRegionsAction extends BaseAction {
           List<CrpProgramCountry> crpProgramCountriesPreview = crpProgramPrevLeaders.getCrpProgramCountries().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList());
           for (CrpProgramCountry crpProgramCountry : crpProgramCountriesPreview) {
-            if (crpProgram.getSelectedCountries().contains(crpProgramCountry.getLocElement().getIsoAlpha2())) {
-              crpProgramCountryManager.deleteCrpProgramCountry(crpProgram.getId());
+            String alpha2 = crpProgramCountry.getLocElement().getIsoAlpha2();
+            if (!crpProgram.getSelectedCountries().contains(alpha2)) {
+              crpProgramCountryManager.deleteCrpProgramCountry(crpProgramCountry.getId());
             }
           }
 
           for (String ISOCode : crpProgram.getSelectedCountries()) {
+            int a = 0;
             LocElement locElement = locElementManger.getLocElementByISOCode(ISOCode);
 
 
             if (crpProgramPrevLeaders.getCrpProgramCountries().stream()
-              .filter(c -> c.isActive() && c.getLocElement().getId().equals(c.getLocElement().getId()))
+              .filter(c -> c.isActive() && c.getLocElement().getId().equals(locElement.getId()))
               .collect(Collectors.toList()).isEmpty()) {
               CrpProgramCountry crpProgramCountry = new CrpProgramCountry();
               crpProgramCountry.setActive(true);
@@ -331,7 +329,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   }
 
 
-  public void setCountriesList(HashMap<String, String> countriesList) {
+  public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
 
