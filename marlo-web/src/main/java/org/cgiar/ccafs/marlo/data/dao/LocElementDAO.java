@@ -49,12 +49,21 @@ public interface LocElementDAO {
    */
   public LocElement find(long id);
 
+
   /**
    * This method gets a list of locElement that are active
    * 
    * @return a list from LocElement null if no exist records
    */
   public List<LocElement> findAll();
+
+  /**
+   * This method gets a locElement object by a given locElement identifier.
+   * 
+   * @param locElementID is the locElement identifier.
+   * @return a LocElement object.
+   */
+  public LocElement findISOCode(String ISOcode);
 
 
   /**

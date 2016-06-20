@@ -61,6 +61,15 @@ public interface LocElementManager {
    */
   public LocElement getLocElementById(long locElementID);
 
+
+  /**
+   * This method gets a locElement object by a given iso code identfier.
+   * 
+   * @param ISOCode is the iso code identifier.
+   * @return a LocElement object.
+   */
+  public LocElement getLocElementByISOCode(String ISOCode);
+
   /**
    * This method saves the information of the given locElement
    * 

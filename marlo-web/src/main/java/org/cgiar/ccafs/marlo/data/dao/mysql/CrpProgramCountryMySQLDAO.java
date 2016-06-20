@@ -15,33 +15,33 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.dao.CrpProgramCountryDAO;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-public class LocElementMySQLDAO implements LocElementDAO {
+public class CrpProgramCountryMySQLDAO implements CrpProgramCountryDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public LocElementMySQLDAO(StandardDAO dao) {
+  public CrpProgramCountryMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteLocElement(long locElementId) {
-    LocElement locElement = this.find(locElementId);
-
-    return dao.delete(locElement);
+  public boolean deleteCrpProgramCountry(long crpProgramCountryId) {
+    CrpProgramCountry crpProgramCountry = this.find(crpProgramCountryId);
+    crpProgramCountry.setActive(false);
+    return this.save(crpProgramCountry) > 0;
   }
 
   @Override
-  public boolean existLocElement(long locElementID) {
-    LocElement locElement = this.find(locElementID);
-    if (locElement == null) {
+  public boolean existCrpProgramCountry(long crpProgramCountryID) {
+    CrpProgramCountry crpProgramCountry = this.find(crpProgramCountryID);
+    if (crpProgramCountry == null) {
       return false;
     }
     return true;
@@ -49,15 +49,15 @@ public class LocElementMySQLDAO implements LocElementDAO {
   }
 
   @Override
-  public LocElement find(long id) {
-    return dao.find(LocElement.class, id);
+  public CrpProgramCountry find(long id) {
+    return dao.find(CrpProgramCountry.class, id);
 
   }
 
   @Override
-  public List<LocElement> findAll() {
-    String query = "from " + LocElement.class.getName();
-    List<LocElement> list = dao.findAll(query);
+  public List<CrpProgramCountry> findAll() {
+    String query = "from " + CrpProgramCountry.class.getName() + " where is_active=1";
+    List<CrpProgramCountry> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,23 +66,15 @@ public class LocElementMySQLDAO implements LocElementDAO {
   }
 
   @Override
-  public LocElement findISOCode(String ISOcode) {
-    String query = "from " + LocElement.class.getName() + "where iso_alpha_2='" + ISOcode + "'";
-    List<LocElement> list = dao.findAll(query);
-    if (list.size() > 0) {
-      return list.get(0);
-    }
-    return null;
-  }
-
-  @Override
-  public long save(LocElement locElement) {
-    if (locElement.getId() == null) {
-      dao.save(locElement);
+  public long save(CrpProgramCountry crpProgramCountry) {
+    if (crpProgramCountry.getId() == null) {
+      dao.save(crpProgramCountry);
     } else {
-      dao.update(locElement);
+      dao.update(crpProgramCountry);
     }
-    return locElement.getId();
+
+
+    return crpProgramCountry.getId();
   }
 
 

@@ -46,6 +46,7 @@
 		<mapping resource="xmls/Institutions.hbm.xml" />
 		<mapping resource="xmls/InstitutionTypes.hbm.xml" />
 		<mapping resource="xmls/CrpPpaPartners.hbm.xml" />
+		<mapping resource="xmls/CrpProgramCountries.hbm.xml" />
   </session-factory>
 </hibernate-configuration>
 

@@ -43,5 +43,11 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
 		</set>
+		  <set name="crpProgramCountries" table="crp_program_countries" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="loc_element_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
+        </set>
 	</class>
 </hibernate-mapping>

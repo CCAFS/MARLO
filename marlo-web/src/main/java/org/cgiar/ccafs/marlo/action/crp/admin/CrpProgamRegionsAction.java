@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -75,13 +77,15 @@ public class CrpProgamRegionsAction extends BaseAction {
   private List<CrpParameter> parameters;
   private LocElementManager locElementManger;
   private CrpProgramLeaderManager crpProgramLeaderManager;
+  private CrpProgramCountryManager crpProgramCountryManager;
   private UserManager userManager;
   private Role rplRole;
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
-    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger) {
+    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
+    CrpProgramCountryManager crpProgramCountryManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -91,6 +95,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.userManager = userManager;
     this.locElementManger = locElementManger;
     this.crpProgramLeaderManager = crpProgramLeaderManager;
+    this.crpProgramCountryManager = crpProgramCountryManager;
   }
 
   public HashMap<String, String> getCountriesList() {
@@ -156,6 +161,13 @@ public class CrpProgamRegionsAction extends BaseAction {
     for (CrpProgram crpProgram : regionsPrograms) {
       crpProgram
         .setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      List<String> countriesSelected = new ArrayList<>();
+      for (CrpProgramCountry crpProgramCountry : crpProgram.getCrpProgramCountries().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        countriesSelected.add(crpProgramCountry.getLocElement().getIsoAlpha2());
+      }
+      crpProgram.setSelectedCountries(countriesSelected);
+
     }
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
@@ -266,6 +278,38 @@ public class CrpProgamRegionsAction extends BaseAction {
           }
         }
 
+
+        if (crpProgram.getSelectedCountries() != null) {
+          CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+
+          List<CrpProgramCountry> crpProgramCountriesPreview = crpProgramPrevLeaders.getCrpProgramCountries().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList());
+          for (CrpProgramCountry crpProgramCountry : crpProgramCountriesPreview) {
+            if (crpProgram.getSelectedCountries().contains(crpProgramCountry.getLocElement().getIsoAlpha2())) {
+              crpProgramCountryManager.deleteCrpProgramCountry(crpProgram.getId());
+            }
+          }
+
+          for (String ISOCode : crpProgram.getSelectedCountries()) {
+            LocElement locElement = locElementManger.getLocElementByISOCode(ISOCode);
+
+
+            if (crpProgramPrevLeaders.getCrpProgramCountries().stream()
+              .filter(c -> c.isActive() && c.getLocElement().getId().equals(c.getLocElement().getId()))
+              .collect(Collectors.toList()).isEmpty()) {
+              CrpProgramCountry crpProgramCountry = new CrpProgramCountry();
+              crpProgramCountry.setActive(true);
+              crpProgramCountry.setLocElement(locElement);
+              crpProgramCountry.setCrpProgram(crpProgram);
+              crpProgramCountry.setCreatedBy(this.getCurrentUser());
+              crpProgramCountry.setModifiedBy(this.getCurrentUser());
+              crpProgramCountry.setModificationJustification("");
+              crpProgramCountry.setActiveSince(new Date());
+              crpProgramCountryManager.saveCrpProgramCountry(crpProgramCountry);
+            }
+
+          }
+        }
 
       }
 

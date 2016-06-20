@@ -57,16 +57,24 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+  private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+  private List<String> selectedCountries;
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private String modificationJustification;
 
@@ -132,11 +140,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.crp;
   }
 
-
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
 
+  public Set<CrpProgramCountry> getCrpProgramCountries() {
+    return crpProgramCountries;
+  }
 
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
@@ -146,10 +156,12 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.crpProgramOutcomes;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
@@ -168,7 +180,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -180,6 +191,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public int getProgramType() {
     return this.programType;
+  }
+
+
+  public List<String> getSelectedCountries() {
+    return selectedCountries;
   }
 
   @Override
@@ -209,6 +225,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
     this.crpClusterOfActivities = crpClusterOfActivities;
+  }
+
+  public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
+    this.crpProgramCountries = crpProgramCountries;
   }
 
   public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {
@@ -241,6 +261,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setProgramType(int programType) {
     this.programType = programType;
+  }
+
+  public void setSelectedCountries(List<String> selectedCountries) {
+    this.selectedCountries = selectedCountries;
   }
 
 

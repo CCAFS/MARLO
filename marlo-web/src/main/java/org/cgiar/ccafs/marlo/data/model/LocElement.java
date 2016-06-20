@@ -58,10 +58,12 @@ public class LocElement implements java.io.Serializable {
 
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+  private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
 
   public LocElement() {
   }
+
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     Long parentId, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
@@ -79,10 +81,14 @@ public class LocElement implements java.io.Serializable {
     this.name = name;
   }
 
-
   public Crp getCrp() {
     return crp;
   }
+
+  public Set<CrpProgramCountry> getCrpProgramCountries() {
+    return crpProgramCountries;
+  }
+
 
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
@@ -122,6 +128,10 @@ public class LocElement implements java.io.Serializable {
 
   public void setCrp(Crp crp) {
     this.crp = crp;
+  }
+
+  public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
+    this.crpProgramCountries = crpProgramCountries;
   }
 
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {

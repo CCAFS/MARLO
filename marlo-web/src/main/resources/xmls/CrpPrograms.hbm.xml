@@ -43,6 +43,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
 		</set>
+		<set name="crpProgramCountries" table="crp_program_countries" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="program_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
+        </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

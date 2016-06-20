@@ -65,6 +65,12 @@ public class LocElementManagerImpl implements LocElementManager {
   }
 
   @Override
+  public LocElement getLocElementByISOCode(String ISOCode) {
+
+    return locElementDAO.findISOCode(ISOCode);
+  }
+
+  @Override
   public long saveLocElement(LocElement locElement) {
 
     return locElementDAO.save(locElement);
