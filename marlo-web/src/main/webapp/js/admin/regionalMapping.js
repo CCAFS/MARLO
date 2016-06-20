@@ -5,6 +5,13 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
+  $('.program-block').find('.countriesSelect').select2({
+      placeholder: "Select a country",
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
+  });
+
 }
 
 function attachEvents() {
