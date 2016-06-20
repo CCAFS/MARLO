@@ -68,14 +68,14 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro userItem element index name userRole template=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#assign userCustomName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
-    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
-    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    <input class="user" type="hidden" name="${userCustomName}.user.id" value="${(element.user.id)!}"/>
+    <input class="role" type="hidden" name="${userCustomName}.role.id" value="${userRole}"/>
+    <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
@@ -124,9 +124,9 @@
     <label for="">Program Countries:</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
-      [#assign countriesSelected = ['co', 'ni'] /]      
-      [@s.select name="${customName}.countries" list=countriesList listKey="key" listValue="value" value=countriesSelected value=countriesSelected cssClass="countriesSelect form-control input-sm" multiple="true" headerKey="-1" headerValue="Select an Option" /]
-      
+
+        [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" /]              
+        
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rpRol}</span>

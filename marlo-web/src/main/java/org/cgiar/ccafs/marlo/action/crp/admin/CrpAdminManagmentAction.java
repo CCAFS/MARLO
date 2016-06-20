@@ -201,6 +201,15 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgram.setModificationJustification("");
           crpProgram.setActiveSince(new Date());
           crpProgramManager.saveCrpProgram(crpProgram);
+        } else {
+          CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          crpProgram.setCrp(loggedCrp);
+          crpProgram.setActive(true);
+          crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
+          crpProgram.setModifiedBy(this.getCurrentUser());
+          crpProgram.setModificationJustification("");
+          crpProgram.setActiveSince(crpProgramDb.getActiveSince());
+          crpProgramManager.saveCrpProgram(crpProgram);
         }
       }
 

@@ -67,7 +67,7 @@ public class LocElementMySQLDAO implements LocElementDAO {
 
   @Override
   public LocElement findISOCode(String ISOcode) {
-    String query = "from " + LocElement.class.getName() + "where iso_alpha_2='" + ISOcode + "'";
+    String query = "from " + LocElement.class.getName() + " where iso_alpha_2='" + ISOcode + "'";
     List<LocElement> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
