@@ -52,7 +52,7 @@
         
         <br />
         [#-- List of countries --]
-        [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id" /]
+        [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id"  /]
 
        
         

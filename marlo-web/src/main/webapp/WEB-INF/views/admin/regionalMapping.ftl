@@ -124,9 +124,8 @@
     <label for="">Program Countries:</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
-      <select class="countriesSelect" name="${customName}.countries" listName="countriesList" style="width: 100%;" multiple="">
-       
-      </select>
+      [#assign countriesSelected = ['co', 'ni'] /]      
+      [@s.select name="${customName}.countries" list=countriesList listKey="key" listValue="value" value=countriesSelected value=countriesSelected cssClass="countriesSelect form-control input-sm" multiple="true" headerKey="-1" headerValue="Select an Option" /]
       
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>

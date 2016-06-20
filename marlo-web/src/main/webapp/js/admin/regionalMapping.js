@@ -87,7 +87,9 @@ function addProgram(element) {
   $li.find('.type').val(item.type);
   $li.find('.countriesSelect').select2({
       placeholder: "Select a country",
-      templateResult: formatState
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
   });
   // Append item into program list
   $programList.find(".regions-list").append($li);
@@ -104,7 +106,8 @@ function formatState(state) {
   if(!state.id) {
     return state.text;
   }
-  var $state = $('<span><i class="flag-sm flag-sm-' + state.element.value + '"></i> ' + state.text + '</span>');
+  var $state =
+      $('<span> <i class="flag-sm flag-sm-' + state.element.value.toUpperCase() + '"></i>  ' + state.text + '</span>');
   return $state;
 };
 
