@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -28,24 +29,26 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
+
   /**
    * 
    */
   private static final long serialVersionUID = -7674530393075404476L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private Crp crp;
 
   @Expose
   private LocElement locElement;
-
-
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
   @Expose
   private boolean active;
+
 
   @Expose
   private User createdBy;
@@ -58,6 +61,8 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
+  private List<CrpSitesLeader> siteLeaders;
 
   public CrpsSiteIntegration() {
   }
@@ -114,11 +119,15 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public List<CrpSitesLeader> getSiteLeaders() {
+    return siteLeaders;
+  }
 
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -154,6 +163,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setSiteLeaders(List<CrpSitesLeader> siteLeaders) {
+    this.siteLeaders = siteLeaders;
   }
 
 

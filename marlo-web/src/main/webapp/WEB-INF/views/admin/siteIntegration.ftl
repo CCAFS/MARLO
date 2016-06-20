@@ -23,21 +23,21 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Site Integration</h4>
-        [#assign crpCountries = [{'name': 'Nicaragua','code': 'ni'},{'name':'Vietnam','code': 'vn'}] /]
-        [#if crpCountries?has_content]
-          [#list crpCountries as crpCountry]
-          [#assign customNameCountry = "crpCountries[${crpCountry_index}].leaders" /]
+        [#if loggedCrp.siteIntegrations?has_content]
+          [#list loggedCrp.siteIntegrations as crpCountry]
+          [#assign customNameCountry = "loggedCrp.siteIntegrations[${crpCountry_index}].locElement" /]
           <div class="borderBox"> 
-            <h5 class="country-title"><i class="flag-sm flag-sm-${crpCountry.code?upper_case}"></i>  ${crpCountry.name}</h5>
+            <h5 class="country-title"><i class="flag-sm flag-sm-${crpCountry.locElement.isoAlpha2?upper_case}"></i>  ${crpCountry.locElement.name}</h5>
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
-                [#assign leaders = [] /]
-                [#list leaders as item]
-                  [@userItem element=item index=item_index name=customNameCountry /]
-                [/#list]
+                [#if loggedCrp.siteIntegrations.siteLeaders?has_content]
+                  [#list loggedCrp.siteIntegrations.siteLeaders as item]
+                    [@userItem element=item index=item_index name=customNameCountry /]
+                  [/#list]
+                [/#if] 
                 </ul>
-                <p class="text-center" style="display:${(leaders?has_content)?string('none','block')}">There are not users added yet.</p>
+                <p class="text-center" style="display:${(loggedCrp.siteIntegrations.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
               </div>
               <div class="searchUser button-green">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]

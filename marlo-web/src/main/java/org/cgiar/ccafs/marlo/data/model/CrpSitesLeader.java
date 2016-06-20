@@ -25,9 +25,6 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1702272624319778464L;
 
   @Expose
@@ -36,7 +33,7 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
   private CrpsSiteIntegration crpsSiteIntegration;
 
   @Expose
-  private User users;
+  private User user;
 
   @Expose
   private boolean active;
@@ -56,9 +53,9 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
   public CrpSitesLeader() {
   }
 
-  public CrpSitesLeader(CrpsSiteIntegration crpsSitesIntegration, User users) {
+  public CrpSitesLeader(CrpsSiteIntegration crpsSitesIntegration, User user) {
     this.crpsSiteIntegration = crpsSitesIntegration;
-    this.users = users;
+    this.user= user;
   }
 
   public Date getActiveSince() {
@@ -94,8 +91,8 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-  public User getUsers() {
-    return this.users;
+  public User getUser() {
+    return this.user;
   }
 
   @Override
@@ -131,8 +128,8 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-  public void setUsers(User users) {
-    this.users = users;
+  public void setUser(User user) {
+    this.user = user;
   }
 
 

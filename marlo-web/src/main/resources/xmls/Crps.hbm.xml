@@ -62,6 +62,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
         </set>
+        <set name="crpsSitesIntegrations" table="crps_sites_integration" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
+        </set>
       <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

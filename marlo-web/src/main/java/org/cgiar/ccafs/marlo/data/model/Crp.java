@@ -33,12 +33,12 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 6299077992797380051L;
 
+
   @Expose
   private Long id;
 
   @Expose
   private String name;
-
 
   @Expose
   private String acronym;
@@ -53,8 +53,8 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
-
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
@@ -62,12 +62,13 @@ public class Crp implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-
   @Expose
   private User createdBy;
 
+
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User modifiedBy;
@@ -82,7 +83,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private List<UserRole> programManagmenTeam;
 
   private List<CrpPpaPartner> crpInstitutionsPartners;
-  private List<CrpsSiteIntegration> siteIntegration;
+
+  private List<CrpsSiteIntegration> siteIntegrations;
+
   private boolean hasRegions;
 
   public Crp() {
@@ -91,7 +94,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Crp(String name) {
     this.name = name;
   }
-
 
   public Crp(String name, String acronym, Set<CrpUser> crpUsers, Set<Role> roles, Set<CrpParameter> crpParameters) {
     this.name = name;
@@ -122,6 +124,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
+
 
   public String getAcronym() {
     return acronym;
@@ -183,12 +186,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getName() {
     return this.name;
@@ -204,9 +205,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.roles;
   }
 
-  public List<CrpsSiteIntegration> getSiteIntegration() {
-    return siteIntegration;
+
+  public List<CrpsSiteIntegration> getSiteIntegrations() {
+    return siteIntegrations;
   }
+
 
   @Override
   public int hashCode() {
@@ -220,7 +223,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
     return active;
   }
-
 
   public boolean isHasRegions() {
     return hasRegions;
@@ -266,6 +268,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpPrograms = crpPrograms;
   }
 
+
   public void setCrpsSitesIntegrations(Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
@@ -310,10 +313,9 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.roles = roles;
   }
 
-  public void setSiteIntegration(List<CrpsSiteIntegration> siteIntegration) {
-    this.siteIntegration = siteIntegration;
+  public void setSiteIntegrations(List<CrpsSiteIntegration> siteIntegrations) {
+    this.siteIntegrations = siteIntegrations;
   }
-
 
 }
 
