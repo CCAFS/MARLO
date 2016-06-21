@@ -135,6 +135,7 @@ function updateAllIndexes() {
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
     $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
 
+
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
       var milestoneName = outcomesName + 'milestones' + '[' + i + '].';
