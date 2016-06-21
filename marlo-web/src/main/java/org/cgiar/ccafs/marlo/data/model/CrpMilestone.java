@@ -31,7 +31,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
+  @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
   @Expose
