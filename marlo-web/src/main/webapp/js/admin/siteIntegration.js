@@ -30,7 +30,7 @@ function attachEvents() {
   select.on('change', function() {
     countrySelected = select.find("option:selected");
     if(countrySelected.val() != -1 && countrySelected.val() != null) {
-
+      console.log(countrySelected);
     }
   });
 

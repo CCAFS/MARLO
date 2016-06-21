@@ -100,6 +100,6 @@
       </div>
     </div>
     <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
-     <input class="isoAlpha" type="hidden" name="${customNameCountry}.id" value="${(element.locElement.isoAlpha2)!}"/>
+     <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
   </div>  
 [/#macro]
