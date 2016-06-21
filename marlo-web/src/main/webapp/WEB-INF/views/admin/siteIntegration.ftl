@@ -23,33 +23,19 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Site Integration</h4>
+        <div class="borderBox"> 
+        
         [#if loggedCrp.siteIntegrations?has_content]
           [#list loggedCrp.siteIntegrations as crpCountry]
-          [#assign customNameCountry = "loggedCrp.siteIntegrations[${crpCountry_index}].locElement" /]
-          <div class="borderBox"> 
-            <h5 class="country-title"><i class="flag-sm flag-sm-${crpCountry.locElement.isoAlpha2?upper_case}"></i>  ${crpCountry.locElement.name}</h5>
-            <div class="crpCountry-block">
-              <div class="items-list simpleBox">
-                <ul>
-                [#if crpCountry.siteLeaders?has_content]
-                  [#list crpCountry.siteLeaders as item]
-                    [@userItem element=item index=item_index name="loggedCrp.siteIntegrations[${crpCountry_index}].siteLeaders" /]
-                  [/#list]
-                [/#if] 
-                </ul>
-                <p class="text-center" style="display:${(crpCountry.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
-              </div>
-              <div class="searchUser button-green">
-                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
-                <span class="inputName-input" style="display:none">loggedCrp.siteIntegrations[${crpCountry_index}].siteLeaders</span>
-              </div>
-            </div>
-          </div>
+
+            [@countryMacro element=crpCountry index=crpCountry_index name='countries'  /]
+
           [/#list]
+          
         [#else]
           <p class="text-center">There are not countries added yet</p>
         [/#if] 
-        
+        </div>
         <br />
         [#-- List of countries --]
         [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id"  /]
@@ -75,6 +61,9 @@
   [@userItem element={} index=0 name="" template=true /]
 </ul>
 
+[#-- Country Item template --]
+  [@countryMacro element={} index=0 name="" template=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro userItem element index name template=false]
@@ -86,4 +75,31 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
+[/#macro]
+
+[#macro countryMacro element index name template=false]
+[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].locElement" /]
+  <div id="country-${template?string('template','')}" class="country col-md-12" style="display:${template?string('none','block')}">
+    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}</h5>
+    <div class="crpCountry-block">
+      <div class="items-list simpleBox">
+        <ul>
+        [#if loggedCrp.siteIntegrations.siteLeaders?has_content]
+          [#list loggedCrp.siteIntegrations.siteLeaders as item]
+          [@userItem element=item index=item_index name=customNameCountry /]
+          [/#list]
+        [/#if] 
+        </ul>
+        <p class="text-center" style="display:${(loggedCrp.siteIntegrations.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
+      </div>
+      <div class="text-center">
+        <div class="searchUser button-green">
+          <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
+          <span class="inputName-input" style="display:none">${customNameCountry}</span>
+        </div>
+      </div>
+    </div>
+    <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
+     <input class="isoAlpha" type="hidden" name="${customNameCountry}.id" value="${(element.locElement.isoAlpha2)!}"/>
+  </div>  
 [/#macro]

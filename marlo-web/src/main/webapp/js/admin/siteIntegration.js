@@ -25,6 +25,15 @@ function formatState(state) {
 };
 
 function attachEvents() {
+
+  var select = $("#ccafs_siteIntegration_");
+  select.on('change', function() {
+    countrySelected = select.find("option:selected");
+    if(countrySelected.val() != -1 && countrySelected.val() != null) {
+
+    }
+  });
+
   // Remove an item
   $('.glyphicon-remove').on('click', function() {
     var $parent = $(this).parent();
@@ -35,6 +44,15 @@ function attachEvents() {
       updateUsersIndex($block, $block.parent().find('.inputName-input').text());
     });
   });
+}
+
+function addCountry() {
+  var $item = $('#country-template').clone(true).removeAttr('id');
+  $item.find('input.institutionId').val(partner.val());
+  $item.find('.title').html(partner.text());
+  partnerContent.append($item);
+  $item.show("slow");
+  updateIndex();
 }
 
 function addUserItem(composedName,userId) {

@@ -48,20 +48,20 @@ import org.apache.commons.lang3.StringUtils;
 public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
-  private Crp loggedCrp;
-  private HashMap<Long, String> targetUnitList;
-  private SrfTargetUnitManager srfTargetUnitManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private CrpMilestoneManager crpMilestoneManager;
+  private long crpProgramID;
   private CrpProgramManager crpProgramManager;
-  private OutcomeValidator validator;
-  private SrfIdoManager srfIdoManager;
-  private List<CrpProgramOutcome> outcomes;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
+  private Crp loggedCrp;
+  private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
+  private SrfIdoManager srfIdoManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
+  private HashMap<Long, String> targetUnitList;
 
-  private long crpProgramID;
+  private OutcomeValidator validator;
 
 
   @Inject
