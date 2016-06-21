@@ -16,6 +16,18 @@
 
 
 <section class="marlo-content">
+ [#-- Program (Regions and Flagships) --]
+    <ul id="liaisonInstitutions" class="horizontalSubMenu">
+      [#list programs as program]
+        [#assign isActive = (program.id == crpProgramID)/]
+       
+        <li class="${isActive?string('active','')}">
+          <a href="[@s.url][@s.param name ="progamID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${program.acronym}</a>
+       
+        </li>
+      [/#list]
+    </ul>
+    
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
@@ -154,7 +166,7 @@
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
     <div class="row form-group">
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="" required=true editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList" required=true editable=true  /]</div>
       <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
       <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
     </div>

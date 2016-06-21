@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,6 +144,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
     List<LocElement> locs =
       locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
+    Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
 
     countriesList = locs;
 
