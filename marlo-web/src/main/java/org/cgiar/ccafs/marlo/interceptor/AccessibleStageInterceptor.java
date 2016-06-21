@@ -14,7 +14,6 @@
 
 package org.cgiar.ccafs.marlo.interceptor;
 
-import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import com.google.inject.Inject;
@@ -49,20 +48,8 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
     String stageName = ServletActionContext.getActionMapping().getNamespace();
     // Check what section is the user loading and
     // validate if it is active
-    if (stageName.startsWith("/admin")) {
-      if (config.isAdminActive()) {
-        return invocation.invoke();
-      } else {
-        return BaseAction.NOT_AUTHORIZED;
-      }
-    } else if (stageName.startsWith("/impactPathway")) {
-      if (config.isImpactPathwayActive()) {
-        return invocation.invoke();
-      } else {
-        return BaseAction.NOT_AUTHORIZED;
-      }
-    } else {
-      return invocation.invoke();
-    }
+    // TODO change this interceptor to catch active sections whit crp.
+    return invocation.invoke();
+
   }
 }
