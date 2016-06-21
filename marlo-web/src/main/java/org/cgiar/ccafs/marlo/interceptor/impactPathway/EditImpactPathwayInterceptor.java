@@ -12,7 +12,7 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.interceptor.admin;
+package org.cgiar.ccafs.marlo.interceptor.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -28,10 +28,9 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class EditCrpAdminInterceptor extends AbstractInterceptor implements Serializable {
+public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
-
-  private static final long serialVersionUID = -6233803983753722378L;
+  private static final long serialVersionUID = 1L;
 
   public static void setPermissionParameters(ActionInvocation invocation) {
 
@@ -51,7 +50,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
       canEdit = true;
     } else {
       if (baseAction
-        .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()))) {
+        .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym()))) {
         canEdit = true;
       }
     }
@@ -68,7 +67,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     // Check the permission if user want to edit or save the form
     if (editParameter || parameters.get("save") != null) {
       hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction
-        .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()));
+        .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym()));
     }
 
     // Set the variable that indicates if the user can edit the section
@@ -77,9 +76,11 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
   }
 
-  public EditCrpAdminInterceptor() {
+
+  public EditImpactPathwayInterceptor() {
     super();
   }
+
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
@@ -90,6 +91,5 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
       return BaseAction.NOT_FOUND;
     }
   }
-
 
 }

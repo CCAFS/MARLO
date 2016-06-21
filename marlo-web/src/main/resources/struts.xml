@@ -47,6 +47,10 @@
 			<interceptor name="canEditCrpAdmin"
 				class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
 
+			<!-- ImpactPathway interceptors -->
+			<interceptor name="canEditImpactPathway"
+				class="org.cgiar.ccafs.marlo.interceptor.impactPathway.EditImpactPathwayInterceptor" />
+
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
 				<interceptor-ref name="i18nFile" />
@@ -65,15 +69,16 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
-			
-			<!-- TODO: Include necessary interceptor's -->
+
 			<interceptor-stack name="impactPathwayStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="canEditImpactPathway" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
 		</interceptors>
 

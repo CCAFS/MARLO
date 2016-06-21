@@ -55,6 +55,12 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
       } else {
         return BaseAction.NOT_AUTHORIZED;
       }
+    } else if (stageName.startsWith("/impactPathway")) {
+      if (config.isImpactPathwayActive()) {
+        return invocation.invoke();
+      } else {
+        return BaseAction.NOT_AUTHORIZED;
+      }
     } else {
       return invocation.invoke();
     }

@@ -31,17 +31,17 @@
             <div class="crpCountry-block">
               <div class="items-list simpleBox">
                 <ul>
-                [#if loggedCrp.siteIntegrations.siteLeaders?has_content]
-                  [#list loggedCrp.siteIntegrations.siteLeaders as item]
-                    [@userItem element=item index=item_index name=customNameCountry /]
+                [#if crpCountry.siteLeaders?has_content]
+                  [#list crpCountry.siteLeaders as item]
+                    [@userItem element=item index=item_index name="loggedCrp.siteIntegrations[${crpCountry_index}].siteLeaders" /]
                   [/#list]
                 [/#if] 
                 </ul>
-                <p class="text-center" style="display:${(loggedCrp.siteIntegrations.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
+                <p class="text-center" style="display:${(crpCountry.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
               </div>
               <div class="searchUser button-green">
                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addPerson" /]
-                <span class="inputName-input" style="display:none">${customNameCountry}</span>
+                <span class="inputName-input" style="display:none">loggedCrp.siteIntegrations[${crpCountry_index}].siteLeaders</span>
               </div>
             </div>
           </div>
