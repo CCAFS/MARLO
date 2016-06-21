@@ -10,7 +10,6 @@ function init() {
 }
 
 function attachEvents() {
-  differences();
   updateIndex();
   removePartner();
   var partner = "";
@@ -18,7 +17,6 @@ function attachEvents() {
   partnerSelect.on('changed.bs.select', function() {
     partner = partnerSelect.find("option:selected");
     if(partner[0].value != -1 && partner[0].value != null) {
-      addPartner(partner);
       differences();
     }
   });
@@ -43,7 +41,6 @@ function removePartner() {
     institution.hide(1000, function() {
       institution.remove();
       updateIndex();
-      differences();
     });
   });
 }
@@ -52,7 +49,12 @@ function removePartner() {
 function differences() {
   partner = partnerSelect.find("option:selected");
   if(partnerContent.find('input[value=' + partner.val() + ']').exists()) {
-    partner.attr("disabled", true);
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'This partner has been added';
+    notyOptions.type = 'alert';
+    noty(notyOptions);
+  } else {
+    addPartner(partner);
   }
   partnerSelect.selectpicker('refresh');
 }
@@ -60,7 +62,6 @@ function differences() {
 // Update index and position of property name
 function updateIndex() {
   $(partnerContent).find('.institution').each(function(i,item) {
-    console.log($(this));
     $(item).find('.institutionId').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].institution.id');
   });
 }
