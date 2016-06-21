@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/clusterActivities.js"] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
@@ -24,22 +24,27 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">Flagship {0} - Cluste of Activities</h4>
-        <div class="borderBox">
-          <div class="form-group CoA">
-            <div class="form-group">
-              <div class="row">
-                <span class="subtitle col-md-11">Cluster of Activity - Title</span>
-                <span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
-              </div>
-              <div class="col-md-12">
-                <input class="col-md-12" type="text" name="CoATilte" value=""/>
-              </div>
-            </div>
-            <div class="form-group">
-            </div>
-          </div>
+        <h4 class="sectionTitle">Flagship {0} - Cluster of Activities</h4>
+        
+        [#assign clusters=[
+        {'title': 'Example',
+          'leaders': [{'id': 1, 'user':{'name':'user1'} },{'id': 2, 'user':{'name':'user2'} }]
+        },
+        {'title': 'Example',
+          'leaders': [{'id': 1, 'user':{'name':'user1'} }]
+        }
+        
+        ]   /]
+        
+        <div class="clusterList">
+          [#if clusters?has_content]
+            [#list clusters as cluster]
+              [@clusterMacro cluster=cluster name='clusters' index=cluster_index /]
+            [/#list]
+          [/#if]
         </div>
+        
+        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
         
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
@@ -50,5 +55,64 @@
     </div>
   </div>
 </section>
+[#-- Search users Interface --]
+[#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
+[@usersForm.searchUsers/]
+
+[#-- Cluster Template --]
+[@clusterMacro cluster={} name="" index=0 isTemplate=true /]
+
+<ul style="display:none">
+  [#-- User template --]
+  [@userItem element={} index=0 name="" userRole="{coaRol}" template=true /]
+</ul>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
+
+
+[#macro clusterMacro cluster name index isTemplate=false]
+  [#assign clusterCustomName= "${name}[${index}]" /]
+  <div id="cluster-${isTemplate?string('template', index)}" class="cluster form-group borderBox" style="display:${isTemplate?string('none','block')}">
+    
+            <div class="form-group">
+              [#-- Remove Button --]
+              <div class=" removeElement removeCluster" title="Remove Cluster"></div>
+              <div class=" form-group">
+                [@customForm.textArea name=".description" i18nkey="Cluster of Activity - Title" required=true className="outcome-statement" editable=true /]
+              </div>
+              
+              <div class="form-group">
+                <span class="subtitle cold-md-12"><label >Cluster of Activity - Leaders:</label></span>
+              </div>
+              
+              <div class="leaders form-group col-md-12">
+              [#if cluster.leaders?has_content]
+                [#list cluster.leaders as leaderItem]
+                  [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole='{coaRol}'  /]
+                [/#list]
+              [/#if]
+              </div>
+              
+              <div class="addPerson text-center">
+                <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
+              </div>              
+            </div>            
+          
+  </div>
+[/#macro]
+
+[#macro userItem element index name userRole template=false]
+  [#assign customName = "${name}[${index}]" /]
+  <li id="user-${template?string('template',index)}" class="user userItem"  style="list-style-type:none; display:${template?string('none','block')}">
+    [#-- User Name --]
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.name?html)!'Unknown user'}</span>
+    [#-- Hidden inputs --]
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Remove Button --]
+    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+  </li>
+[/#macro]
+
+

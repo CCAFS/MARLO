@@ -1,4 +1,64 @@
 .delete {
-    /* padding-left: 3%; */
+    padding-left: 3%;
     cursor: pointer;
+}
+
+.personContent {
+    border: 1px dashed #ccc;
+    width: 95%;
+    padding: 3px 3px;
+}
+
+.person {
+    width: 96%;
+    display: inline-block;
+}
+
+.removePerson {
+    width: 3%;
+    cursor: pointer;
+}
+
+
+.removePerson:hover {
+    color: rgba(255, 0, 0, 0.8);
+}
+
+.addPerson {
+    float: left;
+    width: 100%;
+}
+
+.addPersonBtn {
+    color: white;
+    width: 16%;
+    background-color: rgb(46, 204, 113);
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+
+.AddPersonTitle {
+    display: inline-block;
+    color: #2ecc71;
+}
+
+.userItem {
+    border: 1px dashed rgba(128, 128, 128, 0.44);
+    margin: 8px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background-color: rgba(245, 245, 245, 0.47);
+}
+
+.remove-userItem {
+    cursor: pointer;
+    color: red;
+}
+
+.remove-userItem:hover {
+    font-weight: bold;
 }
