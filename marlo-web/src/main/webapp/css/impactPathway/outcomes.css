@@ -1,3 +1,20 @@
 .outcome {
   margin-bottom: 20px;
 }
+
+.idoBlock {
+  width: 41%;
+  float: left;
+  padding-right: 3%;
+}
+
+.subIdoBlock {
+  width: 41%;
+  float: left;
+  padding-right: 3%;
+}
+
+.contributionBlock {
+  width: 18%;
+  float: left;
+}

@@ -6,7 +6,7 @@ function init() {
   attachEvents();
 
   /* Init Select2 plugin */
-  // $('select').select2();
+  $('outcomes-list select').select2();
 }
 
 function attachEvents() {
@@ -47,6 +47,9 @@ function attachEvents() {
 function addOutcome() {
   var $list = $('.outcomes-list');
   var $item = $('#outcome-template').clone(true).removeAttr("id");
+  $item.find('select').select2({
+    width: '100%'
+  });
   $list.append($item);
   // updateOutcomesIndexes($list, "outcome");
   updateAllIndexes();
@@ -70,10 +73,15 @@ function removeOutcome() {
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
   var $item = $('#milestone-template').clone(true).removeAttr("id");
+  $item.find('select').select2({
+    width: '100%'
+  });
   $list.append($item);
   // updateMilestonesIndexes($list, "outcome[0].milestones");
   updateAllIndexes();
   $item.show('slow');
+  // Hide empty message
+  $(this).parents('.outcome').find('p.message').hide();
 }
 
 function removeMilestone() {
@@ -92,6 +100,9 @@ function removeMilestone() {
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
+  $item.find('select').select2({
+    width: '100%'
+  });
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
@@ -107,8 +118,43 @@ function removeSubIdo() {
 }
 
 function loadSubIdosByIdoId(idoId,select) {
-  console.log(idoId);
-  console.log($(select));
+  // console.log(idoId);
+  // console.log($(select));
+  $loader = $(select).parents('div.subIdo').find('.loading');
+  if(idoId == "-1") {
+    $(select).attr('disabled', true);
+  } else {
+    $.ajax({
+        'url': baseURL + '/SubIDObyIDO.do',
+        'type': "GET",
+        'data': {
+          idoID: idoId
+        },
+        'dataType': "json",
+        beforeSend: function() {
+          $loader.fadeIn('slow');
+        },
+        success: function(data) {
+          // First delete all the options already present in the subtype select
+          $(select).empty();
+          $(select).append(setOption('-1', 'Select an option'));
+          $.each(data.subIdos, function(index,item) {
+            var isSelected = (($(select).val() == item.id) ? "selected" : "");
+            $(select).append("<option value='" + item.id + "' " + isSelected + ">" + item.description + "</option>");
+          });
+          // Select enabled
+          $(select).attr('disabled', false);
+          // Refresh the plugin in order to show the changes
+          $(select).select2();
+        },
+        complete: function() {
+          $loader.fadeOut();
+        },
+        error: function() {
+        }
+    });
+  }
+
 }
 
 /**

@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
-[#assign pageLibs = ["bootstrap-select"] /]
+[#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrl}/js/impactPathway/outcomes.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css" ] /]
 [#assign currentSection = "impactPathway" /]
@@ -16,19 +16,17 @@
 
 
 <section class="marlo-content">
- [#-- Program (Regions and Flagships) --]
-  
+  <div class="container">
+    [#-- Program (Flagships) --]
     <ul id="liaisonInstitutions" class="horizontalSubMenu">
       [#list programs as program]
         [#assign isActive = (program.id == crpProgramID)/]
-       
         <li class="${isActive?string('active','')}">
-          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${program.acronym}</a>
-       
+          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
         </li>
       [/#list]
     </ul>
-    
+  </div>
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
@@ -79,23 +77,22 @@
       <span class="index">${index+1}</span>
       <span class="elementId">${(selectedProgram.acronym)!} - Outcome</span>
     </div>
-   <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
-
+    [#-- Outcome ID Parameter --]
+    <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
-    
       [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="Outcome Statement" required=true className="outcome-statement" editable=true /]
     </div>
     <div class="row form-group">
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" showTitle=false placeholder="Target Value" className="targetValue" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="Target Value" placeholder="Value" className="targetValue" required=true editable=true /]</div>
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" showTitle=false placeholder="Target Year" className="targetYear" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" i18nkey="Target Year"  placeholder="Year" className="targetYear" required=true editable=true /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" showTitle=false placeholder="Select a target Unit..." className="targetUnit" listName="targetUnitList" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="Select a target Unit"  placeholder="Select a target Unit..." className="targetUnit" listName="targetUnitList" editable=true  /]</div>
     </div>  
     <br />
     [#-- Outcome Milestones List --]
@@ -106,7 +103,7 @@
         [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
       [/#list]
     [#else]
-    
+      <p class="message text-center">There is not Milestones related to this Outcome</p>
     [/#if]
     </div>
     [#-- Add Milestone Button --]
@@ -120,7 +117,8 @@
       [#list outcome.subIdos as subIdo]
         [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
       [/#list]
-  
+    [#else]
+      <p class="message text-center">There is not Sub-IDOs related to this Outcome</p>
     [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
@@ -162,6 +160,7 @@
 [#macro subIDOMacro subIdo name index isTemplate=false]
   [#assign subIDOCustomName = "${name}[${index}]" /]
   <div id="subIdo-${isTemplate?string('template', index)}" class="subIdo simpleBox" style="display:${isTemplate?string('none','block')}">
+    <div class="loading" style="display:none"></div>
     <div class="leftHead blue sm">
       <span class="index">${index+1}</span>
       <span class="elementId">Sub-IDO</span>
@@ -169,10 +168,11 @@
     [#-- Remove Button --]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
-    <div class="row form-group">
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList"  className="idoId" editable=true  /]</div>
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
-      <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
+    <div class="form-group">
+      <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList"  className="idoId" required=true editable=true  /]</div>
+      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" disabled=true required=true editable=true  /]</div>
+      <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
+      <div class="clearfix"></div>
     </div>
     [#-- Assumptions List --]
     <label for="">Assumptions:</label>
@@ -181,7 +181,8 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
-   
+    [#else]
+      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]  
     [/#if]
     </div>
     [#-- Add Assumption Button --]
