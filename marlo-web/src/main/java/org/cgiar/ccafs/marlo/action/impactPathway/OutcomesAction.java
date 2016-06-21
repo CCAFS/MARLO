@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.impactPathway.OutcomeValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,7 @@ public class OutcomesAction extends BaseAction {
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private CrpManager crpManager;
   private CrpProgramManager crpProgramManager;
-
+  private OutcomeValidator validator;
   private SrfIdoManager srfIdoManager;
   private List<CrpProgramOutcome> outcomes;
   private HashMap<Long, String> idoList;
@@ -64,13 +65,15 @@ public class OutcomesAction extends BaseAction {
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpManager crpManager, CrpProgramManager crpProgramManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpManager crpManager, CrpProgramManager crpProgramManager,
+    OutcomeValidator validator) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpManager = crpManager;
     this.crpProgramManager = crpProgramManager;
+    this.validator = validator;
   }
 
 
@@ -134,8 +137,9 @@ public class OutcomesAction extends BaseAction {
 
     if (crpProgramID != -1) {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+      outcomes.addAll(selectedProgram.getCrpProgramOutcomes());
+
     }
-    outcomes.addAll(selectedProgram.getCrpProgramOutcomes());
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
       crpProgramOutcome.setMilestones(
@@ -167,12 +171,12 @@ public class OutcomesAction extends BaseAction {
   @Override
   public String save() {
 
-
+    selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
       if (crpProgramOutcome.getId() == null) {
-        crpProgramOutcome.setCrpProgram(selectedProgram);
         crpProgramOutcome.setActive(true);
+
         crpProgramOutcome.setCreatedBy(this.getCurrentUser());
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
@@ -180,13 +184,13 @@ public class OutcomesAction extends BaseAction {
 
       } else {
         CrpProgramOutcome db = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
-        crpProgramOutcome.setCrpProgram(selectedProgram);
         crpProgramOutcome.setActive(true);
         crpProgramOutcome.setCreatedBy(db.getCreatedBy());
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
         crpProgramOutcome.setActiveSince(db.getActiveSince());
       }
+      crpProgramOutcome.setCrpProgram(selectedProgram);
       crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
     }
     Collection<String> messages = this.getActionMessages();
@@ -236,5 +240,12 @@ public class OutcomesAction extends BaseAction {
     this.targetUnitList = targetUnitList;
   }
 
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, outcomes);
+    }
+  }
 
 }

@@ -10,6 +10,7 @@
       <result name="input">/WEB-INF/views/impactPathway/outcomes.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
+        <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>
     
@@ -19,6 +20,7 @@
       <result name="input">/WEB-INF/views/impactPathway/clusterActivities.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/clusterActivities</param>
+          
       </result>
     </action>
     
