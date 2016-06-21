@@ -46,20 +46,20 @@ import org.apache.commons.lang3.StringUtils;
 public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
-  private Crp loggedCrp;
-  private HashMap<Long, String> targetUnitList;
-  private SrfTargetUnitManager srfTargetUnitManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private CrpManager crpManager;
+  private long crpProgramID;
   private CrpProgramManager crpProgramManager;
-
-  private SrfIdoManager srfIdoManager;
-  private List<CrpProgramOutcome> outcomes;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
+  private Crp loggedCrp;
+
+  private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
+  private SrfIdoManager srfIdoManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
 
-  private long crpProgramID;
+  private HashMap<Long, String> targetUnitList;
 
 
   @Inject
@@ -134,8 +134,9 @@ public class OutcomesAction extends BaseAction {
 
     if (crpProgramID != -1) {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+      outcomes.addAll(selectedProgram.getCrpProgramOutcomes());
     }
-    outcomes.addAll(selectedProgram.getCrpProgramOutcomes());
+
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
       crpProgramOutcome.setMilestones(

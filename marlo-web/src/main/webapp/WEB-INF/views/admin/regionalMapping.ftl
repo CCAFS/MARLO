@@ -113,7 +113,7 @@
       </div>
       [#-- Add person Button --]
       <div class="text-center">
-        <div class="searchUser button-green"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
       </div>
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
