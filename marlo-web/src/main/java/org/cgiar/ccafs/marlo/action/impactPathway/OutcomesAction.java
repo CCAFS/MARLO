@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -188,6 +189,15 @@ public class OutcomesAction extends BaseAction {
       }
       crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
     }
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("saving.saved") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("saving.saved"));
+    }
+    messages = this.getActionMessages();
     return SUCCESS;
 
 
