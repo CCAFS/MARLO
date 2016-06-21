@@ -27,9 +27,7 @@
         
         [#if loggedCrp.siteIntegrations?has_content]
           [#list loggedCrp.siteIntegrations as crpCountry]
-
             [@countryMacro element=crpCountry index=crpCountry_index name='countries'  /]
-
           [/#list]
           
         [#else]
@@ -39,9 +37,6 @@
         <br />
         [#-- List of countries --]
         [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id"  /]
-
-       
-        
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
         </div>
@@ -78,19 +73,19 @@
 [/#macro]
 
 [#macro countryMacro element index name template=false]
-[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].locElement" /]
+[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].siteLeaders" /]
   <div id="country-${template?string('template','')}" class="country col-md-12" style="display:${template?string('none','block')}">
     <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}</h5>
     <div class="crpCountry-block">
       <div class="items-list simpleBox">
         <ul>
-        [#if loggedCrp.siteIntegrations.siteLeaders?has_content]
-          [#list loggedCrp.siteIntegrations.siteLeaders as item]
+        [#if element.siteLeaders?has_content]
+          [#list element.siteLeaders as item]
           [@userItem element=item index=item_index name=customNameCountry /]
           [/#list]
         [/#if] 
         </ul>
-        <p class="text-center" style="display:${(loggedCrp.siteIntegrations.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
+        <p class="text-center" style="display:${(element.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
       </div>
       <div class="text-center">
         <div class="searchUser button-green">
@@ -100,6 +95,6 @@
       </div>
     </div>
     <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
-     <input class="isoAlpha" type="hidden" name="${customNameCountry}.id" value="${(element.locElement.isoAlpha2)!}"/>
+     <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
   </div>  
 [/#macro]

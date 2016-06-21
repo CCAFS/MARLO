@@ -72,6 +72,7 @@
 
 			<interceptor-stack name="impactPathwayStack">
 				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="canEditImpactPathway" />
 				<interceptor-ref name="keepRedirectMessages" />
