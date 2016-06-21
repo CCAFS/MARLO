@@ -27,7 +27,9 @@
         
         [#if loggedCrp.siteIntegrations?has_content]
           [#list loggedCrp.siteIntegrations as crpCountry]
+
             [@countryMacro element=crpCountry index=crpCountry_index name='countries'  /]
+
           [/#list]
           
         [#else]

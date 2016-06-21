@@ -135,6 +135,7 @@ function updateAllIndexes() {
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
     $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
 
+
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
       var milestoneName = outcomesName + 'milestones' + '[' + i + '].';
@@ -143,6 +144,7 @@ function updateAllIndexes() {
       $(milestone).find('.targetValue').attr('name', milestoneName + 'value');
       $(milestone).find('.targetYear').attr('name', milestoneName + 'year');
       $(milestone).find('.targetUnit').attr('name', milestoneName + 'srfTargetUnit.id');
+      $(milestone).find('.mileStoneId').attr('name', milestoneName + 'id');
     });
 
     // Update SubIdos

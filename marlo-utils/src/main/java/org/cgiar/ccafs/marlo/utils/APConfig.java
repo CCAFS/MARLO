@@ -38,6 +38,7 @@ public class APConfig {
   private static final String PRODUCTION = "marlo.production";
   private static final String DEBUG_MODE = "marlo.debug";
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
+  private static final String IMPACT_PATHWAY_ACTIVE = "marlo.impactPathway.active";
 
   private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
@@ -128,7 +129,6 @@ public class APConfig {
     return adminActive.equals("true");
   }
 
-
   /**
    * If we are activate the Marlo debug mode.
    * 
@@ -141,6 +141,22 @@ public class APConfig {
       return false;
     }
     return variable.equals("true");
+  }
+
+
+  /**
+   * Get the flag that indicate if the Impact Pathway section is active
+   * according to the variable in the configuration file.
+   * 
+   * @return a boolean indicating if it is active.
+   */
+  public boolean isImpactPathwayActive() {
+    String adminActive = properties.getPropertiesAsString(IMPACT_PATHWAY_ACTIVE);
+    if (adminActive == null) {
+      LOG.error("There is not a ImpactPathway active configured");
+      return false;
+    }
+    return adminActive.equals("true");
   }
 
   /**

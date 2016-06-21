@@ -35,14 +35,15 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 3014520962149158601L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private CrpProgram crpProgram;
 
   @Expose
   private SrfTargetUnit srfTargetUnit;
-
   @Expose
   private String description;
 
@@ -54,13 +55,15 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
-
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
   @Expose
   private boolean active;
+
+
   @Expose
   private User createdBy;
+
   @Expose
   private Date activeSince;
   @Expose
@@ -70,10 +73,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private List<CrpMilestone> milestones;
   private List<CrpOutcomeSubIdo> subIdos;
 
-
   public CrpProgramOutcome() {
   }
-
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, int year,
     BigDecimal value) {
@@ -97,9 +98,33 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpProgramOutcome other = (CrpProgramOutcome) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -154,13 +179,21 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return subIdos;
   }
 
-
   public BigDecimal getValue() {
     return this.value;
   }
 
+
   public int getYear() {
     return this.year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

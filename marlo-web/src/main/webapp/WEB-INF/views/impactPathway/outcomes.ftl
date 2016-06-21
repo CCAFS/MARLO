@@ -17,12 +17,13 @@
 
 <section class="marlo-content">
  [#-- Program (Regions and Flagships) --]
+  
     <ul id="liaisonInstitutions" class="horizontalSubMenu">
       [#list programs as program]
         [#assign isActive = (program.id == crpProgramID)/]
        
         <li class="${isActive?string('active','')}">
-          <a href="[@s.url][@s.param name ="progamID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${program.acronym}</a>
+          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">${program.acronym}</a>
        
         </li>
       [/#list]
@@ -49,7 +50,7 @@
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
         </div>
-        
+        <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [/@s.form]
       </div>
     </div>
@@ -76,9 +77,10 @@
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">${(outcome.crpProgram.acronym)!} - Outcome</span>
+      <span class="elementId">${(selectedProgram.acronym)!} - Outcome</span>
     </div>
    <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
+
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     <br />
@@ -104,7 +106,7 @@
         [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
       [/#list]
     [#else]
-      [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=0 /]
+    
     [/#if]
     </div>
     [#-- Add Milestone Button --]
@@ -118,8 +120,7 @@
       [#list outcome.subIdos as subIdo]
         [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
       [/#list]
-    [#else]
-      [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+  
     [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
@@ -138,6 +139,7 @@
       <span class="index">${index+1}</span>
       <span class="elementId">Milestone</span>
     </div>
+     <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
     [#-- Remove Button --]
     <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     <br />
@@ -179,8 +181,7 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
-    [#else]
-      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]
+   
     [/#if]
     </div>
     [#-- Add Assumption Button --]

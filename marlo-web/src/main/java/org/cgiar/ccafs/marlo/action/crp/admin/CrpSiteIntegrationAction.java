@@ -77,7 +77,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
       loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
 
       for (int i = 0; i < loggedCrp.getSiteIntegrations().size(); i++) {
-        loggedCrp.getSiteIntegrations().get(i).setSiteLeaders(new ArrayList<CrpSitesLeader>());
+        loggedCrp.getSiteIntegrations().get(i)
+          .setSiteLeaders(new ArrayList<CrpSitesLeader>(loggedCrp.getSiteIntegrations().get(i).getCrpSitesLeaders()));
       }
     }
 

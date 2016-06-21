@@ -16,18 +16,20 @@ package org.cgiar.ccafs.marlo.action.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.impactPathway.OutcomeValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,31 +48,33 @@ import org.apache.commons.lang3.StringUtils;
 public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
-  private CrpManager crpManager;
+  private CrpMilestoneManager crpMilestoneManager;
   private long crpProgramID;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
   private Crp loggedCrp;
-
   private List<CrpProgramOutcome> outcomes;
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
   private SrfTargetUnitManager srfTargetUnitManager;
-
   private HashMap<Long, String> targetUnitList;
+
+  private OutcomeValidator validator;
 
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpManager crpManager, CrpProgramManager crpProgramManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
+    CrpProgramManager crpProgramManager, OutcomeValidator validator) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
-    this.crpManager = crpManager;
+    this.crpMilestoneManager = crpMilestoneManager;
     this.crpProgramManager = crpProgramManager;
+    this.validator = validator;
   }
 
 
@@ -134,9 +138,10 @@ public class OutcomesAction extends BaseAction {
 
     if (crpProgramID != -1) {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      outcomes.addAll(selectedProgram.getCrpProgramOutcomes());
-    }
+      outcomes.addAll(
+        selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+    }
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
       crpProgramOutcome.setMilestones(
@@ -167,13 +172,26 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
+    /*
+     * Removing outcomes
+     */
+    selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+    for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+      if (!outcomes.contains(crpProgramOutcome)) {
+        crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
+      }
 
+    }
 
+    /*
+     * Save outcomes
+     */
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
       if (crpProgramOutcome.getId() == null) {
-        crpProgramOutcome.setCrpProgram(selectedProgram);
         crpProgramOutcome.setActive(true);
+
         crpProgramOutcome.setCreatedBy(this.getCurrentUser());
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
@@ -181,14 +199,60 @@ public class OutcomesAction extends BaseAction {
 
       } else {
         CrpProgramOutcome db = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
-        crpProgramOutcome.setCrpProgram(selectedProgram);
         crpProgramOutcome.setActive(true);
         crpProgramOutcome.setCreatedBy(db.getCreatedBy());
         crpProgramOutcome.setModifiedBy(this.getCurrentUser());
         crpProgramOutcome.setModificationJustification("");
         crpProgramOutcome.setActiveSince(db.getActiveSince());
       }
+      crpProgramOutcome.setCrpProgram(selectedProgram);
       crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
+
+      /*
+       * Delete Milestones
+       */
+      CrpProgramOutcome crpProgramOutcomeBD =
+        crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
+      for (CrpMilestone crpMilestone : crpProgramOutcomeBD.getCrpMilestones().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        if (crpProgramOutcome.getMilestones() != null) {
+          if (!crpProgramOutcome.getMilestones().contains(crpMilestone)) {
+            crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
+          }
+        } else {
+          crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
+        }
+
+
+      }
+      /*
+       * Save Milestones
+       */
+
+      if (crpProgramOutcome.getMilestones() != null) {
+        for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
+          if (crpMilestone.getId() == null) {
+            crpMilestone.setActive(true);
+
+            crpMilestone.setCreatedBy(this.getCurrentUser());
+            crpMilestone.setModifiedBy(this.getCurrentUser());
+            crpMilestone.setModificationJustification("");
+            crpMilestone.setActiveSince(new Date());
+
+          } else {
+            CrpMilestone db = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());
+            crpMilestone.setActive(true);
+            crpMilestone.setCreatedBy(db.getCreatedBy());
+            crpMilestone.setModifiedBy(this.getCurrentUser());
+            crpMilestone.setModificationJustification("");
+            crpMilestone.setActiveSince(db.getActiveSince());
+          }
+          crpMilestone.setCrpProgramOutcome(crpProgramOutcome);
+          crpMilestoneManager.saveCrpMilestone(crpMilestone);
+        }
+      }
+
+
     }
     Collection<String> messages = this.getActionMessages();
     if (!messages.isEmpty()) {
@@ -237,5 +301,12 @@ public class OutcomesAction extends BaseAction {
     this.targetUnitList = targetUnitList;
   }
 
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, outcomes);
+    }
+  }
 
 }

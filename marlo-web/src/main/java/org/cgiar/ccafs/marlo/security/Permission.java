@@ -28,5 +28,8 @@ public class Permission {
   public static final String CRP_ADMIN_VISIBLE_PRIVILEGES = "crp:{0}:admin:canAcess"; // path full privileges
   public static final String CRP_ADMIN_EDIT_PRIVILEGES = "crp:{0}:admin:*"; // path full privileges
   public static final String CRP_ADMIN_BASE_PERMISSION = "crp:{0}:admin";
+  public static final String IMPACT_PATHWAY_BASE_PERMISSION = "crp:{0}:impactPathway";
+  public static final String IMPACT_PATHWAY_EDIT_PRIVILEGES = "crp:{0}:impactPathway:*";
+  public static final String IMPACT_PATHWAY_VISIBLE_PRIVILEGES = "crp:{0}:impactPathway:canAcess";
 
 }
