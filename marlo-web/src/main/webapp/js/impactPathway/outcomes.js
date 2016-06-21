@@ -26,6 +26,13 @@ function attachEvents() {
   // Remove a Sub IDO
   $('.removeSubIdo').on('click', removeSubIdo);
 
+  // Select an Ido
+  $('select.idoId').on('change', function() {
+    var idoId = $(this).val();
+    var $subIdosSelect = $(this).parents('div.subIdo').find('select.subIdoId');
+    loadSubIdosByIdoId(idoId, $subIdosSelect);
+  });
+
   // Add an assumption
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
@@ -99,6 +106,11 @@ function removeSubIdo() {
   });
 }
 
+function loadSubIdosByIdoId(idoId,select) {
+  console.log(idoId);
+  console.log($(select));
+}
+
 /**
  * Assumptions Functions
  */
@@ -134,7 +146,6 @@ function updateAllIndexes() {
     $(outcome).find('.targetYear').attr('name', outcomesName + 'year');
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
     $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
-
 
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {

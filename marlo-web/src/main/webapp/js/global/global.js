@@ -1,3 +1,4 @@
+var yesnoEvent;
 var notyDefaultOptions = {
     text: '',
     layout: 'bottomRight',
@@ -20,7 +21,9 @@ $(document).ready(function() {
   applyWordCounter($("#justification"), justificationLimitWords);
 
   // Yes / No Event
-  $('input.onoffswitch-radio').on('change', yesnoEvent);
+  $('input.onoffswitch-radio').on('change', function(e) {
+    yesnoEvent($(this));
+  });
 
   // hash url animation
   if(window.location.hash) {
@@ -85,14 +88,15 @@ $(document).ready(function() {
     track: true
   });
 
-  function yesnoEvent() {
+  yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
-    var isChecked = ($(this).val() === "true");
-    $(this).siblings().removeClass('radio-checked');
-    $(this).next().addClass('radio-checked');
-    var array = (this.name).split('.');
+    $t = $(target);
+    var isChecked = ($t.val() === "true");
+    $t.siblings().removeClass('radio-checked');
+    $t.next().addClass('radio-checked');
+    var array = $t.attr('name').split('.');
     var $aditional = $('#aditional-' + array[array.length - 1]);
-    if($(this).hasClass('inverse')) {
+    if($t.hasClass('inverse')) {
       isChecked = !isChecked;
     }
     if(isChecked) {
