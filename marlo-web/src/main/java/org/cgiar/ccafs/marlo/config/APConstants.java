@@ -41,6 +41,7 @@ public final class APConstants {
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
+  public static final String IDO_ID = "idoID";
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
 

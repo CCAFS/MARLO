@@ -35,13 +35,13 @@
         <property name="value" type="big_decimal">
             <column name="value" precision="10" not-null="true" />
         </property>
-        <set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos" inverse="true"  fetch="select" >
+        <set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos"  order-by="id" inverse="true"  fetch="select" >
             <key>
                 <column name="crp_program_outcome_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo" />
         </set>
-        <set lazy="true" name="crpMilestones" table="crp_milestones" inverse="true"  fetch="select" >
+        <set lazy="true" name="crpMilestones" table="crp_milestones" inverse="true"  order-by="id" fetch="select" >
             <key>
                 <column name="crp_program_outcome_id" not-null="true" />
             </key>
