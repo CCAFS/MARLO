@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -45,20 +46,44 @@ public class OutcomeValidator extends BaseValidator
     }
   }
 
+  public void validateMilestone(BaseAction action, CrpMilestone milestone, int i, int j) {
+    if (!this.isValidString(milestone.getTitle())) {
+      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].title",
+        action.getText("outcome.action.title.required"));
+    }
+    if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
+      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].value",
+        action.getText("outcome.action.value.required"));
+    }
+    if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
+      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].year",
+        action.getText("outcome.action.year.required"));
+    }
+    if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
+      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].srfTargetUnit.id",
+        action.getText("outcome.action.srfTargetUnit.required"));
+    }
+  }
+
+
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
     if (!this.isValidString(outcome.getDescription())) {
       action.addFieldError("outcomes[" + i + "].description", action.getText("outcome.action.statement.required"));
     }
-    if (!this.isValidNumber(outcome.getValue().toString())) {
+    if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
       action.addFieldError("outcomes[" + i + "].value", action.getText("outcome.action.value.required"));
     }
-    if (!this.isValidNumber(String.valueOf(outcome.getYear()))) {
+    if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       action.addFieldError("outcomes[" + i + "].year", action.getText("outcome.action.year.required"));
     }
     if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
       action.addFieldError("outcomes[" + i + "].srfTargetUnit.id",
         action.getText("outcome.action.srfTargetUnit.required"));
     }
+    if (outcome.getMilestones() != null) {
+      for (int j = 0; j < outcome.getMilestones().size(); j++) {
+        this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+      }
+    }
   }
-
 }

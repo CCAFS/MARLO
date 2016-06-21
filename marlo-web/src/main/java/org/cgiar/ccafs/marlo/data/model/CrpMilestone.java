@@ -57,6 +57,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User modifiedBy;
+
   private String modificationJustification;
 
   public CrpMilestone() {
@@ -69,6 +70,28 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     this.title = title;
     this.year = year;
     this.value = value;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpMilestone other = (CrpMilestone) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -119,6 +142,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   public int getYear() {
     return this.year;
   }
+
 
   @Override
   public boolean isActive() {

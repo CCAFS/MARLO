@@ -144,6 +144,7 @@ function updateAllIndexes() {
       $(milestone).find('.targetValue').attr('name', milestoneName + 'value');
       $(milestone).find('.targetYear').attr('name', milestoneName + 'year');
       $(milestone).find('.targetUnit').attr('name', milestoneName + 'srfTargetUnit.id');
+      $(milestone).find('.mileStoneId').attr('name', milestoneName + 'id');
     });
 
     // Update SubIdos

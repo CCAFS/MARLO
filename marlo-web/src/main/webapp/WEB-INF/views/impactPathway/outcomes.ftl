@@ -106,7 +106,7 @@
         [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
       [/#list]
     [#else]
-      [@milestoneMacro milestone={} name="${outcomeCustomName}.milestones" index=0 /]
+    
     [/#if]
     </div>
     [#-- Add Milestone Button --]
@@ -120,8 +120,7 @@
       [#list outcome.subIdos as subIdo]
         [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
       [/#list]
-    [#else]
-      [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+  
     [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
@@ -140,6 +139,7 @@
       <span class="index">${index+1}</span>
       <span class="elementId">Milestone</span>
     </div>
+     <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
     [#-- Remove Button --]
     <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     <br />
@@ -181,8 +181,7 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
-    [#else]
-      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]
+   
     [/#if]
     </div>
     [#-- Add Assumption Button --]
