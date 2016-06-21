@@ -36,14 +36,14 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramLeader" />
 		</set>
-		<set lazy="true" name="crpProgramOutcomes" table="crp_program_outcomes"
+		<set lazy="true" name="crpProgramOutcomes"   order-by="id"  table="crp_program_outcomes"
 			inverse="true" fetch="select">
 			<key>
 				<column name="crp_program_id" not-null="true" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
 		</set>
-		<set name="crpProgramCountries" table="crp_program_countries" order-by="id" inverse="true" lazy="true" fetch="select">
+		<set name="crpProgramCountries" table="crp_program_countries"  order-by="id" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="program_id" not-null="true" />
             </key>

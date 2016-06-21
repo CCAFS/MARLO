@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,6 +168,24 @@ public class OutcomesAction extends BaseAction {
 
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+      if (crpProgramOutcome.getId() == null) {
+        crpProgramOutcome.setCrpProgram(selectedProgram);
+        crpProgramOutcome.setActive(true);
+        crpProgramOutcome.setCreatedBy(this.getCurrentUser());
+        crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+        crpProgramOutcome.setModificationJustification("");
+        crpProgramOutcome.setActiveSince(new Date());
+
+      } else {
+        CrpProgramOutcome db = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpProgramOutcome.getId());
+        crpProgramOutcome.setCrpProgram(selectedProgram);
+        crpProgramOutcome.setActive(true);
+        crpProgramOutcome.setCreatedBy(db.getCreatedBy());
+        crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+        crpProgramOutcome.setModificationJustification("");
+        crpProgramOutcome.setActiveSince(db.getActiveSince());
+      }
       crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
     }
     return SUCCESS;

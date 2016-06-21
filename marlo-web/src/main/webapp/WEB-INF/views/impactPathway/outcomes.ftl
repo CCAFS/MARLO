@@ -78,11 +78,13 @@
       <span class="index">${index+1}</span>
       <span class="elementId">${(outcome.crpProgram.acronym)!} - Outcome</span>
     </div>
+   <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     [#-- Remove Button --]
     <div class="removeOutcome removeElement" title="Remove Outcome"></div>
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
+    
       [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="Outcome Statement" required=true className="outcome-statement" editable=true /]
     </div>
     <div class="row form-group">
@@ -166,7 +168,7 @@
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
     <div class="row form-group">
-      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList" required=true editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList"  className="idoId" editable=true  /]</div>
       <div class="col-md-4">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" required=true editable=true  /]</div>
       <div class="col-md-4">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
     </div>
@@ -193,7 +195,7 @@
   <div id="assumption-${isTemplate?string('template', index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
-    <input type="hidden" class="id" name="${assumptionCustomName}.id" value="-1"/>
+   
     [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${index+1}" className="statement" required=true editable=true /]
   </div>
 [/#macro]

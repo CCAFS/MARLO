@@ -133,6 +133,7 @@ function updateAllIndexes() {
     $(outcome).find('.targetValue').attr('name', outcomesName + 'value');
     $(outcome).find('.targetYear').attr('name', outcomesName + 'year');
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
+    $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
 
     // Update Milestones
     $(outcome).find('.milestone').each(function(i,milestone) {
@@ -148,7 +149,8 @@ function updateAllIndexes() {
     $(outcome).find('.subIdo').each(function(i,subIdo) {
       var subIdoName = outcomesName + 'subIdos' + '[' + i + '].';
       $(subIdo).find('span.index').text(i + 1);
-      $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
+      $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.id');
+      $(subIdo).find('.idoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
       $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
 
       // Update Assumptions
