@@ -11,15 +11,17 @@ function init() {
 // Remove person
   $('.remove-userItem').on('click', removePerson);
 
-  updateIndex();
+  updateClustersIndex();
 }
+
+// Clusters
 
 function addCluster() {
   var $list = $('.clusterList');
   var $item = $('#cluster-template').clone(true).removeAttr("id");
   $list.append($item);
   $item.show('slow');
-  updateIndex();
+  updateClustersIndex();
 }
 
 function removeCluster() {
@@ -27,16 +29,27 @@ function removeCluster() {
   var $item = $(this).parents('.cluster');
   $item.hide(1000, function() {
     $item.remove();
-    updateIndex();
+    updateClustersIndex();
   });
 }
 
+function updateClustersIndex() {
+  var name = $("#clusterName").val();
+  $(".clusterList").find('.cluster').each(function(i,item) {
+    var customName = name + '[' + i + ']';
+    $(item).attr('id', 'cluster-' + i);
+    $(item).find('input.Id').attr('name', customName + '.id');
+    updateUsersIndex(item, customName);
+  });
+}
+
+// Users-leaders
 function removePerson() {
   var $item = $(this).parents('li');
   console.log($item);
   $item.hide(function() {
     $item.remove();
-    updateIndex();
+    updateClustersIndex();
   });
 
 }
@@ -59,16 +72,16 @@ function addUserItem(composedName,userId) {
   }
 
   dialog.dialog("close");
-  updateIndex();
+  updateClustersIndex();
 }
 
-function updateIndex() {
-  $(".clusterList").find('.cluster').each(function(i,item) {
-
-    $(item).attr('id', 'cluster-' + i);
-    $(item).find('.userItem').each(function(iUser,userItem) {
-      $(userItem).attr('name', 'cluster[' + i + '].leader[' + iUser + ']institution.id');
-    });
-
+function updateUsersIndex(item,clustersName) {
+  var name = $("#leaderName").val();
+  $(item).find('li').each(function(indexUser,userItem) {
+    var customName = clustersName + '.' + name + '[' + indexUser + ']';
+    $(userItem).find('.user').attr('name', customName + '.user.id');
+    $(userItem).find('.role').attr('name', customName + '.role.id');
+    $(userItem).find('.id').attr('name', customName + '.id');
   });
+
 }

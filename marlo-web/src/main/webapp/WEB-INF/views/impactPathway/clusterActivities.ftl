@@ -10,6 +10,8 @@
   {"label":"impactPathway", "nameSpace":"", "action":"outcomes"},
   {"label":"clusterActivities", "nameSpace":"", "action":""}
 ]/]
+[#assign clustersName = "clusters"/]
+[#assign leadersName = "leaders"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -39,7 +41,7 @@
         <div class="clusterList">
           [#if clusters?has_content]
             [#list clusters as cluster]
-              [@clusterMacro cluster=cluster name='clusters' index=cluster_index /]
+              [@clusterMacro cluster=cluster name=clustersName index=cluster_index /]
             [/#list]
           [/#if]
         </div>
@@ -66,6 +68,9 @@
   [#-- User template --]
   [@userItem element={} index=0 name="" userRole="{coaRol}" template=true /]
 </ul>
+
+<input type="hidden" id="clusterName" value="${clustersName}" />
+<input type="hidden" id="leaderName" value="${leadersName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -96,7 +101,8 @@
               <div class="addPerson text-center">
                 <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
               </div>              
-            </div>            
+            </div>    
+            <input class="Id" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
           
   </div>
 [/#macro]

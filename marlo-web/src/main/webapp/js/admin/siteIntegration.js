@@ -1,9 +1,13 @@
 $(document).ready(init);
+var select;
+var countriesContent = $(".countriesContent");
 
 function init() {
 
   /* Declaring Events */
   attachEvents();
+  select = $("#ccafs_siteIntegration_");
+  $('.removeCountry').on('click', removeCountry);
 
   /* Init Select2 plugin */
   $('select').select2({
@@ -26,11 +30,12 @@ function formatState(state) {
 
 function attachEvents() {
 
-  var select = $("#ccafs_siteIntegration_");
+  // Select event
+  select = $("#ccafs_siteIntegration_");
   select.on('change', function() {
     countrySelected = select.find("option:selected");
     if(countrySelected.val() != -1 && countrySelected.val() != null) {
-      console.log(countrySelected);
+      differences();
     }
   });
 
@@ -41,29 +46,67 @@ function attachEvents() {
     $parent.hide(function() {
       $parent.remove();
       checkItems($block);
-      updateUsersIndex($block, $block.parent().find('.inputName-input').text());
+      updateCountriesIndex();
     });
   });
 }
 
-function addCountry() {
+// COUNTRIES
+
+// Add a country
+function addCountry(countrySelected) {
   var $item = $('#country-template').clone(true).removeAttr('id');
-  $item.find('input.institutionId').val(partner.val());
-  $item.find('.title').html(partner.text());
-  partnerContent.append($item);
+  $item.find('input.isoAlpha').val(countrySelected.val());
+  $item.find('.country-title').html("<i></i> " + countrySelected.text());
+  $item.find('i').attr('class', 'flag-sm flag-sm-' + countrySelected.val());
+  countriesContent.append($item);
   $item.show("slow");
-  updateIndex();
+  updateCountriesIndex();
 }
 
+function removeCountry() {
+  var $list = $(this).parents('.countriesContent');
+  var $item = $(this).parents('.country');
+  $item.hide(1000, function() {
+    $item.remove();
+    updateCountriesIndex();
+  });
+}
+
+function differences() {
+  countrySelected = select.find("option:selected");
+  if(countriesContent.find('input[value=' + countrySelected.val() + ']').exists()) {
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = 'This country has been added';
+    notyOptions.type = 'alert';
+    noty(notyOptions);
+  } else {
+    addCountry(countrySelected);
+  }
+}
+
+function updateCountriesIndex() {
+  var name = "loggedCrp.siteIntegrations";
+  $(".countriesContent").find('.country').each(function(i,item) {
+    var customName = name + '[' + i + ']';
+    $(item).attr('id', 'country-' + i);
+    $(item).find('input.Id').attr('name', customName + '.siteLeaders.id');
+    $(item).find('input.isoAlpha').attr('name', customName + '.siteLeaders.isoAlpha2');
+    updateUsersIndex(item, customName);
+  });
+}
+
+// LEADERS
+
 function addUserItem(composedName,userId) {
-  $usersList = $elementSelected.parent().find(".items-list");
+  $usersList = $elementSelected.parent().parent().find(".items-list");
   var $li = $("#user-template").clone(true).removeAttr("id");
   $li.find('.name').html(escapeHtml(composedName));
   $li.find('.user').val(userId);
   $usersList.find("ul").append($li);
   $li.show('slow');
   checkItems($usersList);
-  updateUsersIndex($usersList, $elementSelected.find('.inputName-input').text());
+  updateCountriesIndex();
   dialog.dialog("close");
 }
 
@@ -76,11 +119,14 @@ function checkItems(block) {
   }
 }
 
-function updateUsersIndex(list,name) {
-  $(list).find('li').each(function(i,item) {
-    var customName = name + '[' + i + ']';
-    $(item).find('.user').attr('name', customName + '.user.id');
-    $(item).find('.role').attr('name', customName + '.role.id');
-    $(item).find('.id').attr('name', customName + '.id');
+function updateUsersIndex(item,name) {
+  $(item).find('li').each(function(indexUser,userItem) {
+    console.log(userItem);
+    var customName = name + '.siteLeaders[' + indexUser + ']';
+    console.log(customName);
+    $(userItem).find('.user').attr('name', customName + '.user.id');
+    $(userItem).find('.role').attr('name', customName + '.role.id');
+    $(userItem).find('.id').attr('name', customName + '.id');
   });
+
 }
