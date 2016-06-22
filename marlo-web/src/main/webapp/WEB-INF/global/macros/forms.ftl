@@ -257,10 +257,10 @@
     [#if editable]
       <div class="button-wrap">
         [#-- Yes Button --]
-        <input type="radio" name="${name}" id="yes-button-${name}" value="true" [#if customValue == "true"]checked[/#if] class="hidden onoffswitch-radio [#if inverse]inverse[/#if]"/>
+        <input type="radio" name="${name}" id="yes-button-${name}" value="true" [#if customValue == "true"]checked[/#if] class="hidden yes-button-input onoffswitch-radio [#if inverse]inverse[/#if]"/>
         <label for="yes-button-${name}" class="yes-button-label button-label [#if customValue == "true"]radio-checked[/#if]">Yes</label>
         [#-- No Button --]
-        <input type="radio" name="${name}" id="no-button-${name}" value="false" [#if customValue == "false"]checked[/#if] class="hidden onoffswitch-radio [#if inverse]inverse[/#if]"/>
+        <input type="radio" name="${name}" id="no-button-${name}" value="false" [#if customValue == "false"]checked[/#if] class="hidden no-button-input onoffswitch-radio [#if inverse]inverse[/#if]"/>
         <label for="no-button-${name}" class="no-button-label button-label [#if customValue == "false"]radio-checked[/#if]">No</label>
       </div>
       [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 

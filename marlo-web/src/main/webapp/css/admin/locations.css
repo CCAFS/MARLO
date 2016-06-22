@@ -1,3 +1,27 @@
 .locationLevel {
   padding-top: 16px;
 }
+
+.latitudeBlock {
+  width: 17%;
+  float: left;
+  padding-right: 1%;
+}
+
+.longitudeBlock {
+  width: 17%;
+  float: left;
+  padding-right: 1%;
+}
+
+
+.nameBlock {
+  width: 48%;
+  float: left;
+  padding-right: 1%;
+}
+
+.buttonBlock {
+  width: 17%;
+  float: right;
+}
