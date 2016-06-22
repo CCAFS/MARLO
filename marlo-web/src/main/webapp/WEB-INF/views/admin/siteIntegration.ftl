@@ -74,7 +74,7 @@
 [/#macro]
 
 [#macro countryMacro element index name template=false]
-[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].siteLeaders" /]
+[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}]" /]
   <div id="country-${template?string('template','')}" class="borderBox country col-md-12" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
     <div class=" removeElement removeCountry" title="Remove Country"></div>
@@ -84,7 +84,7 @@
         <ul>
         [#if element.siteLeaders?has_content]
           [#list element.siteLeaders as item]
-          [@userItem element=item index=item_index name=customNameCountry /]
+          [@userItem element=item index=item_index name="${customNameCountry}.siteLeaders" /]
           [/#list]
         [/#if] 
         </ul>
