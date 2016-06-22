@@ -23,7 +23,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">Site Integration</h4>
-        <div class="borderBox"> 
+        <div class="countriesContent"> 
         
         [#if loggedCrp.siteIntegrations?has_content]
           [#list loggedCrp.siteIntegrations as crpCountry]
@@ -68,13 +68,16 @@
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${(userRole)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
 
 [#macro countryMacro element index name template=false]
 [#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].siteLeaders" /]
-  <div id="country-${template?string('template','')}" class="country col-md-12" style="display:${template?string('none','block')}">
+  <div id="country-${template?string('template','')}" class="borderBox country col-md-12" style="display:${template?string('none','block')}">
+    [#-- Remove Button --]
+    <div class=" removeElement removeCountry" title="Remove Country"></div>
     <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}</h5>
     <div class="crpCountry-block">
       <div class="items-list simpleBox">
@@ -95,6 +98,6 @@
       </div>
     </div>
     <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
-     <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
+    <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
   </div>  
 [/#macro]
