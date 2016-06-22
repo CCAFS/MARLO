@@ -134,7 +134,7 @@ function updateLocationsIndexes() {
 
       $(element).find('.locElementId').attr('name', elementName + "id");
       $(element).find('.locElementName').attr('name', elementName + "name");
-      $(element).find('.locElementCountry').attr('name', elementName + "name");
+      $(element).find('.locElementCountry').attr('name', elementName + "parent.isoAlpha2");
       $(element).find('.geoId').attr('name', elementName + "locGeoposition.id");
       $(element).find('.geoLat').attr('name', elementName + "locGeoposition.latitude");
       $(element).find('.geoLng').attr('name', elementName + "locGeoposition.longitude");
