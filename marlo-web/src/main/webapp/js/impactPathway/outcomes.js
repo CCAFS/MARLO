@@ -213,6 +213,7 @@ function updateAllIndexes() {
       $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.id');
       $(subIdo).find('.idoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
       $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
+      $(subIdo).find('.programSubIDOId').attr('name', subIdoName + 'id');
 
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {

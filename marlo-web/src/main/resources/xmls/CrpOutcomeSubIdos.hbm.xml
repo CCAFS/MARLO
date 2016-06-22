@@ -24,10 +24,10 @@
             <column name="crp_program_outcome_id" not-null="true" />
         </many-to-one>
         <many-to-one name="srfSubIdo" class="org.cgiar.ccafs.marlo.data.model.SrfSubIdo" fetch="select" >
-            <column name="srf_sub_ido_id" not-null="true" />
+            <column name="srf_sub_ido_id" not-null="false" />
         </many-to-one>
-        <property name="contribution" type="big_decimal">
-            <column name="contribution" precision="10" not-null="true" />
+        <property name="contribution" type="java.math.BigDecimal">
+            <column name="contribution" precision="10" not-null="false" />
         </property>
         <set lazy="true" name="crpAssumptions" table="crp_assumptions" inverse="true"  fetch="select" >
             <key>

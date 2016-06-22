@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,8 +53,10 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
@@ -64,8 +67,11 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private HashMap<Long, String> subIdoList;
+
   public CrpOutcomeSubIdo() {
   }
+
 
   public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcome, SrfSubIdo srfSubIdo, BigDecimal contribution) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -122,10 +128,14 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public SrfSubIdo getSrfSubIdo() {
     return this.srfSubIdo;
   }
+
+  public HashMap<Long, String> getSubIdoList() {
+    return subIdoList;
+  }
+
 
   @Override
   public boolean isActive() {
@@ -170,6 +180,10 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
   public void setSrfSubIdo(SrfSubIdo srfSubIdo) {
     this.srfSubIdo = srfSubIdo;
+  }
+
+  public void setSubIdoList(HashMap<Long, String> subIdoList) {
+    this.subIdoList = subIdoList;
   }
 
 
