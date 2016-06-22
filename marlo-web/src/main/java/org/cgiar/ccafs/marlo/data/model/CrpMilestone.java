@@ -41,7 +41,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   private String title;
 
   @Expose
-  private int year;
+  private Integer year;
 
   @Expose
   private BigDecimal value;
@@ -63,7 +63,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   public CrpMilestone() {
   }
 
-  public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, int year,
+  public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.srfTargetUnit = srfTargetUnit;
@@ -139,7 +139,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return this.value;
   }
 
-  public int getYear() {
+  public Integer getYear() {
     return this.year;
   }
 
@@ -189,7 +189,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     this.value = value;
   }
 
-  public void setYear(int year) {
+  public void setYear(Integer year) {
     this.year = year;
   }
 

@@ -24,16 +24,16 @@
             <column name="crp_program_id" not-null="true" />
         </many-to-one>
         <many-to-one name="srfTargetUnit" class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select" >
-            <column name="target_unit_id" not-null="true" />
+            <column name="target_unit_id" not-null="false" />
         </many-to-one>
         <property name="description" type="string">
-            <column name="description" length="65535" not-null="true" />
+            <column name="description" length="65535" not-null="false" />
         </property>
-        <property name="year" type="int">
-            <column name="year" not-null="true" />
+       <property name="year" type="java.lang.Integer">
+            <column name="year" not-null="false" />
         </property>
-        <property name="value" type="big_decimal">
-            <column name="value" precision="10" not-null="true" />
+        <property name="value" type="java.math.BigDecimal">
+            <column name="value" precision="10" not-null="false" />
         </property>
         <set lazy="true" name="crpOutcomeSubIdos" table="crp_outcome_sub_idos"  order-by="id" inverse="true"  fetch="select" >
             <key>

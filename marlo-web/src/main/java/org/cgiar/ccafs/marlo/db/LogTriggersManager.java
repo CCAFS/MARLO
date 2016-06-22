@@ -43,6 +43,7 @@ public class LogTriggersManager {
     this.tableName = tableName;
   }
 
+
   public void createTrigger(String triggerAction) throws SQLException {
     Statement statement = connection.createStatement();
     StringBuilder query = new StringBuilder();
@@ -138,6 +139,26 @@ public class LogTriggersManager {
       statement.close();
     }
 
+  }
+
+  public void deleteTrigger(String triggerAction) throws SQLException {
+    Statement statement = connection.createStatement();
+    StringBuilder query = new StringBuilder();
+
+    // Add the trigger in the production database
+    statement.addBatch("USE " + databaseName + ";");
+
+    query.append("DROP TRIGGER IF EXISTS after_" + tableName + "_" + triggerAction + "; ");
+    statement.addBatch(query.toString());
+
+    try {
+      statement.executeBatch();
+    } catch (SQLException e) {
+      LOG.error("Exception raised trying to create the trigger after_{}_{}.", tableName, triggerAction);
+      throw e;
+    } finally {
+      statement.close();
+    }
   }
 
   /**

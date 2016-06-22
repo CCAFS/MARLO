@@ -165,12 +165,16 @@
       <span class="index">${index+1}</span>
       <span class="elementId">Sub-IDO</span>
     </div>
+    
+         <input type="hidden" class="programSubIDOId" name="${subIDOCustomName}.id" value="${(subIdo.id)!}"/>
+
+       
     [#-- Remove Button --]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     <br />
     <div class="form-group">
       <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="IDO" placeholder="Select an IDO..." listName="idoList"  className="idoId" required=true editable=true  /]</div>
-      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="" className="subIdoId" disabled=true required=true editable=true  /]</div>
+      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="SubIDO" placeholder="Select a Sub-IDO..." listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=true  /]</div>
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="Contribution" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
       <div class="clearfix"></div>
     </div>
@@ -181,8 +185,7 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
-    [#else]
-      [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]  
+  
     [/#if]
     </div>
     [#-- Add Assumption Button --]

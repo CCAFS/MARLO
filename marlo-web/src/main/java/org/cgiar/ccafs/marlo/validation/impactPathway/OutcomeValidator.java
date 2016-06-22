@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.validation.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -44,46 +46,78 @@ public class OutcomeValidator extends BaseValidator
       CrpProgramOutcome outcome = outcomes.get(i);
       this.validateOuctome(action, outcome, i);
     }
+    if (!action.getFieldErrors().isEmpty()) {
+      action.addActionError(action.getText("saving.fields.required"));
+    } else if (validationMessage.length() > 0) {
+      action
+        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    }
   }
+
 
   public void validateMilestone(BaseAction action, CrpMilestone milestone, int i, int j) {
+
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+    params.add(String.valueOf(j + 1));
     if (!this.isValidString(milestone.getTitle())) {
-      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].title",
-        action.getText("outcome.action.title.required"));
+      this.addMessage(action.getText("outcome.action.title.required", params));
     }
     if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
-      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].value",
-        action.getText("outcome.action.value.required"));
+      this.addMessage(action.getText("outcome.action.milestone.value.required", params));
     }
     if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
-      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].year",
-        action.getText("outcome.action.year.required"));
+      this.addMessage(action.getText("outcome.action.milestone.year.required", params));
     }
     if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
-      action.addFieldError("outcomes[" + i + "].milestones[" + j + "].srfTargetUnit.id",
-        action.getText("outcome.action.srfTargetUnit.required"));
+      this.addMessage(action.getText("outcome.action.milestone.srfTargetUnit.required", params));
+      milestone.setSrfTargetUnit(null);
     }
   }
 
-
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
     if (!this.isValidString(outcome.getDescription())) {
-      action.addFieldError("outcomes[" + i + "].description", action.getText("outcome.action.statement.required"));
+      this.addMessage(action.getText("outcome.action.statement.required", params));
     }
     if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
-      action.addFieldError("outcomes[" + i + "].value", action.getText("outcome.action.value.required"));
+      this.addMessage(action.getText("outcome.action.value.required", params));
     }
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
-      action.addFieldError("outcomes[" + i + "].year", action.getText("outcome.action.year.required"));
+      this.addMessage(action.getText("outcome.action.year.required", params));
     }
     if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
-      action.addFieldError("outcomes[" + i + "].srfTargetUnit.id",
-        action.getText("outcome.action.srfTargetUnit.required"));
+      outcome.setSrfTargetUnit(null);
+      this.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
     }
     if (outcome.getMilestones() != null) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
+      if (outcome.getSubIdos() != null) {
+        for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+          this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
+        }
+      }
+
+    }
+  }
+
+
+  public void validateSubIDO(BaseAction action, CrpOutcomeSubIdo subIdo, int i, int j) {
+
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+    params.add(String.valueOf(j + 1));
+    if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1
+      || subIdo.getSrfSubIdo().getSrfIdo() == null || subIdo.getSrfSubIdo().getSrfIdo().getId() == -1) {
+      subIdo.setSrfSubIdo(null);
+      this.addMessage(action.getText("outcome.action.subido.subido.required", params));
+    }
+    if (subIdo.getContribution() == null || !this.isValidNumber(subIdo.getContribution().toString())
+      || subIdo.getContribution().doubleValue() > 100) {
+      this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
     }
   }
 }
