@@ -199,8 +199,9 @@
   [#assign assumptionCustomName = "${name}[${index}]" /]
   <div id="assumption-${isTemplate?string('template', index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
+     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
    
-    [@customForm.input name="${assumptionCustomName}.statement" type="text" showTitle=false placeholder="Assumption statement #${index+1}" className="statement" required=true editable=true /]
+    [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="Assumption statement #${index+1}" className="statement" required=true editable=true /]
   </div>
 [/#macro]

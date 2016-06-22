@@ -67,7 +67,7 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${(userRole)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${(slRole.id)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
@@ -83,7 +83,7 @@
         <ul>
         [#if element.siteLeaders?has_content]
           [#list element.siteLeaders as item]
-          [@userItem element=item index=item_index name="loggedCrp.siteIntegrations.siteLeaders" userRole=slRole.id /]
+          [@userItem element=item index=item_index name="${customNameCountry}.siteLeaders" /]
           [/#list]
         [/#if] 
         </ul>

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
@@ -58,6 +59,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   private RoleManager roleManager;
 
+  private UserRoleManager userRoleManager;
+
 
   private Crp loggedCrp;
   private List<LocElement> countriesList;
@@ -67,13 +70,14 @@ public class CrpSiteIntegrationAction extends BaseAction {
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    RoleManager roleManager) {
+    RoleManager roleManager, UserRoleManager userRoleManager) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
     this.crpSitesLeaderManager = crpSitesLeaderManager;
     this.roleManager = roleManager;
+    this.userRoleManager = userRoleManager;
   }
 
   public List<LocElement> getCountriesList() {

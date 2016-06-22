@@ -5294,6 +5294,7 @@ table.evaluationRank thead th{
   padding: 6px 18px;
   background: #f5f5f5;
   border: 1px dashed #e2e0e0;
+  position: relative;
 }
 
 .items-list ul li .glyphicon-remove{
