@@ -15,6 +15,14 @@ jQuery.fn.exists = function() {
   return this.length > 0;
 };
 
+jQuery.fn.numericInput = function() {
+  $(this).each(function(i,input) {
+    $(input).on("keydown", function(e) {
+      isNumber(e);
+    });
+  });
+};
+
 /*
  * This function takes the links whit popup class and add a click event. That event takes the href and open it in a
  * popUp window This method must be called in ready function
@@ -28,10 +36,15 @@ function popups() {
 }
 
 function isNumber(e) {
+  console.log(e.keyCode);
   if($.inArray(e.keyCode, [
-      46, 8, 9, 27, 13, 110, 190
+      46, 8, 9, 27, 13, 110, 190, 109, 189
   ]) !== -1 ||
-  // Allow: Ctrl+A
+  // Allow: Ctrl + C
+  (e.keyCode == 67 && e.ctrlKey === true) ||
+  // Allow: Ctrl + V
+  (e.keyCode == 86 && e.ctrlKey === true) ||
+  // Allow: Ctrl + A
   (e.keyCode == 65 && e.ctrlKey === true) ||
   // Allow: home, end, left, right
   (e.keyCode >= 35 && e.keyCode <= 39)) {
@@ -58,6 +71,15 @@ function isPercentage(e) {
   }
   if(value < 0) {
     e.target.value = 0;
+  }
+}
+
+// checks whether the coordinate is valid
+function isCoordinateValid(latitude,longitude) {
+  if(latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180) {
+    return true;
+  } else {
+    return false;
   }
 }
 

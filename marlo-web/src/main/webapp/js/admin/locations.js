@@ -7,6 +7,22 @@ function init() {
 
   /* Overwritten event from global.js */
   yesnoEvent = yesnoEventLocations;
+
+  /* Numeric Inputs */
+  $('.locationLatitude-input, .locationLongitude-input').numericInput();
+
+  /* Coordinates verification */
+  $('.locationLatitude-input, .locationLongitude-input').on("keyup", function(e) {
+    var $parent = $(this).parent().parent().parent();
+    var lat = $parent.find('.locationLatitude-input').val();
+    var lng = $parent.find('.locationLongitude-input').val();
+
+    if(isCoordinateValid(lat, lng)) {
+      $parent.find('.locationLatitude-input, .locationLongitude-input').removeClass('fieldError');
+    } else {
+      $parent.find('.locationLatitude-input, .locationLongitude-input').addClass('fieldError');
+    }
+  });
 }
 
 function attachEvents() {
