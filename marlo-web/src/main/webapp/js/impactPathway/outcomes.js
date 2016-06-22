@@ -218,9 +218,9 @@ function updateAllIndexes() {
       // Update Assumptions
       $(subIdo).find('.assumption').each(function(i,assumption) {
         var assumptionName = subIdoName + 'assumptions' + '[' + i + '].';
-        $(assumption).find('.id').attr('name', assumptionName + 'id');
+        $(assumption).find('.assumptionId').attr('name', assumptionName + 'id');
         $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
-        $(assumption).find('.statement').attr('name', assumptionName + 'statement');
+        $(assumption).find('.statement').attr('name', assumptionName + 'description');
       });
     });
   });

@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -104,6 +105,15 @@ public class OutcomeValidator extends BaseValidator
     }
   }
 
+  public void validateSubIDO(BaseAction action, CrpAssumption assuption, int i, int j, int k) {
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+    params.add(String.valueOf(j + 1));
+    params.add(String.valueOf(k + 1));
+    if (!this.isValidString(assuption.getDescription())) {
+      this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
+    }
+  }
 
   public void validateSubIDO(BaseAction action, CrpOutcomeSubIdo subIdo, int i, int j) {
 

@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -49,6 +50,7 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
 
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
+  private List<CrpAssumption> assumptions;
 
   @Expose
   private boolean active;
@@ -57,12 +59,13 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
   @Expose
   private Date activeSince;
 
+
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private String modificationJustification;
@@ -71,7 +74,6 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
   public CrpOutcomeSubIdo() {
   }
-
 
   public CrpOutcomeSubIdo(CrpProgramOutcome crpProgramOutcome, SrfSubIdo srfSubIdo, BigDecimal contribution) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -87,8 +89,13 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
     this.crpAssumptions = crpAssumptions;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public List<CrpAssumption> getAssumptions() {
+    return assumptions;
   }
 
   public BigDecimal getContribution() {
@@ -136,11 +143,11 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
     return subIdoList;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -148,6 +155,10 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setAssumptions(List<CrpAssumption> assumptions) {
+    this.assumptions = assumptions;
   }
 
   public void setContribution(BigDecimal contribution) {
