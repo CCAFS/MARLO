@@ -17,12 +17,15 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -43,20 +46,34 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
 
   private CrpManager crpManager;
+
+
   private LocElementManager locElementManager;
+
+
   private CrpsSiteIntegrationManager crpsSiteIntegrationManager;
+
+
+  private CrpSitesLeaderManager crpSitesLeaderManager;
+
+  private RoleManager roleManager;
 
 
   private Crp loggedCrp;
   private List<LocElement> countriesList;
+  private Long slRoleid;
+  private Role slRole;
 
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager) {
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
+    RoleManager roleManager) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
+    this.crpSitesLeaderManager = crpSitesLeaderManager;
+    this.roleManager = roleManager;
   }
 
   public List<LocElement> getCountriesList() {
@@ -67,11 +84,20 @@ public class CrpSiteIntegrationAction extends BaseAction {
     return loggedCrp;
   }
 
+  public Role getSlRole() {
+    return slRole;
+  }
+
+  public Long getSlRoleid() {
+    return slRoleid;
+  }
 
   @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
+    slRole = roleManager.getRoleById(slRoleid);
 
     if (loggedCrp.getCrpsSitesIntegrations() != null) {
       loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
@@ -101,6 +127,25 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
     if (this.hasPermission("*")) {
 
+      List<CrpsSiteIntegration> siteIntegrationPrew;
+
+      if (crpsSiteIntegrationManager.findAll() != null) {
+        siteIntegrationPrew = crpsSiteIntegrationManager.findAll().stream().filter(si -> si.getCrp().equals(loggedCrp))
+          .collect(Collectors.toList());
+
+        for (CrpsSiteIntegration crpsSiteIntegration : siteIntegrationPrew) {
+          if (!loggedCrp.getSiteIntegrations().contains(crpsSiteIntegration)) {
+
+            for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+              crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
+            }
+
+            crpsSiteIntegrationManager.deleteCrpsSiteIntegration(crpsSiteIntegration.getId());
+          }
+        }
+      }
+
+
       List<CrpsSiteIntegration> siteIntegrationsPrew = crpsSiteIntegrationManager.findAll().stream()
         .filter(si -> si.getCrp().equals(loggedCrp)).collect(Collectors.toList());
 
@@ -117,13 +162,22 @@ public class CrpSiteIntegrationAction extends BaseAction {
     return null;
   }
 
+
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setSlRole(Role slRole) {
+    this.slRole = slRole;
+  }
+
+
+  public void setSlRoleid(Long slRoleid) {
+    this.slRoleid = slRoleid;
   }
 
 }

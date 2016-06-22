@@ -67,14 +67,13 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
-    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${(userRole)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
 
 [#macro countryMacro element index name template=false]
-[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}].siteLeaders" /]
+[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}]" /]
   <div id="country-${template?string('template','')}" class="borderBox country col-md-12" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
     <div class=" removeElement removeCountry" title="Remove Country"></div>
@@ -84,7 +83,7 @@
         <ul>
         [#if element.siteLeaders?has_content]
           [#list element.siteLeaders as item]
-          [@userItem element=item index=item_index name=customNameCountry /]
+          [@userItem element=item index=item_index name="loggedCrp.siteIntegrations.siteLeaders" userRole=slRole.id /]
           [/#list]
         [/#if] 
         </ul>

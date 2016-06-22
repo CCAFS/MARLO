@@ -56,6 +56,7 @@
 		<span class="index hidden" >${index+1}</span>
 		<span class="title col-md-11">${(ppaPartners.institution.name)!'Null'} </span>
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
+		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
 		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
 	</div>
 [/#macro]
