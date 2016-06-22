@@ -14,7 +14,15 @@
 
 package org.cgiar.ccafs.marlo.interceptor;
 
+import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -36,6 +44,7 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   private static final Logger LOG = LoggerFactory.getLogger(AccessibleStageInterceptor.class);
 
   private APConfig config;
+  private Crp loggedCrp;
 
   @Inject
   public AccessibleStageInterceptor(APConfig config) {
@@ -45,11 +54,38 @@ public class AccessibleStageInterceptor extends AbstractInterceptor {
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
     LOG.debug("=> AccessibleStageInterceptor");
+
     String stageName = ServletActionContext.getActionMapping().getNamespace();
+    Map<String, Object> session = invocation.getInvocationContext().getSession();
+    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
     // Check what section is the user loading and
     // validate if it is active
-    // TODO change this interceptor to catch active sections whit crp.
-    return invocation.invoke();
+    if (stageName.startsWith("/admin")) {
+      if (Boolean.parseBoolean(this.sectionActive(APConstants.CRP_ADMIN_ACTIVE))) {
+        return invocation.invoke();
+      } else {
+        return BaseAction.NOT_AUTHORIZED;
+      }
+    } else if (stageName.startsWith("/impactPathway")) {
+      if (Boolean.parseBoolean(this.sectionActive(APConstants.CRP_IMPACT_PATHWAY_ACTIVE))) {
+        return invocation.invoke();
+      } else {
+        return BaseAction.NOT_AUTHORIZED;
+      }
+    } else {
+      return invocation.invoke();
+    }
+  }
 
+  public String sectionActive(String section) {
+    List<CrpParameter> parameters = loggedCrp.getCrpParameters().stream()
+      .filter(p -> p.getKey().equals(section) && p.isActive() && p.getCrp().getId().equals(loggedCrp.getId()))
+      .collect(Collectors.toList());
+
+    if (parameters.size() == 0) {
+      return "false";
+    } else {
+      return parameters.get(0).getValue();
+    }
   }
 }

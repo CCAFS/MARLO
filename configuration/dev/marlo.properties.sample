@@ -13,9 +13,6 @@ marlo.baseUrl=https://localhost/marlo-web/
 # ----------------------------------------------------
 #                   Sections Variables
 # ----------------------------------------------------
-# Is Admin Section active? 
-marlo.admin.active=true
-marlo.impactPathway.active=true
 
 # ------------------------------------------------
 # Email account
