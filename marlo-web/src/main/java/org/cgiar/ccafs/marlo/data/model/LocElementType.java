@@ -12,7 +12,9 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElementType implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 1795563086382428049L;
+
 
   @Expose
   private Long id;
@@ -20,8 +22,13 @@ public class LocElementType implements java.io.Serializable {
   @Expose
   private String name;
 
+  @Expose
+  private Crp crp;
+
   private LocElementType locElementType;
+
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
+
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
   public LocElementType() {
@@ -33,6 +40,10 @@ public class LocElementType implements java.io.Serializable {
     this.name = name;
     this.locElements = locElements;
     this.locElementTypes = locElementTypes;
+  }
+
+  public Crp getCrp() {
+    return crp;
   }
 
   public Long getId() {
@@ -53,6 +64,10 @@ public class LocElementType implements java.io.Serializable {
 
   public String getName() {
     return this.name;
+  }
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setId(Long id) {

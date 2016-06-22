@@ -40,24 +40,23 @@ public class Crp implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
+
   @Expose
   private String acronym;
 
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
 
-
   private Set<Role> roles = new HashSet<Role>(0);
 
   private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
-
 
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
+  private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
-
 
   @Expose
   private boolean active;
@@ -65,10 +64,8 @@ public class Crp implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
   @Expose
   private Date activeSince;
-
 
   @Expose
   private User modifiedBy;
@@ -125,7 +122,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public String getAcronym() {
     return acronym;
   }
@@ -133,6 +129,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -175,6 +172,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return locElements;
   }
 
+  public Set<LocElementType> getLocElementTypes() {
+    return locElementTypes;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -194,7 +195,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public String getName() {
     return this.name;
   }
-
 
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
@@ -219,6 +219,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
@@ -227,7 +228,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public boolean isHasRegions() {
     return hasRegions;
   }
-
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -273,6 +273,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
 
+
   public void setCrpSubIdosContributions(Set<CrpSubIdosContribution> crpSubIdosContributions) {
     this.crpSubIdosContributions = crpSubIdosContributions;
   }
@@ -291,6 +292,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setLocElements(Set<LocElement> locElementses) {
     this.locElements = locElementses;
+  }
+
+  public void setLocElementTypes(Set<LocElementType> locElementTypes) {
+    this.locElementTypes = locElementTypes;
   }
 
   public void setModificationJustification(String modificationJustification) {

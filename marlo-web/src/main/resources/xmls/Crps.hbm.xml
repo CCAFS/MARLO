@@ -68,6 +68,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
         </set>
+        <set name="locElementTypes" table="loc_element_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElementType" />
+        </set>
       <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
