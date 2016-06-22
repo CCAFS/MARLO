@@ -81,7 +81,7 @@ function addMilestone() {
   updateAllIndexes();
   $item.show('slow');
   // Hide empty message
-  $(this).parents('.outcome').find('p.message').hide();
+  $(this).parents('.outcome').find('.milestones-list p.message').hide();
 }
 
 function removeMilestone() {
@@ -106,6 +106,8 @@ function addSubIdo() {
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
+// Hide empty message
+  $(this).parents('.outcome').find('.subIdos-list p.message').hide();
 }
 
 function removeSubIdo() {
