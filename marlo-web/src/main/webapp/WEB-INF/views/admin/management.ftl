@@ -22,7 +22,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">Program Management Team</h4>
+        <h4 class="sectionTitle">[@s.text name="programManagement.title" /]</h4>
         <div class="usersBlock clearfix">
           [#-- PMU Users List --]
           <div class="users items-list borderBox">
@@ -33,7 +33,7 @@
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">There are not users added yet.</p>
+            <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">[@s.text name="programManagement.notUsers.span" /]</p>
           </div>
           [#-- Add Person--]
           <div class="text-right">
@@ -44,7 +44,7 @@
           <span class="usersRole" style="display:none">${pmuRol}</span>
         </div>
         
-        <h4 class="sectionTitle">Flagships</h4>
+        <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
         <div class="program-block">
           [#-- Flagships List --]
           <div class="flagships items-list">
@@ -55,20 +55,20 @@
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">There are not flagships added yet.</p>
+            <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
           </div>
           [#-- Add Flagship--] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Flagship Program</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.flagshipProgram" /]</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">flagshipsPrograms</span>
           </div>
         </div>
         
-        <h4 class="sectionTitle">Regional program Managers</h4>
+        <h4 class="sectionTitle">[@s.text name="programManagement.regionalProgram.title"/]</h4>
         <div class="program-block borderBox">
           [#-- Does your CRP have regional program managers?  --]
-          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="Does your CRP have regional program managers?" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
+          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
         </div>
 
         <div class="buttons">
@@ -116,10 +116,10 @@
     <div class="remove-programItem removeElement" title="Remove program"></div>
     [#-- Program Acronym & Name --]
     <div class="form-group">
-      <label for="">Program Name:</label>
+      <label for="">[@s.text name="CrpProgram.name"/]</label>
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="Acronym" className="acronym" required=true editable=true /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Flagship Name" className="name" required=true editable=true /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=true /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=true /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]

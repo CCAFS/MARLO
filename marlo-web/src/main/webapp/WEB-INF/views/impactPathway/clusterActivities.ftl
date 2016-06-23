@@ -26,7 +26,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">Flagship {0} - Cluster of Activities</h4>
+        <h4 class="sectionTitle">[@s.text name="clusterOfActivities.title"] [@s.param]1[/@s.param] [/@s.text]</h4>
         
         [#assign clusters=[
         {'title': 'Example',
@@ -46,7 +46,7 @@
           [/#if]
         </div>
         
-        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> [@s.text name="form.buttons.addCluster" /]</div>
         
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
@@ -83,11 +83,11 @@
               [#-- Remove Button --]
               <div class=" removeElement removeCluster" title="Remove Cluster"></div>
               <div class=" form-group">
-                [@customForm.textArea name=".description" i18nkey="Cluster of Activity - Title" required=true className="outcome-statement" editable=true /]
+                [@customForm.textArea name=".description" i18nkey="cluster.title" required=true className="outcome-statement" editable=true /]
               </div>
               
               <div class="form-group">
-                <span class="subtitle cold-md-12"><label >Cluster of Activity - Leaders:</label></span>
+                <span class="subtitle cold-md-12"><label >[@s.text name="cluster.leaders.title" /]</label></span>
               </div>
               
               <div class="leaders form-group col-md-12">

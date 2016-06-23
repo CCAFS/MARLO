@@ -22,7 +22,7 @@
       </div>
       <div class="col-md-9">
       
-        <h4 class="text-center">PPA Partners</h4>
+        <h4 class="text-center">[@s.text name="ppaPartners.title" /]</h4>
         <div class=" borderBox formWrapper ">
  
           [@s.form action=actionName enctype="multipart/form-data" ]  
@@ -33,7 +33,7 @@
   	      	</div>
   	      	
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="Select an option..." className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
+        		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
         			<div class="clearfix"></div>
       			</div>
         		<div class="buttons">

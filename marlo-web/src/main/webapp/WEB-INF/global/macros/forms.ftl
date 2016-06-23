@@ -252,7 +252,7 @@
   [/#if]
   <div class="onoffswitch ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">${label}</label>
+      <label for="${name}">[@s.text name=label/]</label>
     [/#if]
     [#if editable]
       <div class="button-wrap">
