@@ -10,6 +10,7 @@
 			<result name="input">/WEB-INF/views/admin/management.ftl</result>
 			<result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/management</param>
+        <param name="edit">true</param>
       </result>
     </action>
     
@@ -20,6 +21,7 @@
       <result name="input">/WEB-INF/views/admin/regionalMapping.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/regionalMapping</param>
+        <param name="edit">true</param>
       </result>
     </action>
     
@@ -29,6 +31,7 @@
       <result name="input">/WEB-INF/views/admin/siteIntegration.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/siteIntegration</param>
+        <param name="edit">true</param>
       </result>
     </action>
     
@@ -38,6 +41,7 @@
       <result name="input">/WEB-INF/views/admin/ppaPartners.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/ppaPartners</param>
+        <param name="edit">true</param>
       </result>
     </action>
    
@@ -47,6 +51,7 @@
       <result name="input">/WEB-INF/views/admin/locations.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/locations</param>
+        <param name="edit">true</param>
       </result>
     </action>
 
