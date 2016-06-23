@@ -416,7 +416,7 @@ select{
   width: auto !important;
 }
 
-input[type="submit"], button, .addButton {
+input[type="submit"], button, .addButton, a.form-button {
   background-color: #2BA6CB;
   color: #fff;
   border: 0;
@@ -424,6 +424,12 @@ input[type="submit"], button, .addButton {
   /* font-weight: bold; */
   border-bottom: 3px solid #1E94B8;
   border-radius: 2px;
+  text-decoration: none;
+}
+
+a.form-button.button-edit{
+  background-color: #999;
+  border-bottom: 3px solid #807f7f;
 }
 
 .addButton{
@@ -2081,9 +2087,7 @@ margin: 0;
 }
 
 .buttons button[name=save] {
-    color: #FFFFFF;
-    background: #8EA786;
-    border-bottom: 3px solid #7E9377;
+    
 }
 
 .buttons button[name=save]:hover{
@@ -5491,4 +5495,10 @@ span.select2-selection.select2-selection--multiple {
 
 h4.testEnvironment {
   margin-top: 0;
+}
+
+.button-save {
+  color: #FFFFFF;
+  background: #8EA786;
+  border-bottom: 3px solid #7E9377;
 }

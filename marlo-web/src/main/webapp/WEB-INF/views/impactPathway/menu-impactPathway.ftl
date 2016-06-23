@@ -10,7 +10,7 @@
       <ul>
         [#list items as item]
           <li class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="${item.action}.do">${item.name}</a>
+            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]">${item.name}</a>
           </li>
         [/#list] 
       </ul>

@@ -49,13 +49,26 @@
             [/#list]
           [/#if]
         </div>
+        [#-- Add CoA Button --]
+        [#if editable]
+          <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+        [/#if]
         
         <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
         
         <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+          [#if editable]
+            <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-save" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
         </div>
-                <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+        
+        [#-- Hidden Parameters --]
+        <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [/@s.form]
       </div>
     </div>
@@ -82,33 +95,36 @@
 [#macro clusterMacro cluster name index isTemplate=false]
   [#assign clusterCustomName= "${name}[${index}]" /]
   <div id="cluster-${isTemplate?string('template', index)}" class="cluster form-group borderBox" style="display:${isTemplate?string('none','block')}">
-    
-            <div class="form-group">
-              [#-- Remove Button --]
-              <div class=" removeElement removeCluster" title="Remove Cluster"></div>
-             
-              <div class=" form-group">
-                [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement" editable=true /]
-              </div>
-              
-              <div class="form-group">
-                <span class="subtitle cold-md-12"><label >[@s.text name="cluster.leaders.title" /]</label></span>
-              </div>
-              
-              <div class="leaders form-group col-md-12">
-              [#if cluster.leaders?has_content]
-                [#list cluster.leaders as leaderItem]
-                  [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
-                [/#list]
-              [/#if]
-              </div>
-              
-              <div class="addPerson text-center">
-                <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
-              </div>              
-            </div>    
-            <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
-          
+   
+           <div class="form-group">
+      [#-- Remove Button --]
+      [#if editable]
+        <div class=" removeElement removeCluster" title="Remove Cluster"></div>
+      [/#if]
+      [#-- Cluster Activity Name --]
+      <div class=" form-group">
+        [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement" editable=editable /]
+      </div>
+      [#-- Cluster Activity Leaders --]
+      <div class="form-group">
+        <span class="subtitle cold-md-12"><label >[@s.text name="cluster.leaders.title" /]</label></span>
+      </div>
+      <div class="leaders form-group col-md-12">
+      [#if cluster.leaders?has_content]
+        [#list cluster.leaders as leaderItem]
+          [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
+        [/#list]
+      [/#if]
+      </div>
+      [#-- Add CoA Leader --]
+      [#if editable]
+      <div class="addPerson text-center">
+        <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
+      </div>
+      [/#if]
+    </div>    
+    <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
+           
   </div>
 [/#macro]
 
@@ -122,7 +138,9 @@
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [#if editable]
+      <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [/#if]
   </li>
 [/#macro]
 
