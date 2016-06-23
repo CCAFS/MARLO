@@ -30,21 +30,35 @@
             [#if regionsPrograms?has_content]
               [#list regionsPrograms as item]
                 [@programItem element=item index=item_index name="regionsPrograms"/]
-              [/#list]
+              [/#list] 
             [/#if]
             </ul>
-            <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">[@s.text name="regionalMapping.notRegions.span"/]</p>
+            [#if !regionsPrograms?has_content]
+              <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">
+                [@s.text name="regionalMapping.notRegions.span"/]
+              </p>
+            [/#if]
           </div>
-          [#-- Add Regions--] 
+          [#-- Add Regions--]
+          [#if editable]
           <div class="text-center">
             <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addRegionProgram"/]</div>
             <span class="type-input" style="display:none">2</span>
             <span class="inputName-input" style="display:none">regionsPrograms</span>
           </div>
+          [/#if]
         </div>
 
+        [#-- Section Buttons--]
         <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+          [#if editable]
+            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-save" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
         </div>
         
         [/@s.form]
@@ -77,7 +91,9 @@
     <input class="role" type="hidden" name="${userCustomName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
+    [#if editable]
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [/#if]
   </li>
 [/#macro]
 
@@ -85,7 +101,9 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
-    <div class="remove-programItem removeElement" title="Remove program"></div>
+    [#if editable]
+      <div class="remove-programItem removeElement" title="Remove program"></div>
+    [/#if]
     [#-- Program Acronym & Name --]
     <div class="form-group">
       <label for="">[@s.text name="regionalMapping.CrpProgram.name"/]</label>
@@ -112,9 +130,11 @@
         <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="regionalMapping.CrpProgram.notLeaders.span"/]</p>
       </div>
       [#-- Add person Button --]
+      [#if editable]
       <div class="text-center">
         <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
       </div>
+      [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rplRole.id}</span>
@@ -124,9 +144,7 @@
     <label for="">[@s.text name="regionalMapping.CrpProgram.countries"/]</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
-
-        [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" /]              
-        
+      [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" editable=editable/]              
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rpRol}</span>

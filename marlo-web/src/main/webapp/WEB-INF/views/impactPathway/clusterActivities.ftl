@@ -39,10 +39,8 @@
         
        
         <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        
-       
-        
-        <div class="clusterList">
+        [#-- Cluster of Activities List --]
+        <div class="clusterList ">
           [#if clusterofActivities?has_content]
             [#list clusterofActivities as cluster]
               [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
@@ -106,15 +104,15 @@
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
-      <div class="form-group">
-        <span class="subtitle cold-md-12"><label >[@s.text name="cluster.leaders.title" /]</label></span>
-      </div>
-      <div class="leaders form-group col-md-12">
-      [#if cluster.leaders?has_content]
-        [#list cluster.leaders as leaderItem]
-          [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
-        [/#list]
-      [/#if]
+      <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>
+      <div class="items-list form-group col-md-12 simpleBox">
+        <ul class="leaders">
+        [#if cluster.leaders?has_content]
+          [#list cluster.leaders as leaderItem]
+            [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
+          [/#list]
+        [/#if]
+        </ul>
       </div>
       [#-- Add CoA Leader --]
       [#if editable]

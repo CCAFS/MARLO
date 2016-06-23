@@ -72,7 +72,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     }
 
     // Set the variable that indicates if the user can edit the section
-    baseAction.setEditableParameter(canEdit);
+    baseAction.setEditableParameter(editParameter);
     baseAction.setCanEdit(canEdit);
 
   }

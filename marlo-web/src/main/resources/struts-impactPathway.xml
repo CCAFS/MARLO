@@ -11,6 +11,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomes</param>
         <param name="crpProgramID">${crpProgramID}</param>
+        <param name="edit">true</param>
       </result>
     </action>
     
@@ -21,7 +22,7 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/clusterActivities</param>
         <param name="crpProgramID">${crpProgramID}</param>
-          
+        <param name="edit">true</param>
       </result>
     </action>
     
