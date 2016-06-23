@@ -7,6 +7,9 @@ function init() {
 
   /* Init Select2 plugin */
   $('outcomes-list select').select2();
+
+  /* Numeric Inputs */
+  $('input.targetValue , input.targetYear').numericInput();
 }
 
 function attachEvents() {
