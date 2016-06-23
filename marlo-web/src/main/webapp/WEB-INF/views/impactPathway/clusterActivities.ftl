@@ -37,8 +37,8 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">${(selectedProgram.acronym)!}- Cluster of Activities</h4>
-        <h4 class="sectionTitle">[@s.text name="clusterOfActivities.title"] [@s.param]1[/@s.param] [/@s.text]</h4>
+       
+        <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
         
        
         
