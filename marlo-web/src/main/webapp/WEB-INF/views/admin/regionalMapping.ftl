@@ -33,7 +33,7 @@
               [/#list] 
             [/#if]
             </ul>
-            [#if !regionsPrograms?has_content]
+            [#if !regionsPrograms?has_content && !editable]
               <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">
                 [@s.text name="regionalMapping.notRegions.span"/]
               </p>
@@ -108,8 +108,8 @@
     <div class="form-group">
       <label for="">[@s.text name="regionalMapping.CrpProgram.name"/]</label>
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=true /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=true /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=editable /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=editable /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]
@@ -117,7 +117,7 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
     <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]</label>
-    <div class="usersBlock simpleBox">
+    <div class="usersBlock form-group simpleBox">
       [#-- Leaders List --]
       <div class="items-list">
         <ul>
@@ -141,10 +141,9 @@
     </div>
     
     [#-- Countries  --]
-    <label for="">[@s.text name="regionalMapping.CrpProgram.countries"/]</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
-      [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" editable=editable/]              
+      [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="regionalMapping.CrpProgram.countries" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" disabled=!editable/]              
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rpRol}</span>
