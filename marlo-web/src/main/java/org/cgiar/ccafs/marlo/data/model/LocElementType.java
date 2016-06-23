@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -12,12 +13,11 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElementType implements java.io.Serializable {
 
-
   private static final long serialVersionUID = 1795563086382428049L;
-
 
   @Expose
   private Long id;
+
 
   @Expose
   private String name;
@@ -25,11 +25,18 @@ public class LocElementType implements java.io.Serializable {
   @Expose
   private Crp crp;
 
+
+  @Expose
+  private Boolean hasCoordinates;
+
   private LocElementType locElementType;
+
 
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
+
+  private List<LocElement> locationElements;
 
   public LocElementType() {
   }
@@ -42,12 +49,42 @@ public class LocElementType implements java.io.Serializable {
     this.locElementTypes = locElementTypes;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    LocElementType other = (LocElementType) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
   public Crp getCrp() {
     return crp;
   }
 
+  public Boolean getHasCoordinates() {
+    return hasCoordinates;
+  }
+
   public Long getId() {
     return this.id;
+  }
+
+  public List<LocElement> getLocationElements() {
+    return locationElements;
   }
 
   public Set<LocElement> getLocElements() {
@@ -70,8 +107,16 @@ public class LocElementType implements java.io.Serializable {
     this.crp = crp;
   }
 
+  public void setHasCoordinates(Boolean hasCoordinates) {
+    this.hasCoordinates = hasCoordinates;
+  }
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setLocationElements(List<LocElement> locationElements) {
+    this.locationElements = locationElements;
   }
 
   public void setLocElements(Set<LocElement> locElements) {

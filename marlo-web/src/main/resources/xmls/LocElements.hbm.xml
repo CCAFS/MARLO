@@ -21,6 +21,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocGeoposition" fetch="select">
 			<column name="geoposition_id" />
 		</many-to-one>
+		<many-to-one name="locElement"
+			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
+			<column name="parent_id" />
+		</many-to-one>
 		<property name="name" type="string">
 			<column name="name" length="65535" not-null="true" />
 		</property>
@@ -29,9 +33,6 @@
 		</property>
 		<property name="isoAlpha2" type="string">
 			<column name="iso_alpha_2" length="45" />
-		</property>
-		<property name="parentId" type="java.lang.Long">
-			<column name="parent_id" />
 		</property>
 		<property name="isSiteIntegration" type="java.lang.Boolean">
 			<column name="is_site_integration" />
@@ -43,11 +44,12 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
 		</set>
-		  <set name="crpProgramCountries" table="crp_program_countries" order-by="id" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="loc_element_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
-        </set>
+		<set name="crpProgramCountries" table="crp_program_countries"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="loc_element_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
+		</set>
 	</class>
 </hibernate-mapping>

@@ -1,0 +1,1 @@
+ALTER TABLE `loc_elements` ADD CONSTRAINT `loc_elements_ibfk_4` FOREIGN KEY (`parent_id`) REFERENCES `loc_elements` (`id`);

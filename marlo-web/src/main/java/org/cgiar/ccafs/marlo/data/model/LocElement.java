@@ -35,6 +35,7 @@ public class LocElement implements java.io.Serializable {
   @Expose
   private Crp crp;
 
+
   @Expose
   private String isoAlpha2;
 
@@ -51,35 +52,36 @@ public class LocElement implements java.io.Serializable {
   private String name;
 
   @Expose
-  private Long parentId;
+  private LocElement locElement;
 
   @Expose
   private Boolean isSiteIntegration;
 
-
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
+
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
 
   public LocElement() {
   }
 
-
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
-    Long parentId, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
+    LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
     this.locElementType = locElementTypes;
     this.locGeoposition = locGeopositions;
     this.name = name;
     this.isoAlpha2 = isoAlpha2;
-    this.parentId = parentId;
+    this.locElement = locElement;
     this.isSiteIntegration = isSiteIntegration;
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
+
 
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
   }
+
 
   public Crp getCrp() {
     return crp;
@@ -89,7 +91,6 @@ public class LocElement implements java.io.Serializable {
     return crpProgramCountries;
   }
 
-
   public Set<CrpsSiteIntegration> getCrpsSitesIntegrations() {
     return this.crpsSitesIntegrations;
   }
@@ -97,6 +98,7 @@ public class LocElement implements java.io.Serializable {
   public Long getId() {
     return this.id;
   }
+
 
   public String getIsoAlpha2() {
     return isoAlpha2;
@@ -110,6 +112,10 @@ public class LocElement implements java.io.Serializable {
     return this.isSiteIntegration;
   }
 
+  public LocElement getLocElement() {
+    return locElement;
+  }
+
   public LocElementType getLocElementType() {
     return this.locElementType;
   }
@@ -120,10 +126,6 @@ public class LocElement implements java.io.Serializable {
 
   public String getName() {
     return this.name;
-  }
-
-  public Long getParentId() {
-    return this.parentId;
   }
 
   public void setCrp(Crp crp) {
@@ -154,6 +156,10 @@ public class LocElement implements java.io.Serializable {
     this.isSiteIntegration = isSiteIntegration;
   }
 
+  public void setLocElement(LocElement locElement) {
+    this.locElement = locElement;
+  }
+
   public void setLocElementType(LocElementType locElementTypes) {
     this.locElementType = locElementTypes;
   }
@@ -165,11 +171,6 @@ public class LocElement implements java.io.Serializable {
   public void setName(String name) {
     this.name = name;
   }
-
-  public void setParentId(Long parentId) {
-    this.parentId = parentId;
-  }
-
 
 }
 

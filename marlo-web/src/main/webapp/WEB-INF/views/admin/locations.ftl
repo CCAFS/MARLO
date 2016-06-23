@@ -32,8 +32,8 @@
                 {'hasCoordinates': true, 'locElements':[{},{}] }
               ] 
             /]
-            [#list locationsLevels as level]
-              [@locationLevelMacro locLevel=level name="locElementTypes" index=level_index  /]
+            [#list loggedCrp.locationElementTypes as level]
+              [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index  /]
             [/#list]
           </div>
           [#-- Add Location Level Button --]
@@ -84,9 +84,9 @@
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">
         <div class="items-list simpleBox">
           <ul class="">
-            [#if locLevel.locElements?has_content]
-              [#list locLevel.locElements as locElement]
-                [@locElementMacro element=locElement name="${customName}.locElements" index=locElement_index /]
+            [#if locLevel.locationElements?has_content]
+              [#list locLevel.locationElements as locElement]
+                [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index /]
               [/#list]
             [#else] 
               <p class="message text-center">There is not specific coordinates yet.</p>
@@ -116,7 +116,7 @@
     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span>
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="locElementCountry" name="${locElementName}.parent.isoAlpha2" value="${(element.parent.isoAlpha2)!}" />
+    <input type="hidden" class="locElementCountry" name="${locElementName}.parent.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
     <input type="hidden" class="geoId" name="${locElementName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
     <input type="hidden" class="geoLat" name="${locElementName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
     <input type="hidden" class="geoLng" name="${locElementName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
