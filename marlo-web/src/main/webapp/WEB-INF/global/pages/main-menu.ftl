@@ -21,7 +21,8 @@
         [#-- Admin --]
         [#if action.canAcessCrpAdmin() ]
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/admin" action='${crpSession}/management'][@s.param name="edit" value="true"/][/@s.url]">[@s.text name="menu.admin" /]
+          <a href="[@s.url namespace="/admin" action='${crpSession}/management'][@s.param name="edit" value="true"/][/@s.url]">
+            <span class="glyphicon glyphicon-cog"></span> [@s.text name="menu.admin" /]
           </a>
         </li> 
         [/#if] 
