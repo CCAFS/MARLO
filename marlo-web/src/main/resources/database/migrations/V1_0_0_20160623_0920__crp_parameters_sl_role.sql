@@ -1,0 +1,1 @@
+INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', 'crp_sl_rol', '15', '1', '1', '1', ' ');

@@ -63,5 +63,6 @@ function differences() {
 function updateIndex() {
   $(partnerContent).find('.institution').each(function(i,item) {
     $(item).find('.institutionId').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].institution.id');
+    $(item).find('.id').attr('name', 'loggedCrp.crpInstitutionsPartners[' + i + '].id');
   });
 }

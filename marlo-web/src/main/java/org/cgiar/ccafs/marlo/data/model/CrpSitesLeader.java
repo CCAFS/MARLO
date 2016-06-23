@@ -29,12 +29,12 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
+
   @Expose
   private CrpsSiteIntegration crpsSiteIntegration;
 
   @Expose
   private User user;
-
   @Expose
   private boolean active;
 
@@ -55,7 +55,29 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
   public CrpSitesLeader(CrpsSiteIntegration crpsSitesIntegration, User user) {
     this.crpsSiteIntegration = crpsSitesIntegration;
-    this.user= user;
+    this.user = user;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpSitesLeader other = (CrpSitesLeader) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {

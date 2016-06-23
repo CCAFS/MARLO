@@ -51,6 +51,8 @@
           <div id="marlo-logo" class="animated fadeIn">
             <div id="title" >MARLO</div>    
             <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
+            <div class="clearfix"></div>
+            [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span></h4> [/#if]
           </div>
           [#if crpSession??]
             <img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />

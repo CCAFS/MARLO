@@ -22,7 +22,7 @@
       </div>
       <div class="col-md-9">
       
-        <h4 class="text-center">PPA Partners</h4>
+        <h4 class="text-center">[@s.text name="ppaPartners.title" /]</h4>
         <div class=" borderBox formWrapper ">
  
           [@s.form action=actionName enctype="multipart/form-data" ]  
@@ -33,7 +33,7 @@
   	      	</div>
   	      	
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="Select an option..." className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
+        		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
         			<div class="clearfix"></div>
       			</div>
         		<div class="buttons">
@@ -56,6 +56,7 @@
 		<span class="index hidden" >${index+1}</span>
 		<span class="title col-md-11">${(ppaPartners.institution.name)!'Null'} </span>
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
+		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
 		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
 	</div>
 [/#macro]

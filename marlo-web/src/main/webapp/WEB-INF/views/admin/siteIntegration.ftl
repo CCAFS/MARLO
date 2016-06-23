@@ -22,7 +22,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">Site Integration</h4>
+        <h4 class="sectionTitle">[@s.text name="siteIntegration.title" /]</h4>
         <div class="countriesContent"> 
         
         [#if loggedCrp.siteIntegrations?has_content]
@@ -31,12 +31,12 @@
           [/#list]
           
         [#else]
-          <p class="text-center">There are not countries added yet</p>
+          <p class="text-center">[@s.text name="siteIntegration.notUsers.span" /]</p>
         [/#if] 
         </div>
         <br />
         [#-- List of countries --]
-        [@customForm.select name="" label="Select a country:" i18nkey="" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id"  /]
+        [@customForm.select name=""  i18nkey="siteIntegration.select.title" listName="countriesList" keyFieldName="isoAlpha2" displayFieldName="name" value="id"  /]
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
         </div>
@@ -67,8 +67,8 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${(slRole.id)!}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${(userRole)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
@@ -88,7 +88,7 @@
           [/#list]
         [/#if] 
         </ul>
-        <p class="text-center" style="display:${(element.siteLeaders?has_content)?string('none','block')}">There are not users added yet.</p>
+        <p class="text-center" style="display:${(element.siteLeaders?has_content)?string('none','block')}">[@s.text name="siteIntegration.notUsers.span" /]</p>
       </div>
       <div class="text-center">
         <div class="searchUser button-green">
@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-    <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
-    <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
+    <input class="id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
+    <input class="isoAlpha2" type="hidden" name="${customNameCountry}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
   </div>  
 [/#macro]
