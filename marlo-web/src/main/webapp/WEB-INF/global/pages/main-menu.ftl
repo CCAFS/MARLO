@@ -14,24 +14,18 @@
         
         [#-- Impact Pathway section --]
         <li [#if currentSection?? && currentSection == "impactPathway"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/impactPathway" action='${crpSession}/outcomes'/]">[@s.text name="menu.impactPathway" /]
+          <a href="[@s.url namespace="/impactPathway" action='${crpSession}/outcomes'][@s.param name="edit" value="true"/][/@s.url]">[@s.text name="menu.impactPathway" /]
           </a>
         </li> 
         
         [#-- Admin --]
         [#if action.canAcessCrpAdmin() ]
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/admin" action='${crpSession}/management'/]">[@s.text name="menu.admin" /]
+          <a href="[@s.url namespace="/admin" action='${crpSession}/management'][@s.param name="edit" value="true"/][/@s.url]">[@s.text name="menu.admin" /]
           </a>
         </li> 
         [/#if] 
         
-        [#-- PRE-Planning section 
-        <li [#if currentSection?? && currentSection == "preplanning"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/pre-planning" action='intro'/]">[@s.text name="menu.preplanning" /]
-          </a>
-        </li>
-        --]
 	    [#else]
 	      [#-- If the user is not logged show the login element in menu --]
 	      <li [#if currentSection?? && currentSection == "home"] class="currentSection" [/#if]>
