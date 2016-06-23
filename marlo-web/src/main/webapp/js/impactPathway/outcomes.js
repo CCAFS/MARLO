@@ -10,6 +10,10 @@ function init() {
 
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
+
+  /* Percentage Inputs */
+  $('.outcomes-list input.contribution').percentageInput();
+
 }
 
 function attachEvents() {
@@ -106,10 +110,11 @@ function addSubIdo() {
   $item.find('select').select2({
     width: '100%'
   });
+  $item.find('input.contribution').percentageInput();
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
-// Hide empty message
+  // Hide empty message
   $(this).parents('.outcome').find('.subIdos-list p.message').hide();
 }
 

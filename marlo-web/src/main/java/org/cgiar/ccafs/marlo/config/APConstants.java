@@ -38,6 +38,7 @@ public final class APConstants {
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
+  public static final String CRP_CL_ROLE = "crp_cl_rol";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";

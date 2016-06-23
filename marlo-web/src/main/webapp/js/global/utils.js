@@ -23,6 +23,25 @@ jQuery.fn.numericInput = function() {
   });
 };
 
+jQuery.fn.percentageInput = function() {
+  var $inputs = $(this);
+  $inputs.on("keydown", isNumber).on("focusout", setPercentage).on("focus", removePercentage).on("keyup", function(e) {
+    isPercentage(e);
+  }).on("click", function() {
+    $(this).select();
+  });
+  // Active initial currency format to all inputs
+  $inputs.attr("autocomplete", "off").trigger("focusout");
+
+  $("form").submit(function(event) {
+    $inputs.each(function() {
+      $(this).attr("readonly", true);
+      $(this).val(removePercentageFormat($(this).val() || "0"));
+    });
+    return;
+  });
+};
+
 /*
  * This function takes the links whit popup class and add a click event. That event takes the href and open it in a
  * popUp window This method must be called in ready function
@@ -113,6 +132,19 @@ function getSerializeForm() {
     });
   });
   return result
+}
+
+function setPercentage(event) {
+  var $input = $(event.target);
+  if($input.val().length == 0) {
+    $input.val(0);
+  }
+  $input.val(setPercentageFormat($input.val()));
+}
+
+function removePercentage(event) {
+  $input = $(event.target);
+  $input.val(removePercentageFormat($input.val() || "0"));
 }
 
 function setCurrencyFormat(stringNumber) {

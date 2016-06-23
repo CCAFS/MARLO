@@ -31,7 +31,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   private static final long serialVersionUID = -6392709700346014366L;
 
   @Expose
-  private String id;
+  private Long id;
 
   @Expose
   private CrpProgram crpProgram;
@@ -57,7 +57,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   public CrpClusterOfActivity() {
   }
 
-  public CrpClusterOfActivity(String id, CrpProgram crpProgram, String description) {
+  public CrpClusterOfActivity(Long id, CrpProgram crpProgram, String description) {
     this.id = id;
     this.crpProgram = crpProgram;
     this.description = description;
@@ -80,7 +80,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   }
 
   @Override
-  public String getId() {
+  public Long getId() {
     return this.id;
   }
 
@@ -125,7 +125,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     this.description = description;
   }
 
-  public void setId(String id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

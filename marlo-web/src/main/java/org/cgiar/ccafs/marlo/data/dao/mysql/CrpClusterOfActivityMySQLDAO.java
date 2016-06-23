@@ -35,7 +35,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
   public boolean deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
     CrpClusterOfActivity crpClusterOfActivity = this.find(crpClusterOfActivityId);
     crpClusterOfActivity.setActive(false);
-    return this.save(crpClusterOfActivity).length() > 0;
+    return this.save(crpClusterOfActivity) > 0;
   }
 
   @Override
@@ -66,7 +66,7 @@ public class CrpClusterOfActivityMySQLDAO implements CrpClusterOfActivityDAO {
   }
 
   @Override
-  public String save(CrpClusterOfActivity crpClusterOfActivity) {
+  public Long save(CrpClusterOfActivity crpClusterOfActivity) {
     if (crpClusterOfActivity.getId() == null) {
       dao.save(crpClusterOfActivity);
     } else {

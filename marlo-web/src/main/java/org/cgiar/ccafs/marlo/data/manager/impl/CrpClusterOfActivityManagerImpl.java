@@ -65,7 +65,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
   }
 
   @Override
-  public String saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
+  public Long saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
 
     return crpClusterOfActivityDAO.save(crpClusterOfActivity);
   }
