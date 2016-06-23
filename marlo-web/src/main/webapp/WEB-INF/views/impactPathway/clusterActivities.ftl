@@ -37,25 +37,36 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-       
         <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        
-       
-        
+        [#-- Cluster of Activities List --]
         <div class="clusterList">
           [#if clusterofActivities?has_content]
             [#list clusterofActivities as cluster]
               [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
             [/#list]
+          [#else]
+            [#if !editable] <p class="message text-center">There is not Cluster of activities yet. [#if canEdit]Please click in "Edit" button below for adding a new Cluster of activity[/#if]</p> [/#if]
+          [/#if]
+        </div>
+        [#-- Add CoA Button --]
+        [#if editable]
+          <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+        [/#if]
+        
+        [#-- Section Buttons--]
+        <div class="buttons">
+          [#if editable]
+            <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-save" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
           [/#if]
         </div>
         
-        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
-        
-        <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
-        </div>
-                <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+        [#-- Hidden Parameters --]
+        <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [/@s.form]
       </div>
     </div>
