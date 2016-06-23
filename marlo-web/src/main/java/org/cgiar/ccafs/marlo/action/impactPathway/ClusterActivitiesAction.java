@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -24,10 +25,13 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.impactPathway.ClusterActivitiesValidator;
@@ -55,6 +59,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpManager crpManager;
   private CrpProgramManager crpProgramManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
+  private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private UserManager userManager;
   private Crp loggedCrp;
   private Role roleCl;
@@ -68,7 +73,8 @@ public class ClusterActivitiesAction extends BaseAction {
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator) {
+    CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -76,6 +82,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
+    this.crpClusterActivityLeaderManager = crpClusterActivityLeaderManager;
     this.validator = validator;
   }
 
@@ -144,7 +151,11 @@ public class ClusterActivitiesAction extends BaseAction {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       clusterofActivities.addAll(
         selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
 
+        crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList()));
+      }
     }
 
     String params[] = {loggedCrp.getAcronym()};
@@ -200,6 +211,74 @@ public class ClusterActivitiesAction extends BaseAction {
         }
         crpClusterOfActivity.setCrpProgram(selectedProgram);
         crpClusterOfActivityManager.saveCrpClusterOfActivity(crpClusterOfActivity);
+
+        /*
+         * Check leaders
+         */
+        CrpClusterOfActivity crpClusterPrev =
+          crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
+        for (CrpClusterActivityLeader leaderPreview : crpClusterPrev.getCrpClusterActivityLeaders().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+          if (crpClusterOfActivity.getLeaders() == null) {
+            crpClusterOfActivity.setLeaders(new ArrayList<>());
+          }
+          if (!crpClusterOfActivity.getLeaders().contains(leaderPreview)) {
+            crpClusterActivityLeaderManager.deleteCrpClusterActivityLeader(leaderPreview.getId());
+            User user = userManager.getUser(leaderPreview.getUser().getId());
+
+            List<CrpClusterActivityLeader> existsUserLeader =
+              user.getCrpClusterActivityLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
+
+
+            if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+
+              List<UserRole> clUserRoles =
+                user.getUserRoles().stream().filter(ur -> ur.getRole().equals(roleCl)).collect(Collectors.toList());
+              if (clUserRoles != null || !clUserRoles.isEmpty()) {
+                for (UserRole userRole : clUserRoles) {
+                  userRoleManager.deleteUserRole(userRole.getId());
+                }
+              }
+
+            }
+
+          }
+        }
+        /*
+         * Save leaders
+         */
+
+        if (crpClusterOfActivity.getLeaders() != null) {
+          for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
+            if (crpClusterActivityLeader.getId() == null) {
+              crpClusterActivityLeader.setActive(true);
+              crpClusterActivityLeader.setCrpClusterOfActivity(crpClusterOfActivity);
+              crpClusterActivityLeader.setCreatedBy(this.getCurrentUser());
+              crpClusterActivityLeader.setModifiedBy(this.getCurrentUser());
+              crpClusterActivityLeader.setModificationJustification("");
+              crpClusterActivityLeader.setActiveSince(new Date());
+              CrpClusterOfActivity crpClusterPreview =
+                crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
+              if (crpClusterPreview.getCrpClusterActivityLeaders().stream()
+                .filter(c -> c.isActive() && c.getUser().equals(crpClusterActivityLeader.getUser()))
+                .collect(Collectors.toList()).isEmpty()) {
+                crpClusterActivityLeaderManager.saveCrpClusterActivityLeader(crpClusterActivityLeader);
+              }
+
+              User user = userManager.getUser(crpClusterActivityLeader.getUser().getId());
+              UserRole userRole = new UserRole();
+              userRole.setUser(user);
+              userRole.setRole(this.roleCl);
+              if (!user.getUserRoles().contains(userRole)) {
+                userRoleManager.saveUserRole(userRole);
+              }
+            }
+          }
+        }
+
+
       }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {

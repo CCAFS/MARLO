@@ -70,7 +70,7 @@
 
 <ul style="display:none">
   [#-- User template --]
-  [@userItem element={} index=0 name="" userRole="{coaRol}" template=true /]
+  [@userItem element={} index=0 name="" userRole=roleCl.id template=true /]
 </ul>
 
 <input type="hidden" id="clusterName" value="clusterofActivities" />
@@ -98,7 +98,7 @@
               <div class="leaders form-group col-md-12">
               [#if cluster.leaders?has_content]
                 [#list cluster.leaders as leaderItem]
-                  [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole='{coaRol}'  /]
+                  [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
                 [/#list]
               [/#if]
               </div>
@@ -116,7 +116,7 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.name?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
