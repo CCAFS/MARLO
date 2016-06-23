@@ -23,7 +23,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data"]
         
-        <h4 class="sectionTitle">Locations</h4>
+        <h4 class="sectionTitle">[@s.text name="locations.title"/]</h4>
         <div class="locationsBlock">
           [#-- Locations Levels List --]
           <div class="locations-list">
@@ -37,7 +37,7 @@
             [/#list]
           </div>
           [#-- Add Location Level Button --]
-          <div class="addLocationLevel bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add a Location Level</div>
+          <div class="addLocationLevel bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addLocationLevel"/]</div>
         </div>
         
         [#-- Save Button --]
@@ -75,11 +75,11 @@
     <input type="hidden" class="locationLevelId" name="${customName}.id" value="${(locLevel.id)!}"/>
     [#-- Location level name --]
     <div class="form-group">
-      [@customForm.input name="${customName}.name" type="text"  i18nkey="Location Level Name" placeholder="Name" className="locationName" required=true editable=true /]
+      [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName" placeholder="location.inputName.placeholder" className="locationName" required=true editable=true /]
     </div>
     <div class="form-group">
       [#-- Does this location level have specific coordinates?   --]
-      [@customForm.yesNoInput name="${customName}.hasCoordinates" label="Does this location level have specific coordinates? " editable=true inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
+      [@customForm.yesNoInput name="${customName}.hasCoordinates" label="location.question" editable=true inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
       [#-- Locations List --]
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">
         <div class="items-list simpleBox">
@@ -89,16 +89,16 @@
                 [@locElementMacro element=locElement name="${customName}.locationElements" index=locElement_index /]
               [/#list]
             [#else] 
-              <p class="message text-center">There is not specific coordinates yet.</p>
+              <p class="message text-center">[@s.text name="location.notSpecificCoordinates.span"/]</p>
             [/#if]
           </ul>
           [#-- Add Location Element --]
           <hr />
           <div class="form-group">
-            <div class="latitudeBlock">[@customForm.input name="" type="text"  placeholder="Latitude" showTitle=false className="locationLatitude-input" /]</div>
-            <div class="longitudeBlock">[@customForm.input name="" type="text"  placeholder="Longitude" showTitle=false className="locationLongitude-input" /]</div>
-            <div class="nameBlock">[@customForm.input name="" type="text"  placeholder="Location Name" showTitle=false className="locationName-input" /]</div>
-            <div class="buttonBlock text-right"><div class="addLocElement button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Location</div></div>
+            <div class="latitudeBlock">[@customForm.input name="" type="text"  placeholder="location.inputLatitude.placeholder" showTitle=false className="locationLatitude-input" /]</div>
+            <div class="longitudeBlock">[@customForm.input name="" type="text"  placeholder="location.inputLongitude.placeholder" showTitle=false className="locationLongitude-input" /]</div>
+            <div class="nameBlock">[@customForm.input name="" type="text"  placeholder="location.inputLocationName.placeholder" showTitle=false className="locationName-input" /]</div>
+            <div class="buttonBlock text-right"><div class="addLocElement button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
             <div class="clearfix"></div>
           </div>
         </div>

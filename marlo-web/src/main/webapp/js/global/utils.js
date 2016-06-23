@@ -11,6 +11,9 @@ $(function() {
   }
 });
 
+/**
+ * Jquery Plugins
+ */
 jQuery.fn.exists = function() {
   return this.length > 0;
 };
@@ -25,9 +28,13 @@ jQuery.fn.numericInput = function() {
 
 jQuery.fn.percentageInput = function() {
   var $inputs = $(this);
-  $inputs.on("keydown", isNumber).on("focusout", setPercentage).on("focus", removePercentage).on("keyup", function(e) {
+  $inputs.on("keydown", isNumber);
+  $inputs.on("focusout", setPercentage);
+  $inputs.on("focus", removePercentage);
+  $inputs.on("keyup", function(e) {
     isPercentage(e);
-  }).on("click", function() {
+  });
+  $inputs.on("click", function() {
     $(this).select();
   });
   // Active initial currency format to all inputs

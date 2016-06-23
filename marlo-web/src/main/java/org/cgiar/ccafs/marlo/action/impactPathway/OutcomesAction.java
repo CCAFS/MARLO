@@ -205,16 +205,6 @@ public class OutcomesAction extends BaseAction {
        * Removing outcomes
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
-        if (!outcomes.contains(crpProgramOutcome)) {
-          if (crpProgramOutcome.getCrpMilestones().isEmpty() && crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
-            crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
-          }
-
-        }
-
-      }
 
       /*
        * Save outcomes
@@ -293,13 +283,18 @@ public class OutcomesAction extends BaseAction {
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           if (crpProgramOutcome.getSubIdos() != null) {
             if (!crpProgramOutcome.getSubIdos().contains(crpOutcomeSubIdo)) {
-              if (crpOutcomeSubIdo.getCrpAssumptions().isEmpty()) {
-                crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+
+              crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+              for (CrpAssumption assumption : crpOutcomeSubIdo.getCrpAssumptions()) {
+                crpAssumptionManager.deleteCrpAssumption(assumption.getId());
               }
             }
           } else {
             if (crpOutcomeSubIdo.getCrpAssumptions().isEmpty()) {
               crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+              for (CrpAssumption assumption : crpOutcomeSubIdo.getCrpAssumptions()) {
+                crpAssumptionManager.deleteCrpAssumption(assumption.getId());
+              }
             }
           }
 
@@ -382,6 +377,26 @@ public class OutcomesAction extends BaseAction {
             }
 
 
+          }
+        }
+
+
+      }
+      for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+        if (!outcomes.contains(crpProgramOutcome)) {
+          // if (crpProgramOutcome.getCrpMilestones().isEmpty() && crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
+          crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
+
+          for (CrpMilestone crpMilestone : crpProgramOutcome.getCrpMilestones()) {
+            crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
+
+          }
+          for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos()) {
+            crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+            for (CrpAssumption assumption : crpOutcomeSubIdo.getCrpAssumptions()) {
+              crpAssumptionManager.deleteCrpAssumption(assumption.getId());
+            }
           }
         }
 

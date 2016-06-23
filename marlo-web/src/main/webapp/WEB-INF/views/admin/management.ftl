@@ -23,9 +23,9 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">[@s.text name="programManagement.title" /]</h4>
-        <div class="usersBlock clearfix">
+        <div class="usersBlock borderBox clearfix">
           [#-- PMU Users List --]
-          <div class="users items-list borderBox">
+          <div class="users items-list simpleBox">
             <ul>
             [#if loggedCrp.programManagmenTeam?has_content]
               [#list loggedCrp.programManagmenTeam as item]
@@ -36,9 +36,11 @@
             <p class="text-center usersMessage" style="display:${(loggedCrp.programManagmenTeam?has_content)?string('none','block')}">[@s.text name="programManagement.notUsers.span" /]</p>
           </div>
           [#-- Add Person--]
+          [#if editable] 
           <div class="text-right">
             <div class="searchUser button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.searchUser" /]</div>
           </div>
+          [/#if]
           [#-- Hidden Parameters --]
           <span class="usersType" style="display:none">crpUser</span>
           <span class="usersRole" style="display:none">${pmuRol}</span>
@@ -57,22 +59,32 @@
             </ul>
             <p class="text-center programMessage" style="display:${(flagshipsPrograms?has_content)?string('none','block')}">[@s.text name="programManagement.flagship.notFlagship.span" /]</p>
           </div>
-          [#-- Add Flagship--] 
+          [#-- Add Flagship--]
+          [#if editable] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.flagshipProgram" /]</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">flagshipsPrograms</span>
           </div>
+          [/#if]
         </div>
         
         <h4 class="sectionTitle">[@s.text name="programManagement.regionalProgram.title"/]</h4>
         <div class="program-block borderBox">
           [#-- Does your CRP have regional program managers?  --]
-          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=true inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
+          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=editable inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
         </div>
 
+        [#-- Section Buttons--]
         <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+          [#if editable]
+            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-save" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
         </div>
         
         [/@s.form]
@@ -105,7 +117,9 @@
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [#if editable]
+      <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [/#if]
   </li>
 [/#macro]
 
@@ -113,20 +127,22 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
-    <div class="remove-programItem removeElement" title="Remove program"></div>
+    [#if editable]
+      <div class="remove-programItem removeElement" title="Remove program"></div>
+    [/#if]
     [#-- Program Acronym & Name --]
     <div class="form-group">
       <label for="">[@s.text name="CrpProgram.name"/]</label>
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=true /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=true /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
-    <label for="">Program Leaders:</label>
+    <label for="">[@s.text name="CrpProgram.leaders"/]</label>
     <div class="usersBlock simpleBox">
       [#-- Leaders List --]
       <div class="items-list">
@@ -137,12 +153,14 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">There are not leaders belong to this flagship yet.</p>
+        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="CrpProgram.notLeaders.span"/]</p>
       </div>
       [#-- Add person Button --]
+      [#if editable]
       <div class="text-center">
         <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
       </div>
+      [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{fpRole.id}</span>

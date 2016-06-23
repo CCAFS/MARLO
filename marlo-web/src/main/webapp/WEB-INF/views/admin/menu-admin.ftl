@@ -13,7 +13,9 @@
       <ul>
         [#list items as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="${item.action}.do" onclick="return ${item.active?string}">${item.name}</a>
+            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
+              ${item.name}
+            </a>
           </li>
         [/#list] 
       </ul>

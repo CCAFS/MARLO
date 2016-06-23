@@ -64,9 +64,12 @@ public class User implements java.io.Serializable, IAuditLog {
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
+  private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
+
 
   public User() {
   }
+
 
   public User(String email, String password, boolean cgiarUser, boolean active) {
     this.email = email;
@@ -144,10 +147,13 @@ public class User implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
+    return crpClusterActivityLeaders;
+  }
+
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return crpProgramLeaders;
   }
-
 
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
@@ -163,15 +169,16 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.email;
   }
 
+
   public String getFirstName() {
     return this.firstName;
   }
-
 
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public Date getLastLogin() {
     return this.lastLogin;
@@ -192,7 +199,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -202,6 +208,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getPassword() {
     return this.password;
   }
+
 
   public String getUsername() {
     return this.username;
@@ -228,13 +235,17 @@ public class User implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCgiarUser(boolean cgiarUser) {
     this.cgiarUser = cgiarUser;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpClusterActivityLeaders(Set<CrpClusterActivityLeader> crpClusterActivityLeaders) {
+    this.crpClusterActivityLeaders = crpClusterActivityLeaders;
   }
 
   public void setCrpProgramLeaders(Set<CrpProgramLeader> crpProgramLeaders) {

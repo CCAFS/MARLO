@@ -22,7 +22,7 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
-		<set lazy="true" name="crpClusterOfActivities" table="crp_cluster_of_activities"
+		<set lazy="true" name="crpClusterOfActivities" order-by="id" table="crp_cluster_of_activities"
 			inverse="true" fetch="select">
 			<key>
 				<column name="crp_program_id" not-null="true" />
