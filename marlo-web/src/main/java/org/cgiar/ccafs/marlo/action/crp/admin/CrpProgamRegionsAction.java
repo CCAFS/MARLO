@@ -81,6 +81,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   private UserManager userManager;
   private Role rplRole;
 
+
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
@@ -139,6 +140,8 @@ public class CrpProgamRegionsAction extends BaseAction {
     if (this.getSession().containsKey(APConstants.CRP_RPL_ROLE)) {
       rplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_RPL_ROLE)));
     }
+
+
     // countries
 
 

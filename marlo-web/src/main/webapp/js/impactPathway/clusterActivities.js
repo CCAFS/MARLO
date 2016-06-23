@@ -36,9 +36,12 @@ function removeCluster() {
 function updateClustersIndex() {
   var name = $("#clusterName").val();
   $(".clusterList").find('.cluster').each(function(i,item) {
+
     var customName = name + '[' + i + ']';
-    $(item).attr('id', 'cluster-' + i);
-    $(item).find('input.Id').attr('name', customName + '.id');
+    $(item).find('span.index').html(i + 1);
+    $(item).find('.outcome-statement').attr('name', customName + '.description');
+    $(item).find('.cluterId').attr('name', customName + 'id');
+
     updateUsersIndex(item, customName);
   });
 }

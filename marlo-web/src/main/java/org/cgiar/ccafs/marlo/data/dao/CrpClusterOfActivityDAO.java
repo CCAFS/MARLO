@@ -65,5 +65,5 @@ public interface CrpClusterOfActivityDAO {
    *         updated
    *         or -1 is some error occurred.
    */
-  public String save(CrpClusterOfActivity crpClusterOfActivity);
+  public Long save(CrpClusterOfActivity crpClusterOfActivity);
 }

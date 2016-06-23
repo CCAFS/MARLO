@@ -69,7 +69,7 @@ public interface CrpClusterOfActivityManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public String saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity);
+  public Long saveCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity);
 
 
 }

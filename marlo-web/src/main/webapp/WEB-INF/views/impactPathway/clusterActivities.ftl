@@ -18,6 +18,17 @@
 
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
+  <div class="container">
+    [#-- Program (Flagships) --]
+    <ul id="liaisonInstitutions" class="horizontalSubMenu">
+      [#list programs as program]
+        [#assign isActive = (program.id == crpProgramID)/]
+        <li class="${isActive?string('active','')}">
+          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
+        </li>
+      [/#list]
+    </ul>
+  </div>
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
@@ -26,22 +37,14 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
-        <h4 class="sectionTitle">Flagship {0} - Cluster of Activities</h4>
+        <h4 class="sectionTitle">${(selectedProgram.acronym)!}- Cluster of Activities</h4>
         
-        [#assign clusters=[
-        {'title': 'Example',
-          'leaders': [{'id': 1, 'user':{'name':'user1'} },{'id': 2, 'user':{'name':'user2'} }]
-        },
-        {'title': 'Example',
-          'leaders': [{'id': 1, 'user':{'name':'user1'} }]
-        }
-        
-        ]   /]
+       
         
         <div class="clusterList">
-          [#if clusters?has_content]
-            [#list clusters as cluster]
-              [@clusterMacro cluster=cluster name=clustersName index=cluster_index /]
+          [#if clusterofActivities?has_content]
+            [#list clusterofActivities as cluster]
+              [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
             [/#list]
           [/#if]
         </div>
@@ -51,7 +54,7 @@
         <div class="buttons">
           [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
         </div>
-        
+                <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [/@s.form]
       </div>
     </div>
@@ -69,7 +72,7 @@
   [@userItem element={} index=0 name="" userRole="{coaRol}" template=true /]
 </ul>
 
-<input type="hidden" id="clusterName" value="${clustersName}" />
+<input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
@@ -82,8 +85,9 @@
             <div class="form-group">
               [#-- Remove Button --]
               <div class=" removeElement removeCluster" title="Remove Cluster"></div>
+             
               <div class=" form-group">
-                [@customForm.textArea name=".description" i18nkey="Cluster of Activity - Title" required=true className="outcome-statement" editable=true /]
+                [@customForm.textArea name="${clusterCustomName}.description" i18nkey="Cluster of Activity - Title" required=true className="outcome-statement" editable=true /]
               </div>
               
               <div class="form-group">
@@ -102,7 +106,7 @@
                 <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
               </div>              
             </div>    
-            <input class="Id" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
+            <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
           
   </div>
 [/#macro]
