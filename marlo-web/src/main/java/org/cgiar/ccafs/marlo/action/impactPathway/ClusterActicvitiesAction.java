@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.impactPathway.ClusterActivitiesValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,11 +63,12 @@ public class ClusterActicvitiesAction extends BaseAction {
   private CrpProgram selectedProgram;
   private long crpProgramID;
   private List<CrpClusterOfActivity> clusterofActivities;
+  private ClusterActivitiesValidator validator;
 
   @Inject
   public ClusterActicvitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
-    CrpClusterOfActivityManager crpClusterOfActivityManager) {
+    CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -74,6 +76,7 @@ public class ClusterActicvitiesAction extends BaseAction {
     this.userManager = userManager;
     this.crpProgramManager = crpProgramManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
+    this.validator = validator;
   }
 
   public long getClRol() {
@@ -220,7 +223,6 @@ public class ClusterActicvitiesAction extends BaseAction {
     this.clRol = clRol;
   }
 
-
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
   }
@@ -248,6 +250,14 @@ public class ClusterActicvitiesAction extends BaseAction {
 
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
+  }
+
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, clusterofActivities);
+    }
   }
 
 
