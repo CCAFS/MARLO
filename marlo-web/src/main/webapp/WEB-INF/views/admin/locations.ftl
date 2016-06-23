@@ -33,7 +33,7 @@
               ] 
             /]
             [#list locationsLevels as level]
-              [@locationLevelMacro locLevel=level name="locationsLevels" index=level_index  /]
+              [@locationLevelMacro locLevel=level name="locElementTypes" index=level_index  /]
             [/#list]
           </div>
           [#-- Add Location Level Button --]
@@ -110,13 +110,16 @@
 [#macro locElementMacro element name index isTemplate=false]
   <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
     [#assign locElementName = "${name}[${index}]" ]
+    [#-- Remove Button --]
+    <div class="removeLocElement removeIcon" title="Remove Location"></div>
     [#-- Location Name --]
     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span>
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="GeoId" name="${locElementName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
-    <input type="hidden" class="GeoLat" name="${locElementName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
-    <input type="hidden" class="GeoLng" name="${locElementName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
+    <input type="hidden" class="locElementCountry" name="${locElementName}.parent.isoAlpha2" value="${(element.parent.isoAlpha2)!}" />
+    <input type="hidden" class="geoId" name="${locElementName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
+    <input type="hidden" class="geoLat" name="${locElementName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
+    <input type="hidden" class="geoLng" name="${locElementName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
   </li>
 [/#macro]
 

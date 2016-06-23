@@ -29,12 +29,7 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -7674530393075404476L;
-
 
   @Expose
   private Long id;
@@ -42,19 +37,20 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
 
+
   @Expose
   private LocElement locElement;
+
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
 
   @Expose
   private boolean active;
-
-
   @Expose
   private User createdBy;
 
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User modifiedBy;
@@ -76,6 +72,28 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     this.crp = crps;
     this.locElement = locElements;
     this.crpSitesLeaders = crpSitesLeaders;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpsSiteIntegration other = (CrpsSiteIntegration) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {

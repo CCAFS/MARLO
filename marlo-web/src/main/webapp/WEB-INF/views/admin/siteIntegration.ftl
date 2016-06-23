@@ -67,8 +67,8 @@
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
     <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
+    <input class="role" type="hidden" name="${customName}.role.id" value="${(slRole.id)!}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    <input class="role" type="hidden" name="${customName}.role.id" value="${(userRole)!}"/>
     <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
   </li>
 [/#macro]
@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-    <input class="Id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
-    <input class="isoAlpha" type="hidden" name="${customNameCountry}.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
+    <input class="id" type="hidden" name="${customNameCountry}.id" value="${(element.id)!}"/>
+    <input class="isoAlpha2" type="hidden" name="${customNameCountry}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}"/>
   </div>  
 [/#macro]

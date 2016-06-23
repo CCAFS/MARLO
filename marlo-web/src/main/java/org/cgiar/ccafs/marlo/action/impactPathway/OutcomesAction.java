@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.action.impactPathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -23,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -57,14 +59,8 @@ public class OutcomesAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
-
-
   private Crp loggedCrp;
-
-
   private List<CrpProgramOutcome> outcomes;
-
-
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
@@ -72,11 +68,13 @@ public class OutcomesAction extends BaseAction {
   private SrfTargetUnitManager srfTargetUnitManager;
   private HashMap<Long, String> targetUnitList;
   private OutcomeValidator validator;
+  private CrpAssumptionManager crpAssumptionManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
-    CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager) {
+    CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
+    CrpAssumptionManager crpAssumptionManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -85,6 +83,7 @@ public class OutcomesAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
+    this.crpAssumptionManager = crpAssumptionManager;
   }
 
   public long getCrpProgramID() {
@@ -158,7 +157,11 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcome.setSubIdos(
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+        List<CrpAssumption> assumptions =
+          crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        crpOutcomeSubIdo.setAssumptions(assumptions);
         HashMap<Long, String> mapSubidos = new HashMap<>();
         try {
           for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
@@ -205,7 +208,10 @@ public class OutcomesAction extends BaseAction {
       for (CrpProgramOutcome crpProgramOutcome : selectedProgram.getCrpProgramOutcomes().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (!outcomes.contains(crpProgramOutcome)) {
-          crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
+          if (crpProgramOutcome.getCrpMilestones().isEmpty() && crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
+            crpProgramOutcomeManager.deleteCrpProgramOutcome(crpProgramOutcome.getId());
+          }
+
         }
 
       }
@@ -287,10 +293,14 @@ public class OutcomesAction extends BaseAction {
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           if (crpProgramOutcome.getSubIdos() != null) {
             if (!crpProgramOutcome.getSubIdos().contains(crpOutcomeSubIdo)) {
-              crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+              if (crpOutcomeSubIdo.getCrpAssumptions().isEmpty()) {
+                crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+              }
             }
           } else {
-            crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+            if (crpOutcomeSubIdo.getCrpAssumptions().isEmpty()) {
+              crpOutcomeSubIdoManager.deleteCrpOutcomeSubIdo(crpOutcomeSubIdo.getId());
+            }
           }
 
 
@@ -325,6 +335,53 @@ public class OutcomesAction extends BaseAction {
               crpOutcomeSubIdo.setSrfSubIdo(null);
             }
             crpOutcomeSubIdoManager.saveCrpOutcomeSubIdo(crpOutcomeSubIdo);
+
+            /*
+             * Delete assupmtions
+             */
+            CrpOutcomeSubIdo crpOutcomeSubIdoBD =
+              crpOutcomeSubIdoManager.getCrpOutcomeSubIdoById(crpOutcomeSubIdo.getId());
+            for (CrpAssumption crpAssumption : crpOutcomeSubIdoBD.getCrpAssumptions().stream().filter(c -> c.isActive())
+              .collect(Collectors.toList())) {
+              if (crpOutcomeSubIdo.getAssumptions() != null) {
+                if (!crpOutcomeSubIdo.getAssumptions().contains(crpAssumption)) {
+                  crpAssumptionManager.deleteCrpAssumption(crpAssumption.getId());
+                }
+              } else {
+                crpAssumptionManager.deleteCrpAssumption(crpAssumption.getId());
+              }
+
+
+            }
+
+
+            if (crpOutcomeSubIdo.getAssumptions() != null) {
+              for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getAssumptions()) {
+                if (crpAssumption.getId() == null) {
+                  crpAssumption.setActive(true);
+
+                  crpAssumption.setCreatedBy(this.getCurrentUser());
+                  crpAssumption.setModifiedBy(this.getCurrentUser());
+                  crpAssumption.setModificationJustification("");
+                  crpAssumption.setActiveSince(new Date());
+
+                } else {
+                  CrpAssumption db = crpAssumptionManager.getCrpAssumptionById(crpAssumption.getId());
+                  crpAssumption.setActive(true);
+                  crpAssumption.setCreatedBy(db.getCreatedBy());
+                  crpAssumption.setModifiedBy(this.getCurrentUser());
+                  crpOutcomeSubIdo.setModificationJustification("");
+                  crpAssumption.setActiveSince(db.getActiveSince());
+                }
+                crpAssumption.setCrpOutcomeSubIdo(crpOutcomeSubIdo);
+                if (crpAssumption.getDescription() == null) {
+                  crpAssumption.setDescription(new String());
+                }
+                crpAssumptionManager.saveCrpAssumption(crpAssumption);
+              }
+            }
+
+
           }
         }
 

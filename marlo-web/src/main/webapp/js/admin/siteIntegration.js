@@ -90,8 +90,8 @@ function updateCountriesIndex() {
   $(".countriesContent").find('.country').each(function(i,item) {
     var customName = name + '[' + i + ']';
     $(item).attr('id', 'country-' + i);
-    $(item).find('input.Id').attr('name', customName + '.siteLeaders.id');
-    $(item).find('input.isoAlpha').attr('name', customName + '.siteLeaders.isoAlpha2');
+    $(item).find('input.id').attr('name', customName + '.id');
+    $(item).find('input.isoAlpha2').attr('name', customName + '.locElement.isoAlpha2');
     updateUsersIndex(item, customName);
   });
 }
