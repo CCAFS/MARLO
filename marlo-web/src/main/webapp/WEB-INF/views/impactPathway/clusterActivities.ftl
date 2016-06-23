@@ -51,8 +51,7 @@
         [#if editable]
           <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
         [/#if]
-        
-        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+
         
         <div class="buttons">
           [#if editable]
