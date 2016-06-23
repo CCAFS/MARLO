@@ -85,7 +85,10 @@ $(document).ready(function() {
 
   /* Tooltips with JQuery UI */
   $(this).tooltip({
-    track: true
+      track: true,
+      content: function() {
+        return $(this).attr('title');
+      }
   });
 
   yesnoEvent = function(target) {
