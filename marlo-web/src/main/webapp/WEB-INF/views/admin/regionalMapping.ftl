@@ -22,7 +22,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data"]
         
-        <h4 class="sectionTitle">Regional Mapping</h4>
+        <h4 class="sectionTitle">[@s.text name="regionalMapping.title"/]</h4>
         <div class="program-block">
           [#-- Regions List --]
           <div class="regions items-list">
@@ -33,11 +33,11 @@
               [/#list]
             [/#if]
             </ul>
-            <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">There are not regions added yet.</p>
+            <p class="text-center programMessage" style="display:${(regionsPrograms?has_content)?string('none','block')}">[@s.text name="regionalMapping.notRegions.span"/]</p>
           </div>
           [#-- Add Regions--] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.add" /] Region Program</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addRegionProgram"/]</div>
             <span class="type-input" style="display:none">2</span>
             <span class="inputName-input" style="display:none">regionsPrograms</span>
           </div>
@@ -88,17 +88,17 @@
     <div class="remove-programItem removeElement" title="Remove program"></div>
     [#-- Program Acronym & Name --]
     <div class="form-group">
-      <label for="">Program Name:</label>
+      <label for="">[@s.text name="regionalMapping.CrpProgram.name"/]</label>
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="Acronym" className="acronym-input" required=true editable=true /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="Region Name" className="name-input" required=true editable=true /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=true /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=true /]</div>
       </div>
     </div>
     [#-- Hidden inputs  --]
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
-    <label for="">Program Leaders:</label>
+    <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]</label>
     <div class="usersBlock simpleBox">
       [#-- Leaders List --]
       <div class="items-list">
@@ -109,7 +109,7 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">There are not leaders belong to this region yet.</p>
+        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="regionalMapping.CrpProgram.notLeaders.span"/]</p>
       </div>
       [#-- Add person Button --]
       <div class="text-center">
@@ -121,7 +121,7 @@
     </div>
     
     [#-- Countries  --]
-    <label for="">Program Countries:</label>
+    <label for="">[@s.text name="regionalMapping.CrpProgram.countries"/]</label>
     <div class="countriesBlock form-group">
       [#-- Countries List --]
 

@@ -59,7 +59,7 @@
           </div>
           [#-- Add Flagship--] 
           <div class="text-center">
-            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.flagshipProgram" /]</div>
+            <div class="addProgram bigAddButton"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipProgram" /]</div>
             <span class="type-input" style="display:none">1</span>
             <span class="inputName-input" style="display:none">flagshipsPrograms</span>
           </div>
@@ -126,7 +126,7 @@
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
-    <label for="">Program Leaders:</label>
+    <label for="">[@s.text name="CrpProgram.leaders"/]</label>
     <div class="usersBlock simpleBox">
       [#-- Leaders List --]
       <div class="items-list">
@@ -137,7 +137,7 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">There are not leaders belong to this flagship yet.</p>
+        <p class="text-center usersMessage" style="display:${(element.leaders?has_content)?string('none','block')}">[@s.text name="CrpProgram.notLeaders.span"/]</p>
       </div>
       [#-- Add person Button --]
       <div class="text-center">
