@@ -40,7 +40,7 @@ function updateClustersIndex() {
     var customName = name + '[' + i + ']';
     $(item).find('span.index').html(i + 1);
     $(item).find('.outcome-statement').attr('name', customName + '.description');
-    $(item).find('.cluterId').attr('name', customName + 'id');
+    $(item).find('.cluterId').attr('name', customName + '.id');
 
     updateUsersIndex(item, customName);
   });

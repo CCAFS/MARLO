@@ -37,6 +37,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
+       
         <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
         [#-- Cluster of Activities List --]
         <div class="clusterList ">
@@ -44,8 +45,6 @@
             [#list clusterofActivities as cluster]
               [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
             [/#list]
-          [#else]
-            [#if !editable] <p class="message text-center">There is not Cluster of activities yet. [#if canEdit]Please click in "Edit" button below for adding a new Cluster of activity[/#if]</p> [/#if]
           [/#if]
         </div>
         [#-- Add CoA Button --]
@@ -53,7 +52,8 @@
           <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
         [/#if]
         
-        [#-- Section Buttons--]
+        <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+        
         <div class="buttons">
           [#if editable]
             <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
@@ -81,7 +81,7 @@
 
 <ul style="display:none">
   [#-- User template --]
-  [@userItem element={} index=0 name="" userRole="{coaRol}" template=true /]
+  [@userItem element={} index=0 name="" userRole=roleCl.id template=true /]
 </ul>
 
 <input type="hidden" id="clusterName" value="clusterofActivities" />
@@ -93,7 +93,8 @@
 [#macro clusterMacro cluster name index isTemplate=false]
   [#assign clusterCustomName= "${name}[${index}]" /]
   <div id="cluster-${isTemplate?string('template', index)}" class="cluster form-group borderBox" style="display:${isTemplate?string('none','block')}">
-    <div class="form-group">
+   
+           <div class="form-group">
       [#-- Remove Button --]
       [#if editable]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
@@ -108,7 +109,7 @@
         <ul class="leaders">
         [#if cluster.leaders?has_content]
           [#list cluster.leaders as leaderItem]
-            [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole='{coaRol}'  /]
+            [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
           [/#list]
         [/#if]
         </ul>
@@ -121,6 +122,7 @@
       [/#if]
     </div>    
     <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
+           
   </div>
 [/#macro]
 
@@ -128,7 +130,7 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.name?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
