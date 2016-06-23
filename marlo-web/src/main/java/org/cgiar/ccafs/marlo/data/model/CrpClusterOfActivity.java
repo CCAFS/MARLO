@@ -17,6 +17,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -54,8 +56,12 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
+
+
   public CrpClusterOfActivity() {
   }
+
 
   public CrpClusterOfActivity(Long id, CrpProgram crpProgram, String description) {
     this.id = id;
@@ -69,6 +75,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+  public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
+    return crpClusterActivityLeaders;
   }
 
   public CrpProgram getCrpProgram() {
@@ -115,6 +125,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpClusterActivityLeaders(Set<CrpClusterActivityLeader> crpClusterActivityLeaders) {
+    this.crpClusterActivityLeaders = crpClusterActivityLeaders;
   }
 
   public void setCrpProgram(CrpProgram crpProgram) {
