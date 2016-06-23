@@ -44,7 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * @author Christian Garcia
  */
-public class ClusterActicvitiesAction extends BaseAction {
+public class ClusterActivitiesAction extends BaseAction {
 
   /**
    * 
@@ -66,7 +66,7 @@ public class ClusterActicvitiesAction extends BaseAction {
   private ClusterActivitiesValidator validator;
 
   @Inject
-  public ClusterActicvitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
+  public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator) {
     super(config);
