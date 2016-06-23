@@ -82,7 +82,7 @@ function addLocElement() {
     $.ajax({
         'url': 'https://maps.googleapis.com/maps/api/geocode/json',
         'data': {
-            key: 'AIzaSyANidBt0o_XOsaqzzFuNKeTMexo_nzLk_s',
+            key: GOOGLE_API_KEY,
             latlng: itemObject.latlng()
         },
         success: function(data) {
