@@ -56,7 +56,7 @@ function attachEvents() {
 // Add a country
 function addCountry(countrySelected) {
   var $item = $('#country-template').clone(true).removeAttr('id');
-  $item.find('input.isoAlpha').val(countrySelected.val());
+  $item.find('input.isoAlpha2').val(countrySelected.val());
   $item.find('.country-title').html("<i></i> " + countrySelected.text());
   $item.find('i').attr('class', 'flag-sm flag-sm-' + countrySelected.val());
   countriesContent.append($item);
