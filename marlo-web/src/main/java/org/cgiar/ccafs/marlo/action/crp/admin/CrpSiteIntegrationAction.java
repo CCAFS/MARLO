@@ -21,17 +21,22 @@ import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +66,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   private UserRoleManager userRoleManager;
 
+  private UserManager userManager;
+
 
   private Crp loggedCrp;
   private List<LocElement> countriesList;
@@ -70,7 +77,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    RoleManager roleManager, UserRoleManager userRoleManager) {
+    RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
@@ -78,6 +85,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.crpSitesLeaderManager = crpSitesLeaderManager;
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
+    this.userManager = userManager;
   }
 
   public List<LocElement> getCountriesList() {
@@ -138,20 +146,83 @@ public class CrpSiteIntegrationAction extends BaseAction {
           .collect(Collectors.toList());
 
         for (CrpsSiteIntegration crpsSiteIntegration : siteIntegrationPrew) {
-          if (!loggedCrp.getSiteIntegrations().contains(crpsSiteIntegration)) {
 
+          if (!loggedCrp.getSiteIntegrations().contains(crpsSiteIntegration)) {
             for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+              userRoleManager.deleteUserRole(crpSitesLeader.getUser().getUserRoles().stream()
+                .filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList()).get(0).getId());
               crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
             }
-
             crpsSiteIntegrationManager.deleteCrpsSiteIntegration(crpsSiteIntegration.getId());
+          } else {
+            for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+              CrpsSiteIntegration siteIntegration = loggedCrp.getSiteIntegrations().stream()
+                .filter(sl -> sl.equals(crpsSiteIntegration)).collect(Collectors.toList()).get(0);
+              if (!siteIntegration.getSiteLeaders().contains(crpSitesLeader)) {
+                userRoleManager.deleteUserRole(crpSitesLeader.getUser().getUserRoles().stream()
+                  .filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList()).get(0).getId());
+                crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
+              }
+            }
+          }
+
+
+          for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
+            if (siteIntegration.getId() == null) {
+              LocElement locElement =
+                locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
+
+              siteIntegration.setLocElement(locElement);
+              siteIntegration.setCrp(loggedCrp);
+              siteIntegration.setActive(true);
+              siteIntegration.setModifiedBy(this.getCurrentUser());
+              siteIntegration.setCreatedBy(this.getCurrentUser());
+              siteIntegration.setModificationJustification("");
+              siteIntegration.setActiveSince(new Date());
+
+              Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+
+
+              for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+                User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+                CrpsSiteIntegration crpSiteIntegration =
+                  crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
+
+                sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+                sitesLeader.setUser(userSiteLeader);
+                sitesLeader.setActive(true);
+                sitesLeader.setModifiedBy(this.getCurrentUser());
+                sitesLeader.setCreatedBy(this.getCurrentUser());
+                sitesLeader.setModificationJustification("");
+                sitesLeader.setActiveSince(new Date());
+
+                UserRole userRole = new UserRole(slRole, userSiteLeader);
+                userRoleManager.saveUserRole(userRole);
+              }
+            } else {
+              for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+                if (sitesLeader.getId() == null) {
+                  User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+                  CrpsSiteIntegration crpSiteIntegration =
+                    crpsSiteIntegrationManager.getCrpsSiteIntegrationById(siteIntegration.getId());
+
+                  sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+                  sitesLeader.setUser(userSiteLeader);
+                  sitesLeader.setActive(true);
+                  sitesLeader.setModifiedBy(this.getCurrentUser());
+                  sitesLeader.setCreatedBy(this.getCurrentUser());
+                  sitesLeader.setModificationJustification("");
+                  sitesLeader.setActiveSince(new Date());
+                  crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
+
+                  UserRole userRole = new UserRole(slRole, userSiteLeader);
+                  userRoleManager.saveUserRole(userRole);
+                }
+              }
+            }
           }
         }
       }
-
-
-      List<CrpsSiteIntegration> siteIntegrationsPrew = crpsSiteIntegrationManager.findAll().stream()
-        .filter(si -> si.getCrp().equals(loggedCrp)).collect(Collectors.toList());
 
       if (loggedCrp.getCrpsSitesIntegrations() != null) {
         loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
@@ -160,10 +231,20 @@ public class CrpSiteIntegrationAction extends BaseAction {
           loggedCrp.getSiteIntegrations().get(i).setSiteLeaders(new ArrayList<CrpSitesLeader>());
         }
       }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      messages = this.getActionMessages();
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
     }
-
-
-    return null;
   }
 
 
