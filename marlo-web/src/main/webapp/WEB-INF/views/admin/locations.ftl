@@ -37,12 +37,21 @@
             [/#list]
           </div>
           [#-- Add Location Level Button --]
-          <div class="addLocationLevel bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addLocationLevel"/]</div>
+          [#if editable]
+            <div class="addLocationLevel bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addLocationLevel"/]</div>
+          [/#if]
         </div>
         
-        [#-- Save Button --]
+        [#-- Section Buttons--]
         <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+          [#if editable]
+            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
         </div>
         
         [/@s.form]
@@ -70,16 +79,18 @@
       <span class="index">${index+1}</span>
     </div>
     [#-- Remove Button --]
+    [#if editable]
     <div class="removeLocationLevel removeElement" title="Remove Location Level"></div>
+    [/#if]
     [#-- Location Level ID Hidden parameter --]
     <input type="hidden" class="locationLevelId" name="${customName}.id" value="${(locLevel.id)!}"/>
     [#-- Location level name --]
     <div class="form-group">
-      [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName" placeholder="location.inputName.placeholder" className="locationName" required=true editable=true /]
+      [@customForm.input name="${customName}.name" type="text"  i18nkey="location.levelName" placeholder="location.inputName.placeholder" className="locationName" required=true editable=editable /]
     </div>
     <div class="form-group">
       [#-- Does this location level have specific coordinates?   --]
-      [@customForm.yesNoInput name="${customName}.hasCoordinates" label="location.question" editable=true inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
+      [@customForm.yesNoInput name="${customName}.hasCoordinates" label="location.question" editable=editable inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
       [#-- Locations List --]
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">
         <div class="items-list simpleBox">
@@ -92,7 +103,9 @@
               <p class="message text-center">[@s.text name="location.notSpecificCoordinates.span"/]</p>
             [/#if]
           </ul>
+          <div class="clearfix"></div> 
           [#-- Add Location Element --]
+          [#if editable]
           <hr />
           <div class="form-group">
             <div class="latitudeBlock">[@customForm.input name="" type="text"  placeholder="location.inputLatitude.placeholder" showTitle=false className="locationLatitude-input" /]</div>
@@ -101,6 +114,7 @@
             <div class="buttonBlock text-right"><div class="addLocElement button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
             <div class="clearfix"></div>
           </div>
+          [/#if]
         </div>
       </div>
     </div> 
@@ -111,7 +125,9 @@
   <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
     [#assign locElementName = "${name}[${index}]" ]
     [#-- Remove Button --]
-    <div class="removeLocElement removeIcon" title="Remove Location"></div>
+    [#if editable]
+      <div class="removeLocElement removeIcon" title="Remove Location"></div>
+    [/#if]
     [#-- Location Name --]
     <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span>
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>

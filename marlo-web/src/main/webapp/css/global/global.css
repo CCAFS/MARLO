@@ -5295,7 +5295,7 @@ table.evaluationRank thead th{
 }
 
 .items-list ul li.userItem{
-  padding: 6px 18px;
+  padding: 4px 18px;
   background: #f5f5f5;
   border: 1px dashed #e2e0e0;
   position: relative;
@@ -5325,7 +5325,7 @@ table.evaluationRank thead th{
     -webkit-user-select:none;
     -moz-user-select:none;
     -ms-user-select: none;
-    padding: 10px 2px;
+    padding: 2px 2px;
 }
 .onoffswitch-checkbox {
     display: none;

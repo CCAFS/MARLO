@@ -21,26 +21,37 @@
         [#include "/WEB-INF/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
-      
+        [@s.form action=actionName enctype="multipart/form-data" ]
         <h4 class="text-center">[@s.text name="ppaPartners.title" /]</h4>
         <div class=" borderBox formWrapper ">
- 
-          [@s.form action=actionName enctype="multipart/form-data" ]  
-  	      	<div class="col-md-12" id="partnerContent">
+            [#-- PPA Partners --]
+  	      	<div  id="partnerContent" class="" >
   	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartners]
   	      			[@intitutionMacro ppaPartners=ppaPartners index=institution_index /]
   	      		 [/#list]
   	      	</div>
-  	      	
+  	      	[#--Select an institution --]
+  	      	[#if editable]
         		<div class="form-group">
         		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
         			<div class="clearfix"></div>
       			</div>
-        		<div class="buttons">
-              [@s.submit  type="button" name="save" cssClass="center-block"][@s.text name="form.buttons.save" /][/@s.submit]
-            </div>
-          [/@s.form]
+      			[/#if]
       	</div>
+      	
+      	[#-- Section Buttons--]
+        <div class="buttons">
+          [#if editable]
+            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
+        </div>
+        
+        [/@s.form]
       	
       </div>
     </div>
@@ -57,7 +68,9 @@
 		<span class="title col-md-11">${(ppaPartners.institution.name)!'Null'} </span>
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
 		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
+		[#if editable]
 		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
+		[/#if]
 	</div>
 [/#macro]
 
