@@ -31,6 +31,7 @@
               [#list regionsPrograms as item]
                 [@programItem element=item index=item_index name="regionsPrograms"/]
               [/#list] 
+            [#else] [@programItem element={} index=0 name="regionsPrograms"/] 
             [/#if]
             </ul>
             [#if !regionsPrograms?has_content && !editable]
@@ -141,9 +142,9 @@
     </div>
     
     [#-- Countries  --]
-    <div class="countriesBlock form-group">
+    <div class="countriesBlock form-group" title="Select Countries clicking here">
       [#-- Countries List --]
-      [@customForm.select name="${customName}.selectedCountries" label="" i18nkey="regionalMapping.CrpProgram.countries" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" disabled=!editable/]              
+      [@customForm.select name="${customName}.selectedCountries" label=""  i18nkey="regionalMapping.CrpProgram.countries" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" disabled=!editable/]              
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rpRol}</span>

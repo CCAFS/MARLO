@@ -104,6 +104,13 @@ function removeMilestone() {
  * SUB-IDOs Functions
  */
 
+function verifyPercentage($subIdosList) {
+  $inputsPercentage = $($subIdosList).find(".contribution");
+  $inputsPercentage.each(function() {
+    console.log($(this).val());
+  });
+}
+
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
@@ -116,6 +123,7 @@ function addSubIdo() {
   $item.show('slow');
   // Hide empty message
   $(this).parents('.outcome').find('.subIdos-list p.message').hide();
+  verifyPercentage($list);
 }
 
 function removeSubIdo() {

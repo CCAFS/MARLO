@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "PPA Partners" /]
-[#assign pageLibs = ["select2","bootstrap-select"] /]
+[#assign pageLibs = ["bootstrap-select"] /]
 [#assign customJS = [ "${baseUrl}/js/admin/ppaPartners.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/ppaPartners.css" ] /]
 [#assign currentSection = "admin" /]
@@ -33,7 +33,8 @@
   	      	[#--Select an institution --]
   	      	[#if editable]
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="composedName" editable=true  /]        		
+        		  [@customForm.select name="" showTitle=false placeholder="ppaPartners.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
+
         			<div class="clearfix"></div>
       			</div>
       			[/#if]

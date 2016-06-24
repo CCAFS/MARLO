@@ -22,6 +22,7 @@
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
+
         [#if programs?has_content]
           <div class="">
             [#-- Program (Flagships) --]
@@ -36,17 +37,20 @@
           </div>
         
           [@s.form action=actionName enctype="multipart/form-data" ]  
-          [#-- Outcomes List --]
-          <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
-          <div class="outcomes-list">
-            [#list outcomes as outcome]
-              [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
-            [/#list]
-          </div>
-          [#-- Add Outcome Button --]
-          [#if editable]
-            <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
-          [/#if]
+        [#-- Outcomes List --]
+        <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
+        <div class="outcomes-list">
+        [#if outcomes?has_content]
+          [#list outcomes as outcome]
+            [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
+          [/#list]
+        [#else][@outcomeMacro outcome={} name="outcomes" index=0 /]
+        [/#if]
+        </div>
+        [#-- Add Outcome Button --]
+        [#if editable]
+          <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+        [/#if]
           
           [#-- Section Buttons--]
           <div class="buttons">
@@ -171,11 +175,12 @@
     </div>
     <div class="row form-group">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"  i18nkey="outcome.milestone.inputTargetYear.placeholder" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false  i18nkey="outcome.milestone.inputTargetYear.placeholder" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue.placeholder" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+
     </div>
   </div>
 [/#macro]
