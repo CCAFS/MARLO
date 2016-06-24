@@ -92,11 +92,19 @@ public class CrpLocationsAction extends BaseAction {
           }
         }
 
-        for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
-          if (locElementType.getId() == null) {
-            locElementType.setName(locElementType.getName());
-            locElementTypeManager.saveLocElementType(locElementType);
+
+      }
+
+      for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
+        if (locElementType.getId() == null) {
+          locElementType.setName(locElementType.getName());
+          Long locElementId = locElementTypeManager.saveLocElementType(locElementType);
+
+          for (LocElement locElement : locElementType.getLocationElements()) {
+
           }
+
+
         }
       }
 

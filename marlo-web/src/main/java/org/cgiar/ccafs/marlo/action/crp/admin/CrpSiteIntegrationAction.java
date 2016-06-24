@@ -204,66 +204,65 @@ public class CrpSiteIntegrationAction extends BaseAction {
               }
             }
           }
+        }
+      }
+
+      for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
+        if (siteIntegration.getId() == null) {
+          LocElement locElement =
+            locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
+
+          siteIntegration.setLocElement(locElement);
+          siteIntegration.setCrp(loggedCrp);
+          siteIntegration.setActive(true);
+          siteIntegration.setModifiedBy(this.getCurrentUser());
+          siteIntegration.setCreatedBy(this.getCurrentUser());
+          siteIntegration.setModificationJustification("");
+          siteIntegration.setActiveSince(new Date());
+
+          Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+
+          if (siteIntegration.getSiteLeaders() != null) {
+            for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+              User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+              CrpsSiteIntegration crpSiteIntegration =
+                crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
+
+              sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+              sitesLeader.setUser(userSiteLeader);
+              sitesLeader.setActive(true);
+              sitesLeader.setModifiedBy(this.getCurrentUser());
+              sitesLeader.setCreatedBy(this.getCurrentUser());
+              sitesLeader.setModificationJustification("");
+              sitesLeader.setActiveSince(new Date());
 
 
-          for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
-            if (siteIntegration.getId() == null) {
-              LocElement locElement =
-                locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
-
-              siteIntegration.setLocElement(locElement);
-              siteIntegration.setCrp(loggedCrp);
-              siteIntegration.setActive(true);
-              siteIntegration.setModifiedBy(this.getCurrentUser());
-              siteIntegration.setCreatedBy(this.getCurrentUser());
-              siteIntegration.setModificationJustification("");
-              siteIntegration.setActiveSince(new Date());
-
-              Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
-
-              if (siteIntegration.getSiteLeaders() != null) {
-                for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
-                  User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-                  CrpsSiteIntegration crpSiteIntegration =
-                    crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
-
-                  sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
-                  sitesLeader.setUser(userSiteLeader);
-                  sitesLeader.setActive(true);
-                  sitesLeader.setModifiedBy(this.getCurrentUser());
-                  sitesLeader.setCreatedBy(this.getCurrentUser());
-                  sitesLeader.setModificationJustification("");
-                  sitesLeader.setActiveSince(new Date());
-
-
-                  UserRole userRole = new UserRole(slRole, userSiteLeader);
-                  if (!userSiteLeader.getUserRoles().contains(userRole)) {
-                    userRoleManager.saveUserRole(userRole);
-                  }
-                }
+              UserRole userRole = new UserRole(slRole, userSiteLeader);
+              if (!userSiteLeader.getUserRoles().contains(userRole)) {
+                userRoleManager.saveUserRole(userRole);
               }
-            } else {
-              if (siteIntegration.getSiteLeaders() != null) {
-                for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
-                  if (sitesLeader.getId() == null) {
-                    User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-                    CrpsSiteIntegration crpSiteIntegration =
-                      crpsSiteIntegrationManager.getCrpsSiteIntegrationById(siteIntegration.getId());
+            }
+          }
+        } else {
+          if (siteIntegration.getSiteLeaders() != null) {
+            for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+              if (sitesLeader.getId() == null) {
+                User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+                CrpsSiteIntegration crpSiteIntegration =
+                  crpsSiteIntegrationManager.getCrpsSiteIntegrationById(siteIntegration.getId());
 
-                    sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
-                    sitesLeader.setUser(userSiteLeader);
-                    sitesLeader.setActive(true);
-                    sitesLeader.setModifiedBy(this.getCurrentUser());
-                    sitesLeader.setCreatedBy(this.getCurrentUser());
-                    sitesLeader.setModificationJustification("");
-                    sitesLeader.setActiveSince(new Date());
-                    crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
+                sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+                sitesLeader.setUser(userSiteLeader);
+                sitesLeader.setActive(true);
+                sitesLeader.setModifiedBy(this.getCurrentUser());
+                sitesLeader.setCreatedBy(this.getCurrentUser());
+                sitesLeader.setModificationJustification("");
+                sitesLeader.setActiveSince(new Date());
+                crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
 
-                    UserRole userRole = new UserRole(slRole, userSiteLeader);
-                    if (!userSiteLeader.getUserRoles().contains(userRole)) {
-                      userRoleManager.saveUserRole(userRole);
-                    }
-                  }
+                UserRole userRole = new UserRole(slRole, userSiteLeader);
+                if (!userSiteLeader.getUserRoles().contains(userRole)) {
+                  userRoleManager.saveUserRole(userRole);
                 }
               }
             }
