@@ -16,24 +16,27 @@
 
 
 <section class="marlo-content">
-  <div class="container">
-    [#-- Program (Flagships) --]
-    <ul id="liaisonInstitutions" class="horizontalSubMenu">
-      [#list programs as program]
-        [#assign isActive = (program.id == crpProgramID)/]
-        <li class="${isActive?string('active','')}">
-          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
-        </li>
-      [/#list]
-    </ul>
-  </div>
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data" ]  
+
+        [#if programs?has_content]
+          <div class="">
+            [#-- Program (Flagships) --]
+            <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
+              [#list programs as program]
+                [#assign isActive = (program.id == crpProgramID)/]
+                <li class="${isActive?string('active','')}">
+                  <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
+                </li>
+              [/#list]
+            </ul>
+          </div>
+        
+          [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
         <div class="outcomes-list">
@@ -48,21 +51,24 @@
         [#if editable]
           <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
         [/#if]
-        
-        [#-- Section Buttons--]
-        <div class="buttons">
-          [#if editable]
-            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          [#else]
-            [#if canEdit]
-              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+          
+          [#-- Section Buttons--]
+          <div class="buttons">
+            [#if editable]
+              <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+              [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+            [#else]
+              [#if canEdit]
+                <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+              [/#if]
             [/#if]
-          [/#if]
-        </div>
-        
-        <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
-        [/@s.form]
+          </div>
+          
+          <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+          [/@s.form]
+        [#else]
+          <p class="text-center borderBox">There is not flagships added</p>
+        [/#if]
       </div>
     </div>
   </div>
@@ -169,11 +175,12 @@
     </div>
     <div class="row form-group">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false  i18nkey="outcome.milestone.inputTargetYear.placeholder" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
       [#-- Target Value --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+
     </div>
   </div>
 [/#macro]
@@ -226,6 +233,12 @@
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
     [/#if]
     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
-    [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement #${index+1}" className="statement" required=true editable=editable /]
+    [#if !editable] 
+      [#if assumption.description?has_content]
+        <div class="input"><p> ${index+1}. ${(assumption.description)!}</p></div>
+      [/#if] 
+    [#else]
+      [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement" className="statement" required=true editable=editable /]
+    [/#if] 
   </div>
 [/#macro]

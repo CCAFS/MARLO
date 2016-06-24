@@ -26,12 +26,7 @@
         <h4 class="sectionTitle">[@s.text name="locations.title"/]</h4>
         <div class="locationsBlock">
           [#-- Locations Levels List --]
-          <div class="locations-list">
-            [#assign locationsLevels= [
-                {'hasCoordinates': false}, 
-                {'hasCoordinates': true, 'locElements':[{},{}] }
-              ] 
-            /]
+          <div class="locations-list">            
             [#list loggedCrp.locationElementTypes as level]
               [@locationLevelMacro locLevel=level name="loggedCrp.locationElementTypes" index=level_index  /]
             [/#list]
@@ -134,7 +129,7 @@
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="locElementCountry" name="${locElementName}.parent.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
+    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
     <input type="hidden" class="geoId" name="${locElementName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
     <input type="hidden" class="geoLat" name="${locElementName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
     <input type="hidden" class="geoLng" name="${locElementName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
