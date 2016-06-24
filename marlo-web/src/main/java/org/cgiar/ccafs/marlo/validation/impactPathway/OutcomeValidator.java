@@ -70,6 +70,12 @@ public class OutcomeValidator extends BaseValidator
     if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
       this.addMessage(action.getText("outcome.action.milestone.year.required", params));
     }
+
+    if (milestone.getCrpProgramOutcome().getYear() != null) {
+      if (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue()) {
+        this.addMessage(action.getText("outcome.action.milestone.year.required", params));
+      }
+    }
     if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
       this.addMessage(action.getText("outcome.action.milestone.srfTargetUnit.required", params));
       milestone.setSrfTargetUnit(null);

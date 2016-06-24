@@ -332,6 +332,7 @@ public class OutcomesAction extends BaseAction {
               || crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId() == -1) {
               crpOutcomeSubIdo.setSrfSubIdo(null);
             }
+
             crpOutcomeSubIdoManager.saveCrpOutcomeSubIdo(crpOutcomeSubIdo);
 
             /*

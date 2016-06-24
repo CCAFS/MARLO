@@ -75,9 +75,17 @@ public class Institution implements java.io.Serializable {
     return this.added;
   }
 
-
   public String getCity() {
     return this.city;
+  }
+
+
+  public String getComposedName() {
+    if (this.getAcronym() != null) {
+
+      return acronym + " - " + name;
+    }
+    return name;
   }
 
   public Long getCountryId() {
