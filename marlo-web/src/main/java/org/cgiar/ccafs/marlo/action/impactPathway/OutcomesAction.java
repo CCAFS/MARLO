@@ -365,7 +365,8 @@ public class OutcomesAction extends BaseAction {
                   crpAssumption.setActive(true);
                   crpAssumption.setCreatedBy(db.getCreatedBy());
                   crpAssumption.setModifiedBy(this.getCurrentUser());
-                  crpOutcomeSubIdo.setModificationJustification("");
+                  crpAssumption.setModificationJustification("");
+
                   crpAssumption.setActiveSince(db.getActiveSince());
                 }
                 crpAssumption.setCrpOutcomeSubIdo(crpOutcomeSubIdo);
