@@ -34,8 +34,8 @@ public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
   @Override
   public boolean deleteLocElementType(long locElementTypeId) {
     LocElementType locElementType = this.find(locElementTypeId);
-
-    return dao.delete(locElementType);
+    locElementType.setActive(false);
+    return this.save(locElementType) > 0;
   }
 
   @Override
@@ -56,7 +56,7 @@ public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
 
   @Override
   public List<LocElementType> findAll() {
-    String query = "from " + LocElementType.class.getName();
+    String query = "from " + LocElementType.class.getName() + " where is_active=1";
     List<LocElementType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
