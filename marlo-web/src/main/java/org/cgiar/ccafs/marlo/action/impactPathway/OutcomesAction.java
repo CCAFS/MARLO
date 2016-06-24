@@ -125,13 +125,13 @@ public class OutcomesAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
 
-    List<CrpProgram> allPrograms = crpProgramManager.findAll();
+    List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
     crpProgramID = -1;
     if (allPrograms != null) {
 
-      this.programs = allPrograms.stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-        .collect(Collectors.toList());
+      this.programs = allPrograms;
 
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
@@ -365,7 +365,8 @@ public class OutcomesAction extends BaseAction {
                   crpAssumption.setActive(true);
                   crpAssumption.setCreatedBy(db.getCreatedBy());
                   crpAssumption.setModifiedBy(this.getCurrentUser());
-                  crpOutcomeSubIdo.setModificationJustification("");
+                  crpAssumption.setModificationJustification("");
+
                   crpAssumption.setActiveSince(db.getActiveSince());
                 }
                 crpAssumption.setCrpOutcomeSubIdo(crpOutcomeSubIdo);

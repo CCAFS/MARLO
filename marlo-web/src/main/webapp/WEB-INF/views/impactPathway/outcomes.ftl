@@ -42,12 +42,22 @@
           [/#list]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+        [#if editable]
+          <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+        [/#if]
         
-        [#-- Save Button --]
+        [#-- Section Buttons--]
         <div class="buttons">
-          [@s.submit type="button" name="save" cssClass=""][@s.text name="form.buttons.save" /][/@s.submit]
+          [#if editable]
+            <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+          [#else]
+            [#if canEdit]
+              <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+            [/#if]
+          [/#if]
         </div>
+        
         <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [/@s.form]
       </div>
@@ -80,19 +90,21 @@
     [#-- Outcome ID Parameter --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     [#-- Remove Button --]
-    <div class="removeOutcome removeElement" title="Remove Outcome"></div>
+    [#if editable]
+      <div class="removeOutcome removeElement" title="Remove Outcome"></div>
+    [/#if]
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="outcome.statement" required=true className="outcome-statement" editable=true /]
+      [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="outcome.statement" required=true className="outcome-statement" editable=editable /]
     </div>
     <div class="row form-group">
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
     </div>  
     <br />
     [#-- Outcome Milestones List --]
@@ -107,9 +119,12 @@
     [/#if]
     </div>
     [#-- Add Milestone Button --]
+    [#if editable]
     <div class="text-right">
       <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addMilestone"/]</div>
     </div>
+    [/#if]
+    
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/]</h5>
     <div class="subIdos-list">
@@ -122,9 +137,11 @@
     [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
+    [#if editable]
     <div class="text-right">
       <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addSubIDO"/]</div>
     </div>
+    [/#if]
     <br />
   </div>
 [/#macro]
@@ -139,19 +156,21 @@
     </div>
      <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
     [#-- Remove Button --]
-    <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
+    [#if editable]
+      <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
+    [/#if]
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement" editable=true /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement" editable=editable /]
     </div>
     <div class="row form-group">
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=true /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=true  /]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
     </div>
   </div>
 [/#macro]
@@ -165,17 +184,17 @@
       <span class="index">${index+1}</span>
       <span class="elementId">[@s.text name="outcome.subIDOs.index.title"/]</span>
     </div>
-    
-         <input type="hidden" class="programSubIDOId" name="${subIDOCustomName}.id" value="${(subIdo.id)!}"/>
-
-       
+    [#-- Hidden inputs --]
+    <input type="hidden" class="programSubIDOId" name="${subIDOCustomName}.id" value="${(subIdo.id)!}"/>
     [#-- Remove Button --]
+    [#if editable]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
+    [/#if]
     <br />
     <div class="form-group">
-      <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="outcome.subIDOs.inputIDO.label" placeholder="outcome.subIDOs.selectIDO.placeholder" listName="idoList"  className="idoId" required=true editable=true  /]</div>
-      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="outcome.subIDOs.selectSubIDO.placeholder" listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=true  /]</div>
-      <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=true /]</div>
+      <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="outcome.subIDOs.inputIDO.label" placeholder="outcome.subIDOs.selectIDO.placeholder" listName="idoList"  className="idoId" required=true editable=editable  /]</div>
+      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="outcome.subIDOs.selectSubIDO.placeholder" listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable  /]</div>
+      <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
     </div>
     [#-- Assumptions List --]
@@ -185,13 +204,14 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
-  
     [/#if]
     </div>
     [#-- Add Assumption Button --]
+    [#if editable]
     <div class="text-right">
       <div class="addAssumption button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addAssumption"/]</div>
     </div>
+    [/#if]
   </div>
 [/#macro]
 
@@ -199,9 +219,10 @@
   [#assign assumptionCustomName = "${name}[${index}]" /]
   <div id="assumption-${isTemplate?string('template', index)}" class="assumption form-group" style="position:relative; display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
-     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
+    [#if editable]
     <div class="removeAssumption removeIcon" title="Remove assumption"></div>
-   
-    [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement #${index+1}" className="statement" required=true editable=true /]
+    [/#if]
+    <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
+    [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement #${index+1}" className="statement" required=true editable=editable /]
   </div>
 [/#macro]

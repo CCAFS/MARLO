@@ -22,8 +22,8 @@
 		<property name="programType" type="int">
 			<column name="program_type" not-null="true" />
 		</property>
-		<set lazy="true" name="crpClusterOfActivities" order-by="id" table="crp_cluster_of_activities"
-			inverse="true" fetch="select">
+		<set lazy="true" name="crpClusterOfActivities" order-by="id"
+			table="crp_cluster_of_activities" inverse="true" fetch="select">
 			<key>
 				<column name="crp_program_id" not-null="true" />
 			</key>
@@ -36,19 +36,20 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramLeader" />
 		</set>
-		<set lazy="true" name="crpProgramOutcomes"   order-by="id"  table="crp_program_outcomes"
-			inverse="true" fetch="select">
+		<set lazy="true" name="crpProgramOutcomes" order-by="id"
+			table="crp_program_outcomes" inverse="true" fetch="select">
 			<key>
 				<column name="crp_program_id" not-null="true" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" />
 		</set>
-		<set name="crpProgramCountries" table="crp_program_countries"  order-by="id" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="program_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
-        </set>
+		<set name="crpProgramCountries" table="crp_program_countries"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
+		</set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
