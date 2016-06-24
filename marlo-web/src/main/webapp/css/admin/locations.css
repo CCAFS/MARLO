@@ -25,3 +25,19 @@
   width: 17%;
   float: right;
 }
+
+.locElement {
+  width: 32.3%;
+  float: left;
+  margin-right: 1%;
+}
+
+span.coordinates {
+  font-size: 0.75em;
+  color: #9c9c9c;
+  margin-left: 16px;
+}
+
+.locElement {
+  line-height: 16px;
+}
