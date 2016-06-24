@@ -169,7 +169,13 @@ public class OutcomesAction extends BaseAction {
         try {
           for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList())) {
-            mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+
+            if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
+              mapSubidos.put(srfSubIdo.getId(), "CrossCutting:" + srfSubIdo.getDescription());
+            } else {
+              mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+            }
+
 
           }
         } catch (Exception e) {

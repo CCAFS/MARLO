@@ -70,7 +70,12 @@ public class SubIDOListAction extends BaseAction {
     for (SrfSubIdo srfSubIdo : subIdosDB) {
       Map<String, Object> mapSubIdo = new HashMap<String, Object>();
       mapSubIdo.put("id", srfSubIdo.getId());
-      mapSubIdo.put("description", srfSubIdo.getDescription());
+      if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
+        mapSubIdo.put("description", "CrossCutting:" + srfSubIdo.getDescription());
+      } else {
+        mapSubIdo.put("description", srfSubIdo.getDescription());
+      }
+
       subIdos.add(mapSubIdo);
     }
     return SUCCESS;
