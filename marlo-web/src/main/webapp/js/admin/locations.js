@@ -135,7 +135,7 @@ function removeLocElement() {
 
 function updateLocationsIndexes() {
   $(".locations-list").find('.locationLevel').each(function(i,location) {
-    var locationName = "locElementTypes" + "[" + i + "].";
+    var locationName = "loggedCrp.locationElementTypes" + "[" + i + "].";
 
     $(location).find('> .leftHead .index').text(i + 1);
     $(location).find('.locationLevelId').attr('name', locationName + "id");
@@ -152,11 +152,11 @@ function updateLocationsIndexes() {
     $(location).find('label.no-button-label').attr('for', "no-button-" + uniqueId);
 
     $(location).find('.locElement').each(function(i,element) {
-      var elementName = locationName + "locElements" + "[" + i + "].";
+      var elementName = locationName + "locationElements" + "[" + i + "].";
 
       $(element).find('.locElementId').attr('name', elementName + "id");
       $(element).find('.locElementName').attr('name', elementName + "name");
-      $(element).find('.locElementCountry').attr('name', elementName + "parent.isoAlpha2");
+      $(element).find('.locElementCountry').attr('name', elementName + "locElement.isoAlpha2");
       $(element).find('.geoId').attr('name', elementName + "locGeoposition.id");
       $(element).find('.geoLat').attr('name', elementName + "locGeoposition.latitude");
       $(element).find('.geoLng').attr('name', elementName + "locGeoposition.longitude");

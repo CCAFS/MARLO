@@ -29,7 +29,6 @@ public class LocElement implements java.io.Serializable {
 
   private static final long serialVersionUID = -5589133827714008187L;
 
-
   @Expose
   private Long id;
 
@@ -39,7 +38,6 @@ public class LocElement implements java.io.Serializable {
 
   @Expose
   private String isoAlpha2;
-
 
   @Expose
   private Long isoNumeric;
@@ -64,6 +62,7 @@ public class LocElement implements java.io.Serializable {
   @Expose
   private Boolean isSiteIntegration;
 
+
   @Expose
   private boolean active;
 
@@ -80,6 +79,7 @@ public class LocElement implements java.io.Serializable {
 
   @Expose
   private String modificationJustification;
+
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
@@ -102,6 +102,28 @@ public class LocElement implements java.io.Serializable {
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    LocElement other = (LocElement) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -132,15 +154,14 @@ public class LocElement implements java.io.Serializable {
     return isoAlpha2;
   }
 
-
   public Long getIsoNumeric() {
     return isoNumeric;
   }
 
+
   public Boolean getIsSiteIntegration() {
     return this.isSiteIntegration;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -150,6 +171,7 @@ public class LocElement implements java.io.Serializable {
   public LocElementType getLocElementType() {
     return this.locElementType;
   }
+
 
   public LocGeoposition getLocGeoposition() {
     return this.locGeoposition;
@@ -162,7 +184,6 @@ public class LocElement implements java.io.Serializable {
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getName() {
     return this.name;
