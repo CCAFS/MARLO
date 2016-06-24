@@ -50,13 +50,14 @@ function differences() {
   partner = partnerSelect.find("option:selected");
   if(partnerContent.find('input[value=' + partner.val() + ']').exists()) {
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'This partner has been added';
+    notyOptions.text = partner.text() + ' already exists in this list';
     notyOptions.type = 'alert';
     noty(notyOptions);
   } else {
     addPartner(partner);
   }
-  partnerSelect.selectpicker('refresh');
+  console.log(partnerSelect.find("option[value= '-1' ]").text());
+  partnerSelect.selectpicker('val', '-1');
 }
 
 // Update index and position of property name
