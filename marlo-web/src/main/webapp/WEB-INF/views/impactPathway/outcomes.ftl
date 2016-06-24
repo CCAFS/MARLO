@@ -37,9 +37,12 @@
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
         <div class="outcomes-list">
+        [#if outcomes?has_content]
           [#list outcomes as outcome]
             [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
           [/#list]
+        [#else][@outcomeMacro outcome={} name="outcomes" index=0 /]
+        [/#if]
         </div>
         [#-- Add Outcome Button --]
         [#if editable]
@@ -99,12 +102,12 @@
       [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="outcome.statement" required=true className="outcome-statement" editable=editable /]
     </div>
     <div class="row form-group">
-      [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      [#-- Target Value --]
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
     </div>  
     <br />
     [#-- Outcome Milestones List --]
@@ -165,12 +168,12 @@
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement" editable=editable /]
     </div>
     <div class="row form-group">
-      [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      [#-- Target Value --]
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
     </div>
   </div>
 [/#macro]
