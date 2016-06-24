@@ -106,8 +106,9 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
       session.clear();
-      obj = (T) session.get(clazz, (Serializable) id);
       this.commitTransaction(tx);
+      obj = (T) session.get(clazz, (Serializable) id);
+
     } catch (Exception e) {
       if (tx != null) {
         this.rollBackTransaction(tx);
@@ -138,11 +139,12 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
+      this.commitTransaction(tx);
       session.clear();
       Query query = session.createQuery(hibernateQuery);
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
-      this.commitTransaction(tx);
+
       return list;
     } catch (Exception e) {
       if (tx != null) {
@@ -170,11 +172,12 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
+      this.commitTransaction(tx);
       session.clear();
       Query query = session.createSQLQuery(sqlQuery);
       query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
       List<Map<String, Object>> result = query.list();
-      this.commitTransaction(tx);
+
       return result;
     } catch (Exception e) {
       if (tx != null) {
@@ -195,11 +198,12 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
+      this.commitTransaction(tx);
       session.clear();
       Query query = session.createQuery("from " + clazz.getName());
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
-      this.commitTransaction(tx);
+
       return list;
     } catch (Exception e) {
       if (tx != null) {
@@ -225,12 +229,13 @@ public class StandardDAO {
     Transaction tx = null;
     try {
       session = this.openSession();
+      this.commitTransaction(tx);
       session.clear();
       tx = this.initTransaction(session);
       Query query = session.createQuery(hibernateQuery);
       session.flush();
       Object object = clazz.cast(query.uniqueResult());
-      this.commitTransaction(tx);
+
       return object;
     } catch (Exception e) {
       if (tx != null) {
