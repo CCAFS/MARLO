@@ -35,6 +35,7 @@ public class LocElementTypeMySQLDAO implements LocElementTypeDAO {
   public boolean deleteLocElementType(long locElementTypeId) {
     LocElementType locElementType = this.find(locElementTypeId);
     locElementType.setActive(false);
+    locElementType.setHasCoordinates(false);
     return this.save(locElementType) > 0;
   }
 
