@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,24 +13,49 @@ import com.google.gson.annotations.Expose;
  */
 public class LocGeoposition implements java.io.Serializable {
 
+
   private static final long serialVersionUID = -8360072728437813608L;
+
 
   @Expose
   private Long id;
 
   private LocGeoposition locGeoposition;
+
+
   @Expose
   private double latitude;
+
 
   @Expose
   private double longitude;
 
+
+  @Expose
+  private boolean active;
+
+
+  @Expose
+  private User createdBy;
+
+
+  @Expose
+  private Date activeSince;
+
+
+  @Expose
+  private User modifiedBy;
+
+
+  @Expose
+  private String modificationJustification;
+
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
+
   private Set<LocGeoposition> locGeopositions = new HashSet<LocGeoposition>(0);
 
   public LocGeoposition() {
   }
-
 
   public LocGeoposition(double latitude, double longitude) {
     this.latitude = latitude;
@@ -43,6 +69,14 @@ public class LocGeoposition implements java.io.Serializable {
     this.longitude = longitude;
     this.locElements = locElements;
     this.locGeopositions = locGeopositions;
+  }
+
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
   }
 
   public Long getId() {
@@ -69,6 +103,31 @@ public class LocGeoposition implements java.io.Serializable {
     return this.longitude;
   }
 
+
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -91,6 +150,14 @@ public class LocGeoposition implements java.io.Serializable {
 
   public void setLongitude(double longitude) {
     this.longitude = longitude;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
 

@@ -127,14 +127,14 @@ public class ClusterActivitiesAction extends BaseAction {
     clRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_CL_ROLE));
     roleCl = roleManager.getRoleById(clRol);
 
-    List<CrpProgram> allPrograms = crpProgramManager.findAll();
+    List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
     crpProgramID = -1;
     clusterofActivities = new ArrayList<>();
     if (allPrograms != null) {
 
-      this.programs = allPrograms.stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-        .collect(Collectors.toList());
+      this.programs = allPrograms;
 
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));

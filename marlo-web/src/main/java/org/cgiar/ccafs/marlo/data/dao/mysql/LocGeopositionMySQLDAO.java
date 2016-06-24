@@ -34,8 +34,8 @@ public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
   @Override
   public boolean deleteLocGeoposition(long locGeopositionId) {
     LocGeoposition locGeoposition = this.find(locGeopositionId);
-
-    return dao.delete(locGeoposition);
+    locGeoposition.setActive(false);
+    return this.save(locGeoposition) > 0;
   }
 
   @Override
@@ -56,7 +56,7 @@ public class LocGeopositionMySQLDAO implements LocGeopositionDAO {
 
   @Override
   public List<LocGeoposition> findAll() {
-    String query = "from " + LocGeoposition.class.getName();
+    String query = "from " + LocGeoposition.class.getName() + " where is_active=1";
     List<LocGeoposition> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
