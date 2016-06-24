@@ -34,6 +34,7 @@
   	      	[#if editable]
         		<div class="form-group">
         		  [@customForm.select name="" showTitle=false placeholder="ppaPartners.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
+
         			<div class="clearfix"></div>
       			</div>
       			[/#if]
@@ -65,7 +66,7 @@
 [#macro intitutionMacro ppaPartners index=0 isTemplate=false]
 	<div id="institution-${isTemplate?string('template','')}" class="institution col-md-12" style="display:${isTemplate?string('none','block')}">
 		<span class="index hidden" >${index+1}</span>
-		<span class="title col-md-11">${(ppaPartners.institution.name)!'Null'} </span>
+		<span class="title col-md-11">${(ppaPartners.institution.composedName)!'Null'} </span>
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
 		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
 		[#if editable]
