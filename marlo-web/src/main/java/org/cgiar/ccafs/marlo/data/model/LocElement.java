@@ -15,6 +15,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,28 +40,50 @@ public class LocElement implements java.io.Serializable {
   @Expose
   private String isoAlpha2;
 
+
   @Expose
   private Long isoNumeric;
+
 
   @Expose
   private LocElementType locElementType;
 
+
   @Expose
   private LocGeoposition locGeoposition;
+
 
   @Expose
   private String name;
 
+
   @Expose
   private LocElement locElement;
+
 
   @Expose
   private Boolean isSiteIntegration;
 
+  @Expose
+  private boolean active;
+
+
+  @Expose
+  private User createdBy;
+
+  @Expose
+  private Date activeSince;
+
+
+  @Expose
+  private User modifiedBy;
+
+  @Expose
+  private String modificationJustification;
+
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
-
 
   public LocElement() {
   }
@@ -76,12 +99,18 @@ public class LocElement implements java.io.Serializable {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
   }
 
-
   public LocElement(LocElementType locElementTypes, String name) {
     this.locElementType = locElementTypes;
     this.name = name;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
 
   public Crp getCrp() {
     return crp;
@@ -99,10 +128,10 @@ public class LocElement implements java.io.Serializable {
     return this.id;
   }
 
-
   public String getIsoAlpha2() {
     return isoAlpha2;
   }
+
 
   public Long getIsoNumeric() {
     return isoNumeric;
@@ -112,9 +141,11 @@ public class LocElement implements java.io.Serializable {
     return this.isSiteIntegration;
   }
 
+
   public LocElement getLocElement() {
     return locElement;
   }
+
 
   public LocElementType getLocElementType() {
     return this.locElementType;
@@ -124,8 +155,33 @@ public class LocElement implements java.io.Serializable {
     return this.locGeoposition;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
+
   public String getName() {
     return this.name;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrp(Crp crp) {
@@ -166,6 +222,14 @@ public class LocElement implements java.io.Serializable {
 
   public void setLocGeoposition(LocGeoposition locGeopositions) {
     this.locGeoposition = locGeopositions;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setName(String name) {

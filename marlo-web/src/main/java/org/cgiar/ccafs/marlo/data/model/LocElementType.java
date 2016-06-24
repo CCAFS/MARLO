@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated May 26, 2016 9:42:28 AM by Hibernate Tools 4.3.1.Final
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,17 +14,39 @@ import com.google.gson.annotations.Expose;
  */
 public class LocElementType implements java.io.Serializable {
 
+
   private static final long serialVersionUID = 1795563086382428049L;
+
 
   @Expose
   private Long id;
 
-
   @Expose
   private String name;
 
+
   @Expose
   private Crp crp;
+
+
+  @Expose
+  private boolean active;
+
+
+  @Expose
+  private User createdBy;
+
+
+  @Expose
+  private Date activeSince;
+
+
+  @Expose
+  private User modifiedBy;
+
+
+  @Expose
+  private String modificationJustification;
 
 
   @Expose
@@ -31,10 +54,10 @@ public class LocElementType implements java.io.Serializable {
 
   private LocElementType locElementType;
 
-
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
+
 
   private List<LocElement> locationElements;
 
@@ -71,6 +94,14 @@ public class LocElementType implements java.io.Serializable {
     return true;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
+  public User getCreatedBy() {
+    return createdBy;
+  }
+
   public Crp getCrp() {
     return crp;
   }
@@ -78,6 +109,7 @@ public class LocElementType implements java.io.Serializable {
   public Boolean getHasCoordinates() {
     return hasCoordinates;
   }
+
 
   public Long getId() {
     return this.id;
@@ -99,8 +131,32 @@ public class LocElementType implements java.io.Serializable {
     return this.locElementTypes;
   }
 
+  public String getModificationJustification() {
+    return modificationJustification;
+  }
+
+  public User getModifiedBy() {
+    return modifiedBy;
+  }
+
   public String getName() {
     return this.name;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
+  }
+
+  public void setCreatedBy(User createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setCrp(Crp crp) {
@@ -129,6 +185,14 @@ public class LocElementType implements java.io.Serializable {
 
   public void setLocElementTypes(Set<LocElementType> locElementTypes) {
     this.locElementTypes = locElementTypes;
+  }
+
+  public void setModificationJustification(String modificationJustification) {
+    this.modificationJustification = modificationJustification;
+  }
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
   public void setName(String name) {
