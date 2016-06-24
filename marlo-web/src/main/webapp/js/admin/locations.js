@@ -69,8 +69,12 @@ function addLocElement() {
       lat: $inputs.find('.locationLatitude-input').val(),
       lng: $inputs.find('.locationLongitude-input').val(),
       name: $inputs.find('.locationName-input').val(),
+      countryName: '',
       latlng: function() {
         return this.lat + "," + this.lng
+      },
+      composedLatLng: function() {
+        return "(" + this.lat + ", " + this.lng + ")"
       }
   }
   if((itemObject.lat && itemObject.lng && itemObject.name) == "") {
@@ -88,6 +92,7 @@ function addLocElement() {
         success: function(data) {
           if(data.status == 'OK') {
             $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
+            itemObject.countryName = getResultByType(data.results[0], 'country').long_name;
           } else {
             console.log(data.status);
           }
@@ -95,6 +100,7 @@ function addLocElement() {
         complete: function(data) {
           // Fill item values
           $item.find('span.name').text(itemObject.name);
+          $item.find('span.coordinates').text(itemObject.countryName + " " + itemObject.composedLatLng());
           $item.find('input.locElementName').val(itemObject.name);
           $item.find('input.geoLat').val(itemObject.lat);
           $item.find('input.geoLng').val(itemObject.lng);

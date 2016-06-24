@@ -129,7 +129,9 @@
       <div class="removeLocElement removeIcon" title="Remove Location"></div>
     [/#if]
     [#-- Location Name --]
-    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span>
+    <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
+    <span class="coordinates">${(element.locElement.name)!} (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
+    [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${locElementName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${locElementName}.name" value="${(element.name)!}" />
     <input type="hidden" class="locElementCountry" name="${locElementName}.parent.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
