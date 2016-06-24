@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.impactPathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -69,12 +70,13 @@ public class OutcomesAction extends BaseAction {
   private HashMap<Long, String> targetUnitList;
   private OutcomeValidator validator;
   private CrpAssumptionManager crpAssumptionManager;
+  private CrpManager crpManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager) {
+    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -83,6 +85,7 @@ public class OutcomesAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
+    this.crpManager = crpManager;
     this.crpAssumptionManager = crpAssumptionManager;
   }
 
@@ -124,7 +127,7 @@ public class OutcomesAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
-
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
