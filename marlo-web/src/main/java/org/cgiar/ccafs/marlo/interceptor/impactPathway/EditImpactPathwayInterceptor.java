@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -49,8 +50,15 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     if (baseAction.isAdmin()) {
       canEdit = true;
     } else {
-      if (baseAction
-        .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym()))) {
+      long crpProgramID = 0;
+      try {
+        crpProgramID = Long.parseLong(StringUtils
+          .trim(((BaseAction) invocation.getAction()).getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+      } catch (Exception e) {
+
+      }
+      if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+        crp.getAcronym(), crpProgramID + ""))) {
         canEdit = true;
       }
     }
@@ -78,7 +86,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
 
   public EditImpactPathwayInterceptor() {
-    super();
+
+
   }
 
 

@@ -198,7 +198,7 @@ public class OutcomesAction extends BaseAction {
     for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
       idoList.put(srfIdo.getId(), srfIdo.getDescription());
     }
-    String params[] = {loggedCrp.getAcronym()};
+    String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
     this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       outcomes.clear();
