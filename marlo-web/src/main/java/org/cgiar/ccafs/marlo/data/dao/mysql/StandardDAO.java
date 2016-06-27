@@ -228,10 +228,12 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
+
       session = this.openSession();
+      tx = this.initTransaction(session);
       this.commitTransaction(tx);
       session.clear();
-      tx = this.initTransaction(session);
+
       Query query = session.createQuery(hibernateQuery);
       session.flush();
       Object object = clazz.cast(query.uniqueResult());
