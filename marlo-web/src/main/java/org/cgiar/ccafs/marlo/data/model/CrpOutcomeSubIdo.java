@@ -42,7 +42,6 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
-
   private SrfSubIdo srfSubIdo;
 
   @Expose
@@ -50,12 +49,12 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
 
   private Set<CrpAssumption> crpAssumptions = new HashSet<CrpAssumption>(0);
+
   private List<CrpAssumption> assumptions;
+
 
   @Expose
   private boolean active;
-
-
   @Expose
   private User createdBy;
 
@@ -66,11 +65,12 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
 
+
   private HashMap<Long, String> subIdoList;
+
 
   public CrpOutcomeSubIdo() {
   }
@@ -89,10 +89,32 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
     this.crpAssumptions = crpAssumptions;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpOutcomeSubIdo other = (CrpOutcomeSubIdo) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
 
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public List<CrpAssumption> getAssumptions() {
     return assumptions;
@@ -141,6 +163,14 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
   public HashMap<Long, String> getSubIdoList() {
     return subIdoList;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
