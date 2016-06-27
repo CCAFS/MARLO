@@ -287,8 +287,28 @@ public class CrpSiteIntegrationAction extends BaseAction {
             CrpsSiteIntegration siteIntegration = loggedCrp.getSiteIntegrations().stream()
               .filter(sl -> sl.equals(crpsSiteIntegration)).collect(Collectors.toList()).get(0);
             for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+              if (siteIntegration.getSiteLeaders() == null) {
 
-              if (!siteIntegration.getSiteLeaders().contains(crpSitesLeader)) {
+                crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
+                User user = userManager.getUser(crpSitesLeader.getUser().getId());
+
+                List<CrpSitesLeader> existsUserLeader =
+                  user.getCrpSitesLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
+
+                if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+                  if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
+                    List<UserRole> slUserRoles = user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole))
+                      .collect(Collectors.toList());
+                    if (slUserRoles != null || !slUserRoles.isEmpty()) {
+                      for (UserRole userRole : slUserRoles) {
+                        userRoleManager.deleteUserRole(userRole.getId());
+                      }
+                    }
+                  }
+                }
+
+              } else if (!siteIntegration.getSiteLeaders().contains(crpSitesLeader)) {
 
                 crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
                 User user = userManager.getUser(crpSitesLeader.getUser().getId());

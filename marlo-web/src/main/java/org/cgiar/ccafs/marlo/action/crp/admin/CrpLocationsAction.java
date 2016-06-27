@@ -159,7 +159,7 @@ public class CrpLocationsAction extends BaseAction {
                 locElementManager.saveLocElement(locElement);
 
                 elementType.setHasCoordinates(true);
-                locElementTypeManager.saveLocElementType(locElementType);
+                locElementTypeManager.saveLocElementType(elementType);
               }
             }
           } else {
