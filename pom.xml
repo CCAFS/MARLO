@@ -89,7 +89,7 @@
          <artifactId>junit</artifactId>
          <version>${junit.version}</version>
          <scope>test</scope>
-      </dependency>
+      </dependency>      
    </dependencies>
    <reporting>
       <plugins>
@@ -127,6 +127,13 @@
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-checkstyle-plugin</artifactId>
                <version>2.9.1</version>
+               <dependencies>
+                <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>6.11.1</version>
+                </dependency>
+               </dependencies>
             </plugin>
          </plugins>
       </pluginManagement>

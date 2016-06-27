@@ -111,6 +111,26 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  private void pmuRoleData() {
+    Role rolePreview = roleManager.getRoleById(pmuRol);
+    // Removing users roles
+    for (UserRole userRole : rolePreview.getUserRoles()) {
+      if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
+        userRoleManager.deleteUserRole(userRole.getId());
+      }
+    }
+    // Add new Users roles
+    for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
+      if (userRole.getId() == null) {
+        if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
+          .collect(Collectors.toList()).isEmpty()) {
+          userRoleManager.saveUserRole(userRole);
+        }
+      }
+    }
+  }
+
+
   @Override
   public void prepare() throws Exception {
 
@@ -154,134 +174,122 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+  private void programLeaderData() {
+    for (CrpProgram crpProgram : flagshipsPrograms) {
+      CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
+      for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+
+        if (crpProgram.getLeaders() == null) {
+          crpProgram.setLeaders(new ArrayList<>());
+        }
+        if (!crpProgram.getLeaders().contains(leaderPreview)) {
+          crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
+          User user = userManager.getUser(leaderPreview.getUser().getId());
+
+          List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+            .filter(u -> u.isActive() && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
+            .collect(Collectors.toList());
+
+
+          if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+            if (crpProgramPrev.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+              List<UserRole> fplUserRoles =
+                user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
+              if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
+                for (UserRole userRole : fplUserRoles) {
+                  userRoleManager.deleteUserRole(userRole.getId());
+                }
+              }
+            }
+          }
+
+        }
+      }
+
+
+      if (crpProgram.getLeaders() != null) {
+        for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
+          if (crpProgramLeader.getId() == null) {
+            crpProgramLeader.setActive(true);
+            crpProgramLeader.setCrpProgram(crpProgram);
+            crpProgramLeader.setCreatedBy(this.getCurrentUser());
+            crpProgramLeader.setModifiedBy(this.getCurrentUser());
+            crpProgramLeader.setModificationJustification("");
+            crpProgramLeader.setActiveSince(new Date());
+            CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
+            if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
+              .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
+                && c.getUser().equals(crpProgramLeader.getUser()))
+              .collect(Collectors.toList()).isEmpty()) {
+              crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+            }
+
+            User user = userManager.getUser(crpProgramLeader.getUser().getId());
+            UserRole userRole = new UserRole();
+            userRole.setUser(user);
+
+            if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+              userRole.setRole(fplRole);
+            }
+
+            if (!user.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void programsData() {
+    List<CrpProgram> fgProgramsRewiev =
+      crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    // Removing crp flagship program type
+    if (fgProgramsRewiev != null) {
+      for (CrpProgram crpProgram : fgProgramsRewiev) {
+        if (!flagshipsPrograms.contains(crpProgram)) {
+          CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
+          if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .isEmpty()) {
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          }
+
+        }
+      }
+    }
+    // Add crp flagship program type
+    for (CrpProgram crpProgram : flagshipsPrograms) {
+      if (crpProgram.getId() == null) {
+        crpProgram.setCrp(loggedCrp);
+        crpProgram.setActive(true);
+        crpProgram.setCreatedBy(this.getCurrentUser());
+        crpProgram.setModifiedBy(this.getCurrentUser());
+        crpProgram.setModificationJustification("");
+        crpProgram.setActiveSince(new Date());
+        crpProgramManager.saveCrpProgram(crpProgram);
+      } else {
+        CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+        crpProgram.setCrp(loggedCrp);
+        crpProgram.setActive(true);
+        crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
+        crpProgram.setModifiedBy(this.getCurrentUser());
+        crpProgram.setModificationJustification("");
+        crpProgram.setActiveSince(crpProgramDb.getActiveSince());
+        crpProgramManager.saveCrpProgram(crpProgram);
+      }
+    }
+  }
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
 
-      Role rolePreview = roleManager.getRoleById(pmuRol);
-      // Removing users roles
-      for (UserRole userRole : rolePreview.getUserRoles()) {
-        if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
-          userRoleManager.deleteUserRole(userRole.getId());
-        }
-      }
-      // Add new Users roles
-      for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
-        if (userRole.getId() == null) {
-          if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
-            .collect(Collectors.toList()).isEmpty()) {
-            userRoleManager.saveUserRole(userRole);
-          }
-        }
-      }
+      this.pmuRoleData();
+      this.programsData();
+      this.programLeaderData();
 
-      List<CrpProgram> fgProgramsRewiev =
-        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-      // Removing crp flagship program type
-      if (fgProgramsRewiev != null) {
-        for (CrpProgram crpProgram : fgProgramsRewiev) {
-          if (!flagshipsPrograms.contains(crpProgram)) {
-            CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
-            if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-              .isEmpty()) {
-              crpProgramManager.deleteCrpProgram(crpProgram.getId());
-            }
-
-          }
-        }
-      }
-      // Add crp flagship program type
-      for (CrpProgram crpProgram : flagshipsPrograms) {
-        if (crpProgram.getId() == null) {
-          crpProgram.setCrp(loggedCrp);
-          crpProgram.setActive(true);
-          crpProgram.setCreatedBy(this.getCurrentUser());
-          crpProgram.setModifiedBy(this.getCurrentUser());
-          crpProgram.setModificationJustification("");
-          crpProgram.setActiveSince(new Date());
-          crpProgramManager.saveCrpProgram(crpProgram);
-        } else {
-          CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          crpProgram.setCrp(loggedCrp);
-          crpProgram.setActive(true);
-          crpProgram.setCreatedBy(crpProgramDb.getCreatedBy());
-          crpProgram.setModifiedBy(this.getCurrentUser());
-          crpProgram.setModificationJustification("");
-          crpProgram.setActiveSince(crpProgramDb.getActiveSince());
-          crpProgramManager.saveCrpProgram(crpProgram);
-        }
-      }
-
-
-      for (CrpProgram crpProgram : flagshipsPrograms) {
-        CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
-        for (CrpProgramLeader leaderPreview : crpProgramPrev.getCrpProgramLeaders().stream().filter(c -> c.isActive())
-          .collect(Collectors.toList())) {
-
-          if (crpProgram.getLeaders() == null) {
-            crpProgram.setLeaders(new ArrayList<>());
-          }
-          if (!crpProgram.getLeaders().contains(leaderPreview)) {
-            crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
-            User user = userManager.getUser(leaderPreview.getUser().getId());
-
-            List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
-              .filter(u -> u.isActive() && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
-              .collect(Collectors.toList());
-
-
-            if (existsUserLeader == null || existsUserLeader.isEmpty()) {
-
-              if (crpProgramPrev.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                List<UserRole> fplUserRoles =
-                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
-                if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
-                  for (UserRole userRole : fplUserRoles) {
-                    userRoleManager.deleteUserRole(userRole.getId());
-                  }
-                }
-              }
-            }
-
-          }
-        }
-
-
-        if (crpProgram.getLeaders() != null) {
-          for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
-            if (crpProgramLeader.getId() == null) {
-              crpProgramLeader.setActive(true);
-              crpProgramLeader.setCrpProgram(crpProgram);
-              crpProgramLeader.setCreatedBy(this.getCurrentUser());
-              crpProgramLeader.setModifiedBy(this.getCurrentUser());
-              crpProgramLeader.setModificationJustification("");
-              crpProgramLeader.setActiveSince(new Date());
-              CrpProgram crpProgramPrevLeaders = crpProgramManager.getCrpProgramById(crpProgram.getId());
-              if (crpProgramPrevLeaders.getCrpProgramLeaders().stream()
-                .filter(c -> c.isActive() && c.getCrpProgram().equals(crpProgramLeader.getCrpProgram())
-                  && c.getUser().equals(crpProgramLeader.getUser()))
-                .collect(Collectors.toList()).isEmpty()) {
-                crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
-              }
-
-              User user = userManager.getUser(crpProgramLeader.getUser().getId());
-              UserRole userRole = new UserRole();
-              userRole.setUser(user);
-
-              if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-                userRole.setRole(fplRole);
-              }
-
-              if (!user.getUserRoles().contains(userRole)) {
-                userRoleManager.saveUserRole(userRole);
-              }
-            }
-          }
-        }
-
-
-      }
       CrpParameter parameter = null;
       if (parameters.size() == 0) {
         parameter = new CrpParameter();
@@ -299,11 +307,11 @@ public class CrpAdminManagmentAction extends BaseAction {
       parameter.setActiveSince(new Date());
       crpParameterManager.saveCrpParameter(parameter);
       this.getSession().put(parameter.getKey(), parameter.getValue());
+
       /*
        * Desactive regions
        */
       if (!loggedCrp.isHasRegions()) {
-
         List<CrpProgram> rgProgramsRewiev =
           crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
         rgProgramsRewiev =
@@ -314,8 +322,6 @@ public class CrpAdminManagmentAction extends BaseAction {
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
         }
-
-
       }
 
       Collection<String> messages = this.getActionMessages();
@@ -333,7 +339,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
 
   }
-
 
   public void setFlagshipsPrograms(List<CrpProgram> flagshipsPrograms) {
     this.flagshipsPrograms = flagshipsPrograms;

@@ -35,7 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.impactPathway.ClusterActivitiesValidator;
+import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;

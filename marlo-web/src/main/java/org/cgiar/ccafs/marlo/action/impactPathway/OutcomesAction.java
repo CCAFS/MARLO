@@ -39,7 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.impactPathway.OutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -305,9 +305,9 @@ public class CrpProgamRegionsAction extends BaseAction {
             }
           }
 
-          for (String ISOCode : crpProgram.getSelectedCountries()) {
+          for (String isoCode : crpProgram.getSelectedCountries()) {
             int a = 0;
-            LocElement locElement = locElementManger.getLocElementByISOCode(ISOCode);
+            LocElement locElement = locElementManger.getLocElementByISOCode(isoCode);
 
 
             if (crpProgramPrevLeaders.getCrpProgramCountries().stream()
