@@ -13,7 +13,7 @@
 		</action>
 
 
-    <action name="SubIDObyIDO" class="org.cgiar.ccafs.marlo.action.json.impactPathway.SubIDOListAction">
+    <action name="SubIDObyIDO" class="org.cgiar.ccafs.marlo.action.json.impactpathway.SubIDOListAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
