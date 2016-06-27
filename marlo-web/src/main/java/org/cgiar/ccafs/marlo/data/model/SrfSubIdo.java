@@ -39,14 +39,14 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
-
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
+
   @Expose
   private boolean active;
+
 
   @Expose
   private User createdBy;
@@ -74,6 +74,28 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
     this.description = description;
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpSubIdosContributions = crpSubIdosContributions;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    SrfSubIdo other = (SrfSubIdo) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -117,9 +139,17 @@ public class SrfSubIdo implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public SrfIdo getSrfIdo() {
     return this.srfIdo;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
