@@ -49,7 +49,7 @@
 
 			<!-- ImpactPathway interceptors -->
 			<interceptor name="canEditImpactPathway"
-				class="org.cgiar.ccafs.marlo.interceptor.impactPathway.EditImpactPathwayInterceptor" />
+				class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
 
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">

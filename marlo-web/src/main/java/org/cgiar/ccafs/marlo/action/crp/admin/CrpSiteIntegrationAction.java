@@ -141,134 +141,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
     if (this.hasPermission("*")) {
 
-      List<CrpsSiteIntegration> siteIntegrationPrew;
-
-      if (crpsSiteIntegrationManager.findAll() != null) {
-        siteIntegrationPrew = crpsSiteIntegrationManager.findAll().stream().filter(si -> si.getCrp().equals(loggedCrp))
-          .collect(Collectors.toList());
-
-        for (CrpsSiteIntegration crpsSiteIntegration : siteIntegrationPrew) {
-
-          if (!loggedCrp.getSiteIntegrations().contains(crpsSiteIntegration)) {
-            for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
-
-              crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
-              User user = userManager.getUser(crpSitesLeader.getUser().getId());
-
-              List<CrpSitesLeader> existsUserLeader =
-                user.getCrpSitesLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
-
-
-              if (existsUserLeader == null || existsUserLeader.isEmpty()) {
-
-                if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
-                  List<UserRole> slUserRoles =
-                    user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList());
-                  if (slUserRoles != null || !slUserRoles.isEmpty()) {
-                    for (UserRole userRole : slUserRoles) {
-                      userRoleManager.deleteUserRole(userRole.getId());
-                    }
-                  }
-                }
-              }
-            }
-            crpsSiteIntegrationManager.deleteCrpsSiteIntegration(crpsSiteIntegration.getId());
-          } else {
-            if (crpsSiteIntegration.getCrpSitesLeaders() != null) {
-              CrpsSiteIntegration siteIntegration = loggedCrp.getSiteIntegrations().stream()
-                .filter(sl -> sl.equals(crpsSiteIntegration)).collect(Collectors.toList()).get(0);
-              for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
-
-                if (!siteIntegration.getSiteLeaders().contains(crpSitesLeader)) {
-
-                  crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
-                  User user = userManager.getUser(crpSitesLeader.getUser().getId());
-
-                  List<CrpSitesLeader> existsUserLeader =
-                    user.getCrpSitesLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
-
-
-                  if (existsUserLeader == null || existsUserLeader.isEmpty()) {
-
-                    if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
-                      List<UserRole> slUserRoles = user.getUserRoles().stream()
-                        .filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList());
-                      if (slUserRoles != null || !slUserRoles.isEmpty()) {
-                        for (UserRole userRole : slUserRoles) {
-                          userRoleManager.deleteUserRole(userRole.getId());
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
-        if (siteIntegration.getId() == null) {
-          LocElement locElement =
-            locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
-
-          siteIntegration.setLocElement(locElement);
-          siteIntegration.setCrp(loggedCrp);
-          siteIntegration.setActive(true);
-          siteIntegration.setModifiedBy(this.getCurrentUser());
-          siteIntegration.setCreatedBy(this.getCurrentUser());
-          siteIntegration.setModificationJustification("");
-          siteIntegration.setActiveSince(new Date());
-
-          Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
-
-          if (siteIntegration.getSiteLeaders() != null) {
-            for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
-              User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-              CrpsSiteIntegration crpSiteIntegration =
-                crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
-
-              sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
-              sitesLeader.setUser(userSiteLeader);
-              sitesLeader.setActive(true);
-              sitesLeader.setModifiedBy(this.getCurrentUser());
-              sitesLeader.setCreatedBy(this.getCurrentUser());
-              sitesLeader.setModificationJustification("");
-              sitesLeader.setActiveSince(new Date());
-
-
-              UserRole userRole = new UserRole(slRole, userSiteLeader);
-              if (!userSiteLeader.getUserRoles().contains(userRole)) {
-                userRoleManager.saveUserRole(userRole);
-              }
-            }
-          }
-        } else {
-          if (siteIntegration.getSiteLeaders() != null) {
-            for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
-              if (sitesLeader.getId() == null) {
-                User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
-                CrpsSiteIntegration crpSiteIntegration =
-                  crpsSiteIntegrationManager.getCrpsSiteIntegrationById(siteIntegration.getId());
-
-                sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
-                sitesLeader.setUser(userSiteLeader);
-                sitesLeader.setActive(true);
-                sitesLeader.setModifiedBy(this.getCurrentUser());
-                sitesLeader.setCreatedBy(this.getCurrentUser());
-                sitesLeader.setModificationJustification("");
-                sitesLeader.setActiveSince(new Date());
-                crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
-
-                UserRole userRole = new UserRole(slRole, userSiteLeader);
-                if (!userSiteLeader.getUserRoles().contains(userRole)) {
-                  userRoleManager.saveUserRole(userRole);
-                }
-              }
-            }
-          }
-        }
-      }
+      this.siteIntegrationPreviusData();
+      this.siteIntegrationNewData();
 
       if (loggedCrp.getCrpsSitesIntegrations() != null) {
         loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations()));
@@ -293,10 +167,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
-
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -306,9 +180,140 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.slRole = slRole;
   }
 
-
   public void setSlRoleid(Long slRoleid) {
     this.slRoleid = slRoleid;
+  }
+
+
+  private void siteIntegrationNewData() {
+    for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
+      if (siteIntegration.getId() == null) {
+        LocElement locElement =
+          locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
+
+        siteIntegration.setLocElement(locElement);
+        siteIntegration.setCrp(loggedCrp);
+        siteIntegration.setActive(true);
+        siteIntegration.setModifiedBy(this.getCurrentUser());
+        siteIntegration.setCreatedBy(this.getCurrentUser());
+        siteIntegration.setModificationJustification("");
+        siteIntegration.setActiveSince(new Date());
+
+        Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+
+        if (siteIntegration.getSiteLeaders() != null) {
+          for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+            User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+            CrpsSiteIntegration crpSiteIntegration =
+              crpsSiteIntegrationManager.getCrpsSiteIntegrationById(newSiteIntegrationId);
+
+            sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+            sitesLeader.setUser(userSiteLeader);
+            sitesLeader.setActive(true);
+            sitesLeader.setModifiedBy(this.getCurrentUser());
+            sitesLeader.setCreatedBy(this.getCurrentUser());
+            sitesLeader.setModificationJustification("");
+            sitesLeader.setActiveSince(new Date());
+
+
+            UserRole userRole = new UserRole(slRole, userSiteLeader);
+            if (!userSiteLeader.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+            }
+          }
+        }
+      } else {
+        if (siteIntegration.getSiteLeaders() != null) {
+          for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+            if (sitesLeader.getId() == null) {
+              User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+              CrpsSiteIntegration crpSiteIntegration =
+                crpsSiteIntegrationManager.getCrpsSiteIntegrationById(siteIntegration.getId());
+
+              sitesLeader.setCrpsSiteIntegration(crpSiteIntegration);
+              sitesLeader.setUser(userSiteLeader);
+              sitesLeader.setActive(true);
+              sitesLeader.setModifiedBy(this.getCurrentUser());
+              sitesLeader.setCreatedBy(this.getCurrentUser());
+              sitesLeader.setModificationJustification("");
+              sitesLeader.setActiveSince(new Date());
+              crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
+
+              UserRole userRole = new UserRole(slRole, userSiteLeader);
+              if (!userSiteLeader.getUserRoles().contains(userRole)) {
+                userRoleManager.saveUserRole(userRole);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void siteIntegrationPreviusData() {
+    List<CrpsSiteIntegration> siteIntegrationPrew;
+
+    if (crpsSiteIntegrationManager.findAll() != null) {
+      siteIntegrationPrew = crpsSiteIntegrationManager.findAll().stream().filter(si -> si.getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+
+      for (CrpsSiteIntegration crpsSiteIntegration : siteIntegrationPrew) {
+
+        if (!loggedCrp.getSiteIntegrations().contains(crpsSiteIntegration)) {
+          for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+
+            crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
+            User user = userManager.getUser(crpSitesLeader.getUser().getId());
+
+            List<CrpSitesLeader> existsUserLeader =
+              user.getCrpSitesLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
+
+            if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+              if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
+                List<UserRole> slUserRoles =
+                  user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList());
+                if (slUserRoles != null || !slUserRoles.isEmpty()) {
+                  for (UserRole userRole : slUserRoles) {
+                    userRoleManager.deleteUserRole(userRole.getId());
+                  }
+                }
+              }
+            }
+          }
+          crpsSiteIntegrationManager.deleteCrpsSiteIntegration(crpsSiteIntegration.getId());
+        } else {
+          if (crpsSiteIntegration.getCrpSitesLeaders() != null) {
+            CrpsSiteIntegration siteIntegration = loggedCrp.getSiteIntegrations().stream()
+              .filter(sl -> sl.equals(crpsSiteIntegration)).collect(Collectors.toList()).get(0);
+            for (CrpSitesLeader crpSitesLeader : crpsSiteIntegration.getCrpSitesLeaders()) {
+
+              if (!siteIntegration.getSiteLeaders().contains(crpSitesLeader)) {
+
+                crpSitesLeaderManager.deleteCrpSitesLeader(crpSitesLeader.getId());
+                User user = userManager.getUser(crpSitesLeader.getUser().getId());
+
+                List<CrpSitesLeader> existsUserLeader =
+                  user.getCrpSitesLeaders().stream().filter(u -> u.isActive()).collect(Collectors.toList());
+
+                if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+
+                  if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
+                    List<UserRole> slUserRoles = user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole))
+                      .collect(Collectors.toList());
+                    if (slUserRoles != null || !slUserRoles.isEmpty()) {
+                      for (UserRole userRole : slUserRoles) {
+                        userRoleManager.deleteUserRole(userRole.getId());
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 }

@@ -13,7 +13,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.action.json.impactPathway;
+package org.cgiar.ccafs.marlo.action.json.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;

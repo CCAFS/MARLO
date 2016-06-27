@@ -12,7 +12,7 @@
  * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.impactPathway;
+package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -36,7 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.impactPathway.OutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;

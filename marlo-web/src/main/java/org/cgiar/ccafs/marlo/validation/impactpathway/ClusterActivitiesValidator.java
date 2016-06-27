@@ -13,7 +13,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.validation.impactPathway;
+package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;

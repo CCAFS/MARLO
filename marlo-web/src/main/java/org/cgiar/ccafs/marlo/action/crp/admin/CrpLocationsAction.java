@@ -64,6 +64,153 @@ public class CrpLocationsAction extends BaseAction {
     return loggedCrp;
   }
 
+  private void locationNewData() {
+    for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
+
+      if (locElementType.getId() == null) {
+
+        locElementType.setName(locElementType.getName());
+        locElementType.setCrp(loggedCrp);
+        locElementType.setActive(true);
+        locElementType.setModifiedBy(this.getCurrentUser());
+        locElementType.setCreatedBy(this.getCurrentUser());
+        locElementType.setActiveSince(new Date());
+        locElementType.setModificationJustification("");
+        Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
+
+        if (locElementType.getLocationElements() != null) {
+          for (LocElement locElement : locElementType.getLocationElements()) {
+            if (locElement.getId() == null) {
+
+              LocGeoposition locGeoposition = new LocGeoposition();
+              locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
+              locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
+              locGeoposition.setActive(true);
+              locGeoposition.setModifiedBy(this.getCurrentUser());
+              locGeoposition.setCreatedBy(this.getCurrentUser());
+              locGeoposition.setActiveSince(new Date());
+              locGeoposition.setModificationJustification("");
+
+              Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
+              LocElementType elementType = locElementTypeManager.getLocElementTypeById(newLocElementTypeId);
+              LocElement parentElement =
+                locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+
+              locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
+
+              locElement.setLocGeoposition(locGeoposition);
+              locElement.setLocElementType(elementType);
+              locElement.setLocElement(parentElement);
+              locElement.setCrp(loggedCrp);
+              locElement.setActive(true);
+              locElement.setModifiedBy(this.getCurrentUser());
+              locElement.setCreatedBy(this.getCurrentUser());
+              locElement.setActiveSince(new Date());
+              locElement.setModificationJustification("");
+              locElementManager.saveLocElement(locElement);
+
+              elementType.setHasCoordinates(true);
+              locElementTypeManager.saveLocElementType(elementType);
+            }
+          }
+        }
+      } else {
+        if (!locElementType.getHasCoordinates()) {
+          LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+          System.out.println();
+          if (elementType.getLocElements() != null) {
+            for (LocElement locElement : elementType.getLocElements()) {
+              locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
+              locElementManager.deleteLocElement(locElement.getId());
+            }
+          }
+          elementType.setHasCoordinates(false);
+          locElementTypeManager.saveLocElementType(elementType);
+        } else {
+          if (locElementType.getLocationElements() != null) {
+            for (LocElement locElement : locElementType.getLocationElements()) {
+              if (locElement.getId() == null) {
+
+                LocGeoposition locGeoposition = new LocGeoposition();
+                locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
+                locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
+                locGeoposition.setActive(true);
+                locGeoposition.setModifiedBy(this.getCurrentUser());
+                locGeoposition.setCreatedBy(this.getCurrentUser());
+                locGeoposition.setActiveSince(new Date());
+                locGeoposition.setModificationJustification("");
+
+                Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
+                LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+                LocElement parentElement =
+                  locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
+
+                locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
+
+                locElement.setLocGeoposition(locGeoposition);
+                locElement.setLocElementType(elementType);
+                locElement.setLocElement(parentElement);
+                locElement.setCrp(loggedCrp);
+                locElement.setActive(true);
+                locElement.setModifiedBy(this.getCurrentUser());
+                locElement.setCreatedBy(this.getCurrentUser());
+                locElement.setActiveSince(new Date());
+                locElement.setModificationJustification("");
+                locElementManager.saveLocElement(locElement);
+
+                elementType.setHasCoordinates(true);
+                locElementTypeManager.saveLocElementType(locElementType);
+              }
+            }
+          } else {
+            LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+
+            if (elementType.getLocElements() != null) {
+              for (LocElement locElement : locElementType.getLocElements()) {
+                locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
+                locElementManager.deleteLocElement(locElement.getId());
+              }
+            }
+            elementType.setHasCoordinates(false);
+            locElementTypeManager.saveLocElementType(elementType);
+          }
+        }
+      }
+    }
+  }
+
+  private void locationPreviousData() {
+    List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes());
+
+    if (locElementTypesPrew != null) {
+      for (LocElementType locElementType : locElementTypesPrew) {
+        if (!loggedCrp.getLocationElementTypes().contains(locElementType)) {
+          if (locElementType.getLocElements() != null) {
+            for (LocElement locElement : locElementType.getLocElements()) {
+              locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
+              locElementManager.deleteLocElement(locElement.getId());
+            }
+          }
+          locElementTypeManager.deleteLocElementType(locElementType.getId());
+        } else {
+          if (locElementType.getLocElements() != null) {
+
+            LocElementType elementType = loggedCrp.getLocationElementTypes().stream()
+              .filter(le -> le.equals(locElementType)).collect(Collectors.toList()).get(0);
+            if (elementType.getLocationElements() != null) {
+              for (LocElement locElement : locElementType.getLocElements()) {
+                if (!elementType.getLocationElements().contains(locElement)) {
+                  locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
+                  locElementManager.deleteLocElement(locElement.getId());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     super.prepare();
@@ -94,155 +241,8 @@ public class CrpLocationsAction extends BaseAction {
   public String save() {
     if (this.hasPermission("*")) {
 
-      List<LocElementType> locElementTypesPrew = new ArrayList<LocElementType>(loggedCrp.getLocElementTypes());
-
-      if (locElementTypesPrew != null) {
-        for (LocElementType locElementType : locElementTypesPrew) {
-          if (!loggedCrp.getLocationElementTypes().contains(locElementType)) {
-            if (locElementType.getLocElements() != null) {
-              for (LocElement locElement : locElementType.getLocElements()) {
-                locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
-                locElementManager.deleteLocElement(locElement.getId());
-              }
-            }
-            locElementTypeManager.deleteLocElementType(locElementType.getId());
-          } else {
-            if (locElementType.getLocElements() != null) {
-
-              LocElementType elementType = loggedCrp.getLocationElementTypes().stream()
-                .filter(le -> le.equals(locElementType)).collect(Collectors.toList()).get(0);
-              if (elementType.getLocationElements() != null) {
-                for (LocElement locElement : locElementType.getLocElements()) {
-                  if (!elementType.getLocationElements().contains(locElement)) {
-                    locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
-                    locElementManager.deleteLocElement(locElement.getId());
-                  }
-                }
-              }
-            }
-          }
-        }
-
-
-      }
-
-      for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
-
-        if (locElementType.getId() == null) {
-
-          locElementType.setName(locElementType.getName());
-          locElementType.setCrp(loggedCrp);
-          locElementType.setActive(true);
-          locElementType.setModifiedBy(this.getCurrentUser());
-          locElementType.setCreatedBy(this.getCurrentUser());
-          locElementType.setActiveSince(new Date());
-          locElementType.setModificationJustification("");
-          Long newLocElementTypeId = locElementTypeManager.saveLocElementType(locElementType);
-
-          if (locElementType.getLocationElements() != null) {
-            for (LocElement locElement : locElementType.getLocationElements()) {
-              if (locElement.getId() == null) {
-
-                LocGeoposition locGeoposition = new LocGeoposition();
-                locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
-                locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
-                locGeoposition.setActive(true);
-                locGeoposition.setModifiedBy(this.getCurrentUser());
-                locGeoposition.setCreatedBy(this.getCurrentUser());
-                locGeoposition.setActiveSince(new Date());
-                locGeoposition.setModificationJustification("");
-
-                Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
-                LocElementType elementType = locElementTypeManager.getLocElementTypeById(newLocElementTypeId);
-                LocElement parentElement =
-                  locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-
-                locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
-
-                locElement.setLocGeoposition(locGeoposition);
-                locElement.setLocElementType(elementType);
-                locElement.setLocElement(parentElement);
-                locElement.setCrp(loggedCrp);
-                locElement.setActive(true);
-                locElement.setModifiedBy(this.getCurrentUser());
-                locElement.setCreatedBy(this.getCurrentUser());
-                locElement.setActiveSince(new Date());
-                locElement.setModificationJustification("");
-                locElementManager.saveLocElement(locElement);
-
-                elementType.setHasCoordinates(true);
-                locElementTypeManager.saveLocElementType(elementType);
-              }
-            }
-          }
-        } else {
-
-          if (!locElementType.getHasCoordinates()) {
-            LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
-            System.out.println();
-            if (elementType.getLocElements() != null) {
-              for (LocElement locElement : elementType.getLocElements()) {
-                locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
-                locElementManager.deleteLocElement(locElement.getId());
-              }
-            }
-
-            elementType.setHasCoordinates(false);
-            locElementTypeManager.saveLocElementType(elementType);
-          } else {
-            if (locElementType.getLocationElements() != null) {
-              for (LocElement locElement : locElementType.getLocationElements()) {
-                if (locElement.getId() == null) {
-
-                  LocGeoposition locGeoposition = new LocGeoposition();
-                  locGeoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
-                  locGeoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
-                  locGeoposition.setActive(true);
-                  locGeoposition.setModifiedBy(this.getCurrentUser());
-                  locGeoposition.setCreatedBy(this.getCurrentUser());
-                  locGeoposition.setActiveSince(new Date());
-                  locGeoposition.setModificationJustification("");
-
-                  Long newLocGeopositionId = locGeopositionManager.saveLocGeoposition(locGeoposition);
-                  LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
-                  LocElement parentElement =
-                    locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
-
-                  locGeoposition = locGeopositionManager.getLocGeopositionById(newLocGeopositionId);
-
-                  locElement.setLocGeoposition(locGeoposition);
-                  locElement.setLocElementType(elementType);
-                  locElement.setLocElement(parentElement);
-                  locElement.setCrp(loggedCrp);
-                  locElement.setActive(true);
-                  locElement.setModifiedBy(this.getCurrentUser());
-                  locElement.setCreatedBy(this.getCurrentUser());
-                  locElement.setActiveSince(new Date());
-                  locElement.setModificationJustification("");
-                  locElementManager.saveLocElement(locElement);
-
-                  elementType.setHasCoordinates(true);
-                  locElementTypeManager.saveLocElementType(locElementType);
-                }
-
-              }
-            } else {
-              LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
-
-              if (elementType.getLocElements() != null) {
-                for (LocElement locElement : locElementType.getLocElements()) {
-                  locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());
-                  locElementManager.deleteLocElement(locElement.getId());
-                }
-              }
-
-              elementType.setHasCoordinates(false);
-              locElementTypeManager.saveLocElementType(elementType);
-            }
-
-          }
-        }
-      }
+      this.locationPreviousData();
+      this.locationNewData();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -261,9 +261,7 @@ public class CrpLocationsAction extends BaseAction {
           loggedCrp.getLocationElementTypes().get(i).setLocationElements(
             new ArrayList<LocElement>(loggedCrp.getLocationElementTypes().get(i).getLocElements()));
         }
-
       }
-
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;

@@ -13,7 +13,7 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.action.impactPathway;
+package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
@@ -34,7 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.impactPathway.ClusterActivitiesValidator;
+import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
