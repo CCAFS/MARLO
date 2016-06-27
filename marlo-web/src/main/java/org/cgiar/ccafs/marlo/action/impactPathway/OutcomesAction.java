@@ -24,16 +24,19 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
@@ -71,12 +74,13 @@ public class OutcomesAction extends BaseAction {
   private OutcomeValidator validator;
   private CrpAssumptionManager crpAssumptionManager;
   private CrpManager crpManager;
+  private UserManager userManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager) {
+    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -86,6 +90,7 @@ public class OutcomesAction extends BaseAction {
     this.validator = validator;
     this.crpOutcomeSubIdoManager = crpOutcomeSubIdoManager;
     this.crpManager = crpManager;
+    this.userManager = userManager;
     this.crpAssumptionManager = crpAssumptionManager;
   }
 
@@ -135,13 +140,21 @@ public class OutcomesAction extends BaseAction {
     if (allPrograms != null) {
 
       this.programs = allPrograms;
-
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       } catch (Exception e) {
-        if (!this.programs.isEmpty()) {
-          crpProgramID = this.programs.get(0).getId();
+
+        User user = userManager.getUser(this.getCurrentUser().getId());
+        List<CrpProgramLeader> userLeads =
+          user.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (!userLeads.isEmpty()) {
+          crpProgramID = userLeads.get(0).getCrpProgram().getId();
+        } else {
+          if (!this.programs.isEmpty()) {
+            crpProgramID = this.programs.get(0).getId();
+          }
         }
+
       }
     } else {
       programs = new ArrayList<>();
@@ -423,6 +436,7 @@ public class OutcomesAction extends BaseAction {
       messages = this.getActionMessages();
       return SUCCESS;
     } else {
+      this.setActionMessages(null);
       return NOT_AUTHORIZED;
     }
 

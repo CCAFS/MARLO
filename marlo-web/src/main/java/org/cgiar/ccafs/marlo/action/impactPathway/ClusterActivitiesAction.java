@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -135,14 +136,24 @@ public class ClusterActivitiesAction extends BaseAction {
     if (allPrograms != null) {
 
       this.programs = allPrograms;
-
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       } catch (Exception e) {
-        if (!this.programs.isEmpty()) {
-          crpProgramID = this.programs.get(0).getId();
+
+        User user = userManager.getUser(this.getCurrentUser().getId());
+        List<CrpProgramLeader> userLeads =
+          user.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        if (!userLeads.isEmpty()) {
+          crpProgramID = userLeads.get(0).getCrpProgram().getId();
+        } else {
+          if (!this.programs.isEmpty()) {
+            crpProgramID = this.programs.get(0).getId();
+          }
         }
+
+
       }
+
     } else {
       programs = new ArrayList<>();
     }
