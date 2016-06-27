@@ -33,7 +33,7 @@
   	      	[#--Select an institution --]
   	      	[#if editable]
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="ppaPartners.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="name" editable=true  /]        		
+        		  [@customForm.select name="" showTitle=false placeholder="ppaPartners.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="composedName" editable=true  /]        		
 
         			<div class="clearfix"></div>
       			</div>
