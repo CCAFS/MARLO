@@ -28,6 +28,29 @@ function attachEvents() {
   // Remove a Milestone
   $('.removeMilestone').on('click', removeMilestone);
 
+  $('input.outcomeYear, input.milestoneYear').on('keyup', function() {
+    var $target = $(this);
+    var targetVal = parseInt($target.val());
+    var $milestonesYearInputs = $(this).parents('.outcome').find('.milestones-list input.targetYear');
+
+    $target.removeClass('fieldError');
+
+    if($target.hasClass('milestoneYear')) {
+      var outcomeYearVal = parseInt($(this).parents('.outcome').find('input.outcomeYear').val()) || 0;
+      if(targetVal > outcomeYearVal) {
+        $target.addClass('fieldError');
+      }
+    } else {
+      $milestonesYearInputs.each(function(i,input) {
+        $(input).removeClass('fieldError');
+        if(parseInt($(input).val()) > targetVal) {
+          $(input).addClass('fieldError');
+        }
+      });
+    }
+  });
+  $('input.outcomeYear, input.milestoneYear').trigger('keyup');
+
   // Add a Sub IDO
   $('.addSubIdo').on('click', addSubIdo);
   // Remove a Sub IDO
