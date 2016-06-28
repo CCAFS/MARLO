@@ -49,9 +49,9 @@ function updateClustersIndex() {
 // Users-leaders
 function removePerson() {
   var $item = $(this).parents('li');
-  console.log($item);
   $item.hide(function() {
     $item.remove();
+    checkItems($(this).parent());
     updateClustersIndex();
   });
 
@@ -65,15 +65,13 @@ function addUserItem(composedName,userId) {
       id: userId
   }
   if($usersList.find('input[value=' + item.id + ']').exists()) {
-    console.log("ya existe el usuario");
   } else {
-    console.log(item.name);
     $li.find('.name').html(item.name);
     $li.find('.user').val(item.id);
     $usersList.append($li);
     $li.show('slow');
   }
-
+  checkItems($usersList);
   dialog.dialog("close");
   updateClustersIndex();
 }
@@ -87,4 +85,13 @@ function updateUsersIndex(item,clustersName) {
     $(userItem).find('.id').attr('name', customName + '.id');
   });
 
+}
+
+function checkItems(block) {
+  var items = $(block).find('li').length;
+  if(items == 0) {
+    $(block).parent().find('p').fadeIn();
+  } else {
+    $(block).parent().find('p').fadeOut();
+  }
 }
