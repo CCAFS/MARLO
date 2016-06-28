@@ -186,11 +186,13 @@ function updateTotalContribution(list,text) {
 
   // Removing classes
   $(text).removeClass('fieldError fieldChecked');
+  $(list).removeClass('fieldError');
 
   // Set percentage and classes
   $(text).find('.value').text(setPercentageFormat(total));
   if(total > 100) {
     $(text).addClass('fieldError');
+    $(list).addClass('fieldError');
   } else if(total == 100) {
     $(text).addClass('fieldChecked');
   }
