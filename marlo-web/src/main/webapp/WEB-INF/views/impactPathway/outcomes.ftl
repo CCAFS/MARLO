@@ -135,7 +135,7 @@
     
     [#-- Outcome Sub-IDOs List --]
     <br />
-    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <span class="contributioRem pull-right">Contribution remaining <span class="value">100%</span></span></h5>
+    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
     <div class="subIdos-list">
     [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]

@@ -18,3 +18,8 @@
   width: 18%;
   float: left;
 }
+
+p.contributioRem {
+  color: #949494;
+  font-size: 0.85em;
+}
