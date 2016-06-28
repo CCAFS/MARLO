@@ -166,7 +166,7 @@ public class StandardDAO {
    * 
    * @param sqlQuery is a string representing an HQL query.
    */
-  protected List<Map<String, Object>> findCustomQuery(String sqlQuery) {
+  public List<Map<String, Object>> findCustomQuery(String sqlQuery) {
     Session session = null;
     Transaction tx = null;
 
@@ -262,7 +262,7 @@ public class StandardDAO {
   }
 
 
-  public void logIt(String action, IAuditLog entity, String json, long userId) {
+  public void logIt(String action, IAuditLog entity, String json, long userId, long transactionId, Long principal) {
 
     Session tempSession = this.openSession();
 
@@ -270,7 +270,7 @@ public class StandardDAO {
 
       try {
         Auditlog auditRecord = new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId().toString(),
-          entity.getClass().toString(), json, userId);
+          entity.getClass().toString(), json, userId, transactionId, principal);
         tempSession.save(auditRecord);
         tempSession.flush();
       } catch (HibernateException e) {
