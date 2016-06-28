@@ -23,3 +23,14 @@ p.contributioRem {
   color: #949494;
   font-size: 0.85em;
 }
+
+.buttonSubIdo-block {
+    float: left;
+    display: inline-block;
+    margin-right: 5%;
+}
+
+.contribution {}
+
+.subIdoId {
+}

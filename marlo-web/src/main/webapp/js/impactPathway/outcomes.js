@@ -2,6 +2,9 @@ $(document).ready(init);
 
 function init() {
 
+  var wWidth = $(window).width();
+  var dWidth = wWidth * 0.7;
+
   /* Declaring Events */
   attachEvents();
 
@@ -14,6 +17,21 @@ function init() {
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
 
+  $("#subIDOs-graphic").dialog({
+      autoOpen: false,
+      resizable: false,
+      height: 500,
+      width: dWidth,
+      modal: true,
+      show: {
+          effect: "blind",
+          duration: 1000
+      },
+      hide: {
+          effect: "explode",
+          duration: 1000
+      }
+  });
 }
 
 function attachEvents() {
@@ -52,6 +70,10 @@ function attachEvents() {
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
   $('.removeAssumption').on('click', removeAssumption);
+
+  $(".selectSubIDO").click(function() {
+    $("#subIDOs-graphic").dialog("open");
+  });
 
 }
 

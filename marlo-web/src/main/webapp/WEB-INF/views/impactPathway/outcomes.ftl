@@ -36,7 +36,7 @@
             </ul>
           </div>
         
-        [@s.form action=actionName enctype="multipart/form-data" ]  
+          [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
         <div class="outcomes-list">
@@ -134,8 +134,7 @@
     [/#if]
     
     [#-- Outcome Sub-IDOs List --]
-    <br />
-    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
+    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/]</h5>
     <div class="subIdos-list">
     [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]
@@ -201,16 +200,22 @@
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />
-    <div class="form-group" style="display:inline-block;">
-      <div class="buttonSubIdo-block">
+    <div class="form-group">
+      <div class="buttonSubIdo-block" >
         <div class="buttonSubIdo-content">
-          <div class="button-blue">Select a subIdo</div>
+          <br>
+          <div class="button-blue selectSubIDO">Select a subIDO</div>
         </div>
       </div>
-      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="outcome.subIDOs.selectSubIDO.placeholder" listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable  /]</div>
+      <div class="subIdoBlock">[@customForm.input name="${subIDOCustomName}.srfSubIdo.id" type="text" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable /]</div>
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
+      [#-- PopUp to select SubIDOs --]
+      <div id="subIDOs-graphic" style="display:none;" >
+        <p>This is an animated dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+      </div>
     </div>
+    
     [#-- Assumptions List --]
     <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]</label>
     <div class="assumptions-list">
