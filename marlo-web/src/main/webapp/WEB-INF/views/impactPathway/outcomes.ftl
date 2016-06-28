@@ -36,7 +36,7 @@
             </ul>
           </div>
         
-          [@s.form action=actionName enctype="multipart/form-data" ]  
+        [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
         <div class="outcomes-list">
@@ -135,7 +135,8 @@
     [/#if]
     
     [#-- Outcome Sub-IDOs List --]
-    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/]</h5>
+    <br />
+    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <span class="contributioRem pull-right">Contribution remaining <span class="value">100%</span></span></h5>
     <div class="subIdos-list">
     [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]
