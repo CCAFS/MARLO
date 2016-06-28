@@ -75,6 +75,7 @@ public class OutcomesAction extends BaseAction {
   private CrpAssumptionManager crpAssumptionManager;
   private CrpManager crpManager;
   private UserManager userManager;
+  private List<SrfIdo> srfIdos;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -120,6 +121,11 @@ public class OutcomesAction extends BaseAction {
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
+  }
+
+
+  public List<SrfIdo> getSrfIdos() {
+    return srfIdos;
   }
 
 
@@ -208,8 +214,10 @@ public class OutcomesAction extends BaseAction {
     }
 
     idoList = new HashMap<>();
+    srfIdos = new ArrayList<>();
     for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
       idoList.put(srfIdo.getId(), srfIdo.getDescription());
+      srfIdos.add(srfIdo);
     }
     String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
     this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
@@ -218,6 +226,7 @@ public class OutcomesAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -475,7 +484,6 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
-
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
   }
@@ -495,12 +503,17 @@ public class OutcomesAction extends BaseAction {
     this.outcomes = outcomes;
   }
 
+
   public void setPrograms(List<CrpProgram> programs) {
     this.programs = programs;
   }
 
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
+  }
+
+  public void setSrfIdos(List<SrfIdo> srfIdos) {
+    this.srfIdos = srfIdos;
   }
 
 
