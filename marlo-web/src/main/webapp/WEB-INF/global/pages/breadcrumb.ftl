@@ -19,7 +19,7 @@
   [#if action.getUsersOnline()??]
   <div class="usersInfo">
     [#assign users = action.getUsersOnline()]
-    <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.firstName)!} ${(us.lastName)!} <br/> [/#list]">Users Online : ${online}</button>
+    <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.user.firstName)!} ${(us.user.lastName)!} - ${(us.section)!} <br/> [/#list]">Users Online : ${online}</button>
   </div>
   [/#if]
 </ol>

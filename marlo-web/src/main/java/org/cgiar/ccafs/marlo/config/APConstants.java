@@ -31,6 +31,7 @@ public final class APConstants {
   // Session variables
   public static final String SESSION_USER = "current_user";
   public static final String SESSION_CRP = "current_crp";
+  public static final String USER_TOKEN = "user_token";
 
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
