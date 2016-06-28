@@ -7,7 +7,6 @@ function init() {
 
   /* Overwritten event from global.js */
   yesnoEvent = yesnoEventLocations;
-
   /* Numeric Inputs */
   $('.locationLatitude-input, .locationLongitude-input').numericInput();
 
@@ -34,6 +33,14 @@ function attachEvents() {
   // Location Elements events
   $('.addLocElement').on('click', addLocElement);
   $('.removeLocElement').on('click', removeLocElement);
+
+  // switch coordinates
+  $('.yes-button-label').on('click', function() {
+    yesnoEventLocations(true, $(this));
+  });
+  $('.no-button-label').on('click', function() {
+    yesnoEventLocations(false, $(this));
+  });
 
 }
 
@@ -165,21 +172,35 @@ function updateLocationsIndexes() {
   });
 }
 
-function yesnoEventLocations(target) {
-  $t = $(target);
-  var isChecked = ($t.val() === "true");
-  $t.siblings().removeClass('radio-checked');
-  $t.next().addClass('radio-checked');
+function yesnoEventLocations(value,item) {
+  $t = item.parent().find('input.onoffswitch-radio');
   var array = $t.attr('name').split('.');
   var $aditional = $t.parents('.locationLevel').find('.aditional-' + array[array.length - 1]);
-  if($t.hasClass('inverse')) {
-    isChecked = !isChecked;
-  }
-  if(isChecked) {
+  // AHORA
+  if(value == true) {
+    item.siblings().removeClass('radio-checked');
+    item.addClass('radio-checked');
     $aditional.slideDown("slow");
+    $t.val(value);
   } else {
-    $aditional.slideUp("slow");
-    $aditional.find('input:text,textarea').val('');
+    $("#dialog-confirm").dialog({
+        resizable: false,
+        height: 120,
+        modal: true,
+        buttons: {
+            "Yes": function() {
+              item.siblings().removeClass('radio-checked');
+              item.addClass('radio-checked');
+              $aditional.slideUp("slow");
+              $t.val(value);
+              $(this).dialog("close");
+
+            },
+            Cancel: function() {
+              $(this).dialog("close");
+            }
+        }
+    });
   }
 }
 

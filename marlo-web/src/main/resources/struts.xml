@@ -111,6 +111,10 @@
 			</result>
 		</global-results>
 
+<global-exception-mappings>
+      <exception-mapping exception="java.lang.Exception" result="unhandledException"/>
+    </global-exception-mappings>
+
 		<action name="unhandledExceptionAction"
 			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
 			<result name="success">/WEB-INF/global/pages/error/500.ftl</result>

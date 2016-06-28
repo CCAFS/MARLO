@@ -86,6 +86,10 @@
     <div class="form-group">
       [#-- Does this location level have specific coordinates?   --]
       [@customForm.yesNoInput name="${customName}.hasCoordinates" label="location.question" editable=editable inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
+      [#-- confirm popup --]
+      <div id="dialog-confirm"  style="display:none;">
+        <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
+      </div>
       [#-- Locations List --]
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">
         <div class="items-list simpleBox">
