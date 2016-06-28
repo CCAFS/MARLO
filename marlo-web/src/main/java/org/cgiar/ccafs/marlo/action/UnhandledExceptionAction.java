@@ -66,7 +66,7 @@ public class UnhandledExceptionAction extends BaseAction {
       return;
     }
 
-    subject = "Exception occurred in CCAFS P&R";
+    subject = "Exception occurred in MARLO";
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " <"
       + this.getCurrentUser().getEmail() + "> ");
     message.append("has experienced an exception on the platform. \n");

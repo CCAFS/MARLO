@@ -43,6 +43,10 @@
 			<interceptor name="validCrp"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidCrpActionInterceptor" />
 
+			<!-- validating if the url is valid in the open session -->
+			<interceptor name="validSessionCrp"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidSessionCrpInterceptor" />
+
 			<!-- Crp Admin interceptors -->
 			<interceptor name="canEditCrpAdmin"
 				class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
@@ -56,6 +60,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp"/>
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
@@ -63,6 +68,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp"/>
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -74,6 +80,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp"/>
 				<interceptor-ref name="canEditImpactPathway" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
