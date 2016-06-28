@@ -53,6 +53,7 @@ public class StandardDAO {
 
   }
 
+
   /**
    * This method commit the changes to hibernate table (in memory) but does not synchronize the changes to the database
    * engine.
@@ -97,7 +98,7 @@ public class StandardDAO {
    * @param id is the record identifier.
    * @return the object populated.
    */
-  protected <T> T find(Class<T> clazz, Object id) {
+  public <T> T find(Class<T> clazz, Object id) {
     T obj = null;
     Session session = null;
     Transaction tx = null;
@@ -119,7 +120,6 @@ public class StandardDAO {
     }
     return obj;
   }
-
 
   /**
    * This method make a query that returns a list of objects from the model.
@@ -159,6 +159,7 @@ public class StandardDAO {
 
     }
   }
+
 
   /**
    * This method make a query that returns a not mapped object result from the model.

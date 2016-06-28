@@ -28,6 +28,7 @@ import com.google.inject.Singleton;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Session;
+import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.Type;
 
 /**
@@ -53,6 +54,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     deletes = new HashSet<Object>();
   }
 
+
   /**
    * delete an object, the object is not delete into database yet.
    */
@@ -77,6 +79,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       if (!((IAuditLog) entity).isActive()) {
         deletes.add(entity);
       } else {
+
+
+        updates.addAll(this.relations(currentState, types));
         updates.add(entity);
       }
 
@@ -84,6 +89,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     return false;
 
   }
+
 
   /**
    * this method triggered when save an object, the object is not save into database yet.
@@ -110,7 +116,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     try {
 
       Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-      for (Iterator it = inserts.iterator(); it.hasNext();) {
+      for (Iterator<Object> it = inserts.iterator(); it.hasNext();) {
         IAuditLog entity = (IAuditLog) it.next();
         System.out.println("postFlush - insert");
 
@@ -119,14 +125,14 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         dao.logIt("Saved", entity, json, entity.getModifiedBy().getId());
       }
 
-      for (Iterator it = updates.iterator(); it.hasNext();) {
+      for (Iterator<Object> it = updates.iterator(); it.hasNext();) {
         IAuditLog entity = (IAuditLog) it.next();
         System.out.println("postFlush - update");
         String json = gson.toJson(entity);
         dao.logIt("Updated", entity, json, entity.getModifiedBy().getId());
       }
 
-      for (Iterator it = deletes.iterator(); it.hasNext();) {
+      for (Iterator<Object> it = deletes.iterator(); it.hasNext();) {
         IAuditLog entity = (IAuditLog) it.next();
         System.out.println("postFlush - delete");
         String json = gson.toJson(entity);
@@ -150,6 +156,27 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public void preFlush(Iterator iterator) {
 
+  }
+
+  public Set<Object> relations(Object[] state, Type[] types) {
+
+    Set<Object> relations = new HashSet<>();
+    int i = 0;
+    for (Type type : types) {
+      if (type instanceof ManyToOneType) {
+        IAuditLog auditable = (IAuditLog) state[i];
+        if (auditable != null && auditable.getId() != null) {
+
+          Object obj = dao.find(type.getReturnedClass(), auditable.getId());
+          relations.add(obj);
+
+
+        }
+
+      }
+      i++;
+    }
+    return relations;
   }
 
   public void setSession(Session session) {
