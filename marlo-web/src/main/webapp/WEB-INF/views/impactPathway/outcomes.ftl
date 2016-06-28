@@ -200,8 +200,12 @@
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />
-    <div class="form-group">
-      <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="outcome.subIDOs.inputIDO.label" placeholder="outcome.subIDOs.selectIDO.placeholder" listName="idoList"  className="idoId" required=true editable=editable  /]</div>
+    <div class="form-group" style="display:inline-block;">
+      <div class="buttonSubIdo-block">
+        <div class="buttonSubIdo-content">
+          <div class="button-blue">Select a subIdo</div>
+        </div>
+      </div>
       <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="outcome.subIDOs.selectSubIDO.placeholder" listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable  /]</div>
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
