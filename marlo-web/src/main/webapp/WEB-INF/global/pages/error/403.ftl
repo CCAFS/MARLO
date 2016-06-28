@@ -5,7 +5,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="content">
-  <article class="fullContent">
+  <article class="container">
     <div class="content center">
       <div class="borderBox">
         <h1 id="error">403</h1>

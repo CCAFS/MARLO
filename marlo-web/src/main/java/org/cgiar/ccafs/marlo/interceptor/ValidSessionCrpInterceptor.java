@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.UserToken;
 
 import java.util.Map;
 
@@ -41,16 +42,30 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
   private CrpUserManager crpUserManager;
   private Crp loggedCrp;
 
+
   @Inject
   public ValidSessionCrpInterceptor(CrpManager crpManager, CrpUserManager crpUserManager) {
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
   }
 
+  private void changeSessionSection(Map<String, Object> session) {
+
+    UserToken userToken = new UserToken();
+    userToken.setUser((User) session.get(APConstants.SESSION_USER));
+    userToken.setSection(ActionContext.getContext().getName());
+    if (session.containsKey(APConstants.USER_TOKEN)) {
+      session.remove(APConstants.USER_TOKEN);
+      session.put(APConstants.USER_TOKEN, userToken);
+    } else {
+      session.put(APConstants.USER_TOKEN, userToken);
+    }
+  }
+
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-
     Map<String, Object> session = invocation.getInvocationContext().getSession();
+
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
@@ -60,12 +75,13 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
       Crp crp = crpManager.findCrpByAcronym(enteredCrp);
       if (crp != null) {
         if (crp.equals(loggedCrp)) {
+          this.changeSessionSection(session);
           return invocation.invoke();
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
           if (crpUserManager.existCrpUser(user.getId(), crp.getId())) {
-            session.remove(APConstants.SESSION_CRP);
-            session.put(APConstants.SESSION_CRP, crp);
+            session.replace(APConstants.SESSION_CRP, crp);
+            this.changeSessionSection(session);
             return invocation.invoke();
           }
         }

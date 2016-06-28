@@ -281,7 +281,7 @@ p.fieldError{
 
 p.fieldChecked{
   color: #008000 !important;
-  /* font-weight: bold; */
+  /* font-weight: 400; */
   margin-right: 4px;
   background: url(../../images/global/checked-true.png) no-repeat 0 40%;
   padding-left: 21px;

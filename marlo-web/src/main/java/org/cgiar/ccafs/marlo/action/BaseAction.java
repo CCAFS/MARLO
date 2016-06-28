@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
+import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
@@ -282,7 +283,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return session;
   }
 
-  public List<User> getUsersOnline() {
+  public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
 

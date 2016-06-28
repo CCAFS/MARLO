@@ -5,10 +5,11 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="content">
-  <article class="fullContent">
+  <br />
+  <article class="container">
     <div class="content center">
       <div class="borderBox">
-        <h1 id="error">[@s.text name="server.error.500.title" /]</h1>
+        <h1 id="error">500</h1>
         <img src="${baseUrl}/images/global/page-404-icon.png" />
         <p class="errorText primary">[@s.text name="server.error.500.description" /]</p> 
         <a id="backHome" href="#" onclick="history.go(-2);">[@s.text name="server.error.404.back" /]</a>

@@ -71,7 +71,8 @@ public class OutcomeValidator extends BaseValidator
       this.addMessage(action.getText("outcome.action.milestone.year.required", params));
     }
 
-    if (milestone.getCrpProgramOutcome().getYear() != null) {
+
+    if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null) {
       if (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue()) {
         this.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
@@ -100,10 +101,12 @@ public class OutcomeValidator extends BaseValidator
     }
     if (outcome.getMilestones() != null) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
+        outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
       if (outcome.getSubIdos() != null) {
         for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+          outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
           this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
         }
       }
