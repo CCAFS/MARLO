@@ -275,13 +275,13 @@ label.readOnly {
 
 p.fieldError{
   color: #F52626 !important;
-  font-weight: bold;
+  /* font-weight: bold; */
   margin-right: 4px;
 }
 
 p.fieldChecked{
-  color: green;
-  font-weight: bold;
+  color: #008000 !important;
+  /* font-weight: bold; */
   margin-right: 4px;
   background: url(../../images/global/checked-true.png) no-repeat 0 40%;
   padding-left: 21px;
@@ -290,7 +290,7 @@ p.fieldChecked{
 
 span.fieldError{
   background-color: #F59898;
-  color: #fff;
+  color: #fff !important;
   padding: 1px 6px 1px 6px;
   margin-right: 4px;
   margin-top: 2px;

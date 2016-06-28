@@ -40,6 +40,14 @@ function attachEvents() {
     loadSubIdosByIdoId(idoId, $subIdosSelect);
   });
 
+  // Change contribution percentage
+  $('input.contribution').on('keyup', function() {
+    var $text = $(this).parents('.outcome').find('p.contributioRem');
+    var $contributions = $(this).parents('.subIdos-list').find('input.contribution');
+    updateTotalContribution($contributions, $text);
+  });
+  $('input.contribution').trigger('keyup');
+
   // Add an assumption
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
@@ -104,13 +112,6 @@ function removeMilestone() {
  * SUB-IDOs Functions
  */
 
-function verifyPercentage($subIdosList) {
-  $inputsPercentage = $($subIdosList).find(".contribution");
-  $inputsPercentage.each(function() {
-    console.log($(this).val());
-  });
-}
-
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
@@ -123,7 +124,6 @@ function addSubIdo() {
   $item.show('slow');
   // Hide empty message
   $(this).parents('.outcome').find('.subIdos-list p.message').hide();
-  verifyPercentage($list);
 }
 
 function removeSubIdo() {
@@ -132,6 +132,7 @@ function removeSubIdo() {
   $item.hide(function() {
     $item.remove();
     updateAllIndexes();
+    $('input.contribution').trigger('keyup');
   });
 }
 
@@ -173,6 +174,26 @@ function loadSubIdosByIdoId(idoId,select) {
     });
   }
 
+}
+
+function updateTotalContribution(list,text) {
+  // calculated total
+  var total = 0;
+  $(list).each(function(i,item) {
+    var itemVal = parseFloat(removePercentageFormat(($(item).val()) || '0'));
+    total += (itemVal > 100) ? 100 : itemVal;
+  });
+
+  // Removing classes
+  $(text).removeClass('fieldError fieldChecked');
+
+  // Set percentage and classes
+  $(text).find('.value').text(setPercentageFormat(total));
+  if(total > 100) {
+    $(text).addClass('fieldError');
+  } else if(total == 100) {
+    $(text).addClass('fieldChecked');
+  }
 }
 
 /**

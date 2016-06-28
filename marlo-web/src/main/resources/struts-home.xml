@@ -3,7 +3,7 @@
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
-    
+
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">
 			<result name="input">/WEB-INF/views/home/login.ftl</result>
@@ -17,7 +17,7 @@
 			method="logout">
 			<result name="success">/WEB-INF/views/home/login.ftl</result>
 		</action>
-		
+
 		<action name="{*}/dashboard"
 			class="org.cgiar.ccafs.marlo.action.home.DashboardAction">
 			<!-- interceptor-ref name="autoLogin" / -->
@@ -25,5 +25,5 @@
 			<result name="input">/WEB-INF/views/home/dashboard.ftl</result>
 		</action>
 	</package>
-	
+
 </struts>

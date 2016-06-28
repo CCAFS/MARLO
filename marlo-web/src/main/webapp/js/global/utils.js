@@ -62,7 +62,6 @@ function popups() {
 }
 
 function isNumber(e) {
-  console.log(e.keyCode);
   if($.inArray(e.keyCode, [
       46, 8, 9, 27, 13, 110, 190, 109, 189
   ]) !== -1 ||
