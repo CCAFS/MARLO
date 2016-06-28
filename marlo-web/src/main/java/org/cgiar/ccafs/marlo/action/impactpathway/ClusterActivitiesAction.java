@@ -141,8 +141,8 @@ public class ClusterActivitiesAction extends BaseAction {
       } catch (Exception e) {
 
         User user = userManager.getUser(this.getCurrentUser().getId());
-        List<CrpProgramLeader> userLeads =
-          user.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
         if (!userLeads.isEmpty()) {
           crpProgramID = userLeads.get(0).getCrpProgram().getId();
         } else {
