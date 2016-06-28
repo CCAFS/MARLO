@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -47,12 +48,17 @@ public class SrfIdo implements java.io.Serializable, IAuditLog {
 
   private Set<SrfSubIdo> srfSubIdos = new HashSet<SrfSubIdo>(0);
 
+  private List<SrfSubIdo> subIdos;
+
   private boolean active;
+
 
   private User createdBy;
 
   private Date activeSince;
+
   private User modifiedBy;
+
   private String modificationJustification;
 
   public SrfIdo() {
@@ -113,10 +119,14 @@ public class SrfIdo implements java.io.Serializable, IAuditLog {
     return this.srfSloIdos;
   }
 
-
   public Set<SrfSubIdo> getSrfSubIdos() {
     return this.srfSubIdos;
   }
+
+  public List<SrfSubIdo> getSubIdos() {
+    return subIdos;
+  }
+
 
   @Override
   public boolean isActive() {
@@ -169,6 +179,10 @@ public class SrfIdo implements java.io.Serializable, IAuditLog {
 
   public void setSrfSubIdos(Set<SrfSubIdo> srfSubIdos) {
     this.srfSubIdos = srfSubIdos;
+  }
+
+  public void setSubIdos(List<SrfSubIdo> subIdos) {
+    this.subIdos = subIdos;
   }
 
 

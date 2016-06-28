@@ -217,6 +217,8 @@ public class OutcomesAction extends BaseAction {
     srfIdos = new ArrayList<>();
     for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
       idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
     String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
