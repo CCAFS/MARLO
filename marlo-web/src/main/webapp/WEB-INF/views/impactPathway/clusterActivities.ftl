@@ -18,23 +18,25 @@
 
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
-  <div class="container">
-    [#-- Program (Flagships) --]
-    <ul id="liaisonInstitutions" class="horizontalSubMenu">
-      [#list programs as program]
-        [#assign isActive = (program.id == crpProgramID)/]
-        <li class="${isActive?string('active','')}">
-          <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
-        </li>
-      [/#list]
-    </ul>
-  </div>
+  
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
+      
+        <div class="">
+          [#-- Program (Flagships) --]
+          <ul id="liaisonInstitutions" class="horizontalSubMenu">
+            [#list programs as program]
+              [#assign isActive = (program.id == crpProgramID)/]
+              <li class="${isActive?string('active','')}">
+                <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
+              </li>
+            [/#list]
+          </ul>
+        </div>
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
        
@@ -45,7 +47,6 @@
             [#list clusterofActivities as cluster]
               [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
             [/#list]
-          [#else][@clusterMacro cluster={} name="clusterofActivities" index=0 /]
           [/#if]
         </div>
         [#-- Add CoA Button --]
@@ -92,15 +93,20 @@
 
 [#macro clusterMacro cluster name index isTemplate=false]
   [#assign clusterCustomName= "${name}[${index}]" /]
+  
   <div id="cluster-${isTemplate?string('template', index)}" class="cluster form-group borderBox" style="display:${isTemplate?string('none','block')}">
-   
-           <div class="form-group">
+      
+      <div class="form-group">
+      <div class="leftHead">
+        <span class="index">${index+1}</span>
+        <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="cluster.index.title"/]</span>
+      </div>
       [#-- Remove Button --]
       [#if editable]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
       [#-- Cluster Activity Name --]
-      <div class=" form-group">
+      <div class=" form-group cluster-title">
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
@@ -113,6 +119,7 @@
           [/#list]
         [/#if]
         </ul>
+        <p class="text-center" style="display:${(cluster.leaders?has_content)?string('none','block')}">[@s.text name="siteIntegration.notUsers" /]</p>
       </div>
       [#-- Add CoA Leader --]
       [#if editable]

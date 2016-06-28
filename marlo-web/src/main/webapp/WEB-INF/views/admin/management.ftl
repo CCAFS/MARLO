@@ -74,7 +74,10 @@
           [#-- Does your CRP have regional program managers?  --]
           [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=editable inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
         </div>
-
+        [#-- confirm popup --]
+        <div id="dialog-confirm"  style="display:none;">
+          <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
+        </div>
         [#-- Section Buttons--]
         <div class="buttons">
           [#if editable]

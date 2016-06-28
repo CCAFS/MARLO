@@ -5,6 +5,9 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
+  /* Overwritten event from global.js */
+  yesnoEvent = yesnoEventLocations;
+
 }
 
 function attachEvents() {
@@ -48,6 +51,14 @@ function attachEvents() {
       updateProgramIndexes($block);
 
     });
+  });
+
+// switch coordinates
+  $('.yes-button-label').on('click', function() {
+    yesnoEventLocations(true, $(this));
+  });
+  $('.no-button-label').on('click', function() {
+    yesnoEventLocations(false, $(this));
   });
 
 }
@@ -137,4 +148,32 @@ function updateUserItemIndex(element,name) {
   $(element).find('.user').attr('name', name + 'user.id');
   $(element).find('.role').attr('name', name + 'role.id');
   $(element).find('.id').attr('name', name + 'id');
+}
+
+function yesnoEventLocations(value,item) {
+  $t = item.parent().find('input.onoffswitch-radio');
+  // AHORA
+  if(value == true) {
+    item.siblings().removeClass('radio-checked');
+    item.addClass('radio-checked');
+    $t.val(value);
+  } else {
+    $("#dialog-confirm").dialog({
+        resizable: false,
+        height: 120,
+        modal: true,
+        buttons: {
+            "Yes": function() {
+              item.siblings().removeClass('radio-checked');
+              item.addClass('radio-checked');
+              $t.val(value);
+              $(this).dialog("close");
+
+            },
+            Cancel: function() {
+              $(this).dialog("close");
+            }
+        }
+    });
+  }
 }

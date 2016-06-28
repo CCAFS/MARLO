@@ -44,7 +44,6 @@
           [#list outcomes as outcome]
             [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
           [/#list]
-        [#else][@outcomeMacro outcome={} name="outcomes" index=0 /]
         [/#if]
         </div>
         [#-- Add Outcome Button --]
