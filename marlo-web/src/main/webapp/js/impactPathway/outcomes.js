@@ -180,12 +180,12 @@ function updateTotalContribution(list,span) {
   // calculated total
   var total = 0;
   $(list).each(function(i,item) {
-    total += parseFloat(removePercentageFormat(($(item).val()) || '0'));
+    var itemVal = parseFloat(removePercentageFormat(($(item).val()) || '0'));
+    total += (itemVal > 100) ? 100 : itemVal;
   });
 
   // Removing classes
-  $(span).removeClass('fieldError, fieldChecked');
-  // $(span).removeClass('');
+  $(span).removeClass('fieldError fieldChecked');
 
   // Set percentage and classes
   $(span).find('.value').text(setPercentageFormat(total));
