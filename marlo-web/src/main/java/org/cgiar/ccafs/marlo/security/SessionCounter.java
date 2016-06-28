@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.security;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +31,13 @@ import javax.servlet.http.HttpSessionBindingEvent;
 public class SessionCounter implements HttpSessionAttributeListener {
 
   // list of users online.
-  public static List<User> users;
+  public static List<UserToken> users;
 
   @Override
   public void attributeAdded(HttpSessionBindingEvent se) {
     // ask if the users list has no initialized
     if (users == null) {
-      users = new ArrayList<User>();
+      users = new ArrayList<UserToken>();
     }
     /*
      * ask if the attribute of the session is the user information (after log in)
@@ -46,10 +45,11 @@ public class SessionCounter implements HttpSessionAttributeListener {
      * If the user exist in users list, the actual session attribute is replaced whit a id -1 user instance.
      * If the user does not exist in the user list, add the user in the list.
      */
-    if (se.getName().equals(APConstants.SESSION_USER)) {
-      if (!users.contains(se.getValue())) {
-        users.add((User) se.getValue());
-      }
+    if (se.getName().equals(APConstants.USER_TOKEN)) {
+      // if (!users.contains(se.getValue())) {
+      UserToken userToken = (UserToken) se.getValue();
+      users.add(userToken);
+      // }
 
       // Code To Control Duplicated users
       /*
@@ -69,7 +69,7 @@ public class SessionCounter implements HttpSessionAttributeListener {
      * ask if the attribute to remove in the session is the user (user log out)
      * then remove this user in the users list
      */
-    if (se.getName().equals(APConstants.SESSION_USER)) {
+    if (se.getName().equals(APConstants.USER_TOKEN)) {
       users.remove(se.getValue());
     }
   }
