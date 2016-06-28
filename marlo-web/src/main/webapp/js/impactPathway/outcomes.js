@@ -176,7 +176,7 @@ function loadSubIdosByIdoId(idoId,select) {
 
 }
 
-function updateTotalContribution(list,span) {
+function updateTotalContribution(list,text) {
   // calculated total
   var total = 0;
   $(list).each(function(i,item) {
@@ -185,14 +185,14 @@ function updateTotalContribution(list,span) {
   });
 
   // Removing classes
-  $(span).removeClass('fieldError fieldChecked');
+  $(text).removeClass('fieldError fieldChecked');
 
   // Set percentage and classes
-  $(span).find('.value').text(setPercentageFormat(total));
+  $(text).find('.value').text(setPercentageFormat(total));
   if(total > 100) {
-    $(span).addClass('fieldError');
+    $(text).addClass('fieldError');
   } else if(total == 100) {
-    $(span).addClass('fieldChecked');
+    $(text).addClass('fieldChecked');
   }
 }
 
