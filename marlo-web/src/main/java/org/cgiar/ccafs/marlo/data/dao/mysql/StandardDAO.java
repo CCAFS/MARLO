@@ -121,6 +121,7 @@ public class StandardDAO {
     return obj;
   }
 
+
   /**
    * This method make a query that returns a list of objects from the model.
    * This method was implemented in a generic way, so, the list of objects to be returned will depend on how the method
