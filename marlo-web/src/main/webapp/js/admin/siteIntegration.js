@@ -6,7 +6,7 @@ function init() {
 
   /* Declaring Events */
   attachEvents();
-  select = $("#ccafs_siteIntegration_");
+  select = $(".countriesList");
   $('.removeCountry').on('click', removeCountry);
 
   /* Init Select2 plugin */

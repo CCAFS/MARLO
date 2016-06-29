@@ -1696,13 +1696,13 @@ a.currentReportingSection li, a.currentSection li {
 #secondaryMenu ul li ul li.submitted a{
   background-image: url("../../images/global/submitted.png");
   background-repeat: no-repeat;
-  background-position: 183px 0;
+  background-position: 97% 6px;
 }
 
 #secondaryMenu ul li ul li.toSubmit a{
   background-image: url("../../images/global/submitted.png");
   background-repeat: no-repeat;
-  background-position: 183px -33px;
+  background-position: 97% -26px;
 }
 
 #secondaryMenu ul li ul li.loadingSection a{
@@ -2073,10 +2073,8 @@ h1.simpleTitle span {
 }
 
 .buttons {
-  display: block;
-  text-align: right;
   margin: 30px 0 10px 0;
-  /* float: right; */
+  height: 33px;
 }
 
 .borderBox .buttons, .simpleBox .buttons{
@@ -3138,7 +3136,7 @@ a.projectReportButton {
 .projectValidateButton {
   background: url(../../images/global/validate-icon.png) no-repeat;
   background-color: #7FB06F;
-  background-position: 44px 11px;
+  background-position: 46px 13px;
   padding: 11px 0 11px 18px;
   margin: 0px 10px;
   border-radius: 2px;
@@ -5502,3 +5500,10 @@ h4.testEnvironment {
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
 }
+
+.buttons-content.positionFixedBot {
+  position: fixed;
+  bottom: 0;
+}
+
+.buttons-content {float: right;margin-bottom: 5px;}
