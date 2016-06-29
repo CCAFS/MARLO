@@ -43,6 +43,22 @@ $(document).ready(function() {
     }
   });
 
+  // Function that set the interface buttons always visible
+  var $buttons = $('.buttons');
+  if($buttons.exists()) {
+    $buttons.find('.buttons-content').css({
+      right: $(document).width() - ($buttons.offset().left + $buttons.width())
+    });
+    $(window).scroll(function() {
+      var menuOffset = $(document).height() - ($buttons.offset().top + $buttons.height());
+      if($(window).scrollBottom() >= menuOffset) {
+        $buttons.find('.buttons-content').addClass('positionFixedBot animated flipInX');
+      } else {
+        $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
+      }
+    });
+  }
+
   function showHelpText() {
     $('.helpMessage').addClass('animated flipInX');
   }

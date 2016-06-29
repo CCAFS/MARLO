@@ -66,7 +66,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
     this.crpProgramOutcome = crpProgramOutcome;
-    this.srfTargetUnit = srfTargetUnit;
+    this.srfTargetUnit = srfTargetUnits;
     this.title = title;
     this.year = year;
     this.value = value;
@@ -127,7 +127,9 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public SrfTargetUnit getSrfTargetUnit() {
+
     return this.srfTargetUnit;
   }
 

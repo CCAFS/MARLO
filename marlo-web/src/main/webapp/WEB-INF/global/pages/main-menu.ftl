@@ -22,7 +22,16 @@
         [#if action.canAcessCrpAdmin() ]
          <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
           <a href="[@s.url namespace="/admin" action='${crpSession}/management'][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-cog"></span> [@s.text name="menu.admin" /]
+            <span class="glyphicon glyphicon-cog"></span> [@s.text name="menu.admin" ] [@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+          </a>
+        </li> 
+        [/#if]
+        
+        [#-- Marlo Admin --]
+        [#if action.canAccessSuperAdmin() ]
+         <li [#if currentSection?? && currentSection == "superadmin"] class="currentSection" [/#if]>
+          <a href="[@s.url namespace="/superadmin" action='${crpSession}/marloBoard'][@s.param name="edit" value="true"/][/@s.url]">
+            <span class="glyphicon glyphicon-tower"></span> [@s.text name="menu.superadmin" /]
           </a>
         </li> 
         [/#if] 

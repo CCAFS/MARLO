@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign pageLibs = [] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/clusterActivities.js"] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js"] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
@@ -56,6 +56,7 @@
 
         [#-- Section Buttons--]
         <div class="buttons">
+          <div class="buttons-content">
           [#if editable]
             <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
             [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
@@ -64,6 +65,7 @@
               <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
             [/#if]
           [/#if]
+          </div>
         </div>
         
         [#-- Hidden Parameters --]

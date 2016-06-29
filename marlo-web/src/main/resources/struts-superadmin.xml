@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- Add addition packages and configuration here. -->
+	<package name="superadmin" namespace="/superadmin" extends="marlo-default">
+
+		<action name="{crp}/marloBoard" class="org.cgiar.ccafs.marlo.action.superadmin.BoardAction">
+			<!-- interceptor-ref name="autoLogin" / -->		
+			<result name="input">/WEB-INF/views/superadmin/marloBoard.ftl</result>
+			<result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/marloBoard</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+
+  </package>
+</struts>

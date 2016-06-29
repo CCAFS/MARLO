@@ -29,9 +29,12 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Singleton;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.EntityMode;
 import org.hibernate.Session;
+import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.OrderedSetType;
+import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
 
 /**
@@ -49,6 +52,9 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private Set<Map<String, Object>> updates;
   private Set<Map<String, Object>> deletes;
   private StandardDAO dao;
+  private final String PRINCIPAL = "PRINCIPAL";
+  private final String ENTITY = "entity";
+
   private long transactionId;
 
   public AuditLogInterceptor() {
@@ -58,6 +64,67 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     deletes = new HashSet<Map<String, Object>>();
 
 
+  }
+
+  public String capitalizeFirstLetter(String original) {
+    if (original == null || original.length() == 0) {
+      return original;
+    }
+    return original.substring(0, 1).toUpperCase() + original.substring(1);
+  }
+
+  public void loadRelations(IAuditLog entity, boolean loadUsers) {
+    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+    String[] propertyNames = classMetadata.getPropertyNames();
+    for (String name : propertyNames) {
+      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Type propertyType = classMetadata.getPropertyType(name);
+      if (propertyValue != null && propertyType instanceof ManyToOneType) {
+
+        if (loadUsers) {
+          IAuditLog entityRelation = (IAuditLog) propertyValue;
+          Object obj = dao.find(propertyType.getReturnedClass(), entityRelation.getId());
+          this.loadRelations((IAuditLog) obj, false);
+          classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+        } else {
+          if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
+            IAuditLog entityRelation = (IAuditLog) propertyValue;
+            Object obj = dao.find(propertyType.getReturnedClass(), entityRelation.getId());
+            this.loadRelations((IAuditLog) obj, false);
+            classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+          }
+        }
+
+
+      }
+    }
+  }
+
+  public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
+    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+    for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
+      Map<String, Object> map = it.next();
+      if (map.get(PRINCIPAL) == null || map.get(PRINCIPAL).toString().equals("1")) {
+        IAuditLog entity = (IAuditLog) map.get(ENTITY);
+        this.loadRelations(entity, true);
+        String json = gson.toJson(entity);
+        if (map.containsKey(PRINCIPAL)) {
+          dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
+            new Long(map.get(PRINCIPAL).toString()));
+        }
+      } else {
+        Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
+        for (IAuditLog iAuditLog : set) {
+          String json = gson.toJson(iAuditLog);
+          if (map.containsKey(PRINCIPAL)) {
+            dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+              new Long(map.get(PRINCIPAL).toString()));
+          }
+        }
+      }
+
+
+    }
   }
 
 
@@ -72,8 +139,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     HashMap<String, Object> objects = new HashMap<>();
 
     if (entity instanceof IAuditLog) {
-      objects.put("entity", entity);
-      objects.put("principal", new Long(1));
+      objects.put(ENTITY, entity);
+      objects.put("PRINCIPAL", new Long(1));
 
       deletes.add(objects);
     }
@@ -88,14 +155,14 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
       if (!((IAuditLog) entity).isActive()) {
-        objects.put("entity", entity);
-        objects.put("principal", new Long(1));
+        objects.put(ENTITY, entity);
+        objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
 
       } else {
-        objects.put("entity", entity);
-        objects.put("principal", new Long(1));
+        objects.put(ENTITY, entity);
+        objects.put(PRINCIPAL, new Long(1));
         updates.add(objects);
 
         updates.addAll(this.relations(currentState, types, propertyNames));
@@ -115,8 +182,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     throws CallbackException {
     HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
-      objects.put("entity", entity);
-      objects.put("principal", new Long(1));
+      objects.put(ENTITY, entity);
+      objects.put(PRINCIPAL, new Long(1));
       inserts.add(objects);
 
 
@@ -140,62 +207,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
     try {
 
+      this.logSaveAndUpdate("Saved", inserts);
+      this.logSaveAndUpdate("Updated", updates);
       Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-      for (Iterator<Map<String, Object>> it = inserts.iterator(); it.hasNext();) {
-        Map<String, Object> map = it.next();
-        if (map.get("principal") == null || map.get("principal").toString().equals("1")) {
-          IAuditLog entity = (IAuditLog) map.get("entity");
-          String json = gson.toJson(entity);
-          if (map.containsKey("principal")) {
-            dao.logIt("Saved", entity, json, entity.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get("principal").toString()));
-          } else {
-            dao.logIt("Saved", entity, json, entity.getModifiedBy().getId(), this.transactionId, null);
-          }
-        } else {
-          Set<IAuditLog> set = (Set<IAuditLog>) map.get("entity");
-          for (IAuditLog iAuditLog : set) {
-            String json = gson.toJson(iAuditLog);
-            if (map.containsKey("principal")) {
-              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-                new Long(map.get("principal").toString()));
-            }
-          }
-        }
-
-
-      }
-
-      for (Iterator<Map<String, Object>> it = updates.iterator(); it.hasNext();) {
-        Map<String, Object> map = it.next();
-        if (map.get("principal") == null || map.get("principal").toString().equals("1")) {
-          IAuditLog entity = (IAuditLog) map.get("entity");
-          String json = gson.toJson(entity);
-          if (map.containsKey("principal")) {
-            dao.logIt("Updated", entity, json, entity.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get("principal").toString()));
-          } else {
-            dao.logIt("Updated", entity, json, entity.getModifiedBy().getId(), this.transactionId, null);
-          }
-        } else {
-          Set<IAuditLog> set = (Set<IAuditLog>) map.get("entity");
-          for (IAuditLog iAuditLog : set) {
-            String json = gson.toJson(iAuditLog);
-            if (map.containsKey("principal")) {
-              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-                new Long(map.get("principal").toString()));
-            }
-          }
-        }
-
-
-      }
-
       for (Iterator<Map<String, Object>> it = deletes.iterator(); it.hasNext();) {
 
         Map<String, Object> map = it.next();
-        IAuditLog entity = (IAuditLog) map.get("entity");
+        IAuditLog entity = (IAuditLog) map.get(ENTITY);
         String json = gson.toJson(entity);
         dao.logIt("Deleted", entity, json, entity.getModifiedBy().getId(), this.transactionId, new Long(1));
       }
@@ -219,48 +237,41 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
+
   public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames) {
 
     Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
     for (Type type : types) {
       HashMap<String, Object> objects = new HashMap<>();
-      if (type instanceof ManyToOneType) {
-        if (!(propertyNames[i].equals("createdBy") || propertyNames[i].equals("modifiedBy"))) {
-          IAuditLog auditable = (IAuditLog) state[i];
-          if (auditable != null && auditable.getId() != null) {
-            Object obj = dao.find(type.getReturnedClass(), auditable.getId());
-            objects.put("entity", obj);
-            relations.add(objects);
-          }
-        }
 
-
-      }
-      if (type instanceof OrderedSetType) {
+      if (type instanceof OrderedSetType || type instanceof SetType) {
         Set<IAuditLog> listRelation = new HashSet<>();
         Set<Object> set = (Set<Object>) state[i];
         if (set != null) {
           for (Object iAuditLog : set) {
             if (iAuditLog instanceof IAuditLog) {
               IAuditLog audit = (IAuditLog) iAuditLog;
-              try {
-                String name = audit.getClass().getName();
-                Class className = Class.forName(name);
-                Object obj = dao.find(className, audit.getId());
-                listRelation.add(audit);
-              } catch (ClassNotFoundException e) {
+              if (audit.isActive()) {
+                try {
+                  String name = audit.getClass().getName();
+                  Class className = Class.forName(name);
+                  Object obj = dao.find(className, audit.getId());
+                  listRelation.add(audit);
+                } catch (ClassNotFoundException e) {
 
-                e.printStackTrace();
+                  e.printStackTrace();
+                }
               }
+
 
             }
 
 
           }
           if (!listRelation.isEmpty()) {
-            objects.put("entity", listRelation);
-            objects.put("principal", "3");
+            objects.put(ENTITY, listRelation);
+            objects.put(PRINCIPAL, "3");
             relations.add(objects);
           }
 
