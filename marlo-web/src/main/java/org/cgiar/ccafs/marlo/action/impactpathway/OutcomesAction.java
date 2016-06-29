@@ -480,7 +480,7 @@ public class OutcomesAction extends BaseAction {
         if (save) {
           crpOutcomeSubIdoManager.saveCrpOutcomeSubIdo(crpOutcomeSubIdo);
         }
-
+        this.saveAssumptions(crpOutcomeSubIdo);
 
       }
     }
