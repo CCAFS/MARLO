@@ -20,6 +20,12 @@ jQuery.fn.exists = function() {
 
 jQuery.fn.numericInput = function() {
   $(this).each(function(i,input) {
+    if($(input).val() != '') {
+      var inputVal = parseFloat($(input).val()) || 0;
+      if((inputVal % 1) == 0) {
+        $(input).val(parseInt(inputVal));
+      }
+    }
     $(input).on("keydown", function(e) {
       isNumber(e);
     });

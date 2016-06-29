@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.data;
 import org.cgiar.ccafs.marlo.data.dao.mysql.StandardDAO;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -29,6 +31,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Session;
 import org.hibernate.type.ManyToOneType;
+import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.Type;
 
 /**
@@ -42,16 +45,19 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   private static final long serialVersionUID = -900829831186014812L;
   Session session;
-  private Set<Object> inserts;
-  private Set<Object> updates;
-  private Set<Object> deletes;
+  private Set<Map<String, Object>> inserts;
+  private Set<Map<String, Object>> updates;
+  private Set<Map<String, Object>> deletes;
   private StandardDAO dao;
+  private long transactionId;
 
   public AuditLogInterceptor() {
     this.dao = new StandardDAO();
-    inserts = new HashSet<Object>();
-    updates = new HashSet<Object>();
-    deletes = new HashSet<Object>();
+    inserts = new HashSet<Map<String, Object>>();
+    updates = new HashSet<Map<String, Object>>();
+    deletes = new HashSet<Map<String, Object>>();
+
+
   }
 
 
@@ -63,8 +69,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
     System.out.println("onDelete");
 
+    HashMap<String, Object> objects = new HashMap<>();
+
     if (entity instanceof IAuditLog) {
-      deletes.add(entity);
+      objects.put("entity", entity);
+      objects.put("principal", new Long(1));
+
+      deletes.add(objects);
     }
   }
 
@@ -74,15 +85,20 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
     String[] propertyNames, Type[] types) throws CallbackException {
-
+    HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
       if (!((IAuditLog) entity).isActive()) {
-        deletes.add(entity);
+        objects.put("entity", entity);
+        objects.put("principal", new Long(1));
+
+        deletes.add(objects);
+
       } else {
+        objects.put("entity", entity);
+        objects.put("principal", new Long(1));
+        updates.add(objects);
 
-
-        updates.addAll(this.relations(currentState, types));
-        updates.add(entity);
+        updates.addAll(this.relations(currentState, types, propertyNames));
       }
 
     }
@@ -97,9 +113,14 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
     throws CallbackException {
-
+    HashMap<String, Object> objects = new HashMap<>();
     if (entity instanceof IAuditLog) {
-      inserts.add(entity);
+      objects.put("entity", entity);
+      objects.put("principal", new Long(1));
+      inserts.add(objects);
+
+
+      inserts.addAll(this.relations(state, types, propertyNames));
     }
     return false;
 
@@ -112,31 +133,71 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public void postFlush(Iterator iterator) {
 
+    String transactionId = dao.findCustomQuery("select IFNULL(max(transaction_id),0) as 'transactionId' from auditlog")
+      .get(0).get("transactionId").toString();
+    this.transactionId = Long.parseLong(transactionId);
+    this.transactionId++;
 
     try {
 
       Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-      for (Iterator<Object> it = inserts.iterator(); it.hasNext();) {
-        IAuditLog entity = (IAuditLog) it.next();
-        System.out.println("postFlush - insert");
+
+      for (Iterator<Map<String, Object>> it = inserts.iterator(); it.hasNext();) {
+        Map<String, Object> map = it.next();
+        if (map.get("principal") == null || map.get("principal").toString().equals("1")) {
+          IAuditLog entity = (IAuditLog) map.get("entity");
+          String json = gson.toJson(entity);
+          if (map.containsKey("principal")) {
+            dao.logIt("Saved", entity, json, entity.getModifiedBy().getId(), this.transactionId,
+              new Long(map.get("principal").toString()));
+          } else {
+            dao.logIt("Saved", entity, json, entity.getModifiedBy().getId(), this.transactionId, null);
+          }
+        } else {
+          Set<IAuditLog> set = (Set<IAuditLog>) map.get("entity");
+          for (IAuditLog iAuditLog : set) {
+            String json = gson.toJson(iAuditLog);
+            if (map.containsKey("principal")) {
+              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+                new Long(map.get("principal").toString()));
+            }
+          }
+        }
 
 
-        String json = gson.toJson(entity);
-        dao.logIt("Saved", entity, json, entity.getModifiedBy().getId());
       }
 
-      for (Iterator<Object> it = updates.iterator(); it.hasNext();) {
-        IAuditLog entity = (IAuditLog) it.next();
-        System.out.println("postFlush - update");
-        String json = gson.toJson(entity);
-        dao.logIt("Updated", entity, json, entity.getModifiedBy().getId());
+      for (Iterator<Map<String, Object>> it = updates.iterator(); it.hasNext();) {
+        Map<String, Object> map = it.next();
+        if (map.get("principal") == null || map.get("principal").toString().equals("1")) {
+          IAuditLog entity = (IAuditLog) map.get("entity");
+          String json = gson.toJson(entity);
+          if (map.containsKey("principal")) {
+            dao.logIt("Updated", entity, json, entity.getModifiedBy().getId(), this.transactionId,
+              new Long(map.get("principal").toString()));
+          } else {
+            dao.logIt("Updated", entity, json, entity.getModifiedBy().getId(), this.transactionId, null);
+          }
+        } else {
+          Set<IAuditLog> set = (Set<IAuditLog>) map.get("entity");
+          for (IAuditLog iAuditLog : set) {
+            String json = gson.toJson(iAuditLog);
+            if (map.containsKey("principal")) {
+              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+                new Long(map.get("principal").toString()));
+            }
+          }
+        }
+
+
       }
 
-      for (Iterator<Object> it = deletes.iterator(); it.hasNext();) {
-        IAuditLog entity = (IAuditLog) it.next();
-        System.out.println("postFlush - delete");
+      for (Iterator<Map<String, Object>> it = deletes.iterator(); it.hasNext();) {
+
+        Map<String, Object> map = it.next();
+        IAuditLog entity = (IAuditLog) map.get("entity");
         String json = gson.toJson(entity);
-        dao.logIt("Deleted", entity, json, entity.getModifiedBy().getId());
+        dao.logIt("Deleted", entity, json, entity.getModifiedBy().getId(), this.transactionId, new Long(1));
       }
 
     } catch (Exception e) {
@@ -158,21 +219,52 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-  public Set<Object> relations(Object[] state, Type[] types) {
+  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames) {
 
-    Set<Object> relations = new HashSet<>();
+    Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
     for (Type type : types) {
+      HashMap<String, Object> objects = new HashMap<>();
       if (type instanceof ManyToOneType) {
-        IAuditLog auditable = (IAuditLog) state[i];
-        if (auditable != null && auditable.getId() != null) {
-
-          Object obj = dao.find(type.getReturnedClass(), auditable.getId());
-          relations.add(obj);
-
-
+        if (!(propertyNames[i].equals("createdBy") || propertyNames[i].equals("modifiedBy"))) {
+          IAuditLog auditable = (IAuditLog) state[i];
+          if (auditable != null && auditable.getId() != null) {
+            Object obj = dao.find(type.getReturnedClass(), auditable.getId());
+            objects.put("entity", obj);
+            relations.add(objects);
+          }
         }
 
+
+      }
+      if (type instanceof OrderedSetType) {
+        Set<IAuditLog> listRelation = new HashSet<>();
+        Set<Object> set = (Set<Object>) state[i];
+        if (set != null) {
+          for (Object iAuditLog : set) {
+            if (iAuditLog instanceof IAuditLog) {
+              IAuditLog audit = (IAuditLog) iAuditLog;
+              try {
+                String name = audit.getClass().getName();
+                Class className = Class.forName(name);
+                Object obj = dao.find(className, audit.getId());
+                listRelation.add(audit);
+              } catch (ClassNotFoundException e) {
+
+                e.printStackTrace();
+              }
+
+            }
+
+
+          }
+          if (!listRelation.isEmpty()) {
+            objects.put("entity", listRelation);
+            objects.put("principal", "3");
+            relations.add(objects);
+          }
+
+        }
       }
       i++;
     }
