@@ -150,11 +150,13 @@ function addSubIdo() {
 }
 
 function removeSubIdo() {
-  var $list = $(this).parents('.outcome').find('.subIdos-list');
+  var $parent = $(this).parents('.outcome');
+  var $list = $parent.find('.subIdos-list');
   var $item = $(this).parents('.subIdo');
   $item.hide(function() {
     $item.remove();
     updateAllIndexes();
+    $parent.find('p.contributioRem span.value').text('0%');
     $('input.contribution').trigger('keyup');
   });
 }

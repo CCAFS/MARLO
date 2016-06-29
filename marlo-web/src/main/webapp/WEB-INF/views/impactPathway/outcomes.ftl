@@ -1,10 +1,11 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrl}/js/impactPathway/outcomes.js" ] /]
+[#assign customJS = [ "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/outcomes.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
+
 
 [#assign breadCrumb = [
   {"label":"impactPathway", "nameSpace":"", "action":"outcomes"},
