@@ -13,7 +13,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -73,6 +73,23 @@
   </div>
 </section>
 
+[#-- PopUp to select SubIDOs --]
+      <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
+      <div class="graphic-container" >        
+        [#list srfIdos as ido]
+          <div class="idoWrapper">
+            <div class="IDO"><strong>${ido.description}</strong></div>
+            <div class="subIdoWrapper">
+              [#list ido.subIdos as subIdo]
+                <div class="line"></div>
+                <div id="subIdo-${subIdo.id}" class="subIDO">${subIdo.description}</div>
+              [/#list]
+            </div>
+          </div>
+        [/#list]
+        </div>      
+      </div>
+      
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
 
@@ -129,7 +146,7 @@
     [#-- Add Milestone Button --]
     [#if editable]
     <div class="text-right">
-      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addMilestone"/]</div>
+      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
     </div>
     [/#if]
     
@@ -147,7 +164,7 @@
     [#-- Add Sub-IDO Button --]
     [#if editable]
     <div class="text-right">
-      <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>[@s.text name="form.buttons.addSubIDO"/]</div>
+      <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
     </div>
     [/#if]
     <br />
@@ -195,25 +212,31 @@
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" class="programSubIDOId" name="${subIDOCustomName}.id" value="${(subIdo.id)!}"/>
+    
+    
     [#-- Remove Button --]
     [#if editable]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />
     <div class="form-group">
+    <div class="subIdoBlock" >
+          <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
+          <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"Select a subIDO clicking the button..." maxPos=50 substr=" "/]</div>
+          <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
+      </div>
       <div class="buttonSubIdo-block" >
         <div class="buttonSubIdo-content">
           <br>
-          <div class="button-blue selectSubIDO">Select a subIDO</div>
+          <div class="button-blue selectSubIDO" ><span class=""></span> Select a subIDO</div>
         </div>
       </div>
-      <div class="subIdoBlock">[@customForm.input name="${subIDOCustomName}.srfSubIdo.id" type="text" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable /]</div>
+      
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
-      [#-- PopUp to select SubIDOs --]
-      <div id="subIDOs-graphic" style="display:none;" >
-        <p>This is an animated dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
-      </div>
+      
+      
+      
     </div>
     
     [#-- Assumptions List --]
