@@ -55,6 +55,10 @@ jQuery.fn.percentageInput = function() {
   });
 };
 
+$.fn.scrollBottom = function() {
+  return $(document).height() - this.scrollTop() - this.height();
+};
+
 /*
  * This function takes the links whit popup class and add a click event. That event takes the href and open it in a
  * popUp window This method must be called in ready function

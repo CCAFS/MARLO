@@ -2073,10 +2073,8 @@ h1.simpleTitle span {
 }
 
 .buttons {
-  display: block;
-  text-align: right;
   margin: 30px 0 10px 0;
-  /* float: right; */
+  height: 33px;
 }
 
 .borderBox .buttons, .simpleBox .buttons{
@@ -5502,3 +5500,10 @@ h4.testEnvironment {
   background: #8EA786;
   border-bottom: 3px solid #7E9377;
 }
+
+.buttons-content.positionFixedBot {
+  position: fixed;
+  bottom: 0;
+}
+
+.buttons-content {float: right;margin-bottom: 5px;}
