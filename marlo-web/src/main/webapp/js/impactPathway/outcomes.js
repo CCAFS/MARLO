@@ -1,4 +1,5 @@
 $(document).ready(init);
+var currentSubIdo;
 
 function init() {
 
@@ -13,6 +14,8 @@ function init() {
 
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
+
+  $(".subIdoId").css("cursor", "auto");
 
 }
 
@@ -56,13 +59,6 @@ function attachEvents() {
   // Remove a Sub IDO
   $('.removeSubIdo').on('click', removeSubIdo);
 
-  // Select an Ido
-  $('select.idoId').on('change', function() {
-    var idoId = $(this).val();
-    var $subIdosSelect = $(this).parents('div.subIdo').find('select.subIdoId');
-    loadSubIdosByIdoId(idoId, $subIdosSelect);
-  });
-
   // Change contribution percentage
   $('input.contribution').on('keyup', function() {
     var $text = $(this).parents('.outcome').find('p.contributioRem');
@@ -75,6 +71,41 @@ function attachEvents() {
   $('.addAssumption').on('click', addAssumption);
   // Remove assumption
   $('.removeAssumption').on('click', removeAssumption);
+
+  // PopUp Select SubIdos (Graphic)
+  $(".selectSubIDO").on("click", function() {
+    var wWidth = $(window).width();
+    var dWidth = wWidth * 0.85;
+    currentSubIdo = $(this).parents(".subIdo");
+    $("#subIDOs-graphic").dialog({
+        autoOpen: false,
+        resizable: false,
+        width: dWidth,
+        modal: true,
+        show: {
+            effect: "blind",
+            duration: 1000
+        },
+        hide: {
+            effect: "fadeOut",
+            duration: 1000
+        }
+    });
+    $("#subIDOs-graphic").dialog("open");
+  });
+
+  // Select a subIdo
+  $(".subIDO").on("click", function() {
+    // less text
+    var $divSubIdo = currentSubIdo.find(".subIdoSelected");
+    var v = $(this).text().length > 50 ? $(this).text().substr(0, 50) + ' ... ' : $(this).text();
+    $divSubIdo.text(v);
+    $divSubIdo.attr("title", $(this).text()).tooltip();
+    var $inputSubIdo = currentSubIdo.find("input.subIdoId");
+    var value = $(this).attr("id").split('-');
+    $inputSubIdo.val(value[value.length - 1]);
+    $("#subIDOs-graphic").dialog("close");
+  });
 
 }
 
@@ -159,46 +190,6 @@ function removeSubIdo() {
     $parent.find('p.contributioRem span.value').text('0%');
     $('input.contribution').trigger('keyup');
   });
-}
-
-function loadSubIdosByIdoId(idoId,select) {
-  // console.log(idoId);
-  // console.log($(select));
-  $loader = $(select).parents('div.subIdo').find('.loading');
-  if(idoId == "-1") {
-    $(select).attr('disabled', true);
-  } else {
-    $.ajax({
-        'url': baseURL + '/SubIDObyIDO.do',
-        'type': "GET",
-        'data': {
-          idoID: idoId
-        },
-        'dataType': "json",
-        beforeSend: function() {
-          $loader.fadeIn('slow');
-        },
-        success: function(data) {
-          // First delete all the options already present in the subtype select
-          $(select).empty();
-          $(select).append(setOption('-1', 'Select an option'));
-          $.each(data.subIdos, function(index,item) {
-            var isSelected = (($(select).val() == item.id) ? "selected" : "");
-            $(select).append("<option value='" + item.id + "' " + isSelected + ">" + item.description + "</option>");
-          });
-          // Select enabled
-          $(select).attr('disabled', false);
-          // Refresh the plugin in order to show the changes
-          $(select).select2();
-        },
-        complete: function() {
-          $loader.fadeOut();
-        },
-        error: function() {
-        }
-    });
-  }
-
 }
 
 function updateTotalContribution(list,text) {

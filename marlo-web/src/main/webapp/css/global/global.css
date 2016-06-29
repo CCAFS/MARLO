@@ -34,6 +34,7 @@ select.input-sm {
   /*width: 1100px;*/
 }
 
+
 a,a:active,a:visited {
   /* color: #1DA5CE; */
 }
@@ -5292,7 +5293,7 @@ table.evaluationRank thead th{
   border-radius: 2px;
 }
 
-.items-list ul li.userItem{
+.items-list ul li.userItem, .items-list ul li.li-item{
   padding: 4px 18px;
   background: #f5f5f5;
   border: 1px dashed #e2e0e0;

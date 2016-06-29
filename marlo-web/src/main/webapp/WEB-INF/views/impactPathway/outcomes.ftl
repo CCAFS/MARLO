@@ -14,7 +14,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
-
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <section class="marlo-content">
   <div class="container"> 
@@ -37,7 +37,7 @@
             </ul>
           </div>
         
-        [@s.form action=actionName enctype="multipart/form-data" ]  
+          [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
         <div class="outcomes-list">
@@ -76,6 +76,23 @@
   </div>
 </section>
 
+[#-- PopUp to select SubIDOs --]
+      <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
+      <div class="graphic-container" >        
+        [#list srfIdos as ido]
+          <div class="idoWrapper">
+            <div class="IDO"><strong>${ido.description}</strong></div>
+            <div class="subIdoWrapper">
+              [#list ido.subIdos as subIdo]
+                <div class="line"></div>
+                <div id="subIdo-${subIdo.id}" class="subIDO">${subIdo.description}</div>
+              [/#list]
+            </div>
+          </div>
+        [/#list]
+        </div>      
+      </div>
+      
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
 
@@ -137,8 +154,7 @@
     [/#if]
     
     [#-- Outcome Sub-IDOs List --]
-    <br />
-    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
+    <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/]</h5>
     <div class="subIdos-list">
     [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]
@@ -199,17 +215,33 @@
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" class="programSubIDOId" name="${subIDOCustomName}.id" value="${(subIdo.id)!}"/>
+    
+    
     [#-- Remove Button --]
     [#if editable]
     <div class="removeSubIdo removeElement sm" title="Remove Sub IDO"></div>
     [/#if]
     <br />
     <div class="form-group">
-      <div class="idoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.srfIdo.id" i18nkey="outcome.subIDOs.inputIDO.label" placeholder="outcome.subIDOs.selectIDO.placeholder" listName="idoList"  className="idoId" required=true editable=editable  /]</div>
-      <div class="subIdoBlock">[@customForm.select name="${subIDOCustomName}.srfSubIdo.id" i18nkey="outcome.subIDOs.inputSubIDO.label" placeholder="outcome.subIDOs.selectSubIDO.placeholder" listName="${subIDOCustomName}.subIdoList" className="subIdoId" disabled=(subIdo.srfSubIdo)!true required=true editable=editable  /]</div>
+    <div class="subIdoBlock" >
+          <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
+          <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"Select a subIDO clicking the button..." maxPos=50 substr=" "/]</div>
+          <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
+      </div>
+      <div class="buttonSubIdo-block" >
+        <div class="buttonSubIdo-content">
+          <br>
+          <div class="button-blue selectSubIDO" ><span class=""></span> Select a subIDO</div>
+        </div>
+      </div>
+      
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
+      
+      
+      
     </div>
+    
     [#-- Assumptions List --]
     <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]</label>
     <div class="assumptions-list">

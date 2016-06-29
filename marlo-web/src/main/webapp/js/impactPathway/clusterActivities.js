@@ -10,7 +10,7 @@ function init() {
   $('.removeCluster').on('click', removeCluster);
 // Remove person
   $('.remove-userItem').on('click', removePerson);
-
+  setWordCounterToInputs('limitWords');
   updateClustersIndex();
 }
 
@@ -49,12 +49,12 @@ function updateClustersIndex() {
 // Users-leaders
 function removePerson() {
   var $item = $(this).parents('li');
+  var $parent = $item.parent();
   $item.hide(function() {
     $item.remove();
-    checkItems($(this).parent());
+    checkItems($parent);
     updateClustersIndex();
   });
-
 }
 
 function addUserItem(composedName,userId) {
@@ -88,6 +88,7 @@ function updateUsersIndex(item,clustersName) {
 }
 
 function checkItems(block) {
+  console.log(block);
   var items = $(block).find('li').length;
   if(items == 0) {
     $(block).parent().find('p').fadeIn();

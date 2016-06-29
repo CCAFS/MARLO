@@ -58,7 +58,10 @@ import org.apache.commons.lang3.StringUtils;
 public class OutcomesAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+  private CrpAssumptionManager crpAssumptionManager;
+  private CrpManager crpManager;
   private CrpMilestoneManager crpMilestoneManager;
+  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
   private long crpProgramID;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -68,14 +71,11 @@ public class OutcomesAction extends BaseAction {
   private List<CrpProgram> programs;
   private CrpProgram selectedProgram;
   private SrfIdoManager srfIdoManager;
-  private CrpOutcomeSubIdoManager crpOutcomeSubIdoManager;
+  private List<SrfIdo> srfIdos;
   private SrfTargetUnitManager srfTargetUnitManager;
   private HashMap<Long, String> targetUnitList;
-  private OutcomeValidator validator;
-  private CrpAssumptionManager crpAssumptionManager;
-  private CrpManager crpManager;
   private UserManager userManager;
-  private List<SrfIdo> srfIdos;
+  private OutcomeValidator validator;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -178,8 +178,10 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       crpProgramOutcome.setSubIdos(
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
+      /* for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+        crpOutcomeSubIdo.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
+      }
+       */
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         List<CrpAssumption> assumptions =
           crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -461,8 +463,8 @@ public class OutcomesAction extends BaseAction {
         }
         crpOutcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
         if (crpOutcomeSubIdo.getSrfSubIdo() == null || crpOutcomeSubIdo.getSrfSubIdo().getId() == null
-          || crpOutcomeSubIdo.getSrfSubIdo().getId() == -1 || crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo() == null
-          || crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId() == -1) {
+          || crpOutcomeSubIdo.getSrfSubIdo().getId() == -1 
+          ) {
           crpOutcomeSubIdo.setSrfSubIdo(null);
         }
 

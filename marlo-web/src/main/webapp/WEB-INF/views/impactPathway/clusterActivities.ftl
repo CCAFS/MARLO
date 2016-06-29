@@ -109,7 +109,7 @@
       [/#if]
       [#-- Cluster Activity Name --]
       <div class=" form-group cluster-title">
-        [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement" editable=editable /]
+        [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-100" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>
