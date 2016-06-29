@@ -120,6 +120,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
+  public boolean canAccessSuperAdmin() {
+    return this.hasPermission(this.generatePermission(Permission.FULL_PRIVILEGES, this.getCrpSession()));
+  }
+
   public boolean canAcessCrpAdmin() {
     return this.hasPermission(this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession()));
   }
