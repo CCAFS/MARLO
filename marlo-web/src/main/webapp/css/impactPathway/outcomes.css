@@ -81,6 +81,7 @@ p.contributioRem {
     border-radius: 3px;
     /* pointer-events: none; */
     width: auto;
+    padding-left: 0em;
 }
 
 .buttonSubIdo-block {

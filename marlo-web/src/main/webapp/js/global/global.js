@@ -147,6 +147,20 @@ $(document).ready(function() {
     $(this).parent().parent().parent().find('.tickBox-toggle').slideToggle($(e.target).is(':checked'));
   }
 
+  // History log popup
+  $('.button-history').on('click', function() {
+    $('#log-history').dialog({
+        modal: true,
+        maxWidth: '500px',
+        width: '80%',
+        buttons: {
+          Cancel: function() {
+            $(this).dialog("close");
+          }
+        }
+    });
+  });
+
   $("textarea[id!='justification']").autoGrow();
 
   // Generating hash from form information

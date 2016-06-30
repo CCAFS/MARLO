@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -245,7 +246,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
-    return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()));
+    try {
+      return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()));
+    } catch (NumberFormatException e) {
+      return new ArrayList<Auditlog>();
+    }
   }
 
   /**

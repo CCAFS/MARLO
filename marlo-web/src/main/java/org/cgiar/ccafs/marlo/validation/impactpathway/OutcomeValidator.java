@@ -51,7 +51,7 @@ public class OutcomeValidator extends BaseValidator
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action
-      .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
   }
 
@@ -73,7 +73,8 @@ public class OutcomeValidator extends BaseValidator
 
 
     if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null) {
-      if (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue()) {
+      if (milestone.getYear() == null
+        || (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue())) {
         this.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
     }
@@ -129,8 +130,7 @@ public class OutcomeValidator extends BaseValidator
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
-    if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1
-      ) {
+    if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1) {
       subIdo.setSrfSubIdo(null);
       this.addMessage(action.getText("outcome.action.subido.subido.required", params));
     }

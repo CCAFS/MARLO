@@ -75,7 +75,7 @@
                   [/#list]
                 </ul>
                </li>
-               <li class="pull-left"> <span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
+               <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
               <div class="clearfix"></div>
             </ul>
           </div>
