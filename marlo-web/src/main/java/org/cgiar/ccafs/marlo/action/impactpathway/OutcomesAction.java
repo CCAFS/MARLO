@@ -226,8 +226,12 @@ public class OutcomesAction extends BaseAction {
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
-    String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-    this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+
+    if (selectedProgram != null) {
+      String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+      this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+    }
+
     if (this.isHttpPost()) {
       outcomes.clear();
     }
