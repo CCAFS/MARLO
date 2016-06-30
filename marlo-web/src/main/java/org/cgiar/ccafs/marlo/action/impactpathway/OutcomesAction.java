@@ -164,7 +164,7 @@ public class OutcomesAction extends BaseAction {
 
 
       long transactionID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID)));
-      CrpProgram history = (CrpProgram) auditLogManager.getHistory(4);
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionID);
       crpProgramID = history.getId();
       selectedProgram = history;
       outcomes.addAll(history.getCrpProgramOutcomes());
