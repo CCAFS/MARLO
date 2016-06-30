@@ -12,8 +12,7 @@
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
-
+<hr />
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
