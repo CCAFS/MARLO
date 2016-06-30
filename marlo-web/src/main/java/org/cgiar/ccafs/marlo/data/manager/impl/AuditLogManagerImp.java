@@ -18,6 +18,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
+
+import java.util.List;
 
 import com.google.inject.Inject;
 
@@ -35,6 +38,11 @@ public class AuditLogManagerImp implements AuditLogManager {
   public IAuditLog getHistory(long transactionID) {
 
     return auditLogDao.getHistory(transactionID);
+  }
+
+  @Override
+  public List<Auditlog> listLogs(Class classAudit) {
+    return auditLogDao.listLogs(classAudit);
   }
 
 }

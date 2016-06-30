@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
+
+import java.util.List;
 
 import com.google.inject.ImplementedBy;
 
@@ -31,7 +34,15 @@ public interface AuditLogDao {
    * Get the element history from AuditLog
    * 
    * @param transactionID the num of transaction ID save on table AuditLog
-   * @return
+   * @return the histoy objet
    */
   public IAuditLog getHistory(long transactionID);
+
+  /**
+   * List of AuditLogs from the class of parameter
+   * 
+   * @param classAudit: the class we want to get logs
+   */
+
+  public List<Auditlog> listLogs(Class classAudit);
 }

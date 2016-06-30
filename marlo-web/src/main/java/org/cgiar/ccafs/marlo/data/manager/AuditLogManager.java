@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.impl.AuditLogManagerImp;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
+
+import java.util.List;
 
 import com.google.inject.ImplementedBy;
 
@@ -31,4 +34,12 @@ public interface AuditLogManager {
    * @return
    */
   public IAuditLog getHistory(long transactionID);
+
+  /**
+   * List of AuditLogs from the class of parameter
+   * 
+   * @param classAudit: the class we want to get logs
+   */
+
+  public List<Auditlog> listLogs(Class classAudit);
 }

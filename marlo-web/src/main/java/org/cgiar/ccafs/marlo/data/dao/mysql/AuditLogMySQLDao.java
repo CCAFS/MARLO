@@ -96,4 +96,14 @@ public class AuditLogMySQLDao implements AuditLogDao {
     return null;
 
   }
+
+
+  @Override
+  public List<Auditlog> listLogs(Class classAudit) {
+
+    List<Auditlog> auditLogs = dao.findAll(
+      "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and principal=1");
+
+    return auditLogs;
+  }
 }
