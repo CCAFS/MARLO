@@ -66,12 +66,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-  public String capitalizeFirstLetter(String original) {
-    if (original == null || original.length() == 0) {
-      return original;
-    }
-    return original.substring(0, 1).toUpperCase() + original.substring(1);
-  }
 
   public void loadRelations(IAuditLog entity, boolean loadUsers) {
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
