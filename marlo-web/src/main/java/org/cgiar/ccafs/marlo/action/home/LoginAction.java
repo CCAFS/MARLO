@@ -127,11 +127,17 @@ public class LoginAction extends BaseAction {
           } else {
             this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
             this.setCrpSession(loggedCrp.getAcronym());
+            this.getSession().clear();
+            SecurityUtils.getSubject().logout();
+            user.setPassword(null);
             user.setPassword(null);
             return BaseAction.INPUT;
           }
         } else {
           this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
+          user.setPassword(null);
+          this.getSession().clear();
+          SecurityUtils.getSubject().logout();
           user.setPassword(null);
           return BaseAction.INPUT;
         }
