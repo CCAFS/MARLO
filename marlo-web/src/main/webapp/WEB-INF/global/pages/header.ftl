@@ -47,10 +47,44 @@
     [#include "/WEB-INF/global/pages/boardMessage.ftl" /]
     [#if !(avoidHeader!false)]
       <header class="clearfix">
+        [#if action.canAccessSuperAdmin()]
+        [#assign superAdminMenu =[
+           { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloBoard', 'visible': action.canAccessSuperAdmin(), 'active': true }
+        ]/]
+        <div id="superadminBlock">
+          <div class="container">
+            <ul>
+              [#list superAdminMenu as item]
+                [#if item.visible]
+                <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+                  <a href="[@s.url namespace=item.namespace action=item.action ][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
+                    [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if][@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+                  </a>
+                </li>
+                [/#if]
+              [/#list]
+              <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${crpSession?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
+                  <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(crpSession?upper_case)!})
+                </a>
+                <ul class="subMenu">
+                  [#list crpList as crp]
+                    <li class="[#if crpSession?? && crpSession == crp.name?lower_case ]currentSection[/#if]">
+                      <a href="[@s.url namespace="/" action="${crp.name?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">${crp.name}</a>
+                    </li>
+                  [/#list]
+                </ul>
+               </li>
+               <li class="pull-left"> <span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
+              <div class="clearfix"></div>
+            </ul>
+          </div>
+        </div>
+        [/#if]
         <div class="container">
           <div id="marlo-logo" class="animated fadeIn">
             <div id="title" >MARLO</div>    
-            <div id="subTitle">Managing Agricultural Research for Learning & Outcomes</div>
+            <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
             <div class="clearfix"></div>
             [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span></h4> [/#if]
           </div>

@@ -1,48 +1,41 @@
 [#ftl]
+[#assign mainMenu= [
+  { 'slug': 'home',           'name': 'menu.login',         'namespace': '/',               'action': '',            'icon': 'log-in',  'visible': (!logged)!false, 'active': true },
+  { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': '',            'icon': 'home',   'visible': (logged)!false, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': 'outcomes',                       'visible': (logged)!false, 'active': true },
+  { 'slug': 'admin',          'name': 'menu.admin',         'namespace': '/admin',          'action': 'management',  'icon': 'cog',    'visible': action.canAcessCrpAdmin(), 'active': true }
+]/]
+
 <nav id="mainMenu"> 
 <div class="menuContent">
 	<div class="container">
-	  <ul>
-	    [#if logged?? && logged]
-	      [#-- Home element --]
-        <li [#if currentSection?? && currentSection == "home"] class="currentSection" [/#if]>
-  	      <a href="${baseUrl}/">
-	         <span class="icon"><img class="icon-15" src="${baseUrl}/images/global/icon-home-menu-selected.png" /></span>
-	         <span class="text">[@s.text name="menu.home" /]</span>
-  	      </a>
+	  <ul class="hidden-md hidden-lg">
+	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Menu
+	     <ul class="subMenu">
+	      [#list mainMenu as item]
+	       [#if item.visible]
+          <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+            <a href="[@s.url namespace=item.namespace action='${(crpSession)!}/${item.action}'][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
+              [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
+              [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+            </a>
+          </li>
+          [/#if]
+        [/#list]
+	     </ul>
+	   </li>
+	  </ul>
+	  <ul class="visible-md-block visible-lg-block">
+	    [#list mainMenu as item]
+       [#if item.visible]
+        <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+          <a href="[@s.url namespace=item.namespace action='${(crpSession)!}/${item.action}'][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
+            [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
+            [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+          </a>
         </li>
-        
-        [#-- Impact Pathway section --]
-        <li [#if currentSection?? && currentSection == "impactPathway"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/impactPathway" action='${crpSession}/outcomes'][@s.param name="edit" value="true"/][/@s.url]">[@s.text name="menu.impactPathway" /]
-          </a>
-        </li> 
-        
-        [#-- Admin --]
-        [#if action.canAcessCrpAdmin() ]
-         <li [#if currentSection?? && currentSection == "admin"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/admin" action='${crpSession}/management'][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-cog"></span> [@s.text name="menu.admin" ] [@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
-          </a>
-        </li> 
         [/#if]
-        
-        [#-- Marlo Admin --]
-        [#if action.canAccessSuperAdmin() ]
-         <li [#if currentSection?? && currentSection == "superadmin"] class="currentSection" [/#if]>
-          <a href="[@s.url namespace="/superadmin" action='${crpSession}/marloBoard'][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-tower"></span> [@s.text name="menu.superadmin" /]
-          </a>
-        </li> 
-        [/#if] 
-        
-	    [#else]
-	      [#-- If the user is not logged show the login element in menu --]
-	      <li [#if currentSection?? && currentSection == "home"] class="currentSection" [/#if]>
-  	      <a href="${baseUrl}/">[@s.text name="menu.login" /]</a>
-	      </li>
-     
-	    [/#if]
+      [/#list]
 	  </ul>
 	  
 	  [#if logged?? && logged]

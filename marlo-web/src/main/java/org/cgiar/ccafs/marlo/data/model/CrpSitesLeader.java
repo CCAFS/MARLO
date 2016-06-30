@@ -25,7 +25,9 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 1702272624319778464L;
+
 
   @Expose
   private Long id;
@@ -35,9 +37,12 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User user;
+
   @Expose
   private boolean active;
 
+  @Expose
+  private boolean regional;
   @Expose
   private User createdBy;
 
@@ -122,6 +127,10 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+  public boolean isRegional() {
+    return regional;
+  }
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -148,6 +157,10 @@ public class CrpSitesLeader implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setRegional(boolean regional) {
+    this.regional = regional;
   }
 
   public void setUser(User user) {

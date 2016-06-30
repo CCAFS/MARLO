@@ -50,25 +50,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   private static final long serialVersionUID = 1323996683605051647L;
 
-
   private CrpManager crpManager;
-
-
   private LocElementManager locElementManager;
-
-
   private CrpsSiteIntegrationManager crpsSiteIntegrationManager;
-
-
   private CrpSitesLeaderManager crpSitesLeaderManager;
-
   private RoleManager roleManager;
-
   private UserRoleManager userRoleManager;
-
   private UserManager userManager;
-
-
   private Crp loggedCrp;
   private List<LocElement> countriesList;
   private Long slRoleid;
@@ -108,8 +96,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
-    slRole = roleManager.getRoleById(slRoleid);
+    if (this.getSession().containsKey(APConstants.CRP_SL_ROLE)) {
+      slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
+      slRole = roleManager.getRoleById(slRoleid);
+    }
 
     if (loggedCrp.getCrpsSitesIntegrations() != null) {
       loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(
@@ -203,6 +193,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
         siteIntegration.setModificationJustification("");
         siteIntegration.setActiveSince(new Date());
 
+        locElement.setIsSiteIntegration(true);
+        locElementManager.saveLocElement(locElement);
+
         Long newSiteIntegrationId = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
 
         if (siteIntegration.getSiteLeaders() != null) {
@@ -285,6 +278,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
               }
             }
           }
+          LocElement locElement = crpsSiteIntegration.getLocElement();
+          locElement.setIsSiteIntegration(true);
+          locElementManager.saveLocElement(locElement);
           crpsSiteIntegrationManager.deleteCrpsSiteIntegration(crpsSiteIntegration.getId());
         } else {
           if (crpsSiteIntegration.getCrpSitesLeaders() != null) {

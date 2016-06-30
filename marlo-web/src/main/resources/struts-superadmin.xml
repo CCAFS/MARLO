@@ -3,12 +3,12 @@
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="superadmin" namespace="/superadmin" extends="marlo-default">
-
-		<action name="{crp}/marloBoard" class="org.cgiar.ccafs.marlo.action.superadmin.BoardAction">
-			<!-- interceptor-ref name="autoLogin" / -->		
-			<result name="input">/WEB-INF/views/superadmin/marloBoard.ftl</result>
-			<result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/marloBoard</param>
+    
+    <action name="marloBoard" class="org.cgiar.ccafs.marlo.action.superadmin.BoardAction">
+      <!-- interceptor-ref name="autoLogin" / -->   
+      <result name="input">/WEB-INF/views/superadmin/marloBoard.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloBoard</param>
         <param name="edit">true</param>
       </result>
     </action>

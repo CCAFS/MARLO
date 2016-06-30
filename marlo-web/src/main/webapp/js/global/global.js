@@ -34,14 +34,16 @@ $(document).ready(function() {
     }
   }
 
-  var mainMenuPosition = $('#mainMenu').position().top + 20;
-  $(window).scroll(function() {
-    if($(window).scrollTop() >= mainMenuPosition) {
-      $('#mainMenu .menuContent').addClass('positionFixedTop');
-    } else {
-      $('#mainMenu .menuContent').removeClass('positionFixedTop');
-    }
-  });
+  if($('#mainMenu').exists()) {
+    var mainMenuPosition = $('#mainMenu').position().top + 20;
+    $(window).scroll(function() {
+      if($(window).scrollTop() >= mainMenuPosition) {
+        $('#mainMenu .menuContent').addClass('positionFixedTop');
+      } else {
+        $('#mainMenu .menuContent').removeClass('positionFixedTop');
+      }
+    });
+  }
 
   // Function that set the interface buttons always visible
   var $buttons = $('.buttons');

@@ -1151,7 +1151,7 @@ header {
   color: #fff;
   text-align: left;
   position: absolute;
-  right: 0em;
+  right: 1em;
   top: 0;
   background: #57A7B5;
   border-bottom: 6px solid #4C8D99;
@@ -1299,7 +1299,7 @@ a#userLogOut {
   font-size: 0.7em;
 }
 
-#crp-image {height: 97px;position: absolute;right: 0;}
+#crp-image {height: 97px;position: absolute;right: 0em;}
 
 
 /************* 3. MAIN MENU ***************/
@@ -5508,3 +5508,60 @@ h4.testEnvironment {
 }
 
 .buttons-content {float: right;margin-bottom: 5px;}
+
+
+
+#superadminBlock {direction: ltr;color: #ccc;font: 400 13px/32px "Open Sans",sans-serif;background: #444;box-shadow: 1px 0px 4px #8a8a8a;}
+
+#superadminBlock ul{text-align: right;margin: 0;padding: 0;}
+
+#superadminBlock ul li{float: right;list-style: none;position: relative;}
+
+#superadminBlock ul li.currentSection{font-weight: bold;background: #383838;box-shadow: inset 1px 1px 1px #313131;}
+
+#superadminBlock ul li:hover{background: #383838;box-shadow: inset 1px 1px 1px #313131;}
+
+#superadminBlock a{
+  padding: 0 20px;
+  color: #fff;
+  text-decoration: none;
+}
+
+#superadminBlock ul li ul.subMenu {
+  display:none; 
+}
+#superadminBlock ul li ul.subMenu:hover {
+  display:block; 
+}
+
+#superadminBlock ul li ul.subMenu li {
+   display:block;
+   padding: 0 5px;
+   margin: 0 2px;
+   font-weight: normal;
+   font-size: 0.86em;
+   float: none;
+   text-align: left;
+   border-top: 1px solid #3a3a3a;
+   line-height: 21px;
+}
+
+#superadminBlock ul li ul.subMenu li a{
+  padding: 0 5px;
+  /* width: 100%; */
+  display: inline-block;
+}
+
+#superadminBlock ul li:hover ul.subMenu{
+ z-index: 10;
+ display:block;
+ width: 100%;
+ background: #444444;
+ position: absolute;
+ top: 31px;
+ left: 0;
+ padding: 0 0 3px 0px;
+ box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+ opacity: 0.98;
+ border-radius: 0px 0px 3px 3px;
+}

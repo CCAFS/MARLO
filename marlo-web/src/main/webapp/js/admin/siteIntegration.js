@@ -31,7 +31,7 @@ function formatState(state) {
 function attachEvents() {
 
   // Select event
-  select = $("#ccafs_siteIntegration_");
+  select = $(".countriesList ");
   select.on('change', function() {
     countrySelected = select.find("option:selected");
     if(countrySelected.val() != -1 && countrySelected.val() != null) {
