@@ -137,6 +137,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put("PRINCIPAL", new Long(1));
 
       deletes.add(objects);
+      deletes.addAll(this.relations(state, types, propertyNames));
     }
   }
 
@@ -153,7 +154,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
-
+        deletes.addAll(this.relations(currentState, types, propertyNames));
       } else {
         objects.put(ENTITY, entity);
         objects.put(PRINCIPAL, new Long(1));
