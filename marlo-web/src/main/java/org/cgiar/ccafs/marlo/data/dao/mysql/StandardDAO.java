@@ -291,7 +291,7 @@ public class StandardDAO {
    * 
    * @return a Session object.
    */
-  private Session openSession() {
+  public Session openSession() {
     if (sessionFactory == null) {
       sessionFactory =
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
