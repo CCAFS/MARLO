@@ -121,7 +121,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canAccessSuperAdmin() {
-    return this.hasPermission(this.generatePermission(Permission.FULL_PRIVILEGES, this.getCrpSession()));
+    return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
 
   public boolean canAcessCrpAdmin() {

@@ -188,6 +188,11 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
+      /*
+       * for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+       * crpOutcomeSubIdo.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
+       * }
+       */
       for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
         List<CrpAssumption> assumptions =
           crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());

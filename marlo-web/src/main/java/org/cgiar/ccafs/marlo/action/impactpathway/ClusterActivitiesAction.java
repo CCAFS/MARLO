@@ -168,9 +168,10 @@ public class ClusterActivitiesAction extends BaseAction {
           .filter(c -> c.isActive()).collect(Collectors.toList()));
       }
     }
-
-    String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-    this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+    if (selectedProgram != null) {
+      String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+      this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+    }
     if (this.isHttpPost()) {
       clusterofActivities.clear();
     }
