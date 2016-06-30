@@ -5513,11 +5513,13 @@ h4.testEnvironment {
 
 #superadminBlock {direction: ltr;color: #ccc;font: 400 13px/32px "Open Sans",sans-serif;background: #444;box-shadow: 1px 0px 4px #8a8a8a;}
 
-#superadminBlock ul{text-align: right;}
+#superadminBlock ul{text-align: right;margin: 0;padding: 0;}
 
 #superadminBlock ul li{float: right;list-style: none;position: relative;}
 
 #superadminBlock ul li.currentSection{font-weight: bold;background: #383838;box-shadow: inset 1px 1px 1px #313131;}
+
+#superadminBlock ul li:hover{background: #383838;box-shadow: inset 1px 1px 1px #313131;}
 
 #superadminBlock a{
   padding: 0 20px;
@@ -5546,6 +5548,8 @@ h4.testEnvironment {
 
 #superadminBlock ul li ul.subMenu li a{
   padding: 0 5px;
+  /* width: 100%; */
+  display: inline-block;
 }
 
 #superadminBlock ul li:hover ul.subMenu{

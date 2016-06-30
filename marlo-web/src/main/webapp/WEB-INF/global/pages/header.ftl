@@ -63,7 +63,10 @@
                 </li>
                 [/#if]
               [/#list]
-              <li><a href="[@s.url namespace="/admin" action="${crpSession?lower_case}/management" ][@s.param name="edit" value="true"/][/@s.url]"><span class="glyphicon glyphicon-chevron-down"></span> CRP Admin (${(crpSession?upper_case)!})</a>
+              <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${crpSession?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
+                  <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(crpSession?upper_case)!})
+                </a>
                 <ul class="subMenu">
                   [#list crpList as crp]
                     <li class="[#if crpSession?? && crpSession == crp.name?lower_case ]currentSection[/#if]">
@@ -73,6 +76,7 @@
                 </ul>
                </li>
                <li class="pull-left"> <span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
+              <div class="clearfix"></div>
             </ul>
           </div>
         </div>
