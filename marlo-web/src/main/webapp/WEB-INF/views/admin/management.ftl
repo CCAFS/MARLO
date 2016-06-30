@@ -168,7 +168,7 @@
       [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">{fpRole.id}</span>
+      <span class="usersRole" style="display:none">${fplRole.id}</span>
     </div>
   </li>
 [/#macro]
