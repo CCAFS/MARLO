@@ -85,7 +85,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         for (IAuditLog iAuditLog : entityRelation) {
 
           if (iAuditLog.isActive()) {
-            this.loadRelations(iAuditLog, false);
+
             listRelation.add(iAuditLog);
           }
         }
@@ -148,7 +148,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
         for (IAuditLog iAuditLog : set) {
-
+          this.loadRelations(iAuditLog, false);
           if (iAuditLog.isActive()) {
             String json = gson.toJson(iAuditLog);
             if (map.containsKey(PRINCIPAL)) {

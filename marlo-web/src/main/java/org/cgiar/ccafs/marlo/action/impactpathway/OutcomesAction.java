@@ -61,6 +61,7 @@ public class OutcomesAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
   private CrpMilestoneManager crpMilestoneManager;
   private long crpProgramID;
+  private long transactionID;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
@@ -138,45 +139,84 @@ public class OutcomesAction extends BaseAction {
   }
 
 
+  public long getTransactionID() {
+    return transactionID;
+  }
+
+
   @Override
   public void prepare() throws Exception {
+
+
     // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-      .collect(Collectors.toList());
-    crpProgramID = -1;
-    if (allPrograms != null) {
+    targetUnitList = new HashMap<>();
+    if (srfTargetUnitManager.findAll() != null) {
+      List<SrfTargetUnit> targetUnits =
+        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (SrfTargetUnit srfTargetUnit : targetUnits) {
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
+      }
+    }
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
-      this.programs = allPrograms;
-      try {
-        crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
-      } catch (Exception e) {
 
-        User user = userManager.getUser(this.getCurrentUser().getId());
-        List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
-        if (!userLeads.isEmpty()) {
-          crpProgramID = userLeads.get(0).getCrpProgram().getId();
-        } else {
-          if (!this.programs.isEmpty()) {
-            crpProgramID = this.programs.get(0).getId();
+      long transactionID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID)));
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(4);
+      crpProgramID = history.getId();
+      selectedProgram = history;
+      outcomes.addAll(history.getCrpProgramOutcomes());
+      this.transactionID = transactionID;
+      this.setEditable(false);
+      programs = new ArrayList<>();
+      programs.add(history);
+    } else {
+      List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+        .collect(Collectors.toList());
+      crpProgramID = -1;
+      if (allPrograms != null) {
+
+        this.programs = allPrograms;
+        try {
+          crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+        } catch (Exception e) {
+
+          User user = userManager.getUser(this.getCurrentUser().getId());
+          List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
+          if (!userLeads.isEmpty()) {
+            crpProgramID = userLeads.get(0).getCrpProgram().getId();
+          } else {
+            if (!this.programs.isEmpty()) {
+              crpProgramID = this.programs.get(0).getId();
+            }
           }
+
         }
+      } else {
+        programs = new ArrayList<>();
+      }
+
+      if (crpProgramID != -1) {
+        selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+        outcomes.addAll(
+          selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
       }
-    } else {
-      programs = new ArrayList<>();
+
+      if (selectedProgram != null) {
+        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+      }
+
+      if (this.isHttpPost()) {
+        outcomes.clear();
+      }
     }
 
-    if (crpProgramID != -1) {
-      selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      outcomes.addAll(
-        selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-    }
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
       crpProgramOutcome.setMilestones(
@@ -214,14 +254,7 @@ public class OutcomesAction extends BaseAction {
       }
 
     }
-    targetUnitList = new HashMap<>();
-    if (srfTargetUnitManager.findAll() != null) {
-      List<SrfTargetUnit> targetUnits =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
-      }
-    }
+
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
@@ -232,14 +265,6 @@ public class OutcomesAction extends BaseAction {
       srfIdos.add(srfIdo);
     }
 
-    if (selectedProgram != null) {
-      String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-      this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-    }
-
-    if (this.isHttpPost()) {
-      outcomes.clear();
-    }
 
   }
 
@@ -506,7 +531,6 @@ public class OutcomesAction extends BaseAction {
     this.crpProgramID = crpProgramID;
   }
 
-
   public void setIdoList(HashMap<Long, String> idoList) {
     this.idoList = idoList;
   }
@@ -526,6 +550,7 @@ public class OutcomesAction extends BaseAction {
     this.programs = programs;
   }
 
+
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
@@ -534,9 +559,13 @@ public class OutcomesAction extends BaseAction {
     this.srfIdos = srfIdos;
   }
 
-
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
     this.targetUnitList = targetUnitList;
+  }
+
+
+  public void setTransactionID(long transactionID) {
+    this.transactionID = transactionID;
   }
 
 
