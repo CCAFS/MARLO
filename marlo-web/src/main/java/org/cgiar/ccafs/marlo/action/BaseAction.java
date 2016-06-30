@@ -14,7 +14,10 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
@@ -89,6 +92,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Managers
   @Inject
   private CrpManager crpManager;
+
+
+  @Inject
+  private AuditLogManager auditLogManager;
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
@@ -237,6 +244,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
+  public List<Auditlog> getListLog(IAuditLog object) {
+    return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()));
+  }
+
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -244,7 +255,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Locale getLocale() {
     return Locale.ENGLISH;
   }
-
 
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
