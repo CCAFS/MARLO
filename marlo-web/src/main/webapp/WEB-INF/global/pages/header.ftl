@@ -63,7 +63,7 @@
                 </li>
                 [/#if]
               [/#list]
-              <li><a href="" onclick="return false"><span class="glyphicon glyphicon-chevron-down"></span>  CRP (${(crpSession?upper_case)!})</a>
+              <li><a href="[@s.url namespace="/admin" action="${crpSession?lower_case}/management" ][@s.param name="edit" value="true"/][/@s.url]"><span class="glyphicon glyphicon-chevron-down"></span> CRP Admin (${(crpSession?upper_case)!})</a>
                 <ul class="subMenu">
                   [#list crpList as crp]
                     <li class="[#if crpSession?? && crpSession == crp.name?lower_case ]currentSection[/#if]">
