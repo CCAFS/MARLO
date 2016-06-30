@@ -36,10 +36,11 @@ public interface AuditLogManager {
   public IAuditLog getHistory(long transactionID);
 
   /**
-   * List of AuditLogs from the class of parameter
+   * List of AuditLogs from the class of parameter that has the entity id
    * 
    * @param classAudit: the class we want to get logs
+   * @param id the entity id
    */
 
-  public List<Auditlog> listLogs(Class classAudit);
+  public List<Auditlog> listLogs(Class classAudit, long id);
 }
