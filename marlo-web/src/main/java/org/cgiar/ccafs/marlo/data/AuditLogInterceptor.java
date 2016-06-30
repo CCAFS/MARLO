@@ -84,8 +84,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
         for (IAuditLog iAuditLog : entityRelation) {
 
-          this.loadRelations(iAuditLog, false);
-          listRelation.add(iAuditLog);
+          if (iAuditLog.isActive()) {
+            this.loadRelations(iAuditLog, false);
+            listRelation.add(iAuditLog);
+          }
         }
 
         objects.put(ENTITY, listRelation);
@@ -146,11 +148,15 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
         for (IAuditLog iAuditLog : set) {
-          String json = gson.toJson(iAuditLog);
-          if (map.containsKey(PRINCIPAL)) {
-            dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString());
+
+          if (iAuditLog.isActive()) {
+            String json = gson.toJson(iAuditLog);
+            if (map.containsKey(PRINCIPAL)) {
+              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+                new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString());
+            }
           }
+
         }
       }
 
@@ -282,7 +288,18 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                   Class className = Class.forName(name);
                   Object obj = dao.find(className, audit.getId());
                   listRelation.add((IAuditLog) obj);
-                  relations.addAll(this.loadList((IAuditLog) obj));
+                  Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
+                  for (HashMap<String, Object> hashMap : loadList) {
+                    HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
+                    for (IAuditLog iAuditLog2 : relationAudit) {
+                      Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
+
+                      relations.addAll(loadListRelations);
+                    }
+                  }
+
+
+                  relations.addAll(loadList);
                 } catch (ClassNotFoundException e) {
 
                   e.printStackTrace();

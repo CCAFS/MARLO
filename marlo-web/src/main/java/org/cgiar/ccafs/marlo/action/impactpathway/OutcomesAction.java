@@ -140,7 +140,7 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    // IAuditLog ia = auditLogManager.getHistory(46);
+    // IAuditLog ia = auditLogManager.getHistory(4);
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -252,6 +252,9 @@ public class OutcomesAction extends BaseAction {
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
+      selectedProgram.setActiveSince(new Date());
+      selectedProgram.setModifiedBy(this.getCurrentUser());
+      crpProgramManager.saveCrpProgram(selectedProgram);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
