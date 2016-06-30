@@ -58,45 +58,14 @@ public class AuditLogMySQLDao implements AuditLogDao {
     if (!auditLogs.isEmpty()) {
 
       Auditlog log = auditLogs.get(0);
-      Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-      try {
-        Class classToCast = Class.forName(log.getEntityName().replace("class ", ""));
-        IAuditLog iAuditLog = gson.fromJson(log.getEntityJson(), classToCast);
-        Session session = dao.openSession();
-        ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(iAuditLog.getClass());
-        String[] propertyNames = classMetadata.getPropertyNames();
-        for (String name : propertyNames) {
-          Type propertyType = classMetadata.getPropertyType(name);
-          if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
+      IAuditLog iAuditLog = this.loadFromAuditLog(log);
+      this.loadRelationsForIAuditLog(iAuditLog, transactionID);
+      return iAuditLog;
 
-            String classNameRelation = propertyType.getName();
-
-            List<Auditlog> auditLogsRelations =
-              dao.findAll("from " + Auditlog.class.getName() + " where transaction_id=" + transactionID
-                + " and principal=3 and relation_name='" + classNameRelation + "'");
-
-            Set<IAuditLog> relation = new HashSet<IAuditLog>();
-            for (Auditlog auditlog : auditLogsRelations) {
-              Class classToCastRelation = Class.forName(auditlog.getEntityName().replace("class ", ""));
-              IAuditLog relationObject = gson.fromJson(auditlog.getEntityJson(), classToCastRelation);
-              relation.add(relationObject);
-            }
-            classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
-          }
-        }
-
-        return iAuditLog;
-      } catch (JsonSyntaxException e) {
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-
-        e.printStackTrace();
-      }
     }
     return null;
 
   }
-
 
   @Override
   public List<Auditlog> listLogs(Class classAudit, long id) {
@@ -105,5 +74,54 @@ public class AuditLogMySQLDao implements AuditLogDao {
       + classAudit.getName() + "' and ENTITY_ID=" + id + " and principal=1");
 
     return auditLogs;
+  }
+
+
+  public IAuditLog loadFromAuditLog(Auditlog auditlog) {
+    try {
+      Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+      Class classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
+      IAuditLog iAuditLog = gson.fromJson(auditlog.getEntityJson(), classToCast);
+
+      return iAuditLog;
+    } catch (JsonSyntaxException e) {
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  public void loadRelationsForIAuditLog(IAuditLog iAuditLog, long transactionID) {
+    try {
+
+      Session session = dao.openSession();
+      ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(iAuditLog.getClass());
+      String[] propertyNames = classMetadata.getPropertyNames();
+      for (String name : propertyNames) {
+        Type propertyType = classMetadata.getPropertyType(name);
+        if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
+
+          String classNameRelation = propertyType.getName();
+
+          List<Auditlog> auditLogsRelations = dao.findAll("from " + Auditlog.class.getName() + " where transaction_id="
+            + transactionID + " and principal=3 and relation_name='" + classNameRelation + "'");
+
+          Set<IAuditLog> relation = new HashSet<IAuditLog>();
+          for (Auditlog auditlog : auditLogsRelations) {
+            IAuditLog relationObject = this.loadFromAuditLog(auditlog);
+            this.loadRelationsForIAuditLog(relationObject, transactionID);
+            relation.add(relationObject);
+          }
+          classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
+        }
+      }
+
+
+    } catch (JsonSyntaxException e) {
+      e.printStackTrace();
+    }
   }
 }

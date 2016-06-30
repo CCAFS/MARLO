@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
@@ -76,12 +77,14 @@ public class OutcomesAction extends BaseAction {
   private CrpManager crpManager;
   private UserManager userManager;
   private List<SrfIdo> srfIdos;
+  private AuditLogManager auditLogManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager) {
+    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
+    AuditLogManager auditLogManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -93,6 +96,7 @@ public class OutcomesAction extends BaseAction {
     this.crpManager = crpManager;
     this.userManager = userManager;
     this.crpAssumptionManager = crpAssumptionManager;
+    this.auditLogManager = auditLogManager;
   }
 
   public long getCrpProgramID() {
@@ -136,6 +140,7 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    // IAuditLog ia = auditLogManager.getHistory(46);
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
