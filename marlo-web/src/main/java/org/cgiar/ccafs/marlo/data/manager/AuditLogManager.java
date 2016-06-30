@@ -13,28 +13,25 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.dao;
+package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
+import org.cgiar.ccafs.marlo.data.manager.impl.AuditLogManagerImp;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
 import com.google.inject.ImplementedBy;
 
-/**
- * @author Christian Garcia
- */
-@ImplementedBy(AuditLogMySQLDao.class)
-public interface AuditLogDao {
+@ImplementedBy(AuditLogManagerImp.class)
+public interface AuditLogManager {
 
 
   /**
    * Get the element history from AuditLog
    * 
    * @param transactionID the num of transaction ID save on table AuditLog
-   * @return the histoy objet
+   * @return
    */
   public IAuditLog getHistory(long transactionID);
 

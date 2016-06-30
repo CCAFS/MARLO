@@ -13,37 +13,36 @@
  *****************************************************************/
 
 
-package org.cgiar.ccafs.marlo.data.dao;
+package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.dao.mysql.AuditLogMySQLDao;
+import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.List;
 
-import com.google.inject.ImplementedBy;
+import com.google.inject.Inject;
 
-/**
- * @author Christian Garcia
- */
-@ImplementedBy(AuditLogMySQLDao.class)
-public interface AuditLogDao {
+public class AuditLogManagerImp implements AuditLogManager {
 
 
-  /**
-   * Get the element history from AuditLog
-   * 
-   * @param transactionID the num of transaction ID save on table AuditLog
-   * @return the histoy objet
-   */
-  public IAuditLog getHistory(long transactionID);
+  private AuditLogDao auditLogDao;
 
-  /**
-   * List of AuditLogs from the class of parameter that has the entity id
-   * 
-   * @param classAudit: the class we want to get logs
-   * @param id the entity id
-   */
+  @Inject
+  public AuditLogManagerImp(AuditLogDao auditLogDao) {
+    this.auditLogDao = auditLogDao;
+  }
 
-  public List<Auditlog> listLogs(Class classAudit, long id);
+  @Override
+  public IAuditLog getHistory(long transactionID) {
+
+    return auditLogDao.getHistory(transactionID);
+  }
+
+  @Override
+  public List<Auditlog> listLogs(Class classAudit, long id) {
+    return auditLogDao.listLogs(classAudit, id);
+  }
+
 }

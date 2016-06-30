@@ -16,8 +16,6 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
 import org.cgiar.ccafs.marlo.data.manager.CrpAssumptionManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
@@ -78,15 +76,13 @@ public class OutcomesAction extends BaseAction {
   private CrpManager crpManager;
   private UserManager userManager;
   private List<SrfIdo> srfIdos;
-  private AuditLogDao daoManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
-    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager, AuditLogDao daoManager) {
+    CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager) {
     super(config);
-    this.daoManager = daoManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
@@ -140,10 +136,6 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
-    IAuditLog iAuditLog = daoManager.getHistory(33);
-    System.out.println(iAuditLog.getId());
-    System.out.println(iAuditLog.getClass().getName());
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     outcomes = new ArrayList<CrpProgramOutcome>();
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -234,8 +226,12 @@ public class OutcomesAction extends BaseAction {
       srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       srfIdos.add(srfIdo);
     }
-    String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-    this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+
+    if (selectedProgram != null) {
+      String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+      this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+    }
+
     if (this.isHttpPost()) {
       outcomes.clear();
     }

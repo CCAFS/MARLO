@@ -42,5 +42,8 @@
 
     </property>
 		
+		<property name="relationName" type="string">
+      <column name="relation_name" length="500" not-null="false" />
+      </property>
 	</class>
 </hibernate-mapping>

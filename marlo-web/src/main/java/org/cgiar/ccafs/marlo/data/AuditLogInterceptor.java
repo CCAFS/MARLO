@@ -54,7 +54,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private StandardDAO dao;
   private final String PRINCIPAL = "PRINCIPAL";
   private final String ENTITY = "entity";
-
+  private final String RELATION_NAME = "relationName";
   private long transactionId;
 
   public AuditLogInterceptor() {
@@ -104,7 +104,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         String json = gson.toJson(entity);
         if (map.containsKey(PRINCIPAL)) {
           dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-            new Long(map.get(PRINCIPAL).toString()));
+            new Long(map.get(PRINCIPAL).toString()), null);
         }
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
@@ -112,7 +112,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           String json = gson.toJson(iAuditLog);
           if (map.containsKey(PRINCIPAL)) {
             dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-              new Long(map.get(PRINCIPAL).toString()));
+              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString());
           }
         }
       }
@@ -137,6 +137,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put("PRINCIPAL", new Long(1));
 
       deletes.add(objects);
+      deletes.addAll(this.relations(state, types, propertyNames));
     }
   }
 
@@ -153,7 +154,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
-
+        deletes.addAll(this.relations(currentState, types, propertyNames));
       } else {
         objects.put(ENTITY, entity);
         objects.put(PRINCIPAL, new Long(1));
@@ -203,15 +204,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
       this.logSaveAndUpdate("Saved", inserts);
       this.logSaveAndUpdate("Updated", updates);
-      Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-      for (Iterator<Map<String, Object>> it = deletes.iterator(); it.hasNext();) {
-
-        Map<String, Object> map = it.next();
-        IAuditLog entity = (IAuditLog) map.get(ENTITY);
-        String json = gson.toJson(entity);
-        dao.logIt("Deleted", entity, json, entity.getModifiedBy().getId(), this.transactionId, new Long(1));
-      }
-
+      this.logSaveAndUpdate("Deleted", deletes);
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
@@ -266,6 +259,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (!listRelation.isEmpty()) {
             objects.put(ENTITY, listRelation);
             objects.put(PRINCIPAL, "3");
+            objects.put(RELATION_NAME, type.getName());
             relations.add(objects);
           }
 

@@ -23,7 +23,6 @@ function attachEvents() {
         type: $parent.parents('.usersBlock').find('.usersType').text(),
         role: $parent.parents('.usersBlock').find('.usersRole').text()
     }
-    console.log(item);
     $parent.hide(function() {
       $parent.remove();
       checkItems($block, 'usersMessage');
@@ -123,14 +122,13 @@ function checkItems(block,target) {
 function updateProgramManagementTeamIndexes(list) {
   $(list).find('li').each(function(i,item) {
     var customName = 'loggedCrp.programManagmenTeam[' + i + '].';
-    updateUserItemIndex(list, customName);
+    updateUserItemIndex(item, customName);
   });
 }
 
 function updateProgramIndexes(list) {
-  $(list).find('.program').each(function(i,item) {
-    var programName = 'flagshipsPrograms' + '[' + i + '].';
-    console.log(programName);
+  $(list).find('.program').each(function(index,item) {
+    var programName = 'flagshipsPrograms' + '[' + index + '].';
     $(item).find('.acronym').attr('name', programName + 'acronym');
     $(item).find('.name').attr('name', programName + 'name');
     $(item).find('.type').attr('name', programName + 'programType');
@@ -145,9 +143,9 @@ function updateProgramIndexes(list) {
 }
 
 function updateUserItemIndex(element,name) {
-  $(element).find('.user').attr('name', name + 'user.id');
-  $(element).find('.role').attr('name', name + 'role.id');
-  $(element).find('.id').attr('name', name + 'id');
+  $(element).find('input.user').attr('name', name + 'user.id');
+  $(element).find('input.role').attr('name', name + 'role.id');
+  $(element).find('input.id').attr('name', name + 'id');
 }
 
 function yesnoEventLocations(value,item) {
