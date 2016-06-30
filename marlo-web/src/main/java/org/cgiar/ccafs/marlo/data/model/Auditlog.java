@@ -34,13 +34,15 @@ public class Auditlog implements java.io.Serializable {
   private Long userId;
   private Long transactionId;
   private Long principal;
+  private String relationName;
+
 
   public Auditlog() {
   }
 
 
   public Auditlog(String action, String detail, Date createdDate, String entityId, String entityName, String entityJson,
-    Long userId, Long transactionId, Long principal) {
+    Long userId, Long transactionId, Long principal, String relationName) {
     this.action = action;
     this.detail = detail;
     this.createdDate = createdDate;
@@ -50,6 +52,7 @@ public class Auditlog implements java.io.Serializable {
     this.userId = userId;
     this.transactionId = transactionId;
     this.principal = principal;
+    this.relationName = relationName;
   }
 
 
@@ -67,6 +70,7 @@ public class Auditlog implements java.io.Serializable {
     return this.createdDate;
   }
 
+
   public String getDetail() {
     return this.detail;
   }
@@ -76,17 +80,22 @@ public class Auditlog implements java.io.Serializable {
     return this.entityId;
   }
 
-
   public String getEntityJson() {
     return this.entityJson;
   }
+
 
   public String getEntityName() {
     return this.entityName;
   }
 
+
   public Long getPrincipal() {
     return principal;
+  }
+
+  public String getRelationName() {
+    return relationName;
   }
 
   public Long getTransactionId() {
@@ -127,6 +136,10 @@ public class Auditlog implements java.io.Serializable {
 
   public void setPrincipal(Long principal) {
     this.principal = principal;
+  }
+
+  public void setRelationName(String relationName) {
+    this.relationName = relationName;
   }
 
   public void setTransactionId(Long transactionId) {

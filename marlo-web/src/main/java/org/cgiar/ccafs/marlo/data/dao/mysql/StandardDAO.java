@@ -263,7 +263,8 @@ public class StandardDAO {
   }
 
 
-  public void logIt(String action, IAuditLog entity, String json, long userId, long transactionId, Long principal) {
+  public void logIt(String action, IAuditLog entity, String json, long userId, long transactionId, Long principal,
+    String relationName) {
 
     Session tempSession = this.openSession();
 
@@ -271,7 +272,7 @@ public class StandardDAO {
 
       try {
         Auditlog auditRecord = new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId().toString(),
-          entity.getClass().toString(), json, userId, transactionId, principal);
+          entity.getClass().toString(), json, userId, transactionId, principal, relationName);
         tempSession.save(auditRecord);
         tempSession.flush();
       } catch (HibernateException e) {

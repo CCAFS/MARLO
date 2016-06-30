@@ -48,12 +48,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
     this.dao = dao;
   }
 
-  public String capitalizeFirstLetter(String original) {
-    if (original == null || original.length() == 0) {
-      return original;
-    }
-    return original.substring(0, 1).toUpperCase() + original.substring(1);
-  }
 
   @Override
   public IAuditLog getHistory(long transactionID) {
@@ -74,12 +68,12 @@ public class AuditLogMySQLDao implements AuditLogDao {
         for (String name : propertyNames) {
           Type propertyType = classMetadata.getPropertyType(name);
           if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
-            String className = this.capitalizeFirstLetter(name).substring(0, name.length() - 1);
-            String classNameRelation = baseModelPakcage + "." + className;
+
+            String classNameRelation = propertyType.getName();
 
             List<Auditlog> auditLogsRelations =
               dao.findAll("from " + Auditlog.class.getName() + " where transaction_id=" + transactionID
-                + " and principal=3 and entityName='class " + classNameRelation + "'");
+                + " and principal=3 and relation_name='" + classNameRelation + "'");
 
             Set<IAuditLog> relation = new HashSet<IAuditLog>();
             for (Auditlog auditlog : auditLogsRelations) {
