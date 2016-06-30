@@ -67,12 +67,46 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   }
 
 
+  public Set<HashMap<String, Object>> loadList(IAuditLog entity) {
+    Set<HashMap<String, Object>> setRelations = new HashSet<>();
+
+    ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+    String[] propertyNames = classMetadata.getPropertyNames();
+    for (String name : propertyNames) {
+
+      Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
+      Type propertyType = classMetadata.getPropertyType(name);
+
+      if (propertyValue != null && (propertyType instanceof OrderedSetType || propertyType instanceof SetType)) {
+        HashMap<String, Object> objects = new HashMap<>();
+        Set<IAuditLog> listRelation = new HashSet<>();
+
+        Set<IAuditLog> entityRelation = (Set<IAuditLog>) propertyValue;
+        for (IAuditLog iAuditLog : entityRelation) {
+
+          this.loadRelations(iAuditLog, false);
+          listRelation.add(iAuditLog);
+        }
+
+        objects.put(ENTITY, listRelation);
+        objects.put(PRINCIPAL, "3");
+        objects.put(RELATION_NAME, propertyType.getName());
+        setRelations.add(objects);
+      }
+
+
+    }
+    return setRelations;
+  }
+
+
   public void loadRelations(IAuditLog entity, boolean loadUsers) {
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
       Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
       Type propertyType = classMetadata.getPropertyType(name);
+
       if (propertyValue != null && propertyType instanceof ManyToOneType) {
 
         if (loadUsers) {
@@ -94,8 +128,11 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
+
   public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+
     for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
       Map<String, Object> map = it.next();
       if (map.get(PRINCIPAL) == null || map.get(PRINCIPAL).toString().equals("1")) {
@@ -244,7 +281,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                   String name = audit.getClass().getName();
                   Class className = Class.forName(name);
                   Object obj = dao.find(className, audit.getId());
-                  listRelation.add(audit);
+                  listRelation.add((IAuditLog) obj);
+                  relations.addAll(this.loadList((IAuditLog) obj));
                 } catch (ClassNotFoundException e) {
 
                   e.printStackTrace();

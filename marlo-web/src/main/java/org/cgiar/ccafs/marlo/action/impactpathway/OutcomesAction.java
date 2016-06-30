@@ -470,8 +470,7 @@ public class OutcomesAction extends BaseAction {
         }
         crpOutcomeSubIdo.setCrpProgramOutcome(crpProgramOutcome);
         if (crpOutcomeSubIdo.getSrfSubIdo() == null || crpOutcomeSubIdo.getSrfSubIdo().getId() == null
-          || crpOutcomeSubIdo.getSrfSubIdo().getId() == -1 || crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo() == null
-          || crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getId() == -1) {
+          || crpOutcomeSubIdo.getSrfSubIdo().getId() == -1) {
           crpOutcomeSubIdo.setSrfSubIdo(null);
         }
 
