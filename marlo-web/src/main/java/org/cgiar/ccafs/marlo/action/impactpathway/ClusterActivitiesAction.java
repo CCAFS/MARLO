@@ -177,7 +177,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
           User user = userManager.getUser(this.getCurrentUser().getId());
           List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-            .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive()
+              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList());
           if (!userLeads.isEmpty()) {
             crpProgramID = userLeads.get(0).getCrpProgram().getId();
           } else {
