@@ -72,7 +72,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private List<CrpClusterOfActivity> clusterofActivities;
   private ClusterActivitiesValidator validator;
   private AuditLogManager auditLogManager;
-  private String transactionID;
+  private String transactionId;
 
 
   @Inject
@@ -123,8 +123,8 @@ public class ClusterActivitiesAction extends BaseAction {
     return selectedProgram;
   }
 
-  public String getTransactionID() {
-    return transactionID;
+  public String getTransactionId() {
+    return transactionId;
   }
 
 
@@ -140,13 +140,13 @@ public class ClusterActivitiesAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
-      String transactionID = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionID);
+      transactionId = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionId);
       if (history != null) {
         crpProgramID = history.getId();
         selectedProgram = history;
         clusterofActivities.addAll(history.getCrpClusterOfActivities());
-        this.transactionID = transactionID;
+
         this.setEditable(false);
         programs = new ArrayList<>();
         programs.add(history);
@@ -157,7 +157,7 @@ public class ClusterActivitiesAction extends BaseAction {
         }
       } else {
         programs = new ArrayList<>();
-        this.transactionID = "-1";
+        this.transactionId = "-1";
       }
 
 
@@ -385,8 +385,8 @@ public class ClusterActivitiesAction extends BaseAction {
   }
 
 
-  public void setTransactionID(String transactionID) {
-    this.transactionID = transactionID;
+  public void setTransactionId(String transactionID) {
+    this.transactionId = transactionID;
   }
 
 
