@@ -87,10 +87,12 @@
 
 [#-- PopUp to select SubIDOs --]
 <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
-  <div class="graphic-container" >        
+  <div class="graphic-container" >
+  <div class="filterPanel"></div>       
   [#list srfIdos as ido]
     <div class="idoWrapper">
-      <div class="IDO"><strong>${ido.description}</strong></div>
+    
+      <div class="IDO"><strong>${ido.isCrossCutting?string("Crosscutting:","")} ${ido.description}</strong></div>
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
           <div class="line"></div>
