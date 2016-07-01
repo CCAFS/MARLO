@@ -831,6 +831,7 @@ span.logType {
   width: 6px;
   padding: 0 0px;
   display: block;
+  border-radius: 1px;
 }
 
 .legend{
@@ -850,15 +851,15 @@ span.logType {
   margin-right: 24px;
 }
 
-span.logType.update {
+span.logType.updated {
     background-color: #CCC;
 }
 
-span.logType.delete { 
+span.logType.deleted { 
   background-color: #E07070;
 }
 
-span.logType.insert {
+span.logType.saved {
     background-color: #5BA55B;
  
 }
@@ -5506,7 +5507,7 @@ h4.testEnvironment {
 
 .buttons-content.positionFixedBot {
   position: fixed;
-  bottom: 0;
+  bottom: 1px;
 }
 
 .buttons-content {float: right;margin-bottom: 5px;}

@@ -69,9 +69,7 @@
               [/#if]
             </div>
           </div>
-          
-          
-          
+
           <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         [#else]
           <p class="text-center borderBox">There is not flagships added</p>
@@ -116,7 +114,8 @@
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#----------------------------------- Outcomes Macros -------------------------------------------]
+[#-----------------------------------  Outcomes Macros  -------------------------------------------]
+
 [#macro outcomeMacro outcome name index isTemplate=false]
   [#assign outcomeCustomName= "${name}[${index}]" /]
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
@@ -232,18 +231,20 @@
     [/#if]
     <br />
     <div class="form-group">
-    <div class="subIdoBlock" >
-          <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
-          <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"Select a subIDO clicking the button..." maxPos=50 substr=" "/]</div>
-          <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
+      <div class="subIdoBlock" >
+        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
+        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=50 substr=" "/]</div>
+        <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
       </div>
       <div class="buttonSubIdo-block" >
+       [#if editable]
         <div class="buttonSubIdo-content">
           <br>
-          <div class="button-blue selectSubIDO" ><span class=""></span> Select a subIDO</div>
+          <div class="button-blue selectSubIDO" ><span class=""></span> Select a sub-IDO</div>
         </div>
+      [/#if]
       </div>
-      
+        
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
     </div>
@@ -276,7 +277,7 @@
     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
     [#if !editable] 
       [#if assumption.description?has_content]
-        <div class="input"><p> ${index+1}. ${(assumption.description)!}</p></div>
+        <div class="input"><p> <strong>${index+1}.</strong> ${(assumption.description)!}</p></div>
       [/#if] 
     [#else]
       [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement" className="statement" required=true editable=editable /]
