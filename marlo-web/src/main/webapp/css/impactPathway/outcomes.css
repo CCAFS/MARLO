@@ -38,7 +38,7 @@ p.contributioRem {
 
 .idoWrapper {
     display: inline-block;
-    width: 6%;
+    width: 120px;
     margin: 5px 8px;
     vertical-align: top;
 }
@@ -115,10 +115,9 @@ p.contributioRem {
 
 
 .idoWrapper.crossCutting {
-    /* display: none; */
 }
 
 .filterPanel {
-    width: 14%;
+    width: 320px;
     margin-bottom: 15px;
 }

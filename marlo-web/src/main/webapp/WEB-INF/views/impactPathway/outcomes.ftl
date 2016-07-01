@@ -17,34 +17,33 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <section class="marlo-content">
-  [#if transactionId??]
-    <div class="history-mode container text-center">
-      <p>
-      [#if transactionId == "-1"]
-        History not found
-      [#else]
-        This is a version history edited by ${selectedProgram.modifiedBy.composedName?html} on ${selectedProgram.activeSince?datetime}
-      [/#if]
-      </p>
-    </div>
-  [/#if]
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        <div class="">
-          [#-- Program (Flagships) --]
-          <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
-            [#list programs as program]
-              [#assign isActive = (program.id == crpProgramID)/]
-              <li class="${isActive?string('active','')}">
-                <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
-              </li>
-            [/#list]
-          </ul>
-        </div>
+        [#-- History Message --]
+        [#if transaction??]
+          <div class="history-mode text-center">
+            [#if transaction == "-1"]
+              <p>History not found</p>
+            [#else]
+              <p>History Version by <span>${selectedProgram.modifiedBy.composedName?html}</span> on <span>${selectedProgram.activeSince?datetime}</span>. Current version <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]"> here</a>.</p>
+            [/#if]
+          </div>
+        [/#if]
+      
+        [#-- Program (Flagships) --]
+        <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
+          [#list programs as program]
+            [#assign isActive = (program.id == crpProgramID)/]
+            <li class="${isActive?string('active','')}">
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
+            </li>
+          [/#list]
+        </ul>
+        
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
@@ -98,19 +97,20 @@
 <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
   <div class="graphic-container" >
   <div class="filterPanel panel-default">
-  <div class="panel-heading">Filter By: 
-    <form role="form">
-    <label class="checkbox-inline">
-      <input type="checkbox" value="" checked>IDOs
-    </label>
-    <label class="checkbox-inline">
-      <input type="checkbox" value="" checked>CrossCutting IDOs
-    </label>
-    </form>
-  </div>
+    <div class="panel-heading"> 
+      <form id="filterForm"  role="form">
+      <label class="checkbox-inline">Filter By:</label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="IDO" checked>IDOs
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="CCIDO" checked>CrossCutting IDOs
+        </label>
+      </form>
+    </div>
   </div>        
   [#list srfIdos as ido]
-    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","")} ">    
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">    
       <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
@@ -256,7 +256,7 @@
     <div class="form-group">
       <div class="subIdoBlock" >
         <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
-        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=50 substr=" "/]</div>
+        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=65 substr=" "/]</div>
         <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
       </div>
       <div class="buttonSubIdo-block" >

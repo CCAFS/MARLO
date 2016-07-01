@@ -10,8 +10,8 @@
 }
 
 .person {
-    width: 96%;
-    display: inline-block;
+    /* width: 96%; */
+    /* display: inline-block; */
 }
 
 .removePerson {
@@ -47,11 +47,6 @@
 }
 
 .userItem {
-    border: 1px dashed rgba(128, 128, 128, 0.44);
-    margin: 8px;
-    border-radius: 5px;
-    padding: 5px 10px;
-    background-color: rgba(245, 245, 245, 0.47);
 }
 
 .remove-userItem {

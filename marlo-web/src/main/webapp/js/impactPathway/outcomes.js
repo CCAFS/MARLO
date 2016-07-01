@@ -91,6 +91,8 @@ function attachEvents() {
     $("#subIDOs-graphic").dialog("open");
   });
 
+  // Filter SubIDOs
+  $("#filterForm").on("change", filter);
   // Select a subIdo
   $(".subIDO").on("click", function() {
     // less text
@@ -208,6 +210,33 @@ function updateTotalContribution(list,text) {
     $(list).addClass('fieldError');
   } else if(total == 100) {
     $(text).addClass('fieldChecked');
+  }
+}
+
+// Filter by CrossCutting
+function filter() {
+  var $checkBox = $(this).find(":checked");
+  if($checkBox.length == 2) {
+    $checkBox.each(function(i,item) {
+      $(".ido").css("display", "inline-block");
+      $(".crossCutting").css("display", "inline-block");
+      $(".graphic-container").css("width", "2000px");
+      $(".crossCutting").css("margin", "5px 8px");
+    });
+  } else {
+    if($checkBox.val() == "IDO") {
+      $(".ido").css("display", "inline-block");
+      $(".crossCutting").css("display", "none");
+      $(".graphic-container").css("width", "1420px");
+    } else if($checkBox.val() == "CCIDO") {
+      $(".ido").css("display", "none");
+      $(".crossCutting").css("display", "inline-block");
+      $(".crossCutting").css("margin", "5px 0 5px 12%");
+      $(".graphic-container").css("width", "1000px");
+    } else {
+      $(".ido").css("display", "none");
+      $(".crossCutting").css("display", "none");
+    }
   }
 }
 
