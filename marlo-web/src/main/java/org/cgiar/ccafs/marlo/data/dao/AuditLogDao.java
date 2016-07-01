@@ -36,7 +36,7 @@ public interface AuditLogDao {
    * @param transactionID the num of transaction ID save on table AuditLog
    * @return the histoy objet
    */
-  public IAuditLog getHistory(long transactionID);
+  public IAuditLog getHistory(String transactionID);
 
   /**
    * List of AuditLogs from the class of parameter that has the entity id
@@ -45,5 +45,5 @@ public interface AuditLogDao {
    * @param id the entity id
    */
 
-  public List<Auditlog> listLogs(Class classAudit, long id);
+  public List<Auditlog> listLogs(Class classAudit, long id, String actionName);
 }

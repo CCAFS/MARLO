@@ -1,34 +1,42 @@
 [#ftl] 
-[#macro logList list ] 
+[#macro logList list itemId] 
 [#if list?has_content]
-  <div id="log-history" class="borderBox">
-    <h1 class="simpleTitle"> [@s.text name="logHistory.title" /] <span>[@s.text name="logHistory.subTitle" /]</span></h1> 
-    <table class="log-table">
+  <div id="log-history" class="" title="${(title)!} History" style="display:none">
+    <h3 class="simpleTitle"> [@s.text name="logHistory.title" /] <span>[@s.text name="logHistory.subTitle" /]</span></h3> 
+    <table class="table table-striped">
       <thead>
         <tr>
           <th class="type">&nbsp;</th>
           <th class="date">[@s.text name="logHistory.date" /]</th>
           <th class="person">[@s.text name="logHistory.person" /]</th>
           <th class="justification">[@s.text name="logHistory.justification" /]</th>
+          <th class="view text-center">[@s.text name="logHistory.viewHistory" /]</th>
         </tr>
       </thead>
       <tbody>
         [#list list as log]
         <tr>
           <td class="type"><span class="logType ${log.action}" title="${log.action?capitalize}">&nbsp;</span></td>
-          <td class="date">${log.date?datetime}</td>
-          <td class="person">${log.user.composedName}</td>
-          <td class="justification">${log.justification}</td>
+          <td class="date">${log.createdDate?datetime}</td>
+          <td class="person">${log.userId}</td>
+          <td class="justification">${(log.justification)!'Empty'}</td>
+          <td class="view text-center">
+            <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="transactionId"]${log.transactionId}[/@s.param][/@s.url]">
+             <span class="glyphicon glyphicon-eye-open"></span> View
+            </a>
+          </td>
         </tr>
         [/#list]
       </tbody>
     </table>
     <br />
+    [#-- 
     <div class="legend">
       <div class="action"><span class="logType insert">&nbsp;</span> [@s.text name="logHistory.action.insert" /]</div>
       <div class="action"><span class="logType update">&nbsp;</span> [@s.text name="logHistory.action.update" /]</div>
       <div class="action"><span class="logType delete">&nbsp;</span> [@s.text name="logHistory.action.delete" /]</div>
     </div>
+    --]
   </div>
 [/#if]
 [/#macro]

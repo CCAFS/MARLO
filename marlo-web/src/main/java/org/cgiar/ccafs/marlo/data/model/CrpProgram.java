@@ -49,24 +49,25 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private int programType;
+  private String action;
 
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
 
 
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
-
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+
+
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+
+
   private List<String> selectedCountries;
-
-
   @Expose
   private boolean active;
-
-
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
@@ -77,6 +78,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
 
   private List<CrpProgramLeader> leaders;
 
@@ -128,6 +130,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
+  public String getAction() {
+    return action;
+  }
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -156,7 +162,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.crpProgramOutcomes;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
@@ -167,9 +172,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
+    if (action != null) {
+      sb.append("Action: " + action).append(this.getId());
+
+    }
     sb.append("Id : ").append(this.getId());
 
 
@@ -193,10 +203,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.programType;
   }
 
-
   public List<String> getSelectedCountries() {
     return selectedCountries;
   }
+
 
   @Override
   public boolean isActive() {
@@ -205,6 +215,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
   }
 
   public void setActive(boolean active) {

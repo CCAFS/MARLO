@@ -48,17 +48,25 @@ $(document).ready(function() {
   // Function that set the interface buttons always visible
   var $buttons = $('.buttons');
   if($buttons.exists()) {
+    var menuOffset = function() {
+      return $(document).height() - ($buttons.offset().top + $buttons.height());
+    }
     $buttons.find('.buttons-content').css({
       right: $(document).width() - ($buttons.offset().left + $buttons.width())
     });
+
+    setFixedElement($(window).scrollBottom() >= menuOffset());
     $(window).scroll(function() {
-      var menuOffset = $(document).height() - ($buttons.offset().top + $buttons.height());
-      if($(window).scrollBottom() >= menuOffset) {
-        $buttons.find('.buttons-content').addClass('positionFixedBot animated flipInX');
-      } else {
-        $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
-      }
+      setFixedElement($(window).scrollBottom() >= menuOffset());
     });
+  }
+
+  function setFixedElement(isFixed) {
+    if(isFixed) {
+      $buttons.find('.buttons-content').addClass('positionFixedBot animated flipInX');
+    } else {
+      $buttons.find('.buttons-content').removeClass('positionFixedBot animated flipInX');
+    }
   }
 
   function showHelpText() {
@@ -146,6 +154,20 @@ $(document).ready(function() {
   function toggleInputs(e) {
     $(this).parent().parent().parent().find('.tickBox-toggle').slideToggle($(e.target).is(':checked'));
   }
+
+  // History log popup
+  $('.button-history').on('click', function() {
+    $('#log-history').dialog({
+        modal: true,
+        maxWidth: '500px',
+        width: '80%',
+        buttons: {
+          Cancel: function() {
+            $(this).dialog("close");
+          }
+        }
+    });
+  });
 
   $("textarea[id!='justification']").autoGrow();
 

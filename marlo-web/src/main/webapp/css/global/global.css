@@ -831,6 +831,7 @@ span.logType {
   width: 6px;
   padding: 0 0px;
   display: block;
+  border-radius: 1px;
 }
 
 .legend{
@@ -850,15 +851,15 @@ span.logType {
   margin-right: 24px;
 }
 
-span.logType.update {
+span.logType.updated {
     background-color: #CCC;
 }
 
-span.logType.delete { 
+span.logType.deleted { 
   background-color: #E07070;
 }
 
-span.logType.insert {
+span.logType.saved {
     background-color: #5BA55B;
  
 }
@@ -1299,7 +1300,7 @@ a#userLogOut {
   font-size: 0.7em;
 }
 
-#crp-image {height: 97px;position: absolute;right: 0em;}
+#crp-image {height: 97px;position: absolute;right: 0em;top: 0.2em;}
 
 
 /************* 3. MAIN MENU ***************/
@@ -1931,7 +1932,7 @@ h3.contentSubTitle {
   color: #663300;
   padding-bottom: 3px;
   font-weight: lighter;
-  margin-top: 30px;
+  margin-top: 28px;
 }
 
 .sectionSubTitle {
@@ -1942,11 +1943,13 @@ h3.contentSubTitle {
 }
 
 
-h1.simpleTitle {
+.simpleTitle {
   border: none;
+  font-weight: lighter;
+  margin-top: 5px;
 }
 
-h1.simpleTitle span {
+.simpleTitle span {
   font-size: 0.8em;   
   color: #747474;
 }
@@ -2259,13 +2262,13 @@ p.projectSubmitted {
 
 .button-blue {
   padding: 3px 8px 3px 8px;
-  margin-top: 3px;
+  /* margin-top: 3px; */
   text-align: center;
   background: #668fda;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
-  display: inline-block
+  display: inline-block;
 }
 
 .button-blue:hover { 
@@ -5504,7 +5507,7 @@ h4.testEnvironment {
 
 .buttons-content.positionFixedBot {
   position: fixed;
-  bottom: 0;
+  bottom: 1px;
 }
 
 .buttons-content {float: right;margin-bottom: 5px;}

@@ -50,10 +50,10 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
 
   @Override
-  public IAuditLog getHistory(long transactionID) {
+  public IAuditLog getHistory(String transactionID) {
 
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id=" + transactionID + " and principal=1");
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and principal=1");
 
     if (!auditLogs.isEmpty()) {
 
@@ -68,10 +68,12 @@ public class AuditLogMySQLDao implements AuditLogDao {
   }
 
   @Override
-  public List<Auditlog> listLogs(Class classAudit, long id) {
+  public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
 
-    List<Auditlog> auditLogs = dao.findAll("from " + Auditlog.class.getName() + " where ENTITY_NAME='class "
-      + classAudit.getName() + "' and ENTITY_ID=" + id + " and principal=1");
+    List<Auditlog> auditLogs = dao.findAll(
+      "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
+        + " and principal=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
+    // " and principal=1 order by CREATED_DATE desc LIMIT 10");
 
     return auditLogs;
   }
@@ -81,7 +83,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
     try {
       Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
       Class classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
-      IAuditLog iAuditLog = gson.fromJson(auditlog.getEntityJson(), classToCast);
+      IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
 
       return iAuditLog;
     } catch (JsonSyntaxException e) {
@@ -94,7 +96,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
     return null;
   }
 
-  public void loadRelationsForIAuditLog(IAuditLog iAuditLog, long transactionID) {
+  public void loadRelationsForIAuditLog(IAuditLog iAuditLog, String transactionID) {
     try {
 
       Session session = dao.openSession();
@@ -105,9 +107,9 @@ public class AuditLogMySQLDao implements AuditLogDao {
         if (propertyType instanceof OrderedSetType || propertyType instanceof SetType) {
 
           String classNameRelation = propertyType.getName();
-
-          List<Auditlog> auditLogsRelations = dao.findAll("from " + Auditlog.class.getName() + " where transaction_id="
-            + transactionID + " and principal=3 and relation_name='" + classNameRelation + "'");
+          String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
+            + "' and principal=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId() + "'";
+          List<Auditlog> auditLogsRelations = dao.findAll(sql);
 
           Set<IAuditLog> relation = new HashSet<IAuditLog>();
           for (Auditlog auditlog : auditLogsRelations) {
@@ -115,6 +117,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
             this.loadRelationsForIAuditLog(relationObject, transactionID);
             relation.add(relationObject);
           }
+
           classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
         }
       }

@@ -263,15 +263,22 @@ public class StandardDAO {
   }
 
 
-  public void logIt(String action, IAuditLog entity, String json, long userId, long transactionId, Long principal,
-    String relationName) {
+  public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
+    String relationName, String actionName) {
 
     Session tempSession = this.openSession();
 
     try {
 
       try {
-        Auditlog auditRecord = new Auditlog(action, entity.getLogDeatil(), new Date(), entity.getId().toString(),
+        String detail = "";
+        if (actionName == null) {
+          detail = entity.getLogDeatil();
+        } else {
+          detail = "Action: " + actionName + " " + entity.getLogDeatil();
+        }
+
+        Auditlog auditRecord = new Auditlog(action, detail, new Date(), entity.getId().toString(),
           entity.getClass().toString(), json, userId, transactionId, principal, relationName);
         tempSession.save(auditRecord);
         tempSession.flush();
@@ -364,6 +371,39 @@ public class StandardDAO {
    * This method saves or update a record into the database.
    * 
    * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected boolean save(Object obj, String actionName) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
+      interceptor.setActionName(actionName);
+      tx = this.initTransaction(session);
+      session.save(obj);
+      this.commitTransaction(tx);
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
+      }
+      return false;
+    }
+  }
+
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected boolean update(Object obj) {
@@ -373,6 +413,43 @@ public class StandardDAO {
       session = this.openSession(interceptor);
       interceptor.setSession(session);
 
+      tx = this.initTransaction(session);
+
+
+      obj = session.merge(obj);
+      session.saveOrUpdate(obj);
+      this.commitTransaction(tx);
+
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
+      }
+      return false;
+    }
+  }
+
+
+  /**
+   * This method saves or update a record into the database.
+   * 
+   * @param obj is the Object to be saved/updated.
+   * @param actionName the action that called the save
+   * @return true if the the save/updated was successfully made, false otherwhise.
+   */
+  protected boolean update(Object obj, String actionName) {
+    Session session = null;
+    Transaction tx = null;
+    try {
+      session = this.openSession(interceptor);
+      interceptor.setSession(session);
+      interceptor.setActionName(actionName);
       tx = this.initTransaction(session);
 
 

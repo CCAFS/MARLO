@@ -35,14 +35,14 @@ public class AuditLogManagerImp implements AuditLogManager {
   }
 
   @Override
-  public IAuditLog getHistory(long transactionID) {
+  public IAuditLog getHistory(String transactionID) {
 
     return auditLogDao.getHistory(transactionID);
   }
 
   @Override
-  public List<Auditlog> listLogs(Class classAudit, long id) {
-    return auditLogDao.listLogs(classAudit, id);
+  public List<Auditlog> listLogs(Class classAudit, long id, String actionName) {
+    return auditLogDao.listLogs(classAudit, id, actionName);
   }
 
 }

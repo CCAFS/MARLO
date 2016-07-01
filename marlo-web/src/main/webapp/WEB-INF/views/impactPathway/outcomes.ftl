@@ -23,75 +23,82 @@
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-
-        [#if programs?has_content]
-          <div class="">
-            [#-- Program (Flagships) --]
-            <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
-              [#list programs as program]
-                [#assign isActive = (program.id == crpProgramID)/]
-                <li class="${isActive?string('active','')}">
-                  <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
-                </li>
-              [/#list]
-            </ul>
-          </div>
-        
-          [@s.form action=actionName enctype="multipart/form-data" ]  
+        <div class="">
+          [#-- Program (Flagships) --]
+          <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
+            [#list programs as program]
+              [#assign isActive = (program.id == crpProgramID)/]
+              <li class="${isActive?string('active','')}">
+                <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
+              </li>
+            [/#list]
+          </ul>
+        </div>
+        [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
-        <div class="outcomes-list">
-        [#if outcomes?has_content]
-          [#list outcomes as outcome]
-            [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
-          [/#list]
-        [/#if]
-        </div>
-        [#-- Add Outcome Button --]
-        [#if editable]
-          <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
-        [/#if]
-          
+        [#if programs?has_content]
+          <div class="outcomes-list">
+          [#if outcomes?has_content]
+            [#list outcomes as outcome]
+              [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
+            [/#list]
+          [/#if]
+          </div>
+          [#-- Add Outcome Button --]
+          [#if editable]
+            <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+          [/#if]
+            
           [#-- Section Buttons--]
           <div class="buttons">
             <div class="buttons-content">
-            [#if editable]
-              <a href="[@s.url][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-              [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-            [#else]
-              [#if canEdit]
-                <a href="[@s.url][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+              [#-- History Log --]
+              [#if action.getListLog(selectedProgram)?has_content]
+                [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
+                [@logHistory.logList list=action.getListLog(selectedProgram) itemId=crpProgramID /]
+                <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
               [/#if]
-            [/#if]
+              [#if editable]
+                <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+                [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+              [#else]
+                [#if canEdit]
+                  <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+                [/#if]
+              [/#if]
             </div>
           </div>
-          
+
           <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
-          [/@s.form]
         [#else]
           <p class="text-center borderBox">There is not flagships added</p>
         [/#if]
-      </div>
+        [/@s.form]
     </div>
   </div>
+</div>
+  
+  
+  
 </section>
 
 [#-- PopUp to select SubIDOs --]
-      <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
-      <div class="graphic-container" >        
-        [#list srfIdos as ido]
-          <div class="idoWrapper">
-            <div class="IDO"><strong>${ido.description}</strong></div>
-            <div class="subIdoWrapper">
-              [#list ido.subIdos as subIdo]
-                <div class="line"></div>
-                <div id="subIdo-${subIdo.id}" class="subIDO">${subIdo.description}</div>
-              [/#list]
-            </div>
-          </div>
+<div id="subIDOs-graphic" style="overflow:auto; display:none;" >
+  <div class="graphic-container" >        
+  [#list srfIdos as ido]
+    <div class="idoWrapper">
+      <div class="IDO"><strong>${ido.description}</strong></div>
+      <div class="subIdoWrapper">
+        [#list ido.subIdos as subIdo]
+          <div class="line"></div>
+          <div id="subIdo-${subIdo.id}" class="subIDO">${subIdo.description}</div>
         [/#list]
-        </div>      
       </div>
+    </div>
+  [/#list]
+  </div>      
+</div>
       
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
@@ -107,7 +114,8 @@
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#----------------------------------- Outcomes Macros -------------------------------------------]
+[#-----------------------------------  Outcomes Macros  -------------------------------------------]
+
 [#macro outcomeMacro outcome name index isTemplate=false]
   [#assign outcomeCustomName= "${name}[${index}]" /]
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
@@ -223,23 +231,22 @@
     [/#if]
     <br />
     <div class="form-group">
-    <div class="subIdoBlock" >
-          <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
-          <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"Select a subIDO clicking the button..." maxPos=50 substr=" "/]</div>
-          <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
+      <div class="subIdoBlock" >
+        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
+        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=50 substr=" "/]</div>
+        <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
       </div>
       <div class="buttonSubIdo-block" >
+       [#if editable]
         <div class="buttonSubIdo-content">
           <br>
-          <div class="button-blue selectSubIDO" ><span class=""></span> Select a subIDO</div>
+          <div class="button-blue selectSubIDO" ><span class=""></span> Select a sub-IDO</div>
         </div>
+      [/#if]
       </div>
-      
+        
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
-      
-      
-      
     </div>
     
     [#-- Assumptions List --]
@@ -270,7 +277,7 @@
     <input type="hidden" class="assumptionId" name="${assumptionCustomName}.id" value="${(assumption.id)!}"/>
     [#if !editable] 
       [#if assumption.description?has_content]
-        <div class="input"><p> ${index+1}. ${(assumption.description)!}</p></div>
+        <div class="input"><p> <strong>${index+1}.</strong> ${(assumption.description)!}</p></div>
       [/#if] 
     [#else]
       [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement" className="statement" required=true editable=editable /]
