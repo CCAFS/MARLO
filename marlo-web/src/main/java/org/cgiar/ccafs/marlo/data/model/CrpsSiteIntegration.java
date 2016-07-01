@@ -39,17 +39,18 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
 
+
   @Expose
   private LocElement locElement;
 
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
-
 
   @Expose
   private boolean active;
 
   @Expose
   private boolean regional;
+
 
   @Expose
   private User createdBy;
@@ -63,11 +64,13 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private List<String> programName;
 
   private List<CrpSitesLeader> siteLeaders;
 
   public CrpsSiteIntegration() {
   }
+
 
   public CrpsSiteIntegration(Crp crps, LocElement locElements) {
     this.crp = crps;
@@ -143,6 +146,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public List<String> getProgramName() {
+    return programName;
+  }
+
   public List<CrpSitesLeader> getSiteLeaders() {
     return siteLeaders;
   }
@@ -160,10 +167,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -191,6 +198,10 @@ public class CrpsSiteIntegration implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setProgramName(List<String> programName) {
+    this.programName = programName;
   }
 
   public void setRegional(boolean regional) {

@@ -91,7 +91,7 @@
   <div id="country-${template?string('template','')}" class="borderBox country col-md-12" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
     <div class=" removeElement removeCountry" title="Remove Country"></div>
-    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}</h5>
+    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!} -  [#if element.programName?has_content][#list element.programName as regName]${regName!} [/#list][/#if] </h5>
     <div class="crpCountry-block">
       <div class="items-list simpleBox">
         <ul>

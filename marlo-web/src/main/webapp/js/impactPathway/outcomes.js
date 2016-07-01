@@ -15,8 +15,6 @@ function init() {
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
 
-  $(".subIdoId").css("cursor", "auto");
-
 }
 
 function attachEvents() {
@@ -74,21 +72,20 @@ function attachEvents() {
 
   // PopUp Select SubIdos (Graphic)
   $(".selectSubIDO").on("click", function() {
-    var wWidth = $(window).width();
-    var dWidth = wWidth * 0.85;
     currentSubIdo = $(this).parents(".subIdo");
     $("#subIDOs-graphic").dialog({
         autoOpen: false,
         resizable: false,
-        width: dWidth,
+        width: '85%',
         modal: true,
+        height: $(window).height() * 0.90,
         show: {
             effect: "blind",
-            duration: 1000
+            duration: 500
         },
         hide: {
             effect: "fadeOut",
-            duration: 1000
+            duration: 500
         }
     });
     $("#subIDOs-graphic").dialog("open");
@@ -98,7 +95,7 @@ function attachEvents() {
   $(".subIDO").on("click", function() {
     // less text
     var $divSubIdo = currentSubIdo.find(".subIdoSelected");
-    var v = $(this).text().length > 50 ? $(this).text().substr(0, 50) + ' ... ' : $(this).text();
+    var v = $(this).text().length > 65 ? $(this).text().substr(0, 65) + ' ... ' : $(this).text();
     $divSubIdo.text(v);
     $divSubIdo.attr("title", $(this).text()).tooltip();
     var $inputSubIdo = currentSubIdo.find("input.subIdoId");

@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -102,10 +103,23 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
 
     if (loggedCrp.getCrpsSitesIntegrations() != null) {
-      loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(
-        loggedCrp.getCrpsSitesIntegrations().stream().filter(si -> si.isActive()).collect(Collectors.toList())));
+      loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations().stream()
+        .filter(si -> si.isActive() && si.getCrp().equals(loggedCrp)).collect(Collectors.toList())));
+
 
       for (int i = 0; i < loggedCrp.getSiteIntegrations().size(); i++) {
+
+        CrpsSiteIntegration siteInt = loggedCrp.getSiteIntegrations().get(i);
+        if (siteInt.isRegional()) {
+          loggedCrp.getSiteIntegrations().get(i).setProgramName(new ArrayList<String>());
+          for (CrpProgramCountry crpProgramCountry : siteInt.getLocElement().getCrpProgramCountries().stream()
+            .filter(pc -> pc.isActive() && pc.getCrpProgram().getCrp().equals(loggedCrp))
+            .collect(Collectors.toList())) {
+
+            loggedCrp.getSiteIntegrations().get(i).getProgramName().add(crpProgramCountry.getCrpProgram().getAcronym());
+          }
+        }
+
         loggedCrp.getSiteIntegrations().get(i)
           .setSiteLeaders(new ArrayList<CrpSitesLeader>(loggedCrp.getSiteIntegrations().get(i).getCrpSitesLeaders()
             .stream().filter(sl -> sl.isActive()).collect(Collectors.toList())));
@@ -321,7 +335,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
                   if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
                     List<UserRole> slUserRoles = user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole))
                       .collect(Collectors.toList());
-                    if (slUserRoles != null || !slUserRoles.isEmpty()) {
+                    if (slUserRoles != null) {
                       for (UserRole userRole : slUserRoles) {
                         userRoleManager.deleteUserRole(userRole.getId());
                       }
