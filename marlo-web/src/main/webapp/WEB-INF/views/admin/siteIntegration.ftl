@@ -74,7 +74,8 @@
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro userItem element index name template=false]
+[#macro userItem element index name template=false hasRegions=false]
+  
   [#assign customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
@@ -82,22 +83,28 @@
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${(slRole.id)!}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [#-- Remove Button --]
+    [#if editable && !hasRegions]
+      <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    [/#if]
   </li>
 [/#macro]
 
 [#macro countryMacro element index name template=false]
-[#assign customNameCountry = "loggedCrp.siteIntegrations[${index}]" /]
+[#local customNameCountry = "loggedCrp.siteIntegrations[${index}]" /]
+[#local hasRegions = element.programName?has_content /]
   <div id="country-${template?string('template','')}" class="borderBox country col-md-12" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
-    <div class=" removeElement removeCountry" title="Remove Country"></div>
-    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!} -  [#if element.programName?has_content][#list element.programName as regName]${regName!} [/#list][/#if] </h5>
+    [#if editable && !hasRegions]
+      <div class=" removeElement removeCountry" title="Remove Country"></div>
+    [/#if]
+    <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!} -  [#if hasRegions][#list element.programName as regName]${regName!} [/#list][/#if] </h5>
     <div class="crpCountry-block">
       <div class="items-list simpleBox">
         <ul>
         [#if element.siteLeaders?has_content]
           [#list element.siteLeaders as item]
-          [@userItem element=item index=item_index name="${customNameCountry}.siteLeaders" /]
+          [@userItem element=item index=item_index name="${customNameCountry}.siteLeaders" hasRegions=item.regional/]
           [/#list]
         [/#if] 
         </ul>
