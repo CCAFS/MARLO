@@ -249,7 +249,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName());
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
       return new ArrayList<Auditlog>();
     }
   }
