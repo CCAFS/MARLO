@@ -463,7 +463,8 @@ public class CrpProgamRegionsAction extends BaseAction {
   }
 
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
-    List<CrpsSiteIntegration> siteIntegrations = loggedCrp.getCrpsSitesIntegrations().stream()
+    Crp crp = crpManager.getCrpById(loggedCrp.getId());
+    List<CrpsSiteIntegration> siteIntegrations = crp.getCrpsSitesIntegrations().stream()
       .filter(si -> si.isActive() && si.getLocElement().equals(locElement)).collect(Collectors.toList());
     if (siteIntegrations == null || siteIntegrations.isEmpty()) {
       CrpsSiteIntegration crpsSiteIntegration = new CrpsSiteIntegration();
@@ -488,6 +489,10 @@ public class CrpProgamRegionsAction extends BaseAction {
 
     } else {
       for (CrpsSiteIntegration siteIntegration : siteIntegrations) {
+        if (!siteIntegration.isRegional()) {
+          siteIntegration.setRegional(true);
+          crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+        }
         this.saveSiteLeaderBySiteIntegration(crpProgram, siteIntegration);
       }
     }
