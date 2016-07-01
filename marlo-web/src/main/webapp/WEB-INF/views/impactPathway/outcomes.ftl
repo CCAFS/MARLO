@@ -25,7 +25,7 @@
       <div class="col-md-9">
         [#-- History Message --]
         [#if transaction??]
-          <div class="history-mode text-center">
+          <div class="history-mode text-center animated flipInX">
             [#if transaction == "-1"]
               <p>History not found</p>
             [#else]
@@ -46,7 +46,7 @@
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
-        <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>
+        <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
         [#if programs?has_content]
           <div class="outcomes-list">
           [#if outcomes?has_content]

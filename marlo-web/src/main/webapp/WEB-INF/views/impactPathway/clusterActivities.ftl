@@ -27,7 +27,7 @@
       <div class="col-md-9">
         [#-- History Message --]
         [#if transaction??]
-          <div class="history-mode text-center">
+          <div class="history-mode text-center animated flipInX">
             [#if transaction == "-1"]
               <p>History not found</p>
             [#else]
@@ -46,42 +46,46 @@
           [/#list]
         </ul>
         [@s.form action=actionName enctype="multipart/form-data" ]  
-        
-       
-        <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        [#-- Cluster of Activities List --]
-        <div class="clusterList ">
-          [#if clusterofActivities?has_content]
-            [#list clusterofActivities as cluster]
-              [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
-            [/#list]
-          [/#if]
-        </div>
-        [#-- Add CoA Button --]
-        [#if editable]
-          <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
-        [/#if]
 
-        [#-- Section Buttons--]
-        <div class="buttons">
-          <div class="buttons-content">
-            [#-- History Log --]
-            [#if action.getListLog(selectedProgram)?has_content]
-              [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-              [@logHistory.logList list=action.getListLog(selectedProgram) itemId=crpProgramID /]
-              <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
-            [/#if]
-            [#if editable]
-              <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
-              [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-            [#elseif canEdit]
-              <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+        <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
+        [#if programs?has_content]
+          [#-- Cluster of Activities List --]
+          <div class="clusterList ">
+            [#if clusterofActivities?has_content]
+              [#list clusterofActivities as cluster]
+                [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
+              [/#list]
             [/#if]
           </div>
-        </div>
+          [#-- Add CoA Button --]
+          [#if editable]
+            <div class="bigAddButton text-center addCluster"><span class="glyphicon glyphicon-plus"></span> Add a Cluster</div>
+          [/#if]
+  
+          [#-- Section Buttons--]
+          <div class="buttons">
+            <div class="buttons-content">
+              [#-- History Log --]
+              [#if action.getListLog(selectedProgram)?has_content]
+                [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
+                [@logHistory.logList list=action.getListLog(selectedProgram) itemId=crpProgramID /]
+                <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
+              [/#if]
+              [#if editable]
+                <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
+                [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
+              [#elseif canEdit]
+                <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+              [/#if]
+            </div>
+          </div>
+          
+          [#-- Hidden Parameters --]
+          <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
         
-        [#-- Hidden Parameters --]
-        <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+        [#else]
+          <p class="text-center borderBox">There is not flagships added</p>
+        [/#if]
         [/@s.form]
       </div>
     </div>
