@@ -35,6 +35,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -799819119525448185L;
 
+
   @Expose
   private Long id;
 
@@ -49,11 +50,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private int programType;
+
   private String action;
 
   private Set<CrpClusterOfActivity> crpClusterOfActivities = new HashSet<CrpClusterOfActivity>(0);
-
-
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
@@ -61,26 +61,30 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
-
   private List<String> selectedCountries;
+
+
   @Expose
   private boolean active;
+
+
   @Expose
   private User createdBy;
-
-
   @Expose
   private Date activeSince;
-
-
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private String modificationJustification;
 
 
   private List<CrpProgramLeader> leaders;
+
+  @Expose
+  private String color;
+
 
   public CrpProgram() {
   }
@@ -138,6 +142,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public String getColor() {
+    return color;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -167,7 +175,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
-
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
   }
@@ -185,6 +192,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
+
 
   public String getModificationJustification() {
     return modificationJustification;
@@ -207,11 +215,11 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return selectedCountries;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -227,6 +235,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setColor(String color) {
+    this.color = color;
   }
 
   public void setCreatedBy(User createdBy) {
