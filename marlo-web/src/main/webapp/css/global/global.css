@@ -831,7 +831,7 @@ span.logType {
   width: 6px;
   padding: 0 0px;
   display: block;
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 .legend{
@@ -3142,7 +3142,7 @@ a.projectReportButton {
   background-color: #7FB06F;
   background-position: 46px 13px;
   padding: 11px 0 11px 18px;
-  margin: 0px 10px;
+  margin: 0px 8%;
   border-radius: 2px;
   color: #fff;
   font-weight: lighter;
@@ -4822,11 +4822,11 @@ ul#deliverablesFilesMessages > li {
 
 
 .leftHead.blue span.index{
-  background: #73a9ce91;
+  background: #73a9ce;
 }
 
 .leftHead.green span.index{
-  background: #81af8199;
+  background: #81af81;
 }
 
 span.index{
@@ -5567,4 +5567,20 @@ h4.testEnvironment {
  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
  opacity: 0.98;
  border-radius: 0px 0px 3px 3px;
+}
+
+
+.color-picker {
+  width: 100%;
+  border-radius:2px;
+  height: 27px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.history-mode {background: #95a5a6;color: #fff;padding: 13px 0 6px 0;font-size: 1.2em;border-radius: 4px;font-weight: lighter;}
+
+.history-mode a {
+  color: #fff;
+  text-decoration: underline;
 }

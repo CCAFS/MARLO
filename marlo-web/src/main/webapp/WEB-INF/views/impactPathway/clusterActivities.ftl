@@ -25,18 +25,26 @@
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-      
-        <div class="">
-          [#-- Program (Flagships) --]
-          <ul id="liaisonInstitutions" class="horizontalSubMenu">
-            [#list programs as program]
-              [#assign isActive = (program.id == crpProgramID)/]
-              <li class="${isActive?string('active','')}">
-                <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
-              </li>
-            [/#list]
-          </ul>
-        </div>
+        [#-- History Message --]
+        [#if transaction??]
+          <div class="history-mode text-center">
+            [#if transaction == "-1"]
+              <p>History not found</p>
+            [#else]
+              <p>History Version by <span>${selectedProgram.modifiedBy.composedName?html}</span> on <span>${selectedProgram.activeSince?datetime}</span>. Current version <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]"> here</a>.</p>
+            [/#if]
+          </div>
+        [/#if]
+        
+        [#-- Program (Flagships) --]
+        <ul id="liaisonInstitutions" class="horizontalSubMenu">
+          [#list programs as program]
+            [#assign isActive = (program.id == crpProgramID)/]
+            <li class="${isActive?string('active','')}">
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">Flagship ${program.acronym}</a>
+            </li>
+          [/#list]
+        </ul>
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
        
@@ -66,10 +74,8 @@
             [#if editable]
               <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> [@s.text name="form.buttons.back" /]</a>
               [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-            [#else]
-              [#if canEdit]
-                <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
-              [/#if]
+            [#elseif canEdit]
+              <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
             [/#if]
           </div>
         </div>

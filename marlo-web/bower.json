@@ -29,7 +29,8 @@
     "animate.css": "^3.5.1",
     "bootstrap": "^3.3.6",
     "flat-flags": "*",
-    "bootstrap-select": "^1.10.0"
+    "bootstrap-select": "^1.10.0",
+    "vanilla-color-picker": "^0.1.7"
   },
   "overrides": {
     "jquery": {

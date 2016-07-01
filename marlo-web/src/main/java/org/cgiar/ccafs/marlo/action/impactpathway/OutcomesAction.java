@@ -62,7 +62,7 @@ public class OutcomesAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
   private CrpMilestoneManager crpMilestoneManager;
   private long crpProgramID;
-  private String transactionID;
+  private String transaction;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
@@ -140,8 +140,8 @@ public class OutcomesAction extends BaseAction {
   }
 
 
-  public String getTransactionID() {
-    return transactionID;
+  public String getTransaction() {
+    return transaction;
   }
 
 
@@ -164,19 +164,21 @@ public class OutcomesAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
-      String transactionID = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionID);
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
       if (history != null) {
         crpProgramID = history.getId();
         selectedProgram = history;
         outcomes.addAll(history.getCrpProgramOutcomes());
-        this.transactionID = transactionID;
+
         this.setEditable(false);
+        this.setCanEdit(false);
         programs = new ArrayList<>();
         programs.add(history);
       } else {
         programs = new ArrayList<>();
-        this.transactionID = "-1";
+        this.transaction = null;
+        this.setTransaction("-1");
       }
 
     } else {
@@ -576,8 +578,8 @@ public class OutcomesAction extends BaseAction {
   }
 
 
-  public void setTransactionID(String transactionID) {
-    this.transactionID = transactionID;
+  public void setTransaction(String transactionId) {
+    this.transaction = transactionId;
   }
 
 
