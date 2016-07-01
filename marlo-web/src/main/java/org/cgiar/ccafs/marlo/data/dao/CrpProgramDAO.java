@@ -73,4 +73,16 @@ public interface CrpProgramDAO {
    *         or -1 is some error occurred.
    */
   public long save(CrpProgram crpProgram);
+
+  /**
+   * This method saves the information of the given crpProgram
+   * 
+   * @param crpProgram - is the crpProgram object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the crpProgram was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public long save(CrpProgram crpProgram, String actionName);
+
 }
+

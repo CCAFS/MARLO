@@ -247,7 +247,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
-      return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()), "");
+      return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
+        this.getActionName());
     } catch (NumberFormatException e) {
       return new ArrayList<Auditlog>();
     }
