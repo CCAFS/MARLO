@@ -9,19 +9,7 @@ function init() {
   yesnoEvent = yesnoEventLocations;
 
   /* Color picker widget */
-  var colors =
-      [
-          '#1abc9c', '#16a085', '#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#34495e', '#2c3e50',
-          '#f1c40f', '#f39c12', '#e67e22', '#d35400', '#e74c3c', '#c0392b', '#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d'
-      ]
-  $('.color-picker').each(function(i,picker) {
-    console.log(picker);
-    var picker = vanillaColorPicker(picker);
-    picker.set('customColors', colors);
-    picker.on('colorChosen', function(color,targetElem) {
-      targetElem.style.backgroundColor = color;
-    });
-  });
+  $('.color-picker').colorPicker();
 }
 
 function attachEvents() {
@@ -113,6 +101,8 @@ function addProgram(element) {
   var $li = $("#program-template").clone(true).removeAttr("id");
   // Assign parameters to template created
   $li.find('.type').val(item.type);
+  // Set color picker
+  $li.find('.color-picker').colorPicker();
   // Append item into program list
   $programList.find(".flagships-list").append($li);
   // Show item
@@ -145,6 +135,7 @@ function updateProgramIndexes(list) {
     var programName = 'flagshipsPrograms' + '[' + index + '].';
     $(item).find('.acronym').attr('name', programName + 'acronym');
     $(item).find('.name').attr('name', programName + 'name');
+    $(item).find('.color-picker input').attr('name', programName + 'color');
     $(item).find('.type').attr('name', programName + 'programType');
     $(item).find('.id').attr('name', programName + 'id');
 

@@ -59,6 +59,24 @@ $.fn.scrollBottom = function() {
   return $(document).height() - this.scrollTop() - this.height();
 };
 
+/* Color picker widget */
+var colors =
+    [
+        '#1abc9c', '#16a085', '#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#34495e', '#2c3e50',
+        '#f1c40f', '#f39c12', '#e67e22', '#d35400', '#e74c3c', '#c0392b', '#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d'
+    ]
+$.fn.colorPicker = function() {
+  $(this).each(function(i,pickerElement) {
+    var picker = vanillaColorPicker(pickerElement);
+    picker.set('customColors', colors);
+    picker.set('defaultColor', $(pickerElement).find('input').val());
+    picker.on('colorChosen', function(color,targetElem) {
+      targetElem.style.backgroundColor = color;
+      $(targetElem).find('input').val(color);
+    });
+  });
+}
+
 /*
  * This function takes the links whit popup class and add a click event. That event takes the href and open it in a
  * popUp window This method must be called in ready function
