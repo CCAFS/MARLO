@@ -321,7 +321,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
                   if (crpSitesLeader.getCrpsSiteIntegration().equals(crpsSiteIntegration)) {
                     List<UserRole> slUserRoles = user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole))
                       .collect(Collectors.toList());
-                    if (slUserRoles != null || !slUserRoles.isEmpty()) {
+                    if (slUserRoles != null) {
                       for (UserRole userRole : slUserRoles) {
                         userRoleManager.deleteUserRole(userRole.getId());
                       }
