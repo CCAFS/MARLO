@@ -16,12 +16,12 @@
       <tbody>
         [#list list as log]
         <tr>
-          <td class="type"><span class="logType ${log.action?lower_case}" title="${log.action?capitalize}">&nbsp;</span></td>
+          <td class="type"><span class="logType ${log.action}" title="${log.action?capitalize}">&nbsp;</span></td>
           <td class="date">${log.createdDate?datetime}</td>
           <td class="person">${log.userId}</td>
           <td class="justification">${(log.justification)!'Empty'}</td>
           <td class="view text-center">
-            <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="transactionId" value=log.transactionId/][/@s.url]">
+            <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="transactionId"]${log.transactionId}[/@s.param][/@s.url]">
              <span class="glyphicon glyphicon-eye-open"></span> View
             </a>
           </td>

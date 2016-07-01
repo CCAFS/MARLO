@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,7 +56,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private final String PRINCIPAL = "PRINCIPAL";
   private final String ENTITY = "entity";
   private final String RELATION_NAME = "relationName";
-  private long transactionId;
+  private String transactionId;
 
   public AuditLogInterceptor() {
     this.dao = new StandardDAO();
@@ -92,12 +93,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
         objects.put(ENTITY, listRelation);
         objects.put(PRINCIPAL, "3");
-        objects.put(RELATION_NAME, propertyType.getName());
+        objects.put(RELATION_NAME, propertyType.getName() + ":" + entity.getId());
         setRelations.add(objects);
       }
 
 
     }
+
     return setRelations;
   }
 
@@ -108,7 +110,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     for (String name : propertyNames) {
       Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
       Type propertyType = classMetadata.getPropertyType(name);
-
+      System.out.println(propertyType.getClass().getName());
       if (propertyValue != null && propertyType instanceof ManyToOneType) {
 
         if (loadUsers) {
@@ -120,7 +122,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
             IAuditLog entityRelation = (IAuditLog) propertyValue;
             Object obj = dao.find(propertyType.getReturnedClass(), entityRelation.getId());
-            this.loadRelations((IAuditLog) obj, false);
+            // this.loadRelations((IAuditLog) obj, false);
             classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
           }
         }
@@ -128,6 +130,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
       }
     }
+
   }
 
 
@@ -180,7 +183,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put("PRINCIPAL", new Long(1));
 
       deletes.add(objects);
-      deletes.addAll(this.relations(state, types, propertyNames));
+      deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId()));
     }
   }
 
@@ -197,13 +200,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
-        deletes.addAll(this.relations(currentState, types, propertyNames));
+        deletes.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId()));
       } else {
         objects.put(ENTITY, entity);
         objects.put(PRINCIPAL, new Long(1));
         updates.add(objects);
 
-        updates.addAll(this.relations(currentState, types, propertyNames));
+        updates.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId()));
       }
 
     }
@@ -225,7 +228,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       inserts.add(objects);
 
 
-      inserts.addAll(this.relations(state, types, propertyNames));
+      inserts.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId()));
     }
     return false;
 
@@ -238,11 +241,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public void postFlush(Iterator iterator) {
 
-    String transactionId = dao.findCustomQuery("select IFNULL(max(transaction_id),0) as 'transactionId' from auditlog")
-      .get(0).get("transactionId").toString();
-    this.transactionId = Long.parseLong(transactionId);
-    this.transactionId++;
-
+    transactionId = UUID.randomUUID().toString();
     try {
 
       this.logSaveAndUpdate("Saved", inserts);
@@ -268,10 +267,16 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   }
 
 
-  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames) {
+  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id) {
 
     Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
+    String parentId = "";
+    try {
+      parentId = id.toString();
+    } catch (Exception e1) {
+      parentId = "";
+    }
     for (Type type : types) {
       HashMap<String, Object> objects = new HashMap<>();
 
@@ -314,7 +319,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
           if (!listRelation.isEmpty()) {
             objects.put(ENTITY, listRelation);
             objects.put(PRINCIPAL, "3");
-            objects.put(RELATION_NAME, type.getName());
+            objects.put(RELATION_NAME, type.getName() + ":" + parentId);
             relations.add(objects);
           }
 
