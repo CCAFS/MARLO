@@ -85,14 +85,26 @@
 
 [#-- PopUp to select SubIDOs --]
 <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
-  <div class="graphic-container" >        
+  <div class="graphic-container" >
+  <div class="filterPanel panel-default">
+  <div class="panel-heading">Filter By: 
+    <form role="form">
+    <label class="checkbox-inline">
+      <input type="checkbox" value="" checked>IDOs
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" value="" checked>CrossCutting IDOs
+    </label>
+    </form>
+  </div>
+  </div>        
   [#list srfIdos as ido]
-    <div class="idoWrapper">
-      <div class="IDO"><strong>${ido.description}</strong></div>
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","")} ">    
+      <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
           <div class="line"></div>
-          <div id="subIdo-${subIdo.id}" class="subIDO">${subIdo.description}</div>
+          <div id="subIdo-${subIdo.id}" class="subIDO subIDO${ido.isCrossCutting?string("-CrossCutting","")}">${subIdo.description}</div>
         [/#list]
       </div>
     </div>
