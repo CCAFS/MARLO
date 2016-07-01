@@ -33,5 +33,6 @@
   [#if libraryName="jsUri"]<script src="${baseUrl}/bower_components/jsUri/Uri.js"></script>[/#if]
   [#if libraryName="bootstrap"]<script src="${baseUrl}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>[/#if]
   [#if libraryName="bootstrap-select"]<script src="${baseUrl}/bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>[/#if]
+  [#if libraryName="vanilla-color-picker"]<script src="${baseUrl}/bower_components/vanilla-color-picker/dist/vanilla-color-picker.min.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

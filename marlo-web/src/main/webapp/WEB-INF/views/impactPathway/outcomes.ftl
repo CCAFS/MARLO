@@ -17,6 +17,17 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <section class="marlo-content">
+  [#if transactionId??]
+    <div class="history-mode container text-center">
+      <p>
+      [#if transactionId == "-1"]
+        History not found
+      [#else]
+        This is a version history edited by ${selectedProgram.modifiedBy.composedName?html} on ${selectedProgram.activeSince?datetime}
+      [/#if]
+      </p>
+    </div>
+  [/#if]
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">

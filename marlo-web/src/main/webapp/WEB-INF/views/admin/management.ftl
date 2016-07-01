@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Management" /]
-[#assign pageLibs = [] /]
+[#assign pageLibs = ["vanilla-color-picker"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
@@ -141,6 +141,8 @@
       <div class="row">
         <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
         <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
+        [#local color= ""/]
+        <div class="col-sm-1"><div class="color-picker" style="background:#${color};"><input type="hidden" value="${color}"></div></div>
       </div>
     </div>
     [#-- Hidden inputs  --]

@@ -831,7 +831,7 @@ span.logType {
   width: 6px;
   padding: 0 0px;
   display: block;
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 .legend{
@@ -5568,3 +5568,14 @@ h4.testEnvironment {
  opacity: 0.98;
  border-radius: 0px 0px 3px 3px;
 }
+
+
+.color-picker {
+  width: 100%;
+  border-radius:2px;
+  height: 27px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.history-mode {background: #95a5a6;color: #fff;padding: 30px 0 20px 0px;font-size: 1.4em;border-radius: 4px;font-weight: lighter;}
