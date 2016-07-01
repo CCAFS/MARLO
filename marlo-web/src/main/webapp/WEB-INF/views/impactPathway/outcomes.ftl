@@ -87,19 +87,20 @@
 <div id="subIDOs-graphic" style="overflow:auto; display:none;" >
   <div class="graphic-container" >
   <div class="filterPanel panel-default">
-  <div class="panel-heading">Filter By: 
-    <form role="form">
-    <label class="checkbox-inline">
-      <input type="checkbox" value="" checked>IDOs
-    </label>
-    <label class="checkbox-inline">
-      <input type="checkbox" value="" checked>CrossCutting IDOs
-    </label>
-    </form>
-  </div>
+    <div class="panel-heading"> 
+      <form id="filterForm"  role="form">
+      <label class="checkbox-inline">Filter By:</label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="IDO" checked>IDOs
+        </label>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="CCIDO" checked>CrossCutting IDOs
+        </label>
+      </form>
+    </div>
   </div>        
   [#list srfIdos as ido]
-    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","")} ">    
+    <div class="idoWrapper ${ido.isCrossCutting?string("crossCutting","ido")} ">    
       <div class="IDO${ido.isCrossCutting?string("-CrossCutting","")}"><strong>${ido.isCrossCutting?string("CrossCutting:","")} ${ido.description}</strong></div>
       <div class="subIdoWrapper">
         [#list ido.subIdos as subIdo]
@@ -245,7 +246,7 @@
     <div class="form-group">
       <div class="subIdoBlock" >
         <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
-        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=50 substr=" "/]</div>
+        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=65 substr=" "/]</div>
         <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
       </div>
       <div class="buttonSubIdo-block" >
