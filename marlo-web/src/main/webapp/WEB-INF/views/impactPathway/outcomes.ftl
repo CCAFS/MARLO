@@ -17,35 +17,33 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <section class="marlo-content">
-  [#-- History Message --]
-  [#if transaction??]
-    <div class="history-mode container text-center">
-      <p>
-      [#if transaction == "-1"]
-        History not found
-      [#else]
-        This is a version history edited by ${selectedProgram.modifiedBy.composedName?html} on ${selectedProgram.activeSince?datetime}
-      [/#if]
-      </p>
-    </div>
-  [/#if]
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        <div class="">
-          [#-- Program (Flagships) --]
-          <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
-            [#list programs as program]
-              [#assign isActive = (program.id == crpProgramID)/]
-              <li class="${isActive?string('active','')}">
-                <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
-              </li>
-            [/#list]
-          </ul>
-        </div>
+        [#-- History Message --]
+        [#if transaction??]
+          <div class="history-mode text-center">
+            [#if transaction == "-1"]
+              <p>History not found</p>
+            [#else]
+              <p>History Version by <span>${selectedProgram.modifiedBy.composedName?html}</span> on <span>${selectedProgram.activeSince?datetime}</span>. Current version <a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]"> here</a>.</p>
+            [/#if]
+          </div>
+        [/#if]
+      
+        [#-- Program (Flagships) --]
+        <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
+          [#list programs as program]
+            [#assign isActive = (program.id == crpProgramID)/]
+            <li class="${isActive?string('active','')}">
+              <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][@s.param name ="edit"]true[/@s.param][/@s.url]">[@s.text name="flagShip.menu"/] ${program.acronym}</a>
+            </li>
+          [/#list]
+        </ul>
+        
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"/]</h4>

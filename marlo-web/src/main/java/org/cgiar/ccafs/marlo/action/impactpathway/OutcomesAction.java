@@ -172,6 +172,7 @@ public class OutcomesAction extends BaseAction {
         outcomes.addAll(history.getCrpProgramOutcomes());
 
         this.setEditable(false);
+        this.setCanEdit(false);
         programs = new ArrayList<>();
         programs.add(history);
       } else {

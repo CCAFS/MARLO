@@ -148,6 +148,7 @@ public class ClusterActivitiesAction extends BaseAction {
         clusterofActivities.addAll(history.getCrpClusterOfActivities());
 
         this.setEditable(false);
+        this.setCanEdit(false);
         programs = new ArrayList<>();
         programs.add(history);
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
