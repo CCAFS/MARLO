@@ -57,6 +57,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private final String ENTITY = "entity";
   private final String RELATION_NAME = "relationName";
   private String transactionId;
+  private String actionName;
+
 
   public AuditLogInterceptor() {
     this.dao = new StandardDAO();
@@ -65,6 +67,11 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     deletes = new HashSet<Map<String, Object>>();
 
 
+  }
+
+
+  public String getActionName() {
+    return actionName;
   }
 
 
@@ -146,7 +153,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         String json = gson.toJson(entity);
         if (map.containsKey(PRINCIPAL)) {
           dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-            new Long(map.get(PRINCIPAL).toString()), null);
+            new Long(map.get(PRINCIPAL).toString()), null, actionName);
         }
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
@@ -156,7 +163,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
             String json = gson.toJson(iAuditLog);
             if (map.containsKey(PRINCIPAL)) {
               dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-                new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString());
+                new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
             }
           }
 
@@ -187,6 +194,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
+
   /**
    * this method triggered when update an object, the object is not update into database yet.
    */
@@ -214,7 +222,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-
   /**
    * this method triggered when save an object, the object is not save into database yet.
    */
@@ -233,6 +240,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     return false;
 
   }
+
 
   /**
    * this method triggered after the saved, updated or deleted objects are committed to database.
@@ -265,7 +273,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   public void preFlush(Iterator iterator) {
 
   }
-
 
   public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id) {
 
@@ -328,6 +335,11 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       i++;
     }
     return relations;
+  }
+
+
+  public void setActionName(String actionName) {
+    this.actionName = actionName;
   }
 
   public void setSession(Session session) {

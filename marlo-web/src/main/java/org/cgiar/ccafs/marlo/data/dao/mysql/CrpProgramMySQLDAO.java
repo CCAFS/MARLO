@@ -100,5 +100,15 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
     return crpProgram.getId();
   }
 
+  @Override
+  public long save(CrpProgram crpProgram, String actionName) {
+    if (crpProgram.getId() == null) {
+      dao.save(crpProgram, actionName);
+    } else {
+      dao.update(crpProgram, actionName);
+    }
+    return crpProgram.getId();
+  }
+
 
 }
