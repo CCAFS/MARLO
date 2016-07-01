@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,7 @@ public class OutcomesAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
   private CrpMilestoneManager crpMilestoneManager;
   private long crpProgramID;
-  private long transactionID;
+  private String transactionID;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private HashMap<Long, String> idoList;
@@ -139,7 +140,7 @@ public class OutcomesAction extends BaseAction {
   }
 
 
-  public long getTransactionID() {
+  public String getTransactionID() {
     return transactionID;
   }
 
@@ -163,15 +164,21 @@ public class OutcomesAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
-      long transactionID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID)));
+      String transactionID = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionID);
-      crpProgramID = history.getId();
-      selectedProgram = history;
-      outcomes.addAll(history.getCrpProgramOutcomes());
-      this.transactionID = transactionID;
-      this.setEditable(false);
-      programs = new ArrayList<>();
-      programs.add(history);
+      if (history != null) {
+        crpProgramID = history.getId();
+        selectedProgram = history;
+        outcomes.addAll(history.getCrpProgramOutcomes());
+        this.transactionID = transactionID;
+        this.setEditable(false);
+        programs = new ArrayList<>();
+        programs.add(history);
+      } else {
+        programs = new ArrayList<>();
+        this.transactionID = "-1";
+      }
+
     } else {
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
@@ -216,6 +223,9 @@ public class OutcomesAction extends BaseAction {
         outcomes.clear();
       }
     }
+
+
+    Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
 
 
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
@@ -279,6 +289,7 @@ public class OutcomesAction extends BaseAction {
       this.saveCrpProgramOutcome();
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
+      selectedProgram.setAction(this.getActionName());
       crpProgramManager.saveCrpProgram(selectedProgram);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -564,7 +575,7 @@ public class OutcomesAction extends BaseAction {
   }
 
 
-  public void setTransactionID(long transactionID) {
+  public void setTransactionID(String transactionID) {
     this.transactionID = transactionID;
   }
 

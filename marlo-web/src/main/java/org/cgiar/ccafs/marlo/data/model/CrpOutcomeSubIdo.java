@@ -41,7 +41,7 @@ public class CrpOutcomeSubIdo implements java.io.Serializable, IAuditLog {
 
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
-
+  @Expose
   private SrfSubIdo srfSubIdo;
 
   @Expose

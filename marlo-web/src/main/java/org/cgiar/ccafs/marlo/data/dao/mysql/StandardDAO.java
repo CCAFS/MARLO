@@ -263,7 +263,7 @@ public class StandardDAO {
   }
 
 
-  public void logIt(String action, IAuditLog entity, String json, long userId, long transactionId, Long principal,
+  public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
     String relationName) {
 
     Session tempSession = this.openSession();

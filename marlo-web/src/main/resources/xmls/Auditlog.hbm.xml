@@ -32,8 +32,8 @@
       <column name="user_id" not-null="true" />
 
     </property>
-      <property name="transactionId" type="java.lang.Long">
-      <column name="transaction_id" not-null="true" />
+      <property name="transactionId" type="java.lang.String">
+      <column name="transaction_id" length="65535" not-null="true" />
 
     </property>
     

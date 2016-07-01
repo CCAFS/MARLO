@@ -20,7 +20,7 @@
           <td class="date">${log.createdDate?datetime}</td>
           <td class="person">${log.userId}</td>
           <td class="justification">${(log.justification)!'Empty'}</td>
-          <td class="view"><a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="transactionId" value=log.transactionId/][@s.param name="edit" value="true"/][/@s.url]">View</a></td>
+          <td class="view"><a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="transactionId"]${log.transactionId}[/@s.param][@s.param name="edit" value="true"/][/@s.url]">View</a></td>
         </tr>
         [/#list]
       </tbody>
