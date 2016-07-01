@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
+import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
 import java.util.HashSet;
@@ -40,12 +41,13 @@ import org.hibernate.type.Type;
 public class AuditLogMySQLDao implements AuditLogDao {
 
   private StandardDAO dao;
-
+  private UserDAO userDao;
   public String baseModelPakcage = "org.cgiar.ccafs.marlo.data.model";
 
   @Inject
-  public AuditLogMySQLDao(StandardDAO dao) {
+  public AuditLogMySQLDao(StandardDAO dao, UserDAO userDao) {
     this.dao = dao;
+    this.userDao = userDao;
   }
 
 
@@ -74,7 +76,9 @@ public class AuditLogMySQLDao implements AuditLogDao {
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
         + " and principal=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
     // " and principal=1 order by CREATED_DATE desc LIMIT 10");
-
+    for (Auditlog auditlog : auditLogs) {
+      auditlog.setUser(userDao.getUser(auditlog.getUserId()));
+    }
     return auditLogs;
   }
 

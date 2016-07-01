@@ -117,7 +117,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     for (String name : propertyNames) {
       Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
       Type propertyType = classMetadata.getPropertyType(name);
-      System.out.println(propertyType.getClass().getName());
+
       if (propertyValue != null && propertyType instanceof ManyToOneType) {
 
         if (loadUsers) {
@@ -147,24 +147,24 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
     for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
       Map<String, Object> map = it.next();
-      if (map.get(PRINCIPAL) == null || map.get(PRINCIPAL).toString().equals("1")) {
+      if (map.get(PRINCIPAL).toString().equals("1")) {
         IAuditLog entity = (IAuditLog) map.get(ENTITY);
         this.loadRelations(entity, true);
         String json = gson.toJson(entity);
-        if (map.containsKey(PRINCIPAL)) {
-          dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
-            new Long(map.get(PRINCIPAL).toString()), null, actionName);
-        }
+
+        dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
+          new Long(map.get(PRINCIPAL).toString()), null, actionName);
+
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
         for (IAuditLog iAuditLog : set) {
           this.loadRelations(iAuditLog, false);
           if (iAuditLog.isActive()) {
             String json = gson.toJson(iAuditLog);
-            if (map.containsKey(PRINCIPAL)) {
-              dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
-                new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
-            }
+
+            dao.logIt("Updated", iAuditLog, json, iAuditLog.getModifiedBy().getId(), this.transactionId,
+              new Long(map.get(PRINCIPAL).toString()), map.get(RELATION_NAME).toString(), actionName);
+
           }
 
         }

@@ -280,8 +280,29 @@ public class StandardDAO {
 
         Auditlog auditRecord = new Auditlog(action, detail, new Date(), entity.getId().toString(),
           entity.getClass().toString(), json, userId, transactionId, principal, relationName);
-        tempSession.save(auditRecord);
-        tempSession.flush();
+
+        Session session = null;
+        Transaction tx = null;
+        try {
+          session = this.openSession();
+
+          tx = this.initTransaction(session);
+          session.save(auditRecord);
+          this.commitTransaction(tx);
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          if (tx != null) {
+            this.rollBackTransaction(tx);
+          }
+          session.clear();
+          if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+            Transaction tx1 = session.beginTransaction();
+            tx1.commit();
+          }
+
+        }
+
       } catch (HibernateException e) {
         /*
          * TODO

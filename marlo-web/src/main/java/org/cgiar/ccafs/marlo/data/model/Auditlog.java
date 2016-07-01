@@ -35,6 +35,7 @@ public class Auditlog implements java.io.Serializable {
   private String transactionId;
   private Long principal;
   private String relationName;
+  private User user;
 
 
   public Auditlog() {
@@ -80,6 +81,7 @@ public class Auditlog implements java.io.Serializable {
     return this.entityId;
   }
 
+
   public String getEntityJson() {
     return this.entityJson;
   }
@@ -89,17 +91,22 @@ public class Auditlog implements java.io.Serializable {
     return this.entityName;
   }
 
-
   public Long getPrincipal() {
     return principal;
   }
+
 
   public String getRelationName() {
     return relationName;
   }
 
+
   public String getTransactionId() {
     return transactionId;
+  }
+
+  public User getUser() {
+    return user;
   }
 
   public Long getUserId() {
@@ -144,6 +151,10 @@ public class Auditlog implements java.io.Serializable {
 
   public void setTransactionId(String transactionId) {
     this.transactionId = transactionId;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   public void setUserId(Long userId) {

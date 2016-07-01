@@ -287,6 +287,7 @@ public class OutcomesAction extends BaseAction {
        */
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
+      selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       selectedProgram.setAction(this.getActionName());

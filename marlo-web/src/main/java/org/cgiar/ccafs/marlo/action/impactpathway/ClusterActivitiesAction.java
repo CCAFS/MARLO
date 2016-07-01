@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
@@ -70,12 +71,15 @@ public class ClusterActivitiesAction extends BaseAction {
   private long crpProgramID;
   private List<CrpClusterOfActivity> clusterofActivities;
   private ClusterActivitiesValidator validator;
+  private AuditLogManager auditLogManager;
+  private String transactionID;
+
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
-    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager) {
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -84,8 +88,10 @@ public class ClusterActivitiesAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.crpClusterActivityLeaderManager = crpClusterActivityLeaderManager;
+    this.auditLogManager = auditLogManager;
     this.validator = validator;
   }
+
 
   public long getClRol() {
     return clRol;
@@ -99,15 +105,14 @@ public class ClusterActivitiesAction extends BaseAction {
     return crpProgramID;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
-
   public List<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public Role getRoleCl() {
     return roleCl;
@@ -116,6 +121,10 @@ public class ClusterActivitiesAction extends BaseAction {
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
+  }
+
+  public String getTransactionID() {
+    return transactionID;
   }
 
 
@@ -127,54 +136,81 @@ public class ClusterActivitiesAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     clRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_CL_ROLE));
     roleCl = roleManager.getRoleById(clRol);
-
-    List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-      .collect(Collectors.toList());
-    crpProgramID = -1;
     clusterofActivities = new ArrayList<>();
-    if (allPrograms != null) {
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
-      this.programs = allPrograms;
-      try {
-        crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
-      } catch (Exception e) {
 
-        User user = userManager.getUser(this.getCurrentUser().getId());
-        List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
-        if (!userLeads.isEmpty()) {
-          crpProgramID = userLeads.get(0).getCrpProgram().getId();
-        } else {
-          if (!this.programs.isEmpty()) {
-            crpProgramID = this.programs.get(0).getId();
-          }
+      String transactionID = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transactionID);
+      if (history != null) {
+        crpProgramID = history.getId();
+        selectedProgram = history;
+        clusterofActivities.addAll(history.getCrpClusterOfActivities());
+        this.transactionID = transactionID;
+        this.setEditable(false);
+        programs = new ArrayList<>();
+        programs.add(history);
+        for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
+
+          crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
-
-
+      } else {
+        programs = new ArrayList<>();
+        this.transactionID = "-1";
       }
+
 
     } else {
-      programs = new ArrayList<>();
-    }
+      List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+        .collect(Collectors.toList());
+      crpProgramID = -1;
 
-    if (crpProgramID != -1) {
-      selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      clusterofActivities.addAll(
-        selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
+      if (allPrograms != null) {
 
-        crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
-          .filter(c -> c.isActive()).collect(Collectors.toList()));
+        this.programs = allPrograms;
+        try {
+          crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+        } catch (Exception e) {
+
+          User user = userManager.getUser(this.getCurrentUser().getId());
+          List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive()).collect(Collectors.toList());
+          if (!userLeads.isEmpty()) {
+            crpProgramID = userLeads.get(0).getCrpProgram().getId();
+          } else {
+            if (!this.programs.isEmpty()) {
+              crpProgramID = this.programs.get(0).getId();
+            }
+          }
+
+
+        }
+
+      } else {
+        programs = new ArrayList<>();
+      }
+
+      if (crpProgramID != -1) {
+        selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+        clusterofActivities.addAll(
+          selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
+
+          crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
+      }
+      if (selectedProgram != null) {
+        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+      }
+      if (this.isHttpPost()) {
+        clusterofActivities.clear();
       }
     }
-    if (selectedProgram != null) {
-      String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-      this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-    }
-    if (this.isHttpPost()) {
-      clusterofActivities.clear();
-    }
+
   }
 
 
@@ -292,6 +328,11 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
       }
+      selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+      selectedProgram.setActiveSince(new Date());
+      selectedProgram.setModifiedBy(this.getCurrentUser());
+      selectedProgram.setAction(this.getActionName());
+      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName());
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -314,10 +355,10 @@ public class ClusterActivitiesAction extends BaseAction {
     this.clRol = clRol;
   }
 
+
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
   }
-
 
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
@@ -341,6 +382,11 @@ public class ClusterActivitiesAction extends BaseAction {
 
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
+  }
+
+
+  public void setTransactionID(String transactionID) {
+    this.transactionID = transactionID;
   }
 
 
