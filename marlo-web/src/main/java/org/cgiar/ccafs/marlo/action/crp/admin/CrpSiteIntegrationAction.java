@@ -93,15 +93,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     return slRoleid;
   }
 
-  @Override
-  public void prepare() throws Exception {
-    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    if (this.getSession().containsKey(APConstants.CRP_SL_ROLE)) {
-      slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
-      slRole = roleManager.getRoleById(slRoleid);
-    }
-
+  private void loadData() {
     if (loggedCrp.getCrpsSitesIntegrations() != null) {
       loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations().stream()
         .filter(si -> si.isActive() && si.getCrp().equals(loggedCrp)).collect(Collectors.toList())));
@@ -125,6 +117,18 @@ public class CrpSiteIntegrationAction extends BaseAction {
             .stream().filter(sl -> sl.isActive()).collect(Collectors.toList())));
       }
     }
+  }
+
+  @Override
+  public void prepare() throws Exception {
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    if (this.getSession().containsKey(APConstants.CRP_SL_ROLE)) {
+      slRoleid = Long.parseLong((String) this.getSession().get(APConstants.CRP_SL_ROLE));
+      slRole = roleManager.getRoleById(slRoleid);
+    }
+
+    this.loadData();
 
     countriesList = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
       .collect(Collectors.toList());
@@ -147,17 +151,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
       this.siteIntegrationPreviusData();
       this.siteIntegrationNewData();
-
-      if (loggedCrp.getCrpsSitesIntegrations() != null) {
-        loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(
-          loggedCrp.getCrpsSitesIntegrations().stream().filter(si -> si.isActive()).collect(Collectors.toList())));
-
-        for (int i = 0; i < loggedCrp.getSiteIntegrations().size(); i++) {
-          loggedCrp.getSiteIntegrations().get(i)
-            .setSiteLeaders(new ArrayList<CrpSitesLeader>(loggedCrp.getSiteIntegrations().get(i).getCrpSitesLeaders()
-              .stream().filter(sl -> sl.isActive()).collect(Collectors.toList())));
-        }
-      }
+      this.loadData();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -174,10 +168,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
+
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
-
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -187,10 +181,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.slRole = slRole;
   }
 
+
   public void setSlRoleid(Long slRoleid) {
     this.slRoleid = slRoleid;
   }
-
 
   private void siteIntegrationNewData() {
 
