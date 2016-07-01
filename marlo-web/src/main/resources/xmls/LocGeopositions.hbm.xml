@@ -20,7 +20,7 @@
 			<column name="longitude" precision="22" scale="0" not-null="true" />
 		</property>
 		<set lazy="true" name="locElements" table="loc_elements" inverse="true"
-			fetch="select">
+			order-by="name" fetch="select">
 			<key>
 				<column name="geoposition_id" />
 			</key>

@@ -24,7 +24,7 @@
 			<column name="has_coordinates" />
 		</property>
 		<set lazy="true" name="locElements" table="loc_elements" inverse="true"
-			fetch="select">
+			order-by="name" fetch="select">
 			<key>
 				<column name="element_type_id" not-null="true" />
 			</key>
