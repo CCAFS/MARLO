@@ -3,3 +3,8 @@
 .nameBlock {padding: 0;width: 60%;float: left;}
 
 .buttonBlock {width: 20%;padding-right: 0;float: right;}
+
+li.targetUnit {
+  float: left;
+  width: 49%;
+}

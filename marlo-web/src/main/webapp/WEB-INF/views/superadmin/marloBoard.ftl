@@ -31,6 +31,7 @@
             [/#list]
             </ul>
             [#if !targetUnitList?has_content]<p class="text-center">There is not target units</p>[/#if]
+            <div class="clearfix"></div>
           </div>
           <hr />
           [#-- Add target unit --]
@@ -67,7 +68,7 @@
     <span class="glyphicon glyphicon-scale"></span>  <span class="composedName">(${(element.acronym)!}) ${(element.name)!}</span>
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
-    <input type="hidden" class="name" name="${customName}.${customName}.name" value="${(element.name)!}" />
+    <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
     <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
   </li>
