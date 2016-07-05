@@ -1,5 +1,6 @@
 $(document).ready(init);
 var currentSubIdo;
+var saveObj;
 
 function init() {
 
@@ -14,6 +15,8 @@ function init() {
 
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
+
+  // console.log(JSON.stringify($('form').serializeObject()));
 
 }
 
@@ -266,7 +269,9 @@ function removeAssumption() {
  */
 
 function updateAllIndexes() {
+  saveObj = {}
   // All Outcomes List
+  var outcomesArray = []
   $('.outcomes-list').find('.outcome').each(function(i,outcome) {
     var outcomesName = 'outcomes' + '[' + i + '].';
     $(outcome).find('span.index').html(i + 1);
@@ -276,7 +281,19 @@ function updateAllIndexes() {
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
     $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
 
+    /* Outcome Object */
+    var outcomeObj = {
+        description: $(outcome).find('.outcome-statement').val(),
+        value: $(outcome).find('.targetValue').val(),
+        year: $(outcome).find('.targetYear').val(),
+        srfTargetUnit: {
+          id: $(outcome).find('.targetUnit').val()
+        },
+        id: $(outcome).find('.outcomeId').val()
+    };
+
     // Update Milestones
+    var milestonesArray = [];
     $(outcome).find('.milestone').each(function(i,milestone) {
       var milestoneName = outcomesName + 'milestones' + '[' + i + '].';
       $(milestone).find('span.index').text(i + 1);
@@ -285,9 +302,22 @@ function updateAllIndexes() {
       $(milestone).find('.targetYear').attr('name', milestoneName + 'year');
       $(milestone).find('.targetUnit').attr('name', milestoneName + 'srfTargetUnit.id');
       $(milestone).find('.mileStoneId').attr('name', milestoneName + 'id');
+
+      // Milestone Object
+      var milestonObj = {
+          title: $(milestone).find('.milestone-statement').val(),
+          value: $(milestone).find('.targetValue').val(),
+          year: $(milestone).find('.targetYear').val(),
+          srfTargetUnit: {
+            id: $(milestone).find('.targetUnit').val()
+          },
+          id: $(milestone).find('.mileStoneId')
+      }
+      milestonesArray.push(milestonObj);
     });
 
     // Update SubIdos
+    var subIdosArray = []
     $(outcome).find('.subIdo').each(function(i,subIdo) {
       var subIdoName = outcomesName + 'subIdos' + '[' + i + '].';
       $(subIdo).find('span.index').text(i + 1);
@@ -296,13 +326,43 @@ function updateAllIndexes() {
       $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
       $(subIdo).find('.programSubIDOId').attr('name', subIdoName + 'id');
 
+      var subIdoObj = {
+          srfSubIdo: {
+              id: $(subIdo).find('.subIdoId').val(),
+              srfIdo: {
+                id: $(subIdo).find('.idoId').val()
+              }
+          },
+          contribution: $(subIdo).find('.contribution').val(),
+          id: $(subIdo).find('.programSubIDOId').val()
+      }
+
       // Update Assumptions
+      var assumptionsArray = [];
       $(subIdo).find('.assumption').each(function(i,assumption) {
         var assumptionName = subIdoName + 'assumptions' + '[' + i + '].';
         $(assumption).find('.assumptionId').attr('name', assumptionName + 'id');
         $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
         $(assumption).find('.statement').attr('name', assumptionName + 'description');
+
+        assumptionObj = {
+            id: $(assumption).find('.assumptionId').val(),
+            name: $(assumption).find('.statement').val()
+        }
+        assumptionsArray.push(assumptionObj);
       });
+
+      subIdoObj.assumptions = assumptionsArray;
+      subIdosArray.push(subIdoObj);
     });
+
+    outcomeObj.subIdos = subIdosArray;
+    outcomeObj.milestones = milestonesArray;
+    outcomesArray.push(outcomeObj);
   });
+
+  saveObj.outcomes = outcomesArray;
+
+  console.log(saveObj);
+  console.log(JSON.stringify(saveObj));
 }
