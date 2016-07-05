@@ -15,13 +15,13 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,28 +39,22 @@ public class BoardAction extends BaseAction {
   private HashMap<Long, String> idoList;
 
 
-  private SrfIdoManager srfIdoManager;
   private SrfTargetUnitManager srfTargetUnitManager;
 
 
   private List<SrfTargetUnit> targetUnitList;
-  private List<SrfIdo> srfIdos;
+
 
   @Inject
-  public BoardAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager) {
+  public BoardAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
-    this.srfIdoManager = srfIdoManager;
+
   }
 
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
-  }
-
-
-  public List<SrfIdo> getSrfIdos() {
-    return srfIdos;
   }
 
 
@@ -81,16 +75,65 @@ public class BoardAction extends BaseAction {
         targetUnitList.add(srfTargetUnit);
       }
     }
-
-
-    idoList = new HashMap<>();
-    srfIdos = new ArrayList<>();
-    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      idoList.put(srfIdo.getId(), srfIdo.getDescription());
-      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      srfIdos.add(srfIdo);
+    if (this.isHttpPost()) {
+      targetUnitList.clear();
     }
 
+  }
+
+
+  @Override
+  public String save() {
+    if (this.canAccessSuperAdmin()) {
+
+      List<SrfTargetUnit> targetsPreview =
+        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      // Removing crp flagship program type
+      if (targetsPreview != null) {
+        for (SrfTargetUnit srfTargetUnit : targetsPreview) {
+          if (!targetUnitList.contains(srfTargetUnit)) {
+
+            srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
+
+          }
+        }
+      }
+
+      for (SrfTargetUnit srfTargetUnit : targetUnitList) {
+        if (srfTargetUnit.getId() == null) {
+
+          srfTargetUnit.setActive(true);
+          srfTargetUnit.setCreatedBy(this.getCurrentUser());
+          srfTargetUnit.setModifiedBy(this.getCurrentUser());
+          srfTargetUnit.setModificationJustification("");
+          srfTargetUnit.setActiveSince(new Date());
+
+          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+        } else {
+          SrfTargetUnit srfTargetUnitDB = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
+
+          srfTargetUnit.setActive(true);
+          srfTargetUnit.setCreatedBy(srfTargetUnitDB.getCreatedBy());
+          srfTargetUnit.setModifiedBy(this.getCurrentUser());
+          srfTargetUnit.setModificationJustification("");
+          srfTargetUnit.setActiveSince(srfTargetUnitDB.getActiveSince());
+
+          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+        }
+      }
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      messages = this.getActionMessages();
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
 
@@ -98,16 +141,9 @@ public class BoardAction extends BaseAction {
     this.idoList = idoList;
   }
 
-
-  public void setSrfIdos(List<SrfIdo> srfIdos) {
-    this.srfIdos = srfIdos;
-  }
-
-
   public void setTargetUnitList(List<SrfTargetUnit> targetUnitList) {
     this.targetUnitList = targetUnitList;
   }
-
 
   @Override
   public void validate() {

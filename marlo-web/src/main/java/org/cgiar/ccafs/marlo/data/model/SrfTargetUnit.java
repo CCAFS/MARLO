@@ -39,9 +39,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private String acronym;
 
-
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
-
 
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
 
@@ -54,8 +52,12 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private User createdBy;
 
+
   private Date activeSince;
+
+
   private User modifiedBy;
+
   private String modificationJustification;
 
   public SrfTargetUnit() {
@@ -73,6 +75,28 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.crpMilestones = crpMilestones;
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
     this.crpProgramOutcomes = crpProgramOutcomes;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    SrfTargetUnit other = (SrfTargetUnit) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public String getAcronym() {
@@ -116,13 +140,21 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getName() {
     return this.name;
   }
 
+
   public Set<SrfSloIndicatorTarget> getSrfSloIndicatorTargets() {
     return this.srfSloIndicatorTargets;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
