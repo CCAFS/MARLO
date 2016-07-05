@@ -81,6 +81,7 @@
           </div>
 
           <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+           <input type="hidden"  name="className" value="${(selectedProgram.class.name)!}"/>
         [#else]
           <p class="text-center borderBox">There is not flagships added</p>
         [/#if]
