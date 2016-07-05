@@ -269,9 +269,7 @@ function removeAssumption() {
  */
 
 function updateAllIndexes() {
-  saveObj = {}
   // All Outcomes List
-  var outcomesArray = []
   $('.outcomes-list').find('.outcome').each(function(i,outcome) {
     var outcomesName = 'outcomes' + '[' + i + '].';
     $(outcome).find('span.index').html(i + 1);
@@ -281,19 +279,7 @@ function updateAllIndexes() {
     $(outcome).find('.targetUnit').attr('name', outcomesName + 'srfTargetUnit.id');
     $(outcome).find('.outcomeId').attr('name', outcomesName + 'id');
 
-    /* Outcome Object */
-    var outcomeObj = {
-        description: $(outcome).find('.outcome-statement').val(),
-        value: $(outcome).find('.targetValue').val(),
-        year: $(outcome).find('.targetYear').val(),
-        srfTargetUnit: {
-          id: $(outcome).find('.targetUnit').val()
-        },
-        id: $(outcome).find('.outcomeId').val()
-    };
-
     // Update Milestones
-    var milestonesArray = [];
     $(outcome).find('.milestone').each(function(i,milestone) {
       var milestoneName = outcomesName + 'milestones' + '[' + i + '].';
       $(milestone).find('span.index').text(i + 1);
@@ -302,8 +288,50 @@ function updateAllIndexes() {
       $(milestone).find('.targetYear').attr('name', milestoneName + 'year');
       $(milestone).find('.targetUnit').attr('name', milestoneName + 'srfTargetUnit.id');
       $(milestone).find('.mileStoneId').attr('name', milestoneName + 'id');
+    });
 
-      // Milestone Object
+    // Update SubIdos
+    $(outcome).find('.subIdo').each(function(i,subIdo) {
+      var subIdoName = outcomesName + 'subIdos' + '[' + i + '].';
+      $(subIdo).find('span.index').text(i + 1);
+      $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.id');
+      $(subIdo).find('.idoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
+      $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
+      $(subIdo).find('.programSubIDOId').attr('name', subIdoName + 'id');
+
+      // Update Assumptions
+      $(subIdo).find('.assumption').each(function(i,assumption) {
+        var assumptionName = subIdoName + 'assumptions' + '[' + i + '].';
+        $(assumption).find('.assumptionId').attr('name', assumptionName + 'id');
+        $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
+        $(assumption).find('.statement').attr('name', assumptionName + 'description');
+      });
+    });
+  });
+
+  // JUST FOR TESTING
+  setCurrentObject();
+}
+
+function setCurrentObject() {
+  saveObj = {}
+
+  // Outcomes
+  var outcomesArray = []
+  $('.outcomes-list').find('.outcome').each(function(i,outcome) {
+    var outcomeObj = {
+        description: $(outcome).find('.outcome-statement').val(),
+        value: $(outcome).find('.targetValue').val(),
+        year: $(outcome).find('.targetYear').val(),
+        srfTargetUnit: {
+          id: $(outcome).find('.targetUnit').val()
+        },
+        id: $(outcome).find('.outcomeId').val()
+    }
+
+    // Milestones
+    var milestonesArray = [];
+    $(outcome).find('.milestone').each(function(i,milestone) {
       var milestonObj = {
           title: $(milestone).find('.milestone-statement').val(),
           value: $(milestone).find('.targetValue').val(),
@@ -316,16 +344,9 @@ function updateAllIndexes() {
       milestonesArray.push(milestonObj);
     });
 
-    // Update SubIdos
+    // SubIdos
     var subIdosArray = []
     $(outcome).find('.subIdo').each(function(i,subIdo) {
-      var subIdoName = outcomesName + 'subIdos' + '[' + i + '].';
-      $(subIdo).find('span.index').text(i + 1);
-      $(subIdo).find('.subIdoId').attr('name', subIdoName + 'srfSubIdo.id');
-      $(subIdo).find('.idoId').attr('name', subIdoName + 'srfSubIdo.srfIdo.id');
-      $(subIdo).find('.contribution').attr('name', subIdoName + 'contribution');
-      $(subIdo).find('.programSubIDOId').attr('name', subIdoName + 'id');
-
       var subIdoObj = {
           srfSubIdo: {
               id: $(subIdo).find('.subIdoId').val(),
@@ -337,15 +358,10 @@ function updateAllIndexes() {
           id: $(subIdo).find('.programSubIDOId').val()
       }
 
-      // Update Assumptions
+      // Assumptions
       var assumptionsArray = [];
       $(subIdo).find('.assumption').each(function(i,assumption) {
-        var assumptionName = subIdoName + 'assumptions' + '[' + i + '].';
-        $(assumption).find('.assumptionId').attr('name', assumptionName + 'id');
-        $(assumption).find('.statement').attr('placeholder', 'Assumption statement #' + (i + 1));
-        $(assumption).find('.statement').attr('name', assumptionName + 'description');
-
-        assumptionObj = {
+        var assumptionObj = {
             id: $(assumption).find('.assumptionId').val(),
             name: $(assumption).find('.statement').val()
         }
@@ -362,6 +378,7 @@ function updateAllIndexes() {
   });
 
   saveObj.outcomes = outcomesArray;
+  saveObj.crpProgramID = $('#crpProgramID').val();
 
   console.log(saveObj);
   console.log(JSON.stringify(saveObj));
