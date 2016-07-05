@@ -1,5 +1,6 @@
 $(document).ready(init);
 var currentSubIdo;
+var saveObj;
 
 function init() {
 
@@ -14,6 +15,8 @@ function init() {
 
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
+
+  // console.log(JSON.stringify($('form').serializeObject()));
 
 }
 
@@ -305,4 +308,78 @@ function updateAllIndexes() {
       });
     });
   });
+
+  // JUST FOR TESTING
+  setCurrentObject();
+}
+
+function setCurrentObject() {
+  saveObj = {}
+
+  // Outcomes
+  var outcomesArray = []
+  $('.outcomes-list').find('.outcome').each(function(i,outcome) {
+    var outcomeObj = {
+        description: $(outcome).find('.outcome-statement').val(),
+        value: $(outcome).find('.targetValue').val(),
+        year: $(outcome).find('.targetYear').val(),
+        srfTargetUnit: {
+          id: $(outcome).find('.targetUnit').val()
+        },
+        id: $(outcome).find('.outcomeId').val()
+    }
+
+    // Milestones
+    var milestonesArray = [];
+    $(outcome).find('.milestone').each(function(i,milestone) {
+      var milestonObj = {
+          title: $(milestone).find('.milestone-statement').val(),
+          value: $(milestone).find('.targetValue').val(),
+          year: $(milestone).find('.targetYear').val(),
+          srfTargetUnit: {
+            id: $(milestone).find('.targetUnit').val()
+          },
+          id: $(milestone).find('.mileStoneId')
+      }
+      milestonesArray.push(milestonObj);
+    });
+
+    // SubIdos
+    var subIdosArray = []
+    $(outcome).find('.subIdo').each(function(i,subIdo) {
+      var subIdoObj = {
+          srfSubIdo: {
+              id: $(subIdo).find('.subIdoId').val(),
+              srfIdo: {
+                id: $(subIdo).find('.idoId').val()
+              }
+          },
+          contribution: $(subIdo).find('.contribution').val(),
+          id: $(subIdo).find('.programSubIDOId').val()
+      }
+
+      // Assumptions
+      var assumptionsArray = [];
+      $(subIdo).find('.assumption').each(function(i,assumption) {
+        var assumptionObj = {
+            id: $(assumption).find('.assumptionId').val(),
+            name: $(assumption).find('.statement').val()
+        }
+        assumptionsArray.push(assumptionObj);
+      });
+
+      subIdoObj.assumptions = assumptionsArray;
+      subIdosArray.push(subIdoObj);
+    });
+
+    outcomeObj.subIdos = subIdosArray;
+    outcomeObj.milestones = milestonesArray;
+    outcomesArray.push(outcomeObj);
+  });
+
+  saveObj.outcomes = outcomesArray;
+  saveObj.crpProgramID = $('#crpProgramID').val();
+
+  console.log(saveObj);
+  console.log(JSON.stringify(saveObj));
 }

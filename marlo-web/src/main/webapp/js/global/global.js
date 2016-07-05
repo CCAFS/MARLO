@@ -117,6 +117,15 @@ $(document).ready(function() {
       }
   });
 
+  /* Event triggers */
+  $(document).on('addComponent', function() {
+    console.log('Add Component');
+  });
+
+  $(document).on('removeComponent', function() {
+    console.log('Remove Component');
+  });
+
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     $t = $(target);
@@ -335,10 +344,6 @@ function word_count(field) {
     return value.replace(regex, ' ').split(' ').length;
   }
 }
-
-jQuery.fn.exists = function() {
-  return this.length > 0;
-};
 
 /**
  * Functions for selects
