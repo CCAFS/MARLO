@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
@@ -42,7 +44,7 @@ public class AutoSaveReader {
   public AutoSaveReader() {
   }
 
-  public HashMap<String, Object> convertJSONFormat(String json) {
+  private HashMap<String, Object> convertJSONFormat(String json) {
 
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
@@ -75,7 +77,7 @@ public class AutoSaveReader {
     return jsonNew;
   }
 
-  public HashMap<String, Object> getListJson(String keyParent, JsonObject jobj, int i) {
+  private HashMap<String, Object> getListJson(String keyParent, JsonObject jobj, int i) {
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
     HashMap<String, Object> relations = new HashMap<>();
@@ -99,7 +101,7 @@ public class AutoSaveReader {
     return jsonNew;
   }
 
-  public HashMap<String, Object> getListJsonParent(String keyParent, JsonObject jobj) {
+  private HashMap<String, Object> getListJsonParent(String keyParent, JsonObject jobj) {
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
     int index = 0;
@@ -124,13 +126,18 @@ public class AutoSaveReader {
 
   public Object readFromJson(String json) {
     HashMap<String, Object> jsonNew = this.convertJSONFormat(json);
-    Gson gson = new Gson();
+    Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
+      .registerTypeAdapter(Long.class, new LongTypeAdapter())
+      .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter()).create();
+
+
     JsonObject jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
     String className = jobj.get("className").getAsString();
     jobj.remove("className");
     try {
       return gson.fromJson(jobj, Class.forName(className));
     } catch (JsonSyntaxException e) {
+      e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
 
     } catch (ClassNotFoundException e) {

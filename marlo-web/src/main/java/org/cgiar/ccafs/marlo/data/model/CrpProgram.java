@@ -62,6 +62,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
   private List<String> selectedCountries;
+  private List<CrpProgramOutcome> outcomes;
 
 
   @Expose
@@ -70,17 +71,17 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private User modifiedBy;
-
-
   @Expose
   private String modificationJustification;
-
-
   private List<CrpProgramLeader> leaders;
+
 
   @Expose
   private String color;
@@ -95,6 +96,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
     this.programType = programType;
   }
+
 
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
@@ -179,7 +181,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -193,18 +194,23 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
+  }
+
+  public List<CrpProgramOutcome> getOutcomes() {
+    return outcomes;
   }
 
   public int getProgramType() {
@@ -220,10 +226,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
+
 
   public void setAction(String action) {
     this.action = action;
@@ -283,6 +289,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
+    this.outcomes = outcomes;
   }
 
   public void setProgramType(int programType) {
