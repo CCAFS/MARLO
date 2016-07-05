@@ -78,6 +78,16 @@ $.fn.serializeObject = function() {
   return o;
 };
 
+jQuery.fn.setNameIndex = function(level,index) {
+  var re = /\[.+?\]/g;
+  var name = $(this).attr('name');
+  var levels = 0;
+  $(this).attr('name', name.replace(re, function(match,pos,original) {
+    levels++;
+    return (levels == level) ? "[" + index + "]" : match;
+  }));
+};
+
 /* Color picker widget */
 var colors =
     [

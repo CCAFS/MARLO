@@ -1,5 +1,5 @@
-.acronymBlock {padding-left: 0;}
+.acronymBlock {float: left;width: 18%;padding-left: 0;padding-right: 1%;}
 
-.nameBlock {padding: 0;}
+.nameBlock {padding: 0;width: 60%;float: left;}
 
-.buttonBlock {padding-right: 0;}
+.buttonBlock {width: 20%;padding-right: 0;float: right;}
