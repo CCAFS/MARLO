@@ -47,33 +47,23 @@ public class AutoSaveReader {
         jobj.remove(key);
       }
     }
-
     result = gson.fromJson(jobj, LinkedTreeMap.class);
-
     Set<String> listNames = new HashSet<>();
     for (Map.Entry<String, Object> entry : result.entrySet()) {
-
       String key = entry.getKey();
       String keys[] = key.split("\\.");
       String keyList = keys[0];
       keyList = keyList.split("\\[")[0];
-
       listNames.add(keyList);
-
     }
-
     for (String keyList : listNames) {
-
       HashMap<String, Object> list = this.getListJsonParent(keyList, jobj);
       if (list.size() > 0) {
         jsonNew.putAll(list);
       }
     }
-
-
     return jsonNew;
   }
-
 
   public HashMap<String, Object> getListJson(String keyParent, JsonObject jobj, int i) {
     HashMap<String, Object> jsonNew = new HashMap<>();
@@ -91,11 +81,8 @@ public class AutoSaveReader {
           relations.put(newKey, entry.getValue());
           jobj.remove(key);
         }
-
-
       }
     }
-
     if (!relations.isEmpty()) {
       jsonNew.putAll(this.convertJSONFormat(gson.toJson(relations)));
     }
@@ -103,7 +90,6 @@ public class AutoSaveReader {
   }
 
   public HashMap<String, Object> getListJsonParent(String keyParent, JsonObject jobj) {
-
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
     int index = 0;
@@ -121,8 +107,6 @@ public class AutoSaveReader {
     for (int i = 0; i <= index; i++) {
       list.add(this.getListJson(keyParent, jobj, i));
     }
-
-
     jsonNew.put(keyParent, list);
     return jsonNew;
   }
@@ -131,6 +115,4 @@ public class AutoSaveReader {
   public Object readFromJson(String json) {
     return null;
   }
-
-
 }
