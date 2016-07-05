@@ -283,6 +283,7 @@ function getHash(str) {
   return hash;
 }
 
+setWordCounterToInputs('limitWords');
 /* Set word counter to inputs list where cssName could be limitWords */
 function setWordCounterToInputs(cssName) {
   // Attribute contains certain value somewhere -> [class*="limitWords"]
