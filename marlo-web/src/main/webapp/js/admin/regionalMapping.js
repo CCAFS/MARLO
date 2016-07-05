@@ -5,12 +5,16 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
+  /* Select2 */
   $('.program-block').find('.countriesSelect').select2({
       placeholder: "Select a country",
       templateResult: formatState,
       templateSelection: formatState,
       width: '100%'
   });
+
+  /* Color picker widget */
+  $('.color-picker').colorPicker();
 
 }
 
@@ -102,6 +106,8 @@ function addProgram(element) {
   $programList.find(".regions-list").append($li);
   // Show item
   $li.show('slow');
+  // Set color picker
+  $li.find('.color-picker').colorPicker();
   // Check program items
   checkItems($programList, 'programMessage');
   // Update program index
@@ -132,6 +138,7 @@ function updateProgramIndexes(list) {
     var programName = 'regionsPrograms' + '[' + i + '].';
     $(item).find('.acronym-input').attr('name', programName + 'acronym');
     $(item).find('.name-input').attr('name', programName + 'name');
+    $(item).find('.color-picker input').attr('name', programName + 'color');
     $(item).find('.type').attr('name', programName + 'programType');
     $(item).find('.id').attr('name', programName + 'id');
     $(item).find('.countriesSelect').attr('name', programName + 'selectedCountries');
