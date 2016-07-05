@@ -24,13 +24,23 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Garcia
  * @author Hermes Jimenez
  */
 public class AutoSaveReader {
+
+  public static Logger LOG = LoggerFactory.getLogger(AutoSaveReader.class);
+
+  @Inject
+  public AutoSaveReader() {
+  }
 
   public HashMap<String, Object> convertJSONFormat(String json) {
 
@@ -113,6 +123,19 @@ public class AutoSaveReader {
 
 
   public Object readFromJson(String json) {
+    HashMap<String, Object> jsonNew = this.convertJSONFormat(json);
+    Gson gson = new Gson();
+    JsonObject jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
+    String className = jobj.get("className").getAsString();
+    jobj.remove("className");
+    try {
+      return gson.fromJson(jobj, Class.forName(className));
+    } catch (JsonSyntaxException e) {
+      LOG.error(e.getLocalizedMessage());
+
+    } catch (ClassNotFoundException e) {
+      LOG.error(e.getLocalizedMessage());
+    }
     return null;
   }
 }

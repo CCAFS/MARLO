@@ -37,6 +37,8 @@ import org.hibernate.type.ManyToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a EmptyInterceptor triggered when the data will be change ,
@@ -47,6 +49,7 @@ import org.hibernate.type.Type;
 @Singleton
 public class AuditLogInterceptor extends EmptyInterceptor {
 
+  public static Logger LOG = LoggerFactory.getLogger(AuditLogInterceptor.class);
   private static final long serialVersionUID = -900829831186014812L;
   Session session;
   private Set<Map<String, Object>> inserts;
@@ -256,7 +259,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       this.logSaveAndUpdate("Updated", updates);
       this.logSaveAndUpdate("Deleted", deletes);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error(e.getLocalizedMessage());
     } finally {
       inserts.clear();
       updates.clear();
@@ -314,7 +317,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                   relations.addAll(loadList);
                 } catch (ClassNotFoundException e) {
 
-                  e.printStackTrace();
+                  LOG.error(e.getLocalizedMessage());
                 }
               }
 
