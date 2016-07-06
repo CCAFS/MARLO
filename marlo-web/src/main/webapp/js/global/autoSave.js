@@ -1,7 +1,7 @@
 var timeoutID;
 $(document).ready(function() {
 
-  $('input, textarea').on('change', changeDetected);
+  $('input, textarea').on('keyup', changeDetected);
 
 });
 
@@ -10,7 +10,9 @@ function autoSave() {
       method: 'GET',
       url: baseURL + '/autosaveWriter.do',
       dataType: 'json',
-      data: {autoSave : JSON.stringify($('form').serializeObject())}      
+      data: {
+        autoSave: JSON.stringify($('form').serializeObject())
+      }
   }).done(function(msg) {
     console.log("Data Saved: " + msg);
   });
