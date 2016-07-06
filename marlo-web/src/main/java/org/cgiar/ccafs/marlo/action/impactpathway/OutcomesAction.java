@@ -40,8 +40,13 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +55,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -182,6 +190,7 @@ public class OutcomesAction extends BaseAction {
       }
 
     } else {
+
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
         .collect(Collectors.toList());
@@ -219,8 +228,36 @@ public class OutcomesAction extends BaseAction {
       }
 
       if (selectedProgram != null) {
+
+        String composedClassName = selectedProgram.getClass().getSimpleName();
+        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + ".json";
+
+        Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+
+        if (path.toFile().exists()) {
+
+          System.out.println("Exist File");
+          BufferedReader reader = null;
+
+          reader = new BufferedReader(new FileReader(path.toFile()));
+
+          Gson gson = new GsonBuilder().create();
+
+
+          JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+          AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+          selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
+          outcomes = selectedProgram.getOutcomes();
+
+          reader.close();
+
+        }
+
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+
       }
 
       if (this.isHttpPost()) {
@@ -305,6 +342,16 @@ public class OutcomesAction extends BaseAction {
         this.addActionMessage(this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
+
+      String composedClassName = selectedProgram.getClass().getSimpleName();
+      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + ".json";
+
+      Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
       return SUCCESS;
     } else {
       this.setActionMessages(null);
