@@ -133,7 +133,6 @@ function processTasks(tasks,id,button) {
                     ];
                     noty(notyOptions);
                     $(button).next().fadeOut(function() {
-                      $(button).fadeIn("slow");
                       $(button).fadeIn("slow").on('click', validateButtonEvent);
                     });
                   }
