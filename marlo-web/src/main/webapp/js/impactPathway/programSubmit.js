@@ -63,7 +63,7 @@ function validateButtonEvent(e) {
   processTasks(sections, pID, $(this));
 }
 
-function processTasks(tasks,projectId,button) {
+function processTasks(tasks,id,button) {
   $(button).unbind('click');
   var completed = 0;
   var index = 0;
@@ -73,14 +73,13 @@ function processTasks(tasks,projectId,button) {
   function nextTask() {
     if(index < tasksLength) {
       var sectionName = tasks[index];
-      var $sectionMenu = $('#menu-' + sectionName);
+      var $sectionMenu = $('#menu-' + sectionName + '');
       $
           .ajax({
-              url: baseURL + '/projects/validateProjectSection.do',
+              url: baseURL + '/impactPathway/validateImpactPathway.do',
               data: {
-                  projectID: projectId,
+                  crpProgramID: id,
                   sectionName: sectionName,
-                  cycle: currentCycle
               },
               beforeSend: function() {
                 $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');
@@ -90,13 +89,13 @@ function processTasks(tasks,projectId,button) {
                 if(jQuery.isEmptyObject(data)) {
                   $sectionMenu.removeClass('submitted');
                 } else {
-                  if(data.sectionStatus.missingFieldsWithPrefix == "") {
+                  if(data.section.missingFields == "") {
                     $sectionMenu.addClass('submitted').removeClass('toSubmit');
                     completed++;
                   } else {
                     $sectionMenu.removeClass('submitted').addClass('toSubmit');
                     // Show missingFields
-                    console.log(sectionName + ": " + data.sectionStatus.missingFields);
+                    console.log(sectionName + ": " + data.section.missingFields);
                   }
                 }
                 $sectionMenu.removeClass('loadingSection');
@@ -105,7 +104,7 @@ function processTasks(tasks,projectId,button) {
                 $sectionMenu.addClass('animated flipInX');
                 // Do next Ajax call
                 $(button).next().progressbar("value", index + 1);
-                ++index;
+                index++;
                 if(index == tasksLength) {
                   if(completed == tasksLength) {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
@@ -134,11 +133,15 @@ function processTasks(tasks,projectId,button) {
                     ];
                     noty(notyOptions);
                     $(button).next().fadeOut(function() {
+                      $(button).fadeIn("slow");
                       $(button).fadeIn("slow").on('click', validateButtonEvent);
                     });
                   }
                 }
                 nextTask();
+              },
+              error: function(error) {
+                console.log(error)
               }
           });
     }

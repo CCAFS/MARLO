@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -40,7 +41,7 @@ public class OutcomeValidator extends BaseValidator
 
   }
 
-  public void validate(BaseAction action, List<CrpProgramOutcome> outcomes) {
+  public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program) {
 
 
     for (int i = 0; i < outcomes.size(); i++) {
@@ -53,6 +54,7 @@ public class OutcomeValidator extends BaseValidator
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
+    this.saveMissingFieldsImpactPathway(program, "outcomes");
   }
 
 

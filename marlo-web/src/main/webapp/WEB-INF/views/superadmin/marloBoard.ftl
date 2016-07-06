@@ -13,6 +13,10 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
+
+<div class="container">
+  [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
+</div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
 <section class="marlo-content">

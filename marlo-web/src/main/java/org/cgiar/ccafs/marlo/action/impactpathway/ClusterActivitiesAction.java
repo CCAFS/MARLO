@@ -396,7 +396,7 @@ public class ClusterActivitiesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, clusterofActivities);
+      validator.validate(this, clusterofActivities, selectedProgram);
     }
   }
 

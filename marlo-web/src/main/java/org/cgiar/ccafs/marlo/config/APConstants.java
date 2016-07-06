@@ -47,7 +47,7 @@ public final class APConstants {
   public static final String TRANSACTION_ID = "transactionId";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
   public static final String CRP_IMPACT_PATHWAY_ACTIVE = "crp_impPath_active";
-
+  public static final String SECTION_NAME = "sectionName";
   public static final String IDO_ID = "idoID";
   // Query parameter
   public static final String QUERY_PARAMETER = "q";

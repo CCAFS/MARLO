@@ -261,15 +261,6 @@ function getFormHash() {
   return getHash($('form [id!="justification"]').serialize());
 }
 
-function validateField($input) {
-  if($input.length) {
-    var valid = ($.trim($input.val()).length > 0) ? true : false;
-    return valid;
-  } else {
-    return true;
-  }
-}
-
 function getHash(str) {
   var hash = 0, i, chr, len;
   if(str.length == 0) {
@@ -299,139 +290,61 @@ function setWordCounterToInputs(cssName) {
   });
 }
 
-/* Add a char counter to a specific text area */
-function applyCharCounter($textArea,charCount) {
-  $textArea.parent().append("<p class='charCount'>(<span>" + charCount + "</span> characters remaining)</p>");
-  $textArea.next(".charCount").find("span").text(charCount - $textArea.val().length);
-  $textArea.on("keyup", function(event) {
-    if($(event.target).val().length > charCount) {
-      $(event.target).val($(event.target).val().substr(0, charCount));
-    }
-    $(event.target).next(".charCount").find("span").text(charCount - $(event.target).val().length);
-  });
-  $textArea.trigger("keyup");
-}
+var source;
+function systemMessage() {
 
-/* Add a word counter to a specific text area */
-function applyWordCounter($textArea,wordCount) {
-  var message = "<p class='charCount'>(<span>" + wordCount + "</span> words remaining of " + wordCount + ")</p>";
-  $textArea.parent().append(message);
-  $textArea.parent().find(".charCount").find("span").text(wordCount - word_count($textArea));
-  $textArea.on("keyup", function(event) {
-    var valueLength = $(event.target).val().length;
-    var $charCount = $(event.target).parent().find(".charCount");
-    if((word_count($(event.target)) > wordCount)
-        || ((valueLength == 0) && $(event.target).hasClass("required") && $('.hasMissingFields').exists() && $(
-            event.target).attr('id') != 'justification')) {
-      $(event.target).addClass('fieldError');
-      $charCount.addClass('fieldError');
-    } else {
-      $(event.target).removeClass('fieldError');
-      $charCount.removeClass('fieldError');
-    }
-    // Set count value
-    $charCount.find("span").text(wordCount - word_count($(event.target)));
-
-  });
-  $textArea.trigger("keyup");
-}
-
-function word_count(field) {
-  var value = $.trim($(field).val());
-  if(typeof value === "undefined" || value.length == 0) {
-    return 0;
-  } else {
-    var regex = /\s+/gi;
-    return value.replace(regex, ' ').split(' ').length;
-  }
-}
-
-/**
- * Functions for selects
- */
-function setOption(val,name) {
-  return "<option value='" + val + "'>" + name + "</option>";
-}
-
-jQuery.fn.addOption = function(val,name) {
-  if(!($(this).find('option[value=' + val + ']').exists())) {
-    $(this).append("<option value='" + val + "'>" + name + "</option>");
-  }
-};
-
-function removeOption(select,val) {
-  $(select).find('option[value=' + val + ']').remove();
-}
-
-jQuery.fn.removeOption = function(val) {
-  $(this).find('option[value=' + val + ']').remove();
-};
-
-/**
- * Escape HTML text
- */
-
-function escapeHtml(text) {
-  var map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, function(m) {
-    return map[m];
-  });
-}
-
-/**
- * Javascript: array.indexOf() fix for IE8 and below
- */
-
-if(!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function(searchElement /* , fromIndex */) {
-    'use strict';
-    if(this == null) {
-      throw new TypeError();
-    }
-    var n, k, t = Object(this), len = t.length >>> 0;
-
-    if(len === 0) {
-      return -1;
-    }
-    n = 0;
-    if(arguments.length > 1) {
-      n = Number(arguments[1]);
-      if(n != n) { // shortcut for verifying if it's NaN
-        n = 0;
-      } else if(n != 0 && n != Infinity && n != -Infinity) {
-        n = (n > 0 || -1) * Math.floor(Math.abs(n));
+  $.ajax({
+      dataType: 'json',
+      url: baseURL + '/systemMessages.json',
+      beforeSend: function() {
+      },
+      success: function(data) {
+        console.log(data);
+        showSystemResetMessage(data);
+      },
+      complete: function() {
+      },
+      error: function(e) {
       }
-    }
-    if(n >= len) {
-      return -1;
-    }
-    for(k = n >= 0 ? n : Math.max(len - Math.abs(n), 0); k < len; k++) {
-      if(k in t && t[k] === searchElement) {
-        return k;
+  });
+
+/*
+ * if(typeof (EventSource) !== "undefined") { source = new EventSource(baseURL + '/systemMessages.json');
+ * source.onmessage = function(event) { var data = event.data; console.log(data); }; } else { console .log("Las
+ * funciones en tiempo real no son soportadas por su navegador. </br>Recomendamos usar la ultima version de Google
+ * Chrome"); }
+ */
+
+}
+
+function showSystemResetMessage(data) {
+  var $timer = $('.timer-content').show();
+  $timer.find('.countdown').countdown({
+      date: +(new Date) + 10000,
+      render: function(data) {
+        $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
+      },
+      onEnd: function() {
+        $(this.el).addClass('ended');
       }
-    }
-    return -1;
-  };
+  }).on("click", function() {
+    $(this).removeClass('ended').data('countdown').update(+(new Date) + 10000).start();
+  });
+  noty({
+      text: $timer,
+      type: 'alert',
+      dismissQueue: true,
+      layout: 'center',
+      theme: 'relax',
+      modal: true,
+      buttons: [
+        {
+            addClass: 'btn btn-primary',
+            text: 'Roger that',
+            onClick: function($noty) {
+              $noty.close();
+            }
+        }
+      ]
+  });
 }
-
-function urlify(text) {
-  var urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, function(url) {
-    var l = getLocation(url);
-    return '<a href="' + url + '">' + l.hostname + '</a>';
-  })
-  // or alternatively
-  // return text.replace(urlRegex, '<a href="$1">$1</a>')
-}
-
-var getLocation = function(href) {
-  var l = document.createElement("a");
-  l.href = href;
-  return l;
-};

@@ -57,13 +57,16 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
 
-  private List<String> selectedCountries;
-  private List<CrpProgramOutcome> outcomes;
 
+  private List<String> selectedCountries;
+
+  private List<CrpProgramOutcome> outcomes;
+  private List<CrpClusterOfActivity> clusterofActivities;
 
   @Expose
   private boolean active;
@@ -74,14 +77,15 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
-
-
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private String modificationJustification;
-  private List<CrpProgramLeader> leaders;
 
+
+  private List<CrpProgramLeader> leaders;
 
   @Expose
   private String color;
@@ -97,7 +101,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.programType = programType;
   }
 
-
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
@@ -109,6 +112,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -132,6 +136,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
@@ -140,8 +145,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return action;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public List<CrpClusterOfActivity> getClusterofActivities() {
+    return clusterofActivities;
   }
 
   public String getColor() {
@@ -184,10 +194,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
-    if (action != null) {
-      sb.append("Action: " + action).append(this.getId());
 
-    }
     sb.append("Id : ").append(this.getId());
 
 
@@ -198,12 +205,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getName() {
     return this.name;
@@ -213,8 +218,14 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return outcomes;
   }
 
+
   public int getProgramType() {
     return this.programType;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
   public List<String> getSelectedCountries() {
@@ -230,7 +241,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
-
   public void setAction(String action) {
     this.action = action;
   }
@@ -239,8 +249,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
+    this.clusterofActivities = clusterofActivities;
   }
 
   public void setColor(String color) {
@@ -297,6 +312,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setProgramType(int programType) {
     this.programType = programType;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
   public void setSelectedCountries(List<String> selectedCountries) {

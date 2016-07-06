@@ -71,5 +71,12 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
+		
+		  <set name="sectionStatuses" table="section_statuses" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_program_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+        </set>
 	</class>
 </hibernate-mapping>

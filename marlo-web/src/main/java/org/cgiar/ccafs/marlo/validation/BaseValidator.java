@@ -1,6 +1,9 @@
 package org.cgiar.ccafs.marlo.validation;
 
 
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import javax.mail.internet.InternetAddress;
@@ -19,6 +22,9 @@ public class BaseValidator {
   protected StringBuilder validationMessage;
   protected StringBuilder missingFields;
 
+  @Inject
+  private SectionStatusManager sectionStatusManager;
+
 
   @Inject
   public BaseValidator() {
@@ -30,6 +36,8 @@ public class BaseValidator {
     validationMessage.append("<p> - ");
     validationMessage.append(message);
     validationMessage.append("</p>");
+
+    this.addMissingField(message);
   }
 
   /**
@@ -83,6 +91,27 @@ public class BaseValidator {
       return !string.trim().isEmpty();
     }
     return false;
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at ImpactPathway.
+   * 
+   * @param crpProgram is a CrpProgram.
+   * @param sectionName is the name of the section (description, partners, etc.).
+   */
+  protected void saveMissingFieldsImpactPathway(CrpProgram crpProgram, String sectionName) {
+    // Reporting missing fields into the database.
+    int year = 0;
+
+    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(crpProgram.getId(), sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setSectionName(sectionName);
+      status.setCrpProgram(crpProgram);
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
   }
 
   /**

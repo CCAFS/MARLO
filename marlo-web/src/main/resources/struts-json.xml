@@ -36,4 +36,13 @@
    </action>
 		
 	</package>
+	
+	  <package name="json-planning" namespace="/impactPathway" extends="json-default">
+    <action name="validateImpactPathway" class="org.cgiar.ccafs.marlo.action.json.impactpathway.ValidateSectionStatusImpactPathway">
+      <result type="json">        
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+  </package>
 </struts>
