@@ -29,7 +29,11 @@
 			</result>
 		</action>
 		
-		<action name="autosaveWriter" class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction"/>
+		<action name="autosaveWriter" class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
+		<result type="json">
+     <param name="autoSave"/>
+   </result>
+   </action>
 		
 	</package>
 	

@@ -124,14 +124,14 @@ public class AutoSaveReader {
   }
 
 
-  public Object readFromJson(String json) {
-    HashMap<String, Object> jsonNew = this.convertJSONFormat(json);
+  public Object readFromJson(JsonObject jobj) {
+
     Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
       .registerTypeAdapter(Long.class, new LongTypeAdapter())
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter()).create();
+    HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
-
-    JsonObject jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
+    jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
     String className = jobj.get("className").getAsString();
     jobj.remove("className");
     try {
