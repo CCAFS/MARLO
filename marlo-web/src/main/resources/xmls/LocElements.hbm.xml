@@ -44,6 +44,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration" />
 		</set>
+		<set name="institutions" table="institutions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="country_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+		</set>
 		<set name="crpProgramCountries" table="crp_program_countries"
 			order-by="id" inverse="true" lazy="true" fetch="select">
 			<key>

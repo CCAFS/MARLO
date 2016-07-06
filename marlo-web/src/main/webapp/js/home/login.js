@@ -1,12 +1,14 @@
 $(document).ready(init);
 function init() {
   initJreject();
-  
+
   $('.crpGroup ul li').on('click', function() {
     // Add 'selected' class and removing sibling's class if any
     $(this).addClass('selected').siblings().removeClass('selected');
     // Setting up the CRP value into a hidden input
     $('#crp').val($(this).attr('id').split('-')[1]);
+    // Show Second Form (Email, password & login button)
+    $(this).parents('.loginForm').find('.secondForm').slideDown();
   });
 }
 

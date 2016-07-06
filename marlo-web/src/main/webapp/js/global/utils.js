@@ -79,7 +79,7 @@ $.fn.serializeObject = function() {
 };
 
 jQuery.fn.setNameIndex = function(level,index) {
-  var re = /\[.+?\]/g;
+  var re = /\[.*?\]/g;
   var name = $(this).attr('name');
   var levels = 0;
   $(this).attr('name', name.replace(re, function(match,pos,original) {
