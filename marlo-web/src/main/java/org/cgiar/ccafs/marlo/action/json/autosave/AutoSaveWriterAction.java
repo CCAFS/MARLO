@@ -20,44 +20,94 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.inject.Inject;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class AutoSaveWriterAction extends BaseAction {
 
+
   private static final long serialVersionUID = 2904862716714197942L;
 
+  private String autoSave[];
+
+  @Inject
   public AutoSaveWriterAction(APConfig config) {
     super(config);
   }
 
+
   @Override
   public String execute() throws Exception {
 
-    Map<String, Object> parameters = this.getParameters();
+    String fileId = "";
+    String fileClass = "";
 
-    String serialJson = (String) parameters.get(APConstants.AUTOSAVE_REQUEST);
+    if (autoSave.length > 0) {
 
-    Gson gson = new Gson();
-    LinkedTreeMap<String, Object> result = gson.fromJson(serialJson, LinkedTreeMap.class);
+      Gson gson = new Gson();
 
-    try {
+      @SuppressWarnings("unchecked")
+      LinkedTreeMap<String, Object> result = gson.fromJson(autoSave[0], LinkedTreeMap.class);
 
-      FileWriter writer = new FileWriter("D:\\Test.json");
-      writer.write(serialJson);
-      writer.close();
 
-    } catch (IOException e) {
-      e.printStackTrace();
+      if (result.containsKey("id")) {
+        fileId = (String) result.get("id");
+      } else {
+        fileId = "XX";
+      }
+
+      if (result.containsKey("className")) {
+        String ClassName = (String) result.get("className");
+        String[] composedClassName = ClassName.split("\\.");
+        fileClass = composedClassName[composedClassName.length - 1];
+      }
+
+      try {
+
+        String fileName = fileId + "_" + fileClass + ".json";
+
+        Path path = Paths.get(config.getAutoSaveFolder());
+
+        if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+          FileWriter writer = new FileWriter(config.getAutoSaveFolder() + fileName);
+          writer.write(autoSave[0]);
+          writer.close();
+        } else {
+          Files.createDirectories(path);
+          FileWriter writer = new FileWriter(config.getAutoSaveFolder() + fileName);
+          writer.write(autoSave[0]);
+          writer.close();
+        }
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
     }
 
-
-    return super.execute();
+    return Action.SUCCESS;
   }
+
+
+  @Override
+  public void prepare() throws Exception {
+
+    Map<String, Object> parameters = this.getParameters();
+
+    autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
+
+  }
+
 
 }
