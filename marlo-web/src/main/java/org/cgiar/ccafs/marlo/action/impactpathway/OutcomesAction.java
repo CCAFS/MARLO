@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -73,6 +74,7 @@ public class OutcomesAction extends BaseAction {
   private String transaction;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private SrfSubIdoManager srfSubIdoManager;
   private HashMap<Long, String> idoList;
   private Crp loggedCrp;
   private List<CrpProgramOutcome> outcomes;
@@ -94,7 +96,7 @@ public class OutcomesAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
     CrpAssumptionManager crpAssumptionManager, CrpManager crpManager, UserManager userManager,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, SrfSubIdoManager srfSubIdoManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -107,6 +109,7 @@ public class OutcomesAction extends BaseAction {
     this.userManager = userManager;
     this.crpAssumptionManager = crpAssumptionManager;
     this.auditLogManager = auditLogManager;
+    this.srfSubIdoManager = srfSubIdoManager;
   }
 
   public long getCrpProgramID() {
@@ -236,7 +239,6 @@ public class OutcomesAction extends BaseAction {
 
         if (path.toFile().exists()) {
 
-          System.out.println("Exist File");
           BufferedReader reader = null;
 
           reader = new BufferedReader(new FileReader(path.toFile()));
@@ -251,8 +253,60 @@ public class OutcomesAction extends BaseAction {
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
           outcomes = selectedProgram.getOutcomes();
 
+          for (CrpProgramOutcome outcome : outcomes) {
+
+            if (outcome.getSubIdos() != null) {
+              for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+                if (subIdo.getSrfSubIdo() != null) {
+                  subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
+                }
+              }
+            }
+          }
+
           reader.close();
 
+        } else {
+
+          for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+            crpProgramOutcome.setMilestones(
+              crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+            crpProgramOutcome.setSubIdos(
+              crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+            /*
+             * for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+             * crpOutcomeSubIdo.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
+             * }
+             */
+            for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+              List<CrpAssumption> assumptions =
+                crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+              crpOutcomeSubIdo.setAssumptions(assumptions);
+              HashMap<Long, String> mapSubidos = new HashMap<>();
+              try {
+                for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
+                  .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+                  if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
+                    mapSubidos.put(srfSubIdo.getId(), "CrossCutting:" + srfSubIdo.getDescription());
+                  } else {
+                    mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+                  }
+
+
+                }
+              } catch (Exception e) {
+
+              }
+              crpOutcomeSubIdo.setSubIdoList(mapSubidos);
+            }
+
+          }
         }
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
@@ -267,44 +321,6 @@ public class OutcomesAction extends BaseAction {
 
 
     Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
-
-
-    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
-      crpProgramOutcome.setMilestones(
-        crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      crpProgramOutcome.setSubIdos(
-        crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-      /*
-       * for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
-       * crpOutcomeSubIdo.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
-       * }
-       */
-      for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
-        List<CrpAssumption> assumptions =
-          crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        crpOutcomeSubIdo.setAssumptions(assumptions);
-        HashMap<Long, String> mapSubidos = new HashMap<>();
-        try {
-          for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
-            if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
-              mapSubidos.put(srfSubIdo.getId(), "CrossCutting:" + srfSubIdo.getDescription());
-            } else {
-              mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
-            }
-
-
-          }
-        } catch (Exception e) {
-
-        }
-        crpOutcomeSubIdo.setSubIdoList(mapSubidos);
-      }
-
-    }
 
 
     idoList = new HashMap<>();
