@@ -1,7 +1,7 @@
 [#ftl]
 [#import "bowerComponents.ftl" as components /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "noty", "animate.css", "autogrow-textarea", "jReject" ] /]
+[#assign globalLibs = ["jquery", "bootstrap", "jquery-ui", "noty", "countdown", "animate.css", "autogrow-textarea", "jReject" ] /]
 <!doctype html>
   <html lang="en">
   <head>
@@ -97,3 +97,9 @@
       </header>
     [/#if]
     <!-- ${actionName} Content -->
+    
+    <div class="timer-content" style="display:none">
+      <div class="message">[@s.text name="systemMessage.serverReset" /]</div>
+      <div class="countdown"></div>
+    </div>
+  
