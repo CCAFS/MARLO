@@ -40,6 +40,8 @@ public class APConfig {
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
   private static final String IMPACT_PATHWAY_ACTIVE = "marlo.impactPathway.active";
 
+  private static final String AUTOSAVE_FILE = "autosave.file";
+
   private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
   private static final Logger LOG = LoggerFactory.getLogger(APConfig.class);
@@ -50,6 +52,20 @@ public class APConfig {
   @Inject
   public APConfig(PropertiesManager properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Get the folder destination to save the autosave temporal files
+   * 
+   * @return a string with the auto save folder destination.
+   */
+  public String getAutoSaveFolder() {
+    try {
+      return properties.getPropertiesAsString(AUTOSAVE_FILE);
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+    }
+    return null;
   }
 
   /**
@@ -129,6 +145,7 @@ public class APConfig {
     return adminActive.equals("true");
   }
 
+
   /**
    * If we are activate the Marlo debug mode.
    * 
@@ -142,7 +159,6 @@ public class APConfig {
     }
     return variable.equals("true");
   }
-
 
   /**
    * Get the flag that indicate if the Impact Pathway section is active

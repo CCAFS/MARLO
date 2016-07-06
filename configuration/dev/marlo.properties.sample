@@ -11,9 +11,9 @@ mysql.port=3306
 marlo.baseUrl=https://localhost/marlo-web/
 
 # ----------------------------------------------------
-#                   Sections Variables
+#                   File properties
 # ----------------------------------------------------
-
+autosave.file=D:/marlo/tempFiles/
 # ------------------------------------------------
 # Email account
 # ------------------------------------------------
