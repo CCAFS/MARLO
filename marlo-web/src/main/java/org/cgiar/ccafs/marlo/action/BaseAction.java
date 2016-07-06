@@ -17,8 +17,10 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -93,7 +96,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Managers
   @Inject
   private CrpManager crpManager;
-
+  @Inject
+  private SectionStatusManager sectionStatusManager;
   @Inject
   private AuditLogManager auditLogManager;
   // Config Variables
@@ -145,7 +149,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
-
   @Override
   public String execute() throws Exception {
     if (save) {
@@ -164,16 +167,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
-
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
-
 
   public String getBasePermission() {
     return basePermission;
@@ -199,6 +201,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return crpManager.findAll();
   }
 
+
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
    * current action to catch the crp
@@ -223,7 +226,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpSession;
   }
 
-
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -239,6 +241,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+
+  public boolean getImpactSectionStatus(String section, long crpProgramID) {
+    SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
+    if (sectionStatus != null) {
+      if (section.length() == 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public String getJustification() {
@@ -326,7 +339,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
-
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -335,6 +347,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public boolean hasProgramnsRegions() {
     try {
@@ -354,6 +367,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isCanEdit() {
     return canEdit;
+  }
+
+  public boolean isCompleteImpact(long crpProgramID) {
+    List<SectionStatus> sections = sectionStatusManager.findAll().stream()
+      .filter(c -> c.getCrpProgram().getId().longValue() == crpProgramID).collect(Collectors.toList());
+    for (SectionStatus sectionStatus : sections) {
+      if (sectionStatus.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    return true;
   }
 
 

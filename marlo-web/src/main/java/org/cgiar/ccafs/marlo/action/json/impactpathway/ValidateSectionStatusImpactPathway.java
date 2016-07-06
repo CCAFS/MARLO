@@ -102,7 +102,7 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
     section = new HashMap<String, Object>();
     section.put("sectionName", sectionStatus.getSectionName());
     section.put("missingFields", sectionStatus.getMissingFields());
-
+    Thread.sleep(500);
     return SUCCESS;
   }
 
