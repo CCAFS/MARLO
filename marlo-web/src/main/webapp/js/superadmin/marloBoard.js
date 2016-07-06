@@ -19,15 +19,13 @@ function addTargetUnit() {
   var $itemsList = $parent.parent().find('.items-list');
   var $item = $("#targetUnit-template").clone(true).removeAttr("id");
   var data = {
-      acronym: $.trim($parent.find('.acronym-input').val()),
       name: $.trim($parent.find('.name-input').val()),
       composedName: function() {
-        return "(" + this.acronym + ") " + this.name;
+        return this.name;
       }
   }
-  if((data.acronym && data.name) != "") {
+  if((data.name) != "") {
     $item.find('.composedName').text(data.composedName());
-    $item.find('.acronym').val(data.acronym);
     $item.find('.name').val(data.name);
 
     $itemsList.find("ul").append($item);

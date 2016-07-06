@@ -13,6 +13,8 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 <hr />
+[#include "/WEB-INF/global/pages/generalMessages.ftl" /]
+
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
@@ -35,10 +37,9 @@
           </div>
           <hr />
           [#-- Add target unit --]
-          <div class="row col-md-12">
-            <div class="acronymBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit acronym" className="acronym-input" required=true editable=true /]</div>
-            <div class="nameBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit Name" className="name-input" required=true editable=true /]</div>
-            <div class="buttonBlock text-right"><div class="addTargetUnit button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTarget" /]</div></div>
+          <div class="row ">
+            <div class="col-md-9">[@customForm.input name="" type="text" showTitle=false placeholder="Target Unit Name" className="name-input" required=true editable=true /]</div>
+            <div class="col-md-3 text-right"><div class="addTargetUnit button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTarget" /]</div></div>
           </div>
         </div>
         
@@ -65,7 +66,7 @@
 [#macro targetUnitMacro element name index isTemplate=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
-    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName">(${(element.acronym)!}) ${(element.name)!}</span>
+    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName"> ${(element.name)!}</span>
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
     <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
