@@ -257,7 +257,7 @@ public class OutcomesAction extends BaseAction {
 
             if (outcome.getSubIdos() != null) {
               for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-                if (subIdo.getSrfSubIdo() != null) {
+                if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != null) {
                   subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
                 }
               }

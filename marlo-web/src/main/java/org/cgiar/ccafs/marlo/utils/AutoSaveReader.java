@@ -81,25 +81,40 @@ public class AutoSaveReader {
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
     HashMap<String, Object> relations = new HashMap<>();
+    HashMap<String, Object> onetoMany = new HashMap<>();
+
     LinkedTreeMap<String, Object> result = gson.fromJson(jobj, LinkedTreeMap.class);
     for (Map.Entry<String, Object> entry : result.entrySet()) {
       String key = entry.getKey().split("\\.")[0];
       if (key.equals(keyParent + "[" + i + "]")) {
         String newKey = entry.getKey().replace(keyParent + "[" + i + "].", "");
+
+
         if (!newKey.contains("[")) {
-          jsonNew.put(entry.getKey().replace(keyParent + "[" + i + "].", ""), entry.getValue());
-          jobj.remove(key);
+          String oneToManys[] = newKey.split("\\.");
+          if (oneToManys.length > 1) {
+            onetoMany.put(newKey, entry.getValue());
+          } else {
+            jsonNew.put(entry.getKey().replace(keyParent + "[" + i + "].", ""), entry.getValue());
+            jobj.remove(key);
+          }
+
         } else {
+
           relations.put(newKey, entry.getValue());
           jobj.remove(key);
         }
       }
+    }
+    if (!onetoMany.isEmpty()) {
+      jsonNew.putAll(this.getOneToMany(gson.toJson(onetoMany)));
     }
     if (!relations.isEmpty()) {
       jsonNew.putAll(this.convertJSONFormat(gson.toJson(relations)));
     }
     return jsonNew;
   }
+
 
   private HashMap<String, Object> getListJsonParent(String keyParent, JsonObject jobj) {
     HashMap<String, Object> jsonNew = new HashMap<>();
@@ -120,6 +135,38 @@ public class AutoSaveReader {
       list.add(this.getListJson(keyParent, jobj, i));
     }
     jsonNew.put(keyParent, list);
+    return jsonNew;
+  }
+
+  private HashMap<String, Object> getOneToMany(String json) {
+    Gson gson = new Gson();
+    JsonObject jobj = gson.fromJson(json, JsonObject.class);
+    HashMap<String, Object> jsonNew = new HashMap<>();
+    LinkedTreeMap<String, Object> result = gson.fromJson(jobj, LinkedTreeMap.class);
+    Set<String> listNames = new HashSet<>();
+    for (Map.Entry<String, Object> entry : result.entrySet()) {
+      String key = entry.getKey();
+      String keys[] = key.split("\\.");
+      String keyList = keys[0];
+
+      listNames.add(keyList);
+    }
+    for (String name : listNames) {
+      HashMap<String, Object> relation = new HashMap<>();
+      for (Map.Entry<String, Object> entry : result.entrySet()) {
+        String key = entry.getKey();
+        String keys[] = key.split("\\.");
+        String keyList = keys[0];
+        if (keyList.equals(name)) {
+          relation.put(keys[1], entry.getValue());
+          jobj.remove(key);
+        }
+
+      }
+
+      jsonNew.put(name, relation);
+
+    }
     return jsonNew;
   }
 
