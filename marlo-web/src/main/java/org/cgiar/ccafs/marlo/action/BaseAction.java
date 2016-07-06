@@ -94,7 +94,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private CrpManager crpManager;
 
-
   @Inject
   private AuditLogManager auditLogManager;
   // Config Variables
@@ -165,11 +164,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
   }
-
 
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
@@ -190,6 +189,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config;
   }
 
+
   /**
    * Get the Crp List
    * 
@@ -198,7 +198,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
-
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -223,6 +222,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
+
 
   /**
    * Get the user that is currently saved in the session.
@@ -307,7 +307,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SessionCounter.users;
   }
 
-
   /**
    * Return the artifact version of the Marlo project pom.xml
    * 
@@ -326,6 +325,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
+
 
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
@@ -352,10 +352,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
-
   public boolean isCanEdit() {
     return canEdit;
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -364,7 +364,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isEditable() {
     return isEditable;
   }
-
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -378,6 +377,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   /**
    * Validate if the user is already logged in or not.
    * 
@@ -390,19 +390,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isSaveable() {
     return saveable;
   }
+
 
   public boolean isSubmit() {
     return submit;
   }
 
-
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -413,6 +413,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String save() {
     return SUCCESS;
   }
+
 
   public void setAdd(boolean add) {
     this.add = true;

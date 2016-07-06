@@ -66,31 +66,33 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private List<String> selectedCountries;
 
   private List<CrpProgramOutcome> outcomes;
+  private List<CrpClusterOfActivity> clusterofActivities;
 
   @Expose
   private boolean active;
+
+
   @Expose
   private User createdBy;
 
-
   @Expose
   private Date activeSince;
-
-
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private String modificationJustification;
 
 
   private List<CrpProgramLeader> leaders;
+
   @Expose
   private String color;
 
+
   public CrpProgram() {
   }
-
 
   public CrpProgram(Crp crps, String name, String acronym, int programType) {
     this.crp = crps;
@@ -98,7 +100,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
     this.programType = programType;
   }
-
 
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
@@ -111,6 +112,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -143,8 +145,13 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return action;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public List<CrpClusterOfActivity> getClusterofActivities() {
+    return clusterofActivities;
   }
 
   public String getColor() {
@@ -207,7 +214,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.name;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -216,6 +222,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public int getProgramType() {
     return this.programType;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -238,13 +245,17 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.action = action;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
+    this.clusterofActivities = clusterofActivities;
   }
 
   public void setColor(String color) {

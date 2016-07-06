@@ -56,13 +56,24 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
 
   @Override
   public List<SectionStatus> findAll() {
-    String query = "from " + SectionStatus.class.getName() + " where is_active=1";
+    String query = "from " + SectionStatus.class.getName() + " ";
     List<SectionStatus> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
+      + "' and crp_program_id=" + crpProgramID;
+    List<SectionStatus> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
   }
 
   @Override
@@ -76,6 +87,4 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
 
     return sectionStatus.getId();
   }
-
-
 }

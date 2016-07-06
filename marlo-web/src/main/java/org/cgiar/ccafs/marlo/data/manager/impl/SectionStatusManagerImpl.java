@@ -59,6 +59,11 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusById(long sectionStatusID) {
 
     return sectionStatusDAO.find(sectionStatusID);
@@ -69,6 +74,5 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
 
     return sectionStatusDAO.save(sectionStatus);
   }
-
 
 }

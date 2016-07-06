@@ -588,7 +588,7 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, outcomes);
+      validator.validate(this, outcomes, selectedProgram);
     }
   }
 

@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
   public ClusterActivitiesValidator() {
   }
 
-  public void validate(BaseAction action, List<CrpClusterOfActivity> activities) {
+  public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program) {
 
 
     for (int i = 0; i < activities.size(); i++) {
@@ -43,6 +44,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
+    this.saveMissingFieldsImpactPathway(program, "clusterActivities");
   }
 
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {

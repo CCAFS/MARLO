@@ -56,6 +56,8 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
+
 
   /**
    * This method saves the information of the given sectionStatus

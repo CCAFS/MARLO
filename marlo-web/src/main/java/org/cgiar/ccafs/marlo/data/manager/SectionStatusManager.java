@@ -56,6 +56,14 @@ public interface SectionStatusManager {
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
+   * @param crpProgramID is the crp program identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
    * @param sectionStatusID is the sectionStatus identifier.
    * @return a SectionStatus object.
    */
