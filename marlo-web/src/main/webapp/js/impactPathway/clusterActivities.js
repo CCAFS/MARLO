@@ -10,7 +10,7 @@ function init() {
   $('.removeCluster').on('click', removeCluster);
 // Remove person
   $('.remove-userItem').on('click', removePerson);
-  setWordCounterToInputs('limitWords');
+
   updateClustersIndex();
 }
 

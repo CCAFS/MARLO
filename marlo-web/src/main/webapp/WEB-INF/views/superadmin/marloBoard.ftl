@@ -31,13 +31,14 @@
             [/#list]
             </ul>
             [#if !targetUnitList?has_content]<p class="text-center">There is not target units</p>[/#if]
+            <div class="clearfix"></div>
           </div>
           <hr />
           [#-- Add target unit --]
-          <div class="row">
-            <div class="col-md-3 acronymBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit acronym" className="acronym-input" required=true editable=true /]</div>
-            <div class="col-md-6 nameBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit Name" className="name-input" required=true editable=true /]</div>
-            <div class="col-md-3 buttonBlock text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTarget" /]</div></div>
+          <div class="row col-md-12">
+            <div class="acronymBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit acronym" className="acronym-input" required=true editable=true /]</div>
+            <div class="nameBlock">[@customForm.input name="" type="text" showTitle=false placeholder="Unit Name" className="name-input" required=true editable=true /]</div>
+            <div class="buttonBlock text-right"><div class="addTargetUnit button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addTarget" /]</div></div>
           </div>
         </div>
         
@@ -56,16 +57,19 @@
 </section>
 
 
+[#-- Unit Target Template --]
+[@targetUnitMacro element={} name="targetUnitList" index=-1 isTemplate=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
   <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnit" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
-    <span class="glyphicon glyphicon-scale"></span>  <span class="acronym">(${element.acronym})</span> <span class="name">${element.name}</span>
-    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.acronym" value="${(element.acronym)!}" />
-    <input type="hidden" name="${customName}.name" value="${(element.name)!}" />
+    <span class="glyphicon glyphicon-scale"></span>  <span class="composedName">(${(element.acronym)!}) ${(element.name)!}</span>
+    <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" class="acronym" name="${customName}.acronym" value="${(element.acronym)!}" />
+    <input type="hidden" class="name" name="${customName}.name" value="${(element.name)!}" />
     [#-- Remove Button --]
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-remove pull-right remove-targetUnit" aria-hidden="true"></span>
   </li>
 [/#macro]
