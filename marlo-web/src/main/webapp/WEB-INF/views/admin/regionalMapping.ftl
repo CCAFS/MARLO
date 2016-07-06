@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Regional Mapping" /]
-[#assign pageLibs = ["select2", "flat-flags"] /]
+[#assign pageLibs = ["select2", "flat-flags", "vanilla-color-picker"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/regionalMapping.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "regionalMapping" /]
@@ -113,6 +113,7 @@
       <div class="row">
         <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=editable /]</div>
         <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=editable /]</div>
+        <div class="col-sm-1"><div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div></div>
       </div>
     </div>
     [#-- Hidden inputs  --]
