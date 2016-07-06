@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/outcomes.js" ] /]
+[#assign customJS = [ "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/outcomes.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
@@ -81,8 +81,8 @@
           </div>
 
           <input type="hidden" id="crpProgramID"  name="crpProgramID" value="${(crpProgramID)!}"/>
-           <input type="hidden"  name="className" value="${(selectedProgram.class.name)!}"/>
-            <input type="hidden"  name="id" value="${(selectedProgram.id)!}"/>
+          <input type="hidden"  name="className" value="${(selectedProgram.class.name)!}"/>
+          <input type="hidden"  name="id" value="${(selectedProgram.id)!}"/>
         [#else]
           <p class="text-center borderBox">There is not flagships added</p>
         [/#if]
