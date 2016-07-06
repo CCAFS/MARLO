@@ -28,5 +28,8 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="autosaveWriter" class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction"/>
+		
 	</package>
 </struts>

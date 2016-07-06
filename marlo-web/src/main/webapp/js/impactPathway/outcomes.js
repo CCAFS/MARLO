@@ -310,7 +310,7 @@ function updateAllIndexes() {
   });
 
   // JUST FOR TESTING
-  setCurrentObject();
+  // setCurrentObject();
 }
 
 function setCurrentObject() {

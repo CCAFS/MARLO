@@ -46,8 +46,8 @@
     </script>
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
     <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>
+    <script type="text/javascript" src="${baseUrl}/js/global/global.js" ></script>
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     

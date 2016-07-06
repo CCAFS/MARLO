@@ -36,8 +36,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
-  @Expose
-  private String acronym;
 
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
@@ -63,15 +61,15 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   public SrfTargetUnit() {
   }
 
-  public SrfTargetUnit(String name, String acronym) {
+  public SrfTargetUnit(String name) {
     this.name = name;
-    this.acronym = acronym;
+
   }
 
-  public SrfTargetUnit(String name, String acronym, Set<CrpMilestone> crpMilestones,
-    Set<SrfSloIndicatorTarget> srfSloIndicatorTargets, Set<CrpProgramOutcome> crpProgramOutcomes) {
+  public SrfTargetUnit(String name, Set<CrpMilestone> crpMilestones, Set<SrfSloIndicatorTarget> srfSloIndicatorTargets,
+    Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.name = name;
-    this.acronym = acronym;
+
     this.crpMilestones = crpMilestones;
     this.srfSloIndicatorTargets = srfSloIndicatorTargets;
     this.crpProgramOutcomes = crpProgramOutcomes;
@@ -99,9 +97,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public String getAcronym() {
-    return this.acronym;
-  }
 
   public Date getActiveSince() {
     return activeSince;
@@ -162,9 +157,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-  public void setAcronym(String acronym) {
-    this.acronym = acronym;
-  }
 
   public void setActive(boolean active) {
     this.active = active;

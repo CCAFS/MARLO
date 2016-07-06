@@ -13,22 +13,28 @@
     <div class="crpGroup form-group clearfix">
       <label for="crp">[@s.text name="login.crp" /]:<span class="red">*</span></label>
       <ul>
+      [#if crpList?has_content]
         [#list crpList as crp]
           <li id="crp-${crp.acronym}" class="[#if crpSession?? && (crp.acronym == crpSession)]selected[/#if]"><img src="${baseUrl}/images/global/crps/${crp.acronym}.png" alt="${crp.acronym}" /></li>
         [/#list]
+      [#else]
+        <p>Not CRPs loaded</p>
+      [/#if]
       </ul>
-      <input type="hidden" id="crp" name="crp" value="${(crpSession)!-1}" />
+      <input type="hidden" id="crp" name="crp" value="${(crpSession)!}" />
     </div>
-    [#-- Email --]
-    <div class="form-group">
-      [@customForm.input name="user.email" i18nkey="login.email" required=true /]
+    <div class="secondForm" style="display:${(crpSession?has_content)?string('block', 'none')}">
+      [#-- Email --]
+      <div class="form-group">
+        [@customForm.input name="user.email" i18nkey="login.email" required=true /]
+      </div>
+      [#-- Password --]
+      <div class="form-group">
+        [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
+      </div>
+      [#-- Login (Submit button) --]
+      <div class="center">[@s.submit key="login.button" name="login" /]</div>
     </div>
-    [#-- Password --]
-    <div class="form-group">
-      [@customForm.input name="user.password" i18nkey="login.password" required=true type="password" /]
-    </div>
-    [#-- Login (Submit button) --]
-    <div class="center">[@s.submit key="login.button" name="login" /]</div>
   [/@s.form]
   <br />
   [#-- Disclaimer --]

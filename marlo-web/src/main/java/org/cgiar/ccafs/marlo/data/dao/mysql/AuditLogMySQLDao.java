@@ -125,8 +125,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
           classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
         }
       }
-
-
     } catch (JsonSyntaxException e) {
       e.printStackTrace();
     }

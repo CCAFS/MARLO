@@ -158,7 +158,7 @@ public class OutcomesAction extends BaseAction {
       List<SrfTargetUnit> targetUnits =
         srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getAcronym());
+        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
     }
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
