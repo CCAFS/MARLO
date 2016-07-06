@@ -84,12 +84,13 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
   @Override
   public String execute() throws Exception {
     if (existCrpProgram && validSection) {
+      // sectionName = sectionName.toLowerCase();
       // getting the current section status.
-      switch (SectionStatusEnum.valueOf(sectionName.toUpperCase())) {
+      switch (SectionStatusEnum.getValue(sectionName)) {
         case OUTCOMES:
           this.validateOutcomes();
           break;
-        case CLUSTER_OF_ACTIVITES:
+        case CLUSTERACTIVITES:
           this.validateClusterOfActivites();
           break;
 

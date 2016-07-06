@@ -15,18 +15,27 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
-
 public enum SectionStatusEnum {
 
 
-  OUTCOMES("outcomes"), CLUSTER_OF_ACTIVITES("clusterActivities");
+  OUTCOMES("outcomes"), CLUSTERACTIVITES("clusterActivities");
+
+  public static SectionStatusEnum getValue(String section) {
+    SectionStatusEnum[] lst = SectionStatusEnum.values();
+    for (SectionStatusEnum sectionStatusEnum : lst) {
+      if (sectionStatusEnum.getStatus().equals(section)) {
+        return sectionStatusEnum;
+      }
+    }
+    return null;
+  }
 
   private String status;
+
 
   private SectionStatusEnum(String status) {
     this.status = status;
   }
-
 
   public String getStatus() {
     return status;
