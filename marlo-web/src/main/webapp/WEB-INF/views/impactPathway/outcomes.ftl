@@ -157,7 +157,7 @@
     <br />
     [#-- Outcome Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.description" i18nkey="outcome.statement" required=true className="outcome-statement" editable=editable /]
+      [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
     </div>
     <div class="row form-group">
       [#-- Target Year --]
