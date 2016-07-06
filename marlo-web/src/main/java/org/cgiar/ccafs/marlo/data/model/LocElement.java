@@ -31,12 +31,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -5589133827714008187L;
 
+
   @Expose
   private Long id;
 
   @Expose
   private Crp crp;
-
 
   @Expose
   private String isoAlpha2;
@@ -47,7 +47,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private LocElementType locElementType;
-
 
   @Expose
   private LocGeoposition locGeoposition;
@@ -72,6 +71,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+
   @Expose
   private Date activeSince;
 
@@ -82,16 +82,18 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+
+  private Set<Institution> institutions = new HashSet<Institution>(0);
 
   public LocElement() {
   }
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
-    LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations) {
+    LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
+    Set<Institution> institutions) {
     this.locElementType = locElementTypes;
     this.locGeoposition = locGeopositions;
     this.name = name;
@@ -99,6 +101,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.locElement = locElement;
     this.isSiteIntegration = isSiteIntegration;
     this.crpsSitesIntegrations = crpsSitesIntegrations;
+    this.institutions = institutions;
   }
 
   public LocElement(LocElementType locElementTypes, String name) {
@@ -153,6 +156,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
+  public Set<Institution> getInstitutions() {
+    return institutions;
+  }
+
   public String getIsoAlpha2() {
     return isoAlpha2;
   }
@@ -161,15 +168,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return isoNumeric;
   }
 
-
   public Boolean getIsSiteIntegration() {
     return this.isSiteIntegration;
   }
 
+
   public LocElement getLocElement() {
     return locElement;
   }
-
 
   public LocElementType getLocElementType() {
     return this.locElementType;
@@ -179,6 +185,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   public LocGeoposition getLocGeoposition() {
     return this.locGeoposition;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -231,6 +238,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setInstitutions(Set<Institution> institutions) {
+    this.institutions = institutions;
   }
 
   public void setIsoAlpha2(String isoAlpha2) {
