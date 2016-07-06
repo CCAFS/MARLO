@@ -1,14 +1,14 @@
 [#ftl]
 [#assign items= [
-  { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',  'action': 'outcomes',           'active': true, 'completed' : false },
-  { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',       'action': 'clusterActivities',  'active': true, 'completed' : false }
+  { 'slug': 'outcomes',           'name': 'impactPathway.menu.hrefOutcomes',  'action': 'outcomes',           'active': true  },
+  { 'slug': 'clusterActivities',  'name': 'impactPathway.menu.hrefCOA',       'action': 'clusterActivities',  'active': true }
 ]/]
 
 
 [#assign currentCycleYear= ((reportingCycle?string(currentReportingYear,currentPlanningYear))?number)!2016 /]
 [#assign submission = (project.isSubmitted(currentCycleYear, cycleName))! /]
-[#assign canSubmit = (action.hasProjectPermission("submitProject", project.id, "manage"))!false /]
-[#assign completed = false /]
+[#assign canSubmit = (action.hasProjectPermission("submitProject", project.id, "manage"))!true /]
+[#assign completed = action.isCompleteImpact(crpProgramID) /]
 
 [#-- Menu--]
 <nav id="secondaryMenu">
@@ -16,7 +16,8 @@
     <li><p>[@s.text name="impactPathway.menu.title"/]</p>
       <ul>
         [#list items as item]
-          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${item.completed?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+            ${action.getImpactSectionStatus(item.action, crpProgramID)?string}
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
               [@s.text name=item.name/]
             </a>
