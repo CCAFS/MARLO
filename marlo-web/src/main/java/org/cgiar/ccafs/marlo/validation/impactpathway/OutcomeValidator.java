@@ -58,12 +58,22 @@ public class OutcomeValidator extends BaseValidator
   }
 
 
+  public void validateAssumption(BaseAction action, CrpAssumption assuption, int i, int j, int k) {
+    List<String> params = new ArrayList<String>();
+    params.add(String.valueOf(i + 1));
+    params.add(String.valueOf(j + 1));
+    params.add(String.valueOf(k + 1));
+    if (!(this.isValidString(assuption.getDescription()) && this.wordCount(assuption.getDescription()) <= 100)) {
+      this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
+    }
+  }
+
   public void validateMilestone(BaseAction action, CrpMilestone milestone, int i, int j) {
 
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
-    if (!this.isValidString(milestone.getTitle())) {
+    if (!(this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 100)) {
       this.addMessage(action.getText("outcome.action.title.required", params));
     }
     if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
@@ -89,7 +99,7 @@ public class OutcomeValidator extends BaseValidator
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
-    if (!this.isValidString(outcome.getDescription())) {
+    if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.statement.required", params));
     }
     if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
@@ -117,16 +127,6 @@ public class OutcomeValidator extends BaseValidator
     }
   }
 
-  public void validateSubIDO(BaseAction action, CrpAssumption assuption, int i, int j, int k) {
-    List<String> params = new ArrayList<String>();
-    params.add(String.valueOf(i + 1));
-    params.add(String.valueOf(j + 1));
-    params.add(String.valueOf(k + 1));
-    if (!this.isValidString(assuption.getDescription())) {
-      this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
-    }
-  }
-
   public void validateSubIDO(BaseAction action, CrpOutcomeSubIdo subIdo, int i, int j) {
 
     List<String> params = new ArrayList<String>();
@@ -140,5 +140,13 @@ public class OutcomeValidator extends BaseValidator
       || subIdo.getContribution().doubleValue() > 100) {
       this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
     }
+    int k = 0;
+    if (subIdo.getAssumptions() != null) {
+      for (CrpAssumption crpAssumption : subIdo.getAssumptions()) {
+        this.validateAssumption(action, crpAssumption, i, j, k);
+        k++;
+      }
+    }
+
   }
 }
