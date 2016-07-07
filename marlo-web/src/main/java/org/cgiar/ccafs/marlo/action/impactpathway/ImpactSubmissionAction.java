@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -71,30 +72,46 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // Check if user has permissions to submit the project.
-    if (this.isCompleteImpact(progamID)) {
-      List<Submission> submissions = submissionManager.findAll();
-      if (submissions != null) {
-        submissions =
-          submissions.stream().filter(c -> c.getCrpProgram().equals(crpProgram)).collect(Collectors.toList());
-        for (Submission theSubmission : submissions) {
-          submission = theSubmission;
-          alreadySubmitted = true;
+    if (this.hasPermission("submit")) {
+      if (this.isCompleteImpact(progamID)) {
+        List<Submission> submissions = submissionManager.findAll();
+        if (submissions != null) {
+          submissions =
+            submissions.stream().filter(c -> c.getCrpProgram().equals(crpProgram)).collect(Collectors.toList());
+          for (Submission theSubmission : submissions) {
+            submission = theSubmission;
+            alreadySubmitted = true;
+          }
+        }
+
+        if (!alreadySubmitted) {
+          // Let's submit the project. <:)
+          submission = new Submission();
+          submission.setCrpProgram(crpProgram);
+          submission.setDateTime(new Date());
+          submission.setUser(this.getCurrentUser());
+
+          submissionManager.saveSubmission(submission);
         }
       }
-
-      if (!alreadySubmitted) {
-        // Let's submit the project. <:)
-        submission = new Submission();
-        submission.setCrpProgram(crpProgram);
-        submission.setDateTime(new Date());
-        submission.setUser(this.getCurrentUser());
-
-        submissionManager.saveSubmission(submission);
-      }
+      return SUCCESS;
     }
-    return INPUT;
 
+    return NOT_AUTHORIZED;
+
+  }
+
+  public long getProgamID() {
+    return progamID;
+  }
+
+
+  public Submission getSubmission() {
+    return submission;
+  }
+
+  public boolean hasPersmissionSubmit() {
+    return this.hasPermission("submit");
   }
 
   @Override
@@ -112,10 +129,23 @@ public class ImpactSubmissionAction extends BaseAction {
 
     // Getting the program information.
     crpProgram = crpProgramManager.getCrpProgramById(progamID);
-
+    String params[] = {crpProgram.getCrp().getAcronym(), crpProgram.getId().toString()};
+    this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
     // Initializing Section Statuses:
     sectionStatus = sectionStatusManager.findAll().stream().filter(c -> c.getCrpProgram().equals(crpProgram))
       .collect(Collectors.toList());
+    if (!crpProgram.getSubmissions().isEmpty()) {
+      submission = crpProgram.getSubmissions().stream().collect(Collectors.toList()).get(0);
+    }
+  }
+
+
+  public void setProgamID(long progamID) {
+    this.progamID = progamID;
+  }
+
+  public void setSubmission(Submission submission) {
+    this.submission = submission;
   }
 
 

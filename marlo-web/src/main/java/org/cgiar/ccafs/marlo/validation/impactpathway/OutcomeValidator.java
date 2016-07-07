@@ -43,7 +43,9 @@ public class OutcomeValidator extends BaseValidator
 
   public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program) {
 
-
+    if (outcomes.size() == 0) {
+      this.addMissingField("program.outcomes");
+    }
     for (int i = 0; i < outcomes.size(); i++) {
       CrpProgramOutcome outcome = outcomes.get(i);
       this.validateOuctome(action, outcome, i);

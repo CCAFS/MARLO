@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.SubmissionDAO;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -61,7 +62,7 @@ public class SubmissionMySQLDAO implements SubmissionDAO {
     if (list.size() > 0) {
       return list;
     }
-    return null;
+    return new ArrayList<Submission>();
 
   }
 
