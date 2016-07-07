@@ -294,17 +294,17 @@ function setWordCounterToInputs(cssName) {
  * * MARLO Messages Widget
  */
 
-var messageDelivered = false;
+document.cookie = 'messageDelivered=false';
 (function worker() {
-
   $.ajax({
       url: baseURL + '/systemMessages.json',
+      cache: false,
       success: function(data) {
-        if(data.active && !messageDelivered) {
+        if(data.active && !(getCookie('messageDelivered') === 'true')) {
           showSystemResetMessage(data);
         } else if(!data.active) {
           $.noty.closeAll();
-          messageDelivered = false;
+          document.cookie = 'messageDelivered=false';
         }
       },
       complete: function() {
@@ -336,7 +336,7 @@ function showSystemResetMessage(data) {
   });
 
   showFullNotification($timer);
-  messageDelivered = true;
+  document.cookie = 'messageDelivered=true';
 
 }
 

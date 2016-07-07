@@ -1,7 +1,7 @@
 var timeoutID;
 $(document).ready(function() {
 
-  $('input, textarea').on('keyup', changeDetected);
+  $(':input').on('keyup change', changeDetected);
 
 });
 
@@ -15,30 +15,43 @@ function autoSave() {
       beforeSend: function() {
       },
       success: function(data) {
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = 'Succesfully saved';
-        notyOptions.type = 'alert';
-        notyOptions.layout = 'topCenter';
-        notyOptions.animation = {
-            open: 'animated fadeInDown',
-            close: 'animated fadeOutUp'
-        };
-        noty(notyOptions);
+        if(data.status.status) {
+          successNotification('Successfully Saved');
+          $('[name="save"]').find('.draft').text('(Draft Version)').addClass('animated flipInX');
+        } else {
+          errorNotification('Auto save error' + data.status.statusMessage);
+        }
       },
       complete: function() {
       },
       error: function(e) {
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = 'Auto save error';
-        notyOptions.type = 'error';
-        notyOptions.layout = 'topCenter';
-        notyOptions.animation = {
-            open: 'animated fadeInDown',
-            close: 'animated fadeOutUp'
-        };
-        noty(notyOptions);
+        errorNotification('Auto save error');
       }
   });
+}
+
+function successNotification(msj) {
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
+  notyOptions.text = msj;
+  notyOptions.type = 'alert';
+  notyOptions.layout = 'topCenter';
+  notyOptions.animation = {
+      open: 'animated fadeInDown',
+      close: 'animated fadeOutUp'
+  };
+  noty(notyOptions);
+}
+
+function errorNotification(msj) {
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
+  notyOptions.text = 'Auto save error';
+  notyOptions.type = 'error';
+  notyOptions.layout = 'topCenter';
+  notyOptions.animation = {
+      open: 'animated fadeInDown',
+      close: 'animated fadeOutUp'
+  };
+  noty(notyOptions);
 }
 
 function changeDetected(e) {
@@ -48,6 +61,6 @@ function changeDetected(e) {
   // Start a timer that will search when finished
   timeoutID = setTimeout(function() {
     autoSave();
-  }, 1000);
+  }, 5000);
 
 }

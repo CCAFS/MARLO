@@ -1710,7 +1710,7 @@ a.currentReportingSection li, a.currentSection li {
 #secondaryMenu ul li ul li.loadingSection a{
   background-image: url("../../images/global/loading_3.gif");
   background-repeat: no-repeat;
-  background-position: 183px 0px;
+  background-position: 97% 6px;
 }
 
 
