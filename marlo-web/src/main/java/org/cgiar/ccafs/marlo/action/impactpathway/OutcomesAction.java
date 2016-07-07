@@ -304,10 +304,10 @@ public class OutcomesAction extends BaseAction {
           }
 
           reader.close();
-
+          this.setDraft(true);
         } else {
           this.loadInfo();
-
+          this.setDraft(false);
         }
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
