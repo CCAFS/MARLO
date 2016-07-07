@@ -61,31 +61,32 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
 
   private List<String> selectedCountries;
 
+
   private List<CrpProgramOutcome> outcomes;
+
   private List<CrpClusterOfActivity> clusterofActivities;
 
   @Expose
   private boolean active;
-
-
   @Expose
   private User createdBy;
 
   @Expose
   private Date activeSince;
+
+
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
-
-
   private List<CrpProgramLeader> leaders;
+
 
   @Expose
   private String color;
@@ -101,6 +102,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.programType = programType;
   }
 
+
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
@@ -112,7 +114,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -136,10 +137,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public String getAcronym() {
     return this.acronym;
   }
+
 
   public String getAction() {
     return action;
@@ -153,6 +154,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
   }
+
 
   public String getColor() {
     return color;
@@ -218,18 +220,22 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return outcomes;
   }
 
-
   public int getProgramType() {
     return this.programType;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
 
+
   public List<String> getSelectedCountries() {
     return selectedCountries;
+  }
+
+
+  public Set<Submission> getSubmissions() {
+    return submissions;
   }
 
   @Override
@@ -249,10 +255,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
@@ -320,6 +326,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setSelectedCountries(List<String> selectedCountries) {
     this.selectedCountries = selectedCountries;
+  }
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
   }
 
 

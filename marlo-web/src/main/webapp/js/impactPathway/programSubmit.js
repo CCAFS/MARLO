@@ -108,7 +108,7 @@ function processTasks(tasks,id,button) {
                 if(index == tasksLength) {
                   if(completed == tasksLength) {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
-                    notyOptions.text = 'The project can be submmited now';
+                    notyOptions.text = 'The program impact pathway can be submmited now';
                     notyOptions.type = 'success';
                     notyOptions.layout = 'center';
                     noty(notyOptions);
@@ -118,7 +118,7 @@ function processTasks(tasks,id,button) {
                   } else {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
                     notyOptions.text =
-                        "The project is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your project.";
+                        "The program impact pathway is still incomplete, please go to the sections without the green check mark and complete the missing fields before submitting your program impact pathway.";
                     notyOptions.type = 'confirm';
                     notyOptions.layout = 'center';
                     notyOptions.modal = true;
