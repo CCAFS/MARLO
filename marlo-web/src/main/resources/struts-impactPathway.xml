@@ -26,5 +26,14 @@
       </result>
     </action>
     
+    
+     <action name="{crp}/submit" class="org.cgiar.ccafs.marlo.action.impactpathway.ImpactSubmissionAction">
+      <result name="input">/WEB-INF/views/impactPathway/outcomes.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">submit</param>
+        <param name="crpProgramID">${crpProgramID}</param>        
+      </result>
+    </action>
+    
   </package>
 </struts>
