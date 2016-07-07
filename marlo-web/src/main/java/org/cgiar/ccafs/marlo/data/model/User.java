@@ -65,6 +65,7 @@ public class User implements java.io.Serializable, IAuditLog {
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
   private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
 
   public User() {
@@ -77,6 +78,7 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
+
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -93,6 +95,7 @@ public class User implements java.io.Serializable, IAuditLog {
     this.userRoles = userRoles;
     this.crpUsers = crpUsers;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -159,11 +162,9 @@ public class User implements java.io.Serializable, IAuditLog {
     return crpSitesLeaders;
   }
 
-
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
   }
-
 
   public String getEmail() {
     return this.email;
@@ -173,6 +174,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getFirstName() {
     return this.firstName;
   }
+
 
   @Override
   public Long getId() {
@@ -187,6 +189,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public String getLastName() {
     return this.lastName;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -204,15 +207,19 @@ public class User implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public String getPassword() {
     return this.password;
+  }
+
+  public Set<Submission> getSubmissions() {
+    return submissions;
   }
 
 
   public String getUsername() {
     return this.username;
   }
+
 
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
@@ -239,10 +246,10 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrpClusterActivityLeaders(Set<CrpClusterActivityLeader> crpClusterActivityLeaders) {
     this.crpClusterActivityLeaders = crpClusterActivityLeaders;
@@ -259,7 +266,6 @@ public class User implements java.io.Serializable, IAuditLog {
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
   }
-
 
   public void setEmail(String email) {
     this.email = email;
@@ -290,12 +296,17 @@ public class User implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
   }
 
   public void setUsername(String username) {

@@ -49,6 +49,9 @@
 		<mapping resource="xmls/CrpProgramCountries.hbm.xml" />
     <mapping resource="xmls/CrpClusterActivityLeaders.hbm.xml" />
     <mapping resource="xmls/SectionStatuses.hbm.xml" />
+    <mapping resource="xmls/Submissions.hbm.xml" />
+    
+  
   </session-factory>
 </hibernate-configuration>
 

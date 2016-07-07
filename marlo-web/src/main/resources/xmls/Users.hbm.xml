@@ -86,5 +86,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader" />
 		</set>
+		
+		
+		 <set name="submissions" table="submissions" inverse="true" 
+		 order-by="id" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+        </set>
 	</class>
 </hibernate-mapping>
