@@ -33,7 +33,8 @@
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
 			<result type="json">
-			<param name="status">status</param>
+				<param name="encoding">UTF-8</param>
+				<param name="status">status</param>
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
 			</result>

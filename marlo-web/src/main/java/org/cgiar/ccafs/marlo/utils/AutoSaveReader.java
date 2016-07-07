@@ -49,16 +49,28 @@ public class AutoSaveReader {
     HashMap<String, Object> jsonNew = new HashMap<>();
     Gson gson = new Gson();
     LinkedTreeMap<String, Object> result = gson.fromJson(json, LinkedTreeMap.class);
-
+    HashMap<String, Object> onetoMany = new HashMap<>();
     JsonObject jobj = new Gson().fromJson(json, JsonObject.class);
     for (Map.Entry<String, Object> entry : result.entrySet()) {
       String value = entry.getValue().toString();
       String key = entry.getKey();
       if (!key.contains("[")) {
-        jsonNew.put(key, value);
-        jobj.remove(key);
+        String oneToManys[] = key.split("\\.");
+        if (oneToManys.length > 1) {
+          onetoMany.put(key, entry.getValue());
+          jobj.remove(key);
+        } else {
+          jsonNew.put(key, value);
+          jobj.remove(key);
+        }
       }
     }
+
+
+    if (!onetoMany.isEmpty()) {
+      jsonNew.putAll(this.getOneToMany(gson.toJson(onetoMany)));
+    }
+
     result = gson.fromJson(jobj, LinkedTreeMap.class);
     Set<String> listNames = new HashSet<>();
     for (Map.Entry<String, Object> entry : result.entrySet()) {
