@@ -98,8 +98,12 @@
     [/#if]
     <!-- ${actionName} Content -->
     
-    <div class="timer-content" style="display:none">
-      <div class="message">[@s.text name="systemMessage.serverReset" /]</div>
-      <div class="countdown"></div>
+    [#-- Timer message --]
+    <div class="" style="display:none">
+      <div id="timer-content">
+        <div class="message">{{message}}</div>
+        <div class="countdown"></div>
+        <div class="clearfix"></div>
+      </div>
     </div>
   
