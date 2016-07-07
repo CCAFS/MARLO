@@ -44,7 +44,7 @@
 [#-- Submit button --]
 [#if canEdit]
   [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
-  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][/@s.url]" >
+  <a id="submitProject-${crpProgramID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='crpProgramID']${crpProgramID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
