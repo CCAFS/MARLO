@@ -50,7 +50,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
   public void validateClusterOfActivity(BaseAction action, CrpClusterOfActivity activity, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
-    if (!this.isValidString(activity.getDescription())) {
+    if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
     }
   }

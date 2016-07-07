@@ -248,7 +248,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
-      if (section.length() == 0) {
+      if (sectionStatus.getMissingFields().length() == 0) {
         return true;
       }
     }
