@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,6 +80,10 @@ public class AutoSaveWriterAction extends BaseAction {
         fileClass = composedClassName[composedClassName.length - 1];
       }
 
+      result.put("activeSince", new Date());
+
+      String jSon = gson.toJson(result);
+
       try {
 
         String fileName = fileId + "_" + fileClass + ".json";
@@ -87,12 +92,12 @@ public class AutoSaveWriterAction extends BaseAction {
 
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
           FileWriter writer = new FileWriter(config.getAutoSaveFolder() + fileName);
-          writer.write(autoSave[0]);
+          writer.write(jSon);
           writer.close();
         } else {
           Files.createDirectories(path);
           FileWriter writer = new FileWriter(config.getAutoSaveFolder() + fileName);
-          writer.write(autoSave[0]);
+          writer.write(jSon);
           writer.close();
         }
         status.put("status", true);
