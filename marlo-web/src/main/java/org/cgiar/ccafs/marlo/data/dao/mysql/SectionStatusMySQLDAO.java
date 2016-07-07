@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.SectionStatusDAO;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -61,7 +62,7 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
     if (list.size() > 0) {
       return list;
     }
-    return null;
+    return new ArrayList<SectionStatus>();
 
   }
 

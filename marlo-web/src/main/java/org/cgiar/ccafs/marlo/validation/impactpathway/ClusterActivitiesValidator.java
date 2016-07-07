@@ -32,7 +32,9 @@ public class ClusterActivitiesValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program) {
-
+    if (activities.size() == 0) {
+      this.addMissingField("program.activites");
+    }
 
     for (int i = 0; i < activities.size(); i++) {
       CrpClusterOfActivity outcome = activities.get(i);

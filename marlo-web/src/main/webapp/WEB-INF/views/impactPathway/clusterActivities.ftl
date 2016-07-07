@@ -35,7 +35,9 @@
             [/#if]
           </div>
         [/#if]
-        
+          [#if submission?has_content]
+        Submitted on ${submission.dateTime}
+         [/#if]
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
           [#list programs as program]

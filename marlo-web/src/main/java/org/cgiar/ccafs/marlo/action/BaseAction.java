@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -96,12 +97,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private Map<String, Object> session;
   private HttpServletRequest request;
   private String basePermission;
+  private Submission submission;
 
   // Managers
   @Inject
   private CrpManager crpManager;
+
+
   @Inject
   private SectionStatusManager sectionStatusManager;
+
   @Inject
   private AuditLogManager auditLogManager;
   // Config Variables
@@ -182,7 +187,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return basePermission;
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
@@ -200,7 +204,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
-
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -255,6 +258,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public String getJustification() {
     return justification;
   }
@@ -276,6 +280,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Locale getLocale() {
     return Locale.ENGLISH;
   }
+
 
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
@@ -316,6 +321,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Map<String, Object> getSession() {
     return session;
+  }
+
+  public Submission getSubmission() {
+    return submission;
   }
 
   public List<UserToken> getUsersOnline() {
@@ -366,20 +375,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasRole("Admin");
   }
 
-
   public boolean isCanEdit() {
     return canEdit;
   }
 
+
   public boolean isCompleteImpact(long crpProgramID) {
     List<SectionStatus> sections = sectionStatusManager.findAll().stream()
       .filter(c -> c.getCrpProgram().getId().longValue() == crpProgramID).collect(Collectors.toList());
+
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
         return false;
       }
     }
     if (sections.size() == 0) {
+      return false;
+    }
+    if (sections.size() < 2) {
       return false;
     }
     return true;
@@ -393,10 +406,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return draft;
   }
 
-
   public boolean isEditable() {
     return isEditable;
   }
+
 
   public boolean isFullEditable() {
     return fullEditable;
@@ -408,7 +421,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   /**
    * Validate if the user is already logged in or not.
@@ -427,30 +439,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return saveable;
   }
 
+
   public boolean isSubmit() {
     return submit;
   }
 
-
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
 
-
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
 
+
   public void setAdd(boolean add) {
     this.add = true;
   }
-
 
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
@@ -461,19 +473,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
+
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
-
 
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
 
+
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
-
 
   public void setDelete(boolean delete) {
     this.delete = delete;
@@ -483,6 +495,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setDraft(boolean draft) {
     this.draft = draft;
   }
+
 
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
@@ -500,10 +513,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.justification = justification;
   }
 
-
   public void setNext(boolean next) {
     this.next = true;
   }
+
 
   public void setSave(boolean save) {
     this.save = true;
@@ -525,6 +538,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Override
   public void setSession(Map<String, Object> session) {
     this.session = session;
+  }
+
+  public void setSubmission(Submission submission) {
+    this.submission = submission;
   }
 
   public void setSubmit(boolean submit) {

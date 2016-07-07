@@ -309,12 +309,16 @@ public class OutcomesAction extends BaseAction {
           this.loadInfo();
           this.setDraft(false);
         }
-
-        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-
+        if (selectedProgram != null) {
+          String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+          this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+          if (!selectedProgram.getSubmissions().isEmpty()) {
+            this.setCanEdit(false);
+            this.setEditable(false);
+            this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+          }
+        }
       }
-
       if (this.isHttpPost()) {
         outcomes.clear();
       }
@@ -323,9 +327,7 @@ public class OutcomesAction extends BaseAction {
 
     Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
 
-    if (!selectedProgram.getSubmissions().isEmpty()) {
-      this.setCanEdit(false);
-    }
+
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
     for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {

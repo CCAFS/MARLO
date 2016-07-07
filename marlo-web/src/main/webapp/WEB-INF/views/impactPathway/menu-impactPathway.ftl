@@ -5,9 +5,8 @@
 ]/]
 
 
-[#assign currentCycleYear= ((reportingCycle?string(currentReportingYear,currentPlanningYear))?number)!2016 /]
-[#assign submission = (project.isSubmitted(currentCycleYear, cycleName))! /]
-[#assign canSubmit = (action.hasProjectPermission("submitProject", project.id, "manage"))!true /]
+[#assign submission = (action.submission)! /]
+[#assign canSubmit = (action.hasPersmissionSubmit())!true /]
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
 
 [#-- Menu--]
