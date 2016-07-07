@@ -89,8 +89,7 @@
           <input type="hidden"  name="className" value="${(selectedProgram.class.name)!}"/>
           <input type="hidden"  name="id" value="${(selectedProgram.id)!}"/>
           <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
-          <input type="hidden"  name="modifiedBy.firstName" value="${(currentUser.firstName)!}"/>
-          <input type="hidden"  name="modifiedBy.lastName" value="${(currentUser.lastName)!}"/>
+          <input type="hidden"  name="actionName" value="${(actionName)!}"/>          
         [#else]
           <p class="text-center borderBox">There is not flagships added</p>
         [/#if]

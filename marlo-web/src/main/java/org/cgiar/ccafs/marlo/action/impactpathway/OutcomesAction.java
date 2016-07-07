@@ -231,6 +231,7 @@ public class OutcomesAction extends BaseAction {
         this.setTransaction("-1");
       }
 
+      Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
     } else {
 
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
@@ -323,9 +324,6 @@ public class OutcomesAction extends BaseAction {
         outcomes.clear();
       }
     }
-
-
-    Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
 
 
     idoList = new HashMap<>();
