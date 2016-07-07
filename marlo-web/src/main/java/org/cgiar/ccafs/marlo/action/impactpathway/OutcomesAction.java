@@ -156,6 +156,43 @@ public class OutcomesAction extends BaseAction {
   }
 
 
+  public void loadInfo() {
+    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+
+      crpProgramOutcome.setMilestones(
+        crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      crpProgramOutcome.setSubIdos(
+        crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+        List<CrpAssumption> assumptions =
+          crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        crpOutcomeSubIdo.setAssumptions(assumptions);
+        HashMap<Long, String> mapSubidos = new HashMap<>();
+        try {
+          for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+            if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
+              mapSubidos.put(srfSubIdo.getId(), "CrossCutting:" + srfSubIdo.getDescription());
+            } else {
+              mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
+            }
+
+
+          }
+        } catch (Exception e) {
+
+        }
+        crpOutcomeSubIdo.setSubIdoList(mapSubidos);
+      }
+
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
 
@@ -185,10 +222,12 @@ public class OutcomesAction extends BaseAction {
         this.setEditable(false);
         this.setCanEdit(false);
         programs = new ArrayList<>();
+        this.loadInfo();
         programs.add(history);
       } else {
         programs = new ArrayList<>();
         this.transaction = null;
+
         this.setTransaction("-1");
       }
 
@@ -267,46 +306,8 @@ public class OutcomesAction extends BaseAction {
           reader.close();
 
         } else {
+          this.loadInfo();
 
-          for (CrpProgramOutcome crpProgramOutcome : outcomes) {
-
-            crpProgramOutcome.setMilestones(
-              crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-            crpProgramOutcome.setSubIdos(
-              crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-            /*
-             * for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
-             * crpOutcomeSubIdo.setSrfSubIdo(crpOutcomeSubIdo.getSrfSubIdo());
-             * }
-             */
-            for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
-              List<CrpAssumption> assumptions =
-                crpOutcomeSubIdo.getCrpAssumptions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-              crpOutcomeSubIdo.setAssumptions(assumptions);
-              HashMap<Long, String> mapSubidos = new HashMap<>();
-              try {
-                for (SrfSubIdo srfSubIdo : crpOutcomeSubIdo.getSrfSubIdo().getSrfIdo().getSrfSubIdos().stream()
-                  .filter(c -> c.isActive()).collect(Collectors.toList())) {
-
-                  if (srfSubIdo.getSrfIdo().isIsCrossCutting()) {
-                    mapSubidos.put(srfSubIdo.getId(), "CrossCutting:" + srfSubIdo.getDescription());
-                  } else {
-                    mapSubidos.put(srfSubIdo.getId(), srfSubIdo.getDescription());
-                  }
-
-
-                }
-              } catch (Exception e) {
-
-              }
-              crpOutcomeSubIdo.setSubIdoList(mapSubidos);
-            }
-
-          }
         }
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
@@ -334,7 +335,6 @@ public class OutcomesAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
