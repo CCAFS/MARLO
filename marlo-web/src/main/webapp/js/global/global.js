@@ -290,48 +290,59 @@ function setWordCounterToInputs(cssName) {
   });
 }
 
-var source;
-function systemMessage() {
+/**
+ * * MARLO Messages Widget
+ */
+
+var messageDelivered = false;
+(function worker() {
 
   $.ajax({
-      dataType: 'json',
       url: baseURL + '/systemMessages.json',
-      beforeSend: function() {
-      },
       success: function(data) {
-        console.log(data);
-        showSystemResetMessage(data);
+        if(data.active && !messageDelivered) {
+          showSystemResetMessage(data);
+        } else if(!data.active) {
+          $.noty.closeAll();
+          messageDelivered = false;
+        }
       },
       complete: function() {
-      },
-      error: function(e) {
+        // Schedule the next request when the current one's complete
+        setTimeout(worker, 1000*5);
+      }
+  });
+})();
+
+function showSystemResetMessage(data) {
+  var currentTime = new Date(data.serverCurrentTime);
+  var deadlineTime = new Date(data.messageDeadline);
+  var diff = deadlineTime - currentTime
+  if(diff <= 0){
+    return
+  }
+  var $timer = $('#timer-content').clone(true).removeAttr('id');
+  $timer.find('.message').html(data.message);
+  $timer.find('.countdown').countdown({
+      date: +(new Date) + (diff),
+      render: function(data) {
+        $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
+        if(this.leadingZeros(data.min, 1) == 0) {
+          $(this.el).addClass('ended animated infinite flash');
+        } else {
+          $(this.el).removeClass('ended animated infinite flash');
+        }
       }
   });
 
-/*
- * if(typeof (EventSource) !== "undefined") { source = new EventSource(baseURL + '/systemMessages.json');
- * source.onmessage = function(event) { var data = event.data; console.log(data); }; } else { console .log("Las
- * funciones en tiempo real no son soportadas por su navegador. </br>Recomendamos usar la ultima version de Google
- * Chrome"); }
- */
+  showFullNotification($timer);
+  messageDelivered = true;
 
 }
 
-function showSystemResetMessage(data) {
-  var $timer = $('.timer-content').show();
-  $timer.find('.countdown').countdown({
-      date: +(new Date) + 10000,
-      render: function(data) {
-        $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
-      },
-      onEnd: function() {
-        $(this.el).addClass('ended');
-      }
-  }).on("click", function() {
-    $(this).removeClass('ended').data('countdown').update(+(new Date) + 10000).start();
-  });
+function showFullNotification(timer) {
   noty({
-      text: $timer,
+      text: $(timer),
       type: 'alert',
       dismissQueue: true,
       layout: 'center',
@@ -345,6 +356,25 @@ function showSystemResetMessage(data) {
               $noty.close();
             }
         }
-      ]
+      ],
+      callback: {
+        afterClose: function() {
+          showMinNotification($(timer));
+        },
+      },
+  });
+}
+
+function showMinNotification(timer) {
+  $(timer).find('.countdown').addClass('small');
+  $(timer).find('.message').hide();
+  noty({
+      text: $(timer),
+      theme: 'relax',
+      layout: 'topCenter',
+      animation: {
+          open: 'animated fadeInUp',
+          close: 'animated fadeOutUp'
+      }
   });
 }
