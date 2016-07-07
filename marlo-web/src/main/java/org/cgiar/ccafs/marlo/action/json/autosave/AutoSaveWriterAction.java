@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -39,7 +40,11 @@ public class AutoSaveWriterAction extends BaseAction {
 
   private static final long serialVersionUID = 2904862716714197942L;
 
+
   private String autoSave[];
+
+  private Map<String, Object> status;
+
 
   @Inject
   public AutoSaveWriterAction(APConfig config) {
@@ -52,6 +57,7 @@ public class AutoSaveWriterAction extends BaseAction {
 
     String fileId = "";
     String fileClass = "";
+    status = new HashMap<String, Object>();
 
     if (autoSave.length > 0) {
 
@@ -89,8 +95,12 @@ public class AutoSaveWriterAction extends BaseAction {
           writer.write(autoSave[0]);
           writer.close();
         }
-
+        status.put("status", true);
       } catch (IOException e) {
+        status.put("status", false);
+        e.printStackTrace();
+      } catch (Exception e) {
+        status.put("status", false);
         e.printStackTrace();
       }
 
@@ -99,6 +109,9 @@ public class AutoSaveWriterAction extends BaseAction {
     return Action.SUCCESS;
   }
 
+  public Map<String, Object> getStatus() {
+    return status;
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -107,6 +120,10 @@ public class AutoSaveWriterAction extends BaseAction {
 
     autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
 
+  }
+
+  public void setStatus(Map<String, Object> status) {
+    this.status = status;
   }
 
 

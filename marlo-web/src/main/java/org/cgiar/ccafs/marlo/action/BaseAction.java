@@ -64,7 +64,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public static final String CANCEL = "cancel";
 
   public static final String NEXT = "next";
+
+
   public static final String NOT_LOGGED = "401";
+
   public static final String NOT_AUTHORIZED = "403";
   public static final String NOT_FOUND = "404";
   public static final String SAVED_STATUS = "savedStatus";
@@ -72,14 +75,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
   // button actions
   protected boolean save;
-
   protected boolean next;
-
   protected boolean delete;
+
   protected boolean cancel;
+
   protected boolean submit;
   protected boolean dataSaved;
   protected boolean add;
+  private boolean draft;
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   private boolean canEdit; // If user is able to edit the form.
@@ -90,9 +94,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Variables
   private String crpSession;
   private Map<String, Object> session;
-
   private HttpServletRequest request;
   private String basePermission;
+
   // Managers
   @Inject
   private CrpManager crpManager;
@@ -103,9 +107,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   protected APConfig config;
-
   private Map<String, Object> parameters;
 
   @Inject
@@ -172,7 +174,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -185,7 +186,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
-
 
   public APConfig getConfig() {
     return config;
@@ -226,6 +226,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpSession;
   }
 
+
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -257,6 +258,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getJustification() {
     return justification;
   }
+
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
@@ -348,7 +350,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -364,6 +365,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isAdmin() {
     return securityContext.hasRole("Admin");
   }
+
 
   public boolean isCanEdit() {
     return canEdit;
@@ -383,10 +385,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isDataSaved() {
     return dataSaved;
   }
+
+  public boolean isDraft() {
+    return draft;
+  }
+
 
   public boolean isEditable() {
     return isEditable;
@@ -395,7 +401,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isFullEditable() {
     return fullEditable;
   }
-
 
   protected boolean isHttpPost() {
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
@@ -417,30 +422,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isSaveable() {
     return saveable;
   }
-
 
   public boolean isSubmit() {
     return submit;
   }
 
+
   public String next() {
     return NEXT;
   }
-
 
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
 
+
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
-
 
   public void setAdd(boolean add) {
     this.add = true;
@@ -451,19 +456,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.basePermission = basePermission;
   }
 
+
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
-
 
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
-
 
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
@@ -472,6 +477,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setDelete(boolean delete) {
     this.delete = delete;
+  }
+
+
+  public void setDraft(boolean draft) {
+    this.draft = draft;
   }
 
   public void setEditable(boolean isEditable) {
