@@ -132,7 +132,6 @@ public class AutoSaveWriterAction extends BaseAction {
   public void prepare() throws Exception {
 
     Map<String, Object> parameters = this.getParameters();
-
     autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
 
   }
