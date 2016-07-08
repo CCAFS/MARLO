@@ -79,7 +79,7 @@ public interface UserDAO {
    * @param userData - Information to be saved.
    * @return the id of the user that was created, 0 if the user was updated or -1 if some error appeared.
    */
-  public int saveUser(User user);
+  public Long saveUser(User user);
 
   /**
    * This method looks for the active users that contains the

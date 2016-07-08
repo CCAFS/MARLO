@@ -25,6 +25,7 @@ import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,22 +44,25 @@ import org.slf4j.LoggerFactory;
  */
 public class ManageUsersAction extends BaseAction {
 
+
   private static final long serialVersionUID = 281018603716118132L;
+
+
   private static Logger LOG = LoggerFactory.getLogger(ManageUsersAction.class);
 
   private static String PARAM_FIRST_NAME = "firstName";
   private static String PARAM_LAST_NAME = "lastName";
+
   private static String PARAM_EMAIL = "email";
   private static String PARAM_IS_ACTIVE = "isActive";
-
   private UserManager userManager;
   private SendMail sendMail;
 
   private String queryParameter;
   private List<Map<String, Object>> users;
+
   private User newUser;
   private String message;
-
 
   @Inject
   public ManageUsersAction(APConfig config, UserManager userManager, SendMail sendMail) {
@@ -67,23 +71,36 @@ public class ManageUsersAction extends BaseAction {
     this.sendMail = sendMail;
   }
 
-
   /**
    * Add a new user into the database;
    * 
    * @return true if the user was successfully added, false otherwise.
    */
   private boolean addUser() {
-    int id = userManager.saveUser(newUser, this.getCurrentUser());
+    newUser.setModificationJustification("User created in MARLO");
+    newUser.setActiveSince(new Date());
+    newUser.setModifiedBy(this.getCurrentUser());
+    newUser.setActive(true);
+    newUser.setId(null);
+
+    Long id = userManager.saveUser(newUser, this.getCurrentUser());
     // If successfully added.
     if (id > 0) {
-      newUser.setId((long) id);
+      newUser = userManager.getUser(id);
+
+      this.users = new ArrayList<>();
+      Map<String, Object> userMap = new HashMap<>();
+      userMap.put("id", newUser.getId());
+      userMap.put("composedName", newUser.getComposedName());
+      this.users.add(userMap);
+
       return true;
     } else {
       // If some error occurred.
       return false;
     }
   }
+
 
   /**
    * Create a new user in the system.
@@ -108,7 +125,7 @@ public class ManageUsersAction extends BaseAction {
 
       // Validate if is a CGIAR email.
       if (newUser.getEmail().toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
-        newUser.setCgiarUser(false); // marking it as CCAFS user.
+        newUser.setCgiarUser(true); // marking it as CGIAR user.
 
         // Validate and populate the information that is coming from the CGIAR Outlook Active Directory.
         newUser = this.validateOutlookUser(newUser.getEmail());
@@ -143,6 +160,7 @@ public class ManageUsersAction extends BaseAction {
     return SUCCESS;
   }
 
+
   @Override
   public String execute() throws Exception {
     // Nothing to do here yet.
@@ -158,15 +176,10 @@ public class ManageUsersAction extends BaseAction {
     return this.message;
   }
 
-  public User getNewUser() {
-    return this.newUser;
-  }
-
 
   public List<Map<String, Object>> getUsers() {
     return users;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -179,8 +192,11 @@ public class ManageUsersAction extends BaseAction {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);
-      newUser.setFirstName(StringUtils.trim(((String[]) parameters.get(PARAM_FIRST_NAME))[0]));
-      newUser.setLastName(StringUtils.trim(((String[]) parameters.get(PARAM_LAST_NAME))[0]));
+      if (!StringUtils.trim(((String[]) parameters.get(PARAM_EMAIL))[0]).toLowerCase()
+        .endsWith(APConstants.OUTLOOK_EMAIL)) {
+        newUser.setFirstName(StringUtils.trim(((String[]) parameters.get(PARAM_FIRST_NAME))[0]));
+        newUser.setLastName(StringUtils.trim(((String[]) parameters.get(PARAM_LAST_NAME))[0]));
+      }
       newUser.setEmail(StringUtils.trim(((String[]) parameters.get(PARAM_EMAIL))[0]));
       newUser.setActive(StringUtils.trim(((String[]) parameters.get(PARAM_IS_ACTIVE))[0]).equals("1") ? true : false);
     }
@@ -209,10 +225,6 @@ public class ManageUsersAction extends BaseAction {
   }
 
 
-  public void setUsers(List<Map<String, Object>> users) {
-    this.users = users;
-  }
-
   /**
    * Validate if a given user exists in the Outlook Active Directory .
    * 
@@ -220,11 +232,11 @@ public class ManageUsersAction extends BaseAction {
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
    */
   private User validateOutlookUser(String email) {
-    LDAPUser user = LDAPService.searchUserByEmail(email);
+    LDAPUser user = new LDAPService().searchUserByEmail(email);
     if (user != null) {
       newUser.setFirstName(user.getFirstName());
       newUser.setLastName(user.getLastName());
-      newUser.setUsername(user.getLogin());
+      newUser.setUsername(user.getLogin().toLowerCase());
       return newUser;
     }
     return null;

@@ -22,7 +22,7 @@
 			<column name="email" not-null="true" unique="true" />
 		</property>
 		<property name="password" type="string">
-			<column name="password" not-null="true" />
+			<column name="password"/>
 		</property>
 		<property name="cgiarUser" type="boolean">
 			<column name="is_cgiar_user" not-null="true" />

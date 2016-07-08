@@ -9,11 +9,12 @@
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
 
 			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="defaultStack"/>
 				<interceptor-ref name="SecurityControl" />
-				<interceptor-ref name="prepare"/>  
+				<interceptor-ref name="prepare" />
 			</interceptor-stack>
 		</interceptors>
-		
+
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
 		<action name="searchUsers"

@@ -75,13 +75,13 @@ public class UserMySQLDAO implements UserDAO {
   }
 
   @Override
-  public int saveUser(User user) {
+  public Long saveUser(User user) {
     if (user.getId() == null) {
       dao.save(user);
     } else {
       dao.update(user);
     }
-    return user.getId().intValue();
+    return user.getId();
   }
 
   @Override
