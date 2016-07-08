@@ -239,6 +239,17 @@ public class ClusterActivitiesAction extends BaseAction {
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
           clusterofActivities = selectedProgram.getClusterofActivities();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
+          selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
+
+          for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
+            if (clusterOfActivity.getLeaders() != null) {
+              for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
+                if (leaders.getUser() != null && leaders.getUser().getId() != null) {
+                  leaders.setUser(userManager.getUser(leaders.getUser().getId()));
+                }
+              }
+            }
+          }
 
           reader.close();
           this.setDraft(true);

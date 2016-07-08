@@ -103,12 +103,11 @@
           </div>
           
           [#-- Hidden Parameters --]
-          <input type="hidden"  name="crpProgramID" value="${(crpProgramID)!}"/>
+          <input type="hidden" id="crpProgramID"  name="crpProgramID" value="${(crpProgramID)!}"/>
           <input type="hidden"  name="className" value="${(selectedProgram.class.name)!}"/>
           <input type="hidden"  name="id" value="${(selectedProgram.id)!}"/>
           <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
-          <input type="hidden"  name="modifiedBy.firstName" value="${(currentUser.firstName)!}"/>
-          <input type="hidden"  name="modifiedBy.lastName" value="${(currentUser.lastName)!}"/>        
+          <input type="hidden"  name="actionName" value="${(actionName)!}"/>       
         [/@s.form]
       </div>
     </div>
