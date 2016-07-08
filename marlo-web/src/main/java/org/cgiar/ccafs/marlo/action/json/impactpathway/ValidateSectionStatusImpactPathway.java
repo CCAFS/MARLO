@@ -123,8 +123,8 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
       try {
         crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
       } catch (NumberFormatException e) {
-        LOG.error("There was an exception trying to parse the project id = {} ",
-          StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+        LOG.error("There was an exception trying to parse the crp program id = {} ",
+          StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
       }
     }
 
