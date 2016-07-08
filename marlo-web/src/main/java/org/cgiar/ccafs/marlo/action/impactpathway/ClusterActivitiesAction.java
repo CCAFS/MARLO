@@ -240,7 +240,9 @@ public class ClusterActivitiesAction extends BaseAction {
           clusterofActivities = selectedProgram.getClusterofActivities();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
-
+          if (clusterofActivities == null) {
+            clusterofActivities = new ArrayList<>();
+          }
           for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
             if (clusterOfActivity.getLeaders() != null) {
               for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {

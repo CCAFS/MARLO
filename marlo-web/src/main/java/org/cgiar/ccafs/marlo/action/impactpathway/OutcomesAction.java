@@ -295,7 +295,9 @@ public class OutcomesAction extends BaseAction {
           outcomes = selectedProgram.getOutcomes();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
-
+          if (outcomes == null) {
+            outcomes = new ArrayList<>();
+          }
           for (CrpProgramOutcome outcome : outcomes) {
 
             if (outcome.getSubIdos() != null) {
