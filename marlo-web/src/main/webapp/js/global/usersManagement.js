@@ -122,7 +122,7 @@ $(document).ready(function() {
             if(data.message) {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             } else {
-              addUser(data.newUser.composedName, data.newUser.id);
+              addUser(data.users.composedName, data.users.id);
               addUserMessage($('#created-message').val());
             }
           },
