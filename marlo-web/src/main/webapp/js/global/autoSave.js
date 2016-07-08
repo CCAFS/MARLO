@@ -57,7 +57,7 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
-  console.log('Change Detected : ' + e.target.class);
+
   if(timeoutAutoSave) {
     clearTimeout(timeoutAutoSave);
   }
