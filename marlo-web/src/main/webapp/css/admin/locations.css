@@ -41,3 +41,18 @@ span.coordinates {
 .locElement {
   line-height: 16px;
 }
+
+.infoContent {
+    float: left;
+    color: #999;
+}
+
+.info-icon {
+    width: 3%;
+    float: left;
+}
+
+.info-text {
+    width: 97%;
+    float: left;
+}
