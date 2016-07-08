@@ -119,13 +119,13 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
     sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
     crpProgramID = -1;
-    if (((String[]) parameters.get(APConstants.IDO_ID)) != null) {
-      try {
-        crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
-      } catch (NumberFormatException e) {
-        LOG.error("There was an exception trying to parse the crp program id = {} ",
-          StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
-      }
+
+    try {
+      crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+    } catch (Exception e) {
+      LOG.error("There was an exception trying to parse the crp program id = {} ",
+        StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+
     }
 
     // Validate if project exists.
