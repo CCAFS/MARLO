@@ -195,7 +195,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -204,6 +203,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -228,7 +228,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
-
 
   /**
    * Get the user that is currently saved in the session.
@@ -273,6 +272,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -281,10 +281,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
+
 
   /**
    * get the number of users log in in the application
@@ -357,6 +357,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return securityContext.hasPermission(this.getBasePermission() + ":" + fieldName);
     }
 
+  }
+
+  public boolean hasPersmissionSubmit() {
+
+    boolean permissions = this.hasPermission("submit");
+    return permissions;
   }
 
   public boolean hasProgramnsRegions() {

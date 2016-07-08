@@ -267,15 +267,7 @@ public class OutcomesAction extends BaseAction {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
         outcomes.addAll(
           selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        if (selectedProgram != null) {
-          String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-          this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-          if (!selectedProgram.getSubmissions().isEmpty()) {
-            this.setCanEdit(false);
-            this.setEditable(false);
-            this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
-          }
-        }
+      
       }
 
       if (selectedProgram != null) {
@@ -319,6 +311,19 @@ public class OutcomesAction extends BaseAction {
           this.setDraft(false);
         }
 
+      }
+      
+      
+      
+      
+      if (selectedProgram != null) {
+        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+        if (!selectedProgram.getSubmissions().isEmpty()) {
+          this.setCanEdit(false);
+          this.setEditable(false);
+          this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+        }
       }
       if (this.isHttpPost()) {
         outcomes.clear();

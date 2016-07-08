@@ -115,10 +115,6 @@ public class ImpactSubmissionAction extends BaseAction {
   }
 
 
-  public boolean hasPersmissionSubmit() {
-    return this.hasPermission("submit");
-  }
-
   @Override
   public void prepare() throws Exception {
     super.prepare();
