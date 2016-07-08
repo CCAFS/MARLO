@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,8 +130,9 @@ public class AutoSaveWriterAction extends BaseAction {
           out.close();
         }
         status.put("status", true);
+        SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
         status.put("modifiedBy", userManager.getUser(Long.parseLong(userModifiedBy)).getComposedCompleteName());
-        status.put("activeSince", generatedDate);
+        status.put("activeSince", dt.format(generatedDate));
       } catch (IOException e) {
         status.put("status", false);
         e.printStackTrace();
