@@ -89,16 +89,16 @@ public class SubIDOListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
+    Map<String, Object> parameters = this.getParameters();
     // Verify if there is a programID parameter
-    if (this.getRequest().getParameter(APConstants.IDO_ID) == null) {
+    if (parameters.get(APConstants.IDO_ID) == null) {
       idoID = "";
       return;
     }
 
 
     // If there is a parameter take its values
-    idoID = StringUtils.trim(this.getRequest().getParameter(APConstants.IDO_ID));
+    idoID = StringUtils.trim(((String[]) parameters.get(APConstants.IDO_ID))[0]);
   }
 
   public void setSubIdos(List<Map<String, Object>> subIdos) {

@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,16 +114,17 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    Map<String, Object> parameters = this.getParameters();
     // Validating parameters.
-    sectionName = this.getRequest().getParameter(APConstants.SECTION_NAME);
+    sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
     crpProgramID = -1;
-    if (this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID) != null) {
+    if (((String[]) parameters.get(APConstants.IDO_ID)) != null) {
       try {
-        crpProgramID = Long.parseLong(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID));
+        crpProgramID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
       } catch (NumberFormatException e) {
         LOG.error("There was an exception trying to parse the project id = {} ",
-          this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
+          StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
       }
     }
 

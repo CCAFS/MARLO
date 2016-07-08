@@ -170,17 +170,19 @@ public class ManageUsersAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    Map<String, Object> parameters = this.getParameters();
     // if searching a user, we need to get the queried String.
     if (ActionContext.getContext().getName().equals("searchUsers")) {
-      queryParameter = StringUtils.trim(this.getRequest().getParameter(APConstants.QUERY_PARAMETER));
+
+      queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
     } else if (ActionContext.getContext().getName().equals("createUser")) {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);
-      newUser.setFirstName(StringUtils.trim(this.getRequest().getParameter(PARAM_FIRST_NAME)));
-      newUser.setLastName(StringUtils.trim(this.getRequest().getParameter(PARAM_LAST_NAME)));
-      newUser.setEmail(StringUtils.trim(this.getRequest().getParameter(PARAM_EMAIL)));
-      newUser.setActive(StringUtils.trim(this.getRequest().getParameter(PARAM_IS_ACTIVE)).equals("1") ? true : false);
+      newUser.setFirstName(StringUtils.trim(((String[]) parameters.get(PARAM_FIRST_NAME))[0]));
+      newUser.setLastName(StringUtils.trim(((String[]) parameters.get(PARAM_LAST_NAME))[0]));
+      newUser.setEmail(StringUtils.trim(((String[]) parameters.get(PARAM_EMAIL))[0]));
+      newUser.setActive(StringUtils.trim(((String[]) parameters.get(PARAM_IS_ACTIVE))[0]).equals("1") ? true : false);
     }
 
   }
