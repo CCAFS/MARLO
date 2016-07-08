@@ -133,10 +133,7 @@ public class AutoSaveReader {
     Gson gson = new Gson();
     int index = 0;
     LinkedTreeMap<String, Object> result = gson.fromJson(jobj, LinkedTreeMap.class);
-    if (keyParent.equals("milestones")) {
-      int a = 0;
-      System.out.println(a);
-    }
+
     for (Map.Entry<String, Object> entry : result.entrySet()) {
 
       String key = entry.getKey().split("\\.")[0];
