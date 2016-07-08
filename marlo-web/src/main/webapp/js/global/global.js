@@ -169,7 +169,7 @@ $(document).ready(function() {
     $('#log-history').dialog({
         modal: true,
         maxWidth: '500px',
-        width: '80%',
+        width: '70%',
         buttons: {
           Cancel: function() {
             $(this).dialog("close");
@@ -386,3 +386,10 @@ function showMinNotification(timer) {
       }
   });
 }
+
+
+/** secondaryMenu * */
+
+$('.selectedProgram, selectedProject').on('click', function(){
+  $(this).parent().next().slideToggle('slow');
+});

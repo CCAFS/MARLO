@@ -20,6 +20,7 @@
 <section class="marlo-content">
   
   <div class="container"> 
+    [#if programs?has_content]
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
@@ -35,9 +36,21 @@
             [/#if]
           </div>
         [/#if]
-          [#if submission?has_content]
-        Submitted on ${submission.dateTime}
-         [/#if]
+        
+        [#-- Submission Message --]
+        [#if submission?has_content]
+          <div class="submission-mode text-center animated flipInX">
+            <p>Submitted on ${submission.dateTime}</p>
+          </div>
+        [/#if]
+        
+        [#-- Program completed Message--]
+        [#if canSubmit && !submission?has_content && completed]
+          <div class="completed-mode text-center animated flipInX">
+            <p>The program is able to be submitted, please click in the "Submit" button located at the left side of this section.</p>
+          </div>
+        [/#if]
+        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
           [#list programs as program]
@@ -50,7 +63,6 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
 
         <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        [#if programs?has_content]
           [#-- Cluster of Activities List --]
           <div class="clusterList ">
             [#if clusterofActivities?has_content]
@@ -92,12 +104,12 @@
           <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
           <input type="hidden"  name="modifiedBy.firstName" value="${(currentUser.firstName)!}"/>
           <input type="hidden"  name="modifiedBy.lastName" value="${(currentUser.lastName)!}"/>        
-        [#else]
-          <p class="text-center borderBox">There is not flagships added</p>
-        [/#if]
         [/@s.form]
       </div>
     </div>
+    [#else]
+      <p class="text-center borderBox">There is not flagships added</p>
+    [/#if]
   </div>
 </section>
 [#-- Search users Interface --]

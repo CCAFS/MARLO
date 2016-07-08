@@ -5585,6 +5585,21 @@ h4.testEnvironment {
   text-decoration: underline;
 }
 
+.submission-mode {color: #7FB06F;padding: 13px 0 6px 0;background-color: #E8F7E3;border: 1px solid #E3F5DD;font-size: 1.2em;border-radius: 4px;font-weight: lighter;}
+
+.submission-mode a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.completed-mode {color: #fff;padding: 13px 0 6px 0;background-color: #5bc0de;border: 1px solid #4fb4d2;font-size: 1.1em;border-radius: 4px;font-weight: lighter;}
+
+.completed-mode a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+
 
 /* Countdown plugin */
 .callback,
@@ -5648,4 +5663,28 @@ h4.testEnvironment {
 
 .timer-content {
   padding: 0 30px;
+}
+
+#secondaryMenu .selectedProgram{
+  cursor: pointer;
+}
+
+#secondaryMenu .selectedProgram:hover{}
+
+#secondaryMenu .menuList {
+  display: none;
+  margin-bottom: 15px;
+}
+
+#secondaryMenu .menuList p{padding: 3px 11px;border: 1px solid #D2D2D2;margin-bottom: 5px;border-radius: 3px;position: relative;text-align: center;}
+
+#secondaryMenu .menuList p.active{background: #1DA5CE;border-color: #1DA5CE;}
+
+#secondaryMenu .menuList p a{
+  text-decoration: none;
+  color: #B3B2B2;
+}
+
+#secondaryMenu .menuList p.active a{
+  color: #fff;
 }
