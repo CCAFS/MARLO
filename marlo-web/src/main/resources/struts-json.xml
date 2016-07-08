@@ -3,6 +3,19 @@
 <struts>
 	<package name="json" namespace="/" extends="json-default">
 
+		<interceptors>
+			<!-- Json interceptors -->
+			<interceptor name="SecurityControl"
+				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
+
+			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="SecurityControl" />
+				<interceptor-ref name="prepare"/>  
+			</interceptor-stack>
+		</interceptors>
+		
+		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
+
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
 			method="search">

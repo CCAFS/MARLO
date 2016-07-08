@@ -60,7 +60,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validSessionCrp"/>
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
@@ -68,7 +68,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validSessionCrp"/>
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -80,7 +80,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validSessionCrp"/>
+				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="canEditImpactPathway" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -111,19 +111,21 @@
 			</result>
 		</global-results>
 
-    <global-exception-mappings>
-      <exception-mapping exception="java.lang.Exception" result="unhandledException"/>
-    </global-exception-mappings>
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.Exception"
+				result="unhandledException" />
+		</global-exception-mappings>
 
-    <action name="unhandledExceptionAction" class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
-      <result name="success">/WEB-INF/global/pages/error/500.ftl</result>
-      <result name="input">/WEB-INF/global/pages/error/500.ftl</result>
-    </action>
+		<action name="unhandledExceptionAction"
+			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
+			<result name="success">/WEB-INF/global/pages/error/500.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
+		</action>
 
-    <action name="*" class="org.cgiar.ccafs.marlo.action.BaseAction">
+		<action name="*" class="org.cgiar.ccafs.marlo.action.BaseAction">
 			<result name="input">/WEB-INF/global/pages/error/404.ftl</result>
-    </action>
-  </package>
+		</action>
+	</package>
 
 	<include file="struts-json.xml" />
 	<include file="struts-home.xml" />
