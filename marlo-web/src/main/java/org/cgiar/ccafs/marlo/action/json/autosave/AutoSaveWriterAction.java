@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.action.json.autosave;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedWriter;
@@ -37,6 +38,9 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.Action;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
@@ -50,10 +54,13 @@ public class AutoSaveWriterAction extends BaseAction {
 
   private Map<String, Object> status;
 
+  private UserManager userManager;
 
   @Inject
-  public AutoSaveWriterAction(APConfig config) {
+  public AutoSaveWriterAction(APConfig config, UserManager userManager) {
+
     super(config);
+    this.userManager = userManager;
   }
 
 
@@ -70,11 +77,14 @@ public class AutoSaveWriterAction extends BaseAction {
     if (autoSave.length > 0) {
 
       Gson gson = new Gson();
+      byte ptext[] = autoSave[0].getBytes(ISO_8859_1);
+      String value = new String(ptext, UTF_8);
 
       @SuppressWarnings("unchecked")
-      LinkedTreeMap<String, Object> result = gson.fromJson(autoSave[0], LinkedTreeMap.class);
 
+      LinkedTreeMap<String, Object> result = gson.fromJson(value, LinkedTreeMap.class);
 
+      String userModifiedBy = fileId = (String) result.get("modifiedBy.id");
       if (result.containsKey("id")) {
         fileId = (String) result.get("id");
       } else {
@@ -91,8 +101,8 @@ public class AutoSaveWriterAction extends BaseAction {
         fileAction = (String) result.get("actionName");
         fileAction = fileAction.replace("/", "_");
       }
-
-      result.put("activeSince", new Date());
+      Date generatedDate = new Date();
+      result.put("activeSince", generatedDate);
 
       String jSon = gson.toJson(result);
 
@@ -119,6 +129,8 @@ public class AutoSaveWriterAction extends BaseAction {
           out.close();
         }
         status.put("status", true);
+        status.put("modifiedBy", userManager.getUser(Long.parseLong(userModifiedBy)).getComposedCompleteName());
+        status.put("activeSince", generatedDate);
       } catch (IOException e) {
         status.put("status", false);
         e.printStackTrace();
