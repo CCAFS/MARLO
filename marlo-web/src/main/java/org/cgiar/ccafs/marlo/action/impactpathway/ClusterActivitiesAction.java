@@ -258,6 +258,7 @@ public class ClusterActivitiesAction extends BaseAction {
         }
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+        selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
         if (!selectedProgram.getSubmissions().isEmpty()) {
           this.setCanEdit(false);
           this.setEditable(false);
