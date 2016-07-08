@@ -1,6 +1,8 @@
-var timeoutID;
+var timeoutAutoSave;
 $(document).ready(function() {
 
+  /* Event triggers */
+  $(document).on('updateComponent', changeDetected);
   $(':input').on('keyup change', changeDetected);
 
 });
@@ -55,11 +57,12 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
-  if(timeoutID) {
-    clearTimeout(timeoutID);
+  console.log('Change Detected : ' + e.target.class);
+  if(timeoutAutoSave) {
+    clearTimeout(timeoutAutoSave);
   }
   // Start a timer that will search when finished
-  timeoutID = setTimeout(function() {
+  timeoutAutoSave = setTimeout(function() {
     autoSave();
   }, 5000);
 
