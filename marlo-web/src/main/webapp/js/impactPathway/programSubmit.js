@@ -30,7 +30,7 @@ $(document).ready(function() {
 function submitButtonEvent(e) {
   e.preventDefault();
   noty({
-      text: 'Are you sure you want to submit the project now?  Once submitted, you will no longer have editing rights.',
+      text: 'Are you sure you want to submit the program impact pathway now?  Once submitted, you will no longer have editing rights.',
       type: 'confirm',
       dismissQueue: true,
       layout: 'center',

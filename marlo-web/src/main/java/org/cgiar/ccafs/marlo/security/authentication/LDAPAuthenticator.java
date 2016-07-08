@@ -14,7 +14,10 @@
 
 package org.cgiar.ccafs.marlo.security.authentication;
 
+import org.cgiar.ccafs.marlo.utils.APConfig;
+
 import org.cgiar.ciat.auth.ADConexion;
+import org.cgiar.ciat.auth.LDAPService;
 
 import com.google.inject.Inject;
 import org.slf4j.Logger;
@@ -29,8 +32,13 @@ public class LDAPAuthenticator implements Authenticator {
 
   public static Logger LOG = LoggerFactory.getLogger(LDAPAuthenticator.class);
 
+
+  private APConfig config;
+
   @Inject
-  public LDAPAuthenticator() {
+  public LDAPAuthenticator(APConfig config) {
+
+    this.config = config;
   }
 
   @Override
@@ -38,15 +46,27 @@ public class LDAPAuthenticator implements Authenticator {
     boolean logued = false;
 
     try {
-      ADConexion con = new ADConexion(email, password);
+      ADConexion con = null;
+      LDAPService service = new LDAPService();
+      if (config.isProduction()) {
+        service.setInternalConnection(false);
+      } else {
+        service.setInternalConnection(true);
+      }
+      con = service.authenticateUser(email, password);
+
       if (con != null) {
         if (con.getLogin() != null) {
           logued = true;
+        } else {
+          System.out.println(con.getAuthenticationMessage());
+          LOG.error("Authentication error  {}", con.getAuthenticationMessage());
         }
         con.closeContext();
       }
     } catch (Exception e) {
-      LOG.error("Exception raised trying to log in the user '{}' against the active directory.", email, e.getMessage());
+      LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
+        e.getMessage());
     }
     return logued;
   }

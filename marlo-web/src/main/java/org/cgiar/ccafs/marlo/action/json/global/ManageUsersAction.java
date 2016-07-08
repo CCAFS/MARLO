@@ -57,6 +57,7 @@ public class ManageUsersAction extends BaseAction {
   private static String PARAM_IS_ACTIVE = "isActive";
   private UserManager userManager;
   private SendMail sendMail;
+  private String actionName;
 
   private String queryParameter;
   private List<Map<String, Object>> users;
@@ -77,7 +78,7 @@ public class ManageUsersAction extends BaseAction {
    * @return true if the user was successfully added, false otherwise.
    */
   private boolean addUser() {
-    newUser.setModificationJustification("User created in MARLO");
+    newUser.setModificationJustification("User created in MARLO " + actionName.replace("/", "-"));
     newUser.setActiveSince(new Date());
     newUser.setModifiedBy(this.getCurrentUser());
     newUser.setActive(true);
@@ -199,6 +200,8 @@ public class ManageUsersAction extends BaseAction {
       }
       newUser.setEmail(StringUtils.trim(((String[]) parameters.get(PARAM_EMAIL))[0]));
       newUser.setActive(StringUtils.trim(((String[]) parameters.get(PARAM_IS_ACTIVE))[0]).equals("1") ? true : false);
+
+      actionName = StringUtils.trim(((String[]) parameters.get("actionName"))[0]);
     }
 
   }
