@@ -149,7 +149,7 @@ public class ImpactSubmissionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[3];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = crpProgram.getName();
+    values[1] = crpProgram.getAcronym().toUpperCase();
 
     String subject = null;
 
@@ -158,7 +158,7 @@ public class ImpactSubmissionAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
     subject = this.getText("impact.submit.email.subject",
-      new String[] {crpProgram.getCrp().getAcronym(), crpProgram.getName() + "(" + crpProgram.getAcronym() + ")"});
+      new String[] {crpProgram.getCrp().getAcronym().toUpperCase(), crpProgram.getAcronym().toUpperCase()});
 
 
     /**

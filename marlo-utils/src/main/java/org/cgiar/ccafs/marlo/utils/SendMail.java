@@ -92,7 +92,7 @@ public class SendMail {
 
     // Set the FROM and TO fields
     try {
-      msg.setFrom(new InternetAddress(config.getEmailHost(), "CCAFS MARLO Platform"));
+      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
       if (toEmail != null) {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
       }
