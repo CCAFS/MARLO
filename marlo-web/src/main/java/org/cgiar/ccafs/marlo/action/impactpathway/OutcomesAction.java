@@ -294,6 +294,7 @@ public class OutcomesAction extends BaseAction {
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
           outcomes = selectedProgram.getOutcomes();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
+          selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
 
           for (CrpProgramOutcome outcome : outcomes) {
 

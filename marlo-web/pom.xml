@@ -365,6 +365,41 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- MINIFYING CSS AND JS - TEST -->
+      <plugin>
+      <groupId>com.samaxes.maven</groupId>
+      <artifactId>minify-maven-plugin</artifactId>
+      <version>1.7.4</version>
+      <executions>
+        <execution>
+          <id>default-minify</id>
+          <phase>package</phase>
+          <configuration>
+          <charset>UTF-8</charset>
+            <nosuffix>true</nosuffix>
+            <skipMerge>true</skipMerge>
+            <verbose>true</verbose>
+            <cssSourceDir>css</cssSourceDir>
+                    <cssSourceIncludes>
+                        <cssSourceInclude>**/*.css</cssSourceInclude>
+                    </cssSourceIncludes>
+            <cssTargetDir>css</cssTargetDir>
+			      <jsSourceDir>js</jsSourceDir>
+                    <jsSourceIncludes>
+                        <jsSourceInclude>**/*.js</jsSourceInclude>
+                    </jsSourceIncludes>
+            <jsTargetDir>js</jsTargetDir>
+          </configuration>
+          <goals>
+            <goal>minify</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    <!--  END -->
+			
+			
 		</plugins>
 	</build>
 	<repositories>
