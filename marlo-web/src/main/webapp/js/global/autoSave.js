@@ -1,5 +1,10 @@
 var timeoutAutoSave;
+var $draftTag, $editedBy;
+
 $(document).ready(function() {
+
+  $draftTag = $('[name="save"]').find('.draft');
+  $editedBy = $('#lastUpdateMessage');
 
   /* Event triggers */
   $(document).on('updateComponent', changeDetected);
@@ -8,6 +13,7 @@ $(document).ready(function() {
 });
 
 function autoSave() {
+
   $.ajax({
       dataType: 'json',
       url: baseURL + '/autosaveWriter.do',
@@ -15,11 +21,14 @@ function autoSave() {
         autoSave: JSON.stringify($('form').serializeObject())
       },
       beforeSend: function() {
+        $draftTag.text('... Saving');
       },
       success: function(data) {
         if(data.status.status) {
-          successNotification('Successfully Saved');
-          $('[name="save"]').find('.draft').text('(Draft Version)').addClass('animated flipInX');
+          successNotification('Successfully saved a draft version');
+          $draftTag.text('(Draft Version)').addClass('animated flipInX');
+          $editedBy.find('.datetime').text(data.status.activeSince);
+          $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
         } else {
           errorNotification('Auto save error' + data.status.statusMessage);
         }
@@ -27,7 +36,7 @@ function autoSave() {
       complete: function() {
       },
       error: function(e) {
-        errorNotification('Auto save error');
+        errorNotification('Auto save ' + e.statusText);
       }
   });
 }

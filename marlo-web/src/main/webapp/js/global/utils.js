@@ -34,6 +34,7 @@ jQuery.fn.numericInput = function() {
 
 jQuery.fn.percentageInput = function() {
   var $inputs = $(this);
+  $inputs.addClass('percentageInput');
   $inputs.on("keydown", isNumber);
   $inputs.on("focusout", setPercentage);
   $inputs.on("focus", removePercentage);

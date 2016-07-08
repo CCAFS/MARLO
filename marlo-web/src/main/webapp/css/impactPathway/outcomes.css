@@ -97,16 +97,18 @@ p.contributioRem {
 }
 
 .subIdoSelected {
-    border: 1.5px solid rgba(204, 204, 204, 0.22);
-    height: 28px;
+    border: 1.5px solid #e2e2e2;
+    line-height: 26px;
     border-radius: 3px;
     /* pointer-events: none; */
     width: auto;
-    padding-left: 0em;
+    padding-left: 0.8em;
 }
 
+.subIdoSelected i{color: #999999;}
+
 .buttonSubIdo-block {
-    padding-top: 3px;
+    padding-top: 5px;
 }
 
 
