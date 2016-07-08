@@ -240,7 +240,9 @@ public class ClusterActivitiesAction extends BaseAction {
           clusterofActivities = selectedProgram.getClusterofActivities();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
-
+          if (clusterofActivities == null) {
+            clusterofActivities = new ArrayList<>();
+          }
           for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
             if (clusterOfActivity.getLeaders() != null) {
               for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
@@ -258,6 +260,7 @@ public class ClusterActivitiesAction extends BaseAction {
         }
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+        selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
         if (!selectedProgram.getSubmissions().isEmpty()) {
           this.setCanEdit(false);
           this.setEditable(false);

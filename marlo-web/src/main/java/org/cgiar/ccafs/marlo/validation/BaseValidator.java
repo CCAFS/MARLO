@@ -110,7 +110,12 @@ public class BaseValidator {
       status.setSectionName(sectionName);
       status.setCrpProgram(crpProgram);
     }
-    status.setMissingFields(this.missingFields.toString());
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
     sectionStatusManager.saveSectionStatus(status);
   }
 

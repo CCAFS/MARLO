@@ -36,6 +36,9 @@ public class BigDecimalTypeAdapter extends TypeAdapter<BigDecimal>
 
     try {
       String value = jsonReader.nextString();
+      if (value.contains("%")) {
+        value = value.replace("%", "");
+      }
       if ("".equals(value)) {
         return new BigDecimal(0);
       }

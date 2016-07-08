@@ -51,6 +51,7 @@
 				<param name="status">status</param>
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
+				<param name="defaultEncoding">utf-8</param>
 			</result>
 		</action>
 

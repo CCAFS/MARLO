@@ -64,6 +64,7 @@
           [/#list]
         </ul>
         
+        
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
@@ -100,6 +101,13 @@
               [/#if]
             </div>
           </div>
+          
+          [#-- Last update message --]
+          [#if selectedProgram?has_content]
+          <span id="lastUpdateMessage" class="pull-right"> 
+            Last edit was made on <span class="datetime">${(selectedProgram.activeSince)?datetime}</span> by <span class="modifiedBy">${selectedProgram.modifiedBy.composedCompleteName}</span>  
+          </span>
+          [/#if]
 
           [#-- Hidden Parameters --]
           <input type="hidden" id="crpProgramID"  name="crpProgramID" value="${(crpProgramID)!}"/>
@@ -331,6 +339,7 @@
       [/#if] 
     [#else]
       [@customForm.input name="${assumptionCustomName}.description" type="text" showTitle=false placeholder="outcome.subIDOs.assumptions.statement" className="statement limitWords-100" required=true editable=editable /]
-    [/#if] 
+    [/#if]
+    <div class="clearfix"></div>
   </div>
 [/#macro]

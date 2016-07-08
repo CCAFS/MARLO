@@ -120,9 +120,17 @@ public class OutcomeValidator extends BaseValidator
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
       if (outcome.getSubIdos() != null) {
+        double contributions = 0;
         for (int j = 0; j < outcome.getSubIdos().size(); j++) {
           outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
           this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
+          if (outcome.getSubIdos().get(j).getContribution() != null) {
+            contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
+          }
+
+        }
+        if (contributions != 100) {
+          this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
         }
       }
 
