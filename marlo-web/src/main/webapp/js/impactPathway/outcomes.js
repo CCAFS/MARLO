@@ -105,6 +105,8 @@ function attachEvents() {
     var value = $(this).attr("id").split('-');
     $inputSubIdo.val(value[value.length - 1]);
     $("#subIDOs-graphic").dialog("close");
+    // Update component
+    $(document).trigger('updateComponent');
   });
 
 }
