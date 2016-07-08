@@ -116,16 +116,7 @@ $(document).ready(function() {
         return $(this).attr('title');
       }
   });
-
-  /* Event triggers */
-  $(document).on('addComponent', function() {
-    console.log('Add Component');
-  });
-
-  $(document).on('removeComponent', function() {
-    console.log('Remove Component');
-  });
-
+  
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     $t = $(target);

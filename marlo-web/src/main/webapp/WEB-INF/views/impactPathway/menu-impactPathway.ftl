@@ -14,7 +14,7 @@
 <nav id="secondaryMenu" class="${action.getImpactSectionStatus(actionName, crpProgramID)?string("","hasMissingFields")}">
   <ul>
     <li>
-      <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${selectedProgram.acronym}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
+      <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
       <div class="menuList">
         [#list programs as program]
           [#assign isActive = (program.id == crpProgramID)/]

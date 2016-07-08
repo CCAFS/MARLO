@@ -16,8 +16,6 @@ function init() {
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
 
-  // console.log(JSON.stringify($('form').serializeObject()));
-
 }
 
 function attachEvents() {
@@ -122,7 +120,6 @@ function addOutcome() {
     width: '100%'
   });
   $list.append($item);
-  // updateOutcomesIndexes($list, "outcome");
   updateAllIndexes();
   $item.show('slow');
 }
@@ -132,7 +129,6 @@ function removeOutcome() {
   var $item = $(this).parents('.outcome');
   $item.hide(function() {
     $item.remove();
-    // updateOutcomesIndexes($list, "outcome");
     updateAllIndexes();
   });
 }
@@ -148,7 +144,6 @@ function addMilestone() {
     width: '100%'
   });
   $list.append($item);
-  // updateMilestonesIndexes($list, "outcome[0].milestones");
   updateAllIndexes();
   $item.show('slow');
   // Hide empty message
@@ -308,6 +303,9 @@ function updateAllIndexes() {
       });
     });
   });
+
+  // Update component event
+  $(document).trigger('updateComponent');
 
   // JUST FOR TESTING
   // setCurrentObject();
