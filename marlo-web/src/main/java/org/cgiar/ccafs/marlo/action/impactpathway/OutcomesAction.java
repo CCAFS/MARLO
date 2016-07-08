@@ -267,13 +267,14 @@ public class OutcomesAction extends BaseAction {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
         outcomes.addAll(
           selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      
+
       }
 
       if (selectedProgram != null) {
 
         String composedClassName = selectedProgram.getClass().getSimpleName();
-        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + ".json";
+        String actionFile = this.getActionName().replace("/", "_");
+        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
         Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 
@@ -292,6 +293,7 @@ public class OutcomesAction extends BaseAction {
 
           selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
           outcomes = selectedProgram.getOutcomes();
+          selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
 
           for (CrpProgramOutcome outcome : outcomes) {
 
@@ -312,10 +314,8 @@ public class OutcomesAction extends BaseAction {
         }
 
       }
-      
-      
-      
-      
+
+
       if (selectedProgram != null) {
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
@@ -367,7 +367,8 @@ public class OutcomesAction extends BaseAction {
       messages = this.getActionMessages();
 
       String composedClassName = selectedProgram.getClass().getSimpleName();
-      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + ".json";
+      String actionFile = this.getActionName().replace("/", "_");
+      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
       Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
 
@@ -561,8 +562,6 @@ public class OutcomesAction extends BaseAction {
           }
         }
       }
-
-
     }
 
     /*
