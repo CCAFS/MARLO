@@ -79,6 +79,7 @@ $(document).ready(function() {
     $dialogContent.find('.warning-info').empty().hide();
     var invalidFields = [];
     var user = {};
+    user.actionName = $('#actionName').val();
     user.email = $dialogContent.find("#email").val().trim();
     var isCGIAREmail = ((user.email).indexOf("cgiar") > -1);
     if(!isCGIAREmail) {

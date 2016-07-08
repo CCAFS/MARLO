@@ -63,6 +63,7 @@
       
       [#-- Messages for javascript --]
       <input type="hidden" id="created-message" value="[@s.text name="users.createUser.message" /]" />
+      <input type="hidden" id="actionName" value="${(actionName)!}" />
     </div>  
   </div>
   
