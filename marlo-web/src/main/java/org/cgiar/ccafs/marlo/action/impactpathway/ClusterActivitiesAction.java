@@ -36,14 +36,22 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -197,6 +205,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+
         clusterofActivities.addAll(
           selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
@@ -205,7 +214,37 @@ public class ClusterActivitiesAction extends BaseAction {
             .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
       }
+
       if (selectedProgram != null) {
+
+        String composedClassName = selectedProgram.getClass().getSimpleName();
+        String actionFile = this.getActionName().replace("/", "_");
+        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+        Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+
+        if (path.toFile().exists()) {
+
+          BufferedReader reader = null;
+
+          reader = new BufferedReader(new FileReader(path.toFile()));
+
+          Gson gson = new GsonBuilder().create();
+
+
+          JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+          AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+          selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
+          clusterofActivities = selectedProgram.getClusterofActivities();
+          selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
+
+          reader.close();
+          this.setDraft(true);
+        } else {
+          this.setDraft(false);
+        }
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
         if (!selectedProgram.getSubmissions().isEmpty()) {
@@ -214,7 +253,6 @@ public class ClusterActivitiesAction extends BaseAction {
           this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
         }
       }
-
       if (this.isHttpPost()) {
         clusterofActivities.clear();
       }
@@ -352,6 +390,17 @@ public class ClusterActivitiesAction extends BaseAction {
         this.addActionMessage(this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
+
+      String composedClassName = selectedProgram.getClass().getSimpleName();
+      String actionFile = this.getActionName().replace("/", "_");
+      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+      Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;

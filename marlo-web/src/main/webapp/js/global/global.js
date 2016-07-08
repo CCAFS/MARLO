@@ -116,16 +116,7 @@ $(document).ready(function() {
         return $(this).attr('title');
       }
   });
-
-  /* Event triggers */
-  $(document).on('addComponent', function() {
-    console.log('Add Component');
-  });
-
-  $(document).on('removeComponent', function() {
-    console.log('Remove Component');
-  });
-
+  
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     $t = $(target);
@@ -169,7 +160,7 @@ $(document).ready(function() {
     $('#log-history').dialog({
         modal: true,
         maxWidth: '500px',
-        width: '80%',
+        width: '70%',
         buttons: {
           Cancel: function() {
             $(this).dialog("close");
@@ -386,3 +377,10 @@ function showMinNotification(timer) {
       }
   });
 }
+
+
+/** secondaryMenu * */
+
+$('.selectedProgram, selectedProject').on('click', function(){
+  $(this).parent().next().slideToggle('slow');
+});

@@ -64,17 +64,17 @@ public class SendMail {
    * @param is the name of the file
    */
   public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
-    byte[] attachment, String attachmentMimeType, String fileName) {
+    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
 
     // Get a Properties object
     Properties properties = System.getProperties();
-    /*
-     * properties.put("mail.smtp.auth", "true");
-     * properties.put("mail.smtp.starttls.enable", "true");
-     * properties.put("mail.smtp.ssl.trust", config.getEmailHost());
-     * properties.put("mail.smtp.host", config.getEmailHost());
-     * properties.put("mail.smtp.port", config.getEmailPort());
-     */
+
+    properties.put("mail.smtp.auth", "true");
+    properties.put("mail.smtp.starttls.enable", "true");
+    properties.put("mail.smtp.ssl.trust", config.getEmailHost());
+    properties.put("mail.smtp.host", config.getEmailHost());
+    properties.put("mail.smtp.port", config.getEmailPort());
+
     // Un-comment this line to watch javaMail debug
     // properties.put("mail.debug", "true");
 
@@ -92,7 +92,7 @@ public class SendMail {
 
     // Set the FROM and TO fields
     try {
-      msg.setFrom(new InternetAddress(config.getEmailHost(), "CCAFS P&R Platform"));
+      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
       if (toEmail != null) {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
       }
@@ -113,7 +113,10 @@ public class SendMail {
 
       // Body content: TEXT
       MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+      if (isHtml) {
+        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+      }
+
       mimeMultipart.addBodyPart(mimeBodyPart);
 
       if (attachment != null && attachmentMimeType != null && fileName != null) {

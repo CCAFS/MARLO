@@ -21,10 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.Date;
 import java.util.List;
@@ -49,7 +52,7 @@ public class ImpactSubmissionAction extends BaseAction {
   private Submission submission;
 
   private boolean alreadySubmitted;
-
+  private SendMail sendMail;
 
   private CrpProgramManager crpProgramManager;
 
@@ -62,12 +65,12 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Inject
   public ImpactSubmissionAction(APConfig config, CrpProgramManager crpProgramManager,
-    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager) {
+    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager, SendMail sendMail) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.sectionStatusManager = sectionStatusManager;
     this.submissionManager = submissionManager;
-
+    this.sendMail = sendMail;
   }
 
   @Override
@@ -92,6 +95,7 @@ public class ImpactSubmissionAction extends BaseAction {
           submission.setUser(this.getCurrentUser());
 
           submissionManager.saveSubmission(submission);
+          this.sendNotficationEmail();
         }
       }
       return SUCCESS;
@@ -105,14 +109,11 @@ public class ImpactSubmissionAction extends BaseAction {
     return progamID;
   }
 
-
+  @Override
   public Submission getSubmission() {
     return submission;
   }
 
-  public boolean hasPersmissionSubmit() {
-    return this.hasPermission("submit");
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -139,11 +140,73 @@ public class ImpactSubmissionAction extends BaseAction {
     }
   }
 
+  private void sendNotficationEmail() {
+    // Building the email message
+    StringBuilder message = new StringBuilder();
+    String[] values = new String[3];
+    values[0] = this.getCurrentUser().getComposedCompleteName();
+    values[1] = crpProgram.getAcronym().toUpperCase();
+
+    String subject = null;
+
+
+    message.append(this.getText("impact.submit.email.message", values));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+    subject = this.getText("impact.submit.email.subject",
+      new String[] {crpProgram.getCrp().getAcronym().toUpperCase(), crpProgram.getAcronym().toUpperCase()});
+
+
+    /**
+     * 
+     */
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the user that is submitting the project.
+      // TO
+      toEmail = this.getCurrentUser().getEmail();
+
+      // Getting all the MLs associated to the Project Liaison institution
+      List<CrpProgramLeader> owners =
+        crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      StringBuilder ccEmails = new StringBuilder();
+      for (CrpProgramLeader crpProgramLeader : owners) {
+        User user = crpProgramLeader.getUser();
+        if (user.getId() != this.getCurrentUser().getId()) {
+          ccEmails.append(user.getEmail());
+          ccEmails.append(" ");
+        }
+      }
+      // CC will be the other MLs.
+      ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+
+    /*
+     * // Get the PDF from the Project report url.
+     * ByteBuffer buffer = null;
+     * String fileName = null;
+     * String contentType = null;
+     * if (buffer != null && fileName != null && contentType != null) {
+     * sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+     * true);
+     * } else {
+     * sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+     * }
+     */
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  }
+
 
   public void setProgamID(long progamID) {
     this.progamID = progamID;
   }
 
+  @Override
   public void setSubmission(Submission submission) {
     this.submission = submission;
   }

@@ -60,8 +60,11 @@ public class AutoSaveWriterAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
+
     String fileId = "";
     String fileClass = "";
+    String fileAction = "";
+
     status = new HashMap<String, Object>();
 
     if (autoSave.length > 0) {
@@ -84,13 +87,18 @@ public class AutoSaveWriterAction extends BaseAction {
         fileClass = composedClassName[composedClassName.length - 1];
       }
 
+      if (result.containsKey("actionName")) {
+        fileAction = (String) result.get("actionName");
+        fileAction = fileAction.replace("/", "_");
+      }
+
       result.put("activeSince", new Date());
 
       String jSon = gson.toJson(result);
 
       try {
 
-        String fileName = fileId + "_" + fileClass + ".json";
+        String fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
 
         Path path = Paths.get(config.getAutoSaveFolder());
 
@@ -133,7 +141,6 @@ public class AutoSaveWriterAction extends BaseAction {
 
     Map<String, Object> parameters = this.getParameters();
     autoSave = (String[]) parameters.get(APConstants.AUTOSAVE_REQUEST);
-
   }
 
   public void setStatus(Map<String, Object> status) {

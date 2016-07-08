@@ -85,6 +85,8 @@ function updateUsersIndex(item,clustersName) {
     $(userItem).find('.id').attr('name', customName + '.id');
   });
 
+  // Update component event
+  $(document).trigger('updateComponent');
 }
 
 function checkItems(block) {

@@ -18,6 +18,7 @@
 
 <section class="marlo-content">
   <div class="container"> 
+    [#if programs?has_content]
     <div class="row">
       <div class="col-md-3">
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
@@ -34,9 +35,20 @@
           </div>
         [/#if]
       
+        [#-- Submission Message --]
         [#if submission?has_content]
-        Submitted on ${submission.dateTime}
-         [/#if]
+          <div class="submission-mode text-center animated flipInX">
+            <p>Submitted on ${submission.dateTime}</p>
+          </div>
+        [/#if]
+        
+        [#-- Program completed Message--]
+        [#if canSubmit && !submission?has_content && completed]
+          <div class="completed-mode text-center animated flipInX">
+            <p>The program is able to be submitted, please click in the "Submit" button located at the left side of this section.</p>
+          </div>
+        [/#if]
+        
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
           [#list programs as program]
@@ -50,7 +62,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
-        [#if programs?has_content]
+        
           <div class="outcomes-list">
           [#if outcomes?has_content]
             [#list outcomes as outcome]
@@ -90,11 +102,12 @@
           <input type="hidden"  name="id" value="${(selectedProgram.id)!}"/>
           <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
           <input type="hidden"  name="actionName" value="${(actionName)!}"/>          
-        [#else]
-          <p class="text-center borderBox">There is not flagships added</p>
-        [/#if]
+        
         [/@s.form]
     </div>
+    [#else]
+      <p class="text-center borderBox">There is not flagships added</p>
+    [/#if]
   </div>
 </div>
   
