@@ -36,7 +36,7 @@
       var hashScroll = true;
       var Tawk_API, Tawk_LoadStart;
       
-      var GOOGLE_API_KEY= "AIzaSyANidBt0o_XOsaqzzFuNKeTMexo_nzLk_s";
+      var GOOGLE_API_KEY=${config.googleApiKey};
       
       baseURL = "${baseUrl}";
       debugMode = ${config.debug?string};

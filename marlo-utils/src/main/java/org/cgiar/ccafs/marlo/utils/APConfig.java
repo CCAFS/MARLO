@@ -34,6 +34,8 @@ public class APConfig {
   private static final String EMAIL_PASSWORD = "email.password";
   private static final String EMAIL_HOST = "email.host";
   private static final String EMAIL_PORT = "email.port";
+  private static final String GOOGLE_API_KEY = "google.api.key";
+  private static final String AUTO_SAVE_ACTIVE = "autosave.active";
 
   private static final String PRODUCTION = "marlo.production";
   private static final String DEBUG_MODE = "marlo.debug";
@@ -121,6 +123,7 @@ public class APConfig {
     return null;
   }
 
+
   public int getEmailPort() {
     try {
       return Integer.parseInt(properties.getPropertiesAsString(EMAIL_PORT));
@@ -139,6 +142,15 @@ public class APConfig {
     return null;
   }
 
+  public String getGoogleApiKey() {
+    try {
+      return properties.getPropertiesAsString(GOOGLE_API_KEY);
+    } catch (Exception e) {
+      LOG.error("there is not an google api key configured.");
+    }
+    return "";
+  }
+
   /**
    * Get the flag that indicate if the admin section is active
    * according to the variable in the configuration file.
@@ -149,6 +161,15 @@ public class APConfig {
     String adminActive = properties.getPropertiesAsString(ADMIN_ACTIVE);
     if (adminActive == null) {
       LOG.error("There is not a Admin active configured");
+      return false;
+    }
+    return adminActive.equals("true");
+  }
+
+  public boolean isAutoSaveActive() {
+    String adminActive = properties.getPropertiesAsString(AUTO_SAVE_ACTIVE);
+    if (adminActive == null) {
+      LOG.error("There is not a auto save configured");
       return false;
     }
     return adminActive.equals("true");
