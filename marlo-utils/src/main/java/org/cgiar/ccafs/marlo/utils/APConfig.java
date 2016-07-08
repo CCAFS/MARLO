@@ -121,6 +121,15 @@ public class APConfig {
     return null;
   }
 
+  public int getEmailPort() {
+    try {
+      return Integer.parseInt(properties.getPropertiesAsString(EMAIL_PORT));
+    } catch (Exception e) {
+      LOG.error("there is not an email port configured.");
+    }
+    return 0;
+  }
+
   public String getEmailUsername() {
     try {
       return properties.getPropertiesAsString(EMAIL_USER);

@@ -197,6 +197,15 @@ public class ClusterActivitiesAction extends BaseAction {
 
       if (crpProgramID != -1) {
         selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+        if (selectedProgram != null) {
+          String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+          this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+          if (!selectedProgram.getSubmissions().isEmpty()) {
+            this.setCanEdit(false);
+            this.setEditable(false);
+            this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
+          }
+        }
         clusterofActivities.addAll(
           selectedProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
@@ -205,15 +214,7 @@ public class ClusterActivitiesAction extends BaseAction {
             .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
       }
-      if (selectedProgram != null) {
-        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-        if (!selectedProgram.getSubmissions().isEmpty()) {
-          this.setCanEdit(false);
-          this.setEditable(false);
-          this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
-        }
-      }
+
 
       if (this.isHttpPost()) {
         clusterofActivities.clear();

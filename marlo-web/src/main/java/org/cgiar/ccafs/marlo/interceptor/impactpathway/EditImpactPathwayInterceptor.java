@@ -17,9 +17,12 @@ package org.cgiar.ccafs.marlo.interceptor.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
@@ -39,10 +42,12 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private static final long serialVersionUID = 1L;
 
   private CrpManager crpManager;
+  private UserManager userManager;
 
   @Inject
-  public EditImpactPathwayInterceptor(CrpManager crpManager) {
+  public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager) {
     this.crpManager = crpManager;
+    this.userManager = userManager;
 
   }
 
@@ -77,12 +82,25 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
 
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-      List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+
+      User user = (User) session.get(APConstants.SESSION_USER);
+      user = userManager.getUser(user.getId());
+      List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
         .collect(Collectors.toList());
-      if (!allPrograms.isEmpty()) {
-        crpProgramID = allPrograms.get(0).getId();
+      if (!userLeads.isEmpty()) {
+        crpProgramID = userLeads.get(0).getCrpProgram().getId();
+      } else {
+        List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+          .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+          .collect(Collectors.toList());
+        if (!allPrograms.isEmpty()) {
+          crpProgramID = allPrograms.get(0).getId();
+        }
       }
+
+
     }
 
     // If user is admin, it should have privileges to edit all projects.
