@@ -46,7 +46,7 @@ function successNotification(msj) {
 
 function errorNotification(msj) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
-  notyOptions.text = 'Auto save error';
+  notyOptions.text = msj;
   notyOptions.type = 'error';
   notyOptions.layout = 'topCenter';
   notyOptions.animation = {
