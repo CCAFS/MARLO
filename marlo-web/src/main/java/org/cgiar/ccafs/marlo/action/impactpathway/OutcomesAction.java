@@ -313,10 +313,6 @@ public class OutcomesAction extends BaseAction {
           this.setDraft(false);
         }
 
-      }
-
-
-      if (selectedProgram != null) {
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
         if (!selectedProgram.getSubmissions().isEmpty()) {
@@ -324,7 +320,9 @@ public class OutcomesAction extends BaseAction {
           this.setEditable(false);
           this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));
         }
+
       }
+
       if (this.isHttpPost()) {
         outcomes.clear();
       }

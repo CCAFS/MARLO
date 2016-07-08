@@ -88,6 +88,11 @@
     <div class="form-group">
       [#-- Does this location level have specific coordinates?   --]
       [@customForm.yesNoInput name="${customName}.hasCoordinates" label="location.question" editable=editable inverse=false value="${((locLevel.hasCoordinates)!false)?string}" cssClass="text-left" /]
+      <div class="infoContent" >
+        <div class="info-icon"><span class="glyphicon glyphicon-info-sign"></span></div>
+        <div class="info-text"><span>If so, the locations added below will prefill a dropdown menu for Project Leader to pick from. Otherwise, Project Leaders will define by themselves.</span></div>
+      </div>
+      <div class="clearfix"></div>
       [#-- confirm popup --]
       <div id="dialog-confirm"  style="display:none;">
         <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
