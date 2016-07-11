@@ -107,6 +107,11 @@
     [#if editable]
       <div class="remove-programItem removeElement" title="Remove program"></div>
     [/#if]
+    <div class="leftHead">
+      <span class="index">${index+1}</span>
+      <span class="elementId">${(element.acronym)!} ${(element.name)!'Regional Program'}</span>
+    </div>
+    <br />
     [#-- Program Acronym & Name --]
     <div class="form-group">
       <label for="">[@s.text name="regionalMapping.CrpProgram.name"/]</label>
