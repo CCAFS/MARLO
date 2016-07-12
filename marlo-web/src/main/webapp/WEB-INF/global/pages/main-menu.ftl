@@ -1,10 +1,23 @@
 [#ftl]
 [#assign mainMenu= [
-  { 'slug': 'home',           'name': 'menu.login',         'namespace': '/',               'action': '',            'icon': 'log-in',  'visible': (!logged)!false, 'active': true },
-  { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': '',            'icon': 'home',   'visible': (logged)!false, 'active': true },
-  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': 'outcomes',                       'visible': (logged)!false, 'active': true },
-  { 'slug': 'admin',          'name': 'menu.admin',         'namespace': '/admin',          'action': 'management',  'icon': 'cog',    'visible': action.canAcessCrpAdmin(), 'active': true }
+  { 'slug': 'home',           'name': 'menu.login',         'namespace': '/',               'action': 'login',         'icon': 'log-in',   'visible': !logged, 'active': true },
+  { 'slug': 'home',           'name': 'menu.home',          'namespace': '/',               'action': 'dashboard',     'icon': 'home',     'visible': logged, 'active': true },
+  { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',                         'visible': logged, 'active': true },
+  { 'slug': 'admin',          'name': 'menu.admin',         'namespace': '/admin',          'action': '${(crpSession)!}/management',   'icon': 'cog',      'visible': action.canAcessCrpAdmin(), 'active': true }
 ]/]
+
+[#macro mainMenuList]
+  [#list mainMenu as item]
+   [#if item.visible]
+    <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}">
+        [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
+        [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+      </a>
+    </li>
+    [/#if]
+  [/#list]
+[/#macro]
 
 <nav id="mainMenu"> 
 <div class="menuContent">
@@ -12,30 +25,12 @@
 	  <ul class="hidden-md hidden-lg">
 	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Menu
 	     <ul class="subMenu">
-	      [#list mainMenu as item]
-	       [#if item.visible]
-          <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url namespace=item.namespace action='${(crpSession)!}/${item.action}'][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
-              [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
-              [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
-            </a>
-          </li>
-          [/#if]
-        [/#list]
+	       [@mainMenuList /]
 	     </ul>
 	   </li>
 	  </ul>
 	  <ul class="visible-md-block visible-lg-block">
-	    [#list mainMenu as item]
-       [#if item.visible]
-        <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-          <a href="[@s.url namespace=item.namespace action='${(crpSession)!}/${item.action}'][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
-            [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
-            [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
-          </a>
-        </li>
-        [/#if]
-      [/#list]
+	    [@mainMenuList /]
 	  </ul>
 	  
 	  [#if logged?? && logged]

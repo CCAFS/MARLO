@@ -35,5 +35,6 @@
   [#if libraryName="bootstrap-select"]<script src="${baseUrl}/bower_components/bootstrap-select/dist/js/bootstrap-select.js"></script>[/#if]
   [#if libraryName="vanilla-color-picker"]<script src="${baseUrl}/bower_components/vanilla-color-picker/dist/vanilla-color-picker.min.js"></script>[/#if]
   [#if libraryName="countdown"]<script src="${baseUrl}/bower_components/countdown/dest/jquery.countdown.js"></script>[/#if]
+  [#if libraryName="pusher-websocket-iso"]<script src="${baseUrl}/bower_components/pusher-websocket-iso/dist/web/pusher.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

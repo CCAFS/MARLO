@@ -4,6 +4,7 @@ target
 .*
 *.jks
 !.gitignore
+!.bowerrc
 bin
 
 # Configuration 
