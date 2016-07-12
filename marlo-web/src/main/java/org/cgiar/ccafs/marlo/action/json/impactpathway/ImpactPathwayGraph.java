@@ -64,17 +64,18 @@ public class ImpactPathwayGraph extends BaseAction {
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
     HashMap<String, Object> data = new HashMap<>();
     HashMap<String, Object> dataProgram = new HashMap<>();
+    HashMap<String, Object> dataCrpAdd = new HashMap<>();
     dataProgram.put("id", crpProgram.getAcronym());
     dataProgram.put("label", crpProgram.getName());
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
-    dataProgram = new HashMap<>();
-    dataProgram.put("id", crpProgram.getCrp().getAcronym());
-    dataProgram.put("label", crpProgram.getCrp().getName());
-    dataProgram.put("type", "C");
-    data.put("data", dataProgram);
-    dataNodes.add(data);
+    HashMap<String, Object> dataCrp = new HashMap<>();
+    dataCrp.put("id", crpProgram.getCrp().getAcronym());
+    dataCrp.put("label", crpProgram.getCrp().getName());
+    dataCrp.put("type", "C");
+    dataCrpAdd.put("data", dataCrp);
+    dataNodes.add(dataCrpAdd);
 
     HashMap<String, Object> dataCRP = new HashMap<>();
     HashMap<String, Object> dataCRPDetail = new HashMap<>();
