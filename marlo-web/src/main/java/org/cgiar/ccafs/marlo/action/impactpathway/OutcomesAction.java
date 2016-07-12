@@ -112,6 +112,39 @@ public class OutcomesAction extends BaseAction {
     this.srfSubIdoManager = srfSubIdoManager;
   }
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = selectedProgram.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
   public long getCrpProgramID() {
     return crpProgramID;
   }
@@ -126,7 +159,6 @@ public class OutcomesAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -135,6 +167,7 @@ public class OutcomesAction extends BaseAction {
   public List<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -150,11 +183,9 @@ public class OutcomesAction extends BaseAction {
     return targetUnitList;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   public void loadInfo() {
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
@@ -272,11 +303,7 @@ public class OutcomesAction extends BaseAction {
 
       if (selectedProgram != null) {
 
-        String composedClassName = selectedProgram.getClass().getSimpleName();
-        String actionFile = this.getActionName().replace("/", "_");
-        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-        Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+        Path path = this.getAutoSaveFilePath();
 
         if (path.toFile().exists()) {
 
@@ -367,11 +394,7 @@ public class OutcomesAction extends BaseAction {
       }
       messages = this.getActionMessages();
 
-      String composedClassName = selectedProgram.getClass().getSimpleName();
-      String actionFile = this.getActionName().replace("/", "_");
-      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-      Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+      Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
         path.toFile().delete();
