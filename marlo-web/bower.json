@@ -32,7 +32,8 @@
     "bootstrap-select": "^1.10.0",
     "vanilla-color-picker": "^0.1.7",
     "countdown": "^2.2.0",
-    "pusher-websocket-iso": "pusher#^3.1.0"
+    "pusher-websocket-iso": "pusher#^3.1.0",
+    "cytoscape": "^2.7.5"
   },
   "overrides": {
     "jquery": {

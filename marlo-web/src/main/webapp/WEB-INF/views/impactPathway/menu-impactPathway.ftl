@@ -55,3 +55,10 @@
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
+<div id="graphicWrapper">
+  <div id="mini-graphic">
+    <div id="overlay" >
+      <span><strong>Show Impact Graphic</strong></span>
+    </div>
+  </div>
+</div>
