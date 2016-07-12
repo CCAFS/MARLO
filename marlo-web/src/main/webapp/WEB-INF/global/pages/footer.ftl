@@ -28,7 +28,7 @@
     
     [#-- Second, import global javascripts and templates. --]
     <script type="text/javascript">
-      var baseURL, editable, canEdit, production, currentPlanningYear, currentReportingYear;
+      var currentPlanningYear, currentReportingYear;
       var formBefore;
       var justificationLimitWords = 100;
       var errorMessages = [];
@@ -38,10 +38,13 @@
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
       
-      baseURL = "${baseUrl}";
-      debugMode = ${config.debug?string};
-      editable = ${editable?string};
-      canEdit = ${canEdit?string};
+      var production = ${config.production?string};
+      var baseURL = "${baseUrl}";
+      var debugMode = ${config.debug?string};
+      var editable = ${editable?string};
+      var canEdit = ${canEdit?string};
+      
+      var PUSHER_KEY = "${config.production?string('530082f1cccc805bcf69','a83864709700a9aca7a5')}";
       
     </script>
     

@@ -139,7 +139,7 @@
           <input type="checkbox" value="IDO" checked>IDOs
         </label>
         <label class="checkbox-inline">
-          <input type="checkbox" value="CCIDO" checked>CrossCutting IDOs
+          <input type="checkbox" value="CCIDO" checked>Cross-cutting IDOs
         </label>
       </form>
     </div>

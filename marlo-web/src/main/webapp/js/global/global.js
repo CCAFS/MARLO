@@ -282,44 +282,28 @@ function setWordCounterToInputs(cssName) {
 }
 
 /**
- * * MARLO Messages Widget
+ * * MARLO Pusher Initializing
  */
-if(getCookie('messageDelivered') == ""){
-  document.cookie = 'messageDelivered=false';  
-}
-if(getCookie('messageMin') == ""){
-  document.cookie = 'messageMin=false';  
-}
-(function worker() {
-  $.ajax({
-      url: baseURL + '/systemMessages.json',
-      cache: false,
-      success: function(data) {
-        if(data.active && !(getCookie('messageDelivered') === 'true')) {
-          showSystemResetMessage(data);
-        } else if(!data.active) {
-          $.noty.closeAll();
-          document.cookie = 'messageDelivered=false';
-        }
-      },
-      complete: function() {
-        // Schedule the next request when the current one's complete
-        setTimeout(worker, 1000*5);
-      }
-  });
-})();
+
+Pusher.logToConsole = debugMode;
+var pusher = new Pusher(PUSHER_KEY, {
+  encrypted: true
+});
+
+var globalChannel = pusher.subscribe('global');
+globalChannel.bind('system-reset', function(data) {
+  showSystemResetMessage(data);
+});
 
 function showSystemResetMessage(data) {
-  var currentTime = new Date(data.serverCurrentTime);
-  var deadlineTime = new Date(data.messageDeadline);
-  var diff = deadlineTime - currentTime
-  if(diff <= 0){
+  var diffTime = data.diffTime
+  if(diffTime <= 0){
     return
   }
   var $timer = $('#timer-content').clone(true).removeAttr('id');
   $timer.find('.message').html(data.message);
   $timer.find('.countdown').countdown({
-      date: +(new Date) + (diff),
+      date: +(new Date) + (1000*diffTime),
       render: function(data) {
         $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
         if(this.leadingZeros(data.min, 1) == 0) {
@@ -329,15 +313,10 @@ function showSystemResetMessage(data) {
         }
       }
   });
-  if((getCookie('messageMin') === 'true')){
-    showMinNotification($timer);
-  }else{
-    showFullNotification($timer);
-  }
-  document.cookie = 'messageDelivered=true';
+  showFullNotification($timer);
 
 }
-
+  
 function showFullNotification(timer) {
   noty({
       text: $(timer),
@@ -350,9 +329,7 @@ function showFullNotification(timer) {
         {
             addClass: 'btn btn-primary',
             text: 'Roger that',
-            onClick: function($noty) {
-              $noty.close();
-            }
+            onClick: function($noty) {$noty.close();}
         }
       ],
       callback: {
@@ -377,6 +354,7 @@ function showMinNotification(timer) {
       }
   });
 }
+
 
 
 /** secondaryMenu * */
