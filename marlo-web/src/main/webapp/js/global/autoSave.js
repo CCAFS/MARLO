@@ -1,10 +1,11 @@
 var timeoutAutoSave;
-var $draftTag, $editedBy;
+var $draftTag, $editedBy, $cancelButton;
 
 $(document).ready(function() {
 
   $draftTag = $('[name="save"]').find('.draft');
   $editedBy = $('#lastUpdateMessage');
+  $cancelButton = $('.button-cancel');
 
   /* Event triggers */
   $(document).on('updateComponent', changeDetected);
@@ -29,6 +30,7 @@ function autoSave() {
           $draftTag.text('(Draft Version)').addClass('animated flipInX');
           $editedBy.find('.datetime').text(data.status.activeSince);
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
+          $cancelButton.css('display', 'inline-block');
         } else {
           errorNotification('Auto save error' + data.status.statusMessage);
         }
