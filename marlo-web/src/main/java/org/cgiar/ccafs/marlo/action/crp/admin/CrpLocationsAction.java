@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -222,10 +223,16 @@ public class CrpLocationsAction extends BaseAction {
       loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>(
         loggedCrp.getLocElementTypes().stream().filter(let -> let.isActive()).collect(Collectors.toList())));
 
+
+      Collections.sort(loggedCrp.getLocationElementTypes(), (le1, le2) -> le1.getName().compareTo(le2.getName()));
+
       for (int i = 0; i < loggedCrp.getLocationElementTypes().size(); i++) {
         loggedCrp.getLocationElementTypes().get(i)
           .setLocationElements(new ArrayList<LocElement>(loggedCrp.getLocationElementTypes().get(i).getLocElements()
             .stream().filter(le -> le.isActive()).collect(Collectors.toList())));
+
+        Collections.sort(loggedCrp.getLocationElementTypes().get(i).getLocationElements(),
+          (le1, le2) -> le1.getName().compareTo(le2.getName()));
       }
 
     }
