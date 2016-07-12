@@ -69,6 +69,19 @@ public class ImpactPathwayGraph extends BaseAction {
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
+    dataProgram = new HashMap<>();
+    dataProgram.put("id", crpProgram.getCrp().getAcronym());
+    dataProgram.put("label", crpProgram.getCrp().getName());
+    dataProgram.put("type", "C");
+    data.put("data", dataProgram);
+    dataNodes.add(data);
+
+    HashMap<String, Object> dataCRP = new HashMap<>();
+    HashMap<String, Object> dataCRPDetail = new HashMap<>();
+    dataCRPDetail.put("source", crpProgram.getCrp().getAcronym());
+    dataCRPDetail.put("target", crpProgram.getAcronym());
+    dataCRP.put("data", dataCRPDetail);
+    dataEdges.add(dataCRP);
     switch (SectionStatusEnum.getValue(sectionName)) {
 
       case OUTCOMES:
