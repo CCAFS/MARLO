@@ -50,6 +50,7 @@ span.coordinates {
 .info-icon {
     width: 3%;
     float: left;
+    text-align: center;
 }
 
 .info-text {

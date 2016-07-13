@@ -55,10 +55,24 @@
     [@s.text name="form.buttons.submit" /]
   </a>
 [/#if]
+
+[#-- Mini-graph --]
 <div id="graphicWrapper">
   <div id="mini-graphic">
     <div id="overlay" >
       <span><strong>Show Impact Graphic</strong></span>
     </div>
   </div>
+  <div class="clearfix"></div>
+</div>
+
+[#-- PopUp Graph --]
+<div id="impactGraphic-content"  style="display:none;" >
+  <div id="infoRelations" class="panel panel-default">
+    <div class="panel-heading">Relations</div>
+    <div id="infoContent" class="panel-body">
+     <ul></ul>
+    </div>
+  </div>
+  <div id="impactGraphic"></div>
 </div>

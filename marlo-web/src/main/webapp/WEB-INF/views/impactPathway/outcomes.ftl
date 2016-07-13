@@ -2,7 +2,7 @@
 [#assign title = "Impact Pathway - Outcomes" /]
 [#assign pageLibs = ["select2","cytoscape"] /]
 [#assign customJS = [ "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/outcomes.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css" ] /]
+[#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css","${baseUrl}/css/global/impactGraphic.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "outcomes" /]
 

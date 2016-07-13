@@ -3,25 +3,26 @@ $(function() { // on dom ready
   var url = baseURL + "/impactPathway/impactPathwayGraph.do";
   var graphicContent = "mini-graphic";
   var panningEnable = false;
+  var crpProgram = $("input[name='crpProgramID']").val();
+  var section = $("input[name='actionName']").val().split('/');
 
   $.ajax({
       url: url,
       type: 'GET',
       dataType: "json",
       data: {
-          crpProgramID: 78,
-          sectionName: 'outcomes'
+          crpProgramID: crpProgram,
+          sectionName: section[1]
       }
   }).done(function(m) {
-    console.log(m);
-    createGraphic(m.elements, graphicContent);
+    createGraphic(m.elements, graphicContent, panningEnable, false);
 
   });
-// photos from flickr with creative commons license
 
   // function to create a new graph
 
-  function createGraphic(json,graphicContent) {
+  function createGraphic(json,graphicContent,panningEnable,inPopUp) {
+    var infoRelations;
     var cy = cytoscape({
         container: document.getElementById(graphicContent),
 
@@ -34,8 +35,8 @@ $(function() { // on dom ready
         userPanningEnabled: panningEnable,
 
         style: cytoscape.stylesheet().selector('node').css({
-            'height': 80,
-            'width': 80,
+            'height': 100,
+            'width': 100,
             'background-fit': 'cover',
             'border-width': 1,
             'border-opacity': 0.5,
@@ -73,13 +74,17 @@ $(function() { // on dom ready
 
 // cy init
 
-    cy.$('node').addClass('center-center')
+    // Nodes init
+    var nodesInit = cy.$('node');
+    nodesInit.addClass('center-center');
 
 // tap a node
     cy.on('tap', function(event) {
 
       cy.$('node').css('background-opacity', '0.4');
       cy.$('node').css('text-opacity', '0.4');
+      $(".panel-body ul").empty();
+      infoRelations = [];
 
       if(event.cyTarget == cy) {
 
@@ -97,6 +102,7 @@ $(function() { // on dom ready
 
         cy.$('node').removeClass('eating');
         var $this = event.cyTarget;
+        console.log($this);
         nodeSelected($this);
         var successors = $this.successors();
         var predecessors = $this.predecessors();
@@ -108,6 +114,16 @@ $(function() { // on dom ready
         successors.forEach(function(ele) {
           nodeSelected(ele);
         });
+
+        if(inPopUp === true) {
+
+          // console.log(infoRelations);
+          infoRelations.forEach(function(ele) {
+            $(".panel-body ul").append("<li>" + ele + "</li>")
+          });
+
+        }
+
       }
     });
 
@@ -116,11 +132,50 @@ $(function() { // on dom ready
       ele.css('background-opacity', '1');
       ele.css('text-opacity', '1');
       ele.css('z-index', '3');
+      if(ele.data('description') != 'undefined' && ele.data('description') != null) {
+        infoRelations.push(ele.data('description'));
+      }
     }
   }
 
-});
+  $("#mini-graphic").mouseenter(function() {
+    $("#overlay").css("display", "block");
+  })
 
-$("#mini-graphic").mouseenter(function() {
-  $("#overlay").css("display", "block");
-})
+  $("#mini-graphic").mouseleave(function() {
+    $("#overlay").css("display", "none");
+  })
+
+  // Open PopUp Graph
+  $("#overlay span").on("click", function() {
+    $("#impactGraphic-content").dialog({
+        resizable: false,
+        width: '85%',
+        modal: true,
+        height: $(window).height() * 0.70,
+        show: {
+            effect: "blind",
+            duration: 500
+        },
+        hide: {
+            effect: "fadeOut",
+            duration: 500
+        },
+        open: function(event,ui) {
+          $.ajax({
+              url: url,
+              type: 'GET',
+              dataType: "json",
+              data: {
+                  crpProgramID: crpProgram,
+                  sectionName: section[1]
+              }
+          }).done(function(m) {
+            createGraphic(m.elements, "impactGraphic", true, true);
+          });
+        }
+    });
+
+  });
+
+});
