@@ -55,20 +55,20 @@
       
       Tawk_API.onLoad = function() {
         Tawk_API.setAttributes({
-            'fullName': '${(currentUser.composedCompleteName)!'Unknown Name'}',
+            'fullName': '${(currentUser.composedCompleteName)!}',
             'userName' : '${(currentUser.username)!}',
-            'userId': '${(currentUser.id)!'Unknown id'}',
+            'userId': '${(currentUser.id)!}',
             'roles': '',
             'liaisonInstitutions': ''
             
         }, function(error) {
         });
-        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Develpment')}', '${(crpSession)!}'], function(error){});
+        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});
       };
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
-        s1.src = 'https://embed.tawk.to/${config.production?string('56128da200d3af75029e5645','5613e7282ee46dc72a5c89c5')}/default';
+        s1.src = 'https://embed.tawk.to/${config.production?string('{PRODUCTION_TAWK_KEY}','57864c4b7e9d57372d381198')}/default';
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
