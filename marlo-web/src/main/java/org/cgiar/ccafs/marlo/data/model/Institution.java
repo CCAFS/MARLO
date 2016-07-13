@@ -31,23 +31,28 @@ public class Institution implements java.io.Serializable {
   @Expose
   private InstitutionType institutionType;
 
+
   @Expose
   private String name;
+
+
   @Expose
   private LocElement locElement;
+
   @Expose
   private String acronym;
-
   @Expose
   private String city;
-
   @Expose
   private String websiteLink;
+
   @Expose
   private Long programId;
+
   @Expose
   private Date added;
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   public Institution() {
   }
@@ -103,6 +108,10 @@ public class Institution implements java.io.Serializable {
     return institutionType;
   }
 
+  public Set<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
+  }
+
   public LocElement getLocElement() {
     return locElement;
   }
@@ -141,6 +150,10 @@ public class Institution implements java.io.Serializable {
 
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
+  }
+
+  public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
   }
 
   public void setLocElement(LocElement locElement) {

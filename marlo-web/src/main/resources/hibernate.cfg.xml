@@ -51,7 +51,10 @@
     <mapping resource="xmls/CrpClusterActivityLeaders.hbm.xml" />
     <mapping resource="xmls/SectionStatuses.hbm.xml" />
     <mapping resource="xmls/Submissions.hbm.xml" />
-    
+    <mapping resource="xmls/Projects.hbm.xml" />
+    <mapping resource="xmls/ProjectFocuses.hbm.xml" />
+    <mapping resource="xmls/LiaisonInstitutions.hbm.xml" />
+    <mapping resource="xmls/LiaisonUsers.hbm.xml" />
   
   </session-factory>
 </hibernate-configuration>

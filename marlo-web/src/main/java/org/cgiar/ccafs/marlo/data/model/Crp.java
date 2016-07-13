@@ -85,8 +85,11 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private List<CrpsSiteIntegration> siteIntegrations;
 
   private List<LocElementType> locationElementTypes;
+  private Set<Project> projects = new HashSet<Project>(0);
+
 
   private boolean hasRegions;
+
 
   public Crp() {
   }
@@ -141,7 +144,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpInstitutionsPartners;
   }
 
-
   public Set<CrpParameter> getCrpParameters() {
     return this.crpParameters;
   }
@@ -149,6 +151,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
+
 
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
@@ -207,10 +210,13 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return programManagmenTeam;
   }
 
+  public Set<Project> getProjects() {
+    return projects;
+  }
+
   public Set<Role> getRoles() {
     return this.roles;
   }
-
 
   public List<CrpsSiteIntegration> getSiteIntegrations() {
     return siteIntegrations;
@@ -236,6 +242,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return hasRegions;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -243,7 +250,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -289,6 +295,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.crpUsers = crpUsers;
   }
 
+
   public void setHasRegions(boolean hasRegions) {
     this.hasRegions = hasRegions;
   }
@@ -323,6 +330,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setProgramManagmenTeam(List<UserRole> programManagmenTeam) {
     this.programManagmenTeam = programManagmenTeam;
+  }
+
+  public void setProjects(Set<Project> projects) {
+    this.projects = projects;
   }
 
   public void setRoles(Set<Role> roles) {

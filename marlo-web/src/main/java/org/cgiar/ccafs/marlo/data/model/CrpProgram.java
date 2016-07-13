@@ -70,11 +70,17 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private List<CrpProgramOutcome> outcomes;
 
   private List<CrpClusterOfActivity> clusterofActivities;
+  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
+  private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+
 
   @Expose
   private boolean active;
+
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
@@ -86,7 +92,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
   private List<CrpProgramLeader> leaders;
-
 
   @Expose
   private String color;
@@ -102,7 +107,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.programType = programType;
   }
 
-
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
@@ -114,6 +118,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -137,10 +142,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
-
 
   public String getAction() {
     return action;
@@ -155,14 +160,15 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return clusterofActivities;
   }
 
-
   public String getColor() {
     return color;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Crp getCrp() {
     return this.crp;
@@ -171,6 +177,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public Set<CrpClusterOfActivity> getCrpClusterOfActivities() {
     return this.crpClusterOfActivities;
   }
+
 
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
@@ -191,6 +198,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
+  }
+
+  public Set<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
   }
 
   @Override
@@ -224,24 +235,28 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.programType;
   }
 
+  public Set<ProjectFocus> getProjectFocuses() {
+    return projectFocuses;
+  }
+
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public List<String> getSelectedCountries() {
     return selectedCountries;
   }
 
-
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
@@ -259,7 +274,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
   }
@@ -267,6 +281,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public void setColor(String color) {
     this.color = color;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -300,6 +315,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.leaders = leaders;
   }
 
+  public void setLiaisonInstitutions(Set<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
+  }
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -318,6 +337,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setProgramType(int programType) {
     this.programType = programType;
+  }
+
+  public void setProjectFocuses(Set<ProjectFocus> projectFocuses) {
+    this.projectFocuses = projectFocuses;
   }
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
