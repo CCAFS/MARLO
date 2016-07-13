@@ -1,8 +1,8 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
-[#assign pageLibs = [] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js", "${baseUrl}/js/global/autoSave.js"] /]
-[#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css" ] /]
+[#assign pageLibs = ["cytoscape"] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js"] /]
+[#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css","${baseUrl}/css/global/impactGraphic.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
 

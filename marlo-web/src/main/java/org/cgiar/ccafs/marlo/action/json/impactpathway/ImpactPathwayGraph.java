@@ -37,17 +37,17 @@ import org.slf4j.LoggerFactory;
 
 public class ImpactPathwayGraph extends BaseAction {
 
+  // Logger
+  private static final Logger LOG = LoggerFactory.getLogger(ImpactPathwayGraph.class);
   /**
    * 
    */
   private static final long serialVersionUID = 971011588781935964L;
-  // Logger
-  private static final Logger LOG = LoggerFactory.getLogger(ImpactPathwayGraph.class);
+  long crpProgramID;
   @Inject
   private CrpProgramManager crpProgramManager;
-  long crpProgramID;
-  private String sectionName;
   private HashMap<String, Object> elements;
+  private String sectionName;
 
   @Inject
   public ImpactPathwayGraph(APConfig config) {
@@ -66,13 +66,15 @@ public class ImpactPathwayGraph extends BaseAction {
     HashMap<String, Object> dataProgram = new HashMap<>();
     HashMap<String, Object> dataCrpAdd = new HashMap<>();
     dataProgram.put("id", crpProgram.getAcronym());
-    dataProgram.put("label", crpProgram.getName());
+    dataProgram.put("label", crpProgram.getAcronym());
+    dataProgram.put("description", crpProgram.getName());
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
     HashMap<String, Object> dataCrp = new HashMap<>();
     dataCrp.put("id", crpProgram.getCrp().getAcronym());
-    dataCrp.put("label", crpProgram.getCrp().getName());
+    dataCrp.put("label", crpProgram.getCrp().getAcronym());
+    dataCrp.put("description", crpProgram.getCrp().getName());
     dataCrp.put("type", "C");
     dataCrpAdd.put("data", dataCrp);
     dataNodes.add(dataCrpAdd);
@@ -86,6 +88,7 @@ public class ImpactPathwayGraph extends BaseAction {
     switch (SectionStatusEnum.getValue(sectionName)) {
 
       case OUTCOMES:
+        int i=0;
         for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -93,7 +96,8 @@ public class ImpactPathwayGraph extends BaseAction {
           HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
           HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
           dataDetailOutcome.put("id", "O" + crpProgramOutcome.getId());
-          dataDetailOutcome.put("label", crpProgramOutcome.getDescription());
+          dataDetailOutcome.put("label", "Outcome #"+i);
+          dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
           dataDetailOutcome.put("type", "O");
           dataOutcome.put("data", dataDetailOutcome);
           dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
@@ -101,6 +105,7 @@ public class ImpactPathwayGraph extends BaseAction {
           dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
           dataNodes.add(dataOutcome);
           dataEdges.add(dataEdgeOutcome);
+          i++;
         }
         break;
       case CLUSTERACTIVITES:

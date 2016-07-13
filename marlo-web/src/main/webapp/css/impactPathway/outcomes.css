@@ -124,29 +124,3 @@ p.contributioRem {
     margin-bottom: 15px;
 }
 
-#mini-graphic {
-    width: 85%;
-    height: 200px;
-    border: 2px solid #d1d1d1;
-    margin: auto auto;
-    position: absolute;
-    margin-left: 8%;
-}
-
-#graphicWrapper {
-    margin-top: 20%;
-    width: 100%;
-    position: relative;
-}
-
-#overlay {
-    z-index: 100;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(51, 51, 51, 0.6);
-    color: white;
-    text-align: center;
-    line-height: 200px;
-    display: none;
-}
