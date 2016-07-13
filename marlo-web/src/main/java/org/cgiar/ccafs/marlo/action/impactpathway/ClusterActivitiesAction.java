@@ -377,9 +377,7 @@ public class ClusterActivitiesAction extends BaseAction {
                   userRoleManager.deleteUserRole(userRole.getId());
                 }
               }
-
             }
-
           }
         }
         /*

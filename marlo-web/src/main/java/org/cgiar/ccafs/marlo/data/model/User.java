@@ -29,7 +29,9 @@ import com.google.gson.annotations.Expose;
  */
 public class User implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = 3674438945983473335L;
+
 
   @Expose
   private Long id;
@@ -52,11 +54,15 @@ public class User implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean cgiarUser;
 
+  private boolean autoSave;
 
   private User createdBy;
 
   private Date activeSince;
+
+
   private User modifiedBy;
+
   private String modificationJustification;
   private boolean active;
   private Date lastLogin;
@@ -67,10 +73,8 @@ public class User implements java.io.Serializable, IAuditLog {
   private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
 
-
   public User() {
   }
-
 
   public User(String email, String password, boolean cgiarUser, boolean active) {
     this.email = email;
@@ -119,9 +123,11 @@ public class User implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   /**
    * This method returns the user's full name.
@@ -170,11 +176,9 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.email;
   }
 
-
   public String getFirstName() {
     return this.firstName;
   }
-
 
   @Override
   public Long getId() {
@@ -185,6 +189,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public Date getLastLogin() {
     return this.lastLogin;
   }
+
 
   public String getLastName() {
     return this.lastName;
@@ -202,6 +207,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -215,19 +221,23 @@ public class User implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-
   public String getUsername() {
     return this.username;
   }
-
 
   public Set<UserRole> getUserRoles() {
     return this.userRoles;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public boolean isAutoSave() {
+    return autoSave;
   }
 
   public boolean isCgiarUser() {
@@ -240,6 +250,10 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setAutoSave(boolean autoSave) {
+    this.autoSave = autoSave;
   }
 
   public void setCgiarUser(boolean cgiarUser) {

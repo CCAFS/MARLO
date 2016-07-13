@@ -305,7 +305,7 @@ public class OutcomesAction extends BaseAction {
 
         Path path = this.getAutoSaveFilePath();
 
-        if (path.toFile().exists()) {
+        if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
 
           BufferedReader reader = null;
 

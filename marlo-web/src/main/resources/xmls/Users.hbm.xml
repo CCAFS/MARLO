@@ -30,6 +30,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="autoSave" type="boolean">
+      <column name="auto_save" not-null="true" />
+    </property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />
