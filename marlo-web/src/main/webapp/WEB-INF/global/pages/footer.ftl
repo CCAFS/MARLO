@@ -34,7 +34,6 @@
       var errorMessages = [];
       var forceChange = false;
       var hashScroll = true;
-      var Tawk_API, Tawk_LoadStart;
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
       
@@ -46,7 +45,37 @@
       
       var PUSHER_KEY = "${config.production?string('530082f1cccc805bcf69','a83864709700a9aca7a5')}";
       
+      
+      [#-- Tawk.to Widget --]
+      var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+      Tawk_LoadStart = new Date();
+      Tawk_API.visitor = {
+        'name': '${(currentUser.composedCompleteName)!}',
+      };
+      
+      Tawk_API.onLoad = function() {
+        Tawk_API.setAttributes({
+            'fullName': '${(currentUser.composedCompleteName)!}',
+            'userName' : '${(currentUser.username)!}',
+            'userId': '${(currentUser.id)!}',
+            'roles': '',
+            'liaisonInstitutions': ''
+            
+        }, function(error) {
+        });
+        Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});
+      };
+      (function() {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/${config.production?string('{PRODUCTION_TAWK_KEY}','57864c4b7e9d57372d381198')}/default';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+      
     </script>
+  
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrl}/js/global/utils.js" ></script>

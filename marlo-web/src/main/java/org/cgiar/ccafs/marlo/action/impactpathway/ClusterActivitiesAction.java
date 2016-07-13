@@ -101,6 +101,37 @@ public class ClusterActivitiesAction extends BaseAction {
   }
 
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = selectedProgram.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
   public long getClRol() {
     return clRol;
   }
@@ -113,14 +144,15 @@ public class ClusterActivitiesAction extends BaseAction {
     return crpProgramID;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public List<CrpProgram> getPrograms() {
     return programs;
   }
-
 
   public Role getRoleCl() {
     return roleCl;
@@ -130,6 +162,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -217,11 +250,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
       if (selectedProgram != null) {
 
-        String composedClassName = selectedProgram.getClass().getSimpleName();
-        String actionFile = this.getActionName().replace("/", "_");
-        String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-        Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+        Path path = this.getAutoSaveFilePath();
 
         if (path.toFile().exists()) {
 
@@ -292,11 +321,8 @@ public class ClusterActivitiesAction extends BaseAction {
           // crpProgramOutcome.getCrpOutcomeSubIdos().isEmpty()) {
           crpClusterOfActivityManager.deleteCrpClusterOfActivity(crpClusterOfActivity.getId());
           // }
-
         }
-
       }
-
       /*
        * Save outcomes
        */
@@ -359,7 +385,6 @@ public class ClusterActivitiesAction extends BaseAction {
         /*
          * Save leaders
          */
-
         if (crpClusterOfActivity.getLeaders() != null) {
           for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity.getLeaders()) {
             if (crpClusterActivityLeader.getId() == null) {
@@ -405,12 +430,7 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       messages = this.getActionMessages();
 
-      String composedClassName = selectedProgram.getClass().getSimpleName();
-      String actionFile = this.getActionName().replace("/", "_");
-      String autoSaveFile = selectedProgram.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-      Path path = Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-
+      Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
@@ -423,7 +443,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
-
   public void setClRol(long clRol) {
     this.clRol = clRol;
   }
@@ -432,6 +451,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public void setClusterofActivities(List<CrpClusterOfActivity> clusterofActivities) {
     this.clusterofActivities = clusterofActivities;
   }
+
 
   public void setCrpProgramID(long crpProgramID) {
     this.crpProgramID = crpProgramID;
@@ -457,11 +477,9 @@ public class ClusterActivitiesAction extends BaseAction {
     this.selectedProgram = selectedProgram;
   }
 
-
   public void setTransaction(String transactionID) {
     this.transaction = transactionID;
   }
-
 
   @Override
   public void validate() {
@@ -469,6 +487,5 @@ public class ClusterActivitiesAction extends BaseAction {
       validator.validate(this, clusterofActivities, selectedProgram);
     }
   }
-
 
 }
