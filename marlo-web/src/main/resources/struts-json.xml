@@ -75,5 +75,13 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="impactPathwayFullGraph"
+      class="org.cgiar.ccafs.marlo.action.json.impactpathway.ImpactPathwayFullGraph">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 	</package>
 </struts>

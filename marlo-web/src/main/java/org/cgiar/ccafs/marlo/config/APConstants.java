@@ -44,6 +44,7 @@ public final class APConstants {
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
+  public static final String CRP_ID = "crpID";
   public static final String TRANSACTION_ID = "transactionId";
   public static final String CRP_ADMIN_ACTIVE = "crp_admin_active";
   public static final String CRP_IMPACT_PATHWAY_ACTIVE = "crp_impPath_active";
