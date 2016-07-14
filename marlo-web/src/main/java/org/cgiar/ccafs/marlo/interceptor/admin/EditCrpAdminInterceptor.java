@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,16 +31,38 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  */
 public class EditCrpAdminInterceptor extends AbstractInterceptor implements Serializable {
 
-
   private static final long serialVersionUID = -6233803983753722378L;
+  private BaseAction baseAction;
+  private Map<String, Object> parameters;
+  private Map<String, Object> session;
+  private Crp crp;
 
-  public static void setPermissionParameters(ActionInvocation invocation) {
+  public EditCrpAdminInterceptor() {
+    super();
+  }
 
-    BaseAction baseAction = (BaseAction) invocation.getAction();
+  @Override
+  public String intercept(ActionInvocation invocation) throws Exception {
 
-    Map<String, Object> parameters = invocation.getInvocationContext().getParameters();
-    Map<String, Object> session = invocation.getInvocationContext().getSession();
-    Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
+    baseAction = (BaseAction) invocation.getAction();
+    parameters = invocation.getInvocationContext().getParameters();
+    session = invocation.getInvocationContext().getSession();
+    crp = (Crp) session.get(APConstants.SESSION_CRP);
+
+    if (!baseAction.canAcessCrpAdmin()) {
+      return BaseAction.NOT_AUTHORIZED;
+    }
+
+    try {
+      this.setPermissionParameters(invocation);
+      return invocation.invoke();
+    } catch (Exception e) {
+      return BaseAction.NOT_FOUND;
+    }
+  }
+
+  public void setPermissionParameters(ActionInvocation invocation) {
+
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -76,20 +98,6 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     baseAction.setEditableParameter(editParameter);
     baseAction.setCanEdit(canEdit);
 
-  }
-
-  public EditCrpAdminInterceptor() {
-    super();
-  }
-
-  @Override
-  public String intercept(ActionInvocation invocation) throws Exception {
-    try {
-      setPermissionParameters(invocation);
-      return invocation.invoke();
-    } catch (Exception e) {
-      return BaseAction.NOT_FOUND;
-    }
   }
 
 

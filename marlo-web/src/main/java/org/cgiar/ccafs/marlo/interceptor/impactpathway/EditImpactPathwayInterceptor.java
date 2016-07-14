@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,10 +40,15 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
  */
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
-  private static final long serialVersionUID = 1L;
-
+  private static final long serialVersionUID = 8294421978295446976L;
   private CrpManager crpManager;
   private UserManager userManager;
+
+  private BaseAction baseAction;
+  private Map<String, Object> parameters;
+  private Map<String, Object> session;
+  private Crp crp;
+  private long crpProgramID = 0;
 
   @Inject
   public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager) {
@@ -52,9 +57,50 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
   }
 
+  long getCrpProgramId() {
+    try {
+      return Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
+    } catch (Exception e) {
+      Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+      User user = (User) session.get(APConstants.SESSION_USER);
+      user = userManager.getUser(user.getId());
+      List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().isActive()
+          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList());
+      if (!userLeads.isEmpty()) {
+        return userLeads.get(0).getCrpProgram().getId();
+      } else {
+        List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+          .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+          .collect(Collectors.toList());
+        if (!allPrograms.isEmpty()) {
+          return allPrograms.get(0).getId();
+        }
+      }
+    }
+    return 0;
+  }
+
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+
+    baseAction = (BaseAction) invocation.getAction();
+    parameters = invocation.getInvocationContext().getParameters();
+    session = invocation.getInvocationContext().getSession();
+    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crpProgramID = this.getCrpProgramId();
+
+    if (!baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES,
+      crp.getAcronym(), crpProgramID + ""))) {
+      return BaseAction.NOT_AUTHORIZED;
+    }
+
+
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
@@ -63,21 +109,13 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     }
   }
 
-
   public void setPermissionParameters(ActionInvocation invocation) {
-
-    BaseAction baseAction = (BaseAction) invocation.getAction();
-
-    Map<String, Object> parameters = invocation.getInvocationContext().getParameters();
-    Map<String, Object> session = invocation.getInvocationContext().getSession();
-    Crp crp = (Crp) session.get(APConstants.SESSION_CRP);
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
-    long crpProgramID = 0;
-    try {
 
+    try {
       crpProgramID = Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
     } catch (Exception e) {
       Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -100,15 +138,12 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           crpProgramID = allPrograms.get(0).getId();
         }
       }
-
-
     }
 
     // If user is admin, it should have privileges to edit all projects.
     if (baseAction.isAdmin()) {
       canEdit = true;
     } else {
-
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
         crp.getAcronym(), crpProgramID + ""))) {
         canEdit = true;
