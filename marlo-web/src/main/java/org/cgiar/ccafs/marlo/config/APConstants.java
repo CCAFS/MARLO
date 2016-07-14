@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -62,6 +62,19 @@ public final class APConstants {
   public static final String CRP_REQUEST = "crp";
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
+
+  // login messages and status
+  public static final String LOGIN_STATUS = "loginStatus";
+  public static final String LOGIN_MESSAGE = "loginMessage";
+
+  public static final String LOGON_SUCCES = "LOGON_SUCCES";
+  public static final String ERROR_NO_SUCH_USER = "ERROR_NO_SUCH_USER";
+  public static final String ERROR_LOGON_FAILURE = "ERROR_LOGON_FAILURE";
+  public static final String ERROR_INVALID_LOGON_HOURS = "ERROR_INVALID_LOGON_HOURS";
+  public static final String ERROR_PASSWORD_EXPIRED = "ERROR_PASSWORD_EXPIRED";
+  public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
+  public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
+  public static final String ERROR_ACCOUNT_LOCKED_OUT = "ERROR_ACCOUNT_LOCKED_OUT";
 
 
 }

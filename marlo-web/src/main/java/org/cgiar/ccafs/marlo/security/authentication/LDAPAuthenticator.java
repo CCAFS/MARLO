@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,10 +15,14 @@
 
 package org.cgiar.ccafs.marlo.security.authentication;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import org.cgiar.ciat.auth.ADConexion;
 import org.cgiar.ciat.auth.LDAPService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import org.slf4j.Logger;
@@ -35,6 +39,7 @@ public class LDAPAuthenticator implements Authenticator {
 
 
   private APConfig config;
+  private Map<String, Object> looged;
 
   @Inject
   public LDAPAuthenticator(APConfig config) {
@@ -43,8 +48,10 @@ public class LDAPAuthenticator implements Authenticator {
   }
 
   @Override
-  public boolean authenticate(String email, String password) {
-    boolean logued = false;
+  public Map<String, Object> authenticate(String email, String password) {
+    looged = new HashMap<>();
+    looged.put(APConstants.LOGIN_STATUS, false);
+
 
     try {
       ADConexion con = null;
@@ -58,9 +65,11 @@ public class LDAPAuthenticator implements Authenticator {
 
       if (con != null) {
         if (con.getLogin() != null) {
-          logued = true;
-        } else {
+          looged.replace(APConstants.LOGIN_STATUS, true);
+          looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
           System.out.println(con.getAuthenticationMessage());
+        } else {
+          looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
           LOG.error("Authentication error  {}", con.getAuthenticationMessage());
         }
         con.closeContext();
@@ -69,7 +78,7 @@ public class LDAPAuthenticator implements Authenticator {
       LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
         e.getMessage());
     }
-    return logued;
+    return looged;
   }
 
 }

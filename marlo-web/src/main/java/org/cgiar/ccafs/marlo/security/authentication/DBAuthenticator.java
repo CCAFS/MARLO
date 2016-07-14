@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,8 +15,12 @@
 
 package org.cgiar.ccafs.marlo.security.authentication;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuthenticationManager;
 import org.cgiar.ccafs.marlo.utils.MD5Convert;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -36,9 +40,11 @@ public class DBAuthenticator implements Authenticator {
 
 
   @Override
-  public boolean authenticate(String email, String password) {
+  public Map<String, Object> authenticate(String email, String password) {
+    Map<String, Object> authentic = new HashMap<>();
     String md5Pass = MD5Convert.stringToMD5(password);
-    return authenticationManager.veirifyCredentials(email, md5Pass);
+    authentic.put(APConstants.LOGIN_STATUS, authenticationManager.veirifyCredentials(email, md5Pass));
+    return authentic;
   }
 
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,6 +23,9 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -104,7 +107,9 @@ public class APCustomRealm extends AuthorizingRealm {
     final String username = userPassToken.getUsername();
     final String password = new String(userPassToken.getPassword());
     User user;
-    boolean authenticated = false;
+    Map<String, Object> authenticated = new HashMap<>();
+
+    Session session = SecurityUtils.getSubject().getSession();
 
     // Get user info from db
     if (username.contains("@")) {
@@ -120,8 +125,9 @@ public class APCustomRealm extends AuthorizingRealm {
       } else {
         authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
       }
+      session.setAttribute(APConstants.LOGIN_MESSAGE, authenticated.get(APConstants.LOGIN_MESSAGE));
 
-      if (!authenticated) {
+      if (!(boolean) authenticated.get(APConstants.LOGIN_STATUS)) {
         throw new IncorrectCredentialsException();
       }
 

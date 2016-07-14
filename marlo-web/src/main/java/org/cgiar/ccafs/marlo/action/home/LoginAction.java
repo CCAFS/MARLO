@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -32,6 +33,7 @@ import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.Session;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +80,48 @@ public class LoginAction extends BaseAction {
     return crp;
   }
 
+  private void getLoginMessages() {
+    Session session = SecurityUtils.getSubject().getSession();
+    if (session.getAttribute(APConstants.LOGIN_MESSAGE) != null) {
+      switch ((String) session.getAttribute(APConstants.LOGIN_MESSAGE)) {
+        case APConstants.LOGON_SUCCES:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.LOGON_SUCCESS.getValue());
+          break;
+        case APConstants.ERROR_NO_SUCH_USER:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_NO_SUCH_USER.getValue());
+          break;
+        case APConstants.ERROR_LOGON_FAILURE:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_LOGON_FAILURE.getValue());
+          break;
+        case APConstants.ERROR_INVALID_LOGON_HOURS:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_INVALID_LOGON_HOURS.getValue());
+          break;
+        case APConstants.ERROR_PASSWORD_EXPIRED:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_PASSWORD_EXPIRED.getValue());
+          break;
+        case APConstants.ERROR_ACCOUNT_DISABLED:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_ACCOUNT_DISABLED.getValue());
+          break;
+        case APConstants.ERROR_ACCOUNT_EXPIRED:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_ACCOUNT_EXPIRED.getValue());
+          break;
+        case APConstants.ERROR_ACCOUNT_LOCKED_OUT:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_ACCOUNT_LOCKED_OUT.getValue());
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   public String getUrl() {
     return url;
   }
 
+
   public User getUser() {
     return user;
   }
-
 
   public UserManager getUserManager() {
     return userManager;
@@ -97,8 +133,9 @@ public class LoginAction extends BaseAction {
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
       User loggedUser = userManager.login(userEmail, user.getPassword());
-
+      this.getLoginMessages();
       if (loggedUser != null) {
+
         // Obtain the crp selected
         Crp loggedCrp = crpManager.findCrpByAcronym(this.crp);
 
@@ -160,9 +197,14 @@ public class LoginAction extends BaseAction {
           return SUCCESS;
         }
       } else {
-        LOG.info("User " + user.getEmail() + " tried to log-in but failed.");
+        LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
+          + this.getSession().get(APConstants.LOGIN_MESSAGE));
         user.setPassword(null);
-        this.addFieldError("loginMessage", this.getText("login.error.userOrPass"));
+        if (this.getSession().get(APConstants.LOGIN_MESSAGE) != null) {
+          this.addFieldError("loginMessage", this.getText((String) this.getSession().get(APConstants.LOGIN_MESSAGE)));
+        } else {
+          this.addFieldError("loginMessage", this.getText("login.error.userOrPass"));
+        }
         return BaseAction.INPUT; // TODO change to return INPUT when the login front-end is finished.
       }
     } else {
@@ -216,5 +258,4 @@ public class LoginAction extends BaseAction {
       }
     }
   }
-
 }

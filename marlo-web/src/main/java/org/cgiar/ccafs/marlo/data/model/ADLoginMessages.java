@@ -13,22 +13,32 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.security.authentication;
+package org.cgiar.ccafs.marlo.data.model;
 
-import java.util.Map;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public interface Authenticator {
+public enum ADLoginMessages {
 
-  /**
-   * Authenticates a user based on the credentials received as parameter.
-   * 
-   * @param email - This can be the email or the CCAFS user name
-   * @param password
-   * @return a Map with the info if the user was authenticated successfully or otherwise
-   */
-  public Map<String, Object> authenticate(String email, String password);
+  LOGON_SUCCESS("Login successful"), ERROR_NO_SUCH_USER("CGIAR User not exist"),
+  ERROR_LOGON_FAILURE("Invalid CGIAR username or password"),
+  ERROR_INVALID_LOGON_HOURS("CGIAR User account with restricted access in specific hours"),
+  ERROR_PASSWORD_EXPIRED("CGIAR User password expired"), ERROR_ACCOUNT_DISABLED("CGIAR User account disabled"),
+  ERROR_ACCOUNT_EXPIRED("CGIAR User account expired"), ERROR_ACCOUNT_LOCKED_OUT("CGIAR User account blocked");
+
+  private String value;
+
+  private ADLoginMessages(String value) {
+    this.value = value;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
 
 }
