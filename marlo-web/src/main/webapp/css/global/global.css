@@ -1855,7 +1855,6 @@ a.currentReportingSection li, a.currentSection li {
 
 h1.sectionTitle{
     border: 0;
-  
     /* color: #515151; */
     border-bottom: 1px solid #818181;
     font-size: 2em;
@@ -1933,6 +1932,11 @@ h3.contentSubTitle {
   padding-bottom: 3px;
   font-weight: lighter;
   margin-top: 28px;
+}
+
+.headTitle{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: lighter;
 }
 
 .sectionSubTitle {
