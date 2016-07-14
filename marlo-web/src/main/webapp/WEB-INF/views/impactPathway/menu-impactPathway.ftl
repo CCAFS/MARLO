@@ -75,7 +75,7 @@
     </div>
   </div>
   <div id="changeGraph">
-        [@customForm.yesNoInput name="changeGraphic" label="" editable=editable inverse=false value="" yesLabel="Section Graph" noLabel="Full Impact Graph"cssClass="" /]
+        [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Section Graph" noLabel="Full Impact Graph"cssClass="" /]
   </div>
   <div id="impactGraphic"></div>
 </div>

@@ -39,7 +39,9 @@ $(function() { // on dom ready
             'border-opacity': 0.5,
             'label': 'data(label)',
             'background-color': '#2388ae',
-            'color': 'white'
+            'color': 'white',
+            'text-outline-width': 2,
+            'text-outline-color': '#888'
         }).selector('.eating').css({
             'border-width': 2,
             'background-color': '#163799'
@@ -67,6 +69,23 @@ $(function() { // on dom ready
             padding: false,
             clockwise: false,
             minNodeSpacing: 5,
+            concentric: function(node) { // returns numeric value for each node, placing higher nodes in levels towards
+              // the centre
+              var weight = 0;
+              if(node.data('type') == 'C') {
+                weight = 10;
+              }
+              if(node.data('type') == 'F') {
+                weight = 5;
+              }
+              if(node.data('type') == 'O') {
+                weight = 1;
+              }
+              if(node.data('type') == 'CoA') {
+                weight = 1;
+              }
+              return weight;
+            }
         }
     });
 
@@ -75,6 +94,9 @@ $(function() { // on dom ready
     // Nodes init
     var nodesInit = cy.$('node');
     nodesInit.addClass('center-center');
+    nodesInit.forEach(function(ele) {
+      ele.css('background-color', ele.data('color'));
+    });
 
     if(inPopUp === true) {
       cy.panzoom({
@@ -121,6 +143,8 @@ $(function() { // on dom ready
         cy.$('node').removeClass('eating');
         var $this = event.cyTarget;
 
+        console.log($this);
+
         var successors = $this.successors();
         var predecessors = $this.predecessors();
 
@@ -128,7 +152,6 @@ $(function() { // on dom ready
           nodeSelected(ele);
         });
         nodeSelected($this);
-        console.log($this);
         successors.forEach(function(ele) {
           nodeSelected(ele);
         });
