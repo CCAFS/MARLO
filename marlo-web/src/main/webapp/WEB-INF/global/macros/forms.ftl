@@ -244,7 +244,7 @@
   </div>
 [/#macro]
 
-[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" cssClass=""]
+[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass=""]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
@@ -257,9 +257,9 @@
     [#if editable]
       <div class="button-wrap">
         [#-- Yes Button --]
-        <label for="yes-button-${name}" class="yes-button-label button-label [#if customValue == "true"]radio-checked[/#if]">Yes</label>
+        <label for="yes-button-${name}" class="yes-button-label button-label [#if customValue == "true"]radio-checked[/#if]">${yesLabel}</label>
         [#-- No Button --]
-        <label for="no-button-${name}" class="no-button-label button-label [#if customValue == "false"]radio-checked[/#if]">No</label>
+        <label for="no-button-${name}" class="no-button-label button-label [#if customValue == "false"]radio-checked[/#if]">${noLabel}</label>
         <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  [#if customValue == "false"]value="false"[#else]value="true"[/#if] />
                 
       </div>

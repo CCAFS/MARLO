@@ -89,7 +89,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
       dataCRPDetail.put("target", crpProgram.getAcronym());
       dataCRP.put("data", dataCRPDetail);
       dataEdges.add(dataCRP);
-      int i = 0;
+      int i = 1;
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
         HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -108,7 +108,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataEdges.add(dataEdgeOutcome);
         i++;
       }
-
+      int j=1;
       for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -116,14 +116,16 @@ public class ImpactPathwayFullGraph extends BaseAction {
         HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
         HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-        dataDetailOutcome.put("label", crpClusterOfActivity.getDescription());
-        dataDetailOutcome.put("type", "C");
+        dataDetailOutcome.put("label","CoA #" + j);
+        dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
+        dataDetailOutcome.put("type", "CoA");
         dataOutcome.put("data", dataDetailOutcome);
         dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
         dataEdgeDetailOutcome.put("target", "C" + crpClusterOfActivity.getId());
         dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
         dataNodes.add(dataOutcome);
         dataEdges.add(dataEdgeOutcome);
+        j++;
       }
     }
 

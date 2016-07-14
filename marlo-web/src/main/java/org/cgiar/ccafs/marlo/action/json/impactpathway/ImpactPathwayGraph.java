@@ -68,6 +68,7 @@ public class ImpactPathwayGraph extends BaseAction {
     dataProgram.put("id", crpProgram.getAcronym());
     dataProgram.put("label", crpProgram.getAcronym());
     dataProgram.put("description", crpProgram.getName());
+    dataProgram.put("color", crpProgram.getColor());
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
@@ -88,7 +89,7 @@ public class ImpactPathwayGraph extends BaseAction {
     switch (SectionStatusEnum.getValue(sectionName)) {
 
       case OUTCOMES:
-        int i=0;
+        int i=1;
         for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
           .collect(Collectors.toList())) {
           HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -98,6 +99,7 @@ public class ImpactPathwayGraph extends BaseAction {
           dataDetailOutcome.put("id", "O" + crpProgramOutcome.getId());
           dataDetailOutcome.put("label", "Outcome #"+i);
           dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
+          dataDetailOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
           dataDetailOutcome.put("type", "O");
           dataOutcome.put("data", dataDetailOutcome);
           dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
@@ -109,6 +111,7 @@ public class ImpactPathwayGraph extends BaseAction {
         }
         break;
       case CLUSTERACTIVITES:
+        int i1=1;
         for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -116,14 +119,17 @@ public class ImpactPathwayGraph extends BaseAction {
           HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
           HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
           dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-          dataDetailOutcome.put("label", crpClusterOfActivity.getDescription());
-          dataDetailOutcome.put("type", "C");
+          dataDetailOutcome.put("label", "CoA #"+i1);
+          dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
+          dataDetailOutcome.put("color", crpClusterOfActivity.getCrpProgram().getColor());
+          dataDetailOutcome.put("type", "CoA");
           dataOutcome.put("data", dataDetailOutcome);
           dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
           dataEdgeDetailOutcome.put("target", "C" + crpClusterOfActivity.getId());
           dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
           dataNodes.add(dataOutcome);
           dataEdges.add(dataEdgeOutcome);
+          i1++;
         }
         break;
 

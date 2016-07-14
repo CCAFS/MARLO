@@ -16,6 +16,8 @@
   [#if libraryName="bootstrap" ]<link rel="stylesheet" href="${baseUrl}/bower_components/bootstrap/dist/css/bootstrap.min.css" />[/#if]
   [#if libraryName="flat-flags" ]<link rel="stylesheet" href="${baseUrl}/bower_components/flat-flags/css/main.css" />[/#if]
   [#if libraryName="bootstrap-select" ]<link rel="stylesheet" href="${baseUrl}/bower_components/bootstrap-select/dist/css/bootstrap-select.css" />[/#if]
+  [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/cytoscape.js-panzoom.css" />[/#if]
+  [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/font-awesome-4.0.3/css/font-awesome.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -37,5 +39,6 @@
   [#if libraryName="countdown"]<script src="${baseUrl}/bower_components/countdown/dest/jquery.countdown.js"></script>[/#if]
   [#if libraryName="pusher-websocket-iso"]<script src="${baseUrl}/bower_components/pusher-websocket-iso/dist/web/pusher.js"></script>[/#if]
   [#if libraryName="cytoscape"]<script src="${baseUrl}/bower_components/cytoscape/dist/cytoscape.js"></script>[/#if]
+  [#if libraryName="cytoscape-panzoom"]<script src="${baseUrl}/bower_components/cytoscape-panzoom/cytoscape-panzoom.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
