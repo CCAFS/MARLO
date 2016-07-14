@@ -43,7 +43,7 @@
       var editable = ${editable?string};
       var canEdit = ${canEdit?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
-      var currentCrpID=${(selectedProgram.crp.id)!};
+      var currentCrpID=${(selectedProgram.crp.id)!'-1'};
       
       var PUSHER_KEY = "${config.production?string('530082f1cccc805bcf69','a83864709700a9aca7a5')}";
       
