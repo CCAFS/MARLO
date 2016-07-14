@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.utils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -196,7 +197,8 @@ public class AutoSaveReader {
 
     Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
       .registerTypeAdapter(Long.class, new LongTypeAdapter())
-      .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter()).create();
+      .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
+      .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);

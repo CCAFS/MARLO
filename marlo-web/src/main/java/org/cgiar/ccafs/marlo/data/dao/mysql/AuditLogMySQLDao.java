@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,7 +20,13 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.dao.AuditLogDao;
 import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.utils.BigDecimalTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +92,10 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
   public IAuditLog loadFromAuditLog(Auditlog auditlog) {
     try {
-      Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+      Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
+        .registerTypeAdapter(Long.class, new LongTypeAdapter())
+        .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
+        .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
       Class classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
       IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
 

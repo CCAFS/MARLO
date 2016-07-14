@@ -60,7 +60,7 @@
 <div id="graphicWrapper">
   <div id="mini-graphic">
     <div id="overlay" >
-      <span><strong>Show Impact Graphic</strong></span>
+      <a><strong>Show Impact Graphic</strong></a>
     </div>
   </div>
   <div class="clearfix"></div>
@@ -69,10 +69,13 @@
 [#-- PopUp Graph --]
 <div id="impactGraphic-content"  style="display:none;" >
   <div id="infoRelations" class="panel panel-default">
-    <div class="panel-heading">Relations</div>
+    <div class="panel-heading"><strong>Relations</strong></div>
     <div id="infoContent" class="panel-body">
      <ul></ul>
     </div>
+  </div>
+  <div id="changeGraph">
+        [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Section Graph" noLabel="Full Impact Graph"cssClass="" /]
   </div>
   <div id="impactGraphic"></div>
 </div>

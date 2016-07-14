@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Outcomes" /]
-[#assign pageLibs = ["select2","cytoscape"] /]
+[#assign pageLibs = ["select2","cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = [ "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/outcomes.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/outcomes.css","${baseUrl}/css/global/impactGraphic.css" ] /]
 [#assign currentSection = "impactPathway" /]
@@ -24,35 +24,8 @@
         [#include "/WEB-INF/views/impactPathway/menu-impactPathway.ftl" /]
       </div>
       <div class="col-md-9">
-        [#-- History Message --]
-        [#if transaction??]
-          <div class="history-mode text-center animated flipInX">
-            [#if transaction == "-1"]
-              <p>[@s.text name="CrpProgram.message.historyNotFound" /]</p>
-            [#else]
-              <p>[@s.text name="CrpProgram.message.historyVersion" ]  
-                  [@s.param]<span>${selectedProgram.modifiedBy.composedName?html}</span>[/@s.param]
-                  [@s.param]<span>${selectedProgram.activeSince?datetime}</span>[/@s.param]
-                  [@s.param]<a href="[@s.url][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
-                 [/@s.text]
-              </p>
-            [/#if]
-          </div>
-        [/#if]
-      
-        [#-- Submission Message --]
-        [#if submission?has_content]
-          <div class="submission-mode text-center animated flipInX">
-            <p>[@s.text name="CrpProgram.message.submittedOn" ][@s.param]${submission.dateTime}[/@s.param][/@s.text]</p>
-          </div>
-        [/#if]
-        
-        [#-- Program completed Message--]
-        [#if canSubmit && !submission?has_content && completed]
-          <div class="completed-mode text-center animated flipInX">
-            <p>[@s.text name="CrpProgram.message.completed" /]</p>
-          </div>
-        [/#if]
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/impactPathway/messages-impactPathway.ftl" /]
         
         [#-- Program (Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu text-left">
@@ -63,7 +36,6 @@
             </li>
           [/#list]
         </ul>
-        
         
         [@s.form action=actionName enctype="multipart/form-data" ]  
         [#-- Outcomes List --]

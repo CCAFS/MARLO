@@ -132,5 +132,6 @@
 	<include file="struts-admin.xml" />
 	<include file="struts-superadmin.xml" />
 	<include file="struts-impactPathway.xml" />
+	<include file="struts-projects.xml" />
 
 </struts>

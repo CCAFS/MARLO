@@ -28,16 +28,24 @@ table tr:first-child th:last-child{
 .dataTables_filter {
   float: right;
   padding-top: 0px;
-  margin-bottom: 6px;
-  width: 250px;
+  margin-bottom: 4px;
+  /* width: 250px; */
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+  height: 25px;
+}
+div.dataTables_wrapper div.dataTables_length select {
+  height: 25px;
 }
 
 /* Table */
 
-table.dataTable {  
+table.dataTable {
   font-size: 0.95em;
   border-left: 1px solid #CCC;
   border-top: 1px solid #AEAEAE;
+  margin: 0 !important;
 }
 
 table.dataTable thead {
@@ -107,7 +115,7 @@ table.dataTable a {
  */
 .dataTables_paginate {
   margin-top: 5px;
-  border-bottom: 1px solid #d4d4d4;
+  /* border-bottom: 1px solid #d4d4d4; */
 }
 
 .paginate_enabled_previous {
@@ -158,34 +166,6 @@ table.dataTable a {
   text-decoration: none !important;
 }
 
-/*
- * Sorting
- */
-.sorting {
-  background: url('../../images/libs/dataTables/sort_both.png') no-repeat
-    center right;
-}
-
-.sorting_asc {
-  background: url('../../images/libs/dataTables/sort_asc.png') no-repeat
-    center right;
-}
-
-.sorting_desc {
-  background: url('../../images/libs/dataTables/sort_desc.png') no-repeat
-    center right;
-}
-
-.sorting_asc_disabled {
-  background: url('../../images/libs/dataTables/sort_asc_disabled.png')
-    no-repeat center right;
-}
-
-.sorting_desc_disabled {
-  background: url('../../images/libs/dataTables/sort_desc_disabled.png')
-    no-repeat center right;
-}
-
 /* Info */
 .dataTables_info {
   font-style: italic;
@@ -193,7 +173,7 @@ table.dataTable a {
 }
 
 .dataTables_length {
-  position: absolute;
-  top: 17px;
-  left: 0;
+  /* position: absolute; */
+  /* top: 17px; */
+  /* left: 0; */
 }

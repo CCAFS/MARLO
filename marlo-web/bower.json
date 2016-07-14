@@ -33,7 +33,9 @@
     "vanilla-color-picker": "^0.1.7",
     "countdown": "^2.2.0",
     "pusher-websocket-iso": "pusher#^3.1.0",
-    "cytoscape": "^2.7.5"
+    "cytoscape": "^2.7.5",
+    "cytoscape-panzoom": "^2.4.0",
+    "datatables.net-bs": "^1.10.12"
   },
   "overrides": {
     "jquery": {
@@ -67,6 +69,13 @@
     "countdown": {
       "main": [
         "dest/jquery.countdown.js"
+      ]
+    },
+    "cytoscape-panzoom": {
+      "main": [
+        "cytoscape-panzoom.js",
+        "cytoscape.js-panzoom.css",
+        "font-awesome-4.0.3/css/font-awesome.css"
       ]
     }
   }
