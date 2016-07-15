@@ -78,6 +78,7 @@ public class StandardDAO {
       session.clear();
       session.delete(newEntityRef);
       this.commitTransaction(tx);
+      session.close();
       return true;
     } catch (Exception e) {
       if (tx != null) {
@@ -249,7 +250,7 @@ public class StandardDAO {
       session.flush();
       Object object = clazz.cast(query.uniqueResult());
       this.commitTransaction(tx);
-
+      session.close();
       return object;
     } catch (Exception e) {
       if (tx != null) {
@@ -375,7 +376,7 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
-
+      session.close();
 
       return true;
     } catch (Exception e) {
@@ -410,7 +411,7 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
-
+      session.close();
 
       return true;
     } catch (Exception e) {
@@ -447,7 +448,7 @@ public class StandardDAO {
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
-
+      session.close();
 
       return true;
     } catch (Exception e) {
@@ -486,7 +487,7 @@ public class StandardDAO {
       session.saveOrUpdate(obj);
 
       this.commitTransaction(tx);
-
+      session.close();
 
       return true;
     } catch (Exception e) {
