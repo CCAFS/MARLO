@@ -133,6 +133,8 @@ function updateProgramManagementTeamIndexes(list) {
 function updateProgramIndexes(list) {
   $(list).find('.program').each(function(index,item) {
     var programName = 'flagshipsPrograms' + '[' + index + '].';
+    $(item).find('.index').text(index + 1);
+
     $(item).find('.acronym').attr('name', programName + 'acronym');
     $(item).find('.name').attr('name', programName + 'name');
     $(item).find('.color-picker input').attr('name', programName + 'color');
