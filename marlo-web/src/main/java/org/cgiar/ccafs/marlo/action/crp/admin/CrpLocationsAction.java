@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -51,6 +51,9 @@ public class CrpLocationsAction extends BaseAction {
   private LocGeopositionManager locGeopositionManager;
   private Crp loggedCrp;
 
+  private List<LocElementType> defaultLocationTypes;
+
+
   @Inject
   public CrpLocationsAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     LocElementTypeManager locElementTypeManager, LocGeopositionManager locGeopositionManager) {
@@ -62,9 +65,15 @@ public class CrpLocationsAction extends BaseAction {
   }
 
 
+  public List<LocElementType> getDefaultLocationTypes() {
+    return defaultLocationTypes;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   private void locationNewData() {
     for (LocElementType locElementType : loggedCrp.getLocationElementTypes()) {
@@ -216,6 +225,10 @@ public class CrpLocationsAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     super.prepare();
+
+    defaultLocationTypes =
+      locElementTypeManager.findAll().stream().filter(let -> let.isActive()).collect(Collectors.toList());
+
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
@@ -274,6 +287,10 @@ public class CrpLocationsAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setDefaultLocationTypes(List<LocElementType> defaultLocationTypes) {
+    this.defaultLocationTypes = defaultLocationTypes;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {

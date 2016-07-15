@@ -23,7 +23,15 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data"]
         
-        <h4 class="sectionTitle">[@s.text name="locations.title"/]</h4>
+        <h4 class="sectionTitle">Default Location Levels</h4>
+        <div class="defaultLocations simpleBox">
+          [#list defaultLocationTypes as elementType]
+            [#if !elementType.crp??]<p>${elementType.name}</p>[/#if]
+          [/#list]
+          <div class="clearfix"></div>
+        </div>
+        
+        <h4 class="sectionTitle">Customize ${(crpSession?upper_case)!} location levels</h4>
         <div class="locationsBlock">
           [#-- Locations Levels List --]
           <div class="locations-list">            
