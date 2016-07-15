@@ -68,7 +68,6 @@ public class HibernateListener implements ServletContextListener {
 
       factory = config.buildSessionFactory();
 
-
       // System.out.println("Build factory " + factory);
 
       // save the Hibernate session factory into serlvet context
