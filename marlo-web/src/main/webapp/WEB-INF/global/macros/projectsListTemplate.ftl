@@ -1,4 +1,5 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 [#macro projectsList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
   <table class="projectsList" id="projects">
     <thead>
@@ -49,11 +50,7 @@
           </td>
           [#-- Project Type --]
           <td>
-            [#if project.bilateralProject && project.cofinancing]
-              <p title="[@s.text name="planning.projects.type.explanation.bilateralCoFinancing" /]" id="">[@s.text name="planning.projects.type.bilateralCoFinancing" /]</p>
-            [#else]
-              <p title="[@s.text name="planning.projects.type.explanation.${project.type?lower_case}" /]" id="">[@s.text name="planning.projects.type.${project.type?lower_case}" /]</p>
-            [/#if]
+            W1/W2
           </td>
           [#-- Region --]
           <td> 
@@ -81,31 +78,7 @@
           </td>
           [#-- Project Action Status --]
           <td>
-            [#assign currentCycleYear= (reportingCycle?string(currentReportingYear,currentPlanningYear))?number /]
-            [#assign submission = (project.isSubmitted(currentCycleYear, cycleName))! /]
-            [#assign canSubmit = action.hasProjectPermission("submitProject", project.id, "manage") /]
-            
-            [#-- Check button --] 
-            [#if !submission?has_content ]
-              [#if canEdit && canSubmit && !action.isProjectComplete(project.id)]
-                <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
-                <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
-              [/#if]
-            [/#if]
-            
-            [#-- Submit button --]
-            [#if submission?has_content]
-              <p title="Submitted on ${(submission.dateTime?date)?string.full} ">Submitted</p>
-            [#else]
-              [#if canSubmit]
-                [#assign showSubmit=(canSubmit && !submission?has_content && action.isProjectComplete(project.id))]
-                <a id="submitProject-${project.id}" class="submitButton" href="[@s.url namespace=namespace action='submit'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" style="display:${showSubmit?string('block','none')}">[@s.text name="form.buttons.submit" /]</a>
-              [/#if]
-            [/#if]
-            
-            [#if !submission?has_content && !canEdit ]
-              <p title="The project can be submitted by Management liaisons and Contact points">Not Submitted</p>
-            [/#if]
+            {TODO}
           </td>
           [#-- Track completition of entry --]
           [#if isPlanning]
@@ -114,7 +87,7 @@
           [#-- Summary PDF download --]
           <td>
             [#if true]
-            <a href="[@s.url namespace="/summaries" action='project'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCycleName()}[/@s.param][/@s.url]" target="__BLANK">
+            <a href="[@s.url namespace="/summaries" action='project'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']{TODO}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/images/global/download-summary.png" height="25" title="[@s.text name="summaries.project.download" /]" />
             </a>
             [#else]
@@ -123,7 +96,8 @@
           </td>
           [#-- Delete Project--]
           <td>
-            [#if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) ]
+            [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
+            [#if true]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>
