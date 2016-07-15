@@ -137,14 +137,14 @@
     [/#if]
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">${(element.acronym)!} ${(element.name)!'Flagship Program'}</span>
+      <span class="elementId">${(element.composedName)!'Flagship'}</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]
     <div class="form-group"> 
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text"  i18nkey="CrpProgram.inputAcronym.placeholder" placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text"  i18nkey="CrpProgram.inputName.placeholder" placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
+        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text"  i18nkey="CrpProgram.inputAcronym" placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
+        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text"  i18nkey="CrpProgram.inputName" placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
         <div class="col-sm-1">
           <label for="">Color</label>
           <div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div>
