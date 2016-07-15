@@ -14,8 +14,6 @@
     <property name="connection.autoReconnect">true</property>
     <property name="connection.autoReconnectForPools">true</property>
     <property name="connection.is-connection-validation-required">true</property>
-     <property name="hibernate.connection.release_mode">auto</property>
-     <property name="hibernate.transaction.auto_close_session">true</property>
     
     
     
