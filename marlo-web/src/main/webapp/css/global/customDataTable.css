@@ -102,6 +102,8 @@ table.dataTable td {
   border-bottom: 1px solid #AEAEAE;
   border-right: 1px solid #CCC;
   vertical-align: middle;
+  padding: 2px 8px;
+  font-size: 0.93em;
 }
 
 table.dataTable a {
