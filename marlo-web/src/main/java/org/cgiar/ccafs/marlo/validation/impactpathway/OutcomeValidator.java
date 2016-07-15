@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -120,22 +120,30 @@ public class OutcomeValidator extends BaseValidator
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
-      if (outcome.getSubIdos() != null) {
-        double contributions = 0;
-        for (int j = 0; j < outcome.getSubIdos().size(); j++) {
-          outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
-          this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
-          if (outcome.getSubIdos().get(j).getContribution() != null) {
-            contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
-          }
+    }
+    if (outcome.getSubIdos() != null) {
+      if (outcome.getSubIdos().isEmpty()) {
+        this.addMessage(action.getText("outcome.action.subido.requeried", params));
 
-        }
-        if (contributions != 100) {
-          this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
-        }
       }
+      double contributions = 0;
+      for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+        outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
+        this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
+        if (outcome.getSubIdos().get(j).getContribution() != null) {
+          contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
+        }
+
+      }
+      if (contributions != 100) {
+        this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+      }
+    } else {
+      this.addMessage(action.getText("outcome.action.subido.requeried", params));
 
     }
+
+
   }
 
   public void validateSubIDO(BaseAction action, CrpOutcomeSubIdo subIdo, int i, int j) {
