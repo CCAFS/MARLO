@@ -1,6 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +29,6 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.struts2.ServletActionContext;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -88,7 +86,7 @@ public class StandardDAO {
       e.printStackTrace();
       return false;
     } finally {
-      session.flush(); // Flushing the changes always.
+      // Flushing the changes always.
     }
   }
 
@@ -108,8 +106,11 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
       session.clear();
-      this.commitTransaction(tx);
+      session.flush();
+
       obj = (T) session.get(clazz, (Serializable) id);
+
+      this.commitTransaction(tx);
 
     } catch (Exception e) {
       if (tx != null) {
@@ -117,7 +118,7 @@ public class StandardDAO {
       }
       e.printStackTrace();
     } finally {
-      session.flush(); // Flushing the changes always.
+      // Flushing the changes always.
     }
     return obj;
   }
@@ -141,11 +142,15 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-      this.commitTransaction(tx);
       session.clear();
+      session.flush();
+
+
       Query query = session.createQuery(hibernateQuery);
+
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
+      this.commitTransaction(tx);
 
       return list;
     } catch (Exception e) {
@@ -156,7 +161,7 @@ public class StandardDAO {
       return new ArrayList<T>();
     } finally {
       if (session.isOpen()) {
-        session.flush(); // Flushing the changes always.
+        // Flushing the changes always.
       }
 
     }
@@ -175,11 +180,13 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-      this.commitTransaction(tx);
+
+      session.flush();
       session.clear();
       Query query = session.createSQLQuery(sqlQuery);
       query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
       List<Map<String, Object>> result = query.list();
+      this.commitTransaction(tx);
 
       return result;
     } catch (Exception e) {
@@ -190,7 +197,7 @@ public class StandardDAO {
       return null;
     } finally {
       if (session.isOpen()) {
-        session.flush(); // Flushing the changes always.
+        // Flushing the changes always.
       }
     }
   }
@@ -201,11 +208,12 @@ public class StandardDAO {
     try {
       session = this.openSession();
       tx = this.initTransaction(session);
-      this.commitTransaction(tx);
+      session.flush();
       session.clear();
       Query query = session.createQuery("from " + clazz.getName());
       @SuppressWarnings("unchecked")
       List<T> list = query.list();
+      this.commitTransaction(tx);
 
       return list;
     } catch (Exception e) {
@@ -215,7 +223,7 @@ public class StandardDAO {
       e.printStackTrace();
       return null;
     } finally {
-      session.flush(); // Flushing the changes always.
+      // Flushing the changes always.
     }
   }
 
@@ -234,12 +242,13 @@ public class StandardDAO {
 
       session = this.openSession();
       tx = this.initTransaction(session);
-      this.commitTransaction(tx);
+      session.flush();
       session.clear();
 
       Query query = session.createQuery(hibernateQuery);
       session.flush();
       Object object = clazz.cast(query.uniqueResult());
+      this.commitTransaction(tx);
 
       return object;
     } catch (Exception e) {
@@ -250,7 +259,7 @@ public class StandardDAO {
       return new ArrayList<T>();
     } finally {
       if (session.isOpen()) {
-        session.flush(); // Flushing the changes always.
+        // Flushing the changes always.
       }
     }
   }
@@ -267,52 +276,41 @@ public class StandardDAO {
   public void logIt(String action, IAuditLog entity, String json, long userId, String transactionId, Long principal,
     String relationName, String actionName) {
 
-    Session tempSession = this.openSession();
 
+    String detail = "";
+    if (actionName == null) {
+      detail = entity.getLogDeatil();
+    } else {
+      detail = "Action: " + actionName + " " + entity.getLogDeatil();
+    }
+
+    Auditlog auditRecord = new Auditlog(action, detail, new Date(), entity.getId().toString(),
+      entity.getClass().toString(), json, userId, transactionId, principal, relationName);
+
+    Session session = null;
+    Transaction tx = null;
     try {
+      session = this.openSession();
 
-      try {
-        String detail = "";
-        if (actionName == null) {
-          detail = entity.getLogDeatil();
-        } else {
-          detail = "Action: " + actionName + " " + entity.getLogDeatil();
-        }
+      tx = this.initTransaction(session);
+      session.save(auditRecord);
+      this.commitTransaction(tx);
 
-        Auditlog auditRecord = new Auditlog(action, detail, new Date(), entity.getId().toString(),
-          entity.getClass().toString(), json, userId, transactionId, principal, relationName);
 
-        Session session = null;
-        Transaction tx = null;
-        try {
-          session = this.openSession();
-
-          tx = this.initTransaction(session);
-          session.save(auditRecord);
-          this.commitTransaction(tx);
-
-        } catch (Exception e) {
-          e.printStackTrace();
-          if (tx != null) {
-            this.rollBackTransaction(tx);
-          }
-          session.clear();
-          if (e instanceof org.hibernate.exception.ConstraintViolationException) {
-            Transaction tx1 = session.beginTransaction();
-            tx1.commit();
-          }
-
-        }
-
-      } catch (HibernateException e) {
-        /*
-         * TODO
-         */
+    } catch (Exception e) {
+      e.printStackTrace();
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      session.clear();
+      if (e instanceof org.hibernate.exception.ConstraintViolationException) {
+        Transaction tx1 = session.beginTransaction();
+        tx1.commit();
       }
 
-    } finally {
-      tempSession.close();
     }
+
+
   }
 
 
@@ -327,7 +325,9 @@ public class StandardDAO {
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
-    return sessionFactory.openSession(interceptor);
+    sessionFactory.getCurrentSession().disconnect();
+    return sessionFactory.openSession();
+
   }
 
 
@@ -343,7 +343,10 @@ public class StandardDAO {
 
     }
 
+    sessionFactory.getCurrentSession().disconnect();
     return sessionFactory.openSession(interceptor);
+
+
   }
 
   /**
@@ -367,12 +370,14 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      session = this.openSession(interceptor);
-      interceptor.setSession(session);
+      session = this.openSession();
+
 
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
+
+
       return true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -406,6 +411,8 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
+
+
       return true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -432,8 +439,8 @@ public class StandardDAO {
     Session session = null;
     Transaction tx = null;
     try {
-      session = this.openSession(interceptor);
-      interceptor.setSession(session);
+      session = this.openSession();
+      // interceptor.setSession(session);
 
       tx = this.initTransaction(session);
 
@@ -441,6 +448,7 @@ public class StandardDAO {
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
+
 
       return true;
     } catch (Exception e) {
@@ -477,7 +485,9 @@ public class StandardDAO {
 
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
+
       this.commitTransaction(tx);
+
 
       return true;
     } catch (Exception e) {

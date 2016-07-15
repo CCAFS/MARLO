@@ -11,8 +11,9 @@
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.search.autoregister_listeners">false</property>
     <property name="hibernate.validator.apply_to_ddl">false</property>
-    
-    
+    <property name="connection.autoReconnect">true</property>
+    <property name="connection.autoReconnectForPools">true</property>
+    <property name="connection.is-connection-validation-required">true</property>
     <!-- *********************************************************** -->
     
     <!-- Model Mappings -->

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -59,7 +59,7 @@ public class HibernateListener implements ServletContextListener {
       config.setProperty("hibernate.connection.password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
       String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
         + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE);
+        + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE) + "";
       config.setProperty("hibernate.connection.url", urlMysql);
       config.setProperty("hibernate.current_session_context_class", "thread");
       // config.setProperty("hibernate.c3p0.min_size", "5");

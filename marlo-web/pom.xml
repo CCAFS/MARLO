@@ -204,6 +204,7 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibbernate-core-version}</version>
 		</dependency>
+		
 		<dependency>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>

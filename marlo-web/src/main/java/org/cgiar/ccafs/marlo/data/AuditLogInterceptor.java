@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -117,6 +117,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   public void loadRelations(IAuditLog entity, boolean loadUsers) {
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
+
+
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
       Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
@@ -126,13 +128,18 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
         if (loadUsers) {
           IAuditLog entityRelation = (IAuditLog) propertyValue;
-          Object obj = dao.find(propertyType.getReturnedClass(), entityRelation.getId());
+
+
+          Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+
           this.loadRelations((IAuditLog) obj, false);
           classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
         } else {
           if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
             IAuditLog entityRelation = (IAuditLog) propertyValue;
-            Object obj = dao.find(propertyType.getReturnedClass(), entityRelation.getId());
+
+            Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+
             // this.loadRelations((IAuditLog) obj, false);
             classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
           }
@@ -141,6 +148,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
       }
     }
+
 
   }
 
@@ -198,7 +206,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     }
   }
 
-
   /**
    * this method triggered when update an object, the object is not update into database yet.
    */
@@ -245,7 +252,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-
   /**
    * this method triggered after the saved, updated or deleted objects are committed to database.
    */
@@ -265,6 +271,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       inserts.clear();
       updates.clear();
       deletes.clear();
+
     }
   }
 
@@ -302,7 +309,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
                 try {
                   String name = audit.getClass().getName();
                   Class className = Class.forName(name);
-                  Object obj = dao.find(className, audit.getId());
+
+                  Object obj = dao.find(className, (Serializable) audit.getId());
+
+
                   listRelation.add((IAuditLog) obj);
                   Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
                   for (HashMap<String, Object> hashMap : loadList) {
@@ -338,6 +348,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       }
       i++;
     }
+
     return relations;
   }
 
