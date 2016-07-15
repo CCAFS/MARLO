@@ -68,6 +68,7 @@ $(function() { // on dom ready
             directed: true,
             padding: false,
             clockwise: false,
+            equidistant: false,
             minNodeSpacing: 5,
             concentric: function(node) { // returns numeric value for each node, placing higher nodes in levels towards
               // the centre
@@ -96,6 +97,9 @@ $(function() { // on dom ready
     nodesInit.addClass('center-center');
     nodesInit.forEach(function(ele) {
       ele.css('background-color', ele.data('color'));
+      if(ele.data('type') === 'C') {
+        ele.css("text-transform", "uppercase");
+      }
     });
 
     if(inPopUp === true) {
@@ -143,8 +147,6 @@ $(function() { // on dom ready
         cy.$('node').removeClass('eating');
         var $this = event.cyTarget;
 
-        console.log($this);
-
         var successors = $this.successors();
         var predecessors = $this.predecessors();
 
@@ -162,13 +164,13 @@ $(function() { // on dom ready
             $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>")
           });
           flagships.forEach(function(ele) {
-            $(".panel-body ul").append("<label>Flagship:</label><li>" + ele + "</li>")
+            $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
           });
           outcomes.forEach(function(ele) {
-            $(".panel-body ul").append("<label>Outcome:</label><li>" + ele + "</li>")
+            $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
           });
           clusters.forEach(function(ele) {
-            $(".panel-body ul").append("<label>Cluster of Activities:</label><li>" + ele + "</li>")
+            $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
           });
 
         }
@@ -187,14 +189,21 @@ $(function() { // on dom ready
 
       // information arrays
       if(ele.data('description') != 'undefined' && ele.data('description') != null) {
+        var data = [];
         if(ele.data('type') === 'C') {
           crps.push(ele.data('description'));
         } else if(ele.data('type') === 'F') {
-          flagships.push(ele.data('description'));
+          data.push(ele.data('description'));
+          data.push(ele.data('label'));
+          flagships.push(data);
         } else if(ele.data('type') === 'O') {
-          outcomes.push(ele.data('description'));
+          data.push(ele.data('description'));
+          data.push(ele.data('label'));
+          outcomes.push(data);
         } else if(ele.data('type') === 'CoA') {
-          clusters.push(ele.data('description'));
+          data.push(ele.data('description'));
+          data.push(ele.data('label'));
+          clusters.push(data);
         }
       }
     }
