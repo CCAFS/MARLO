@@ -325,7 +325,7 @@ public class StandardDAO {
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
-    sessionFactory.getCurrentSession().disconnect();
+
     return sessionFactory.openSession();
 
   }
@@ -343,7 +343,6 @@ public class StandardDAO {
 
     }
 
-    sessionFactory.getCurrentSession().disconnect();
     return sessionFactory.openSession(interceptor);
 
 

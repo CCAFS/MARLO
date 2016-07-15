@@ -14,7 +14,16 @@
     <property name="connection.autoReconnect">true</property>
     <property name="connection.autoReconnectForPools">true</property>
     <property name="connection.is-connection-validation-required">true</property>
-    <!-- *********************************************************** -->
+    
+    <property name="hibernate.c3p0.idle_test_period">10</property>
+		<property name="hibernate.c3p0.timeout">10</property>
+		<property name="hibernate.c3p0.max_size">400</property>
+		<property name="hibernate.c3p0.min_size">20</property>
+		<property name="hibernate.c3p0.max_statements">10</property>
+		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
+    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+    
+    
     
     <!-- Model Mappings -->
      <mapping resource="xmls/Auditlog.hbm.xml" />
