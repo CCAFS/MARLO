@@ -156,7 +156,7 @@ function createBadge(member){
   $badge.attr('title', member.info.name);
   $badge.css("background-color", getRandomColor());
   $badge.appendTo('.breadcrumb .usersInfo');
-  $badge.show('slow');
+  $badge.fadeIn('slow');
 }
 
 function removeBadge(member){

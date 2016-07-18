@@ -24,7 +24,7 @@
     --]
     
     [#-- Users Online --]
-    <p id="usersOnline" class="btn btn-xs btn-default"> Users Online: <span>0</span></p>
+    <span id="usersOnline" class="""> <span>0</span> Users Online </span>
     
     [#-- Channel name --]
     <span id="currentSectionString" style="display:none">${(currentSectionString)!'none'}</span>
