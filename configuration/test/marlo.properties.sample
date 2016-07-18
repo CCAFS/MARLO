@@ -11,6 +11,9 @@ mysql.port=3306
 
 #Pusher API KEY-----------
 pusher.api.key=puserkey
+pusher.api.appid=puserkey
+pusher.api.privatekey=puserkey
+
 #---------------------------------------------------
 #                   Google api key
 #---------------------------------------------------

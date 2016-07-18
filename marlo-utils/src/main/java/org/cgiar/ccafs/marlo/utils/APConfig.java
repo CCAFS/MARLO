@@ -37,6 +37,8 @@ public class APConfig {
   private static final String EMAIL_PORT = "email.port";
   private static final String GOOGLE_API_KEY = "google.api.key";
   private static final String PUSH_API_KEY = "pusher.api.key";
+  private static final String PUSH_APP_ID = "pusher.api.appid";
+  private static final String PUSH_SECRETE_KEY = "pusher.api.privatekey";
 
   private static final String AUTO_SAVE_ACTIVE = "autosave.active";
 
@@ -157,6 +159,24 @@ public class APConfig {
   public String getPushApiKey() {
     try {
       return properties.getPropertiesAsString(PUSH_API_KEY);
+    } catch (Exception e) {
+      LOG.error("there is not an push api key configured.");
+    }
+    return "";
+  }
+
+  public String getPushAppId() {
+    try {
+      return properties.getPropertiesAsString(PUSH_APP_ID);
+    } catch (Exception e) {
+      LOG.error("there is not an push api key configured.");
+    }
+    return "";
+  }
+
+  public String getPushKeySecret() {
+    try {
+      return properties.getPropertiesAsString(PUSH_SECRETE_KEY);
     } catch (Exception e) {
       LOG.error("there is not an push api key configured.");
     }

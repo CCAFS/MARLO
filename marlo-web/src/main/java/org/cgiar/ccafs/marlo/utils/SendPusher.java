@@ -30,14 +30,16 @@ import com.pusher.rest.data.Result.Status;
 public class SendPusher {
 
   private String apiKey;
-  private final String appId = "225146";
-  private final String apiSecret = "c80a05a0aa0ea876b91c";
+  private String appId;
+  private String apiSecret;
   private APConfig config;
 
   @Inject
   public SendPusher(APConfig config) {
     this.config = config;
     apiKey = config.getPushApiKey();
+    appId = config.getPushAppId();
+    apiSecret = config.getPushKeySecret();
   }
 
   public String autenticate(String socketID, String channel, User user, String idSession) {
