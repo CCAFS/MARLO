@@ -57,13 +57,14 @@ public class TargetUnitAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-
+    this.newTargetUnit = new HashMap<>();
     List<SrfTargetUnit> targetUnits = srfTargetUnitManager.findAll().stream()
       .filter(tg -> tg.isActive() && tg.getName().toLowerCase().equals(queryParameter.toLowerCase()))
       .collect(Collectors.toList());
 
     if (targetUnits.size() > 1) {
-      message = this.getText("Target Unit Exist");
+      newTargetUnit.put("id", targetUnits.get(0).getId());
+      newTargetUnit.put("name", targetUnits.get(0).getName());
       return SUCCESS;
     } else {
 
@@ -79,7 +80,7 @@ public class TargetUnitAction extends BaseAction {
 
       long newTargetUnitId = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
 
-      this.newTargetUnit = new HashMap<>();
+
       newTargetUnit.put("id", newTargetUnitId);
       newTargetUnit.put("name", queryParameter);
 
