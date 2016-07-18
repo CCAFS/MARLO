@@ -69,8 +69,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class OutcomesAction extends BaseAction {
 
+
   private static final long serialVersionUID = -793652591843623397L;
+
+
   private CrpMilestoneManager crpMilestoneManager;
+
+
   private long crpProgramID;
   private String transaction;
   private CrpProgramManager crpProgramManager;
@@ -91,6 +96,7 @@ public class OutcomesAction extends BaseAction {
   private UserManager userManager;
   private List<SrfIdo> srfIdos;
   private AuditLogManager auditLogManager;
+
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -136,7 +142,6 @@ public class OutcomesAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -144,7 +149,6 @@ public class OutcomesAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public long getCrpProgramID() {
     return crpProgramID;
@@ -160,6 +164,7 @@ public class OutcomesAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
@@ -168,7 +173,6 @@ public class OutcomesAction extends BaseAction {
   public List<CrpProgram> getPrograms() {
     return programs;
   }
-
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -183,6 +187,7 @@ public class OutcomesAction extends BaseAction {
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -645,7 +650,6 @@ public class OutcomesAction extends BaseAction {
     this.idoList = idoList;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -665,6 +669,7 @@ public class OutcomesAction extends BaseAction {
     this.selectedProgram = selectedProgram;
   }
 
+
   public void setSrfIdos(List<SrfIdo> srfIdos) {
     this.srfIdos = srfIdos;
   }
@@ -672,7 +677,6 @@ public class OutcomesAction extends BaseAction {
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
     this.targetUnitList = targetUnitList;
   }
-
 
   public void setTransaction(String transactionId) {
     this.transaction = transactionId;

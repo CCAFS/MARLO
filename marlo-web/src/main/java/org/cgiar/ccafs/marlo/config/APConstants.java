@@ -57,6 +57,7 @@ public final class APConstants {
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
+
   // Request variables
   public static final String EDITABLE_REQUEST = "edit";
   public static final String CRP_REQUEST = "crp";
@@ -76,6 +77,8 @@ public final class APConstants {
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
   public static final String ERROR_ACCOUNT_LOCKED_OUT = "ERROR_ACCOUNT_LOCKED_OUT";
 
-
+  // new Target unit
+  public static final String TARGET_UNIT_NAME = "targetUnitName";
+  public static final long TARGET_UNIT_OTHER_ID = 18;
 }
 
