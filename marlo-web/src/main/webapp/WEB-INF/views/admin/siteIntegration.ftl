@@ -22,9 +22,8 @@
       </div>
       <div class="col-md-9">
       
-      <div class="infoContent col-md-12 text-center" >
-        <div class="info-text glyphicon glyphicon-info-sign"><span> This section is provisional for it to be available when there are more details defined. </span></div>
-      </div>
+      <div class=" col-md-12 glyphicon glyphicon-info-sign alert alert-info"><span> This section is provisional for it to be available when there are more details defined. </span></div>
+      
       
         [@s.form action=actionName enctype="multipart/form-data" ]  
         

@@ -18,8 +18,25 @@
   [/#if]
   [#if action.getUsersOnline()??]
   <div class="usersInfo">
-    [#assign users = action.getUsersOnline()]
-    <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.user.firstName)!} ${(us.user.lastName)!} - ${(us.section)!} <br/> [/#list]">Users Online : ${online}</button>
+    [#-- 
+      [#assign users = action.getUsersOnline()]
+      <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.user.firstName)!} ${(us.user.lastName)!} - ${(us.section)!} <br/> [/#list]">Users Online : ${online}</button>
+    --]
+    
+    [#-- Users Online --]
+    <span id="usersOnline" class="""> <span>0</span> Users Online </span>
+    
+    [#-- Channel name --]
+    <span id="currentSectionString" style="display:none">${(currentSectionString)!'none'}</span>
+
+    [#-- Mouse Pointer Template --]
+    <span id="mouse-template" style="display:none;position:absolute;top:0;left:0;">
+     | <small style="vertical-align: top;">{sessionID}</small> 
+    </span>
+    
+    [#-- User Badge Template --]
+    <span id="user-badge-template" class="user-badge" style="display:none">{}</span>
+    
   </div>
   [/#if]
 </ol>

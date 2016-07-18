@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Project Description" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectDescription.js"] /]
 [#assign currentSection = "projects" /]
