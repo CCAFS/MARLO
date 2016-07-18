@@ -12,7 +12,8 @@ marlo.baseUrl=https://localhost/marlo-web/
 # ----------------------------------------------------
 #                   Sections Variables
 
-
+#Pusher API KEY-----------
+pusher.api.key=puserkey
 
 #---------------------------------------------------
 #                   Google api key

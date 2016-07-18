@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,6 +36,8 @@ public class APConfig {
   private static final String EMAIL_HOST = "email.host";
   private static final String EMAIL_PORT = "email.port";
   private static final String GOOGLE_API_KEY = "google.api.key";
+  private static final String PUSH_API_KEY = "pusher.api.key";
+
   private static final String AUTO_SAVE_ACTIVE = "autosave.active";
 
   private static final String PRODUCTION = "marlo.production";
@@ -148,6 +150,15 @@ public class APConfig {
       return properties.getPropertiesAsString(GOOGLE_API_KEY);
     } catch (Exception e) {
       LOG.error("there is not an google api key configured.");
+    }
+    return "";
+  }
+
+  public String getPushApiKey() {
+    try {
+      return properties.getPropertiesAsString(PUSH_API_KEY);
+    } catch (Exception e) {
+      LOG.error("there is not an push api key configured.");
     }
     return "";
   }

@@ -10,7 +10,8 @@ mysql.port=3306
 # -----------------------------
 marlo.baseUrl=https://localhost/marlo-web/
 
-
+#Pusher API KEY-----------
+pusher.api.key=puserkey
 
 #---------------------------------------------------
 #                   Google api key
