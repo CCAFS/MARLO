@@ -15,6 +15,10 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="marlo-content">
+  <div class="container">
+    <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p>[@s.text name="crpLocations.help" /] </p></div> 
+  </div>
+
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
@@ -23,7 +27,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data"]
         
-        <h4 class="sectionTitle">Default Location Levels</h4>
+        <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
         <div class="defaultLocations simpleBox">
           [#list defaultLocationTypes as elementType]
             <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
@@ -31,7 +35,7 @@
           <div class="clearfix"></div>
         </div>
         
-        <h4 class="sectionTitle">Customize ${(crpSession?upper_case)!} location levels</h4>
+        <h4 class="sectionTitle">[@s.text name="crpLocations.customize"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
         <div class="locationsBlock">
           [#-- Locations Levels List --]
           <div class="locations-list">            
