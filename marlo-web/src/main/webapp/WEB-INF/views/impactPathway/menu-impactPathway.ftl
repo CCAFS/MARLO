@@ -77,5 +77,8 @@
   <div id="changeGraph">
         [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Section Graph" noLabel="Full Impact Graph"cssClass="" /]
   </div>
+  
+  <button id="buttonDownload"><a class="glyphicon glyphicon-download-alt"> Download</a></button>
+  
   <div id="impactGraphic"></div>
 </div>

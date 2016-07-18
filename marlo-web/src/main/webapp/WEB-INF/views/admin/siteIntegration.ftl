@@ -2,6 +2,7 @@
 [#assign title = "Site Integration" /]
 [#assign pageLibs = ["select2", "flat-flags"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/siteIntegration.js" ] /]
+[#assign customCSS = [ "${baseUrl}/css/admin/siteIntegration.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "siteIntegration" /]
 
@@ -20,6 +21,11 @@
         [#include "/WEB-INF/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
+      
+      <div class="infoContent col-md-12 text-center" >
+        <div class="info-text glyphicon glyphicon-info-sign"><span> This section is provisional for it to be available when there are more details defined. </span></div>
+      </div>
+      
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">[@s.text name="siteIntegration.title" /]</h4>
