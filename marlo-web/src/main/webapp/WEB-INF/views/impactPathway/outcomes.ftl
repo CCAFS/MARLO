@@ -183,6 +183,7 @@
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        <a href="#" class="addOtherTargetUnit">Add new Target Unit</a>
       </div>
       [#-- Target Value --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>

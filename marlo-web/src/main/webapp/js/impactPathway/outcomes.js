@@ -94,27 +94,33 @@ function attachEvents() {
 
   // New Target unit
   var $targetUnit = $("#dialog-targetUnit");
-  $('select.targetUnit ').on('change', function(e) {
-    var val = $(this).val();
-    if(val == 17) {
-      e.preventDefault();
-      $targetUnit.dialog({
-          modal: true,
-          buttons: [
-            {
-                text: "Add Target",
-                click: function() {
-                  $(this).dialog("close");
-                }
+  $('.addOtherTargetUnit').on('click', function(e) {
+    e.preventDefault();
+    var $select = $(this).parent().find('select');
 
-            // Uncommenting the following line would hide the text,
-            // resulting in the label being used as a tooltip
-            // showText: false
-            }
-          ]
-      });
+    console.log($select);
+    $targetUnit.dialog({
+        modal: true,
+        buttons: [
+          {
+              text: "Add Target",
+              click: function() {
+                $.ajax({
+                    'url': baseURL + '/newTargetUnit.do',
+                    data: {
+                      targetUnitName: $('#targetUnitName').val()
+                    },
+                    success: function(data) {
+                    },
+                    complete: function(data) {
+                      $targetUnit.dialog("close");
+                    }
+                });
+              }
+          }
+        ]
+    });
 
-    }
   });
 
   // Filter SubIDOs
