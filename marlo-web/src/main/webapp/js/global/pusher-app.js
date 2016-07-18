@@ -1,26 +1,11 @@
 /**
  * * MARLO Pusher Initializing
  */
-
 Pusher.logToConsole = debugMode;
 var pusher = new Pusher(PUSHER_KEY, {
   authEndpoint: baseURL + '/pusherAutentication.do',
-  encrypted: true,
-  params: {
-    
-  }
+  encrypted: true
 });
-
-
-var presenceChannel = pusher.subscribe("presence-mousemoves");
-presenceChannel.bind('pusher:subscription_error', function(status) {
-  // console.log(status);
-});
-presenceChannel.bind('pusher:subscription_succeeded', function(members) {
-  var me = presenceChannel.members.me;
-  console.log(me);
-})
-
 
 var globalChannel = pusher.subscribe('presence-global');
 globalChannel.bind('system-reset', function(data) {
@@ -86,3 +71,79 @@ function showMinNotification(timer) {
       }
   });
 }
+
+
+// Pusher Users Online
+
+var me;
+
+var currentSectionString = $('#currentSectionString').text();
+var presenceChannel = pusher.subscribe("presence-"+currentSectionString);
+
+presenceChannel.bind('pusher:subscription_succeeded', function(members) {
+  var me = presenceChannel.members.me;
+  $('#mySessionID span').text(me.id + ' '+me.info.name);
+  members.each(function(member) {
+    if(me.id != member.id){
+      createMousePointer(member);
+    }
+  });
+  updateUsersCount(presenceChannel.members.count);
+
+})
+
+presenceChannel.bind('pusher:member_added', function(member) {
+  createMousePointer(member);
+  updateUsersCount(presenceChannel.members.count);
+}); 
+
+presenceChannel.bind('pusher:member_removed', function(member) {
+  removeMousePointer(member);
+  updateUsersCount(presenceChannel.members.count);
+});   
+
+presenceChannel.bind('client-mouse-moved', function(data) {
+  var $mousePointer = $('#mouse-'+data.sessionID);
+  $mousePointer.css("top", data.y+"px").css("left", data.x+"px");
+  $mousePointer.fadeIn();
+});
+
+document.body.addEventListener('click', onMouseClick, true);
+function onMouseClick(ev){
+  ev = ev || window.event;
+  
+  presenceChannel.trigger("client-mouse-moved", {
+    sessionID: presenceChannel.members.me.id,
+    x: ev.pageX || ev.clientX,
+    y: ev.pageY || ev.clientY
+  });
+
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++ ) {
+      color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function updateUsersCount(count){
+  $('#usersOnline span').text(count);
+}
+
+function createMousePointer(member){
+  var $mousePointer = $('#mouse-template').clone(true).attr('id','mouse-'+member.id );
+  $mousePointer.find("small").text(member.info.name);
+  $mousePointer.css("color", getRandomColor());
+  $mousePointer.appendTo('body');
+}
+
+function removeMousePointer(member){
+  var $mousePointer = $('#mouse-'+member.id);
+  $mousePointer.fadeOut('slow', function(){
+    $mousePointer.remove();
+  });
+}
+

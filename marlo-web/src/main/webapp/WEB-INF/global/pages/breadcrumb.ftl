@@ -18,8 +18,19 @@
   [/#if]
   [#if action.getUsersOnline()??]
   <div class="usersInfo">
-    [#assign users = action.getUsersOnline()]
-    <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.user.firstName)!} ${(us.user.lastName)!} - ${(us.section)!} <br/> [/#list]">Users Online : ${online}</button>
+    [#-- 
+      [#assign users = action.getUsersOnline()]
+      <button type="button" class="btn btn-xs btn-default" title="[#list users as us]${(us.user.firstName)!} ${(us.user.lastName)!} - ${(us.section)!} <br/> [/#list]">Users Online : ${online}</button>
+    --]
+    
+    <p id="usersOnline"> Users Online: <span>0</span></p>
+    
+    <span id="currentSectionString" style="display:none">${(currentSectionString)!'none'}</span>
+
+    <span id="mouse-template" style="display:none;position:absolute;top:0;left:0;">
+     | <small style="font-size: 0.8em;vertical-align: top;">{sessionID}</small> 
+    </span>
+    
   </div>
   [/#if]
 </ol>
