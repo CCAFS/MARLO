@@ -176,15 +176,6 @@ $(document).ready(function() {
 
 });
 
-function isReportingCycle() {
-  var url = window.location.href;
-  return(url.indexOf("/reporting") > -1)
-}
-
-function isPlanningCycle() {
-  var url = window.location.href;
-  return(url.indexOf("/planning") > -1)
-}
 
 /**
  * Validate fields length when click to any button

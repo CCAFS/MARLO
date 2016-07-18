@@ -5,7 +5,6 @@ $(function() {
       heightStyle: "content"
     });
     $('body').on('click', function() {
-
       $('.getSerializeForm').html(getSerializeForm());
     });
   }

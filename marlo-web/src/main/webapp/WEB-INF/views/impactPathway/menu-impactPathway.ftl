@@ -10,8 +10,8 @@
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
 
 
-[#-- Menu--]
-<nav id="secondaryMenu" class="${action.getImpactSectionStatus(actionName, crpProgramID)?string("","hasMissingFields")}">
+[#-- Menu  ${action.getImpactSectionStatus(actionName, crpProgramID)?string("","hasMissingFields")} --]
+<nav id="secondaryMenu" class="">
   <ul>
     <li>
       <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
