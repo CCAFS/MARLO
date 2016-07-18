@@ -1,6 +1,6 @@
 DROP VIEW IF EXISTS `user_permissions`;
-
 CREATE  VIEW `user_permissions` AS 
+
 SELECT    `u`.`id`                                       AS `id`, 
           `r`.`acronym`                                  AS `ro_acronym`, 
           `r`.`id`                                       AS `role_id`, 
@@ -142,7 +142,7 @@ SELECT `u`.`id`                                                                 
        `r`.`acronym`                                                            AS `acronym`,
        `r`.`id`                                                                 AS `rolid`, 
        replace(replace(`p`.`permission`,'{0}',`cp`.`acronym`),'{1}',`pro`.`id`) AS `name_exp_32`,
-       `pro`.`id`                                                               AS `id`, 
+       `pro`.`id`                                                               AS `project_id`, 
        `cp`.`acronym`                                                           AS `crp_acronym`,
        `p`.`id`                                                                 AS `permission_id`
 FROM   (((((((((`users` `u` 
@@ -190,7 +190,7 @@ SELECT `u`.`id`                                                                 
        `r`.`acronym`                                                            AS `acronym`,
        `r`.`id`                                                                 AS `rolid`, 
        replace(replace(`p`.`permission`,'{0}',`cp`.`acronym`),'{1}',`pro`.`id`) AS `name_exp_39`,
-       `pro`.`id`                                                               AS `id`, 
+       `pro`.`id`                                                               AS `project_id`, 
        `cp`.`acronym`                                                           AS `crp_acronym`,
        `p`.`id`                                                                 AS `permission_id`
 FROM   ((((((((`users` `u` 
@@ -235,7 +235,7 @@ SELECT `u`.`id`                                                                 
        `r`.`acronym`                                                            AS `acronym`,
        `r`.`id`                                                                 AS `rolid`, 
        replace(replace(`p`.`permission`,'{0}',`cp`.`acronym`),'{1}',`pro`.`id`) AS `name_exp_46`,
-       `pro`.`id`                                                               AS `id`, 
+       `pro`.`id`                                                               AS `project_id`, 
        `cp`.`acronym`                                                           AS `crp_acronym`,
        `p`.`id`                                                                 AS `permission_id`
 FROM   (((((((((`users` `u` 
