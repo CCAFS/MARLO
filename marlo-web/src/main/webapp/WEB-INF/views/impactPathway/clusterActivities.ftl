@@ -48,6 +48,8 @@
               [#list clusterofActivities as cluster]
                 [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
               [/#list]
+            [#else]
+              [@clusterMacro cluster={} name="clusterofActivities" index=0 /]
             [/#if]
           </div>
           [#-- Add CoA Button --]

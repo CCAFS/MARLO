@@ -226,8 +226,8 @@ public class CrpLocationsAction extends BaseAction {
   public void prepare() throws Exception {
     super.prepare();
 
-    defaultLocationTypes =
-      locElementTypeManager.findAll().stream().filter(let -> let.isActive()).collect(Collectors.toList());
+    defaultLocationTypes = locElementTypeManager.findAll().stream()
+      .filter(let -> let.isActive() && let.getCrp() == null).collect(Collectors.toList());
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());

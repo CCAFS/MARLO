@@ -183,24 +183,44 @@ function yesnoEventLocations(value,item) {
     $aditional.slideDown("slow");
     $t.val(value);
   } else {
-    $("#dialog-confirm").dialog({
-        resizable: false,
-        height: 120,
-        modal: true,
-        buttons: {
-            "Yes": function() {
-              item.siblings().removeClass('radio-checked');
-              item.addClass('radio-checked');
-              $aditional.slideUp("slow");
-              $t.val(value);
-              $(this).dialog("close");
+    var locElements = $t.parents('.locationLevel').find('.locElement').length;
+    if(locElements > 0) {
+      noty({
+          text: 'If you want to proceed with this action, '
+              + locElements
+              + ' locations  will be removed from the system. Please be aware you may have projects associated to these locations.',
+          type: 'confirm',
+          dismissQueue: true,
+          layout: 'center',
+          theme: 'relax',
+          modal: true,
+          buttons: [
+              {
+                  addClass: 'btn btn-primary',
+                  text: 'Proceed',
+                  onClick: function($noty) {
+                    item.siblings().removeClass('radio-checked');
+                    item.addClass('radio-checked');
+                    $aditional.slideUp("slow");
+                    $t.val(value);
+                    $noty.close();
+                  }
+              }, {
+                  addClass: 'btn btn-danger',
+                  text: 'Cancel',
+                  onClick: function($noty) {
+                    $noty.close();
+                  }
+              }
+          ]
+      });
 
-            },
-            Cancel: function() {
-              $(this).dialog("close");
-            }
-        }
-    });
+    } else {
+      item.siblings().removeClass('radio-checked');
+      item.addClass('radio-checked');
+      $aditional.slideUp("slow");
+      $t.val(value);
+    }
   }
 }
 

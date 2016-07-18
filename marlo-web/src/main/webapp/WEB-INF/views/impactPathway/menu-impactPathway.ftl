@@ -10,8 +10,8 @@
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
 
 
-[#-- Menu--]
-<nav id="secondaryMenu" class="${action.getImpactSectionStatus(actionName, crpProgramID)?string("","hasMissingFields")}">
+[#-- Menu  ${action.getImpactSectionStatus(actionName, crpProgramID)?string("","hasMissingFields")} --]
+<nav id="secondaryMenu" class="">
   <ul>
     <li>
       <p>[@s.text name="impactPathway.menu.title"/] <span class="selectedProgram">(${(selectedProgram.acronym)!}) <span class="glyphicon glyphicon-chevron-down"></span></span></p>
@@ -77,5 +77,8 @@
   <div id="changeGraph">
         [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Section Graph" noLabel="Full Impact Graph"cssClass="" /]
   </div>
+  
+  <button id="buttonDownload"><a class="glyphicon glyphicon-download-alt"> Download</a></button>
+  
   <div id="impactGraphic"></div>
 </div>

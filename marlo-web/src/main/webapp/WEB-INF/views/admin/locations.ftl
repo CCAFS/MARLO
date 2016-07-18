@@ -26,7 +26,7 @@
         <h4 class="sectionTitle">Default Location Levels</h4>
         <div class="defaultLocations simpleBox">
           [#list defaultLocationTypes as elementType]
-            [#if !elementType.crp??]<p>${elementType.name}</p>[/#if]
+            <p><span class="glyphicon glyphicon-ok-circle"></span> ${elementType.name}</p>
           [/#list]
           <div class="clearfix"></div>
         </div>
@@ -103,7 +103,7 @@
       <div class="clearfix"></div>
       [#-- confirm popup --]
       <div id="dialog-confirm"  style="display:none;">
-        <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span><strong> Are you sure?</strong></p>
+        <p><span class="glyphicon glyphicon-warning-sign" style="float:left; margin:0 7px 20px 0;"></span> If you want to proceed with this action, <span class="locElements"></span> locations elements will be removed by the system.  </p>
       </div>
       [#-- Locations List --]
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">

@@ -58,3 +58,16 @@
     top: 2%;
     z-index: 100;
 }
+
+#buttonDownload {
+    position: absolute;
+    right: 1%;
+    top: 90%;
+    z-index: 100;
+    background-color: #efefef;
+    color: #292929;
+}
+
+#buttonDownload a {
+    text-decoration: none;
+}

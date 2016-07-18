@@ -207,6 +207,18 @@ $(function() { // on dom ready
         }
       }
     }
+
+    // button to print
+
+    $("#buttonDownload").on("click", function() {
+      var image = new Image();
+      image = cy.jpg();
+      var name = "impactPathway_Graphic";
+      $('#buttonDownload a').attr({
+          href: image,
+          download: name
+      })
+    });
   }
 
   // EVENTS

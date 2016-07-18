@@ -31,11 +31,11 @@
   	      		 [/#list]
   	      	</div>
   	      	[#--Select an institution --]
-  	      	[#if editable]
+  	      	[#if editable]  	      	
         		<div class="form-group">
-        		  [@customForm.select name="" showTitle=false placeholder="ppaPartners.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="composedName" editable=true  /]        		
-
-        			<div class="clearfix"></div>
+        		<div class="clearfix"></div>
+        		<label >Select an institution:</label>
+        		  [@customForm.select name="" showTitle=false placeholder="form.select.placeholder" className="selectpicker col-md-12" listName="institutions" keyFieldName="id" displayFieldName="composedName" editable=true  /]
       			</div>
       			[/#if]
       	</div>
