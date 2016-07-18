@@ -20,6 +20,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendPusher;
 
+import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 public class PusherAutentication extends BaseAction {
@@ -30,7 +34,8 @@ public class PusherAutentication extends BaseAction {
 
   public String socketID;
   public String channel;
-  public String jsonReturn;
+  public HashMap<String, Object> jsonString;
+
 
   public SendPusher sendPusher;
 
@@ -43,36 +48,22 @@ public class PusherAutentication extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    jsonReturn = sendPusher.autenticate(socketID, channel, this.getCurrentUser());
+    socketID = this.getRequest().getParameter("socket_id");
+    channel = this.getRequest().getParameter("channel_name");
+    jsonString = new HashMap<>();
+
+
+    String jsonReturn =
+      sendPusher.autenticate(socketID, channel, this.getCurrentUser(), this.getRequest().getSession().getId());
+    Gson gson = new GsonBuilder().create();
+    jsonString = gson.fromJson(jsonReturn, HashMap.class);
+
+    System.out.println(jsonString);
     return SUCCESS;
   }
 
-
-  public String getChannel() {
-    return channel;
-  }
-
-
-  public String getJsonReturn() {
-    return jsonReturn;
-  }
-
-
-  public String getSocketID() {
-    return socketID;
-  }
-
-
-  public void setChannel(String channel) {
-    this.channel = channel;
-  }
-
-  public void setJsonReturn(String jsonReturn) {
-    this.jsonReturn = jsonReturn;
-  }
-
-  public void setSocketID(String socketID) {
-    this.socketID = socketID;
+  public HashMap<String, Object> getJsonString() {
+    return jsonString;
   }
 
 

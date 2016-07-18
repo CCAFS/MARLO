@@ -41,6 +41,7 @@
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
+        <param name="root">jsonString</param>
       </result>
     </action>
 

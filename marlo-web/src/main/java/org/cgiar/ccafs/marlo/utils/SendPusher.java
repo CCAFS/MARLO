@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.utils;
 import org.cgiar.ccafs.marlo.data.model.User;
 
 import java.util.Collections;
+import java.util.HashMap;
 
 import com.google.inject.Inject;
 import com.pusher.rest.Pusher;
@@ -29,8 +30,8 @@ import com.pusher.rest.data.Result.Status;
 public class SendPusher {
 
   private String apiKey;
-  private final String appId = "225127";
-  private final String apiSecret = "07c95a64b08e84a50449";
+  private final String appId = "225146";
+  private final String apiSecret = "c80a05a0aa0ea876b91c";
   private APConfig config;
 
   @Inject
@@ -39,9 +40,11 @@ public class SendPusher {
     apiKey = config.getPushApiKey();
   }
 
-  public String autenticate(String socketID, String channel, User user) {
+  public String autenticate(String socketID, String channel, User user, String idSession) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
-    PresenceUser prenceUser = new PresenceUser(user.getId(), user);
+    HashMap<String, Object> userInfo = new HashMap<>();
+    userInfo.put("name", user.getComposedCompleteName());
+    PresenceUser prenceUser = new PresenceUser(idSession, userInfo);
     return pusher.authenticate(socketID, channel, prenceUser);
 
   }

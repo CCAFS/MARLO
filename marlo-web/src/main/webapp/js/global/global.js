@@ -116,7 +116,7 @@ $(document).ready(function() {
         return $(this).attr('title');
       }
   });
-  
+
   yesnoEvent = function(target) {
     // var isChecked = $(this).is(':checked');
     $t = $(target);
@@ -175,7 +175,6 @@ $(document).ready(function() {
   setFormHash();
 
 });
-
 
 /**
  * Validate fields length when click to any button
@@ -272,84 +271,8 @@ function setWordCounterToInputs(cssName) {
   });
 }
 
-/**
- * * MARLO Pusher Initializing
- */
-
-Pusher.logToConsole = debugMode;
-var pusher = new Pusher(PUSHER_KEY, {
-  encrypted: true
-});
-
-var globalChannel = pusher.subscribe('global');
-globalChannel.bind('system-reset', function(data) {
-  showSystemResetMessage(data);
-});
-
-function showSystemResetMessage(data) {
-  var diffTime = data.diffTime
-  if(diffTime <= 0){
-    return
-  }
-  var $timer = $('#timer-content').clone(true).removeAttr('id');
-  $timer.find('.message').html(data.message);
-  $timer.find('.countdown').countdown({
-      date: +(new Date) + (1000*diffTime),
-      render: function(data) {
-        $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
-        if(this.leadingZeros(data.min, 1) == 0) {
-          $(this.el).addClass('ended animated infinite flash');
-        } else {
-          $(this.el).removeClass('ended animated infinite flash');
-        }
-      }
-  });
-  showFullNotification($timer);
-
-}
-  
-function showFullNotification(timer) {
-  noty({
-      text: $(timer),
-      type: 'alert',
-      dismissQueue: true,
-      layout: 'center',
-      theme: 'relax',
-      modal: true,
-      buttons: [
-        {
-            addClass: 'btn btn-primary',
-            text: 'Roger that',
-            onClick: function($noty) {$noty.close();}
-        }
-      ],
-      callback: {
-        afterClose: function() {
-          document.cookie = 'messageMin=true';
-          showMinNotification($(timer));
-        },
-      },
-  });
-}
-
-function showMinNotification(timer) {
-  $(timer).find('.countdown').addClass('small');
-  $(timer).find('.message').hide();
-  noty({
-      text: $(timer),
-      theme: 'relax',
-      layout: 'topCenter',
-      animation: {
-          open: 'animated fadeInUp',
-          close: 'animated fadeOutUp'
-      }
-  });
-}
-
-
-
 /** secondaryMenu * */
 
-$('.selectedProgram, selectedProject').on('click', function(){
+$('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
 });
