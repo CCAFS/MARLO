@@ -90,16 +90,15 @@
 			
 			<interceptor-stack name="projectsStack">
         <interceptor-ref name="i18nFile" />
-        <!-- interceptor-ref name="validCrp" /-->
+        <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
-        <!-- interceptor-ref name="validSessionCrp" /-->
-        <!-- interceptor-ref name="canEditImpactPathway" /-->
+        <interceptor-ref name="validSessionCrp" />
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
         <interceptor-ref name="trimInputs" />
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
-
+     
 		</interceptors>
 
 		<default-action-ref name="login" />
