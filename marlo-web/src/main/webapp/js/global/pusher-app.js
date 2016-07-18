@@ -2,6 +2,7 @@
  * * MARLO Pusher Initializing
  */
 Pusher.logToConsole = debugMode;
+
 var pusher = new Pusher(PUSHER_KEY, {
   authEndpoint: baseURL + '/pusherAutentication.do',
   encrypted: true
@@ -87,17 +88,20 @@ presenceChannel.bind('pusher:subscription_succeeded', function(members) {
     if(me.id != member.id){
       createMousePointer(member);
     }
+    createBadge(member);
   });
   updateUsersCount(presenceChannel.members.count);
 
 })
 
 presenceChannel.bind('pusher:member_added', function(member) {
+  createBadge(member);
   createMousePointer(member);
   updateUsersCount(presenceChannel.members.count);
 }); 
 
 presenceChannel.bind('pusher:member_removed', function(member) {
+  removeBadge(member);
   removeMousePointer(member);
   updateUsersCount(presenceChannel.members.count);
 });   
@@ -108,10 +112,9 @@ presenceChannel.bind('client-mouse-moved', function(data) {
   $mousePointer.fadeIn();
 });
 
-document.body.addEventListener('click', onMouseClick, true);
+// document.body.addEventListener('click', onMouseClick, true);
 function onMouseClick(ev){
   ev = ev || window.event;
-  
   presenceChannel.trigger("client-mouse-moved", {
     sessionID: presenceChannel.members.me.id,
     x: ev.pageX || ev.clientX,
@@ -147,3 +150,18 @@ function removeMousePointer(member){
   });
 }
 
+function createBadge(member){
+  var $badge = $('#user-badge-template').clone(true).attr('id','user-badge-'+member.id );
+  $badge.text((member.info.name).replace(/[^A-Z]/g, ''));
+  $badge.attr('title', member.info.name);
+  $badge.css("background-color", getRandomColor());
+  $badge.appendTo('.breadcrumb .usersInfo');
+  $badge.show('slow');
+}
+
+function removeBadge(member){
+  var $badge = $('#user-badge-'+member.id);
+  $badge.fadeOut('slow', function(){
+    $badge.remove();
+  });
+}

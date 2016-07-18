@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${crpProgramID}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js"] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css","${baseUrl}/css/global/impactGraphic.css" ] /]

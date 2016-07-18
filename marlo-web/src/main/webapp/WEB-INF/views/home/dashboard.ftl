@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/home/dashboard.js" ] /]
 [#assign currentSection = "home" /]
