@@ -54,4 +54,3 @@ INSERT INTO `srf_target_units` VALUES ('14', 'Practices', '1', '3', '2016-09-20 
 INSERT INTO `srf_target_units` VALUES ('15', 'Site-specific targeted CSA technologies/practices', '1', '3', '2016-09-26 20:31:44', '3', 'a');
 INSERT INTO `srf_target_units` VALUES ('16', 'Subnational public/private initiatives', '1', '3', '2016-10-03 05:58:06', '3', 'a');
 INSERT INTO `srf_target_units` VALUES ('17', 'Technologies', '1', '3', '2016-10-09 15:24:28', '3', 'a');
-INSERT INTO `srf_target_units` VALUES ('18', 'Other (Please specify)', '1', '1', '2016-07-18 16:33:22', '1', 'Other Target Unit');

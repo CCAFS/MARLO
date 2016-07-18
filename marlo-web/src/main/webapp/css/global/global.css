@@ -5704,6 +5704,16 @@ h4.testEnvironment {
   padding: 3px 6px;
   border-radius: 2px;
   margin-left: 2px;
+  vertical-align: middle;
   color: #fff;
   text-shadow: 0px 0px  1px #a09c9c;
+}
+
+span#usersOnline {
+  width: 90px;
+  font-size: 0.9em;
+  line-height: 1em;
+  display: block;
+  font-style: italic;
+  float: left;
 }

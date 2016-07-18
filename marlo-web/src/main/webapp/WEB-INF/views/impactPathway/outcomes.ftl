@@ -183,7 +183,7 @@
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
-        <a href="#" class="addOtherTargetUnit">Add new Target Unit</a>
+        <div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>
       </div>
       [#-- Target Value --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
@@ -251,7 +251,10 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      <div class="col-md-4">
+        [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        <div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>
+      </div>
       [#-- Target Value --]
       <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
 

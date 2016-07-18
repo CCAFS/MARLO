@@ -124,3 +124,13 @@ p.contributioRem {
     margin-bottom: 15px;
 }
 
+
+
+.addOtherTargetUnit {
+  font-size: 0.9em;
+  margin-top: 3px;
+  font-style: italic;
+}
+.addOtherTargetUnit a{
+  color: #8ea786;
+}

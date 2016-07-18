@@ -8,8 +8,7 @@ function init() {
   attachEvents();
 
   /* Init Select2 plugin */
-  $('outcomes-list select').select2();
-
+  // $('outcomes-list select').select2();
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
 
@@ -97,25 +96,30 @@ function attachEvents() {
   $('.addOtherTargetUnit').on('click', function(e) {
     e.preventDefault();
     var $select = $(this).parent().find('select');
-
-    console.log($select);
     $targetUnit.dialog({
         modal: true,
         buttons: [
           {
               text: "Add Target",
               click: function() {
-                $.ajax({
-                    'url': baseURL + '/newTargetUnit.do',
-                    data: {
-                      targetUnitName: $('#targetUnitName').val()
-                    },
-                    success: function(data) {
-                    },
-                    complete: function(data) {
-                      $targetUnit.dialog("close");
-                    }
-                });
+                var targetUnitName = $.trim($('#targetUnitName').val());
+                if(targetUnitName != "") {
+                  $.ajax({
+                      'url': baseURL + '/newTargetUnit.do',
+                      data: {
+                        targetUnitName: targetUnitName
+                      },
+                      success: function(data) {
+                        $('select.targetUnit').each(function(i,select) {
+                          $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name);
+                        });
+                        $select.val(data.newTargetUnit.id);
+                      },
+                      complete: function(data) {
+                        $targetUnit.dialog("close");
+                      }
+                  });
+                }
               }
           }
         ]
@@ -149,9 +153,9 @@ function attachEvents() {
 function addOutcome() {
   var $list = $('.outcomes-list');
   var $item = $('#outcome-template').clone(true).removeAttr("id");
-  $item.find('select').select2({
-    width: '100%'
-  });
+  // $item.find('select').select2({
+  // width: '100%'
+  // });
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
@@ -173,9 +177,9 @@ function removeOutcome() {
 function addMilestone() {
   var $list = $(this).parents('.outcome').find('.milestones-list');
   var $item = $('#milestone-template').clone(true).removeAttr("id");
-  $item.find('select').select2({
-    width: '100%'
-  });
+  // $item.find('select').select2({
+  // width: '100%'
+  // });
   $list.append($item);
   updateAllIndexes();
   $item.show('slow');
@@ -199,9 +203,9 @@ function removeMilestone() {
 function addSubIdo() {
   var $list = $(this).parents('.outcome').find('.subIdos-list');
   var $item = $('#subIdo-template').clone(true).removeAttr("id");
-  $item.find('select').select2({
-    width: '100%'
-  });
+  // $item.find('select').select2({
+  // width: '100%'
+  // });
   $item.find('input.contribution').percentageInput();
   $list.append($item);
   updateAllIndexes();
