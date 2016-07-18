@@ -46,6 +46,8 @@
             [#list outcomes as outcome]
               [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
             [/#list]
+          [#else]
+            [@outcomeMacro outcome={} name="outcomes" index=0 /]
           [/#if]
           </div>
           [#-- Add Outcome Button --]
@@ -201,7 +203,8 @@
         [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
       [/#list]
     [#else]
-      <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p>
+      [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+      [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
     [/#if]
     </div>
     [#-- Add Sub-IDO Button --]
