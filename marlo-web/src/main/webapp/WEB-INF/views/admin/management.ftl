@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Management" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["vanilla-color-picker"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]

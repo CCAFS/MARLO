@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "PPA Partners" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["bootstrap-select"] /]
 [#assign customJS = [ "${baseUrl}/js/admin/ppaPartners.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/ppaPartners.css" ] /]

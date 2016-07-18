@@ -134,6 +134,14 @@
   [/#list]
   </div>      
 </div>
+
+[#-- Add other target unit --]
+<div id="dialog-targetUnit" class="text-center" style="display:none" title="New Target Unit">  
+  <div class="form-group text-center">
+    <label for="targetUnitName">Insert the new Target Unit</label>
+    <input type="text" class="form-control" id="targetUnitName" placeholder="">
+  </div>
+</div>
       
 [#-- Outcome Template --]
 [@outcomeMacro outcome={} name="" index=0 isTemplate=true /]
@@ -173,7 +181,9 @@
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      <div class="col-md-4">
+        [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+      </div>
       [#-- Target Value --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
     </div>  
@@ -238,11 +248,11 @@
     </div>
     <div class="row form-group">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text" showTitle=false  i18nkey="outcome.milestone.inputTargetYear.placeholder" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id" showTitle=false placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]</div>
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text" showTitle=false placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
 
     </div>
   </div>

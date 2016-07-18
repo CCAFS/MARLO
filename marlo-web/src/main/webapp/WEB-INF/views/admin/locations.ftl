@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "Locations" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrl}/js/admin/locations.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/locations.css" ] /]

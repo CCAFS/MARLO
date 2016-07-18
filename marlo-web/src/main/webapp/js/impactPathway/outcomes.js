@@ -92,6 +92,31 @@ function attachEvents() {
     $("#subIDOs-graphic").dialog("open");
   });
 
+  // New Target unit
+  var $targetUnit = $("#dialog-targetUnit");
+  $('select.targetUnit ').on('change', function(e) {
+    var val = $(this).val();
+    if(val == 17) {
+      e.preventDefault();
+      $targetUnit.dialog({
+          modal: true,
+          buttons: [
+            {
+                text: "Add Target",
+                click: function() {
+                  $(this).dialog("close");
+                }
+
+            // Uncommenting the following line would hide the text,
+            // resulting in the label being used as a tooltip
+            // showText: false
+            }
+          ]
+      });
+
+    }
+  });
+
   // Filter SubIDOs
   $("#filterForm").on("change", filter);
   // Select a subIdo

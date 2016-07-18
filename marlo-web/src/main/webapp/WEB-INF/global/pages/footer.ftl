@@ -96,8 +96,9 @@
           <h3>Debug Panel</h3>
           <div>
             <ul class="list-unstyled">
-              <li>Editable: ${editable?string}</li>
-              <li>canEdit: ${canEdit?string}</li>
+              <li><strong>canEdit:</strong> ${canEdit?string}</li>
+              <li><strong>Editable:</strong> ${editable?string}</li>
+              <li><strong>currentSectionString:</strong> ${(currentSectionString)!}</li>
             </ul> 
           </div>
           <h3>Form outputs</h3>

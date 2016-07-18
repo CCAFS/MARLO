@@ -1,5 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Admin" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrl}/js/superadmin/marloBoard.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/superadmin/marloBoard.css" ] /]

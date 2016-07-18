@@ -12,6 +12,15 @@
         <param name="edit">true</param>
       </result>
     </action>
+    
+    <action name="notifications" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <!-- interceptor-ref name="autoLogin" / -->   
+      <result name="input">/WEB-INF/views/superadmin/notifications.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">notifications</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
 
   </package>
 </struts>
