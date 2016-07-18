@@ -1,6 +1,22 @@
 $(document).ready(init);
+var username = $("input[name='user.email']");
 function init() {
   initJreject();
+
+  var cookieTime = 1;
+
+  if(verifyCookie("CRP") == true) {
+    var crpCookie = $("li#" + getCookie("CRP"));
+    console.log(crpCookie);
+    crpCookie.addClass('selected').siblings().removeClass('selected');
+    $('#crp').val(crpCookie.attr('id').split("-")[1]);
+    crpCookie.parents('.loginForm').find('.secondForm').slideDown();
+    if(verifyCookie("username.email") == true) {
+      username.val(getCookie("username.email"));
+    } else {
+      username.val(getCookie(""));
+    }
+  }
 
   $('.crpGroup ul li').on('click', function() {
     // Add 'selected' class and removing sibling's class if any
@@ -9,7 +25,17 @@ function init() {
     $('#crp').val($(this).attr('id').split('-')[1]);
     // Show Second Form (Email, password & login button)
     $(this).parents('.loginForm').find('.secondForm').slideDown();
+
+    // Create crp cookie
+    setCookie("CRP", $(this).attr('id'), cookieTime);
+
   });
+
+  // Username cookie
+  username.keyup(function(e) {
+    setCookie("username.email", username.val(), cookieTime);
+  });
+
 }
 
 function initJreject() {
@@ -39,4 +65,19 @@ function initJreject() {
           'firefox', 'chrome', 'opera', 'msie', 'safari'
       ]
   });
+}
+
+function verifyCookie(nameCookie) {
+  if(getCookie(nameCookie) != "") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function setCookie(cname,cvalue,mins) {
+  var d = new Date();
+  d.setTime(d.getTime() + (mins * 60 * 1000));
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + "; " + expires;
 }

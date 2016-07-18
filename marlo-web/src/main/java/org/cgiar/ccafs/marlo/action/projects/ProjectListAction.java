@@ -16,7 +16,10 @@
 package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -33,19 +36,22 @@ public class ProjectListAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
+  private Crp loggedCrp;
+
   // Managers
   private ProjectManager projectManager;
+  private CrpManager crpManager;
 
   // Front-end
   private List<Project> myProjects;
-
   private List<Project> allProjects;
 
 
   @Inject
-  public ProjectListAction(APConfig config, ProjectManager projectManager) {
+  public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
     super(config);
     this.projectManager = projectManager;
+    this.crpManager = crpManager;
   }
 
   public List<Project> getAllProjects() {
@@ -59,6 +65,9 @@ public class ProjectListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     myProjects = new ArrayList<>();
     // TODO: Projects that the user have privileges
