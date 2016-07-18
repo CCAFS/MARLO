@@ -2,7 +2,7 @@ $(document).ready(init);
 var partnerSelect, partnerContent;
 
 function init() {
-  partnerSelect = $("#ccafs_ppaPartners_");
+  partnerSelect = $("select");
   partnerSelect.attr("data-live-search", "true")
   partnerContent = $("#partnerContent");
   /* Declaring Events */
