@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.utils;
 
 import org.cgiar.ccafs.marlo.data.model.User;
 
-import java.util.Collections;
 import java.util.HashMap;
 
 import com.google.inject.Inject;
@@ -51,10 +50,10 @@ public class SendPusher {
 
   }
 
-  public boolean sendPush(String channel, String event, String message) {
+  public boolean sendPush(String channel, String event, HashMap<String, String> message) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
     pusher.setEncrypted(true);
-    Result result = pusher.trigger(channel, event, Collections.singletonMap("message", message));
+    Result result = pusher.trigger(channel, event, message);
     return result.getStatus().compareTo(Status.SUCCESS) == 0;
 
   }

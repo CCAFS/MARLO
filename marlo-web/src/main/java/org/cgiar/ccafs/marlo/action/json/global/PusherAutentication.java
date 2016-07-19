@@ -51,14 +51,17 @@ public class PusherAutentication extends BaseAction {
     socketID = this.getRequest().getParameter("socket_id");
     channel = this.getRequest().getParameter("channel_name");
     jsonString = new HashMap<>();
-
+    /*
+     * HashMap<String, String> message = new HashMap<>();
+     * message.put("message", "Holi vamos a reinciar!");
+     * message.put("diffTime", "30");
+     * sendPusher.sendPush("presence-global", "system-reset", message);
+     */
 
     String jsonReturn =
       sendPusher.autenticate(socketID, channel, this.getCurrentUser(), this.getRequest().getSession().getId());
     Gson gson = new GsonBuilder().create();
     jsonString = gson.fromJson(jsonReturn, HashMap.class);
-
-    System.out.println(jsonString);
     return SUCCESS;
   }
 
