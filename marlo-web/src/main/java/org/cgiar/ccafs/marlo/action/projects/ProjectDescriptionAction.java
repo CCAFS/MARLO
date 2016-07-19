@@ -27,11 +27,13 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -92,6 +94,31 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
+  public File getFile() {
+    return file;
+  }
+
+
+  public String getFileContentType() {
+    return fileContentType;
+  }
+
+
+  public String getFileFileName() {
+    return fileFileName;
+  }
+
+
+  public File getFileReporting() {
+    return fileReporting;
+  }
+
+
+  public String getFileReportingFileName() {
+    return fileReportingFileName;
+  }
+
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -133,21 +160,27 @@ public class ProjectDescriptionAction extends BaseAction {
     // Get current CRP
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-
-
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     } catch (Exception e) {
 
     }
-
     project = projectManager.getProjectById(projectID);
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
     programFlagships = new ArrayList<>();
-    programFlagships.addAll(loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
+
+    projectTypes = new HashMap<>();
+    projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
+    projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
+    projectTypes.put(APConstants.PROJECT_CCAFS_COFUNDED, this.getText("project.projectType.cofounded"));
+
+
   }
 
 
@@ -159,6 +192,31 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
+  }
+
+
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
+  }
+
+
+  public void setFileReporting(File fileReporting) {
+    this.fileReporting = fileReporting;
+  }
+
+
+  public void setFileReportingFileName(String fileReportingFileName) {
+    this.fileReportingFileName = fileReportingFileName;
   }
 
 

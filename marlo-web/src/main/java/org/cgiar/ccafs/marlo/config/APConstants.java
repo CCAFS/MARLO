@@ -57,6 +57,10 @@ public final class APConstants {
   // Outlook institutional email
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
+  // Types of project
+  public static final String PROJECT_CORE = "CCAFS_CORE";
+  public static final String PROJECT_CCAFS_COFUNDED = "CCAFS_COFUNDED";
+  public static final String PROJECT_BILATERAL = "BILATERAL";
 
   // Request variables
   public static final String EDITABLE_REQUEST = "edit";
