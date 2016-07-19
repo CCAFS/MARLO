@@ -5701,12 +5701,12 @@ h4.testEnvironment {
 }
 
 .user-badge {
-  padding: 3px 6px;
+  padding: 2px 6px;
   border-radius: 2px;
   margin-left: 2px;
   vertical-align: middle;
   color: #fff;
-  text-shadow: 0px 0px  1px #a09c9c;
+  text-shadow: 0px 0px  1px #7d7979;
 }
 
 span#usersOnline {
@@ -5716,4 +5716,5 @@ span#usersOnline {
   display: block;
   font-style: italic;
   float: left;
+  text-align: center;
 }
