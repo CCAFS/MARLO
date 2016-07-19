@@ -115,11 +115,22 @@
     <br />
     [#-- Program Acronym & Name --]
     <div class="form-group">
-      <label for="">[@s.text name="regionalMapping.CrpProgram.name"/]</label>
+    
       <div class="row">
-        <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=editable /]</div>
-        <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=editable /]</div>
-        <div class="col-sm-1"><div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div></div>
+        <div class="col-sm-2">
+          <label class="abbreviation" for="">[@s.text name="CrpProgram.inputAcronym"/]<span class="red">*</span></label>
+          [@customForm.input name="${customName}.acronym" type="text" i18nkey="regionalMapping.CrpProgram.name" showTitle=false placeholder="regionalMapping.CrpProgram.inputAcronym.placeholder" className="acronym-input" required=true editable=editable /]
+        </div>
+        
+        <div class="col-sm-9">
+          <label class="regionalName" for="">Name<span class="red">*</span></label>
+          [@customForm.input name="${customName}.name" type="text" showTitle=false placeholder="regionalMapping.CrpProgram.inputName.placeholder" className="name-input" required=true editable=editable /]
+        </div>
+        
+        <div class="col-sm-1">
+          <label class="color" for="">Color</label>
+          <div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div>
+        </div>
       </div>
     </div>
     [#-- Hidden inputs  --]

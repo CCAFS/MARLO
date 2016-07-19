@@ -245,18 +245,18 @@
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=false className="milestone-statement limitWords-100" editable=editable /]
     </div>
     <div class="row form-group">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=false editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
         <div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>
       </div>
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=false editable=editable /]</div>
 
     </div>
   </div>
@@ -282,9 +282,9 @@
     <br />
     <div class="form-group">
       <div class="subIdoBlock" >
-        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:</label>
-        <div class="subIdoSelected" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=65 substr=" "/]</div>
-        <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}"/>
+        <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:<span class="red">*</span></label>
+        <div class="subIdoSelected selectSubIDO" title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"<i>Select a subIDO clicking the button...</i>" maxPos=65 substr=" "/]</div>
+        <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}" />
       </div>
       <div class="buttonSubIdo-block" >
        [#if editable]

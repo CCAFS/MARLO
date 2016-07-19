@@ -23,7 +23,7 @@
       </div>
       <div class="col-md-9">
       
-      <div class=" col-md-12 glyphicon glyphicon-info-sign alert alert-info"><span> This section is provisional for it to be available when there are more details defined. </span></div>
+      <div class="text-center col-md-12  alert alert-info"><span> This section is provisional for it to be available when there are more details defined. </span></div>
       
       
         [@s.form action=actionName enctype="multipart/form-data" ]  
