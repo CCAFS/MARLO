@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
@@ -119,6 +120,28 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
+  /**
+   * This method returns an array of flagship ids depending on the project.flagships attribute.
+   * 
+   * @return an array of integers.
+   */
+  public long[] getFlagshipIds() {
+
+    List<ProjectFocus> projectFocuses = project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+
+    if (projectFocuses != null) {
+      long[] ids = new long[projectFocuses.size()];
+      for (int c = 0; c < ids.length; c++) {
+        ids[c] = projectFocuses.get(c).getCrpProgram().getId();
+      }
+      return ids;
+    }
+    return null;
+  }
+
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
@@ -152,7 +175,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public Map<String, String> getProjectTypes() {
     return projectTypes;
   }
-
 
   @Override
   public void prepare() throws Exception {

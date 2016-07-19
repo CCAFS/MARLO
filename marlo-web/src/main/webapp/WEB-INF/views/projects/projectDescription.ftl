@@ -147,7 +147,7 @@
                   <div class="checkboxGroup">  
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagships"/]
-                      [@s.checkboxlist name="project.flagships" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
+                      [@s.checkboxlist name="project.flagships.id" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]
