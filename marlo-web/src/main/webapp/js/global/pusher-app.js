@@ -13,6 +13,15 @@ globalChannel.bind('client-system-reset', function(data) {
   showSystemResetMessage(data);
 });
 
+globalChannel.bind('client-simple-notification', function(data) {
+  noty({
+    text: data.message,
+    theme: 'relax',
+    type : 'information',
+    layout: 'topRight',
+});
+});
+
 function showSystemResetMessage(data) {
   var diffTime = data.diffTime
   if(diffTime <= 0){
