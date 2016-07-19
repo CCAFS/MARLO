@@ -3,7 +3,6 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrl}/js/superadmin/notifications.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/notifications.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "notifications" /]
 
@@ -20,6 +19,7 @@
 </div>
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
+
 <section class="marlo-content">
   <div class="container"> 
     <div class="row">
@@ -29,15 +29,20 @@
       <div class="col-md-9">
       
         <h4 class="sectionTitle">System Reset</h4>
-        <div class="borderBox ">
+        <div id="systemReset" class="borderBox ">
          <div class="form-group">
           [@customForm.textArea name="" i18nkey="notifications.systemReset.message" placeholder="notifications.systemReset.message.placeholder" required=true className="systemReset-message" /]
          </div>
          <div class="form-group">
-          [@customForm.input name="" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
+           <div class="row">
+           	<div class="col-md-4">
+              [@customForm.input name="" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
+           	</div>
+           </div>
          </div>
+         <br />
          <div class="form-group">
-          
+          <button type="button" class="btn btn-primary">[@s.text name="form.buttons.sendMessage" /]</button>
          </div>
         </div>
 
@@ -46,5 +51,5 @@
   </div>
 </section>
 
-[#include "/WEB-INF/global/pages/footer.ftl" /]
 
+[#include "/WEB-INF/global/pages/footer.ftl" /]

@@ -9,7 +9,7 @@ var pusher = new Pusher(PUSHER_KEY, {
 });
 
 var globalChannel = pusher.subscribe('presence-global');
-globalChannel.bind('system-reset', function(data) {
+globalChannel.bind('client-system-reset', function(data) {
   showSystemResetMessage(data);
 });
 

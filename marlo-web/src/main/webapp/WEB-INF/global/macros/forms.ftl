@@ -37,7 +37,7 @@
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
-      <textarea rows="4" name="${name}" id="${name}" [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="${placeholder}" />${customValue}</textarea>
+      <textarea rows="4" name="${name}" id="${name}" [#if disabled]disabled="disabled"[/#if]  class="[#if className != "-NULL"]${className}[/#if] form-control input-sm ${required?string('required','optional')}" placeholder="[@s.text name=placeholder /]" />${customValue}</textarea>
     [#else]
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
