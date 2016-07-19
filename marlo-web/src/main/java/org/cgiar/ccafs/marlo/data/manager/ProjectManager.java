@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -61,6 +61,15 @@ public interface ProjectManager {
    * @return a Project object.
    */
   public Project getProjectById(long projectID);
+
+  /**
+   * Get the list of projects that the user can access and edit.
+   * 
+   * @param userId - The user Id.
+   * @param crp - The crp acronym that the user has logged.
+   * @return a Project List.
+   */
+  public List<Project> getUserProjects(long userId, String crp);
 
   /**
    * This method saves the information of the given project

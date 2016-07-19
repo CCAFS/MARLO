@@ -23,7 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,15 +69,12 @@ public class ProjectListAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    myProjects = new ArrayList<>();
-    // TODO: Projects that the user have privileges
+    myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+    Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
-    allProjects = new ArrayList<>();
     if (projectManager.findAll() != null) {
-      List<Project> projects = projectManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (Project project : projects) {
-        allProjects.add(project);
-      }
+      allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+      allProjects.removeAll(myProjects);
     }
 
   }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -61,8 +63,23 @@ public class ProjectManagerImpl implements ProjectManager {
 
   @Override
   public Project getProjectById(long projectID) {
-
     return projectDAO.find(projectID);
+  }
+
+  @Override
+  public List<Project> getUserProjects(long userId, String crp) {
+
+    List<Project> projects = new ArrayList<>();
+
+    List<Map<String, Object>> view = projectDAO.getUserProjects(userId, crp);
+
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
+      }
+    }
+
+    return projects;
   }
 
   @Override
