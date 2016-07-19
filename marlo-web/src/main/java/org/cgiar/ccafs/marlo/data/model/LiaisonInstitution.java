@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,6 +43,9 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   private String name;
   @Expose
   private String acronym;
+  @Expose
+  private Crp crp;
+
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
 
 
@@ -62,7 +65,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
-
   public LiaisonInstitution(Institution institution, String name) {
     this.institution = institution;
     this.name = name;
@@ -71,6 +73,25 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public String getAcronym() {
     return this.acronym;
+  }
+
+  public String getComposedName() {
+    if (this.getAcronym() != null) {
+      if (this.getAcronym().length() != 0) {
+
+        return this.getAcronym() + " - " + this.getName();
+
+
+      }
+    }
+
+    return this.getName();
+
+  }
+
+
+  public Crp getCrp() {
+    return crp;
   }
 
 
@@ -89,6 +110,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
+
   public Set<LiaisonUser> getLiaisonUsers() {
     return liaisonUsers;
   }
@@ -103,13 +125,13 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public User getModifiedBy() {
     User user = new User();
     user.setId(new Long(3));
     return user;
   }
+
 
   public String getName() {
     return this.name;
@@ -127,6 +149,10 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setCrpProgram(CrpProgram crpProgram) {
