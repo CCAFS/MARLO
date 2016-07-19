@@ -45,6 +45,17 @@
           <button type="button" class="btn btn-primary">[@s.text name="form.buttons.sendMessage" /]</button>
          </div>
         </div>
+        
+        <h4 class="sectionTitle">Simple Message</h4>
+        <div id="simpleNotification" class="borderBox ">
+         <div class="form-group">
+          [@customForm.textArea name="" i18nkey="notifications.simpleNotification.message" placeholder="notifications.simpleNotification.message.placeholder" required=true className="simpleNotification-message" /]
+         </div>
+         <br />
+         <div class="form-group">
+          <button type="button" class="btn btn-primary">[@s.text name="form.buttons.sendMessage" /]</button>
+         </div>
+        </div>
 
       </div>
     </div>
