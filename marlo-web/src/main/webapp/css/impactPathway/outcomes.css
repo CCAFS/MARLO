@@ -97,12 +97,12 @@ p.contributioRem {
 }
 
 .subIdoSelected {
-    border: 1.5px solid #e2e2e2;
+    border: 1.5px solid #f1f1f1;
     line-height: 26px;
     border-radius: 3px;
-    /* pointer-events: none; */
     width: auto;
     padding-left: 0.8em;
+    cursor: pointer;
 }
 
 .subIdoSelected i{color: #999999;}
@@ -133,4 +133,8 @@ p.contributioRem {
 }
 .addOtherTargetUnit a{
   color: #8ea786;
+}
+
+.buttonSubIdo-content {
+    padding-top: 3px;
 }
