@@ -54,6 +54,9 @@
 			<!-- ImpactPathway interceptors -->
 			<interceptor name="canEditImpactPathway"
 				class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
+			<!-- SuperAdmin interceptors -->
+			<interceptor name="superAdminValidation"
+				class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
 
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
@@ -87,18 +90,30 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
-			
+
 			<interceptor-stack name="projectsStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-     
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<interceptor-stack name="superAdminStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="superAdminValidation" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
 		</interceptors>
 
 		<default-action-ref name="login" />
