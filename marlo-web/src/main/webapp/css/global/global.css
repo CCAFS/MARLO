@@ -5706,6 +5706,7 @@ h4.testEnvironment {
   margin-left: 2px;
   vertical-align: middle;
   color: #fff;
+  cursor: default;
   text-shadow: 0px 0px  1px #7d7979;
 }
 
