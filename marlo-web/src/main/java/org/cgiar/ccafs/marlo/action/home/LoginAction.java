@@ -27,7 +27,9 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.awt.Color;
 import java.util.Date;
+import java.util.Random;
 
 import com.google.inject.Inject;
 import org.apache.shiro.SecurityUtils;
@@ -152,6 +154,7 @@ public class LoginAction extends BaseAction {
                 this.getSession().put(parameter.getKey(), parameter.getValue());
               }
             }
+            this.getSession().put("color", this.randomColor());
             // Validate if the user already logged in other session.
             /*
              * if (((User) this.getSession().get(APConstants.SESSION_USER)).getId() == -1) {
@@ -230,6 +233,17 @@ public class LoginAction extends BaseAction {
     }
 
     return SUCCESS;
+  }
+
+  public String randomColor() {
+
+    Random random = new Random(); // Probably really put this somewhere where it gets executed only once
+    int red = random.nextInt(256);
+    int green = random.nextInt(256);
+    int blue = random.nextInt(256);
+    Color color = new Color(red, green, blue);
+    String hex = "#" + Integer.toHexString(color.getRGB()).substring(2);
+    return hex;
   }
 
   public void setCrp(String crp) {
