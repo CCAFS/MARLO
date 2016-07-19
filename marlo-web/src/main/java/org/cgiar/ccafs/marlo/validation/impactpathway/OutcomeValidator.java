@@ -22,8 +22,11 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +45,24 @@ public class OutcomeValidator extends BaseValidator
 
   }
 
-  public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program) {
+
+  private Path getAutoSaveFilePath(CrpProgram program) {
+    String composedClassName = program.getClass().getSimpleName();
+    String actionFile = SectionStatusEnum.OUTCOMES.getStatus().replace("/", "_");
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program, boolean saving) {
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(program);
+
+      if (path.toFile().exists()) {
+        this.addMissingField("program.outcomes.draft");
+      }
+    }
+
 
     if (outcomes.size() == 0) {
       this.addMissingField("program.outcomes");

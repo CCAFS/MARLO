@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,8 +19,11 @@ package org.cgiar.ccafs.marlo.validation.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +35,26 @@ public class ClusterActivitiesValidator extends BaseValidator {
   public ClusterActivitiesValidator() {
   }
 
-  public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program) {
+  private Path getAutoSaveFilePath(CrpProgram program) {
+    String composedClassName = program.getClass().getSimpleName();
+    String actionFile = SectionStatusEnum.CLUSTERACTIVITES.getStatus().replace("/", "_");
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program, boolean saving) {
+
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(program);
+
+      if (path.toFile().exists()) {
+        this.addMissingField("program.activites.draft");
+      }
+    }
+
+
     if (activities.size() == 0) {
       this.addMissingField("program.activites");
     }

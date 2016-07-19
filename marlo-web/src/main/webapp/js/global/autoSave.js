@@ -31,6 +31,9 @@ function autoSave() {
           $editedBy.find('.datetime').text(data.status.activeSince);
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
           $cancelButton.css('display', 'inline-block');
+
+          // Validate section
+          validateThisSection();
         } else {
           errorNotification('Auto save error' + data.status.statusMessage);
         }
@@ -75,7 +78,40 @@ function changeDetected(e) {
     // Start a timer that will search when finished
     timeoutAutoSave = setTimeout(function() {
       autoSave();
-    }, 50 * 1000);
+    }, 30 * 1000);
   }
+}
 
+function validateThisSection() {
+  var $sectionMenu = $('#menu-' + (actionName.split("/"))[1] + '');
+  $.ajax({
+      url: baseURL + '/impactPathway/validateImpactPathway.do',
+      data: {
+          crpProgramID: 84,
+          sectionName: "outcomes",
+      },
+      beforeSend: function() {
+        $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');
+      },
+      success: function(data) {
+        // Process Ajax results here
+        if(jQuery.isEmptyObject(data)) {
+          $sectionMenu.removeClass('submitted');
+        } else {
+          if(data.section.missingFields == "") {
+            $sectionMenu.addClass('submitted').removeClass('toSubmit');
+          } else {
+            $sectionMenu.removeClass('submitted').addClass('toSubmit');
+
+          }
+        }
+        $sectionMenu.removeClass('loadingSection');
+      },
+      complete: function(data) {
+        $sectionMenu.addClass('animated flipInX');
+      },
+      error: function(error) {
+        console.log(error)
+      }
+  });
 }

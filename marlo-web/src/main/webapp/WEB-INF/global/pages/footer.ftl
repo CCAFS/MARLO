@@ -38,6 +38,7 @@
       var GOOGLE_API_KEY="${config.googleApiKey}";
       var PUSHER_KEY = "${config.pushApiKey}";
       
+      var actionName = "${actionName}";
       var production = ${config.production?string};
       var baseURL = "${baseUrl}";
       var debugMode = ${config.debug?string};
