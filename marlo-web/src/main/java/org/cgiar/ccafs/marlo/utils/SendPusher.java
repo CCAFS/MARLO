@@ -18,9 +18,7 @@ package org.cgiar.ccafs.marlo.utils;
 
 import org.cgiar.ccafs.marlo.data.model.User;
 
-import java.awt.Color;
 import java.util.HashMap;
-import java.util.Random;
 
 import com.google.inject.Inject;
 import com.pusher.rest.Pusher;
@@ -46,9 +44,8 @@ public class SendPusher {
   public String autenticate(String socketID, String channel, User user, String idSession) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
     HashMap<String, Object> userInfo = new HashMap<>();
-    String hex = "#" + Integer.toHexString(this.randomColor().getRGB()).substring(2);
+
     userInfo.put("name", user.getComposedCompleteName());
-    userInfo.put("color", hex);
 
 
     PresenceUser prenceUser = new PresenceUser(idSession, userInfo);
@@ -56,13 +53,6 @@ public class SendPusher {
 
   }
 
-  public Color randomColor() {
-    Random random = new Random(); // Probably really put this somewhere where it gets executed only once
-    int red = random.nextInt(256);
-    int green = random.nextInt(256);
-    int blue = random.nextInt(256);
-    return new Color(red, green, blue);
-  }
 
   public boolean sendPush(String channel, String event, HashMap<String, String> message) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
