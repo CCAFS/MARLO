@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -64,6 +65,13 @@ public class ProjectMySQLDAO implements ProjectDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getUserProjects(long userId, String crp) {
+    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
+      + "' and project_id is not null";
+    return dao.findCustomQuery(query);
   }
 
   @Override

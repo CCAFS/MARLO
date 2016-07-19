@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.Project;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -57,6 +58,14 @@ public interface ProjectDAO {
    */
   public List<Project> findAll();
 
+  /**
+   * Get the list of permissions that the user can access and edit.
+   * 
+   * @param userId - The user Id.
+   * @param crp - The crp acronym that the user has logged.
+   * @return a permissions user list.
+   */
+  public List<Map<String, Object>> getUserProjects(long userId, String crp);
 
   /**
    * This method saves the information of the given project
