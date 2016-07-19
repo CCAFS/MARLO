@@ -23,14 +23,15 @@
     <div style="display:none">[@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]</div>
 
    
-    [#-- Section Buttons--]
+    [#-- Section Buttons
     <div class="buttons">
       <div class="buttons-content">
         <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
         <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
       </div>
     </div>
-
+    --]
+    
     <div class="clearfix"></div>
     <hr/>
     
