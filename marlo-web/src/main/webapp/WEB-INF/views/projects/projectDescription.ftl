@@ -138,15 +138,16 @@
             
               
               [#--  Regions/global and Flagships that the project is working on --]
-              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[#if !((project.bilateralProject)!false) && editable ]<span class="red">*</span>[/#if] </h5> 
+              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:
+             
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
                 <div id="projectFlagshipsBlock" class="grid_5">
                   <h6>[@s.text name="projectDescription.flagships" /]</h6>
                   <div class="checkboxGroup">  
-                    [#if editable || (project.bilateralProject)!false]
+                    [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagships"/]
-                      [@s.checkboxlist name="project.flagships" disabled=!((project.bilateralProject)!false) list="ipProgramFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
+                      [@s.checkboxlist name="project.flagships" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]
@@ -158,29 +159,10 @@
                     [/#if]
                   </div>
                 </div> 
-                [#-- Regions --]
-                <div id="projectRegionsBlock" class="grid_4">
-                  <h6>[@s.text name="projectDescription.regions" /]</h6>
-                  <div class="checkboxGroup">
-                    [#if editable &&  ((project.bilateralProject)!false) ]
-                      [@s.fielderror cssClass="fieldError" fieldName="project.regions"/]
-                      [@s.checkboxlist name="project.regions" disabled=!project.bilateralProject  list="ipProgramRegions" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="regionIds" /]
-                    [#else]
-                      [#if project.regions?has_content]
-                        [#list project.regions as element]
-                          <p class="checked">${element.composedName}</p>
-                        [/#list]
-                      [#else]
-                        [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
-                      [/#if]
-                    [/#if]
-                  </div>
-                </div> 
-              </div> 
-            
+                
       
-            [#-- Bilateral/Core projects only for CCAFS Projects --]
-            <h4 id="bilateralProjects" class="subHeadTitle"> [@s.text name="projectDescription.projectsContributing" /] </h4> 
+            [#-- Bilateral/Core projects only for CCAFS Projects 
+             <h4 id="bilateralProjects" class="subHeadTitle"> [@s.text name="projectDescription.projectsContributing" /] </h4> 
             <div class="panel tertiary">
               <div class="panel-head">
                 [#if (project.bilateralProject)!false]
@@ -204,12 +186,16 @@
                 [/#if]  
                 </ul>
                 [#if editable ]
-                  [#-- The values of this list are loaded via ajax --]
+                
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="" keyFieldName="id" displayFieldName="" className="" value="" /]
                 [/#if] 
               </div>
             </div>
           </div> 
+            
+            
+            --]
+           
           
           [#-- Project identifier --]
           <input name="projectID" type="hidden" value="${project.id}" />
