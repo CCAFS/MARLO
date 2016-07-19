@@ -110,12 +110,15 @@ function attachEvents() {
                         targetUnitName: targetUnitName
                       },
                       success: function(data) {
-                        $('select.targetUnit').each(function(i,select) {
-                          $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name);
-                        });
+                        if(data.newTargetUnit.status) {
+                          $('select.targetUnit').each(function(i,select) {
+                            $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name);
+                          });
+                        }
                         $select.val(data.newTargetUnit.id);
                       },
                       complete: function(data) {
+                        $('#targetUnitName').val("");
                         $targetUnit.dialog("close");
                       }
                   });
