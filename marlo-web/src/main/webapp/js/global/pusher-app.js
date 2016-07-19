@@ -123,14 +123,6 @@ function onMouseClick(ev){
 
 }
 
-function getRandomColor() {
-  var letters = '0123456789ABCDEF'.split('');
-  var color = '#';
-  for (var i = 0; i < 6; i++ ) {
-      color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
 
 function updateUsersCount(count){
   $('#usersOnline span').text(count);
@@ -139,7 +131,7 @@ function updateUsersCount(count){
 function createMousePointer(member){
   var $mousePointer = $('#mouse-template').clone(true).attr('id','mouse-'+member.id );
   $mousePointer.find("small").text(member.info.name);
-  $mousePointer.css("color", getRandomColor());
+  $mousePointer.css("color", member.info.color);
   $mousePointer.appendTo('body');
 }
 
@@ -154,7 +146,7 @@ function createBadge(member){
   var $badge = $('#user-badge-template').clone(true).attr('id','user-badge-'+member.id );
   $badge.text((member.info.name).replace(/[^A-Z]/g, ''));
   $badge.attr('title', member.info.name);
-  $badge.css("background-color", getRandomColor());
+  $badge.css("background-color", member.info.color);
   $badge.appendTo('.breadcrumb .usersInfo');
   $badge.fadeIn('slow');
 }
