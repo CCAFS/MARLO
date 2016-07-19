@@ -91,6 +91,24 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
         </set>
+        
+        
+            <set name="liaisonInstitutions" table="liaison_institutions" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
+        </set>
+        
+        
+         
+            <set name="liasonUsers" table="liaison_users" inverse="true" order-by="id" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
+        </set>
+        
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

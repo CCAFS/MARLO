@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,8 +39,11 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   private LiaisonInstitution liaisonInstitution;
   @Expose
   private User user;
+  @Expose
+  private Crp crp;
 
   private Set<Project> projects = new HashSet<Project>(0);
+
 
   public LiaisonUser() {
   }
@@ -57,6 +60,10 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
+
+  public Crp getCrp() {
+    return crp;
+  }
 
   @Override
   public Long getId() {
@@ -102,6 +109,11 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
 
     return true;
+  }
+
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setId(Long id) {

@@ -40,11 +40,11 @@
               <div class="fullBlock">
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonInstitution.id"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.owner"  disabled=editable  listName="allOwners" keyFieldName="id"  displayFieldName="composedOwnerName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonUser.id"  disabled=editable  listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
                 </div> 
               </div>  
               <div class="fullBlock">  
@@ -115,7 +115,7 @@
               </div>
               
               [#-- -- -- REPORTING BLOCK -- -- --]
-              [#if (reportingCycle)!false]
+              
                 [#-- Project upload annual report to donor--]
                 [#if (project.bilateralProject)!false]
                 <div class="fullBlock fileUpload annualreportDonor">
@@ -135,7 +135,7 @@
                 </div>
                 [/#if]
                
-              [/#if]
+            
               
               [#--  Regions/global and Flagships that the project is working on --]
               <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[#if !((project.bilateralProject)!false) && editable ]<span class="red">*</span>[/#if] </h5> 

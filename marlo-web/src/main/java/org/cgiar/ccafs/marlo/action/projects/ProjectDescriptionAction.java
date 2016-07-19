@@ -18,16 +18,30 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
+ * @author Christian Garcia- CIAT/CCAFS
  */
 public class ProjectDescriptionAction extends BaseAction {
 
@@ -36,22 +50,60 @@ public class ProjectDescriptionAction extends BaseAction {
   // Managers
   private ProjectManager projectManager;
   private CrpManager crpManager;
+  private CrpProgramManager programManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private LiaisonUserManager liaisonUserManager;
+  private UserManager userManager;
+
 
   // Front-end
   private long projectID;
   private Crp loggedCrp;
   private Project project;
+  private List<CrpProgram> programFlagships;
+  private List<LiaisonInstitution> liaisonInstitutions;
+  private Map<String, String> projectStauses;
+  private List<LiaisonUser> allOwners;
+  private Map<String, String> projectTypes;
+
+  private File file;
+  private File fileReporting;
+  private String fileContentType;
+  private String fileFileName;
+  private String fileReportingFileName;
+
 
   @Inject
-  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
+  public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+    CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
+    LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.userManager = userManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.projectManager = projectManager;
+    this.liaisonUserManager = liaisonUserManager;
+  }
+
+
+  public List<LiaisonUser> getAllOwners() {
+    return allOwners;
+  }
+
+
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
   }
 
 
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public List<CrpProgram> getProgramFlagships() {
+    return programFlagships;
   }
 
 
@@ -62,6 +114,16 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public Map<String, String> getProjectStauses() {
+    return projectStauses;
+  }
+
+
+  public Map<String, String> getProjectTypes() {
+    return projectTypes;
   }
 
 
@@ -80,7 +142,12 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
     project = projectManager.getProjectById(projectID);
-
+    allOwners = new ArrayList<LiaisonUser>();
+    allOwners.addAll(loggedCrp.getLiasonUsers());
+    liaisonInstitutions = new ArrayList<LiaisonInstitution>();
+    liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
+    programFlagships = new ArrayList<>();
+    programFlagships.addAll(loggedCrp.getCrpPrograms().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
   }
 
 
@@ -90,8 +157,23 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
+  public void setAllOwners(List<LiaisonUser> allOwners) {
+    this.allOwners = allOwners;
+  }
+
+
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
+  }
+
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setProgramFlagships(List<CrpProgram> programFlagships) {
+    this.programFlagships = programFlagships;
   }
 
 
@@ -99,8 +181,18 @@ public class ProjectDescriptionAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setProjectStauses(Map<String, String> projectStauses) {
+    this.projectStauses = projectStauses;
+  }
+
+  public void setProjectTypes(Map<String, String> projectTypes) {
+    this.projectTypes = projectTypes;
   }
 
   @Override

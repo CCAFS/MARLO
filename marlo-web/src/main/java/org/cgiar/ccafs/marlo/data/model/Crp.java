@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -58,13 +58,21 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
+  private Set<LiaisonUser> liasonUsers = new HashSet<LiaisonUser>(0);
+
+  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
+
+
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
+
 
   @Expose
   private boolean active;
 
+
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
@@ -86,11 +94,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private List<CrpsSiteIntegration> siteIntegrations;
 
   private List<LocElementType> locationElementTypes;
+
   private Set<Project> projects = new HashSet<Project>(0);
 
-
   private boolean hasRegions;
-
 
   public Crp() {
   }
@@ -106,6 +113,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.roles = roles;
     this.crpParameters = crpParameters;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -128,6 +136,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
+
 
   public String getAcronym() {
     return acronym;
@@ -153,7 +162,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return crpPpaPartners;
   }
 
-
   public Set<CrpProgram> getCrpPrograms() {
     return crpPrograms;
   }
@@ -170,9 +178,18 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return this.crpUsers;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Set<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
+  }
+
+  public Set<LiaisonUser> getLiasonUsers() {
+    return liasonUsers;
   }
 
   public List<LocElementType> getLocationElementTypes() {
@@ -223,7 +240,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return siteIntegrations;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -231,7 +247,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -248,19 +263,19 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
@@ -301,8 +316,18 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.hasRegions = hasRegions;
   }
 
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setLiaisonInstitutions(Set<LiaisonInstitution> liasonInstituions) {
+    this.liaisonInstitutions = liasonInstituions;
+  }
+
+  public void setLiasonUsers(Set<LiaisonUser> liasonUsers) {
+    this.liasonUsers = liasonUsers;
   }
 
   public void setLocationElementTypes(List<LocElementType> locationElementTypes) {
