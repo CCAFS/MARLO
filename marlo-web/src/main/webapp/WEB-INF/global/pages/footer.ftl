@@ -36,6 +36,7 @@
       var hashScroll = true;
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
+      var PUSHER_KEY = "${config.pushApiKey}";
       
       var production = ${config.production?string};
       var baseURL = "${baseUrl}";
@@ -44,8 +45,6 @@
       var canEdit = ${canEdit?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
       var currentCrpID=${(selectedProgram.crp.id)!'-1'};
-      
-      var PUSHER_KEY = "${config.production?string('530082f1cccc805bcf69','a83864709700a9aca7a5')}";
       
       
       [#-- Tawk.to Widget --]
@@ -70,11 +69,13 @@
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
-        s1.src = 'https://embed.tawk.to/${config.production?string('{PRODUCTION_TAWK_KEY}','57864c4b7e9d57372d381198')}/default';
+        s1.src = 'https://embed.tawk.to/${config.tawktoApiKey}/default';
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
       })();
+      
+      
       
     </script>
   

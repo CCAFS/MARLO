@@ -8,26 +8,31 @@ mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
 
 # -----------------------------
-marlo.baseUrl=https://localhost/marlo-web/
-# ----------------------------------------------------
-#                   Sections Variables
-
-#Pusher API KEY-----------
-pusher.api.key=puserkey
-pusher.api.appid=puserkey
-pusher.api.privatekey=puserkey
-
+marlo.baseUrl=https://localhost:8443/marlo-web/
 
 #---------------------------------------------------
-#                   Google api key
+#                   Google API Key
 #---------------------------------------------------
-google.api.key=googlekey
+google.api.key=
+
+#---------------------------------------------------
+#                   Pusher API Key
+#---------------------------------------------------
+pusher.api.key=
+pusher.api.appid=
+pusher.api.privatekey=
+
+#---------------------------------------------------
+#                   Tawk.to API Key
+#---------------------------------------------------
+tawkto.api.key=
 
 # ----------------------------------------------------
 #                   File properties
 # ----------------------------------------------------
-autosave.file=filePath
 autosave.active=true
+autosave.file=D:/marlo/tempFiles/
+
 # ------------------------------------------------
 # Email account
 # ------------------------------------------------

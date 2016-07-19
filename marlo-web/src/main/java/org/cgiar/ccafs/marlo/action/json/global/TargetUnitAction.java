@@ -62,7 +62,8 @@ public class TargetUnitAction extends BaseAction {
       .filter(tg -> tg.isActive() && tg.getName().toLowerCase().equals(queryParameter.toLowerCase()))
       .collect(Collectors.toList());
 
-    if (targetUnits.size() > 1) {
+    if (targetUnits.size() > 0) {
+      newTargetUnit.put("status", false);
       newTargetUnit.put("id", targetUnits.get(0).getId());
       newTargetUnit.put("name", targetUnits.get(0).getName());
       return SUCCESS;
@@ -80,7 +81,7 @@ public class TargetUnitAction extends BaseAction {
 
       long newTargetUnitId = srfTargetUnitManager.saveSrfTargetUnit(targetUnit);
 
-
+      newTargetUnit.put("status", true);
       newTargetUnit.put("id", newTargetUnitId);
       newTargetUnit.put("name", queryParameter);
 
