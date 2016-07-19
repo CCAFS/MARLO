@@ -40,11 +40,11 @@
               <div class="fullBlock">
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonInstitution.id"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonUser.id"  disabled=editable  listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  disabled=editable  listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
                 </div> 
               </div>  
               <div class="fullBlock">  

@@ -69,12 +69,18 @@ public class ProjectListAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
-    Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-
     if (projectManager.findAll() != null) {
       allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+
+      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+        myProjects = allProjects;
+      } else {
+        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+      }
+
       allProjects.removeAll(myProjects);
+
     }
 
   }

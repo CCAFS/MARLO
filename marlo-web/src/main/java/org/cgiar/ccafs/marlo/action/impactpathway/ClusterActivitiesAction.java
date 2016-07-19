@@ -270,6 +270,7 @@ public class ClusterActivitiesAction extends BaseAction {
           clusterofActivities = selectedProgram.getClusterofActivities();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
+          selectedProgram.setCrp(loggedCrp);
           if (clusterofActivities == null) {
             clusterofActivities = new ArrayList<>();
           }

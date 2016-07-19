@@ -328,6 +328,7 @@ public class OutcomesAction extends BaseAction {
           outcomes = selectedProgram.getOutcomes();
           selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
           selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
+          selectedProgram.setCrp(loggedCrp);
           if (outcomes == null) {
             outcomes = new ArrayList<>();
           }

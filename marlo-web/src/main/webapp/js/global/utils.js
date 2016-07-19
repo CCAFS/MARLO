@@ -94,16 +94,33 @@ var colors =
         '#1abc9c', '#16a085', '#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad', '#34495e', '#2c3e50',
         '#f1c40f', '#f39c12', '#e67e22', '#d35400', '#e74c3c', '#c0392b', '#ecf0f1', '#bdc3c7', '#95a5a6', '#7f8c8d'
     ]
+
 $.fn.colorPicker = function() {
   $(this).each(function(i,pickerElement) {
+    var defaultColor;
+    console.log($(pickerElement).find('input').val());
+    if($(pickerElement).find('input').val() == "") {
+      defaultColor = getRandomColor();
+    }
+    console.log(defaultColor);
     var picker = vanillaColorPicker(pickerElement);
     picker.set('customColors', colors);
-    picker.set('defaultColor', $(pickerElement).find('input').val());
+    picker.set('defaultColor', defaultColor);
+    pickerElement.style.backgroundColor = defaultColor;
     picker.on('colorChosen', function(color,targetElem) {
       targetElem.style.backgroundColor = color;
       $(targetElem).find('input').val(color);
     });
   });
+}
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for(var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
 
 /*
