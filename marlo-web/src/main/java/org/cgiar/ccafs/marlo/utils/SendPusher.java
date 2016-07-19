@@ -41,12 +41,13 @@ public class SendPusher {
     apiSecret = config.getPushKeySecret();
   }
 
-  public String autenticate(String socketID, String channel, User user, String idSession) {
+  public String autenticate(String socketID, String channel, User user, String idSession, String color) {
     Pusher pusher = new Pusher(appId, apiKey, apiSecret);
     HashMap<String, Object> userInfo = new HashMap<>();
 
     userInfo.put("name", user.getComposedCompleteName());
 
+    userInfo.put("color", color);
 
     PresenceUser prenceUser = new PresenceUser(idSession, userInfo);
     return pusher.authenticate(socketID, channel, prenceUser);

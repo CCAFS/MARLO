@@ -58,8 +58,8 @@ public class PusherAutentication extends BaseAction {
      * sendPusher.sendPush("presence-global", "system-reset", message);
      */
 
-    String jsonReturn =
-      sendPusher.autenticate(socketID, channel, this.getCurrentUser(), this.getRequest().getSession().getId());
+    String jsonReturn = sendPusher.autenticate(socketID, channel, this.getCurrentUser(),
+      this.getRequest().getSession().getId(), this.getSession().get("color").toString());
     Gson gson = new GsonBuilder().create();
     jsonString = gson.fromJson(jsonReturn, HashMap.class);
     return SUCCESS;
