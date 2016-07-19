@@ -59,7 +59,7 @@ public class TargetUnitAction extends BaseAction {
   public String execute() throws Exception {
     this.newTargetUnit = new HashMap<>();
     List<SrfTargetUnit> targetUnits = srfTargetUnitManager.findAll().stream()
-      .filter(tg -> tg.isActive() && tg.getName().toLowerCase().equals(queryParameter.toLowerCase()))
+      .filter(tg -> tg.isActive() && tg.getName().toLowerCase().trim().equals(queryParameter.toLowerCase().trim()))
       .collect(Collectors.toList());
 
     if (targetUnits.size() > 0) {

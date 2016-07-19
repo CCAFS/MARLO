@@ -48,11 +48,11 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
-
-    if (!baseAction.canAcessCrpAdmin()) {
-      return BaseAction.NOT_AUTHORIZED;
-    }
-
+    /*
+     * if (!baseAction.canAcessCrpAdmin()) {
+     * return BaseAction.NOT_AUTHORIZED;
+     * }
+     */
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
