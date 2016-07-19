@@ -36,6 +36,7 @@
       var hashScroll = true;
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
+      var PUSHER_KEY = "${config.pushApiKey}";
       
       var production = ${config.production?string};
       var baseURL = "${baseUrl}";
@@ -45,7 +46,6 @@
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
       var currentCrpID=${(selectedProgram.crp.id)!'-1'};
       
-      var PUSHER_KEY = "${config.production?string('530082f1cccc805bcf69','a83864709700a9aca7a5')}";
       
       
       [#-- Tawk.to Widget --]

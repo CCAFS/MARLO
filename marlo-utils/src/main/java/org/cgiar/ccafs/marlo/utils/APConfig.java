@@ -39,6 +39,7 @@ public class APConfig {
   private static final String PUSH_API_KEY = "pusher.api.key";
   private static final String PUSH_APP_ID = "pusher.api.appid";
   private static final String PUSH_SECRETE_KEY = "pusher.api.privatekey";
+  private static final String TAWKTO_API_KEY = "tawkto.api.key";
 
   private static final String AUTO_SAVE_ACTIVE = "autosave.active";
 
@@ -179,6 +180,15 @@ public class APConfig {
       return properties.getPropertiesAsString(PUSH_SECRETE_KEY);
     } catch (Exception e) {
       LOG.error("there is not an push api key configured.");
+    }
+    return "";
+  }
+
+  public String getTawktoApiKey() {
+    try {
+      return properties.getPropertiesAsString(TAWKTO_API_KEY);
+    } catch (Exception e) {
+      LOG.error("there is not an Tawkto api key configured.");
     }
     return "";
   }
