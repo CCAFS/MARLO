@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,17 +29,20 @@ public class Submission implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = 235989260663664812L;
+
+
   private Long id;
+
   private CrpProgram crpProgram;
   private User user;
   private Date dateTime;
   private String modificationJustification;
   private String cycle;
   private Short year;
+  private Project project;
 
   public Submission() {
   }
-
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime) {
     this.crpProgram = crpProgram;
@@ -48,14 +51,16 @@ public class Submission implements java.io.Serializable {
   }
 
   public Submission(CrpProgram crpProgram, User user, Date dateTime, String modificationJustification, String cycle,
-    Short year) {
+    Short year, Project project) {
     this.crpProgram = crpProgram;
     this.user = user;
     this.dateTime = dateTime;
     this.modificationJustification = modificationJustification;
     this.cycle = cycle;
     this.year = year;
+    this.project = project;
   }
+
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -75,6 +80,10 @@ public class Submission implements java.io.Serializable {
 
   public String getModificationJustification() {
     return this.modificationJustification;
+  }
+
+  public Project getProject() {
+    return project;
   }
 
   public User getUser() {
@@ -103,6 +112,10 @@ public class Submission implements java.io.Serializable {
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
   public void setUser(User user) {

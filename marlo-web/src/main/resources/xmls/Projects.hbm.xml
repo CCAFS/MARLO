@@ -78,5 +78,11 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
         </set>
+        <set name="submissions" table="submissions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+        </set>
     </class>
 </hibernate-mapping>

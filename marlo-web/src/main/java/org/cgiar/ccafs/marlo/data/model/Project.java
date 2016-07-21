@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,8 +34,12 @@ public class Project implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -5737088425960023585L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private Crp crp;
   @Expose
@@ -76,18 +80,17 @@ public class Project implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
   @Expose
   private String annualReportToDornor;
-
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
   public Project() {
   }
-
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
     boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, String workplanName,
     String bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
-    String annualReportToDornor, Set<ProjectFocus> projectFocuseses) {
+    String annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions) {
     this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
     this.liaisonUser = liaisonUser;
@@ -109,6 +112,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
     this.annualReportToDornor = annualReportToDornor;
     this.projectFocuses = projectFocuseses;
+    this.submissions = submissions;
   }
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
@@ -121,6 +125,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public Date getActiveSince() {
     return this.activeSince;
@@ -194,6 +199,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.startDate;
   }
 
+  public Set<Submission> getSubmissions() {
+    return submissions;
+  }
+
   public String getSummary() {
     return this.summary;
   }
@@ -243,7 +252,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.cofinancing = cofinancing;
   }
 
-
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
   }
@@ -283,6 +291,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.liaisonUser = liaisonUser;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -301,6 +310,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+  public void setSubmissions(Set<Submission> submissions) {
+    this.submissions = submissions;
   }
 
   public void setSummary(String summary) {
