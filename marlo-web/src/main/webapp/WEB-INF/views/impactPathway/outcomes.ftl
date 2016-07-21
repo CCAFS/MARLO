@@ -300,7 +300,7 @@
     </div>
     
     [#-- Assumptions List --]
-    <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]</label>
+    <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]:</label>
     <div class="assumptions-list">
     [#if subIdo.assumptions?has_content]
       [#list subIdo.assumptions as assumption]

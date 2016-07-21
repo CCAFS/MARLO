@@ -33,3 +33,8 @@
     <p>[@s.text name="CrpProgram.message.completed" /]</p>
   </div>
 [/#if]
+
+[#-- Concurrence Message --]
+<div id="concurrenceMessage" class="text-center" style="display:none">
+  <p><span class="glyphicon glyphicon-flash"></span> This section has been modified by <span class="person"></span> in a meantime. By saving your changes you will replace the recent update.</p>
+</div>

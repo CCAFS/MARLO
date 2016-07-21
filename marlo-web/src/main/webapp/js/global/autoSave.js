@@ -11,10 +11,14 @@ $(document).ready(function() {
   $(document).on('updateComponent', changeDetected);
   $(':input').on('keyup change', changeDetected);
 
+  $('button[name="save"]').on('click', function() {
+    // Send push for saving
+    pushSave();
+  });
+
 });
 
 function autoSave() {
-
   $.ajax({
       dataType: 'json',
       url: baseURL + '/autosaveWriter.do',
@@ -34,6 +38,10 @@ function autoSave() {
 
           // Validate section
           validateThisSection();
+
+          // Send push for saving
+          pushSave();
+
         } else {
           errorNotification('Auto save error' + data.status.statusMessage);
         }
@@ -49,7 +57,7 @@ function autoSave() {
 function successNotification(msj) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
   notyOptions.text = msj;
-  notyOptions.type = 'alert';
+  notyOptions.type = 'success';
   notyOptions.layout = 'topCenter';
   notyOptions.animation = {
       open: 'animated fadeInDown',
@@ -78,7 +86,7 @@ function changeDetected(e) {
     // Start a timer that will search when finished
     timeoutAutoSave = setTimeout(function() {
       autoSave();
-    }, 30 * 1000);
+    }, 15 * 1000);
   }
 }
 

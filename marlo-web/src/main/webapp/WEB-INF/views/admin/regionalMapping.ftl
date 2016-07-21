@@ -137,7 +137,7 @@
     <input class="type" type="hidden" name="${customName}.programType" value="${(element.programType)!'-1'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
-    <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]</label>
+    <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]:[@customForm.req required=true /]</label>
     <div class="usersBlock form-group simpleBox">
       [#-- Leaders List --]
       <div class="items-list">
@@ -164,7 +164,7 @@
     [#-- Countries  --]
     <div class="countriesBlock form-group" title="Select Countries clicking here">
       [#-- Countries List --]
-      [@customForm.select name="${customName}.selectedCountries" label=""  i18nkey="regionalMapping.CrpProgram.countries" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true   className="countriesSelect form-control input-sm" disabled=!editable/]              
+      [@customForm.select name="${customName}.selectedCountries" label=""  i18nkey="regionalMapping.CrpProgram.countries" listName="countriesList" keyFieldName="isoAlpha2"  displayFieldName="name" value="${customName}.selectedCountries" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
       <span class="usersRole" style="display:none">{rpRol}</span>
