@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
 import java.util.List;
@@ -58,17 +59,23 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
+    try {
+      this.setPermissionParameters(invocation);
+      return invocation.invoke();
+    } catch (Exception e) {
+      BaseAction action = (BaseAction) invocation.getAction();
+      return action.NOT_FOUND;
 
-    return invocation.invoke();
+    }
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
 
     User user = (User) session.get(APConstants.SESSION_USER);
 
-    boolean canEdit = true;
-    boolean hasPermissionToEdit = true;
-    boolean editParameter = true;
+    boolean canEdit = false;
+    boolean hasPermissionToEdit = false;
+    boolean editParameter = false;
 
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
@@ -79,6 +86,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     Project project = projectManager.getProjectById(projectID);
 
+    String params[] = {crp.getAcronym(), project.getId() + ""};
+
     // TODO Validate if the Project is in Planning or Reporting and get the Year
     int currentCycleYear = 2015;
 
@@ -86,7 +95,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       canEdit = true;
     } else {
       List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-      if (projects.contains(project)) {
+      if (projects.contains(project) && baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params))) {
 
         if (project.getSubmissions().stream().filter(s -> s.getYear().equals(currentCycleYear))
           .collect(Collectors.toList()).size() > 0) {
@@ -104,11 +114,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       }
     }
 
-
     // Check the permission if user want to edit or save the form
     if (editParameter || parameters.get("save") != null) {
-      // hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(baseAction
-      // .generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym(), crpProgramID + ""));
+      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
     }
 
     // Set the variable that indicates if the user can edit the section

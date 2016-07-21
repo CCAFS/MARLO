@@ -11,8 +11,6 @@
   {"label":"projectDescription", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign canEdit = true /]
-[#assign editable = true /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
