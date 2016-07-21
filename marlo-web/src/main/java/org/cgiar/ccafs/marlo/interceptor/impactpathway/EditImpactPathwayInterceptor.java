@@ -94,12 +94,12 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
     crpProgramID = this.getCrpProgramId();
-    /*
-     * if (!baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES,
-     * crp.getAcronym(), crpProgramID + ""))) {
-     * return BaseAction.NOT_AUTHORIZED;
-     * }
-     */
+
+    if (!baseAction
+      .hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, crp.getAcronym()))) {
+      return BaseAction.NOT_AUTHORIZED;
+    }
+
 
     try {
       this.setPermissionParameters(invocation);

@@ -124,7 +124,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
     baseAction.setCanEdit(canEdit);
 
-
   }
 
 }

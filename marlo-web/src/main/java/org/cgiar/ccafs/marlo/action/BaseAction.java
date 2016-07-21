@@ -148,6 +148,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
+  public boolean canAcessImpactPathway() {
+    String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
+    return securityContext.hasPermission(permission);
+  }
+
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
