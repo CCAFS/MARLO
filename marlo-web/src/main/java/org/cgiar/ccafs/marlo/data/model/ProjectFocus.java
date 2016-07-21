@@ -85,14 +85,14 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
       if (other.getCrpProgram() != null) {
         return false;
       }
-    } else if (!this.getCrpProgram().equals(other.getCrpProgram())) {
+    } else if (!this.getCrpProgram().getId().equals(other.getCrpProgram().getId())) {
       return false;
     }
     if (this.getProject() == null) {
       if (other.getProject() != null) {
         return false;
       }
-    } else if (!this.getProject().equals(other.getProject())) {
+    } else if (!this.getProject().getId().equals(other.getProject().getId())) {
       return false;
     }
     return true;

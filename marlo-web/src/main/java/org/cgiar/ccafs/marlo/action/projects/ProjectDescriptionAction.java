@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -238,11 +239,12 @@ public class ProjectDescriptionAction extends BaseAction {
       projectManager.saveProject(project);
 
       for (String programID : project.getFlagshipValue().trim().split(",")) {
-        CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID));
+        CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
         ProjectFocus projectFocus = new ProjectFocus();
         projectFocus.setCrpProgram(program);
         projectFocus.setProject(project);
-        if (!projectDB.getProjectFocuses().contains(projectFocus)) {
+        if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+          .contains(projectFocus)) {
           projectFocus.setActive(true);
           projectFocus.setActiveSince(new Date());
           projectFocus.setCreatedBy(this.getCurrentUser());
@@ -251,11 +253,18 @@ public class ProjectDescriptionAction extends BaseAction {
           projectFocusManager.saveProjectFocus(projectFocus);
         }
       }
-
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
       return SUCCESS;
     } else {
-      projectManager.saveProject(project);
-      return SUCCESS;
+
+      return NOT_AUTHORIZED;
     }
 
   }
