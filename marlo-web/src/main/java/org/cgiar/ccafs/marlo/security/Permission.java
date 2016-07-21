@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,5 +32,6 @@ public class Permission {
   public static final String IMPACT_PATHWAY_BASE_PERMISSION = "crp:{0}:impactPathway:{1}";
   public static final String IMPACT_PATHWAY_EDIT_PRIVILEGES = "crp:{0}:impactPathway:{1}:*";
   public static final String IMPACT_PATHWAY_VISIBLE_PRIVILEGES = "crp:{0}:impactPathway:{1}:canAcess";
+  public static final String PROJECT_DESCRIPTION_BASE_PERMISSION = "crp:{0}:project:{1}:description";
 
 }

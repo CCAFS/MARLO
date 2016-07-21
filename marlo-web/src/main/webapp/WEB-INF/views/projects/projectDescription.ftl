@@ -44,7 +44,7 @@
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  disabled=editable  listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"   listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
                 </div> 
               </div>  
               <div class="fullBlock">  
@@ -147,7 +147,7 @@
                   <div class="checkboxGroup">  
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagships"/]
-                      [@s.checkboxlist name="project.flagships.id" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
+                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]

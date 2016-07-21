@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,10 +16,12 @@ package org.cgiar.ccafs.marlo.data.model;
 // Generated Jul 13, 2016 11:45:52 AM by Hibernate Tools 4.3.1.Final
 
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -44,8 +46,12 @@ public class Project implements java.io.Serializable, IAuditLog {
   private LiaisonUser liaisonUser;
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private String title;
   @Expose
@@ -76,8 +82,10 @@ public class Project implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
   @Expose
   private String annualReportToDornor;
-
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+  private List<CrpProgram> flagships;
+  private String flagshipValue;
+
 
   public Project() {
   }
@@ -122,9 +130,33 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    Project other = (Project) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getAnnualReportToDornor() {
     return this.annualReportToDornor;
@@ -144,6 +176,14 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public Date getEndDate() {
     return this.endDate;
+  }
+
+  public List<CrpProgram> getFlagships() {
+    return flagships;
+  }
+
+  public String getFlagshipValue() {
+    return flagshipValue;
   }
 
   @Override
@@ -211,8 +251,30 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
   @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isBilateralProject() {
+    return (type != null) ? type.equals(APConstants.PROJECT_BILATERAL) : false;
+  }
+
+  /**
+   * A project is bilateral stand alone if it is bilateral and it is NOT contributing to any Core project.
+   * 
+   * @return true if the project is bilateral stand alone, false if is bilateral and is contributing to some core
+   *         project.
+   */
+  public boolean isBilateralStandAlone() {
+    return (type != null) ? (this.isBilateralProject() && !this.cofinancing) : false;
   }
 
   public boolean isCofinancing() {
@@ -243,11 +305,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.cofinancing = cofinancing;
   }
 
-
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
   }
-
 
   public void setCrp(Crp crp) {
     this.crp = crp;
@@ -256,6 +316,16 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+
+  public void setFlagships(List<CrpProgram> flagships) {
+    this.flagships = flagships;
+  }
+
+
+  public void setFlagshipValue(String flagshipValue) {
+    this.flagshipValue = flagshipValue;
   }
 
 
