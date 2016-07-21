@@ -70,16 +70,15 @@ public class ProjectListAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     if (projectManager.findAll() != null) {
-      allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects = allProjects;
+        myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
       } else {
+        allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
         Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+        allProjects.removeAll(myProjects);
       }
-
-      allProjects.removeAll(myProjects);
 
     }
 
