@@ -81,7 +81,7 @@
         
         <set name="submissions" order-by="id" table="submissions" inverse="true" lazy="true" fetch="select">
             <key>
-                <column name="crp_pgroma_id" not-null="true" />
+                <column name="crp_program_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
         </set>

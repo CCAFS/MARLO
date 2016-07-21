@@ -121,9 +121,7 @@
 
 			<interceptor-stack name="superAdminStack">
 				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
-				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="superAdminValidation" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />

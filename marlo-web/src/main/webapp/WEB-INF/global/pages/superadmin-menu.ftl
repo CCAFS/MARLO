@@ -16,7 +16,7 @@
           [/#if]
         [/#list]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
-          <a href="[@s.url namespace="/" action="${crpSession?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
+          <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
             <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(crpSession?upper_case)!})
           </a>
           <ul class="subMenu">
