@@ -59,16 +59,19 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
 
-    return null;
+    return invocation.invoke();
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
 
     User user = (User) session.get(APConstants.SESSION_USER);
 
-    boolean canEdit = false;
-    boolean hasPermissionToEdit = false;
-    boolean editParameter = false;
+    boolean canEdit = true;
+    boolean hasPermissionToEdit = true;
+    boolean editParameter = true;
+
+    // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+
 
     String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
 
