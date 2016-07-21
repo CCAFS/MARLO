@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,8 +35,12 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
   private static final long serialVersionUID = 4814612346573890024L;
   @Expose
   private Long id;
+
+
   @Expose
   private CrpProgram crpProgram;
+
+
   @Expose
   private Project project;
   @Expose
@@ -50,10 +54,8 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-
   public ProjectFocus() {
   }
-
 
   public ProjectFocus(CrpProgram crpProgram, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -67,6 +69,36 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectFocus other = (ProjectFocus) obj;
+    if (this.getCrpProgram() == null) {
+      if (other.getCrpProgram() != null) {
+        return false;
+      }
+    } else if (!this.getCrpProgram().equals(other.getCrpProgram())) {
+      return false;
+    }
+    if (this.getProject() == null) {
+      if (other.getProject() != null) {
+        return false;
+      }
+    } else if (!this.getProject().equals(other.getProject())) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -75,6 +107,7 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public CrpProgram getCrpProgram() {
     return crpProgram;
@@ -106,6 +139,15 @@ public class ProjectFocus implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((crpProgram == null) ? 0 : crpProgram.hashCode());
+    result = prime * result + ((project == null) ? 0 : project.hashCode());
+    return result;
   }
 
   @Override

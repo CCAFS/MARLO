@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -30,10 +31,12 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +55,14 @@ public class ProjectDescriptionAction extends BaseAction {
 
   // Managers
   private ProjectManager projectManager;
+  private ProjectFocusManager projectFocusManager;
   private CrpManager crpManager;
   private CrpProgramManager programManager;
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-  private LiaisonUserManager liaisonUserManager;
-  private UserManager userManager;
-
+  /*
+   * private LiaisonInstitutionManager liaisonInstitutionManager;
+   * private LiaisonUserManager liaisonUserManager;
+   * private UserManager userManager;
+   */
 
   // Front-end
   private long projectID;
@@ -79,14 +84,17 @@ public class ProjectDescriptionAction extends BaseAction {
   @Inject
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
-    LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
+    ProjectFocusManager projectFocusManager) {
     super(config);
     this.projectManager = projectManager;
+    this.programManager = programManager;
     this.crpManager = crpManager;
-    this.userManager = userManager;
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
+    // this.userManager = userManager;
+    // this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
-    this.liaisonUserManager = liaisonUserManager;
+    this.projectFocusManager = projectFocusManager;
+    // this.liaisonUserManager = liaisonUserManager;
   }
 
 
@@ -196,6 +204,13 @@ public class ProjectDescriptionAction extends BaseAction {
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
+    List<CrpProgram> programs = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList())) {
+      programs.add(projectFocuses.getCrpProgram());
+    }
+    project.setFlagships(programs);
 
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
@@ -203,12 +218,46 @@ public class ProjectDescriptionAction extends BaseAction {
     projectTypes.put(APConstants.PROJECT_CCAFS_COFUNDED, this.getText("project.projectType.cofounded"));
 
 
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+
   }
 
 
   @Override
   public String save() {
-    return SUCCESS;
+
+    if (this.hasPermission("canEdit")) {
+
+      Project projectDB = projectManager.getProjectById(project.getId());
+      project.setActive(true);
+      project.setCreatedBy(projectDB.getCreatedBy());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("");
+      project.setActiveSince(projectDB.getActiveSince());
+      projectManager.saveProject(project);
+
+      for (String programID : project.getFlagshipValue().trim().split(",")) {
+        CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID));
+        ProjectFocus projectFocus = new ProjectFocus();
+        projectFocus.setCrpProgram(program);
+        projectFocus.setProject(project);
+        if (!projectDB.getProjectFocuses().contains(projectFocus)) {
+          projectFocus.setActive(true);
+          projectFocus.setActiveSince(new Date());
+          projectFocus.setCreatedBy(this.getCurrentUser());
+          projectFocus.setModifiedBy(this.getCurrentUser());
+          projectFocus.setModificationJustification("");
+          projectFocusManager.saveProjectFocus(projectFocus);
+        }
+      }
+
+      return SUCCESS;
+    } else {
+      projectManager.saveProject(project);
+      return SUCCESS;
+    }
+
   }
 
 
@@ -274,6 +323,7 @@ public class ProjectDescriptionAction extends BaseAction {
   public void setProjectTypes(Map<String, String> projectTypes) {
     this.projectTypes = projectTypes;
   }
+
 
   @Override
   public void validate() {

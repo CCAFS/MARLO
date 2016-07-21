@@ -25,11 +25,13 @@
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/description</param>
         <param name="edit">true</param>
+         <param name="projectID">${projectID}</param>        
       </result>
       <result name="cancel" type="redirectAction">
         <param name="actionName">${crpSession}/description</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
+         <param name="projectID">${projectID}</param>        
       </result>
     </action>
     
