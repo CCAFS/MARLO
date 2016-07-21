@@ -459,7 +459,8 @@ function getCookie(cname) {
     return 0;
   }
 
-  jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+  if(jQuery.fn.dataTableExt){
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
       "natural-asc": function(a,b) {
         return naturalSort(a, b);
       },
@@ -467,6 +468,7 @@ function getCookie(cname) {
       "natural-desc": function(a,b) {
         return naturalSort(a, b) * -1;
       }
-  });
-
+    });
+  }
+  
 }());
