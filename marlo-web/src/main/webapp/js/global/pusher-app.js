@@ -85,8 +85,6 @@ function showMinNotification(timer) {
 
 // Pusher Users Online
 
-var me;
-
 var currentSectionString = $('#currentSectionString').text();
 var presenceChannel = pusher.subscribe("presence-"+currentSectionString);
 
@@ -121,6 +119,15 @@ presenceChannel.bind('client-mouse-moved', function(data) {
   $mousePointer.fadeIn();
 });
 
+presenceChannel.bind('client-section-saved', function(data) {
+  $('#concurrenceMessage').find('.person').text(data.info.name);
+  $('#concurrenceMessage').fadeIn();
+});
+
+function pushSave(){
+  presenceChannel.trigger("client-section-saved", presenceChannel.members.me);
+}
+
 // document.body.addEventListener('click', onMouseClick, true);
 function onMouseClick(ev){
   ev = ev || window.event;
@@ -131,7 +138,6 @@ function onMouseClick(ev){
   });
 
 }
-
 
 function updateUsersCount(count){
   $('#usersOnline span').text(count);
