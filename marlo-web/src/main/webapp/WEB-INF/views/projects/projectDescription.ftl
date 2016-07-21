@@ -66,9 +66,9 @@
       
               [#-- Project upload work plan --]
               [#if !((project.bilateralProject)!false)]
-              <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.workplanRequired)!false) && !project.workplanName?has_content && !editable]display:none[/#if]">
+              <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplanName?has_content && !editable]display:none[/#if]">
                 [#if (action.hasPermission("workplan"))!false ]
-                  [@customForm.checkbox name="project.workplanRequired" value="true" checked=project.workplanRequired  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
+                  [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
                 [/#if]
                 <div class="tickBox-toggle uploadContainer" [#if ! ((project.workplanRequired)!false)]style="display:none"[/#if]>
                   <div class="halfPartBlock fileUpload projectWorkplan"> 

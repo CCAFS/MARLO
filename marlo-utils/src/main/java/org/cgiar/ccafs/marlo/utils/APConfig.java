@@ -15,6 +15,8 @@
 package org.cgiar.ccafs.marlo.utils;
 
 
+import java.io.File;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
@@ -40,9 +42,14 @@ public class APConfig {
   private static final String PUSH_APP_ID = "pusher.api.appid";
   private static final String PUSH_SECRETE_KEY = "pusher.api.privatekey";
   private static final String TAWKTO_API_KEY = "tawkto.api.key";
-
+  private static final String FILE_DOWNLOADS = "file.downloads";
+  private static final String PROJECTS_BASE_FOLDER = "file.uploads.projectsFolder";
+  private static final String PROJECT_BILATERAL_PROPOSAL_FOLDER = "file.uploads.project.bilateralProposalFolder";
+  private static final String PROJECT_BILATERAL_ANUAL_REPORT_FOLDER = "file.uploads.project.bilateralPAnualReport";
+  private static final String PROJECT_WORKPLAN_FOLDER = "file.uploads.project.WorkplanFolder";
+  private static final String RESOURCE_PATH = "resource.path";
   private static final String AUTO_SAVE_ACTIVE = "autosave.active";
-
+  private static final String UPLOADS_BASE_FOLDER = "file.uploads.baseFolder";
   private static final String PRODUCTION = "marlo.production";
   private static final String DEBUG_MODE = "marlo.debug";
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
@@ -56,10 +63,23 @@ public class APConfig {
 
   private PropertiesManager properties;
 
-
   @Inject
   public APConfig(PropertiesManager properties) {
     this.properties = properties;
+  }
+
+  /**
+   * Get the folder where the bilateral project contract proposal should be loaded
+   * 
+   * @return a string with the path
+   */
+  public String getAnualReportFolder() {
+    try {
+      return properties.getPropertiesAsString(PROJECT_BILATERAL_ANUAL_REPORT_FOLDER);
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+    }
+    return null;
   }
 
   /**
@@ -97,6 +117,41 @@ public class APConfig {
     return base;
   }
 
+  /**
+   * Get the folder where the bilateral project contract proposal should be loaded
+   * 
+   * @return a string with the path
+   */
+  public String getBilateralProjectContractProposalFolder() {
+    try {
+      return properties.getPropertiesAsString(PROJECT_BILATERAL_PROPOSAL_FOLDER);
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+    }
+    return null;
+  }
+
+  /**
+   * Get the URL where the users can download the uploaded files
+   * 
+   * @return a string with the path
+   */
+  public String getDownloadURL() {
+    String downloadsURL = properties.getPropertiesAsString(FILE_DOWNLOADS);
+    if (downloadsURL == null) {
+      LOG.error("There is not a downloads url configured");
+      return null;
+    }
+    while (downloadsURL != null && downloadsURL.endsWith("/")) {
+      downloadsURL = downloadsURL.substring(0, downloadsURL.length() - 1);
+    }
+    if (!downloadsURL.startsWith("https://")) {
+      downloadsURL = "https://" + downloadsURL;
+      return downloadsURL;
+    }
+    return downloadsURL;
+  }
+
   public String getEmailHost() {
     try {
       return properties.getPropertiesAsString(EMAIL_HOST);
@@ -129,7 +184,6 @@ public class APConfig {
     return null;
   }
 
-
   public int getEmailPort() {
     try {
       return Integer.parseInt(properties.getPropertiesAsString(EMAIL_PORT));
@@ -155,6 +209,38 @@ public class APConfig {
       LOG.error("there is not an google api key configured.");
     }
     return "";
+  }
+
+  /**
+   * Get the folder that contains all the files related to a project
+   * 
+   * @return a string with the path
+   */
+  public String getProjectsBaseFolder(String crp) {
+    try {
+
+      return properties.getPropertiesAsString(PROJECTS_BASE_FOLDER).replace("{0}", crp);
+
+
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to upload the project files configured.");
+    }
+    return null;
+  }
+
+
+  /**
+   * Get the folder where the project work plan should be uploaded
+   * 
+   * @return a string with the path
+   */
+  public String getProjectWorkplanFolder() {
+    try {
+      return properties.getPropertiesAsString(PROJECT_WORKPLAN_FOLDER);
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+    }
+    return null;
   }
 
   public String getPushApiKey() {
@@ -184,6 +270,15 @@ public class APConfig {
     return "";
   }
 
+  /**
+   * TODO HT
+   * 
+   * @return
+   */
+  public File getResourcePath() {
+    return new File(properties.getPropertiesAsString(RESOURCE_PATH));
+  }
+
   public String getTawktoApiKey() {
     try {
       return properties.getPropertiesAsString(TAWKTO_API_KEY);
@@ -191,6 +286,20 @@ public class APConfig {
       LOG.error("there is not an Tawkto api key configured.");
     }
     return "";
+  }
+
+  /**
+   * Get the base folder where the uploaded files should be saved
+   * 
+   * @return a string with the path
+   */
+  public String getUploadsBaseFolder() {
+    try {
+      return properties.getPropertiesAsString(UPLOADS_BASE_FOLDER);
+    } catch (Exception e) {
+      LOG.error("there is not a base folder to save the uploaded files configured.");
+    }
+    return null;
   }
 
   /**
