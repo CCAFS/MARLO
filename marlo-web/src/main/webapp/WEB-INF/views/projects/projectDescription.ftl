@@ -38,7 +38,7 @@
               <div class="fullBlock">
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonInstitution" i18nkey="project.liaisonInstitution" disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
