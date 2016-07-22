@@ -106,11 +106,12 @@ public class StandardDAO {
       session = this.openSession();
 
       tx = this.initTransaction(session);
-      session.clear();
-      session.flush();
 
+      if (!session.isOpen()) {
+        session = this.openSession();
+      }
       obj = (T) session.get(clazz, (Serializable) id);
-
+      session.flush();
       this.commitTransaction(tx);
 
     } catch (Exception e) {
@@ -485,8 +486,8 @@ public class StandardDAO {
 
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
-
-      this.commitTransaction(tx);
+      session.flush();
+      // this.commitTransaction(tx);
       session.close();
 
       return true;

@@ -3,7 +3,7 @@ var username = $("input[name='user.email']");
 function init() {
   initJreject();
 
-  var cookieTime = 1;
+  var cookieTime = 5;
 
   if(verifyCookie("CRP") == true) {
     var crpCookie = $("li#" + getCookie("CRP"));

@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -60,6 +61,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectFocusManager projectFocusManager;
   private CrpManager crpManager;
   private CrpProgramManager programManager;
+  private AuditLogManager auditLogManager;
+  private String transaction;
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
    * private LiaisonUserManager liaisonUserManager;
@@ -87,7 +90,7 @@ public class ProjectDescriptionAction extends BaseAction {
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    ProjectFocusManager projectFocusManager) {
+    ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -96,6 +99,7 @@ public class ProjectDescriptionAction extends BaseAction {
     // this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
+    this.auditLogManager = auditLogManager;
     // this.liaisonUserManager = liaisonUserManager;
   }
 
@@ -225,6 +229,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectTypes;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   private String getWorkplanRelativePath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
@@ -245,6 +253,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -256,7 +265,24 @@ public class ProjectDescriptionAction extends BaseAction {
     } catch (Exception e) {
 
     }
-    project = projectManager.getProjectById(projectID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
+      if (history != null) {
+
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
+
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
@@ -284,6 +310,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -314,7 +341,11 @@ public class ProjectDescriptionAction extends BaseAction {
             project.setWorkplanName("");
           }
         }
-      } else if (projectDB.isBilateralProject()) {
+      }
+
+
+      if (projectDB.isBilateralProject()) {
+
         if (file != null) {
           if (project.getBilateralContractName() != null) {
             FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
@@ -329,31 +360,12 @@ public class ProjectDescriptionAction extends BaseAction {
             project.setBilateralContractName("");
           }
         }
-      }
-
-
-      if (projectDB.isBilateralProject()) {
-
-        if (file != null) {
-          FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
-          project.setBilateralContractName(fileFileName);
-          FileManager.copyFile(file, this.getBilateralContractAbsolutePath() + project.getBilateralContractName());
-
-        } else {
-          project.setBilateralContractName(projectDB.getBilateralContractName());
-          if (project.getBilateralContractName() == null || project.getBilateralContractName().isEmpty()) {
-            project.setBilateralContractName("");
-            FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getBilateralContractName());
-          }
-        }
-
-
         if (fileReporting != null) {
           FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
           FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
           project.setAnnualReportToDornor(fileReportingFileName);
         } else {
-          project.setAnnualReportToDornor(projectDB.getAnnualReportToDornor());
+
           if (project.getAnnualReportToDornor() == null || !project.getAnnualReportToDornor().isEmpty()) {
 
             FileManager.deleteFile(this.getAnnualReportAbsolutePath() + project.getAnnualReportToDornor());
@@ -363,7 +375,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      projectManager.saveProject(project);
 
       for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -387,6 +398,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
+
+      projectManager.saveProject(project, this.getActionName());
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -402,7 +415,6 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
   }
-
 
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
@@ -463,8 +475,13 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectStauses = projectStauses;
   }
 
+
   public void setProjectTypes(Map<String, String> projectTypes) {
     this.projectTypes = projectTypes;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 

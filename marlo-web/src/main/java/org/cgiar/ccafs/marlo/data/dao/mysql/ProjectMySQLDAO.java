@@ -86,5 +86,17 @@ public class ProjectMySQLDAO implements ProjectDAO {
     return project.getId();
   }
 
+  @Override
+  public long save(Project project, String sectionName) {
+    if (project.getId() == null) {
+      dao.save(project, sectionName);
+    } else {
+      dao.update(project, sectionName);
+    }
+
+
+    return project.getId();
+  }
+
 
 }

@@ -81,5 +81,7 @@ public interface ProjectManager {
    */
   public long saveProject(Project project);
 
+  public long saveProject(Project project, String section);
+
 
 }
