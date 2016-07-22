@@ -84,7 +84,7 @@
               <div class="fullBlock fileUpload bilateralContract">
                 <h6>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</h6>
                 <div class="uploadContainer">
-                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractProposalName" editable=editable /]
+                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName" editable=editable /]
                 </div>  
               </div>
               [/#if]
@@ -101,7 +101,7 @@
                 <div class="fullBlock fileUpload annualreportDonor">
                   <h6>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</h6>
                   <div class="uploadContainer">
-                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportDonor" editable=editable /]
+                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDornor" editable=editable /]
                   </div>  
                 </div>
                 [/#if]

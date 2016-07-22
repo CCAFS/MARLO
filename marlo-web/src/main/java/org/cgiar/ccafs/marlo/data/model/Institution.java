@@ -14,13 +14,15 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
-public class Institution implements java.io.Serializable {
+public class Institution implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 3635585962414755020L;
@@ -111,6 +113,7 @@ public class Institution implements java.io.Serializable {
     return crpPpaPartners;
   }
 
+  @Override
   public Long getId() {
     return this.id;
   }
@@ -127,6 +130,23 @@ public class Institution implements java.io.Serializable {
     return locElement;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
+  }
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return null;
+  }
+
   public String getName() {
     return this.name;
   }
@@ -137,6 +157,11 @@ public class Institution implements java.io.Serializable {
 
   public String getWebsiteLink() {
     return this.websiteLink;
+  }
+
+  @Override
+  public boolean isActive() {
+    return true;
   }
 
   public void setAcronym(String acronym) {

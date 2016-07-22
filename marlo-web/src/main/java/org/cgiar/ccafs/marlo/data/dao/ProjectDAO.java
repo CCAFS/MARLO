@@ -76,4 +76,6 @@ public interface ProjectDAO {
    *         or -1 is some error occurred.
    */
   public long save(Project project);
+
+  public long save(Project project, String section);
 }
