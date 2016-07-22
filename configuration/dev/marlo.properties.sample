@@ -62,3 +62,22 @@ log.file=false
 log.production=false
 !Test log shows logs of all types trace, debug, info, warn and error 
 log.test=true
+
+## file Downloads
+# URL where the files uploaded can be downloaded
+file.downloads=urlData
+file.uploads.projectsFolder={0}/projects
+# folder to upload project work plans
+file.uploads.project.WorkplanFolder=workplan/
+# folder to upload bilateral project contract proposal
+file.uploads.project.bilateralProposalFolder=bilateralProposal/
+
+file.uploads.project.bilateralPAnualReport=anualReport/
+# Resource path
+resource.path=path
+
+# Maximum size allowed
+file.maxSizeAllowed.bytes=3145728
+
+# Base folder where files will be moved
+file.uploads.baseFolder=path
