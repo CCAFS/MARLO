@@ -50,7 +50,7 @@
           </td>
           [#-- Project Type --]
           <td>
-            W1/W2
+            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
           </td>
           [#-- Region --]
           <td> 

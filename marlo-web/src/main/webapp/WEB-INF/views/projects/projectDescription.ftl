@@ -158,11 +158,10 @@
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="" keyFieldName="id" displayFieldName="" className="" value="" /]
                 [/#if] 
               </div>
+            --]
+            
             </div>
           </div> 
-            
-            
-            --]
            
           
           [#-- Project identifier --]
