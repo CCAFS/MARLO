@@ -169,7 +169,6 @@
               [/#if]
             [/#if] 
           [#else]
-            [#if name == ""][#--@s.property value="${listName}[${value}].${displayFieldName}"/--][/#if]
             [#assign customValue][@s.property value="${name}.${displayFieldName}"/][/#assign]  
             [#if value=="-NULL"] 
               [#if !(customValue)?has_content] ${requiredText}   [@s.text name="form.values.fieldEmpty" /]

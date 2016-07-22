@@ -27,6 +27,9 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+      
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
@@ -38,11 +41,11 @@
               <div class="fullBlock">
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="getComposedName()" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"   listName="allOwners" keyFieldName="id"  displayFieldName="getUser().composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"   listName="allOwners" keyFieldName="id"  displayFieldName="user.composedName" required=true editable=editable /]
                 </div> 
               </div>  
               <div class="fullBlock">  
