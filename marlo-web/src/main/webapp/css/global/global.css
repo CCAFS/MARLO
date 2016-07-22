@@ -3293,9 +3293,9 @@ textarea[id$='summary'] {
     /* margin-bottom: -2000px; */    
     /* padding-bottom: 2000px; */
 }
-#projectFlagshipsBlock {     
-    padding: 11px 0px 9px 3px;
-    /* margin-bottom: -2000px; */ 
+#projectFlagshipsBlock {
+    padding: 0px 0px 9px 3px;
+    /* margin-bottom: -2000px; */
     /* padding-bottom: 2000px; */
 }
 
@@ -5734,11 +5734,15 @@ div#concurrenceMessage span{
 font-weight: bold;
 }
 
-input.customCheckBox {
+input.checkboxInput {
   float:left;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
-label.customCheckBoxLabel {
-  float:left;
+label.checkboxLabel {
+  display: block;
+  font-weight: normal;
 }
 
+input.checkboxInput, label.checkboxLabel{line-height: 19px;}

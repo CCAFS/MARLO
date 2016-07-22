@@ -62,7 +62,7 @@
               <div class="fullBlock">
                 [#-- Project Type --]
                 <div class="halfPartBlock"> 
-                  [@customForm.select name="project.type" value="${project.type}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
+                  [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
                 </div>
               </div> 
       
@@ -72,7 +72,7 @@
                 [#if action.hasPermission("workplan") ]
                   [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
                 [/#if]
-                <div class="tickBox-toggle uploadContainer" [#if !(project.requiresWorkplanUpload)]style="display:none"[/#if]>
+                <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
                   <div class="halfPartBlock fileUpload projectWorkplan">
                     [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplanName" editable=editable /]
                   </div> 
@@ -115,11 +115,11 @@
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
                 <div id="projectFlagshipsBlock" class="">
-                  <h5>[@s.text name="projectDescription.flagships" /]</h5>
-                  <div class="">  
+                  <div class="col-md-12">  
+                    <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="customCheckbox"  value="flagshipIds" /]
+                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
@@ -128,6 +128,7 @@
                       [/#if]
                     [/#if]
                   </div>
+                  <div class="clearfix"></div>
                 </div> 
                 
       
