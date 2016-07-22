@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,6 +31,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,6 +103,16 @@ public class AutoSaveWriterAction extends BaseAction {
       if (result.containsKey("actionName")) {
         fileAction = (String) result.get("actionName");
         fileAction = fileAction.replace("/", "_");
+      }
+      ArrayList<String> keysRemove = new ArrayList<>();
+
+      for (Map.Entry<String, Object> entry : result.entrySet()) {
+        if (entry.getKey().contains("__")) {
+          keysRemove.add(entry.getKey());
+        }
+      }
+      for (String string : keysRemove) {
+        result.remove(string);
       }
       Date generatedDate = new Date();
       result.put("activeSince", generatedDate);

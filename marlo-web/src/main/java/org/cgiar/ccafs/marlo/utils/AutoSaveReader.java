@@ -16,6 +16,8 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.model.Project;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +30,6 @@ import java.util.Set;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
@@ -62,8 +63,11 @@ public class AutoSaveReader {
           onetoMany.put(key, entry.getValue());
           jobj.remove(key);
         } else {
-          jsonNew.put(key, value);
-          jobj.remove(key);
+          if (!key.contains("__")) {
+            jsonNew.put(key, value);
+            jobj.remove(key);
+          }
+
         }
       }
     }
@@ -202,17 +206,24 @@ public class AutoSaveReader {
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
 
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
+
     String className = jobj.get("className").getAsString();
+    if (className.equals(Project.class.getName())) {
+      String nuevoJson = gson.toJson(jobj).replaceAll("project", "");
+      jobj = gson.fromJson(nuevoJson, JsonObject.class);
+      int i = 0;
+    }
     jobj.remove("className");
     try {
-      return gson.fromJson(jobj, Class.forName(className));
-    } catch (JsonSyntaxException e) {
+      Object obj = gson.fromJson(jobj, Class.forName(className));
+      return obj;
+    } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
 
-    } catch (ClassNotFoundException e) {
-      LOG.error(e.getLocalizedMessage());
     }
     return null;
+
+
   }
 }
