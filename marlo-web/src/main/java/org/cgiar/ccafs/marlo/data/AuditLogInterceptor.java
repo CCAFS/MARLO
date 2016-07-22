@@ -266,6 +266,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       this.logSaveAndUpdate("Updated", updates);
       this.logSaveAndUpdate("Deleted", deletes);
     } catch (Exception e) {
+      e.printStackTrace();
       LOG.error(e.getLocalizedMessage());
     } finally {
       inserts.clear();
