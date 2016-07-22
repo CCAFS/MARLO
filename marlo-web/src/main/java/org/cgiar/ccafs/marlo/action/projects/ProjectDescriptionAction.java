@@ -282,6 +282,7 @@ public class ProjectDescriptionAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
+
   }
 
   @Override
