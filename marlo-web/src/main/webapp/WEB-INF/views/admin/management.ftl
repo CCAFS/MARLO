@@ -146,8 +146,8 @@
       <div class="row">
         <div class="col-sm-2">[@customForm.input name="${customName}.acronym" type="text"  i18nkey="CrpProgram.inputAcronym" placeholder="CrpProgram.inputAcronym.placeholder" className="acronym" required=true editable=editable /]</div>
         <div class="col-sm-9">[@customForm.input name="${customName}.name" type="text"  i18nkey="CrpProgram.inputName" placeholder="CrpProgram.inputName.placeholder" className="name" required=true editable=editable /]</div>
-        <div class="col-sm-1">
-          <label for="">Color</label>
+        <div title="This color will be used in some section of the platform to represent your Flagship (e.g. Impact Pathway graph, Your projects, etc.). Please try to pick up a color that differs from the other Flagships." class="col-sm-1">
+          <label  for="">Color:</label>
           <div class="color-picker" style="background:${(element.color)!};"><input type="hidden" name="${customName}.color" value="${(element.color)!}"></div>
         </div>
       </div>
