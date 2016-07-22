@@ -454,21 +454,24 @@ public class ProjectDescriptionAction extends BaseAction {
           projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
       }
-      for (String programID : project.getFlagshipValue().trim().split(",")) {
-        CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-        ProjectFocus projectFocus = new ProjectFocus();
-        projectFocus.setCrpProgram(program);
-        projectFocus.setProject(project);
-        if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-          .contains(projectFocus)) {
-          projectFocus.setActive(true);
-          projectFocus.setActiveSince(new Date());
-          projectFocus.setCreatedBy(this.getCurrentUser());
-          projectFocus.setModifiedBy(this.getCurrentUser());
-          projectFocus.setModificationJustification("");
-          projectFocusManager.saveProjectFocus(projectFocus);
+      if (project.getFlagshipValue() != null || project.getFlagshipValue().length() > 0) {
+        for (String programID : project.getFlagshipValue().trim().split(",")) {
+          CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+          ProjectFocus projectFocus = new ProjectFocus();
+          projectFocus.setCrpProgram(program);
+          projectFocus.setProject(project);
+          if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .contains(projectFocus)) {
+            projectFocus.setActive(true);
+            projectFocus.setActiveSince(new Date());
+            projectFocus.setCreatedBy(this.getCurrentUser());
+            projectFocus.setModifiedBy(this.getCurrentUser());
+            projectFocus.setModificationJustification("");
+            projectFocusManager.saveProjectFocus(projectFocus);
+          }
         }
       }
+
       project.setCrp(loggedCrp);
       project.setCofinancing(projectDB.isCofinancing());
       project.setGlobal(projectDB.isGlobal());
