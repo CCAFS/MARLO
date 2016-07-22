@@ -62,7 +62,7 @@
               [#-- History Log --]
               [#if action.getListLog(selectedProgram)?has_content]
                 [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-                [@logHistory.logList list=action.getListLog(selectedProgram) itemId=crpProgramID /]
+                [@logHistory.logList list=action.getListLog(selectedProgram) itemName="crpProgramID" itemId=crpProgramID /]
                 <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
               [/#if]
               [#if editable]
