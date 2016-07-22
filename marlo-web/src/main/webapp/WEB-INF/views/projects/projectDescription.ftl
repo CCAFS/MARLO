@@ -46,7 +46,8 @@
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"   listName="allOwners" keyFieldName="id"  displayFieldName="user.composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonUser" listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                  <input type="hidden" name="project.liaisonUser.id" value="${(project.liaisonUser.id)!}" />
                 </div> 
               </div>  
               <div class="fullBlock">  
