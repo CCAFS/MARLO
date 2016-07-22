@@ -21,11 +21,15 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum ADLoginMessages {
 
-  LOGON_SUCCESS("Login successful"), ERROR_NO_SUCH_USER("CGIAR User not exist"),
-  ERROR_LOGON_FAILURE("Invalid CGIAR username or password"),
-  ERROR_INVALID_LOGON_HOURS("CGIAR User account with restricted access in specific hours"),
-  ERROR_PASSWORD_EXPIRED("CGIAR User password expired"), ERROR_ACCOUNT_DISABLED("CGIAR User account disabled"),
-  ERROR_ACCOUNT_EXPIRED("CGIAR User account expired"), ERROR_ACCOUNT_LOCKED_OUT("CGIAR User account blocked");
+  LOGON_SUCCESS("You have successfully logged in"),
+  ERROR_NO_SUCH_USER("The CGIAR email provided does not exist, please try again"),
+  ERROR_LOGON_FAILURE("Invalid CGIAR email or password, please try again"),
+  ERROR_INVALID_LOGON_HOURS(
+    "Your CGIAR account has a restricted access at this time, please contact the IT staff from your Center"),
+  ERROR_PASSWORD_EXPIRED("Your CGIAR account password has expired, please contact the IT staff from your Center"),
+  ERROR_ACCOUNT_DISABLED("Your CGIAR account is disabled, please contact the IT staff from your Center"),
+  ERROR_ACCOUNT_EXPIRED("Your CGIAR User account has expired, please contact the IT staff from your Center"),
+  ERROR_ACCOUNT_LOCKED_OUT("Your CGIAR account is currently blocked, please contact the IT staff from your Center");
 
   private String value;
 
