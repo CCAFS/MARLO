@@ -290,37 +290,4 @@
   </div>
 [/#macro]
 
-[#-- The following macros aren't tested yet. --]
 
-[#macro radioButton name value="-NULL" i18nkey="" label="" disabled=false checked=false id="" errorField=""]
-  <div class="radioList">
-    [#if errorField==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
-    <input type="radio" id="${id}" name="${name}" value="[#if value=="-NULL"][@s.property value="${name}"/][#else]${value}[/#if]" [#if checked]checked="true"[/#if] />
-    <label for="${id}"> [#if i18nkey==""]${label}[#else][@s.text name="${i18nkey}"/][/#if] </label>
-  </div>
-[/#macro]
-
-[#macro addRemoveLists name id selectedList allOptionList i18nkey="" disabled=false required=false errorfield=""]
-  <div id="${id}-lists">
-    <div class="selectTo">
-      <select name="${name}" id="${id?c}">
-        [#list selectedList as item]
-          <option value="${item.id?c}">${item.name}</option>
-        [/#list]
-      </select>
-    </div>
-    
-    <a href="" id="btn-add">Add &raquo;</a>
-    <a href="" id="btn-remove">&laquo; Remove</a>
-    
-    <div class="selectFrom">
-      <select id="${id}">
-        [#list allOptionsList as item]
-          [#if test="%{ #item not in #selectedList}"]
-            <option value="${item.id?c}">${item.name}</option>
-          [/#if]
-        [/#list]
-      </select>
-    </div>
-  </div>
-[/#macro]

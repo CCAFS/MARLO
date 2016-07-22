@@ -115,11 +115,11 @@
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
                 <div id="projectFlagshipsBlock" class="">
-                  <h5>[@s.text name="projectDescription.flagships" /]</h5>
-                  <div class="">  
+                  <div class="col-md-12">  
+                    <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="customCheckbox"  value="flagshipIds" /]
+                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
@@ -128,6 +128,7 @@
                       [/#if]
                     [/#if]
                   </div>
+                  <div class="clearfix"></div>
                 </div> 
                 
       
