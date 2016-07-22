@@ -369,6 +369,7 @@ public class StandardDAO {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected boolean save(Object obj) {
+
     Session session = null;
     Transaction tx = null;
     try {
@@ -487,8 +488,8 @@ public class StandardDAO {
 
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
-      session.flush();
-      // this.commitTransaction(tx);
+
+      this.commitTransaction(tx);
       session.close();
 
       return true;
