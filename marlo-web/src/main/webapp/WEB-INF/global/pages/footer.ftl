@@ -32,8 +32,8 @@
       var formBefore;
       var justificationLimitWords = 100;
       var errorMessages = [];
-      var forceChange = false;
       var hashScroll = true;
+      var forceChange = ${draft?string};
       
       var GOOGLE_API_KEY="${config.googleApiKey}";
       var PUSHER_KEY = "${config.pushApiKey}";
