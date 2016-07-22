@@ -84,5 +84,8 @@ public final class APConstants {
   // new Target unit
   public static final String TARGET_UNIT_NAME = "targetUnitName";
   public static final long TARGET_UNIT_OTHER_ID = 18;
+
+  // Date Formats
+  public static final String DATE_FORMAT = "yyyy-MM-dd";
 }
 
