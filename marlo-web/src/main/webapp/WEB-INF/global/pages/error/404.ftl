@@ -1,16 +1,25 @@
 [#ftl]
 [#assign title = "Page you requested was not found!" /]
-
+[#assign customCSS = [ "${baseUrl}/css/global/404.css" ] /]
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<section class="container">
-  <article class="fullContent">
-    <div class="borderBox center">
-      <h1 id="error">404</h1>
-      <img src="${baseUrl}/images/global/page-404-icon.png" />
-      <p class="errorText primary">[@s.text name="server.error.404.1" /]</p> 
-      <a id="backHome" href="${baseUrl}">[@s.text name="server.error.404.back" /]</a>
+<section class="content">
+  <br />
+  <article class="container">
+    <div class="content ">
+      <div  class="borderBox errorContent">
+        <div  class="text-center" id="info">
+          <div>
+          <h2 >Sorry! Page not found!</h2>
+          <br />
+          <span ><strong>  The page you requested was not found</strong></span>
+          
+          </div>          
+          <div onclick="history.go(-2);" class="button-goBack block-center">Go back!</div>
+        </div>
+        
+      </div>
     </div>
   </article>
 </section>
