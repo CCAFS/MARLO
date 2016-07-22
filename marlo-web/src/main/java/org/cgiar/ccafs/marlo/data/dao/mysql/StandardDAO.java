@@ -107,7 +107,7 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
 
-      if (!session.isOpen()) {
+      if (!session.isOpen() || !session.isConnected()) {
         session = this.openSession();
       }
 

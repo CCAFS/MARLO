@@ -117,7 +117,9 @@ public class ProjectDescriptionAction extends BaseAction {
     Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
-      path.toFile().delete();
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);
@@ -221,14 +223,12 @@ public class ProjectDescriptionAction extends BaseAction {
    */
   public long[] getFlagshipIds() {
 
-    List<ProjectFocus> projectFocuses = project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList());
+    List<CrpProgram> projectFocuses = project.getFlagships();
 
     if (projectFocuses != null) {
       long[] ids = new long[projectFocuses.size()];
       for (int c = 0; c < ids.length; c++) {
-        ids[c] = projectFocuses.get(c).getCrpProgram().getId();
+        ids[c] = projectFocuses.get(c).getId();
       }
       return ids;
     }
@@ -340,6 +340,24 @@ public class ProjectDescriptionAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
+        List<CrpProgram> programs = new ArrayList<>();
+        for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
+          CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+          programs.add(program);
+        }
+        project.setFlagships(programs);
+        reader.close();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+        List<CrpProgram> programs = new ArrayList<>();
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          programs.add(projectFocuses.getCrpProgram());
+        }
+        project.setFlagships(programs);
 
       }
     }
@@ -353,13 +371,6 @@ public class ProjectDescriptionAction extends BaseAction {
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
-    List<CrpProgram> programs = new ArrayList<>();
-    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList())) {
-      programs.add(projectFocuses.getCrpProgram());
-    }
-    project.setFlagships(programs);
 
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
@@ -458,9 +469,17 @@ public class ProjectDescriptionAction extends BaseAction {
           projectFocusManager.saveProjectFocus(projectFocus);
         }
       }
-
+      project.setCrp(loggedCrp);
+      project.setCofinancing(projectDB.isCofinancing());
+      project.setGlobal(projectDB.isGlobal());
+      project.setLeaderResponsabilities(projectDB.getLeaderResponsabilities());
 
       projectManager.saveProject(project, this.getActionName());
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
