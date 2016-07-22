@@ -42,6 +42,7 @@
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
                   [@customForm.select name="project.liaisonInstitution" disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                  <input type="hidden" name="project.liaisonInstitution.id" value="${(project.liaisonInstitution.id)!}" />
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
@@ -113,17 +114,15 @@
              
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
-                <div id="projectFlagshipsBlock" class="grid_5">
-                  <h6>[@s.text name="projectDescription.flagships" /]</h6>
-                  <div class="checkboxGroup">  
+                <div id="projectFlagshipsBlock" class="">
+                  <h5>[@s.text name="projectDescription.flagships" /]</h5>
+                  <div class="">  
                     [#if editable]
-                      [@s.fielderror cssClass="fieldError" fieldName="project.flagships"/]
-                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="getComposedName()" cssClass="checkbox" value="flagshipIds" /]
+                      [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
+                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="customCheckbox"  value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
-                        [#list project.flagships as element]
-                         <p class="checked">${element.composedName}</p>
-                        [/#list]
+                        [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
                       [#else]
                         [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
                       [/#if]

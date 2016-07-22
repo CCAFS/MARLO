@@ -5730,5 +5730,15 @@ div#concurrenceMessage {
 }
 
 div#concurrenceMessage span{
-  font-weight: bold;
+  
+font-weight: bold;
 }
+
+input.customCheckBox {
+  float:left;
+}
+
+label.customCheckBoxLabel {
+  float:left;
+}
+
