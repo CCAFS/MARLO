@@ -270,9 +270,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
+      Project history = (Project) auditLogManager.getHistory(transaction);
       if (history != null) {
-
+        project = history;
       } else {
         this.transaction = null;
 
