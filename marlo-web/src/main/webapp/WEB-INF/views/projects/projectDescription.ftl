@@ -2,7 +2,7 @@
 [#assign title = "Project Description" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectDescription.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectDescription.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
 
@@ -169,6 +169,10 @@
           
           [#-- Project identifier --]
           <input name="projectID" type="hidden" value="${project.id}" />
+          <input type="hidden"  name="className" value="${(project.class.name)!}"/>
+          <input type="hidden"  name="id" value="${(project.id)!}"/>
+          <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
+          <input type="hidden"  name="actionName" value="${(actionName)!}"/>  
           
           [#-- Section Buttons--]
           <div class="buttons">
@@ -200,7 +204,7 @@
 </section>
 
 [#-- Hidden values used by js --]
-<input id="crpProgramID" value="${project.crp.id}" type="hidden"/>
+
 
 [#-- Core project list template --]
 <ul style="display:none">

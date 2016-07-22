@@ -34,9 +34,14 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -45,6 +50,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -103,6 +111,29 @@ public class ProjectDescriptionAction extends BaseAction {
     // this.liaisonUserManager = liaisonUserManager;
   }
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
   public List<LiaisonUser> getAllOwners() {
     return allOwners;
   }
@@ -121,8 +152,17 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getAnualReportFolder() + File.separator;
   }
 
+
   public String getAnualReportURL() {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
@@ -134,6 +174,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getBilateralContractAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getBilateralProposalRelativePath() + File.separator;
   }
+
 
   public String getBilateralContractURL() {
     return config.getDownloadURL() + "/" + this.getBilateralProposalRelativePath().replace('\\', '/');
@@ -219,11 +260,9 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectID;
   }
 
-
   public Map<String, String> getProjectStauses() {
     return projectStauses;
   }
-
 
   public Map<String, String> getProjectTypes() {
     return projectTypes;
@@ -239,9 +278,11 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getProjectWorkplanFolder() + File.separator;
   }
 
+
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
+
 
   /**
    * Return the absolute path where the work plan is or should be located.
@@ -252,7 +293,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -283,6 +323,28 @@ public class ProjectDescriptionAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
     }
 
+    if (project != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (Project) autoSaveReader.readFromJson(jReader);
+
+      }
+    }
+
+
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
@@ -310,7 +372,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -416,6 +477,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
   }
@@ -475,15 +537,14 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectStauses = projectStauses;
   }
 
-
   public void setProjectTypes(Map<String, String> projectTypes) {
     this.projectTypes = projectTypes;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   @Override
   public void validate() {
