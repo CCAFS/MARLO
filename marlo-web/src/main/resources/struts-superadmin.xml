@@ -13,6 +13,15 @@
       </result>
     </action>
     
+    <action name="marloIDOs" class="org.cgiar.ccafs.marlo.action.superadmin.IDOsAction">
+      <interceptor-ref name="superAdminStack" />   
+      <result name="input">/WEB-INF/views/superadmin/marloIDOs.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloIDOs</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
     <action name="notifications" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloNotifications.ftl</result>

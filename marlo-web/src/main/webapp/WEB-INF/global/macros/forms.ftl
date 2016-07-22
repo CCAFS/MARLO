@@ -187,11 +187,31 @@
   </div>
 [/#macro]
 
-[#macro inputFile name template=false className="" ]
-  [#assign customId][#if template]${name}-template[#else]${name}[/#if][/#assign]
-  <!-- Input File ${customId} -->
-  [@s.fielderror cssClass="fieldError" fieldName="${name}"/]
-  [@s.file name="${name}" id="${customId}" cssClass="${className} upload" cssStyle="${template?string('display:none','')}"  /]
+[#macro inputFile name template=false className="" fileUrl="" fileName="" editable=true]
+  [#local customId][#if template]${name}-template[#else]${name}[/#if][/#local]
+  [#local customFileName][@s.property value="${fileName}"/][/#local]
+  <div id="${customId}" class="${className}" style="${template?string('display:none','block')}">
+    [#if customFileName?has_content && !template]
+      <p> 
+        [#if editable]<span id="remove-${name}" class="remove"></span>[#else]<span class="file"></span>[/#if] 
+        <a href="${fileUrl}${customFileName}">${customFileName}</a>  
+      </p>
+    [#else]
+      [#if editable]
+       [@s.fielderror cssClass="fieldError" fieldName="${name}"/]
+       [@s.file name="${name}" id="" cssClass="upload" cssStyle=""  /]
+      [#else]
+        <p>[@s.text name="form.values.notFileUploaded" /]</p> 
+      [/#if]
+    [/#if]
+    
+    [#if template]
+      <input type="hidden" name="${fileName}" value="" /> 
+    [#else]
+      <input type="hidden" name="${fileName}" value="${(customFileName)!}" /> 
+    [/#if]
+  </div>
+  
 [/#macro] 
 
 [#macro req required=true ][#if required]<span class="red">*</span>[/#if][/#macro]

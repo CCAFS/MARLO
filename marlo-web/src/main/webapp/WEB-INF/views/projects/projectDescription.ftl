@@ -65,24 +65,12 @@
               [#-- Project upload work plan --]
               [#if !((project.bilateralProject)!false)]
               <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplanName?has_content && !editable]display:none[/#if]">
-                [#if (action.hasPermission("workplan"))!false ]
+                [#if action.hasPermission("workplan") ]
                   [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
                 [/#if]
-                <div class="tickBox-toggle uploadContainer" [#if ! ((project.workplanRequired)!false)]style="display:none"[/#if]>
-                  <div class="halfPartBlock fileUpload projectWorkplan"> 
-                    [#if project.workplanName?has_content]
-                      <p> 
-                        [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                        <a href="${(workplanURL)!}${project.workplanName}">${project.workplanName}</a>  <input type="hidden" name="project.workplanName" value="${project.workplanName}" /> 
-                      </p>
-                    [#else]
-                      [#if editable]
-                        [#if !((action.hasPermission("workplan"))!false) ]
-                          <h6>[@s.text name="projectDescription.uploadProjectWorkplan" /]:</h6>
-                        [/#if]
-                        [@customForm.inputFile name="file"  /]
-                      [/#if] 
-                    [/#if] 
+                <div class="tickBox-toggle uploadContainer" [#if !(project.requiresWorkplanUpload)]style="display:none"[/#if]>
+                  <div class="halfPartBlock fileUpload projectWorkplan">
+                    [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplanName" editable=editable /]
                   </div> 
                 </div>  
               </div>
@@ -93,16 +81,7 @@
               <div class="fullBlock fileUpload bilateralContract">
                 <h6>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</h6>
                 <div class="uploadContainer">
-                  [#if project.bilateralContractProposalName?has_content]
-                    [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                    <p> <a href="${bilateralContractURL}${project.bilateralContractProposalName}">${project.bilateralContractProposalName}</a> 
-                  [#else]
-                    [#if editable]
-                      [@customForm.inputFile name="file"  /]
-                    [#else]  
-                      <p>[@s.text name="form.values.notFileUploaded" /]</p> 
-                    [/#if] 
-                  [/#if]
+                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractProposalName" editable=editable /]
                 </div>  
               </div>
               [/#if]
@@ -119,16 +98,7 @@
                 <div class="fullBlock fileUpload annualreportDonor">
                   <h6>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</h6>
                   <div class="uploadContainer">
-                    [#if project.annualReportDonor?has_content]
-                      [#if editable]<span id="remove-fileReporting" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                      <p><a href="${AnualReportURL}${project.annualReportDonor}">${project.annualReportDonor}</a> </p>
-                    [#else]
-                      [#if editable]
-                        [@customForm.inputFile name="fileReporting"  /]
-                      [#else]  
-                        <p> [@s.text name="form.values.notFileUploaded" /]</p>
-                      [/#if] 
-                    [/#if]
+                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportDonor" editable=editable /]
                   </div>  
                 </div>
                 [/#if]
@@ -244,8 +214,9 @@
   <ul class="messages"><li>[@s.text name="projectDescription.removeContributionDialog" /]</li></ul>
 </div>
 
-[#-- File upload Template--] 
-[@customForm.inputFile name="file" template=true /] 
+[#-- File upload Template--]
+[@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplanName" template=true /]
+
 [@customForm.inputFile name="fileReporting" template=true /] 
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
