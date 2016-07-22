@@ -314,7 +314,11 @@ public class ProjectDescriptionAction extends BaseAction {
             project.setWorkplanName("");
           }
         }
-      } else if (projectDB.isBilateralProject()) {
+      }
+
+
+      if (projectDB.isBilateralProject()) {
+
         if (file != null) {
           if (project.getBilateralContractName() != null) {
             FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
@@ -329,31 +333,12 @@ public class ProjectDescriptionAction extends BaseAction {
             project.setBilateralContractName("");
           }
         }
-      }
-
-
-      if (projectDB.isBilateralProject()) {
-
-        if (file != null) {
-          FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
-          project.setBilateralContractName(fileFileName);
-          FileManager.copyFile(file, this.getBilateralContractAbsolutePath() + project.getBilateralContractName());
-
-        } else {
-          project.setBilateralContractName(projectDB.getBilateralContractName());
-          if (project.getBilateralContractName() == null || project.getBilateralContractName().isEmpty()) {
-            project.setBilateralContractName("");
-            FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getBilateralContractName());
-          }
-        }
-
-
         if (fileReporting != null) {
           FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
           FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
           project.setAnnualReportToDornor(fileReportingFileName);
         } else {
-          project.setAnnualReportToDornor(projectDB.getAnnualReportToDornor());
+
           if (project.getAnnualReportToDornor() == null || !project.getAnnualReportToDornor().isEmpty()) {
 
             FileManager.deleteFile(this.getAnnualReportAbsolutePath() + project.getAnnualReportToDornor());
@@ -363,7 +348,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
-      projectManager.saveProject(project);
 
       for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -387,6 +371,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
       }
 
+
+      projectManager.saveProject(project, this.getActionName());
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
