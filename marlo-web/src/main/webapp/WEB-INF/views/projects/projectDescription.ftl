@@ -41,7 +41,7 @@
               <div class="fullBlock">
                 [#-- Project Program Creator --]
                 <div class="halfPartBlock">
-                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                  [@customForm.select name="project.liaisonInstitution" disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
                 <div class="halfPartBlock">
@@ -176,7 +176,7 @@
               [#-- History Log --]
               [#if action.getListLog(project)?has_content]
                 [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-                [@logHistory.logList list=action.getListLog(project) itemId=project.id /]
+                [@logHistory.logList list=action.getListLog(project) itemName="projectID" itemId=project.id /]
                 <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
               [/#if]
               [#if editable]
