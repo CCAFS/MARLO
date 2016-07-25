@@ -102,7 +102,6 @@ p.contributioRem {
     border-radius: 3px;
     width: auto;
     padding-left: 0.8em;
-    cursor: pointer;
 }
 
 .subIdoSelected i{color: #999999;}
@@ -137,4 +136,8 @@ p.contributioRem {
 
 .buttonSubIdo-content {
     padding-top: 3px;
+}
+
+.selectSubIDO {
+    cursor: pointer;
 }

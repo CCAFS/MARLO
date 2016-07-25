@@ -61,9 +61,14 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getComposedName() {
+    return user.getComposedName();
+  }
+
   public Crp getCrp() {
     return crp;
   }
+
 
   @Override
   public Long getId() {
@@ -98,7 +103,6 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   public Set<Project> getProjects() {
     return projects;
   }
-
 
   public User getUser() {
     return user;

@@ -32,7 +32,7 @@ function init() {
   });
 
   // Username cookie
-  username.keyup(function(e) {
+  username.on("change", function(e) {
     setCookie("username.email", username.val(), cookieTime);
   });
 

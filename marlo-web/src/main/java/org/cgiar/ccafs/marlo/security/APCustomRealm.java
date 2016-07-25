@@ -19,10 +19,14 @@ package org.cgiar.ccafs.marlo.security;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
+
+import org.cgiar.ciat.auth.LDAPService;
+import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -120,11 +124,25 @@ public class APCustomRealm extends AuthorizingRealm {
     }
 
     if (user != null) {
-      if (user.isCgiarUser()) {
-        authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
+      if (user.isActive()) {
+        if (user.isCgiarUser()) {
+          if (user.getUsername() == null) {
+            if (this.getCgiarNickname(user)) {
+              authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
+            } else {
+              authenticated.put(APConstants.LOGIN_STATUS, false);
+              authenticated.put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_NO_SUCH_USER.getValue());
+            }
+          }
+        } else {
+          authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
+        }
       } else {
-        authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
+        authenticated.put(APConstants.LOGIN_STATUS, false);
+        authenticated.put(APConstants.LOGIN_MESSAGE, APConstants.USER_DISABLED);
       }
+
+
       session.setAttribute(APConstants.LOGIN_MESSAGE, authenticated.get(APConstants.LOGIN_MESSAGE));
 
       if (!(boolean) authenticated.get(APConstants.LOGIN_STATUS)) {
@@ -160,6 +178,20 @@ public class APCustomRealm extends AuthorizingRealm {
 
     authorizationInfo.addStringPermissions(userManager.getPermission(user.getId().intValue(), crp.getAcronym()));
     return authorizationInfo;
+  }
+
+  boolean getCgiarNickname(User user) {
+
+    LDAPUser ldapUser = new LDAPService().searchUserByEmail(user.getEmail());
+    if (ldapUser != null) {
+      user.setUsername(ldapUser.getLogin().toLowerCase());
+      userManager.saveUser(user, user);
+      return true;
+    } else {
+      return false;
+    }
+
+
   }
 
   @Override
