@@ -29,7 +29,8 @@ public enum ADLoginMessages {
   ERROR_PASSWORD_EXPIRED("Your CGIAR account password has expired, please contact the IT staff from your Center"),
   ERROR_ACCOUNT_DISABLED("Your CGIAR account is disabled, please contact the IT staff from your Center"),
   ERROR_ACCOUNT_EXPIRED("Your CGIAR User account has expired, please contact the IT staff from your Center"),
-  ERROR_ACCOUNT_LOCKED_OUT("Your CGIAR account is currently blocked, please contact the IT staff from your Center");
+  ERROR_ACCOUNT_LOCKED_OUT("Your CGIAR account is currently blocked, please contact the IT staff from your Center"),
+  USER_DISABLED("Your account is disabled, please contact your Management Liaison and/or the MARLO staff");
 
   private String value;
 
