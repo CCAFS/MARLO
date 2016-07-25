@@ -42,6 +42,13 @@
 			</result>
 		</action>
 
+ <action name="sendNotification"
+      class="org.cgiar.ccafs.marlo.action.json.global.MessagesAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
     <action name="pusherAutentication"
       class="org.cgiar.ccafs.marlo.action.json.global.PusherAutentication">
@@ -100,5 +107,7 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+   
 	</package>
 </struts>

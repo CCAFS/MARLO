@@ -13,11 +13,11 @@ function attachEvents() {
         message: $('textarea.systemReset-message').val(),
         diffTime: $('input.systemReset-diffTime').val(),
     }
-    globalChannel.trigger("client-system-reset", pushData);
+    //globalChannel.trigger("client-system-reset", pushData);
+
+      $.ajax({ url: baseURL + '/sendNotification.do', data: pushData, success: resetSuccess });
     $('#systemReset').find('textarea, input').val('');
-    /*
-     * $.ajax({ url: baseURL + '/sendNotification.do', data: pushData, success: resetSuccess });
-     */
+
   });
 
   $('#simpleNotification button').on('click', function() {
@@ -28,3 +28,4 @@ function attachEvents() {
     $('#simpleNotification').find('textarea, input').val('');
   });
 }
+function resetSuccess(){}
