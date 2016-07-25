@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.autosave;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedWriter;
@@ -73,6 +74,7 @@ public class AutoSaveWriterAction extends BaseAction {
 
     String fileId = "";
     String fileClass = "";
+    String nameClass = "";
     String fileAction = "";
 
     status = new HashMap<String, Object>();
@@ -97,6 +99,7 @@ public class AutoSaveWriterAction extends BaseAction {
       if (result.containsKey("className")) {
         String ClassName = (String) result.get("className");
         String[] composedClassName = ClassName.split("\\.");
+        nameClass = ClassName;
         fileClass = composedClassName[composedClassName.length - 1];
       }
 
@@ -118,7 +121,9 @@ public class AutoSaveWriterAction extends BaseAction {
       result.put("activeSince", generatedDate);
 
       String jSon = gson.toJson(result);
-
+      if (nameClass.equals(Project.class.getName())) {
+        jSon = jSon.replaceAll("project.", "");
+      }
       try {
 
         String fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";

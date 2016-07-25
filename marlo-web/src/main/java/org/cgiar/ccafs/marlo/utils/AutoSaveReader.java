@@ -16,8 +16,6 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
-import org.cgiar.ccafs.marlo.data.model.Project;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -208,11 +206,7 @@ public class AutoSaveReader {
     jobj = gson.fromJson(gson.toJson(jsonNew), JsonObject.class);
 
     String className = jobj.get("className").getAsString();
-    if (className.equals(Project.class.getName())) {
-      String nuevoJson = gson.toJson(jobj).replaceAll("project", "");
-      jobj = gson.fromJson(nuevoJson, JsonObject.class);
-      int i = 0;
-    }
+
     jobj.remove("className");
     try {
       Object obj = gson.fromJson(jobj, Class.forName(className));
