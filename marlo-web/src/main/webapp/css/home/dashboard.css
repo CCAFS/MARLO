@@ -1,0 +1,18 @@
+#dashboardContent {
+    margin-left: 16.66666667%;
+}
+
+#dashboardContent li a{
+  background-color: #117fa8;
+  color: white;
+}
+
+#dashboardContent li a:hover{
+  background-color: #69aec8;
+  color:white;
+}
+
+#dashboardContent li.active a{
+  background-color: white;
+  color:black;
+}
