@@ -158,12 +158,14 @@ function removeMousePointer(member){
 }
 
 function createBadge(member){
-  var $badge = $('#user-badge-template').clone(true).attr('id','user-badge-'+member.id );
-  $badge.text((member.info.name).replace(/[^A-Z]/g, ''));
-  $badge.attr('title', member.info.name);
-  $badge.css("background-color", member.info.color);
-  $badge.appendTo('.breadcrumb .usersInfo');
-  $badge.fadeIn('slow');
+  if(!($('#user-badge-'+member.id).exists())){
+    var $badge = $('#user-badge-template').clone(true).attr('id','user-badge-'+member.id );
+    $badge.text((member.info.name).replace(/[^A-Z]/g, ''));
+    $badge.attr('title', member.info.name);
+    $badge.css("background-color", member.info.color);
+    $badge.appendTo('.breadcrumb .usersInfo');
+    $badge.fadeIn('slow');
+  }
 }
 
 function removeBadge(member){

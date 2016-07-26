@@ -3,7 +3,7 @@
   { 'slug': 'marloBoard',   'name': 'menu.superadmin.board', 'action': 'marloBoard',   'active': true },
   { 'slug': 'notifications',   'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true },
   { 'slug': 'slos',   'name': 'menu.superadmin.slos', 'action': 'slos',   'active': false },
-  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'idos',   'active': false }
+  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'marloIDOs',   'active': true }
 ]/]
 
 <nav id="secondaryMenu">

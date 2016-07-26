@@ -133,6 +133,8 @@ public class APCustomRealm extends AuthorizingRealm {
               authenticated.put(APConstants.LOGIN_STATUS, false);
               authenticated.put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_NO_SUCH_USER.getValue());
             }
+          } else {
+            authenticated = ldapAuthenticator.authenticate(user.getUsername(), password);
           }
         } else {
           authenticated = dbAuthenticator.authenticate(user.getEmail(), password);
