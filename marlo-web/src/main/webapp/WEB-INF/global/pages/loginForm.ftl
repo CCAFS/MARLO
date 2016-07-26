@@ -10,8 +10,8 @@
     [#-- Login error message --]
     [@s.fielderror cssClass="fieldError" fieldName="loginMessage"/]
     [#-- CRPs --]
-    <div class="crpGroup form-group clearfix">
-      <label for="crp">[@s.text name="login.crp" /]:<span class="red">*</span></label>
+    <div class="crpGroup form-group animated bounceIn clearfix">
+      <h4 class="headTitle text-center">[@s.text name="login.crp" /]</h4>
       <ul>
       [#if crpList?has_content]
         [#list crpList as crp]
