@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,16 +16,14 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
+import org.cgiar.ccafs.marlo.data.manager.SrfCrossCuttingIssueManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
+import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
+import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -39,18 +37,19 @@ public class IDOsAction extends BaseAction {
 
   private HashMap<Long, String> idoList;
 
+  private SrfIdoManager srfIdoManager;
+  private SrfCrossCuttingIssueManager srfCrossCuttingIssueManager;
 
-  private SrfTargetUnitManager srfTargetUnitManager;
-
-
-  private List<SrfTargetUnit> targetUnitList;
+  private List<SrfIdo> idosList;
+  private List<SrfCrossCuttingIssue> srfCrossCuttingIssues;
 
 
   @Inject
-  public IDOsAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager) {
+  public IDOsAction(APConfig config, SrfIdoManager srfIdoManager,
+    SrfCrossCuttingIssueManager srfCrossCuttingIssueManager) {
     super(config);
-    this.srfTargetUnitManager = srfTargetUnitManager;
-
+    this.srfIdoManager = srfIdoManager;
+    this.srfCrossCuttingIssueManager = srfCrossCuttingIssueManager;
   }
 
 
@@ -59,25 +58,25 @@ public class IDOsAction extends BaseAction {
   }
 
 
-  public List<SrfTargetUnit> getTargetUnitList() {
-    return targetUnitList;
+  public List<SrfIdo> getIdosList() {
+    return idosList;
+  }
+
+
+  public List<SrfCrossCuttingIssue> getSrfCrossCuttingIssues() {
+    return srfCrossCuttingIssues;
   }
 
 
   @Override
   public void prepare() throws Exception {
 
+    idosList = srfIdoManager.findAll();
 
-    targetUnitList = new ArrayList<>();
-    if (srfTargetUnitManager.findAll() != null) {
-      List<SrfTargetUnit> targetUnits =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.add(srfTargetUnit);
-      }
-    }
+    srfCrossCuttingIssues = srfCrossCuttingIssueManager.findAll();
+
     if (this.isHttpPost()) {
-      targetUnitList.clear();
+      idosList.clear();
     }
 
   }
@@ -86,51 +85,6 @@ public class IDOsAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-
-      List<SrfTargetUnit> targetsPreview =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      // Removing crp flagship program type
-      if (targetsPreview != null) {
-        for (SrfTargetUnit srfTargetUnit : targetsPreview) {
-          if (!targetUnitList.contains(srfTargetUnit)) {
-
-            srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
-
-          }
-        }
-      }
-
-      for (SrfTargetUnit srfTargetUnit : targetUnitList) {
-        if (srfTargetUnit.getId() == null) {
-
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(this.getCurrentUser());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(new Date());
-
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
-        } else {
-          SrfTargetUnit srfTargetUnitDB = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
-
-          srfTargetUnit.setActive(true);
-          srfTargetUnit.setCreatedBy(srfTargetUnitDB.getCreatedBy());
-          srfTargetUnit.setModifiedBy(this.getCurrentUser());
-          srfTargetUnit.setModificationJustification("");
-          srfTargetUnit.setActiveSince(srfTargetUnitDB.getActiveSince());
-
-          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
-        }
-      }
-      Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
-        this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
-      } else {
-        this.addActionMessage(this.getText("saving.saved"));
-      }
-      messages = this.getActionMessages();
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -142,9 +96,16 @@ public class IDOsAction extends BaseAction {
     this.idoList = idoList;
   }
 
-  public void setTargetUnitList(List<SrfTargetUnit> targetUnitList) {
-    this.targetUnitList = targetUnitList;
+
+  public void setIdosList(List<SrfIdo> idosList) {
+    this.idosList = idosList;
   }
+
+
+  public void setSrfCrossCuttingIssues(List<SrfCrossCuttingIssue> srfCrossCuttingIssues) {
+    this.srfCrossCuttingIssues = srfCrossCuttingIssues;
+  }
+
 
   @Override
   public void validate() {

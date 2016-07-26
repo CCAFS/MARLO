@@ -1,0 +1,33 @@
+.acronymBlock {float: left;width: 18%;padding-left: 0;padding-right: 1%;}
+
+.nameBlock {padding: 0;width: 60%;float: left;}
+
+.buttonBlock {width: 20%;padding-right: 0;float: right;}
+
+li.targetUnit {
+  float: left;
+  width: 49%;
+  margin-left: 1%;
+}
+
+.srfIdo {padding: 5px;}
+
+.grayBlock {
+  background: #f1f1f1;
+  padding: 6px 16px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.srfIdo .blockTitle {
+  cursor: pointer;
+  padding-left: 12px;
+}
+
+.srfIdo .blockTitle small{
+  color: #389b98;
+}
+
+.srfIdo .blockContent{
+  padding: 0 30px 20px 30px;
+}

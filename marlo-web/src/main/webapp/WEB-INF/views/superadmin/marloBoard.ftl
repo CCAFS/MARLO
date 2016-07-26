@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrl}/js/superadmin/marloBoard.js" ] /]
-[#assign customCSS = [ "${baseUrl}/css/superadmin/marloBoard.css" ] /]
+[#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "marloBoard" /]
 

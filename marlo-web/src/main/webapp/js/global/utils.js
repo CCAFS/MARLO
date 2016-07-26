@@ -114,6 +114,16 @@ $.fn.colorPicker = function() {
   });
 }
 
+// Animate.css - https://github.com/daneden/animate.css
+$.fn.extend({
+  animateCss: function(animationName) {
+    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+    $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+      $(this).removeClass('animated ' + animationName);
+    });
+  }
+});
+
 function getRandomColor() {
   var letters = '0123456789ABCDEF'.split('');
   var color = '#';
@@ -459,16 +469,16 @@ function getCookie(cname) {
     return 0;
   }
 
-  if(jQuery.fn.dataTableExt){
+  if(jQuery.fn.dataTableExt) {
     jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-      "natural-asc": function(a,b) {
-        return naturalSort(a, b);
-      },
+        "natural-asc": function(a,b) {
+          return naturalSort(a, b);
+        },
 
-      "natural-desc": function(a,b) {
-        return naturalSort(a, b) * -1;
-      }
+        "natural-desc": function(a,b) {
+          return naturalSort(a, b) * -1;
+        }
     });
   }
-  
+
 }());
