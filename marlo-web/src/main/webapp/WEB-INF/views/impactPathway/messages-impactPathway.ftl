@@ -23,7 +23,7 @@
 [/#if]
 
 [#-- Privileges Message --]
-[#if !canEdit && !transaction??]
+[#if !canEdit && !transaction?? && !submission?? ]
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if] 
 
@@ -36,5 +36,5 @@
 
 [#-- Concurrence Message --]
 <div id="concurrenceMessage" class="text-center" style="display:none">
-  <p><span class="glyphicon glyphicon-flash"></span> This section has been modified by <span class="person"></span> in a meantime. By saving your changes you will replace the recent update.</p>
+  <p><span class="glyphicon glyphicon-flash"></span> [@s.text name="CrpProgram.message.concurrence"][@s.param]<span class="person"></span>[/@s.param][/@s.text]</p>
 </div>

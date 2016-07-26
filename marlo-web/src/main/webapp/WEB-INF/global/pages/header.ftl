@@ -9,7 +9,7 @@
   	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   	[#-- Favicon --]
-    <link rel="shortcut icon" href="${baseUrl}/images/global/favicon.ico" />
+    <link rel="shortcut icon" href="${baseUrl}/images/global/MARLO_favicon.png" />
     [#-- Keywords --]
     [#if pageKeywords??]<meta name="keywords" content="${pageKeywords}" />[/#if]
     [#-- Description --]
