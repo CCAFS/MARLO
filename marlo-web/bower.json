@@ -35,7 +35,8 @@
     "pusher-websocket-iso": "pusher#^3.1.0",
     "cytoscape": "^2.7.5",
     "cytoscape-panzoom": "^2.4.0",
-    "datatables.net-bs": "^1.10.12"
+    "datatables.net-bs": "^1.10.12",
+    "jQuery-Timelinr": "https://github.com/juanbrujo/jQuery-Timelinr.git#^0.9.6"
   },
   "overrides": {
     "jquery": {
@@ -76,6 +77,12 @@
         "cytoscape-panzoom.js",
         "cytoscape.js-panzoom.css",
         "font-awesome-4.0.3/css/font-awesome.css"
+      ]
+    },
+    "jQuery-Timelinr": {
+      "main": [
+        "js/jquery.timelinr-0.9.6.js",
+        "css/style.css"
       ]
     }
   }

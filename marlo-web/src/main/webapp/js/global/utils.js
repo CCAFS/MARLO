@@ -101,12 +101,15 @@ $.fn.colorPicker = function() {
     console.log($(pickerElement).find('input').val());
     if($(pickerElement).find('input').val() == "") {
       defaultColor = getRandomColor();
+    } else {
+      defaultColor = $(pickerElement).find('input').val();
     }
     console.log(defaultColor);
     var picker = vanillaColorPicker(pickerElement);
     picker.set('customColors', colors);
     picker.set('defaultColor', defaultColor);
     pickerElement.style.backgroundColor = defaultColor;
+    $(pickerElement).find('input').val(defaultColor);
     picker.on('colorChosen', function(color,targetElem) {
       targetElem.style.backgroundColor = color;
       $(targetElem).find('input').val(color);

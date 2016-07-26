@@ -19,6 +19,7 @@
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/cytoscape.js-panzoom.css" />[/#if]
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/font-awesome-4.0.3/css/font-awesome.css" />[/#if]
   [#if libraryName="datatables.net-bs" ]<link rel="stylesheet" href="${baseUrl}/bower_components/datatables.net-bs/css/dataTables.bootstrap.css" />[/#if]
+  [#if libraryName="jQuery-Timelinr" ]<link rel="stylesheet" href="${baseUrl}/bower_components/jQuery-Timelinr/css/style.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -43,5 +44,6 @@
   [#if libraryName="cytoscape-panzoom"]<script src="${baseUrl}/bower_components/cytoscape-panzoom/cytoscape-panzoom.js"></script>[/#if]
   [#if libraryName="datatables.net"]<script src="${baseUrl}/bower_components/datatables.net/js/jquery.dataTables.js"></script>[/#if]
   [#if libraryName="datatables.net-bs"]<script src="${baseUrl}/bower_components/datatables.net-bs/js/dataTables.bootstrap.js"></script>[/#if]
+  [#if libraryName="jQuery-Timelinr"]<script src="${baseUrl}/bower_components/jQuery-Timelinr/js/jquery.timelinr-0.9.6.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]
