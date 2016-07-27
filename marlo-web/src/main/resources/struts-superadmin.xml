@@ -32,6 +32,15 @@
       </result>
     </action>
     
+    <action name="marloSiteIntegration" class="org.cgiar.ccafs.marlo.action.superadmin.SiteIntegrationAction">
+      <interceptor-ref name="superAdminStack" />   
+      <result name="input">/WEB-INF/views/superadmin/marloSiteIntegration.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloSiteIntegration</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
     <action name="notifications" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloNotifications.ftl</result>
