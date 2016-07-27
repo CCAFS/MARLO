@@ -15,24 +15,22 @@ function init() {
 }
 
 function yesnoEventCrossCutting(value,item) {
-  $t = item.parent().find('input.onoffswitch-radio');
+  $t = $(item).parent().find('input.onoffswitch-radio');
   var array = $t.attr('name').split('.');
-  var $aditional = $t.parents('.srfIdo').find('.aditional-' + array[array.length - 1]);
-  if(value == true) {
-    item.siblings().removeClass('radio-checked');
-    item.addClass('radio-checked');
-    $aditional.slideDown("slow");
+  var $aditionalSlo = $t.parents('.srfIdo').find('.aditional-slos');
+  var $aditionalCrossCutting = $t.parents('.srfIdo').find('.aditional-isCrossCutting');
+  if(value) {
+    $(item).siblings().removeClass('radio-checked');
+    $(item).addClass('radio-checked');
+    $aditionalSlo.slideUp("slow");
+    $aditionalCrossCutting.slideDown("slow");
     $t.val(value);
   } else {
-    var locElements = $t.parents('.locationLevel').find('.locElement').length;
-    if(locElements > 0) {
-      // Do something
-    } else {
-      item.siblings().removeClass('radio-checked');
-      item.addClass('radio-checked');
-      $aditional.slideUp("slow");
-      $t.val(value);
-    }
+    $(item).siblings().removeClass('radio-checked');
+    $(item).addClass('radio-checked');
+    $aditionalSlo.slideDown("slow");
+    $aditionalCrossCutting.slideUp("slow");
+    $t.val(value);
   }
 }
 
@@ -47,11 +45,14 @@ function attachEvents() {
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
-      $('.blockTitle').addClass('closed');
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
     }
     $(this).next().slideToggle();
-    $(this).removeClass('closed');
   });
+
 }
 
 function addIdo() {

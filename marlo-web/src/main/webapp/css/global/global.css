@@ -395,6 +395,7 @@ textarea#justification {
   font-size: 1em;
   word-wrap: break-word;
   color: #6D6D6D;
+  margin: 0;
 }
 
 input[type="radio"] {

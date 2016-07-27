@@ -13,6 +13,16 @@
       </result>
     </action>
     
+    
+    <action name="marloSLOs" class="org.cgiar.ccafs.marlo.action.superadmin.SLOsAction">
+      <interceptor-ref name="superAdminStack" />   
+      <result name="input">/WEB-INF/views/superadmin/marloSLOs.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">marloSLOs</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
     <action name="marloIDOs" class="org.cgiar.ccafs.marlo.action.superadmin.IDOsAction">
       <interceptor-ref name="superAdminStack" />   
       <result name="input">/WEB-INF/views/superadmin/marloIDOs.ftl</result>

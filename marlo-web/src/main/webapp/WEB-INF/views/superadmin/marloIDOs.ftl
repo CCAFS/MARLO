@@ -39,7 +39,7 @@
         [/#if]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addIdo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addIdo"/]</div>
+        <div class="addIdo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addIdo"/]</div>
         
         [#-- Section Buttons--]
         <div class="buttons">
@@ -86,6 +86,11 @@
       [#-- Is Cross-cutting IDO?  --]
       [@customForm.yesNoInput name="${name}.isCrossCutting" label="srfIdo.isCrossCutting"  value="${((element.isCrossCutting)!false)?string}" cssClass="text-left" /]
       
+      [#-- SLOs List --]
+      <div class="aditional-slos grayBlock" style="display:${((element.isCrossCutting)!false)?string('none','block')}">
+       [@s.checkboxlist name="${name}.srfSloIdos" list="slosList" listKey="id" listValue="title" cssClass="checkboxInput"  value="${(element.srfSloIdos)!}" /]
+      </div>
+      
       [#-- Cross-cutting Issues --]
       <div class="aditional-isCrossCutting grayBlock" style="display:${((element.isCrossCutting)!false)?string('block','none')}">
         [@customForm.select name="${name}.srfCrossCuttingIssue.id"  i18nkey="srfIdo.srfCrossCuttingIssue" className="" listName="srfCrossCuttingIssues" keyFieldName="id"  displayFieldName="name" /]
@@ -94,7 +99,7 @@
       
       [#-- Sub-IDOs --]
       <div class="srfSubIdos grayBlock">
-        <h5>[@s.text name="marloIDOs.subIdosList" /]</h5>
+        <h5>[@s.text name="marloIDOs.subIdosList" /]:</h5>
         <div class="subIdosList form-group">
           [#if element.srfSubIdos?has_content]
             [#list element.srfSubIdos as subIdo]
