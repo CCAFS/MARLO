@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,16 @@
 package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -25,17 +34,58 @@ import com.google.inject.Inject;
  */
 public class DashboardAction extends BaseAction {
 
+
   private static final long serialVersionUID = 6686785556753962379L;
 
+
+  private List<Project> myProjects;
+
+
+  private ProjectManager projectManager;
+
+
+  private CrpManager crpManager;
+
+  private Crp loggedCrp;
+
   @Inject
-  public DashboardAction(APConfig config) {
+  public DashboardAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
     super(config);
+    this.projectManager = projectManager;
+  }
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+  public List<Project> getMyProjects() {
+    return myProjects;
   }
 
   @Override
   public void prepare() throws Exception {
-    if (this.isAdmin()) {
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+    if (projectManager.findAll() != null) {
+
+      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+        myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+      } else {
+        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+      }
+      Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
     }
+  }
+
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+  public void setMyProjects(List<Project> myProjects) {
+    this.myProjects = myProjects;
   }
 
 }
