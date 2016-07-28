@@ -57,9 +57,13 @@
             <div class="clearfix"></div>
             [#if !config.production] <h4 class="testEnvironment"><span class="label label-danger text-left">Testing Environment</span></h4> [/#if]
           </div>
-          [#if crpSession??]
-            <img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />
+          
+          [#if namespace?contains('superadmin')]
+            <img id="crp-image" src="${baseUrl}/images/global/cgiar.png" alt="" />
+          [#else]
+            [#if crpSession??]<img id="crp-image" src="${baseUrl}/images/global/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
           [/#if]
+          
         </div>
       </header>
     [/#if]

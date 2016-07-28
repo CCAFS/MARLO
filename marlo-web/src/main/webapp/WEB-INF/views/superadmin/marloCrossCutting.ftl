@@ -5,11 +5,11 @@
 [#assign customJS = [ "${baseUrl}/js/superadmin/marloSLOs.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
-[#assign currentStage = "slos" /]
+[#assign currentStage = "crossCutting" /]
 
 [#assign breadCrumb = [
   {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
-  {"label":"marloSLOs", "nameSpace":"", "action":""}
+  {"label":"crossCutting", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -29,17 +29,17 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        [#-- System Level Outcomes --]
-        <h4 class="sectionTitle">[@s.text name="marloSLOs.sloTitle" /]</h4>
-        <div class="slos-list">
-        [#if slosList?has_content]
-          [#list slosList as slo]
-            [@srfSloMacro element=slo name="slosList[${slo_index}]" index=slo_index  /]
+        [#-- Cross-Cutting Issues --]
+        <h4 class="sectionTitle">[@s.text name="marloSLOs.crossCuttingsTitle" /]</h4>
+        <div class="issues-list">
+        [#if srfCrossCuttingIssues?has_content]
+          [#list srfCrossCuttingIssues as issue]
+            [@srfCCIssueMacro element=issue name="srfCrossCuttingIssues[${issue_index}]" index=issue_index /]
           [/#list]
         [/#if]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addSlo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addSlo"/]</div>
+        <div class="addCrossCuttingIssue bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addCrossCuttingIssue"/]</div>
         
         [#-- Section Buttons--]
         <div class="buttons">
