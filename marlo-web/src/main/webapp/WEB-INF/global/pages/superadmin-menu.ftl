@@ -1,7 +1,7 @@
 [#ftl]
 [#if action.canAccessSuperAdmin()]
   [#assign superAdminMenu =[
-     { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloBoard', 'visible': action.canAccessSuperAdmin(), 'active': true }
+     { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
   ]/]
   <div id="superadminBlock">
     <div class="container">

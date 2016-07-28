@@ -52,6 +52,12 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         <h4 class="sectionTitle">Site Integration</h4>
+        <div class="col-md-12">
+          <div class="col-md-3"><strong>Country</strong></div>
+          <div class="col-md-4"><strong>Focal Point(s)</strong></div>
+          <div class="col-md-5"><strong>CGIAR coordinating Center</strong></div>
+        </div>
+        <div class="clearfix"></div>
         <div class="idos-list">
           [#if siteIntegrationList?has_content]
             [#list siteIntegrationList as site]
