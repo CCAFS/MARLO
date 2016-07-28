@@ -52,9 +52,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -73,9 +78,14 @@ public class OutcomesAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
 
 
+  public static void printMap(Map<String, Integer> map) {
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+      System.out.println("[Key] : " + entry.getKey() + " [Value] : " + entry.getValue());
+    }
+  }
+
+
   private CrpMilestoneManager crpMilestoneManager;
-
-
   private long crpProgramID;
   private String transaction;
   private CrpProgramManager crpProgramManager;
@@ -95,8 +105,9 @@ public class OutcomesAction extends BaseAction {
   private CrpManager crpManager;
   private UserManager userManager;
   private List<SrfIdo> srfIdos;
-  private AuditLogManager auditLogManager;
 
+
+  private AuditLogManager auditLogManager;
 
   @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
@@ -150,6 +161,7 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public long getCrpProgramID() {
     return crpProgramID;
   }
@@ -169,10 +181,10 @@ public class OutcomesAction extends BaseAction {
     return outcomes;
   }
 
-
   public List<CrpProgram> getPrograms() {
     return programs;
   }
+
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -187,7 +199,6 @@ public class OutcomesAction extends BaseAction {
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -240,12 +251,23 @@ public class OutcomesAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
+
       List<SrfTargetUnit> targetUnits =
         srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+      Collections.sort(targetUnits,
+        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+
       for (SrfTargetUnit srfTargetUnit : targetUnits) {
         targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
       }
+
+      // TODO
+      targetUnitList = this.sortByComparator(targetUnitList);
+
+      System.out.println("");
     }
+
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
@@ -651,6 +673,7 @@ public class OutcomesAction extends BaseAction {
     this.idoList = idoList;
   }
 
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -670,7 +693,6 @@ public class OutcomesAction extends BaseAction {
     this.selectedProgram = selectedProgram;
   }
 
-
   public void setSrfIdos(List<SrfIdo> srfIdos) {
     this.srfIdos = srfIdos;
   }
@@ -679,10 +701,33 @@ public class OutcomesAction extends BaseAction {
     this.targetUnitList = targetUnitList;
   }
 
+
   public void setTransaction(String transactionId) {
     this.transaction = transactionId;
   }
 
+  private HashMap<Long, String> sortByComparator(HashMap<Long, String> unsortMap) {
+
+    // Convert Map to List
+    List<HashMap.Entry<Long, String>> list = new LinkedList<HashMap.Entry<Long, String>>(unsortMap.entrySet());
+
+    // Sort list with comparator, to compare the Map values
+    Collections.sort(list, new Comparator<HashMap.Entry<Long, String>>() {
+
+      @Override
+      public int compare(HashMap.Entry<Long, String> o1, HashMap.Entry<Long, String> o2) {
+        return (o1.getValue().toLowerCase().trim()).compareTo(o2.getValue().toLowerCase().trim());
+      }
+    });
+
+    // Convert sorted map back to a Map
+    HashMap<Long, String> sortedMap = new LinkedHashMap<Long, String>();
+    for (Iterator<HashMap.Entry<Long, String>> it = list.iterator(); it.hasNext();) {
+      HashMap.Entry<Long, String> entry = it.next();
+      sortedMap.put(entry.getKey(), entry.getValue());
+    }
+    return sortedMap;
+  }
 
   @Override
   public void validate() {

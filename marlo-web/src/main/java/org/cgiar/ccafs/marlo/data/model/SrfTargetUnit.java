@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,11 +37,10 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
-
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
-  private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
 
+  private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
@@ -56,6 +55,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
 
   private User modifiedBy;
+
 
   private String modificationJustification;
 
@@ -93,6 +93,13 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
         return false;
       }
     } else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    } else if (!name.equals(other.name)) {
       return false;
     }
     return true;
@@ -150,6 +157,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
 
