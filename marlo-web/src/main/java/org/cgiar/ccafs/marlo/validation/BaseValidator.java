@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.validation;
 
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -109,6 +110,33 @@ public class BaseValidator {
       status = new SectionStatus();
       status.setSectionName(sectionName);
       status.setCrpProgram(crpProgram);
+    }
+    if (this.missingFields.length() > 0) {
+      status.setMissingFields(this.missingFields.toString());
+    } else {
+      status.setMissingFields("");
+    }
+
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
+
+  /**
+   * This method saves the missing fields into the database for a section at Project.
+   * 
+   * @param project is a Project.
+   * @param sectionName is the name of the section (description, partners, etc.).
+   */
+  protected void saveMissingFieldsProject(Project project, String sectionName) {
+    // Reporting missing fields into the database.
+    int year = 0;
+
+    SectionStatus status = sectionStatusManager.getSectionStatusByCrpProgam(project.getId(), sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setSectionName(sectionName);
+      status.setProject(project);
     }
     if (this.missingFields.length() > 0) {
       status.setMissingFields(this.missingFields.toString());

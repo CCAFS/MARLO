@@ -92,9 +92,12 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private List<CrpProgram> flagships;
   private String flagshipValue;
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   public Project() {
   }
+
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -136,7 +139,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -159,7 +161,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -169,9 +170,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.annualReportToDornor;
   }
 
+
   public String getBilateralContractName() {
     return this.bilateralContractName;
   }
+
 
   public User getCreatedBy() {
     return this.createdBy;
@@ -235,6 +238,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public Boolean getRequiresWorkplanUpload() {
     return this.requiresWorkplanUpload;
+  }
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
   public Date getStartDate() {
@@ -324,7 +331,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
@@ -369,6 +375,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
   }
@@ -379,6 +386,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setRequiresWorkplanUpload(Boolean requiresWorkplanUpload) {
     this.requiresWorkplanUpload = requiresWorkplanUpload;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
   public void setStartDate(Date startDate) {

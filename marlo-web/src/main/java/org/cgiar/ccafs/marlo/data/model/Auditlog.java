@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@ public class Auditlog implements java.io.Serializable {
   private String entityJson;
   private Long userId;
   private String transactionId;
-  private Long principal;
+  private Long main;
   private String relationName;
   private User user;
 
@@ -53,7 +53,7 @@ public class Auditlog implements java.io.Serializable {
     this.entityJson = entityJson;
     this.userId = userId;
     this.transactionId = transactionId;
-    this.principal = principal;
+    this.main = principal;
     this.relationName = relationName;
   }
 
@@ -92,8 +92,8 @@ public class Auditlog implements java.io.Serializable {
     return this.entityName;
   }
 
-  public Long getPrincipal() {
-    return principal;
+  public Long getMain() {
+    return main;
   }
 
 
@@ -142,8 +142,8 @@ public class Auditlog implements java.io.Serializable {
     this.entityName = entityName;
   }
 
-  public void setPrincipal(Long principal) {
-    this.principal = principal;
+  public void setMain(Long main) {
+    this.main = main;
   }
 
   public void setRelationName(String relationName) {

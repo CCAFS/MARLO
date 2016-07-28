@@ -62,7 +62,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
   public IAuditLog getHistory(String transactionID) {
 
     List<Auditlog> auditLogs =
-      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and principal=1");
+      dao.findAll("from " + Auditlog.class.getName() + " where transaction_id='" + transactionID + "' and main=1");
 
     if (!auditLogs.isEmpty()) {
 
@@ -81,12 +81,12 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
     List<Auditlog> auditLogs = dao.findAll(
       "from " + Auditlog.class.getName() + " where ENTITY_NAME='class " + classAudit.getName() + "' and ENTITY_ID=" + id
-        + " and principal=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
+        + " and main=1 and DETAIL like 'Action: " + actionName + "%' order by CREATED_DATE desc LIMIT 11");
     // " and principal=1 order by CREATED_DATE desc LIMIT 10");
     for (Auditlog auditlog : auditLogs) {
       auditlog.setUser(userDao.getUser(auditlog.getUserId()));
     }
-    return auditLogs;
+    return auditLogs.subList(0, 11);
   }
 
 
@@ -122,7 +122,7 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
           String classNameRelation = propertyType.getName();
           String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
-            + "' and principal=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId() + "'";
+            + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId() + "'";
           List<Auditlog> auditLogsRelations = dao.findAll(sql);
 
           Set<IAuditLog> relation = new HashSet<IAuditLog>();

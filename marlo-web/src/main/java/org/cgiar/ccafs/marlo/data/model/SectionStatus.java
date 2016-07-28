@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,9 +31,12 @@ public class SectionStatus implements java.io.Serializable {
   private String missingFields;
   private String cycle;
   private Integer year;
+  private Project project;
+
 
   public SectionStatus() {
   }
+
 
   public SectionStatus(CrpProgram crpProgram, String sectionName, String missingFields, String cycle, Integer year) {
     this.crpProgram = crpProgram;
@@ -43,7 +46,6 @@ public class SectionStatus implements java.io.Serializable {
     this.year = year;
   }
 
-
   public SectionStatus(String sectionName) {
     this.sectionName = sectionName;
   }
@@ -52,18 +54,22 @@ public class SectionStatus implements java.io.Serializable {
     return this.crpProgram;
   }
 
+
   public String getCycle() {
     return this.cycle;
   }
-
 
   public Long getId() {
     return this.id;
   }
 
-
   public String getMissingFields() {
     return this.missingFields;
+  }
+
+
+  public Project getProject() {
+    return project;
   }
 
 
@@ -71,14 +77,15 @@ public class SectionStatus implements java.io.Serializable {
     return this.sectionName;
   }
 
+
   public Integer getYear() {
     return this.year;
   }
 
-
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
+
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
@@ -90,6 +97,10 @@ public class SectionStatus implements java.io.Serializable {
 
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 
   public void setSectionName(String sectionName) {
