@@ -1,0 +1,11 @@
+#globalProject {
+    float: left;
+    margin-right: 5%;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#content {
+    border: 1px dashed #d1d1d1;
+    padding: 10px;
+}

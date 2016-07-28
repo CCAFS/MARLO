@@ -3,6 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectLocations.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
 
@@ -33,7 +34,18 @@
            
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
-
+            <div >
+              <div class="borderBox col-md-6"> 
+                <div id="globalProject"><span>Is the project global?</span></div>
+                [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Yes" noLabel="No"cssClass="" /]
+              </div> 
+            </div>
+            
+            <div id="content" class="col-md-12">
+              <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
+              <div id="selectsContent" class="col-md-6"></div>
+              <div id="map" class="col-md-6"></div>
+            </div>
           </div> 
            
           
