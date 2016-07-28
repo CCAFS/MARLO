@@ -37,8 +37,8 @@
 
     </property>
     
-     <property name="principal" type="java.lang.Long">
-      <column name="principal" not-null="false" />
+     <property name="main" type="java.lang.Long">
+      <column name="main" not-null="false" />
 
     </property>
 		

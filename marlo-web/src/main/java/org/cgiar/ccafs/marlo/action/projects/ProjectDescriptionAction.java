@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -93,12 +94,13 @@ public class ProjectDescriptionAction extends BaseAction {
   private String fileFileName;
   private String fileReportingFileName;
 
+  private ProjectDescriptionValidator validator;
 
   @Inject
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager) {
+    ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager, ProjectDescriptionValidator validator) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -107,6 +109,7 @@ public class ProjectDescriptionAction extends BaseAction {
     // this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
+    this.validator = validator;
     this.auditLogManager = auditLogManager;
     // this.liaisonUserManager = liaisonUserManager;
   }
@@ -151,7 +154,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private String getAnualReportRelativePath() {
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
-      + config.getAnualReportFolder() + File.separator;
+      + config.getAnualReportFolder();
   }
 
 
@@ -571,7 +574,7 @@ public class ProjectDescriptionAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
+      validator.validate(this, project);
     }
   }
 
