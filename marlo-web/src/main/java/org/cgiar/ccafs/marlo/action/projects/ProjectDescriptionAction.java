@@ -405,7 +405,7 @@ public class ProjectDescriptionAction extends BaseAction {
       if (!project.isBilateralProject() && project.getRequiresWorkplanUpload()) {
         if (file != null) {
           if (projectDB.getWorkplanName() != null) {
-            FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
+            // FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
           }
 
           project.setWorkplanName(fileFileName);
@@ -414,7 +414,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
           if (project.getWorkplanName() == null || project.getWorkplanName().isEmpty()) {
-            FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
+            // FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
             project.setWorkplanName("");
           }
         }
@@ -425,7 +425,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
         if (file != null) {
           if (project.getBilateralContractName() != null) {
-            FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
+            // FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
           }
 
           project.setBilateralContractName(fileFileName);
@@ -433,19 +433,19 @@ public class ProjectDescriptionAction extends BaseAction {
         } else {
 
           if (project.getBilateralContractName() == null || project.getBilateralContractName().isEmpty()) {
-            FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
+            // FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
             project.setBilateralContractName("");
           }
         }
         if (fileReporting != null) {
-          FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
+          // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
           FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
           project.setAnnualReportToDornor(fileReportingFileName);
         } else {
 
           if (project.getAnnualReportToDornor() == null || !project.getAnnualReportToDornor().isEmpty()) {
 
-            FileManager.deleteFile(this.getAnnualReportAbsolutePath() + project.getAnnualReportToDornor());
+            // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + project.getAnnualReportToDornor());
             project.setAnnualReportToDornor("");
           }
         }
