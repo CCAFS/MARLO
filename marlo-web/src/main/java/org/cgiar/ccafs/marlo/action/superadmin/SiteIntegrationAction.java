@@ -17,10 +17,8 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.SrfCrossCuttingIssueManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSloManager;
 import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -32,41 +30,34 @@ import com.google.inject.Inject;
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  */
-public class IDOsAction extends BaseAction {
+public class SiteIntegrationAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
 
   private HashMap<Long, String> idoList;
 
+
   private SrfSloManager srfSloManager;
-  private SrfIdoManager srfIdoManager;
+
   private SrfCrossCuttingIssueManager srfCrossCuttingIssueManager;
 
   private List<SrfSlo> slosList;
-
-  private List<SrfIdo> idosList;
-
 
   private List<SrfCrossCuttingIssue> srfCrossCuttingIssues;
 
 
   @Inject
-  public IDOsAction(APConfig config, SrfSloManager srfSloManager, SrfIdoManager srfIdoManager,
+  public SiteIntegrationAction(APConfig config, SrfSloManager srfSloManager,
     SrfCrossCuttingIssueManager srfCrossCuttingIssueManager) {
     super(config);
     this.srfSloManager = srfSloManager;
-    this.srfIdoManager = srfIdoManager;
     this.srfCrossCuttingIssueManager = srfCrossCuttingIssueManager;
   }
 
+
   public HashMap<Long, String> getIdoList() {
     return idoList;
-  }
-
-
-  public List<SrfIdo> getIdosList() {
-    return idosList;
   }
 
 
@@ -85,12 +76,10 @@ public class IDOsAction extends BaseAction {
 
     slosList = srfSloManager.findAll();
 
-    idosList = srfIdoManager.findAll();
-
     srfCrossCuttingIssues = srfCrossCuttingIssueManager.findAll();
 
     if (this.isHttpPost()) {
-      idosList.clear();
+      slosList.clear();
     }
 
   }
@@ -111,18 +100,8 @@ public class IDOsAction extends BaseAction {
   }
 
 
-  public void setIdosList(List<SrfIdo> idosList) {
-    this.idosList = idosList;
-  }
-
-
   public void setSlosList(List<SrfSlo> slosList) {
     this.slosList = slosList;
-  }
-
-
-  public void setSrfCrossCuttingIssues(List<SrfCrossCuttingIssue> srfCrossCuttingIssues) {
-    this.srfCrossCuttingIssues = srfCrossCuttingIssues;
   }
 
 
