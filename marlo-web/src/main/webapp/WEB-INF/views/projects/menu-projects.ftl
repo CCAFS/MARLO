@@ -1,8 +1,8 @@
 [#ftl]
 [#assign items= [
   { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
-  { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': false  },
-  { 'slug': 'budget',  'name': 'projects.menu.budget',  'action': 'budget',  'active': false  }
+  { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
+  { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true  }
 ]/]
 
 
@@ -14,7 +14,7 @@
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <ul>
-    <li>
+    <li><p>Project Menu</p>
       <ul>
         [#list items as item]
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]

@@ -53,16 +53,16 @@
         [@s.form action=actionName enctype="multipart/form-data" ]
         <h4 class="sectionTitle">Site Integration</h4>
         <div class="idos-list">
-        [#if siteIntegrationList?has_content]
-          [#list siteIntegrationList as site]
-            [@srfIdoMacro element=site name="idosList[${site_index}]" index=site_index  /]
-          [/#list]
-        [#else]
-          
-        [/#if]
+          [#if siteIntegrationList?has_content]
+            [#list siteIntegrationList as site]
+              [@srfIdoMacro element=site name="siteIntegrationList[${site_index}]" index=site_index  /]
+            [/#list]
+          [#else]
+            
+          [/#if]
         </div>
         [#-- Add Outcome Button --]
-        <div class="addIdo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addIdo"/]</div>
+        <div class="addSiteIntegration bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addSiteIntegration"/]</div>
         
         [#-- Section Buttons--]
         <div class="buttons">
@@ -103,7 +103,14 @@
     <div class="blockContent" style="display:none">
       <hr />
       
-    
+      [#-- Institution / Organization --]
+      <div class="form-group">
+      </div>
+      
+      [#-- Leaders --]
+      <div class="form-group">
+      </div>
+      
     </div>
   </div>
 [/#macro]

@@ -34,5 +34,37 @@
       </result>
     </action>
     
+    <action name="{crp}/partners" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      <interceptor-ref name="editProjectsStack" />      
+      <result name="input">/WEB-INF/views/projects/projectPartners.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/partners</param>
+        <param name="edit">true</param>
+         <param name="projectID">${projectID}</param>        
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/partners</param>
+        <param name="edit">true</param>
+        <param name="cancel">true</param>
+         <param name="projectID">${projectID}</param>        
+      </result>
+    </action>
+    
+    <action name="{crp}/locations" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      <interceptor-ref name="editProjectsStack" />      
+      <result name="input">/WEB-INF/views/projects/projectLocations.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/locations</param>
+        <param name="edit">true</param>
+         <param name="projectID">${projectID}</param>        
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/locations</param>
+        <param name="edit">true</param>
+        <param name="cancel">true</param>
+         <param name="projectID">${projectID}</param>        
+      </result>
+    </action>
+    
   </package>
 </struts>
