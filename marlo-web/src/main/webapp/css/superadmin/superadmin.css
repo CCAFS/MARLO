@@ -10,7 +10,7 @@ li.targetUnit {
   margin-left: 1%;
 }
 
-.srfIdo {padding: 5px;}
+.srfIdo {/* padding: 5px; */}
 
 .grayBlock {
   background: #f1f1f1;
@@ -18,10 +18,48 @@ li.targetUnit {
   border-radius: 5px;
   margin-top: 5px;
 }
+/** SLOs **/
+
+.srfSlo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../images/global/arrow-up.png);
+}
+
+.srfSlo .blockTitle.closed {
+  background-image: url(../../images/global/arrow-down.png);
+}
+
+.srfSlo .blockTitle small{
+  color: #389b98;
+}
+
+.srfSlo .blockContent{
+  padding: 0 15px 20px 15px;
+}
+
+/** IDOs **/
 
 .srfIdo .blockTitle {
   cursor: pointer;
-  padding-left: 12px;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfIdo .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../images/global/arrow-up.png);
+}
+
+.srfIdo .blockTitle.closed {
+  background-image: url(../../images/global/arrow-down.png);
 }
 
 .srfIdo .blockTitle small{
@@ -29,5 +67,5 @@ li.targetUnit {
 }
 
 .srfIdo .blockContent{
-  padding: 0 30px 20px 30px;
+  padding: 0 15px 20px 15px;
 }

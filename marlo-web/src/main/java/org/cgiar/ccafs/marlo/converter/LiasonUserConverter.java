@@ -15,8 +15,9 @@
 
 package org.cgiar.ccafs.marlo.converter;
 
-import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 
 import java.util.Map;
 
@@ -28,14 +29,14 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LiaisonInstitutionConverter extends StrutsTypeConverter {
+public class LiasonUserConverter extends StrutsTypeConverter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(LiaisonInstitutionConverter.class);
-  private LiaisonInstitutionManager liaisonInstitutionManager;
+  private static final Logger LOG = LoggerFactory.getLogger(LiasonUserConverter.class);
+  private LiaisonUserManager liaisonUserManager;
 
   @Inject
-  public LiaisonInstitutionConverter(LiaisonInstitutionManager liaisonInstitutionManager) {
-    this.liaisonInstitutionManager = liaisonInstitutionManager;
+  public LiasonUserConverter(LiaisonUserManager liaisonUserManager) {
+    this.liaisonUserManager = liaisonUserManager;
   }
 
   @SuppressWarnings("rawtypes")
@@ -44,12 +45,12 @@ public class LiaisonInstitutionConverter extends StrutsTypeConverter {
     if (toClass == LiaisonInstitution.class) {
       String id = values[0];
       try {
-        LiaisonInstitution institution = liaisonInstitutionManager.getLiaisonInstitutionById(Long.parseLong(id));
+        LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserById(Long.parseLong(id));
         LOG.debug(">> convertFromString > id = {} ", id);
-        return institution;
+        return liaisonUser;
       } catch (NumberFormatException e) {
         // Do Nothing
-        LOG.error("Problem to convert User from String (convertFromString) for LiaisonInstitution_id = {} ", id,
+        LOG.error("Problem to convert User from String (convertFromString) for LiaisonUser_id = {} ", id,
           e.getMessage());
       }
     }
@@ -60,9 +61,9 @@ public class LiaisonInstitutionConverter extends StrutsTypeConverter {
   @Override
   public String convertToString(Map context, Object o) {
     if (o != null) {
-      LiaisonInstitution institution = (LiaisonInstitution) o;
-      LOG.debug(">> convertToString > id = {} ", institution.getId());
-      return institution.getId() + "";
+      LiaisonUser liaisonUser = (LiaisonUser) o;
+      LOG.debug(">> convertToString > id = {} ", liaisonUser.getId());
+      return liaisonUser.getId() + "";
     }
     return null;
   }

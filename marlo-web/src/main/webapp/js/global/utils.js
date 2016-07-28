@@ -86,6 +86,13 @@ jQuery.fn.setNameIndex = function(level,index) {
     levels++;
     return (levels == level) ? "[" + index + "]" : match;
   }));
+  $(this).attr('id', $(this).attr('name'));
+};
+
+jQuery.fn.setNameIndexes = function(level,index) {
+  $(this).find('[name]').each(function(i,e) {
+    $(e).setNameIndex(level, index);
+  });
 };
 
 /* Color picker widget */
