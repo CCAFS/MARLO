@@ -341,9 +341,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         List<CrpProgram> programs = new ArrayList<>();
-        for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
-          CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-          programs.add(program);
+        if (project.getFlagshipValue() != null) {
+          for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
+            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+            programs.add(program);
+          }
         }
         project.setFlagships(programs);
         reader.close();
