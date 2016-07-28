@@ -52,6 +52,7 @@ public class DashboardAction extends BaseAction {
   public DashboardAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
     super(config);
     this.projectManager = projectManager;
+    this.crpManager = crpManager;
   }
 
   public Crp getLoggedCrp() {
