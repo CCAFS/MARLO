@@ -25,7 +25,6 @@
     [#if pageLibs??]
       [#list pageLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
     [/#if]
-    
     [#-- Second, import global javascripts and templates. --]
     <script type="text/javascript">
       var currentPlanningYear, currentReportingYear;
@@ -45,7 +44,7 @@
       var editable = ${editable?string};
       var canEdit = ${canEdit?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
-      var currentCrpID=${(selectedProgram.crp.id)!'-1'};
+      var currentCrpID=${(crpID)!'-1'};
       
       
       [#-- Tawk.to Widget --]

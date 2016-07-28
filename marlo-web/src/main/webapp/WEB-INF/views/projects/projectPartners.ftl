@@ -37,18 +37,12 @@
           </div> 
            
           
-          [#-- Project identifier --]
-          <input name="projectID" type="hidden" value="${project.id}" />
-          <input type="hidden"  name="className" value="${(project.class.name)!}"/>
-          <input type="hidden"  name="id" value="${(project.id)!}"/>
-          <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
-          <input type="hidden"  name="actionName" value="${(actionName)!}"/>  
+          
           
           [#-- Section Buttons--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-             
          
-          [/@s.form] 
+        [/@s.form] 
       </div>
     </div>  
 </section>

@@ -36,7 +36,9 @@
     "cytoscape": "^2.7.5",
     "cytoscape-panzoom": "^2.4.0",
     "datatables.net-bs": "^1.10.12",
-    "jQuery-Timelinr": "https://github.com/juanbrujo/jQuery-Timelinr.git#^0.9.6"
+    "jQuery-Timelinr": "https://github.com/juanbrujo/jQuery-Timelinr.git#^0.9.6",
+    "cytoscape-qtip": "^2.4.0",
+    "qtip2": "https://github.com/qTip2/qTip2.git#^3.0.3"
   },
   "overrides": {
     "jquery": {

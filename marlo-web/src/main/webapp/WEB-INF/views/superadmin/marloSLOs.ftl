@@ -41,21 +41,6 @@
         [#-- Add Outcome Button --]
         <div class="addSlo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addSlo"/]</div>
         
-        <br />
-        <hr />
-        
-        [#-- Cross-Cutting Issues --]
-        <h4 class="sectionTitle">[@s.text name="marloSLOs.crossCuttingsTitle" /]</h4>
-        <div class="issues-list">
-        [#if srfCrossCuttingIssues?has_content]
-          [#list srfCrossCuttingIssues as issue]
-            [@srfCCIssueMacro element=issue name="srfCrossCuttingIssues[${issue_index}]" index=issue_index /]
-          [/#list]
-        [/#if]
-        </div>
-        [#-- Add Outcome Button --]
-        <div class="addCrossCuttingIssue bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addCrossCuttingIssue"/]</div>
-        
         [#-- Section Buttons--]
         <div class="buttons">
           <div class="buttons-content">
