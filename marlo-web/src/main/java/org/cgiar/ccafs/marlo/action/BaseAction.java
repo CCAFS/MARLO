@@ -60,61 +60,62 @@ import org.slf4j.LoggerFactory;
 public class BaseAction extends ActionSupport implements Preparable, SessionAware, ServletRequestAware {
 
 
-  private static final long serialVersionUID = -740360140511380630L;
-
-
   public static final String CANCEL = "cancel";
+
+
+  // Loggin
+  private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
   public static final String NEXT = "next";
 
 
-  public static final String NOT_LOGGED = "401";
-
   public static final String NOT_AUTHORIZED = "403";
+
   public static final String NOT_FOUND = "404";
+  public static final String NOT_LOGGED = "401";
   public static final String SAVED_STATUS = "savedStatus";
-  // Loggin
-  private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
-  // button actions
-  protected boolean save;
-  protected boolean next;
-  protected boolean delete;
+  private static final long serialVersionUID = -740360140511380630L;
+  protected boolean add;
+  @Inject
+  private AuditLogManager auditLogManager;
+  private String basePermission;
 
   protected boolean cancel;
 
-  protected boolean submit;
-  protected boolean dataSaved;
-  protected boolean add;
-  private boolean draft;
-  // User actions
-  private boolean isEditable; // If user is able to edit the form.
   private boolean canEdit; // If user is able to edit the form.
-  private boolean saveable; // If user is able to see the save, cancel, delete buttons
-  private boolean fullEditable; // If user is able to edit all the form.
-  // Justification of the changes
-  private String justification;
-  // Variables
-  private String crpSession;
-  private Map<String, Object> session;
-  private HttpServletRequest request;
-  private String basePermission;
-  private Submission submission;
-
+  protected APConfig config;
+  private Long crpID;
   // Managers
   @Inject
   private CrpManager crpManager;
+  // Variables
+  private String crpSession;
+  protected boolean dataSaved;
+  protected boolean delete;
+  private boolean draft;
+  private boolean fullEditable; // If user is able to edit all the form.
+  // User actions
+  private boolean isEditable; // If user is able to edit the form.
+  // Justification of the changes
+  private String justification;
+  protected boolean next;
+  private Map<String, Object> parameters;
+  private HttpServletRequest request;
+  // button actions
+  protected boolean save;
+
+  private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
 
   @Inject
   private SectionStatusManager sectionStatusManager;
 
-  @Inject
-  private AuditLogManager auditLogManager;
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-  protected APConfig config;
-  private Map<String, Object> parameters;
+  private Map<String, Object> session;
+  private Submission submission;
+  protected boolean submit;
 
   @Inject
   public BaseAction(APConfig config) {
@@ -203,6 +204,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
+   * current action to catch the crp
+   * 
+   * @return the crp that the user has log in
+   */
+  public Long getCrpID() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Crp crp =
+          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+          this.crpID = crp.getId();
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user crp in the session.");
+      }
+    } else {
+
+      this.crpID = null;
+
+    }
+    return this.crpID;
+  }
+
+
+  /**
    * Get the Crp List
    * 
    * @return List<Crp> object
@@ -210,7 +235,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll();
   }
-
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -223,7 +247,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-        this.crpSession = crp.getAcronym();
+          this.crpSession = crp.getAcronym();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -235,6 +259,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return this.crpSession;
   }
+
 
   /**
    * Get the user that is currently saved in the session.
