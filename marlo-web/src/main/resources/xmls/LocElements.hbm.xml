@@ -58,6 +58,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpProgramCountry" />
 		</set>
+		<set name="projectLocations" table="project_locations"
+      order-by="id" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="loc_element_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
+    </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

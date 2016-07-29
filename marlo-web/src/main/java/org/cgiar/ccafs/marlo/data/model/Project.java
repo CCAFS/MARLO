@@ -42,25 +42,28 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
-
   @Expose
   private Crp crp;
+
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
+
   @Expose
   private LiaisonUser liaisonUser;
   @Expose
   private User createdBy;
-
-
   @Expose
   private User modifiedBy;
-
-
   @Expose
   private String title;
+
+
   @Expose
   private String summary;
+
+
   @Expose
   private Date startDate;
   @Expose
@@ -88,22 +91,22 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private String annualReportToDornor;
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
-
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private List<CrpProgram> flagships;
+
   private String flagshipValue;
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-
+  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
   public Project() {
   }
-
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
     boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, String workplanName,
     String bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
-    String annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions) {
+    String annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
+    Set<ProjectLocation> projectLocations) {
     this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
     this.liaisonUser = liaisonUser;
@@ -126,7 +129,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.annualReportToDornor = annualReportToDornor;
     this.projectFocuses = projectFocuseses;
     this.submissions = submissions;
+    this.projectLocations = projectLocations;
   }
+
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -138,6 +143,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -165,11 +171,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
-
   public String getAnnualReportToDornor() {
     return this.annualReportToDornor;
   }
-
 
   public String getBilateralContractName() {
     return this.bilateralContractName;
@@ -180,9 +184,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.createdBy;
   }
 
+
   public Crp getCrp() {
     return crp;
   }
+
 
   public Date getEndDate() {
     return this.endDate;
@@ -234,6 +240,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
+  }
+
+  public Set<ProjectLocation> getProjectLocations() {
+    return projectLocations;
   }
 
   public Boolean getRequiresWorkplanUpload() {
@@ -335,7 +345,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.endDate = endDate;
   }
 
-
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
@@ -380,8 +389,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
+
   public void setProjectFocuses(Set<ProjectFocus> projectFocuseses) {
     this.projectFocuses = projectFocuseses;
+  }
+
+  public void setProjectLocations(Set<ProjectLocation> projectLocations) {
+    this.projectLocations = projectLocations;
   }
 
   public void setRequiresWorkplanUpload(Boolean requiresWorkplanUpload) {

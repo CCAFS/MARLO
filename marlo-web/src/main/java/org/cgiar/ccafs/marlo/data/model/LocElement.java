@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,12 +39,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
 
+
   @Expose
   private String isoAlpha2;
 
   @Expose
   private Long isoNumeric;
-
 
   @Expose
   private LocElementType locElementType;
@@ -55,7 +55,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String name;
-
 
   @Expose
   private LocElement locElement;
@@ -80,8 +79,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private String modificationJustification;
+
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
@@ -89,12 +90,14 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
+  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+
   public LocElement() {
   }
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
-    Set<Institution> institutions) {
+    Set<Institution> institutions, Set<ProjectLocation> projectLocations) {
     this.locElementType = locElementTypes;
     this.locGeoposition = locGeopositions;
     this.name = name;
@@ -103,6 +106,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.isSiteIntegration = isSiteIntegration;
     this.crpsSitesIntegrations = crpsSitesIntegrations;
     this.institutions = institutions;
+    this.projectLocations = projectLocations;
   }
 
   public LocElement(LocElementType locElementTypes, String name) {
@@ -173,7 +177,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return this.isSiteIntegration;
   }
 
-
   public LocElement getLocElement() {
     return locElement;
   }
@@ -187,7 +190,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return this.locGeoposition;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -195,9 +197,11 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -206,6 +210,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public String getName() {
     return this.name;
+  }
+
+  public Set<ProjectLocation> getProjectLocations() {
+    return projectLocations;
   }
 
   @Override
@@ -279,6 +287,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setProjectLocations(Set<ProjectLocation> projectLocations) {
+    this.projectLocations = projectLocations;
   }
 
 }
