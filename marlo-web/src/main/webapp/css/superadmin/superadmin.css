@@ -69,3 +69,26 @@ li.targetUnit {
 .srfIdo .blockContent{
   padding: 0 15px 20px 15px;
 }
+
+.targetsContent h6 {
+    display: inline-block;
+    margin-top: 15px;
+}
+
+.targetsList {
+    margin-top: 15px;
+}
+
+.targetRemove {
+    margin-left: 2%;
+    cursor: pointer;
+}
+
+.targetsContent input {
+    width: 15%;
+    margin-right: 2%;
+}
+
+.targetsContent {
+    margin-left: 10%;
+}

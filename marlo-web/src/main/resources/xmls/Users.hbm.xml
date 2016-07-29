@@ -98,5 +98,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
         </set>
+        
+        <set name="projectPartnerPersons" order-by="id" table="project_partner_persons" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
+        </set>
 	</class>
 </hibernate-mapping>

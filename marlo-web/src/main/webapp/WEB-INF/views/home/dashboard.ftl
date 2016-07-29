@@ -30,7 +30,7 @@
     </div>
     
     [#-- Shorcuts --]    
-    <div id="shorcuts" >
+    <div id="shorcuts" class="col-md-5">
       <div class="homeTitle"><strong>Shorcuts</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">
@@ -66,7 +66,7 @@
     </div>     
     
     [#-- Dashboard --]   
-    <div id="dashboardContent" >
+    <div id="dashboardContent" class="col-md-7">
       <div class="homeTitle col-md-12"><strong>Dashboard</strong></div>
       <div class=" col-md-12">
         <ul class="nav nav-tabs" role="tablist">
