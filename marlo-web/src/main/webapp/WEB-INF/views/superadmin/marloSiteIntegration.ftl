@@ -21,12 +21,12 @@
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
 [#assign siteIntegrationList = [
- {"code": "BD", "name": "Bangladesh", "center": "IRRI and WorldFish (co-lead)", "leaders": [{"composedName":"Paul Fox (IRRI)" },{"composedName":"Craig Meisner (WorldFish)" } ] },
- {"code": "ET", "name": "Ethiopia", "center": "ILRI", "leaders": [{"composedName":"Boni Moyo (ILRI)" } ]},
- {"code": "NI", "name": "Nicaragua", "center": "CIAT", "leaders": [{"composedName":"Maya Rajasekharan (CIAT)" } ]},
- {"code": "NG", "name": "Nigeria", "center": "IITA", "leaders": [{"composedName":"Alfred Dixon (IITA)" } ] },
- {"code": "TZ", "name": "Tanzania", "center": "IITA", "leaders": [{"composedName":"Regina Kapinga (IITA)" } ]},
- {"code": "VN", "name": "Vietnam", "center": "CIAT (ICRAF to closely support)", "leaders": [{"composedName":"Dindo Campilan (CIAT)" } ]},
+ {"code": "BD", "name": "Bangladesh","isPlus":true, "center": "IRRI and WorldFish (co-lead)", "leaders": [{"composedName":"Paul Fox (IRRI)" },{"composedName":"Craig Meisner (WorldFish)" } ] },
+ {"code": "ET", "name": "Ethiopia","isPlus":true, "center": "ILRI", "leaders": [{"composedName":"Boni Moyo (ILRI)" } ]},
+ {"code": "NI", "name": "Nicaragua","isPlus":true, "center": "CIAT", "leaders": [{"composedName":"Maya Rajasekharan (CIAT)" } ]},
+ {"code": "NG", "name": "Nigeria","isPlus":true, "center": "IITA", "leaders": [{"composedName":"Alfred Dixon (IITA)" } ] },
+ {"code": "TZ", "name": "Tanzania","isPlus":true, "center": "IITA", "leaders": [{"composedName":"Regina Kapinga (IITA)" } ]},
+ {"code": "VN", "name": "Vietnam","isPlus":true, "center": "CIAT (ICRAF to closely support)", "leaders": [{"composedName":"Dindo Campilan (CIAT)" } ]},
  {"code": "BF", "name": "Burkina Faso", "center": "CIFOR", "leaders": [{"composedName":"Mathurin Zida (CIFOR)" } ]},
  {"code": "CM", "name": "Cameroon", "center": "ICRAF", "leaders": [{"composedName":"Zac Tchoundjeu (ICRAF)" } ]},
  {"code": "CD", "name": "DRC", "center": "IITA", "leaders": [{"composedName":"Nzola Mahungu (IITA)" } ]},
@@ -100,7 +100,7 @@
     [#-- IDO Title --]
     <div class="blockTitle closed">
       <div class="row">
-        <div class="col-md-3"><i class="flag-sm flag-sm-${(element.code?upper_case)!}"></i>  ${(element.name)!'New Site'}</div>
+        <div class="col-md-3"><i class="flag-sm flag-sm-${(element.code?upper_case)!}"></i> ${(element.name)!'New Site'} <strong>${(element.isPlus??)?string('++','+')}</strong></div>
         <div class="col-md-4"><span>${(element.leaders[0].composedName)!}</span> </div>
         <div class="col-md-5"><small>(${(element.center)!})</small></div>
       </div>

@@ -82,48 +82,53 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
 
-    long projectID = Long.parseLong(projectParameter);
+    projectId = Long.parseLong(projectParameter);
 
-    Project project = projectManager.getProjectById(projectID);
+    Project project = projectManager.getProjectById(projectId);
 
-    String params[] = {crp.getAcronym(), project.getId() + ""};
+    if (project != null) {
 
-    // TODO Validate if the Project is in Planning or Reporting and get the Year
-    int currentCycleYear = 2015;
+      String params[] = {crp.getAcronym(), project.getId() + ""};
 
-    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-      canEdit = true;
-    } else {
-      List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-      if (projects.contains(project) && baseAction
-        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params))) {
+      // TODO Validate if the Project is in Planning or Reporting and get the Year
+      int currentCycleYear = 2015;
 
-        if (project.getSubmissions().stream().filter(s -> s.getYear().equals(currentCycleYear))
-          .collect(Collectors.toList()).size() > 0) {
-          canEdit = true;
+      if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+        canEdit = true;
+      } else {
+        List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
+        if (projects.contains(project) && baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params))) {
+
+          if (project.getSubmissions().stream().filter(s -> s.getYear().equals(currentCycleYear))
+            .collect(Collectors.toList()).size() > 0) {
+            canEdit = true;
+          }
         }
       }
-    }
 
-    // TODO Validate is the project is new
-    if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-      String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-      editParameter = stringEditable.equals("true");
-      if (!editParameter) {
-        baseAction.setEditableParameter(hasPermissionToEdit);
+      // TODO Validate is the project is new
+      if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+        String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+        editParameter = stringEditable.equals("true");
+        if (!editParameter) {
+          baseAction.setEditableParameter(hasPermissionToEdit);
+        }
       }
+
+      // Check the permission if user want to edit or save the form
+      if (editParameter || parameters.get("save") != null) {
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+      }
+
+      // Set the variable that indicates if the user can edit the section
+      baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+      baseAction.setCanEdit(canEdit);
+
+    } else {
+      throw new NullPointerException();
     }
-
-    // Check the permission if user want to edit or save the form
-    if (editParameter || parameters.get("save") != null) {
-      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
-        .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
-    }
-
-    // Set the variable that indicates if the user can edit the section
-    baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
-    baseAction.setCanEdit(canEdit);
-
   }
 
 }

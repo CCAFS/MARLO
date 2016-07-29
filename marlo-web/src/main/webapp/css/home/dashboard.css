@@ -68,7 +68,7 @@
 }
 
 #issues li {
-  width: 355px;
+  width: 350px;
   /* height: 200px; */
   list-style: none;
   float: left;
@@ -125,5 +125,17 @@
 .tab-content {
     border: 1px solid #dddddd;
     border-top: none;
+}
+
+#contentGraph {
     height: 330px;
+}
+
+#myProjects {
+    padding: 15px;
+}
+
+
+#projects_wrapper {
+    margin-bottom: 0;
 }

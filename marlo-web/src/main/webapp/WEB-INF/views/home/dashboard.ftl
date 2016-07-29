@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2"] /]
+[#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/home/dashboard.js","${baseUrl}/js/global/impactGraphic.js"] /]
-[#assign customCSS = ["${baseUrl}/css/home/dashboard.css" ] /]
+[#assign customCSS = ["${baseUrl}/css/home/dashboard.css","${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
@@ -30,7 +30,7 @@
     </div>
     
     [#-- Shorcuts --]    
-    <div id="shorcuts" >
+    <div id="shorcuts" class="col-md-5">
       <div class="homeTitle"><strong>Shorcuts</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">
@@ -66,7 +66,7 @@
     </div>     
     
     [#-- Dashboard --]   
-    <div id="dashboardContent" >
+    <div id="dashboardContent" class="col-md-7">
       <div class="homeTitle col-md-12"><strong>Dashboard</strong></div>
       <div class=" col-md-12">
         <ul class="nav nav-tabs" role="tablist">
@@ -86,7 +86,9 @@
                <ul></ul>
               </div>
             </div>
-            <div id="impactGraphic" ></div>
+            <div id="contentGraph">
+              <div id="impactGraphic" ></div>
+            </div>
           </div>
         </div>  
       </div>    
