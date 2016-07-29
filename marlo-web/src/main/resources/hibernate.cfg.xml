@@ -69,6 +69,10 @@
     <mapping resource="xmls/ProjectFocuses.hbm.xml" />
     <mapping resource="xmls/LiaisonInstitutions.hbm.xml" />
     <mapping resource="xmls/LiaisonUsers.hbm.xml" />
+    <mapping resource="xmls/ProjectPartners.hbm.xml" />
+    <mapping resource="xmls/ProjectPartnerContributions.hbm.xml" />
+    <mapping resource="xmls/ProjectPartnerPersons.hbm.xml" />
+    <mapping resource="xmls/ProjectPartnerOverall.hbm.xml" />
   
   </session-factory>
 </hibernate-configuration>
