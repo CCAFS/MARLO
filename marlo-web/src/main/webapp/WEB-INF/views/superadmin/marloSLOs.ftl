@@ -122,8 +122,7 @@
     [#-- Sub-IDO Description --]
     [@customForm.textArea name="${name}.title" value="${(element.title)!}" showTitle=false className="title" required=true /]
     
-    <div class=" targetsList form-group">
-      
+    <div class=" targetsList form-group">      
     </div>
     <div class="text-right">
       <div class="addTargets button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a target</div>
