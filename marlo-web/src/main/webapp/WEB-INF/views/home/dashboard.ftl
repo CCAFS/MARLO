@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2"] /]
+[#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/home/dashboard.js","${baseUrl}/js/global/impactGraphic.js"] /]
-[#assign customCSS = ["${baseUrl}/css/home/dashboard.css" ] /]
+[#assign customCSS = ["${baseUrl}/css/home/dashboard.css","${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
@@ -86,7 +86,9 @@
                <ul></ul>
               </div>
             </div>
-            <div id="impactGraphic" ></div>
+            <div id="contentGraph">
+              <div id="impactGraphic" ></div>
+            </div>
           </div>
         </div>  
       </div>    

@@ -213,6 +213,18 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
   }
 
+  // Download
+
+  $("#buttonDownload").on("click", function() {
+    var image = new Image();
+    image = cy.jpg();
+    var name = "impactPathway_Graphic";
+    $('#buttonDownload a').attr({
+        href: image,
+        download: name
+    })
+  });
+
   // tooltip
   if(tooltip) {
     cy.$("node").qtip({
@@ -249,16 +261,6 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 }
 
 // EVENTS
-
-$("#buttonDownload").on("click", function() {
-  var image = new Image();
-  image = cy.jpg();
-  var name = "impactPathway_Graphic";
-  $('#buttonDownload a').attr({
-      href: image,
-      download: name
-  })
-});
 
 $("#mini-graphic").on("mouseenter", function() {
   $("#overlay").css("display", "block");

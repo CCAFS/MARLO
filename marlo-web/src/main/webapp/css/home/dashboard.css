@@ -125,5 +125,12 @@
 .tab-content {
     border: 1px solid #dddddd;
     border-top: none;
+}
+
+#contentGraph {
     height: 330px;
+}
+
+#myProjects {
+    padding: 15px;
 }

@@ -146,7 +146,7 @@ public class APConfig {
       downloadsURL = downloadsURL.substring(0, downloadsURL.length() - 1);
     }
     if (!downloadsURL.startsWith("https://")) {
-      downloadsURL = "https://" + downloadsURL;
+      downloadsURL = "http://" + downloadsURL;
       return downloadsURL;
     }
     return downloadsURL;
