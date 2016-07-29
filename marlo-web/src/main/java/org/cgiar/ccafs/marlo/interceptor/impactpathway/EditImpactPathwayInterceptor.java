@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.interceptor.impactpathway;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -43,6 +44,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private static final long serialVersionUID = 8294421978295446976L;
   private CrpManager crpManager;
   private UserManager userManager;
+  private CrpProgramManager crpProgramManager;
 
   private BaseAction baseAction;
   private Map<String, Object> parameters;
@@ -51,10 +53,11 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private long crpProgramID = 0;
 
   @Inject
-  public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager) {
+  public EditImpactPathwayInterceptor(CrpManager crpManager, UserManager userManager,
+    CrpProgramManager crpProgramManager) {
     this.crpManager = crpManager;
     this.userManager = userManager;
-
+    this.crpProgramManager = crpProgramManager;
   }
 
   long getCrpProgramId() {
@@ -115,60 +118,47 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    try {
-      crpProgramID = Long.parseLong(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]);
-    } catch (Exception e) {
-      Crp loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
 
-      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+    CrpProgram crpProgram = crpProgramManager.getCrpProgramById(crpProgramID);
 
-      User user = (User) session.get(APConstants.SESSION_USER);
-      user = userManager.getUser(user.getId());
-      List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      if (!userLeads.isEmpty()) {
-        crpProgramID = userLeads.get(0).getCrpProgram().getId();
-      } else {
-        List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-          .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
-          .collect(Collectors.toList());
-        if (!allPrograms.isEmpty()) {
-          crpProgramID = allPrograms.get(0).getId();
+    if (crpProgram != null) {
+
+      if (crpProgram.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+
+        // If user is admin, it should have privileges to edit all projects.
+        if (baseAction.isAdmin()) {
+          canEdit = true;
+        } else {
+          if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
+            crp.getAcronym(), crpProgramID + ""))) {
+            canEdit = true;
+          }
         }
-      }
-    }
 
-    // If user is admin, it should have privileges to edit all projects.
-    if (baseAction.isAdmin()) {
-      canEdit = true;
+        if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+          String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+          editParameter = stringEditable.equals("true");
+          // If the user is not asking for edition privileges we don't need to validate them.
+          if (!editParameter) {
+            baseAction.setEditableParameter(hasPermissionToEdit);
+          }
+        }
+
+        // Check the permission if user want to edit or save the form
+        if (editParameter || parameters.get("save") != null) {
+          hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(baseAction
+            .generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym(), crpProgramID + ""));
+        }
+
+        // Set the variable that indicates if the user can edit the section
+        baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+        baseAction.setCanEdit(canEdit);
+      } else {
+        throw new NullPointerException();
+      }
     } else {
-      if (baseAction.hasPermission(baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES,
-        crp.getAcronym(), crpProgramID + ""))) {
-        canEdit = true;
-      }
+      throw new NullPointerException();
     }
-
-    if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
-      String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
-      editParameter = stringEditable.equals("true");
-      // If the user is not asking for edition privileges we don't need to validate them.
-      if (!editParameter) {
-        baseAction.setEditableParameter(hasPermissionToEdit);
-      }
-    }
-
-    // Check the permission if user want to edit or save the form
-    if (editParameter || parameters.get("save") != null) {
-      hasPermissionToEdit = (baseAction.isAdmin()) ? true : baseAction.hasPermission(
-        baseAction.generatePermission(Permission.IMPACT_PATHWAY_EDIT_PRIVILEGES, crp.getAcronym(), crpProgramID + ""));
-    }
-
-    // Set the variable that indicates if the user can edit the section
-    baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
-    baseAction.setCanEdit(canEdit);
-
   }
 
 }
