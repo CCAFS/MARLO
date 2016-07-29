@@ -39,7 +39,7 @@
           
           
           
-          [#-- Section Buttons--]
+          [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
          
         [/@s.form] 

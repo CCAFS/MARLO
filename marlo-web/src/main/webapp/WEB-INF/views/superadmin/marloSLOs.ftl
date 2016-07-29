@@ -105,7 +105,7 @@
         </div>
         [#-- Add Indicator Button --]
         <div class="text-right">
-          <div class="addIndicator button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addIndicator"/]</div>
+          <div class="addIndicator button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addIndicator"/]</div>
         </div>
       </div>
     
@@ -120,9 +120,49 @@
     [#-- Sub-IDO ID --]
     <input type="hidden" name="${name}.id" value="${(element.id)!}" />
     [#-- Sub-IDO Description --]
-    [@customForm.textArea name="${name}.title" value="${(element.title)!}" showTitle=false className="title" required=true /]
+    [@customForm.textArea name="${name}.title" i18nkey="Indicator Statement" value="${(element.title)!}"  className="title" required=true /]
     
-    <div class=" targetsList form-group">      
+    
+    [#assign targetsindicators = [
+      {"id": "1",  "unit": "Mio. Farm households",  "value":"100", "year":"2022"},
+      {"id": "1",  "unit": "Mio. Farm households",  "value":"350", "year":"2030"},
+      
+      {"id": "2",  "unit": "Mio. People",  "value":"30", "year":"2022"},
+      {"id": "2",  "unit": "Mio. People",  "value":"100", "year":"2030"},
+      
+      {"id": "3",  "unit": "Rate of yield %/yr",  "value":"1.2-1.5", "year":"2022"},
+      {"id": "3",  "unit": "Rate of yield %/yr",  "value":"2.0-2.5", "year":"2030"},
+      
+      {"id": "4",  "unit": "Mio. People",  "value":"30", "year":"2022"},
+      {"id": "4",  "unit": "Mio. People",  "value":"150", "year":"2030"},
+      
+      {"id": "5",  "unit": "Mio. People",  "value":"150", "year":"2022"},
+      {"id": "5",  "unit": "Mio. People",  "value":"500", "year":"2030"},
+      
+      {"id": "6",  "unit": "%",  "value":"10", "year":"2022"},
+      {"id": "6",  "unit": "%",  "value":"33", "year":"2030"},
+      
+      {"id": "7",  "unit": "%",  "value":"5", "year":"2022"},
+      {"id": "7",  "unit": "%",  "value":"20", "year":"2030"},
+      
+      {"id": "8",  "unit": "Gt CO2-e yr -1 (%)",  "value":"0.2 (5)", "year":"2022"},
+      {"id": "8",  "unit": "Gt CO2-e yr -1 (%)",  "value":"0.8 (15)", "year":"2030"},
+      
+      {"id": "9",  "unit": "Mio. Hectares (ha)",  "value":"55", "year":"2022"},
+      {"id": "9",  "unit": "Mio. Hectares (ha)",  "value":"190", "year":"2030"},
+      
+      {"id": "10",  "unit": "Mio. Hectares (ha)",  "value":"2.5", "year":"2022"},
+      {"id": "10",  "unit": "Mio. Hectares (ha)",  "value":"7.5", "year":"2030"}
+    ]/]
+    
+    <div class="targetsList">
+    [#if element.id??]
+      [#list targetsindicators as target]
+        [#if (target.id?number== element.id?number)]
+          [@targetIndicator element=target name="" index=target_index /]
+        [/#if]
+      [/#list]
+    [/#if]    
     </div>
     <div class="text-right">
       <div class="addTargets button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a target</div>
@@ -134,16 +174,16 @@
 [/#macro]
 
 [#macro targetIndicator element name index isTemplate=false]
-  <div id="targetIndicator-${isTemplate?string('template',index)}" class="targetsIndicator form-group" style="position:relative;display:${isTemplate?string('none','block')}">
-      <div class="targetsContent col-md-8  form-group">
+  <div id="targetIndicator-${isTemplate?string('template',index)}" class="targetsIndicator" style="position:relative;display:${isTemplate?string('none','block')}">
+      <div class="targetsContent">
         <h6>Target year: </h6>
-        <input type="text" class="targetYear" />
+        <input type="text" class="targetYear form-control  input-sm" value="${(element.year)!}"/>
         <h6>Target unit: </h6>
-        <input type="text" class="targetUnit" />
+        <input type="text" class="targetUnit form-control  input-sm" value="${(element.unit)!}"/>
         <h6>Target value: </h6>
-        <input type="text" class="targetValue" />
+        <input type="text" class="targetValue form-control  input-sm" value="${(element.value)!}"/>
+        <span class="targetRemove remove-element glyphicon glyphicon-remove red"></span>
       </div>      
-      <span class="col-md-1 targetRemove remove-element glyphicon glyphicon-remove red"></span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

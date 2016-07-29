@@ -1,0 +1,10 @@
+UPDATE `srf_slo_indicators` SET `title` = '# of more farm houholds have adopted improved varieties, breeds or trees' WHERE `srf_slo_indicators`.`id` = 1; 
+UPDATE `srf_slo_indicators` SET `title` = '# of people, of which 50% are women, assisted to exit poverty' WHERE `srf_slo_indicators`.`id` = 2; 
+UPDATE `srf_slo_indicators` SET `title` = 'Increased rate of yield for major food staples from current <1%/year' WHERE `srf_slo_indicators`.`id` = 3; 
+UPDATE `srf_slo_indicators` SET `title` = '# of more people, of which 50% are women, meeting minimum dietary energy requirements' WHERE `srf_slo_indicators`.`id` = 4; 
+UPDATE `srf_slo_indicators` SET `title` = '# of more people, of which 50% are women, without deficiencies of one or more of the following essentials micronutrients: iron, zinc, iodine, vitamin A, folate and vitamin B12' WHERE `srf_slo_indicators`.`id` = 5; 
+UPDATE `srf_slo_indicators` SET `title` = 'Reduction in woman of reproductive age who are consuming less than the adequate number of food groups ' WHERE `srf_slo_indicators`.`id` = 6; 
+UPDATE `srf_slo_indicators` SET `title` = 'Increase in water and nutrient (inorganic, biological) use efficiency in agro-ecosystems, including through recycling and reuse' WHERE `srf_slo_indicators`.`id` = 7; 
+UPDATE `srf_slo_indicators` SET `title` = 'Reduce agriculturally related greenhouse gas emissions compared to business-as-usual scenario 2022' WHERE `srf_slo_indicators`.`id` = 8; 
+UPDATE `srf_slo_indicators` SET `title` = '# of hectares degraded land area restored' WHERE `srf_slo_indicators`.`id` = 9; 
+UPDATE `srf_slo_indicators` SET `title` = '# of hectares of forest saved from deforestation' WHERE `srf_slo_indicators`.`id` = 10;
