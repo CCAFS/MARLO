@@ -12,6 +12,8 @@ function attachEvents() {
   $('.addSlo').on('click', addIdo);
 
   $('.addIndicator').on('click', addIndicator);
+  
+  $('.addTargets').on('click', addTargets);
 
   $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
 
@@ -48,6 +50,15 @@ function addIndicator() {
 
   $itemsList.append($item);
   $item.slideDown('slow');
+  updateIndexes();
+  $item.trigger('addComponent');
+}
+
+function addTargets(){  
+  var $itemsList = $(this).parent().parent().find('.targetsList');
+  var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
+  $itemsList.append($item);
+  $item.show('slow');
   updateIndexes();
   $item.trigger('addComponent');
 }

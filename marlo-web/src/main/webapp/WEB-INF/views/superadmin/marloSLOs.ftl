@@ -61,8 +61,8 @@
 [#-- SLO Indicator Template --]
 [@srfSloIndicator element={} name="slosList[-1].srfSloIndicators[-1]" index=-1 isTemplate=true /]
 
-[#-- Cross-Cutting Template --]
-[@srfCCIssueMacro element={} name="srfCrossCuttingIssues[-1]" index=-1 isTemplate=true /]
+[#-- SLO targetsIndicator Template --]
+[@targetIndicator element={} name="slosList[-1].srfSloIndicators[-1].targetsIndicator[-1]" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -73,7 +73,7 @@
     
     [#-- SLO Title --]
     <div class="blockTitle closed">
-      <strong>SLO: </strong>${(element.title)!'New SLO'} <small>(Indicators: ${(element.srfSloIndicators?size)!0})</small>
+      <strong>SLO ${index+1}: </strong>${(element.title)!'New SLO'} <small>(Indicators: ${(element.srfSloIndicators?size)!0})</small>
     </div>
     
     <div class="blockContent" style="display:none">
@@ -93,7 +93,7 @@
       <div class="clearfix"></div>
 
       [#-- Indicators --]
-      <div class="srfIndicators grayBlock">
+      <div class="srfIndicators ">
         <h5>[@s.text name="marloSLOs.indicators" /]:</h5>
         <div class="srfIndicators-list form-group">
           [#if element.srfSloIndicators?has_content]
@@ -114,26 +114,37 @@
 [/#macro]
 
 [#macro srfSloIndicator element name index isTemplate=false]
-  <div id="srfSloIndicator-${isTemplate?string('template',index)}" class="srfSloIndicator form-group" style="position:relative;display:${isTemplate?string('none','block')}">
+  <div id="srfSloIndicator-${isTemplate?string('template',index)}" class="srfSloIndicator grayBlock form-group" style="position:relative;display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="remove-element removeIcon" title="Remove"></div>
     [#-- Sub-IDO ID --]
     <input type="hidden" name="${name}.id" value="${(element.id)!}" />
     [#-- Sub-IDO Description --]
     [@customForm.textArea name="${name}.title" value="${(element.title)!}" showTitle=false className="title" required=true /]
+    
+    <div class=" targetsList form-group">
+      
+    </div>
+    <div class="text-right">
+      <div class="addTargets button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a target</div>
+    </div>
     <div class="clearfix"></div>
+    
+    
   </div>
 [/#macro]
 
-
-[#macro srfCCIssueMacro element name index isTemplate=false]
-  <div id="srfCCIssue-${isTemplate?string('template',index)}" class="srfCCIssue borderBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Remove Button --]
-    <div class="remove-element removeElement sm" title="Remove"></div>
-    
-    [#-- SLO Title --]
-    <div class="blockTitle closed">
-      [@customForm.input name="${name}.name" value="${(element.name)!}" i18nkey="srfCrossCuttingIssue.name" type="text" className="name limitWords-100" required=true /]
-    </div>
+[#macro targetIndicator element name index isTemplate=false]
+  <div id="targetIndicator-${isTemplate?string('template',index)}" class="targetsIndicator form-group" style="position:relative;display:${isTemplate?string('none','block')}">
+      <div class="targetsContent col-md-8  form-group">
+        <h6>Target year: </h6>
+        <input type="text" class="targetYear" />
+        <h6>Target unit: </h6>
+        <input type="text" class="targetUnit" />
+        <h6>Target value: </h6>
+        <input type="text" class="targetValue" />
+      </div>      
+      <span class="col-md-1 targetRemove remove-element glyphicon glyphicon-remove red"></span>
+    <div class="clearfix"></div>
   </div>
 [/#macro]
