@@ -3385,8 +3385,8 @@ textarea[id$='summary'] {
 }
 
 .projectPartner {
-  padding-top: 33px !important;
-  padding-bottom: 0px !important;
+  /* padding-top: 33px !important; */
+  /* padding-bottom: 0px !important; */
   /* margin-bottom: 18px !important; */
 }
 
@@ -5752,4 +5752,32 @@ input.checkboxInput, label.checkboxLabel{line-height: 19px;}
 hr {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+
+
+/** Expandable Block **/
+
+.expandableBlock .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.expandableBlock .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../images/global/arrow-up.png);
+}
+
+.expandableBlock .blockTitle.closed {
+  background-image: url(../../images/global/arrow-down.png);
+}
+
+.expandableBlock .blockTitle small{
+  color: #389b98;
+}
+
+.expandableBlock .blockContent{
+  padding: 0 15px 20px 15px;
 }
