@@ -1003,8 +1003,8 @@ select#partnerSave_activityPartner_partner_type_id {
     padding: 6px;
     text-align: center;
     border-radius: 3px 3px 0px 0px;
-    font-size: 1.1em;
-    font-weight: bold;
+    font-size: 1em;
+    font-weight: 500;
 }
 .panel .panel-body {
     padding: 4px 3px 10px 10px;
@@ -2300,12 +2300,12 @@ p.projectSubmitted {
 
 
 .fullPartBlock .searchUser{
-  bottom: 0.65em; 
-  right: 0.7em; 
+  /* bottom: 0.65em; */
+  /* right: 0.7em; */
 }
 .halfPartBlock .searchUser{
-  bottom: 0.02em;
-  right: 0.7em;
+  /* bottom: 0.02em; */
+  /* right: 0.7em; */
 }
 
 
@@ -3366,7 +3366,7 @@ textarea[id$='summary'] {
   background: url(../../images/global/filter.png) no-repeat 0px 3px;
   background-size: 12px;
   float: right;
-  margin-top: -12px;
+  margin-top: 0;
 }
 
 .projectPartner .filters-link:hover {
@@ -5780,4 +5780,11 @@ hr {
 
 .expandableBlock .blockContent{
   padding: 0 15px 20px 15px;
+}
+
+.button-float {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    height: 24px;
 }
