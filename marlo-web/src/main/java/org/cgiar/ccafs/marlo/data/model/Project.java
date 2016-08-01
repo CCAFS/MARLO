@@ -49,7 +49,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
-
   @Expose
   private LiaisonUser liaisonUser;
   @Expose
@@ -58,14 +57,14 @@ public class Project implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String title;
-
-
   @Expose
   private String summary;
 
 
   @Expose
   private Date startDate;
+
+
   @Expose
   private Date endDate;
   @Expose
@@ -93,16 +92,18 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private List<CrpProgram> flagships;
-
   private String flagshipValue;
-  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
 
+  private List<ProjectPartner> partners;
+
   public Project() {
   }
+
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -147,7 +148,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -174,40 +174,55 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
   public String getAnnualReportToDornor() {
     return this.annualReportToDornor;
   }
+
 
   public String getBilateralContractName() {
     return this.bilateralContractName;
   }
 
-
   public User getCreatedBy() {
     return this.createdBy;
   }
-
 
   public Crp getCrp() {
     return crp;
   }
 
-
   public Date getEndDate() {
     return this.endDate;
   }
+
 
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
 
+
   public String getFlagshipValue() {
     return flagshipValue;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public ProjectPartner getLeader() {
+    if (projectPartners != null) {
+      for (ProjectPartner partner : projectPartners) {
+        for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+          if (person.getContactType().equals("PL")) {
+            return partner;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   public String getLeaderResponsabilities() {
@@ -241,14 +256,18 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
+  public List<ProjectPartner> getPartners() {
+    return partners;
+  }
+
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
   }
 
-
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
+
 
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
@@ -357,7 +376,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.flagships = flagships;
   }
 
-
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
   }
@@ -395,6 +413,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+
+  public void setPartners(List<ProjectPartner> partners) {
+    this.partners = partners;
   }
 
 
