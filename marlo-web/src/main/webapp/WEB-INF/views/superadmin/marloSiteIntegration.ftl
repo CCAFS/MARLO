@@ -41,8 +41,8 @@
  {"code": "RW", "name": "Rwanda", "plus": "+","center": "CIP (rotating leadership, starting with CIP and then CIAT)", "leaders": [ {"composedName":"Kirimi Sindi (CIP)"} ]},
  {"code": "UG", "name": "Uganda", "plus": "+","center": "CIP and Bioversity", "leaders": [ {"composedName":"Eldad Karamara (Bioversity)"} ]},
  {"code": "ZM", "name": "Zambia", "plus": "+","center": "CIMMYT", "leaders": [ {"composedName":"Peter Setimela (CIMMYT)"} ]},
- {"code": "ID", "name": "Indonesia", "plus": "","center": "Undefined", "leaders": [ {"composedName":"Undefined"} ]},
- {"code": "PH", "name": "Philippines", "plus": "","center": "Undefined", "leaders": [ {"composedName":"Undefined"} ]}
+ {"code": "ID", "name": "Indonesia", "plus": "","center": "CIFOR", "leaders": [ {"composedName":"Robert Nasi"} ]},
+ {"code": "PH", "name": "Philippines", "plus": "","center": "IRRI", "leaders": [ {"composedName":"Bas Bourman"} ]}
 ]/]
 
 <section class="marlo-content">

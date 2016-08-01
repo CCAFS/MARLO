@@ -16,7 +16,7 @@ label {
 
 .input-sm {
   padding: 4px 10px;
-  height: 28px;
+  height: 27px;
   font-size: 13px;
 }
 
@@ -5784,7 +5784,7 @@ hr {
 
 .button-float {
     position: absolute;
-    bottom: 2px;
-    right: 2px;
-    height: 24px;
+    bottom: 1px;
+    right: 1px;
+    height: 25px;
 }
