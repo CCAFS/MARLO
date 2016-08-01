@@ -120,7 +120,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Institution getInstitutions() {
+  public Institution getInstitution() {
     return this.institution;
   }
 
@@ -199,7 +199,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-  public void setInstitutions(Institution institution) {
+  public void setInstitution(Institution institution) {
     this.institution = institution;
   }
 

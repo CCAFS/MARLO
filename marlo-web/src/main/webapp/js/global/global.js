@@ -176,6 +176,10 @@ $(document).ready(function() {
 
 });
 
+function isReportingCycle() {
+  return false;
+}
+
 /**
  * Validate fields length when click to any button
  */
