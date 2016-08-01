@@ -424,7 +424,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
     List<SectionStatus> sections = sectionsBD.stream()
-      .filter(c -> c.getCrpProgram().getId().longValue() == crpProgramID).collect(Collectors.toList());
+      .filter(c -> (c.getCrpProgram() != null && c.getCrpProgram().getId().longValue() == crpProgramID))
+      .collect(Collectors.toList());
 
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getMissingFields().length() > 0) {
