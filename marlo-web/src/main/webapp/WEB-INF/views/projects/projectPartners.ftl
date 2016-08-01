@@ -31,9 +31,8 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-          <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>  
-         
-          [#-- Listing Partners from partnersTemplate.ftl --]
+          <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
+          [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div id="projectPartnersBlock" class="simpleBox" style="display:none">
             [#if project.partners?has_content]
@@ -48,15 +47,10 @@
               [/#if]
             [/#if] 
             [#if (editable && canEdit)]
-              <div id="addProjectPartner" class="addLink">
-                <a href="" class="addProjectPartner addButton" >[@s.text name="projectPartners.addProjectPartner" /]</a>
-              </div>
+              <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
             [/#if]
           </div> 
            
-          
-          
-          
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
          

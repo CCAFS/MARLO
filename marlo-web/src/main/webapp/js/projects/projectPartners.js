@@ -80,7 +80,7 @@ function attachEvents() {
    * Project partner Events
    */
   // Add a project partner Event
-  $("a.addProjectPartner").on('click', addPartnerEvent);
+  $(".addProjectPartner").on('click', addPartnerEvent);
   // Remove a project partner Event
   $(".removePartner").on('click', removePartnerEvent);
   // When Partner Type change
@@ -434,9 +434,9 @@ function removePartnerEvent(e) {
 }
 
 function addPartnerEvent(e) {
-  e.preventDefault();
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
-  $(e.target).parent().before($newElement);
+  console.log($("#projectPartner-template"));
+  $(e.target).before($newElement);
   $newElement.show("slow");
   applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the chosen plugin for new partners created
