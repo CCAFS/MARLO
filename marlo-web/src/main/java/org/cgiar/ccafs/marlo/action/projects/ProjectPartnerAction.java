@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -25,8 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
-import org.cgiar.ccafs.marlo.data.manager.RoleManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -35,33 +35,39 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 
 public class ProjectPartnerAction extends BaseAction {
 
 
+  /**
+   * 
+   */
   private static final long serialVersionUID = 7833194831832715444L;
+
   private ProjectPartnerManager projectPartnerManager;
   private ProjectPartnerOverallManager projectPartnerOverallManager;
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
   private LocElementManager locationManager;
   private ProjectManager projectManager;
-  private UserManager userManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
-  private RoleManager roleManager;
+  private CrpManager crpManager;
   private String overall;
   private long projectID;
-
+  private Crp loggedCrp;
   private Project previousProject;
 
   private Project project;
@@ -80,27 +86,85 @@ public class ProjectPartnerAction extends BaseAction {
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
     InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
-    UserManager userManager, InstitutionTypeManager institutionTypeManager, CrpPpaPartnerManager crpPpaPartnerManager,
-    RoleManager roleManager, ProjectPartnerOverallManager projectPartnerOverallManager, SendMail sendMail) {
+    CrpPpaPartnerManager crpPpaPartnerManager, CrpManager crpManager,
+    ProjectPartnerOverallManager projectPartnerOverallManager, InstitutionTypeManager institutionTypeManager) {
     super(config);
-    this.institutionTypeManager = institutionTypeManager;
+
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
     this.locationManager = locationManager;
     this.projectManager = projectManager;
-    this.userManager = userManager;
-    this.roleManager = roleManager;
+
+    this.crpManager = crpManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.projectPartnerOverallManager = projectPartnerOverallManager;
   }
 
+
+  public List<Institution> getAllInstitutions() {
+    return allInstitutions;
+  }
+
+  public List<Institution> getAllPPAInstitutions() {
+    return allPPAInstitutions;
+  }
+
+  public List<User> getAllUsers() {
+    return allUsers;
+  }
+
+
+  public List<LocElement> getCountries() {
+    return countries;
+  }
+
+
+  public List<InstitutionType> getIntitutionTypes() {
+    return intitutionTypes;
+  }
+
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
+  public String getOverall() {
+    return overall;
+  }
+
+
+  public Map<String, String> getPartnerPersonTypes() {
+    return partnerPersonTypes;
+  }
+
+
+  public Project getProject() {
+    return project;
+  }
+
+
+  public long getProjectID() {
+    return projectID;
+  }
+
+
+  public List<ProjectPartner> getProjectPPAPartners() {
+    return projectPPAPartners;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     // Getting the project identified with the id parameter.
     project = projectManager.getProjectById(projectID);
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
 
     // Getting the list of all institutions
     allInstitutions = institutionManager.findAll();
@@ -142,10 +206,91 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPPAPartners = new ArrayList<ProjectPartner>();
     for (ProjectPartner pp : project.getProjectPartners()) {
 
-      // if (pp.getInstitution()) {
-      // this.projectPPAPartners.add(pp);
-      // }
+      if (pp.getInstitution().getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+        .size() > 0) {
+        this.projectPPAPartners.add(pp);
+      }
     }
+
+    partnerPersonTypes = new HashMap<>();
+    partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("planning.projectPartners.types.CP"));
+
+    if (this.hasPermission("leader")) {
+      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PL, this.getText("planning.projectPartners.types.PL"));
+    }
+    if (this.hasPermission("coordinator")) {
+      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PC, this.getText("planning.projectPartners.types.PC"));
+    }
+
+    if (this.isHttpPost()) {
+
+      if (ActionContext.getContext().getName().equals("partners") && project.getPartners() != null) {
+        project.getProjectPartners().clear();
+      }
+    }
+
   }
+
+
+  @Override
+  public String save() {
+    // TODO Auto-generated method stub
+    return super.save();
+  }
+
+
+  public void setAllInstitutions(List<Institution> allInstitutions) {
+    this.allInstitutions = allInstitutions;
+  }
+
+
+  public void setAllPPAInstitutions(List<Institution> allPPAInstitutions) {
+    this.allPPAInstitutions = allPPAInstitutions;
+  }
+
+
+  public void setAllUsers(List<User> allUsers) {
+    this.allUsers = allUsers;
+  }
+
+
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
+
+  public void setIntitutionTypes(List<InstitutionType> intitutionTypes) {
+    this.intitutionTypes = intitutionTypes;
+  }
+
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setOverall(String overall) {
+    this.overall = overall;
+  }
+
+
+  public void setPartnerPersonTypes(Map<String, String> partnerPersonTypes) {
+    this.partnerPersonTypes = partnerPersonTypes;
+  }
+
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
+  }
+
+  public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
+    this.projectPPAPartners = projectPPAPartners;
+  }
+
 
 }

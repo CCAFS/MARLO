@@ -34,7 +34,7 @@
       </result>
     </action>
     
-    <action name="{crp}/partners" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+    <action name="{crp}/partners" class="org.cgiar.ccafs.marlo.action.projects.ProjectPartnerAction">
       <interceptor-ref name="editProjectsStack" />      
       <result name="input">/WEB-INF/views/projects/projectPartners.ftl</result>
       <result name="success" type="redirectAction">

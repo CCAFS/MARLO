@@ -12,8 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
-
 package org.cgiar.ccafs.marlo.data.manager.impl;
+
 
 import org.cgiar.ccafs.marlo.data.dao.InstitutionTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -21,42 +21,55 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 
 import java.util.List;
 
+import com.google.inject.Inject;
 
 /**
- * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia
  */
 public class InstitutionTypeManagerImpl implements InstitutionTypeManager {
 
-  private InstitutionTypeDAO institutionTypeDao;
+
+  private InstitutionTypeDAO institutionTypeDAO;
+  // Managers
 
 
-  public InstitutionTypeManagerImpl(InstitutionTypeDAO institutionTypeDao) {
-    this.institutionTypeDao = institutionTypeDao;
+  @Inject
+  public InstitutionTypeManagerImpl(InstitutionTypeDAO institutionTypeDAO) {
+    this.institutionTypeDAO = institutionTypeDAO;
+
+
   }
 
   @Override
   public boolean deleteInstitutionType(long institutionTypeId) {
-    return institutionTypeDao.deleteInstitutionType(institutionTypeId);
+
+    return institutionTypeDAO.deleteInstitutionType(institutionTypeId);
   }
 
   @Override
-  public boolean existInstitutionType(long institutionTypeId) {
-    return institutionTypeDao.existInstitutionType(institutionTypeId);
+  public boolean existInstitutionType(long institutionTypeID) {
+
+    return institutionTypeDAO.existInstitutionType(institutionTypeID);
   }
 
   @Override
   public List<InstitutionType> findAll() {
-    return institutionTypeDao.findAll();
+
+    return institutionTypeDAO.findAll();
+
   }
 
   @Override
-  public InstitutionType getInstitutionTypeById(long institutionTypeId) {
-    return institutionTypeDao.find(institutionTypeId);
+  public InstitutionType getInstitutionTypeById(long institutionTypeID) {
+
+    return institutionTypeDAO.find(institutionTypeID);
   }
 
   @Override
   public long saveInstitutionType(InstitutionType institutionType) {
-    return institutionTypeDao.save(institutionType);
+
+    return institutionTypeDAO.save(institutionType);
   }
+
 
 }
