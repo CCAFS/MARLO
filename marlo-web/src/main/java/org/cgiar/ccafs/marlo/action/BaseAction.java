@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning &
+ * isCompleteImpact * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,7 +214,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-          this.crpID = crp.getId();
+        this.crpID = crp.getId();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -247,7 +247,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-          this.crpSession = crp.getAcronym();
+        this.crpSession = crp.getAcronym();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -418,7 +418,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean isCompleteImpact(long crpProgramID) {
-    List<SectionStatus> sections = sectionStatusManager.findAll().stream()
+
+    List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
+    if (sectionsBD == null) {
+      return false;
+    }
+    List<SectionStatus> sections = sectionsBD.stream()
       .filter(c -> c.getCrpProgram().getId().longValue() == crpProgramID).collect(Collectors.toList());
 
     for (SectionStatus sectionStatus : sections) {
