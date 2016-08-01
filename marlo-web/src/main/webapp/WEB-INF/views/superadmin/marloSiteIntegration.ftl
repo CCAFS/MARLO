@@ -21,26 +21,28 @@
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
 
 [#assign siteIntegrationList = [
- {"code": "BD", "name": "Bangladesh","isPlus":true, "center": "IRRI and WorldFish (co-lead)", "leaders": [{"composedName":"Paul Fox (IRRI)" },{"composedName":"Craig Meisner (WorldFish)" } ] },
- {"code": "ET", "name": "Ethiopia","isPlus":true, "center": "ILRI", "leaders": [{"composedName":"Boni Moyo (ILRI)" } ]},
- {"code": "NI", "name": "Nicaragua","isPlus":true, "center": "CIAT", "leaders": [{"composedName":"Maya Rajasekharan (CIAT)" } ]},
- {"code": "NG", "name": "Nigeria","isPlus":true, "center": "IITA", "leaders": [{"composedName":"Alfred Dixon (IITA)" } ] },
- {"code": "TZ", "name": "Tanzania","isPlus":true, "center": "IITA", "leaders": [{"composedName":"Regina Kapinga (IITA)" } ]},
- {"code": "VN", "name": "Vietnam","isPlus":true, "center": "CIAT (ICRAF to closely support)", "leaders": [{"composedName":"Dindo Campilan (CIAT)" } ]},
- {"code": "BF", "name": "Burkina Faso", "center": "CIFOR", "leaders": [{"composedName":"Mathurin Zida (CIFOR)" } ]},
- {"code": "CM", "name": "Cameroon", "center": "ICRAF", "leaders": [{"composedName":"Zac Tchoundjeu (ICRAF)" } ]},
- {"code": "CD", "name": "DRC", "center": "IITA", "leaders": [{"composedName":"Nzola Mahungu (IITA)" } ]},
- {"code": "GH", "name": "Ghana", "center": "IWMI", "leaders": [{"composedName":"Funke Cofie (IWMI)" } ]},
- {"code": "IN", "name": "India", "center": "ICRISAT", "leaders": [{"composedName":"Peter Carberry (ICRISAT)" } ]},
- {"code": "KE", "name": "Kenya", "center": "ICRAF", "leaders": [{"composedName":"Jonathan Muriuki (ICRAF)" } ]},
- {"code": "MW", "name": "Malawi", "center": "CIP (for first two years then followed by ICRISAT)", "leaders": [{"composedName":"Paul Demo (CIP)" } ]},
- {"code": "ML", "name": "Mali", "center": "ICRISAT", "leaders": [{"composedName":"Ramadjita Tabo (ICRISAT)" } ]},
- {"code": "MZ", "name": "Mozambique", "center": "CIP", "leaders": [{"composedName":"Adiel Mbabu (CIP)" }, {"composedName":"Maria Andrade (CIP)" } ]},
- {"code": "NP", "name": "Nepal", "center": "IWMI and CIMMYT (co-lead)", "leaders": [{"composedName":"Arun Joshi (CIMMYT)" }, {"composedName":" Fraser Sugden (IWMI)" }, {"composedName":"Srabani Roy" } ]},
- {"code": "NE", "name": "Niger", "center": "ICRISAT", "leaders": [{"composedName":"Malick Ba (ICRISAT)" } ]},
- {"code": "RW", "name": "Rwanda", "center": "CIP (rotating leadership, starting with CIP and then CIAT)", "leaders": [ {"composedName":"Kirimi Sindi (CIP)"} ]},
- {"code": "UG", "name": "Uganda", "center": "CIP and Bioversity", "leaders": [ {"composedName":"Eldad Karamara (Bioversity)"} ]},
- {"code": "ZM", "name": "Zambia", "center": "CIMMYT", "leaders": [ {"composedName":"Peter Setimela (CIMMYT)"} ]}
+ {"code": "BD", "name": "Bangladesh","plus": "++", "center": "IRRI and WorldFish (co-lead)", "leaders": [{"composedName":"Paul Fox (IRRI)" },{"composedName":"Craig Meisner (WorldFish)" } ] },
+ {"code": "ET", "name": "Ethiopia","plus": "++", "center": "ILRI", "leaders": [{"composedName":"Boni Moyo (ILRI)" } ]},
+ {"code": "NI", "name": "Nicaragua","plus": "++", "center": "CIAT", "leaders": [{"composedName":"Maya Rajasekharan (CIAT)" } ]},
+ {"code": "NG", "name": "Nigeria", "plus": "++", "center": "IITA", "leaders": [{"composedName":"Alfred Dixon (IITA)" } ] },
+ {"code": "TZ", "name": "Tanzania", "plus": "++", "center": "IITA", "leaders": [{"composedName":"Regina Kapinga (IITA)" } ]},
+ {"code": "VN", "name": "Vietnam", "plus": "++" , "center": "CIAT (ICRAF to closely support)", "leaders": [{"composedName":"Dindo Campilan (CIAT)" } ]},
+ {"code": "BF", "name": "Burkina Faso", "plus": "+", "center": "CIFOR", "leaders": [{"composedName":"Mathurin Zida (CIFOR)" } ]},
+ {"code": "CM", "name": "Cameroon", "plus": "+","center": "ICRAF", "leaders": [{"composedName":"Zac Tchoundjeu (ICRAF)" } ]},
+ {"code": "CD", "name": "DRC", "plus": "+","center": "IITA", "leaders": [{"composedName":"Nzola Mahungu (IITA)" } ]},
+ {"code": "GH", "name": "Ghana", "plus": "+","center": "IWMI", "leaders": [{"composedName":"Funke Cofie (IWMI)" } ]},
+ {"code": "IN", "name": "India", "plus": "+","center": "ICRISAT", "leaders": [{"composedName":"Peter Carberry (ICRISAT)" } ]},
+ {"code": "KE", "name": "Kenya", "plus": "+","center": "ICRAF", "leaders": [{"composedName":"Jonathan Muriuki (ICRAF)" } ]},
+ {"code": "MW", "name": "Malawi", "plus": "+","center": "CIP (for first two years then followed by ICRISAT)", "leaders": [{"composedName":"Paul Demo (CIP)" } ]},
+ {"code": "ML", "name": "Mali", "plus": "+","center": "ICRISAT", "leaders": [{"composedName":"Ramadjita Tabo (ICRISAT)" } ]},
+ {"code": "MZ", "name": "Mozambique", "plus": "+","center": "CIP", "leaders": [{"composedName":"Adiel Mbabu (CIP)" }, {"composedName":"Maria Andrade (CIP)" } ]},
+ {"code": "NP", "name": "Nepal", "plus": "+","center": "IWMI and CIMMYT (co-lead)", "leaders": [{"composedName":"Arun Joshi (CIMMYT)" }, {"composedName":" Fraser Sugden (IWMI)" }, {"composedName":"Srabani Roy" } ]},
+ {"code": "NE", "name": "Niger", "plus": "+","center": "ICRISAT", "leaders": [{"composedName":"Malick Ba (ICRISAT)" } ]},
+ {"code": "RW", "name": "Rwanda", "plus": "+","center": "CIP (rotating leadership, starting with CIP and then CIAT)", "leaders": [ {"composedName":"Kirimi Sindi (CIP)"} ]},
+ {"code": "UG", "name": "Uganda", "plus": "+","center": "CIP and Bioversity", "leaders": [ {"composedName":"Eldad Karamara (Bioversity)"} ]},
+ {"code": "ZM", "name": "Zambia", "plus": "+","center": "CIMMYT", "leaders": [ {"composedName":"Peter Setimela (CIMMYT)"} ]},
+ {"code": "ID", "name": "Indonesia", "plus": "","center": "Undefined", "leaders": [ {"composedName":"Undefined"} ]},
+ {"code": "PH", "name": "Philippines", "plus": "","center": "Undefined", "leaders": [ {"composedName":"Undefined"} ]}
 ]/]
 
 <section class="marlo-content">
@@ -100,7 +102,7 @@
     [#-- IDO Title --]
     <div class="blockTitle closed">
       <div class="row">
-        <div class="col-md-3"><i class="flag-sm flag-sm-${(element.code?upper_case)!}"></i> ${(element.name)!'New Site'} <strong>${(element.isPlus??)?string('++','+')}</strong></div>
+        <div class="col-md-3"><i class="flag-sm flag-sm-${(element.code?upper_case)!}"></i> ${(element.name)!'New Site'} <strong>${(element.plus)!}</strong></div>
         <div class="col-md-4"><span>${(element.leaders[0].composedName)!}</span> </div>
         <div class="col-md-5"><small>(${(element.center)!})</small></div>
       </div>
