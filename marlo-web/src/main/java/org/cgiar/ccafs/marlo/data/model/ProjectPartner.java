@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -36,15 +37,18 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
+
   private Set<ProjectPartnerContribution> projectPartnerContributions = new HashSet<ProjectPartnerContribution>(0);
   private Set<ProjectPartnerContribution> projectPartnerContributors = new HashSet<ProjectPartnerContribution>(0);
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
+  private List<ProjectPartnerPerson> partnerPersons;
 
   public ProjectPartner() {
   }
@@ -59,6 +63,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification,
@@ -79,6 +84,28 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectPartner other = (ProjectPartner) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -91,6 +118,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public Institution getInstitutions() {
     return this.institution;
@@ -115,6 +143,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
+  public List<ProjectPartnerPerson> getPartnerPersons() {
+    return partnerPersons;
+  }
+
   public Project getProject() {
     return project;
   }
@@ -135,6 +167,13 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.projectPartnerPersons;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
 
   @Override
   public boolean isActive() {
@@ -151,6 +190,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
   }
@@ -159,10 +199,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setInstitutions(Institution institution) {
     this.institution = institution;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -170,6 +210,10 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
+  }
+
+  public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
+    this.partnerPersons = partnerPersons;
   }
 
   public void setProject(Project project) {
