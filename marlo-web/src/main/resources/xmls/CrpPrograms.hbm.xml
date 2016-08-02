@@ -17,8 +17,8 @@
 			<column name="name" length="65535" not-null="true" />
 		</property>
 		<property name="color" type="string">
-      <column name="color" length="8"/>
-    </property>
+			<column name="color" length="8" />
+		</property>
 		<property name="acronym" type="string">
 			<column name="acronym" length="50" not-null="true" />
 		</property>
@@ -71,33 +71,45 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
-		
-		  <set name="sectionStatuses" table="section_statuses" order-by="id" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="crp_program_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
-        </set>
-        
-        <set name="submissions" order-by="id" table="submissions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="crp_program_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
-        </set>
-        
-        
-        <set name="liaisonInstitutions" table="liaison_institutions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="crp_program" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
-        </set>
-        <set name="projectFocuses" table="project_focuses" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="program_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
-        </set>
+
+		<set name="sectionStatuses" table="section_statuses" order-by="id"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="crp_program_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
+
+		<set name="submissions" order-by="id" table="submissions" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="crp_program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
+		</set>
+
+
+		<set name="liaisonInstitutions" table="liaison_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="crp_program" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
+		</set>
+		<set name="projectFocuses" table="project_focuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="program_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
+		</set>
+
+		<set name="projectLocations" table="project_locations" order-by="id"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="crp_program_region_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
+		</set>
 	</class>
 </hibernate-mapping>
