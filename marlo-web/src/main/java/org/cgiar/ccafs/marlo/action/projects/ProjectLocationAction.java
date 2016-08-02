@@ -122,7 +122,7 @@ public class ProjectLocationAction extends BaseAction {
     List<Object> elementTypes = locElementTypeManager.findAll().stream()
       .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
 
-    locationsLevels.add(new LocationsLevels("Custom Locations", elementTypes, elementTypes.get(0).getClass()));
+    locationsLevels.add(new LocationsLevels("Other Locations", elementTypes, elementTypes.get(0).getClass()));
 
   }
 
