@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Locations" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectId}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectsLocation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
