@@ -5762,17 +5762,22 @@ hr {
   cursor: pointer;
   padding-left: 20px;
   background-repeat: no-repeat;
-  background-position: -4px;
+  background-position: -5px 2px;
 }
 
 .expandableBlock .blockTitle span.index{
-padding: 0 0px;
-background-color: #ccc;
-border-radius: 4px;
-width: 23px;
-text-align: center;
-display: inline-block;
-text-shadow: 1px 1px 2px #b5b4b4;
+  padding: 0 0px;
+  background-color: #ccc;
+  border-radius: 4px;
+  width: 23px;
+  text-align: center;
+  display: inline-block;
+  text-shadow: 1px 1px 2px #b5b4b4;
+  margin-right: 8px;
+}
+
+.expandableBlock .blockTitle span.index.ppa{
+  background-color: #f1c40f;
 }
 
 .expandableBlock .blockTitle.opened {
