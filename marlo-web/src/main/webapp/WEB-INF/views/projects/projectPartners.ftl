@@ -140,6 +140,8 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> ${index+1}. ${(element.institution.composedName)!'Institution Name'}
+      
+      
     </div>
     
     <div class="blockContent" style="display:none">
@@ -232,29 +234,32 @@
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
      
     [#-- Contact type --]
-    <div class="partnerPerson-type halfPartBlock clearfix">
-      [#if canEditLeader]
-        [@customForm.select name="${name}.type" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.type)!'CP'}'" editable=canEditLeader required=true /]
-      [#else]
-        <h6><label class="readOnly">[@s.text name="projectPartners.personType" /]:</label></h6>
-        <div class="select"><p>[@s.text name="projectPartners.types.${(element.type)!'none'}"/]</p></div>
-        <input type="hidden" name="${name}.type" class="partnerPersonType" value="${(element.type)!-1}" />
-      [/#if]
+    <div class="form-group">
+      <div class="partnerPerson-type halfPartBlock clearfix">
+        [#if canEditLeader]
+          [@customForm.select name="${name}.type" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.type)!'CP'}'" editable=canEditLeader required=true /]
+        [#else]
+          <h6><label class="readOnly">[@s.text name="projectPartners.personType" /]:</label></h6>
+          <div class="select"><p>[@s.text name="projectPartners.types.${(element.type)!'none'}"/]</p></div>
+          <input type="hidden" name="${name}.type" class="partnerPersonType" value="${(element.type)!-1}" />
+        [/#if]
+      </div>
+      
+      [#-- Contact Email --]
+      <div class="partnerPerson-email userField halfPartBlock clearfix">
+        [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditLeader/]
+        <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
+        [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
+        [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName" type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+        <input class="userId" type="hidden" name="${name}.user" value="${(element.user.id)!'-1'}" />   
+        [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
+      </div> 
     </div>
     
-    [#-- Contact Email --]
-    <div class="partnerPerson-email userField halfPartBlock clearfix">
-      [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditLeader/]
-      <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
-      [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
-      [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName" type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
-      <input class="userId" type="hidden" name="${name}.user" value="${(element.user.id)!'-1'}" />   
-      [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
-    </div> 
-    
     [#-- Responsibilities --]
-    <div class="fullPartBlock partnerResponsabilities chosen"> 
+    <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=!project.bilateralProject editable=editable /]
+      <div class="clearfix"></div>
     </div>
     
     
