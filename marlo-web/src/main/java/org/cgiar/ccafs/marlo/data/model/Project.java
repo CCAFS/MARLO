@@ -186,7 +186,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.bilateralContractName;
   }
 
-<<<<<<< HEAD
   /**
    * This method gets all the coordinators working for this project.
    * 
@@ -219,8 +218,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return projectCoordinators;
   }
-=======
->>>>>>> branch 'dev' of https://github.com/CCAFS/MARLO.git
+
 
   public User getCreatedBy() {
     return this.createdBy;
@@ -274,7 +272,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-<<<<<<< HEAD
+
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -304,8 +302,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     return null;
   }
-=======
->>>>>>> branch 'dev' of https://github.com/CCAFS/MARLO.git
+
 
   public String getLeaderResponsabilities() {
     return this.leaderResponsabilities;
