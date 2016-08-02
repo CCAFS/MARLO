@@ -63,15 +63,15 @@
   <input id="partners-name" type="hidden" value="project.partners" />
   
   [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-  [@projectPartnerMacro element={} name="project.partners" isTemplate=true /]
+  [@projectPartnerMacro element={} name="project.partners[-1]" isTemplate=true /]
   
   [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
-  [@contactPersonMacro element={} name="contactPerson" isTemplate=true /]
+  [@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
   
   [#-- PPA list Template --]
   <ul style="display:none">
     <li id="ppaListTemplate" class="clearfix">
-      <input class="id" type="hidden" name="" value="" />
+      <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1]" value="" />
       <span class="name"></span> 
       [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if] 
     </li>
@@ -129,6 +129,7 @@
 [#macro projectPartnerMacro element name index=-1 isTemplate=false]
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
+  [#local isPPA = (action.isPPA(element.institution))!false /]
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
@@ -138,11 +139,17 @@
     
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <span class="index">${index+1}</span> <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> ${(element.institution.composedName)!'Institution Name'}
+      <span class="index ${isPPA?string('ppa','')}">${index+1}</span> 
+      <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> 
+      <span>${(element.institution.composedName)!'New Project Partner'}</span>
+      [#if (element.partnerPersons)?? ] <br />
+        <small>[#list element.partnerPersons as partnerPerson](${partnerPerson.user.composedCompleteName}) [/#list]</small> 
+      [/#if]
     </div>
     
     <div class="blockContent" style="display:none">
       <hr />
+      <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!-1}" />
       
       [#-- Filters --]
       [#if editable && isTemplate]
@@ -164,13 +171,15 @@
       [#-- Institution / Organization --]
       <div class="form-group">
       [#if ((editable && isTemplate) || (editable && !element.institution??))]
-        [@customForm.select name="${name}[${index}].institution" value="${(element.institution.id)!-1}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName" /]
+        [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!-1}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
+      [#else]
+        <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!-1}"/>
       [/#if]
       </div>
-      ${((action.isPPA(element.institution))!false)?string}
+
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
-        [#assign showPPABlock][#if (action.isPPA(element.institution))!false]none[#else]block[/#if][/#assign]${showPPABlock}
+        [#assign showPPABlock][#if isPPA]none[#else]block[/#if][/#assign]
         <div class="ppaPartnersList panel tertiary" style="display:${showPPABlock}">
           <div class="panel-head">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /]</div> 
           <div class="panel-body">
@@ -199,12 +208,12 @@
       <div class="contactsPerson panel tertiary">
         <div class="panel-head">[@s.text name="projectPartners.projectPartnerContacts" /]</div>
         <div class="fullPartBlock">
-        [#if element.projectPartnerPersons?has_content]
-          [#list element.projectPartnerPersons as partnerPerson]
-            [@contactPersonMacro element=partnerPerson name="${name}[${index}].partnerPersons" index=partnerPerson_index partnerIndex=index /]
+        [#if element.partnerPersons?has_content]
+          [#list element.partnerPersons as partnerPerson]
+            [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
           [/#list]
         [#else]
-           [@contactPersonMacro element={} name="${name}[0].partnerPersons" index=0 partnerIndex=index /]
+           [@contactPersonMacro element={} name="${name}.partnerPersons[0]" index=0 partnerIndex=index /]
         [/#if]  
         [#if (editable && canEdit)]
           <div class="addContact"><a href="" class="addLink">[@s.text name="projectPartners.addContact"/]</a></div> 
@@ -226,7 +235,7 @@
     <div class="leftHead">
       <span class="index"></span>
     </div>
-    <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(contact.id)!-1}" />
+    <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!-1}" />
     [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
      
@@ -248,7 +257,7 @@
         <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
         [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
         [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName" type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
-        <input class="userId" type="hidden" name="${name}.user" value="${(element.user.id)!'-1'}" />   
+        <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!'-1'}" />   
         [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
       </div> 
     </div>
