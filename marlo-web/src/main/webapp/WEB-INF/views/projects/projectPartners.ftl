@@ -130,7 +130,6 @@
   [#local isLeader = (element.leader)!false/]
   [#local isCoordinator = (element.coordinator)!false/]
   
-  
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable && (isTemplate)]
@@ -139,9 +138,7 @@
     
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> ${index+1}. ${(element.institution.composedName)!'Institution Name'}
-      
-      
+      <span class="index">${index+1}</span> <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> ${(element.institution.composedName)!'Institution Name'}
     </div>
     
     <div class="blockContent" style="display:none">
