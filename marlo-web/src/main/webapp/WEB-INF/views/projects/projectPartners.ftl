@@ -35,9 +35,9 @@
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div id="projectPartnersBlock" class="simpleBox" style="display:none">
-            [#if project.projectPartners?has_content]
-              [#list project.projectPartners as projectPartner]
-                [@projectPartnerMacro element=projectPartner name="project.projectPartners[${projectPartner_index}]" index=projectPartner_index /]
+            [#if project.partners?has_content]
+              [#list project.partners as projectPartner]
+                [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
               [/#list]
             [#else]
               [#if !editable]
@@ -60,10 +60,10 @@
 </section>
 
 [#-- Hidden Parameters Interface --]
-  <input id="partners-name" type="hidden" value="project.projectPartners" />
+  <input id="partners-name" type="hidden" value="project.partners" />
   
   [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-  [@projectPartnerMacro element={} name="project.projectPartners" isTemplate=true /]
+  [@projectPartnerMacro element={} name="project.partners" isTemplate=true /]
   
   [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
   [@contactPersonMacro element={} name="contactPerson" isTemplate=true /]

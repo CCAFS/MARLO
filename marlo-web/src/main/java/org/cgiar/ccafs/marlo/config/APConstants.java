@@ -68,6 +68,11 @@ public final class APConstants {
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
 
+  // Types of Project Partners
+  public static final String PROJECT_PARTNER_PL = "PL";
+  public static final String PROJECT_PARTNER_PC = "PC";
+  public static final String PROJECT_PARTNER_CP = "CP";
+
   // login messages and status
   public static final String LOGIN_STATUS = "loginStatus";
   public static final String LOGIN_MESSAGE = "loginMessage";

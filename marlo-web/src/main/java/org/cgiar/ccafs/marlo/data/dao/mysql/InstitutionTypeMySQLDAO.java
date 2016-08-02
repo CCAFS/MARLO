@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,6 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.InstitutionTypeDAO;
@@ -22,10 +23,6 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
 public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
 
   private StandardDAO dao;
@@ -38,31 +35,35 @@ public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
   @Override
   public boolean deleteInstitutionType(long institutionTypeId) {
     InstitutionType institutionType = this.find(institutionTypeId);
+
     return dao.delete(institutionType);
   }
 
   @Override
-  public boolean existInstitutionType(long institutionTypeId) {
-    InstitutionType institutionType = this.find(institutionTypeId);
+  public boolean existInstitutionType(long institutionTypeID) {
+    InstitutionType institutionType = this.find(institutionTypeID);
     if (institutionType == null) {
       return false;
     }
     return true;
+
   }
 
   @Override
   public InstitutionType find(long id) {
     return dao.find(InstitutionType.class, id);
+
   }
 
   @Override
   public List<InstitutionType> findAll() {
-    String query = "from " + InstitutionType.class.getName();
+    String query = "from " + InstitutionType.class.getName() + "";
     List<InstitutionType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
+
   }
 
   @Override
@@ -72,7 +73,10 @@ public class InstitutionTypeMySQLDAO implements InstitutionTypeDAO {
     } else {
       dao.update(institutionType);
     }
+
+
     return institutionType.getId();
   }
+
 
 }

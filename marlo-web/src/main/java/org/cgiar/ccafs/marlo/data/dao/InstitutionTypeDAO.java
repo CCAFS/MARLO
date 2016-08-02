@@ -13,6 +13,7 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
+
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.InstitutionTypeMySQLDAO;
@@ -22,9 +23,6 @@ import java.util.List;
 
 import com.google.inject.ImplementedBy;
 
-/**
- * @author Hermes Jiménez - CIAT/CCAFS
- */
 @ImplementedBy(InstitutionTypeMySQLDAO.class)
 public interface InstitutionTypeDAO {
 
@@ -39,16 +37,16 @@ public interface InstitutionTypeDAO {
   /**
    * This method validate if the institutionType identify with the given id exists in the system.
    * 
-   * @param institutionTypeId is a institutionType identifier.
+   * @param institutionTypeID is a institutionType identifier.
    * @return true if the institutionType exists, false otherwise.
    */
-  public boolean existInstitutionType(long institutionTypeId);
+  public boolean existInstitutionType(long institutionTypeID);
 
   /**
    * This method gets a institutionType object by a given institutionType identifier.
    * 
-   * @param id is the locElement identifier.
-   * @return a LocElement object.
+   * @param institutionTypeID is the institutionType identifier.
+   * @return a InstitutionType object.
    */
   public InstitutionType find(long id);
 
@@ -63,11 +61,10 @@ public interface InstitutionTypeDAO {
   /**
    * This method saves the information of the given institutionType
    * 
-   * @param institutionType - is the InstitutionType object with the new information to be added/updated.
+   * @param institutionType - is the institutionType object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the institutionType was
    *         updated
    *         or -1 is some error occurred.
    */
   public long save(InstitutionType institutionType);
-
 }
