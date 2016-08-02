@@ -26,6 +26,9 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -35,12 +38,17 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +56,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class ProjectPartnerAction extends BaseAction {
@@ -63,6 +72,9 @@ public class ProjectPartnerAction extends BaseAction {
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
   private LocElementManager locationManager;
+  private UserManager userManager;
+  private UserRoleManager userRoleManager;
+  private RoleManager roleManager;
   private ProjectManager projectManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private CrpManager crpManager;
@@ -81,6 +93,10 @@ public class ProjectPartnerAction extends BaseAction {
   private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
   private List<User> allUsers; // will be used to list all the project leaders that have the system.
+  private Role plRole;
+  private Role pcRole;
+
+
   // Util
   private SendMail sendMail;
 
@@ -88,7 +104,8 @@ public class ProjectPartnerAction extends BaseAction {
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
     InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
     CrpPpaPartnerManager crpPpaPartnerManager, CrpManager crpManager,
-    ProjectPartnerOverallManager projectPartnerOverallManager, InstitutionTypeManager institutionTypeManager) {
+    ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
+    InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager) {
     super(config);
 
     this.projectPartnerManager = projectPartnerManager;
@@ -96,10 +113,12 @@ public class ProjectPartnerAction extends BaseAction {
     this.institutionTypeManager = institutionTypeManager;
     this.locationManager = locationManager;
     this.projectManager = projectManager;
-
+    this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.projectPartnerOverallManager = projectPartnerOverallManager;
+    this.sendMail = sendMail;
+    this.roleManager = roleManager;
   }
 
 
@@ -168,6 +187,52 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  /**
+   * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
+   * access.
+   * 
+   * @param leader is a PartnerPerson object that could be the leader or the coordinator.
+   */
+  private void notifyNewUserCreated(User user) {
+
+    if (!user.isActive()) {
+
+      user.setActive(true);
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.newUser.part1"));
+      message.append(this.getText("email.newUser.part2"));
+
+      String password = this.getText("planning.manageUsers.email.outlookPassword");
+      if (!user.isCgiarUser()) {
+        // Generating a random password.
+        password = RandomStringUtils.randomNumeric(6);
+        // Applying the password to the user.
+        user.setPassword(password);
+      }
+      message
+        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+      message.append(this.getText("email.support"));
+      message.append(this.getText("email.bye"));
+
+      // Saving the new user configuration.
+      userManager.saveUser(user, this.getCurrentUser());
+
+      String toEmail = null;
+      if (config.isProduction()) {
+        // Send email to the new user and the P&R notification email.
+        // TO
+        toEmail = user.getEmail();
+      }
+      // BBC
+      String bbcEmails = this.config.getEmailNotification();
+      sendMail.send(toEmail, null, bbcEmails,
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+        null, false);
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -178,6 +243,8 @@ public class ProjectPartnerAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
+    plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
+    pcRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PC_ROLE)));
 
     // Getting the list of all institutions
     allInstitutions = institutionManager.findAll();
@@ -257,10 +324,93 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
-    // TODO Auto-generated method stub
-    return super.save();
+    if (this.hasPermission("update")) {
+
+      previousProject = projectManager.getProjectById(projectID);
+      for (ProjectPartner previousPartner : previousProject.getProjectPartners()) {
+        if (!project.getPartners().contains(previousPartner)) {
+          projectPartnerManager.deleteProjectPartner(previousPartner.getId());
+          // budgetManager.deleteBudgetsByInstitution(project.getId(), previousPartner.getInstitution(),
+          // this.getCurrentUser(), this.getJustification());
+        }
+
+        for (ProjectPartner projectPartner : project.getPartners()) {
+          if (projectPartner.getId() == null) {
+            projectPartner.setActive(true);
+
+            projectPartner.setCreatedBy(this.getCurrentUser());
+            projectPartner.setModifiedBy(this.getCurrentUser());
+            projectPartner.setModificationJustification("");
+            projectPartner.setActiveSince(new Date());
+
+          } else {
+            ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+            projectPartner.setActive(true);
+            projectPartner.setCreatedBy(db.getCreatedBy());
+            projectPartner.setModifiedBy(this.getCurrentUser());
+            projectPartner.setModificationJustification("");
+            projectPartner.setActiveSince(db.getActiveSince());
+          }
+
+          ProjectPartnerPerson leader = project.getLeaderPerson();
+          // Notify user if the project leader was created.
+          if (leader != null && previousProject.getLeaderPerson() == null) {
+            this.notifyNewUserCreated(leader.getUser());
+            UserRole userRole = new UserRole();
+            userRole.setRole(plRole);
+            userRole.setUser(leader.getUser());
+
+            plRole = roleManager.getRoleById(plRole.getId());
+            if (!plRole.getUserRoles().contains(userRole)) {
+              userRoleManager.saveUserRole(userRole);
+            }
+
+
+          }
+
+          ProjectPartnerPerson previousCoordinator = null;
+          if (previousProject.getCoordinatorPersons().size() > 0) {
+            previousCoordinator = previousProject.getCoordinatorPersons().get(0);
+          }
+          ProjectPartnerPerson coordinator = null;
+          if (project.getCoordinatorPersons() != null) {
+            if (project.getCoordinatorPersons().size() > 0) {
+              coordinator = project.getCoordinatorPersons().get(0);
+            }
+          }
+
+          if (coordinator != null && previousCoordinator == null) {
+            if (!previousCoordinator.equals(coordinator)) {
+              this.notifyNewUserCreated(coordinator.getUser());
+              UserRole userRole = new UserRole();
+              userRole.setRole(pcRole);
+              userRole.setUser(leader.getUser());
+
+              pcRole = roleManager.getRoleById(pcRole.getId());
+              if (!pcRole.getUserRoles().contains(userRole)) {
+                userRoleManager.saveUserRole(userRole);
+              }
+            }
+
+          }
+
+          projectPartnerManager.saveProjectPartner(projectPartner);
+          Collection<String> messages = this.getActionMessages();
+          if (!messages.isEmpty()) {
+            String validationMessage = messages.iterator().next();
+            this.setActionMessages(null);
+            this.addActionWarning(this.getText("saving.saved") + validationMessage);
+          } else {
+            this.addActionMessage(this.getText("saving.saved"));
+          }
+        }
+      }
+      return SUCCESS;
+    }
+    return NOT_AUTHORIZED;
   }
 
 

@@ -18,8 +18,12 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2836976847017848957L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private ProjectPartner projectPartner;
   @Expose
@@ -41,7 +45,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public ProjectPartnerPerson() {
   }
-
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification) {
@@ -67,6 +70,29 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectPartnerPerson other = (ProjectPartnerPerson) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -113,13 +139,21 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.projectPartner;
   }
 
-
   public String getResponsibilities() {
     return this.responsibilities;
   }
 
+
   public User getUser() {
     return this.user;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
