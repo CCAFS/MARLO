@@ -180,7 +180,7 @@
             [/#if]
             <ul class="list"> 
             [#if element.projectPartnerContributors?has_content]
-              [#list element.projectPartnerContributors as ppaPartner]
+              [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
                   <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].institution.id" value="${(ppaPartner.institution.id)!-1}" />
                   <span class="name">${(ppaPartner.institution.composedName)!}</span> 

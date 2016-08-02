@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -194,6 +195,8 @@ public class ProjectPartnerAction extends BaseAction {
     for (ProjectPartner projectPartner : project.getPartners()) {
       projectPartner.setPartnerPersons(
         projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
     }
     ProjectPartner leader = project.getLeader();
     if (leader != null) {
@@ -204,12 +207,23 @@ public class ProjectPartnerAction extends BaseAction {
     }
     // Getting the list of PPA Partners for this project
     this.projectPPAPartners = new ArrayList<ProjectPartner>();
-    for (ProjectPartner pp : project.getProjectPartners()) {
+    for (ProjectPartner pp : project.getPartners()) {
 
       if (pp.getInstitution().getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
         .size() > 0) {
         this.projectPPAPartners.add(pp);
+
       }
+
+      List<ProjectPartner> contributors = new ArrayList<>();
+
+
+      List<ProjectPartnerContribution> partnerContributions =
+        pp.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
+        contributors.add(projectPartnerContribution.getProjectPartnerContributor());
+      }
+      pp.setPartnerContributors(contributors);
     }
 
     partnerPersonTypes = new HashMap<>();
