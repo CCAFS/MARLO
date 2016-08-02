@@ -227,13 +227,13 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
     partnerPersonTypes = new HashMap<>();
-    partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("planning.projectPartners.types.CP"));
+    partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("projectPartners.types.CP"));
 
     if (this.hasPermission("leader")) {
-      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PL, this.getText("planning.projectPartners.types.PL"));
+      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PL, this.getText("projectPartners.types.PL"));
     }
     if (this.hasPermission("coordinator")) {
-      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PC, this.getText("planning.projectPartners.types.PC"));
+      partnerPersonTypes.put(APConstants.PROJECT_PARTNER_PC, this.getText("projectPartners.types.PC"));
     }
 
     if (this.isHttpPost()) {
