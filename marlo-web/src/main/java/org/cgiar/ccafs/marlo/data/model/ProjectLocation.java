@@ -37,10 +37,14 @@ public class ProjectLocation implements java.io.Serializable {
 
 
   @Expose
+  private LocElement regionLocElement;
+
+  @Expose
   private Project project;
 
   @Expose
   private boolean active;
+
 
   @Expose
   private Date activeSince;
@@ -48,17 +52,21 @@ public class ProjectLocation implements java.io.Serializable {
   @Expose
   private long createdBy;
 
+
   @Expose
   private long modifiedBy;
 
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private CrpProgram crpProgram;
+
   public ProjectLocation() {
   }
 
   public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, long createdBy,
-    long modifiedBy, String modificationJustification) {
+    long modifiedBy, String modificationJustification, CrpProgram crpProgram, LocElement regionLocElement) {
     this.locElement = locElement;
     this.project = project;
     this.active = active;
@@ -66,6 +74,8 @@ public class ProjectLocation implements java.io.Serializable {
     this.createdBy = createdBy;
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
+    this.crpProgram = crpProgram;
+    this.regionLocElement = regionLocElement;
   }
 
   @Override
@@ -94,16 +104,17 @@ public class ProjectLocation implements java.io.Serializable {
     return activeSince;
   }
 
-
   public long getCreatedBy() {
     return createdBy;
   }
 
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
+  }
 
   public Long getId() {
     return id;
   }
-
 
   public LocElement getLocElement() {
     return locElement;
@@ -125,6 +136,11 @@ public class ProjectLocation implements java.io.Serializable {
   }
 
 
+  public LocElement getRegionLocElement() {
+    return regionLocElement;
+  }
+
+
   public boolean isActive() {
     return active;
   }
@@ -134,12 +150,18 @@ public class ProjectLocation implements java.io.Serializable {
     this.active = active;
   }
 
+
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(long createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
   public void setId(Long id) {
@@ -160,6 +182,10 @@ public class ProjectLocation implements java.io.Serializable {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setRegionLocElement(LocElement regionLocElement) {
+    this.regionLocElement = regionLocElement;
   }
 
 }

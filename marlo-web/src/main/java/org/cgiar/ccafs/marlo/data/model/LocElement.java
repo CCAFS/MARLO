@@ -46,12 +46,12 @@ public class LocElement implements java.io.Serializable, IAuditLog {
   @Expose
   private Long isoNumeric;
 
+
   @Expose
   private LocElementType locElementType;
 
   @Expose
   private LocGeoposition locGeoposition;
-
 
   @Expose
   private String name;
@@ -62,7 +62,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Boolean isSiteIntegration;
-
 
   @Expose
   private boolean active;
@@ -86,18 +85,22 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
 
+
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
+
 
   private Set<Institution> institutions = new HashSet<Institution>(0);
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
+
+  private Set<ProjectLocation> regionProjectLocations = new HashSet<ProjectLocation>(0);
 
   public LocElement() {
   }
 
   public LocElement(LocElementType locElementTypes, LocGeoposition locGeopositions, String name, String isoAlpha2,
     LocElement locElement, Boolean isSiteIntegration, Set<CrpsSiteIntegration> crpsSitesIntegrations,
-    Set<Institution> institutions, Set<ProjectLocation> projectLocations) {
+    Set<Institution> institutions, Set<ProjectLocation> projectLocations, Set<ProjectLocation> regionProjectLocations) {
     this.locElementType = locElementTypes;
     this.locGeoposition = locGeopositions;
     this.name = name;
@@ -107,6 +110,7 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     this.crpsSitesIntegrations = crpsSitesIntegrations;
     this.institutions = institutions;
     this.projectLocations = projectLocations;
+    this.regionProjectLocations = regionProjectLocations;
   }
 
   public LocElement(LocElementType locElementTypes, String name) {
@@ -185,7 +189,6 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return this.locElementType;
   }
 
-
   public LocGeoposition getLocGeoposition() {
     return this.locGeoposition;
   }
@@ -202,18 +205,23 @@ public class LocElement implements java.io.Serializable, IAuditLog {
     return modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public String getName() {
     return this.name;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
+  }
+
+  public Set<ProjectLocation> getRegionProjectLocations() {
+    return regionProjectLocations;
   }
 
   @Override
@@ -291,6 +299,10 @@ public class LocElement implements java.io.Serializable, IAuditLog {
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
+  }
+
+  public void setRegionProjectLocations(Set<ProjectLocation> regionProjectLocations) {
+    this.regionProjectLocations = regionProjectLocations;
   }
 
 }
