@@ -156,6 +156,18 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public boolean isPPA(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
+    institution = institutionManager.getInstitutionById(institution.getId());
+    if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
+      return true;
+    }
+    return false;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -244,7 +256,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {

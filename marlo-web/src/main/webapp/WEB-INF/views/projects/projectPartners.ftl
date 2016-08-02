@@ -167,18 +167,18 @@
         [@customForm.select name="${name}[${index}].institution" value="${(element.institution.id)!-1}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName" /]
       [/#if]
       </div>
-      
+      ${((action.isPPA(element.institution))!false)?string}
       [#-- Indicate which PPA Partners for second level partners --]
-      [#if (editable || ((!editable && element.projectPartnerContributors?has_content)!false)) && (!project.bilateralProject)]
-        [#assign showPPABlock][#if (element.institution.PPA)!true]none[#else]block[/#if][/#assign]
+      [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
+        [#assign showPPABlock][#if (action.isPPA(element.institution))!false]none[#else]block[/#if][/#assign]${showPPABlock}
         <div class="ppaPartnersList panel tertiary" style="display:${showPPABlock}">
           <div class="panel-head">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /]</div> 
           <div class="panel-body">
-            [#if !(element.projectPartnerContributors?has_content) && !editable]
+            [#if !(element.partnerContributors?has_content) && !editable]
               <p>[@s.text name="projectPartners.noSelectedCCAFSPartners" /] </p>
             [/#if]
             <ul class="list"> 
-            [#if element.projectPartnerContributors?has_content]
+            [#if element.partnerContributors?has_content]
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
                   <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].institution.id" value="${(ppaPartner.institution.id)!-1}" />
@@ -218,7 +218,7 @@
 [/#macro]
 
 [#macro contactPersonMacro element name index=-1 partnerIndex=-1 isTemplate=false]
-  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.type)!}" style="display:${isTemplate?string('none','block')}">
+  <div id="contactPerson-${isTemplate?string('template',(element.id)!)}" class="contactPerson simpleBox ${(element.contactType)!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
     [#if editable]
       <div class="removePerson removeElement" title="[@s.text name="projectPartners.removePerson" /]"></div>
@@ -234,11 +234,11 @@
     <div class="form-group">
       <div class="partnerPerson-type halfPartBlock clearfix">
         [#if canEditLeader]
-          [@customForm.select name="${name}.type" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.type)!'CP'}'" editable=canEditLeader required=true /]
+          [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" editable=canEditLeader required=true /]
         [#else]
           <h6><label class="readOnly">[@s.text name="projectPartners.personType" /]:</label></h6>
-          <div class="select"><p>[@s.text name="projectPartners.types.${(element.type)!'none'}"/]</p></div>
-          <input type="hidden" name="${name}.type" class="partnerPersonType" value="${(element.type)!-1}" />
+          <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
+          <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!-1}" />
         [/#if]
       </div>
       
