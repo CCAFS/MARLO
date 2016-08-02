@@ -435,8 +435,8 @@ function removePartnerEvent(e) {
 
 function addPartnerEvent(e) {
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
-  console.log($("#projectPartner-template"));
   $(e.target).before($newElement);
+  $newElement.find('.blockTitle').trigger('click');
   $newElement.show("slow");
   applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the chosen plugin for new partners created
@@ -582,13 +582,16 @@ function PartnerObject(partner) {
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.setIndex = function(name,index) {
     var elementName = name + "[" + index + "].";
+
+    // Updating indexes
+    $(partner).setNameIndexes(1, index);
+
     // Update index for project Partner
-    $(partner).find("> .leftHead .index").html(index + 1);
-    $(partner).find("[id$='id']").attr("name", elementName + "id");
-    $(partner).find(".institutionsList").attr("name", elementName + "institution");
+    $(partner).find("> .blockTitle .index").html(index + 1);
+
     // Update index for CCAFS Partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
-      $(li).find('.id').attr("name", elementName + "partnerContributors" + "[" + li_index + "].institution.id");
+      $(li).setNameIndexes(2, index);
     });
     // Update index for partner persons
     $(partner).find('.contactPerson').each(function(i,partnerPerson) {
@@ -667,9 +670,11 @@ function PartnerObject(partner) {
     });
   };
   this.showPPAs = function() {
+    $(partner).find("> .blockTitle .index").removeClass('ppa');
     $(this.ppaPartnersList).slideDown();
   };
   this.hidePPAs = function() {
+    $(partner).find("> .blockTitle .index").addClass('ppa');
     $(this.ppaPartnersList).slideUp();
   };
   this.startLoader = function() {
@@ -708,15 +713,13 @@ function PartnerPersonObject(partnerPerson) {
     return $(partnerPerson).find('.tag.' + relation).next().find('ul').html();
   };
   this.setIndex = function(name,partnerIndex,index) {
-    var elementName = name + "partnerPersons[" + index + "].";
-    $(partnerPerson).find(".partnerPersonId").attr("name", elementName + "id");
-    $(partnerPerson).find(".partnerPersonType").attr("name", elementName + "type");
+    // Update Indexes
+    $(partnerPerson).setNameIndexes(2, index);
 
+    // Update name & id for unused input
     $(partnerPerson).find(".userName").attr("name", "partner-" + partnerIndex + "-person-" + index);
     $(partnerPerson).find(".userName").attr("id", "partner-" + partnerIndex + "-person-" + index);
 
-    $(partnerPerson).find(".userId").attr("name", elementName + "user");
-    $(partnerPerson).find(".resp").attr("name", elementName + "responsibilities");
   };
   this.isLeader = function() {
     return(this.type == leaderType);
