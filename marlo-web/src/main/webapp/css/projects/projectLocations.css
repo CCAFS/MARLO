@@ -8,4 +8,73 @@
 #content {
     border: 1px dashed #d1d1d1;
     padding: 10px;
+    margin-bottom: 25px;
+}
+
+.locationLevel-option {
+    float: left;
+    font-weight: bold;
+}
+
+.locations span {
+    float: right;
+    cursor: pointer;
+}
+
+.locations {
+    border: 1px dashed #d1d1d1;
+    background-color: #f4f4f4;
+    margin-bottom: 10px;
+}
+
+.checkBox {
+    font-size: 0.94em;
+    margin-bottom: 10px;
+}
+
+.optionContent {
+    margin-bottom: 25px;
+}
+
+
+.locationLevel-option span {
+    float: right;
+}
+
+.locationLevel {
+    margin-bottom: 25px;
+}
+
+.locationName-content {
+    background-color: #f4f4f4;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.collapsible {
+    float: right;
+}
+
+.locationLevel-optionContent {
+    border-top: none;
+    margin-top: 0;
+}
+
+.collapsible {
+    float: right;
+}
+
+.selectWrapper {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+#map {
+    height: 100%;
+}
+
+.map {
+    height: 300px;
 }
