@@ -27,9 +27,9 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LocationsLevels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +50,7 @@ public class ProjectLocationAction extends BaseAction {
   private Project project;
 
 
-  private HashMap<String, List<Object>> locationsLevels;
+  private List<LocationsLevels> locationsLevels;
 
   private CrpManager crpManager;
 
@@ -59,9 +59,11 @@ public class ProjectLocationAction extends BaseAction {
 
   private LocElementTypeManager locElementTypeManager;
 
+
   private CrpProgramManager crpProgramManager;
 
   private Long projectId;
+
 
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -73,14 +75,14 @@ public class ProjectLocationAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
   }
 
-
-  public HashMap<String, List<Object>> getLocationsLevels() {
+  public List<LocationsLevels> getLocationsLevels() {
     return locationsLevels;
   }
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -94,31 +96,33 @@ public class ProjectLocationAction extends BaseAction {
   * 
   */
   public void locationLevels() {
-    locationsLevels = new HashMap<>();
+
+    locationsLevels = new ArrayList<>();
 
     LocElementType regionsElementType = locElementTypeManager.getLocElementTypeById(1);
 
-    locationsLevels.put(regionsElementType.getName(),
-      regionsElementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()));
-
+    locationsLevels.add(new LocationsLevels("Regions",
+      regionsElementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()),
+      regionsElementType.getClass()));
 
     List<Object> regionPrograms = crpProgramManager
       .findAll().stream().filter(cp -> cp.isActive()
         && (cp.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) && cp.getCrp().equals(loggedCrp))
       .collect(Collectors.toList());
 
-    locationsLevels.put("Custom Regions", regionPrograms);
+    locationsLevels.add(new LocationsLevels("Custom Regions", regionPrograms, regionPrograms.get(0).getClass()));
 
     List<Object> customElementTypes = locElementTypeManager.findAll().stream()
       .filter(let -> let.isActive() && let.getCrp() != null && let.getCrp().equals(loggedCrp) && let.getId() != 1)
       .collect(Collectors.toList());
 
-    locationsLevels.put("Custom Locations", customElementTypes);
+    locationsLevels
+      .add(new LocationsLevels("Custom Locations", customElementTypes, customElementTypes.get(0).getClass()));
 
     List<Object> elementTypes = locElementTypeManager.findAll().stream()
       .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
 
-    locationsLevels.put("Other Locations", elementTypes);
+    locationsLevels.add(new LocationsLevels("Custom Locations", elementTypes, elementTypes.get(0).getClass()));
 
   }
 
@@ -141,9 +145,10 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-  public void setLocationsLevels(HashMap<String, List<Object>> locationsLevels) {
+  public void setLocationsLevels(List<LocationsLevels> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;

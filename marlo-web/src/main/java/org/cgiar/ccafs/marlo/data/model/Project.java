@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -185,6 +186,39 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.bilateralContractName;
   }
 
+  /**
+   * This method gets all the coordinators working for this project.
+   * 
+   * @return a list of PartnerPerson with the information requested.
+   */
+  public List<ProjectPartnerPerson> getCoordinatorPersons() {
+    List<ProjectPartnerPerson> projectCoordinators = new ArrayList<>();
+    if (projectPartners != null) {
+      for (ProjectPartner partner : partners) {
+        if (partner.getPartnerPersons() != null) {
+          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+              projectCoordinators.add(person);
+            }
+          }
+        }
+
+      }
+    } else {
+      for (ProjectPartner partner : projectPartners) {
+        if (partner.getPartnerPersons() != null) {
+          for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+              projectCoordinators.add(person);
+            }
+          }
+        }
+
+      }
+    }
+    return projectCoordinators;
+  }
+
 
   public User getCreatedBy() {
     return this.createdBy;
@@ -194,6 +228,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Crp getCrp() {
     return crp;
   }
+
 
   public Date getEndDate() {
     return this.endDate;
@@ -207,7 +242,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return flagshipValue;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
@@ -215,15 +249,57 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   public ProjectPartner getLeader() {
+
     if (projectPartners != null) {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-          if (person.getContactType().equals("PL")) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
             return partner;
           }
         }
       }
+    } else {
+      for (ProjectPartner partner : projectPartners) {
+        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            return partner;
+          }
+        }
+      }
+
+
     }
+    return null;
+  }
+
+
+  /**
+   * This method returns the project partner person who is leading the project.
+   * 
+   * @return a PartnerPerson object with the information requested. Or null if the project doesn't have a leader.
+   */
+  public ProjectPartnerPerson getLeaderPerson() {
+
+    if (projectPartners != null) {
+      for (ProjectPartner partner : partners) {
+        for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            return person;
+          }
+        }
+      }
+    } else {
+      for (ProjectPartner partner : projectPartners) {
+        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+            return person;
+          }
+        }
+
+      }
+
+    }
+
     return null;
   }
 

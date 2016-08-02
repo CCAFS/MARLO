@@ -42,6 +42,8 @@ public final class APConstants {
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
   public static final String CRP_CL_ROLE = "crp_cl_rol";
   public static final String CRP_FPL_ROLE = "crp_fpl_rol";
+  public static final String CRP_PL_ROLE = "crp_pl_rol";
+  public static final String CRP_PC_ROLE = "crp_pc_rol";
   public static final String CRP_RPL_ROLE = "crp_rpl_rol";
   public static final String CRP_SL_ROLE = "crp_sl_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
@@ -67,7 +69,8 @@ public final class APConstants {
   public static final String CRP_REQUEST = "crp";
   public static final String PROJECT_REQUEST_ID = "projectID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
-
+  public static final String COUNTRY_REQUEST_ID = "countryID";
+  public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   // Types of Project Partners
   public static final String PROJECT_PARTNER_PL = "PL";
   public static final String PROJECT_PARTNER_PC = "PC";
