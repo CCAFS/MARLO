@@ -3411,6 +3411,11 @@ span.partnerTag {
     /* border-color: #9E9E9E; */
 }
 
+.projectPartner .partnerTags {
+    margin-right: 26px;
+}
+ 
+
 .projectPartner.leader .contactPerson.PL {
   border-color: #92D0AC;
   background-color: #F9FFFC;
@@ -5519,6 +5524,10 @@ span.select2-selection.select2-selection--multiple {
     padding: 4px;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 25px;
+}
+
 
 h4.testEnvironment {
   margin-top: 0;
@@ -5786,7 +5795,7 @@ hr {
   text-align: center;
   display: inline-block;
   text-shadow: 1px 1px 2px #b5b4b4;
-  margin-right: 3px;
+  margin-right: 0px;
   vertical-align: middle;
   /* height: 19px; */
   font-size: 75%;
