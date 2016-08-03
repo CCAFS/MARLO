@@ -87,7 +87,7 @@ table.dataTable tr.even td.sorting_3 {
 
 table.dataTable thead th {
   text-align: center;
-  border: 1px solid #2087ad;
+  border: 1px solid #117fa8;
   font-size: 13px;
   vertical-align: middle;
   padding: 2px 16px 2px 10px;
@@ -181,5 +181,5 @@ table.dataTable a {
 }
 
 .subHeader {
-    background-color: #0e697d;
+    background-color: #117fa8;
 }
