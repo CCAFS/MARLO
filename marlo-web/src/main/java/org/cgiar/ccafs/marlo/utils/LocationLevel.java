@@ -31,10 +31,8 @@ public class LocationLevel implements Serializable {
 
   private List<CountryLocationLevel> locations;
 
-
   private Object modelClass;
 
-  private boolean isList;
 
   public LocationLevel() {
 
@@ -57,15 +55,6 @@ public class LocationLevel implements Serializable {
 
   public String getName() {
     return name;
-  }
-
-
-  public boolean isList() {
-    return isList;
-  }
-
-  public void setList(boolean isList) {
-    this.isList = isList;
   }
 
   public void setLocations(List<CountryLocationLevel> locations) {
