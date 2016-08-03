@@ -34,7 +34,7 @@
           <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
-          <div id="projectPartnersBlock" class="" style="display:none">
+          <div id="projectPartnersBlock" class="simpleBox" style="display:none">
             [#if project.partners?has_content]
               [#list project.partners as projectPartner]
                 [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
@@ -52,6 +52,7 @@
           </div> 
           
           [#-- -- -- REPORTING BLOCK -- -- --]
+          <br />
           <div class="fullBlock">
             [@customForm.textArea name="overrall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
           </div>
@@ -77,7 +78,8 @@
   [#-- PPA list Template --]
   <ul style="display:none">
     <li id="ppaListTemplate" class="clearfix">
-      <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1]" value="" />
+      <input type="hidden"            name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.id" />
+      <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.institution.id" value="" />
       <span class="name"></span> 
       [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if] 
     </li>
@@ -145,9 +147,15 @@
     
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <span class="index ${isPPA?string('ppa','')}">${index+1}</span> 
-      <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> 
-      <span>${(element.institution.composedName)!'New Project Partner'}</span>
+      [#-- Title --]
+      <span> <span class="index_number">${index+1}</span>. ${(element.institution.composedName)!'New Project Partner'}</span>
+      
+      [#-- Tags --]
+      <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>
+      <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
+      <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
+      
+      [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br />
         <small>[#list element.partnerPersons as partnerPerson](${partnerPerson.user.composedCompleteName}) [/#list]</small> 
       [/#if]
@@ -198,8 +206,9 @@
             [#if element.partnerContributors?has_content]
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
-                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].institution.id" value="${(ppaPartner.institution.id)!-1}" />
-                  <span class="name">${(ppaPartner.institution.composedName)!}</span> 
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" />
+                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!-1}" />
+                  <span class="name">${(ppaPartner.projectPartnerContributor.institution.composedName)!}</span> 
                   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
                 </li>
               [/#list]
