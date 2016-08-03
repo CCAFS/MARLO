@@ -5778,14 +5778,19 @@ hr {
 }
 
 .expandableBlock .blockTitle span.index{
-  padding: 0 0px;
+  padding: 1px 7px;
   background-color: #ccc;
   border-radius: 4px;
-  width: 23px;
+  /* width: 23px; */
   text-align: center;
   display: inline-block;
   text-shadow: 1px 1px 2px #b5b4b4;
-  margin-right: 8px;
+  margin-right: 3px;
+  vertical-align: middle;
+  /* height: 19px; */
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 17px;
 }
 
 .expandableBlock .blockTitle span.index.ppa{

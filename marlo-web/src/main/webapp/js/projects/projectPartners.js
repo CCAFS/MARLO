@@ -593,7 +593,7 @@ function PartnerObject(partner) {
     $(partner).setNameIndexes(1, index);
 
     // Update index for project Partner
-    $(partner).find("> .blockTitle .index").html(index + 1);
+    $(partner).find("> .blockTitle .index_numbre").html(index + 1);
 
     // Update index for CCAFS Partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
