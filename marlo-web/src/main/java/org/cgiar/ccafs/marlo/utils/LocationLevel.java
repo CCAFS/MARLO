@@ -21,30 +21,33 @@ import java.util.List;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LocationsLevels implements Serializable {
+public class LocationLevel implements Serializable {
+
 
   private static final long serialVersionUID = -8762435022172624443L;
 
+
   private String name;
 
-  private List<Object> locations;
+  private List<CountryLocationLevel> locations;
+
 
   private Object modelClass;
 
+  private boolean isList;
 
-  public LocationsLevels() {
+  public LocationLevel() {
 
   }
 
-  public LocationsLevels(String name, List<Object> locations, Object modelClass) {
+  public LocationLevel(String name, List<CountryLocationLevel> locations, Object modelClass) {
     super();
     this.name = name;
     this.locations = locations;
     this.modelClass = modelClass;
   }
 
-
-  public List<Object> getLocations() {
+  public List<CountryLocationLevel> getLocations() {
     return locations;
   }
 
@@ -56,7 +59,16 @@ public class LocationsLevels implements Serializable {
     return name;
   }
 
-  public void setLocations(List<Object> locations) {
+
+  public boolean isList() {
+    return isList;
+  }
+
+  public void setList(boolean isList) {
+    this.isList = isList;
+  }
+
+  public void setLocations(List<CountryLocationLevel> locations) {
     this.locations = locations;
   }
 
