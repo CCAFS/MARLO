@@ -163,7 +163,7 @@
     
     <div class="blockContent" style="display:none">
       <hr />
-      <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!-1}" />
+      <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
       [#-- Filters --]
       [#if editable && isTemplate]
@@ -172,12 +172,12 @@
           [#-- Partner type list --]
           <div class="col-md-6 partnerTypeName chosen">
             [#-- Name attribute is not needed, we just need to load the value, not save it it. --]
-            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.partnerType" listName="intitutionTypes" keyFieldName="id"  displayFieldName="name" className="partnerTypes" value="${(element.institution.type.id)!-1}" /]
+            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.partnerType" listName="intitutionTypes" keyFieldName="id"  displayFieldName="name" className="partnerTypes" value="${(element.institution.type.id)!}" /]
           </div>
           [#-- Country list --]
           <div class="col-md-6 countryListBlock chosen">
             [#-- Name attribute is not needed, we just need to load the value, not save it it. --]
-            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.country" listName="countries" keyFieldName="id"  displayFieldName="name" className="countryList" value="'${(element.institution.country.id)!-1}'" /]
+            [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.country" listName="countries" keyFieldName="id"  displayFieldName="name" className="countryList" value="'${(element.institution.country.id)!}'" /]
           </div>
           <div class="clearfix"></div>
         </div> 
@@ -187,9 +187,9 @@
       <div class="form-group partnerName">
         <p class="fieldError"></p>
         [#if ((editable && isTemplate) || (editable && !element.institution??))]
-          [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!-1}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
+          [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
         [#else]
-          <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!-1}"/>
+          <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
         [/#if]
       </div>
 
@@ -207,7 +207,7 @@
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
                   <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" />
-                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!-1}" />
+                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!}" />
                   <span class="name">${(ppaPartner.projectPartnerContributor.institution.composedName)!}</span> 
                   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
                 </li>
@@ -252,7 +252,7 @@
     <div class="leftHead">
       <span class="index"></span>
     </div>
-    <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!-1}" />
+    <input id="id" class="partnerPersonId" type="hidden" name="${name}.id" value="${(element.id)!}" />
     [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
     
@@ -272,7 +272,7 @@
         [#else]
           <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
           <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
-          <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!-1}" />
+          <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
         [/#if]
       </div>
       
@@ -282,7 +282,7 @@
         <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
         [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
         [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName" type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
-        <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!'-1'}" />   
+        <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
         [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
       </div> 
     </div>
