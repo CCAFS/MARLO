@@ -30,7 +30,7 @@ function init() {
     // This function enables launch the pop up window
     popups();
     // Activate the chosen to the existing partners
-    addChosen();
+    addSelect2();
     // Applying word counters to form fields
     applyWordCounter($("form textarea.resp"), lWordsResp);
     applyWordCounter($("#lessons textarea"), lWordsResp);
@@ -88,7 +88,7 @@ function attachEvents() {
   // When organization change
   $("select.institutionsList").on("change", updateProjectPPAPartnersLists);
   // Partners filters
-  $(".filters-link").on("click", filterInstitutions);
+  $(".filters-link span").on("click", filterInstitutions);
 
   /**
    * CCAFS Partners list events
@@ -132,7 +132,7 @@ function setProjectLeader(obj) {
 }
 
 function filterInstitutions(e) {
-  var $filterContent = $(e.target).next();
+  var $filterContent = $(e.target).parent().next();
   if($filterContent.is(":visible")) {
     updateOrganizationsList(e);
   }
@@ -268,8 +268,9 @@ function removePPAPartnersFromList(list) {
 }
 
 function updateProjectPPAPartnersLists(e) {
-  // $projectPPAPartners.empty();
   var projectInstitutions = [];
+  // Clean PPA partners from hidden select
+  $projectPPAPartners.empty();
   // Loop for all projects partners
   $partnersBlock.find('.projectPartner').each(function(i,projectPartner) {
     var partner = new PartnerObject($(projectPartner));
@@ -288,6 +289,7 @@ function updateProjectPPAPartnersLists(e) {
       }
     }
   });
+
   // Validating if the institution chosen is already selected
   if(e) {
     var $fieldError = $(e.target).parents('.partnerName').find('p.fieldError');
@@ -301,7 +303,7 @@ function updateProjectPPAPartnersLists(e) {
     }
     // If there is one selected , show an error message
     if(count > 1) {
-      $fieldError.text('This institution is already selected').addClass('animated flipInX');
+      $fieldError.text('This institution is already selected').animateCss('flipInX');
     }
   }
 
@@ -439,10 +441,11 @@ function addPartnerEvent(e) {
   $newElement.find('.blockTitle').trigger('click');
   $newElement.show("slow");
   applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
-  // Activate the chosen plugin for new partners created
-  /*
-   * $newElement.find("select").chosen({ no_results_text: $("#noResultText").val(), search_contains: true });
-   */
+  // Activate the select2 plugin for new partners created
+  $newElement.find("select").select2({
+    width: '100%'
+  });
+  // Update indexes
   setProjectPartnersIndexes();
 }
 
@@ -452,10 +455,11 @@ function addContactEvent(e) {
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
   applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
-  // Activate the chosen plugin for new partners created
-  /*
-   * $newElement.find("select").chosen({ no_results_text: $("#noResultText").val(), search_contains: true });
-   */
+  // Activate the select2 plugin for new partners created
+  $newElement.find("select").select2({
+    width: '100%'
+  });
+  // Update indexes
   setProjectPartnersIndexes();
 }
 
@@ -561,10 +565,12 @@ function addItemList($option) {
 }
 
 // Activate the chosen plugin to the countries, partner types and partners lists.
-function addChosen() {
-  /*
-   * $("form select").chosen({ search_contains: true });
-   */
+function addSelect2() {
+
+  $("form select").select2({
+    width: '100%'
+  });
+
 }
 
 /**
