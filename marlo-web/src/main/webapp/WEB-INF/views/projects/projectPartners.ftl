@@ -78,6 +78,7 @@
   [#-- PPA list Template --]
   <ul style="display:none">
     <li id="ppaListTemplate" class="clearfix">
+    <input type="hidden"            name="project.partners[-1].partnerContributors[-1].id" />
       <input type="hidden"            name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.id" />
       <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.institution.id" value="" />
       <span class="name"></span> 
@@ -208,6 +209,7 @@
             [#if element.partnerContributors?has_content]
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].id" />
                   <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" />
                   <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!}" />
                   <span class="name">${(ppaPartner.projectPartnerContributor.institution.composedName)!}</span> 

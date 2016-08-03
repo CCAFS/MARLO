@@ -497,6 +497,62 @@ public class ProjectPartnerAction extends BaseAction {
           }
 
 
+          db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
+          List<ProjectPartnerContribution> contributors = new ArrayList<>();
+
+
+          List<ProjectPartnerContribution> partnerContributions =
+            db.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
+            contributors.add(projectPartnerContribution);
+          }
+          db.setPartnerContributors(contributors);
+          for (ProjectPartnerContribution partnerContribution : db.getPartnerContributors()) {
+            if (projectPartner.getPartnerContributors() == null
+              || !projectPartner.getPartnerContributors().contains(partnerContribution)) {
+              projectPartnerContributionManager.deleteProjectPartnerContribution(partnerContribution.getId());
+            }
+          }
+          if (projectPartner.getPartnerContributors() != null) {
+            for (ProjectPartnerContribution partnerContribution : projectPartner.getPartnerContributors()) {
+
+
+              if (partnerContribution.getId() == null) {
+                partnerContribution.setActive(true);
+
+                partnerContribution.setCreatedBy(this.getCurrentUser());
+                partnerContribution.setModifiedBy(this.getCurrentUser());
+                partnerContribution.setModificationJustification("");
+                partnerContribution.setActiveSince(new Date());
+
+              } else {
+
+                ProjectPartnerContribution dbContribution =
+                  projectPartnerContributionManager.getProjectPartnerContributionById(partnerContribution.getId());
+                partnerContribution.setActive(true);
+                partnerContribution.setCreatedBy(dbContribution.getCreatedBy());
+                partnerContribution.setModifiedBy(this.getCurrentUser());
+                partnerContribution.setModificationJustification("");
+                partnerContribution.setActiveSince(dbContribution.getActiveSince());
+
+              }
+              partnerContribution.setProjectPartner(projectPartner);
+              if (partnerContribution.getProjectPartnerContributor().getId() == null) {
+                List<ProjectPartner> partenerContributor = project.getPartners().stream()
+                  .filter(c -> c.getInstitution().getId()
+                    .equals(partnerContribution.getProjectPartnerContributor().getInstitution().getId()))
+                  .collect(Collectors.toList());
+                if (!partenerContributor.isEmpty()) {
+                  partnerContribution.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
+                }
+
+              }
+              projectPartnerContributionManager.saveProjectPartnerContribution(partnerContribution);
+
+
+            }
+          }
+
         }
       }
 
