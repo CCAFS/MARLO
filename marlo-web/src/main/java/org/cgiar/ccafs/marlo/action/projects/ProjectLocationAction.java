@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -66,18 +67,19 @@ public class ProjectLocationAction extends BaseAction {
 
   private LocElementTypeManager locElementTypeManager;
 
+  private ProjectLocationManager projectLocationManager;
 
   private LocElementManager locElementManager;
 
   private CrpProgramManager crpProgramManager;
 
-  private Long projectId;
+  private Long projectID;
 
 
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, CrpProgramManager crpProgramManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, ProjectLocationManager projectLocationManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -104,8 +106,8 @@ public class ProjectLocationAction extends BaseAction {
   }
 
 
-  public Long getProjectId() {
-    return projectId;
+  public Long getProjectID() {
+    return projectID;
   }
 
   /**
@@ -198,9 +200,9 @@ public class ProjectLocationAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    projectId = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-    project = projectManager.getProjectById(projectId);
+    project = projectManager.getProjectById(projectID);
 
     this.locationLevels();
 
@@ -227,7 +229,7 @@ public class ProjectLocationAction extends BaseAction {
     this.project = project;
   }
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public void setProjectID(Long projectID) {
+    this.projectID = projectID;
   }
 }
