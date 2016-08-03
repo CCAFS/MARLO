@@ -45,24 +45,24 @@ public class ProjectLocationAction extends BaseAction {
   private static final long serialVersionUID = -3215013554941621274L;
 
 
+  private CrpManager crpManager;
+
+  private CrpProgramManager crpProgramManager;
+
+
+  private List<LocationsLevels> locationsLevels;
+
+  private LocElementTypeManager locElementTypeManager;
+
+
   private Crp loggedCrp;
 
   private Project project;
 
 
-  private List<LocationsLevels> locationsLevels;
-
-  private CrpManager crpManager;
-
+  private Long projectID;
 
   private ProjectManager projectManager;
-
-  private LocElementTypeManager locElementTypeManager;
-
-
-  private CrpProgramManager crpProgramManager;
-
-  private Long projectId;
 
 
   @Inject
@@ -88,13 +88,13 @@ public class ProjectLocationAction extends BaseAction {
     return project;
   }
 
-  public Long getProjectId() {
-    return projectId;
+  public Long getProjectID() {
+    return projectID;
   }
 
   /**
-  * 
-  */
+   * 
+   */
   public void locationLevels() {
 
     locationsLevels = new ArrayList<>();
@@ -117,7 +117,7 @@ public class ProjectLocationAction extends BaseAction {
       .collect(Collectors.toList());
 
     locationsLevels
-      .add(new LocationsLevels("Custom Locations", customElementTypes, customElementTypes.get(0).getClass()));
+    .add(new LocationsLevels("Custom Locations", customElementTypes, customElementTypes.get(0).getClass()));
 
     List<Object> elementTypes = locElementTypeManager.findAll().stream()
       .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
@@ -132,9 +132,9 @@ public class ProjectLocationAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    projectId = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-    project = projectManager.getProjectById(projectId);
+    project = projectManager.getProjectById(projectID);
 
     this.locationLevels();
 
@@ -158,7 +158,7 @@ public class ProjectLocationAction extends BaseAction {
     this.project = project;
   }
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public void setProjectID(Long projectID) {
+    this.projectID = projectID;
   }
 }
