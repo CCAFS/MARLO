@@ -50,6 +50,12 @@
               <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
             [/#if]
           </div> 
+          
+          [#-- -- -- REPORTING BLOCK -- -- --]
+          <div class="fullBlock">
+            [@customForm.textArea name="overrall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+          </div>
+          
            
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
