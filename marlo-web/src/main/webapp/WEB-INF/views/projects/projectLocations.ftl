@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Locations" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectId}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectsLocation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
@@ -11,6 +11,9 @@
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
+
+[#assign locationLevelName = "locationLevels"/]
+[#assign locationName = "locations"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -56,15 +59,16 @@
               </div>
                 
             </div>
-            <select name="" id="" class="selectLocationLevel select" placeholder="select an option...">
-              <option>Select an option...</option>
-              <option>SADC-Southern African Development Community</option>
-              <option value="">CCAFS sites</option>
-              <option value="">Districts</option>
+            <select name="" id="" class="selectLocationLevel select " >
+              [#list locationsLevels as locLevels]
+                <optgroup label="${locLevels.name}">
+                [#list locLevels.locations as locations]
+                  <option value="${locations.id}-5" >${locations.name}</option>
+                [/#list]
+                </optgroup> 
+              [/#list]            
             </select>
           </div> 
-           
-          
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
              
@@ -78,6 +82,9 @@
 [@locationLevel element={} name="" index=0 template=true /]
 
 [@location element={} name="" index=0 template=true /]
+
+<input type="hidden" id="locationLevelName" value="${locationLevelName}" />
+<input type="hidden" id="locationName" value="${locationName}" />
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -86,25 +93,28 @@
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     <div class="col-md-12 locationName-content borderBox opened">
-      <div class="glyphicon glyphicon-chevron-down collapsible" ></div>   
+      <div class="glyphicon glyphicon-chevron-up collapsible" ></div>   
       <div class="locationLevel-option"></div> 
       <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
     </div>
     <div class="col-md-12 locationLevel-optionContent borderBox">
       <div class="col-md-12 checkBox">
         <span class="col-md-10">Are you working in all countries on this region?</span>
-        <input class="col-md-1" type="checkbox" />
+        <input class="col-md-1 allCountries" type="checkbox" />
       </div>
       <div class="optionSelect-content row">
       
       </div>
+      
       <select name="" id="" class="selectLocation col-md-12" placeholder="select an option...">
         <option>Select an option...</option>
-        <option>Angola</option>
-        <option value="">Nyando</option>
-        <option value="">Borana</option>
+        <option value="456">Angola</option>
+        <option value="134">Nyando</option>
+        <option value="223">Borana</option>
       </select>
     </div>
+    <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
+    <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value="${(element.class.name)!}"/>
   </div>
 [/#macro]
 
@@ -116,5 +126,6 @@
       <div class="locationName"> </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>
     </div>
+    <input class="locationId" type="hidden" name="${locationName}[${index}].id" value=""/>
   </div>
 [/#macro]

@@ -149,15 +149,17 @@
     <div class="blockTitle closed">
       [#-- Title --]
       <span> <span class="index_number">${index+1}</span>. <span class="partnerTitle"></span>${(element.institution.composedName)!'New Project Partner'}</span>
-      
+
       [#-- Tags --]
-      <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>
-      <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
-      <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
+      <div class="partnerTags pull-right">
+        <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
+        <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
+        <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>
+      </div>
       
       [#-- Contacts --]
-      [#if (element.partnerPersons)?? ] <br />
-        <small>[#list element.partnerPersons as partnerPerson](${partnerPerson.user.composedCompleteName}) [/#list]</small> 
+      [#if (element.partnerPersons)?? ] <br /> 
+        <small>[#list element.partnerPersons as partnerPerson][${partnerPerson.user.composedCompleteName}] [/#list]</small> 
       [/#if]
     </div>
     

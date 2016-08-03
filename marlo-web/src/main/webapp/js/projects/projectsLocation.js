@@ -1,7 +1,10 @@
 $(document).ready(init);
 
 function init() {
-  console.log($(".selectWrapper").find(".locationLevel").length);
+
+  $(".selectLocationLevel").select2({
+    placeholder: "Select a location level"
+  })
 
   if($(".selectWrapper").find(".locationLevel").length > 0) {
     $(".map").show();
@@ -16,19 +19,26 @@ function init() {
 
 function attachEvents() {
 
+// ADD a location level element-Event
   $('.selectLocationLevel').on('change', function() {
 
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
       loadScript();
-      $(".map").show();
+      $(".map").show("slow");
     }
     var option = $(this).find("option:selected");
-    addLocationLevel(option.html());
+    if($(".selectWrapper").find("input[value=" + option.val().split("-")[0] + "]").exists()) {
+      console.log("exists");
+    } else {
+      addLocationLevel(option);
+    }
+
   });
 
+// ADD a location element-Event
   $('.selectLocation').on('change', function() {
     var option = $(this).find("option:selected");
-    addLocation($(this).parent(), option.html());
+    addLocation($(this).parent(), option);
   });
 
   // Remove a location level element-Event
@@ -37,17 +47,28 @@ function attachEvents() {
 // Remove a location element-Event
   $(".removeLocation").on("click", removeLocationItem);
 
-  // Collapsible
-  $('.locationLevel-option').on('click', function() {
-    var content = $(this).parent().parent().find('.locationLevel-optionContent');
-    if($(this).hasClass('closed')) {
-      content.slideDown();
-      $(this).removeClass('closed').addClass('opened');
-    } else {
-      $(this).removeClass('opened').addClass('closed');
-      content.slideUp();
-    }
+  // Checkbox to working in all regions
+  $(".allCountries").on("change", function() {
+    console.log("holi")
   });
+
+  // Collapsible
+  $('.locationLevel-option').on(
+      'click',
+      function() {
+        var content = $(this).parent().parent().find('.locationLevel-optionContent');
+        if($(this).hasClass('closed')) {
+          content.slideDown();
+          $(this).parent().find(".collapsible").removeClass("glyphicon glyphicon-chevron-down").addClass(
+              "glyphicon glyphicon-chevron-up");
+          $(this).removeClass('closed').addClass('opened');
+        } else {
+          $(this).parent().find(".collapsible").removeClass("glyphicon glyphicon-chevron-up").addClass(
+              "glyphicon glyphicon-chevron-down");
+          $(this).removeClass('opened').addClass('closed');
+          content.slideUp();
+        }
+      });
 }
 
 // FUNCTIONS
@@ -55,21 +76,27 @@ function attachEvents() {
 function addLocationLevel(option) {
   var $list = $('.selectWrapper');
   var $item = $('#locationLevel-template').clone(true).removeAttr("id");
-  $item.attr("id", "holi");
-  $item.find('.locationLevel-option').html(option);
+  $item.find('.locationLevel-option').html(option.html());
+  var optionValue = option.val().split('-');
+  var idLocationLevel = optionValue[0];
+  var typeLocationLevel = optionValue[1];
+  $item.find('.locationLevelId').val(idLocationLevel);
+  $item.find('.locationLevelType').val(typeLocationLevel);
   $list.append($item);
   // updateAllIndexes();
   $item.show('slow');
+  updateIndex();
 }
 
 function addLocation(parent,option) {
   var $list = parent.find(".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
-  $item.attr("id", "holi2");
-  $item.find('.locationName').html(option);
+  $item.find('.locationName').html(option.html());
+  $item.find('.locationId').val(option.val());
   $list.append($item);
   // updateAllIndexes();
   $item.show('slow');
+  updateIndex();
 }
 
 // Remove a location level element-Function
@@ -78,6 +105,7 @@ function removeLocationLevelItem() {
   console.log($item);
   $item.hide(function() {
     $item.remove();
+    updateIndex();
   });
   console.log($(".selectWrapper").find(".locationLevel").length);
   if($(".selectWrapper").find(".locationLevel").length <= 1) {
@@ -91,9 +119,34 @@ function removeLocationItem() {
   console.log($item);
   $item.hide(function() {
     $item.remove();
+    updateIndex();
+  });
+
+}
+
+function updateIndex() {
+  var name = $("#locationLevelName").val();
+  $(".selectWrapper").find('.locationLevel').each(function(i,item) {
+    var customName = name + '[' + i + ']';
+    $(item).find('.locationLevelId').attr('name', customName + '.id');
+    $(item).find('.locationLevelType').attr('name', customName + '.type');
+    updateLocationIndex(item, customName);
   });
 }
 
+function updateLocationIndex(item,locationLevelName) {
+  var name = $("#locationName").val();
+  $(item).find('.locElement').each(function(indexLoc,locItem) {
+    console.log(locItem);
+    var customName = locationLevelName + '.' + name + '[' + indexLoc + ']';
+    $(locItem).find('.locationId').attr('name', customName + '.id');
+  });
+
+  // Update component event
+  $(document).trigger('updateComponent');
+}
+
+// Load script of google services
 function loadScript() {
   var script = document.createElement("script");
   script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&callback=initMap";
