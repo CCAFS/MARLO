@@ -1,6 +1,7 @@
 $(document).ready(init);
 
 function init() {
+  console.log($(".selectWrapper").find(".locationLevel").length);
 
   if($(".selectWrapper").find(".locationLevel").length > 0) {
     $(".map").show();
@@ -15,12 +16,13 @@ function init() {
 
 function attachEvents() {
 
-  $('.selectpicker').on('change', function() {
-    var option = $(this).find("option:selected");
+  $('.selectLocationLevel').on('change', function() {
+
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
-      $(".map").show();
       loadScript();
+      $(".map").show();
     }
+    var option = $(this).find("option:selected");
     addLocationLevel(option.html());
   });
 
@@ -29,21 +31,26 @@ function attachEvents() {
     addLocation($(this).parent(), option.html());
   });
 
-  $(".removeIcon").on("click", removeItem);
+  // Remove a location level element-Event
+  $(".removeLocationLevel").on("click", removeLocationLevelItem);
+
+// Remove a location element-Event
+  $(".removeLocation").on("click", removeLocationItem);
 
   // Collapsible
-  $('.locationName-content').on('click', function() {
-    var content = $(this).parent().find('.locationLevel-optionContent');
+  $('.locationLevel-option').on('click', function() {
+    var content = $(this).parent().parent().find('.locationLevel-optionContent');
     if($(this).hasClass('closed')) {
-      content.slideUp();
-      $('.locationName-content').removeClass('opened').addClass('closed');
+      content.slideDown();
       $(this).removeClass('closed').addClass('opened');
     } else {
       $(this).removeClass('opened').addClass('closed');
-      content.slideDown();
+      content.slideUp();
     }
   });
 }
+
+// FUNCTIONS
 
 function addLocationLevel(option) {
   var $list = $('.selectWrapper');
@@ -65,7 +72,21 @@ function addLocation(parent,option) {
   $item.show('slow');
 }
 
-function removeItem() {
+// Remove a location level element-Function
+function removeLocationLevelItem() {
+  var $item = $(this).parents('.locationLevel');
+  console.log($item);
+  $item.hide(function() {
+    $item.remove();
+  });
+  console.log($(".selectWrapper").find(".locationLevel").length);
+  if($(".selectWrapper").find(".locationLevel").length <= 1) {
+    $(".map").hide('slow');
+  }
+}
+
+// Remove a location element-Function
+function removeLocationItem() {
   var $item = $(this).parents('.locElement');
   console.log($item);
   $item.hide(function() {
@@ -79,6 +100,7 @@ function loadScript() {
   document.body.appendChild(script);
 }
 
+// Initialization Google Map API
 function initMap() {
 
   var style = [

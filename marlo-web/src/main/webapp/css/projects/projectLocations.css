@@ -14,6 +14,7 @@
 .locationLevel-option {
     float: left;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .locations span {
@@ -48,12 +49,7 @@
 .locationName-content {
     background-color: #f4f4f4;
     font-size: 1em;
-    cursor: pointer;
     margin-bottom: 0;
-}
-
-.collapsible {
-    float: right;
 }
 
 .locationLevel-optionContent {
@@ -62,7 +58,9 @@
 }
 
 .collapsible {
-    float: right;
+    padding-top: 2px;
+    float: left;
+    margin-right: 2px;
 }
 
 .selectWrapper {
@@ -77,4 +75,8 @@
 
 .map {
     height: 300px;
+}
+
+.selectLocationLevel {
+    height: 30px;
 }

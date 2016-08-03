@@ -367,7 +367,6 @@ public class ProjectDescriptionAction extends BaseAction {
       }
     }
 
-
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();

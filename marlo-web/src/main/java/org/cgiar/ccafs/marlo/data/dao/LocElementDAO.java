@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -59,12 +59,20 @@ public interface LocElementDAO {
   public List<LocElement> findAll();
 
   /**
-   * This method gets a locElement object by a given locElement identifier.
+   * This method gets a locElement object by a given locElement IsoCode.
    * 
-   * @param locElementID is the locElement identifier.
+   * @param ISOCode of the LocElement.
    * @return a LocElement object.
    */
   public LocElement findISOCode(String ISOcode);
+
+  /**
+   * This method gets a locElement object by a parent locElement.
+   * 
+   * @param parentId is the locElement parent id.
+   * @return a LocElement object.
+   */
+  public List<LocElement> findLocElementByParent(Long parentId);
 
 
   /**
