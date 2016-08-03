@@ -141,14 +141,14 @@
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove link for all partners --]
-    [#if editable && (isTemplate)]
+    [#if editable ] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
     [/#if]
     
     [#-- Partner Title --]
     <div class="blockTitle closed">
       [#-- Title --]
-      <span> <span class="index_number">${index+1}</span>. ${(element.institution.composedName)!'New Project Partner'}</span>
+      <span> <span class="index_number">${index+1}</span>. <span class="partnerTitle"></span>${(element.institution.composedName)!'New Project Partner'}</span>
       
       [#-- Tags --]
       <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>

@@ -86,7 +86,13 @@ function attachEvents() {
   // When Partner Type change
   $("select.partnerTypes, select.countryList").change(updateOrganizationsList);
   // When organization change
-  $("select.institutionsList").on("change", updateProjectPPAPartnersLists);
+  $("select.institutionsList").on("change", function(e) {
+    var partner = new PartnerObject($(this).parents('.projectPartner'));
+    // Update Partner Title
+    partner.updateBlockContent();
+    // Update PPA Partners List
+    updateProjectPPAPartnersLists(e);
+  });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
 
@@ -255,7 +261,7 @@ function updateOrganizationsList(e) {
       complete: function() {
         partner.stopLoader();
         $selectInstitutions.val(optionSelected);
-        $selectInstitutions.trigger("liszt:updated");
+        $selectInstitutions.trigger("change.select2");
       }
   });
 }
@@ -264,7 +270,7 @@ function removePPAPartnersFromList(list) {
   for(var i = 0, len = allPPAInstitutions.length; i < len; i++) {
     $(list).find('option[value=' + allPPAInstitutions[i] + ']').remove();
   }
-  $(list).trigger("liszt:updated");
+  $(list).trigger("change.select2");
 }
 
 function updateProjectPPAPartnersLists(e) {
@@ -316,7 +322,7 @@ function updateProjectPPAPartnersLists(e) {
     $(partner).find('li input.id').each(function(i_id,id) {
       $select.find('option[value=' + $(id).val() + ']').remove();
     });
-    $select.trigger("liszt:updated");
+    $select.trigger("change.select2");
   });
 
 }
@@ -542,7 +548,7 @@ function removeItemList($item) {
   // Adding option to the select
   var $select = $item.parents('.panel').find('select');
   $select.append(setOption($item.find('.id').val(), $item.find('.name').text()));
-  $select.trigger("liszt:updated");
+  $select.trigger("change.select2");
   // Removing from list
   $item.hide("slow", function() {
     $item.remove();
@@ -560,7 +566,7 @@ function addItemList($option) {
   $li.appendTo($list).hide().show('slow');
   // Removing option from select
   $option.remove();
-  $select.trigger("liszt:updated");
+  $select.trigger("change.select2");
   setProjectPartnersIndexes();
 }
 
@@ -604,6 +610,9 @@ function PartnerObject(partner) {
       var contact = new PartnerPersonObject($(partnerPerson));
       contact.setIndex(elementName, index, i);
     });
+  };
+  this.updateBlockContent = function() {
+    $(partner).find('.partnerTitle').text(this.institutionName);
   };
   this.hasPartnerContributions = function() {
     var partners = [];
@@ -707,7 +716,7 @@ function PartnerPersonObject(partnerPerson) {
   this.canEditEmail = ($(partnerPerson).find('input.canEditEmail').val() === "true");
   this.setPartnerType = function(type) {
     this.type = type;
-    $(partnerPerson).find('.partnerPersonType').val(type).trigger("liszt:updated");
+    $(partnerPerson).find('.partnerPersonType').val(type).trigger('change.select2');
   };
   this.getPartnerType = function() {
     return $(partnerPerson).find('.partnerPersonType').val();

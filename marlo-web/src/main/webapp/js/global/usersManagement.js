@@ -149,8 +149,8 @@ $(document).ready(function() {
   }
 
   addUser = function(composedName,userId) {
-    $elementSelected.find("input.userName").val(composedName).addClass('animated flash');
-    $elementSelected.find("input.userId").val(userId);
+    $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
+    $elementSelected.parents('.userField ').find("input.userId").val(userId);
     dialog.dialog("close");
   }
 
