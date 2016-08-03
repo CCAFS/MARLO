@@ -18,8 +18,10 @@ public class ProjectPartnerContribution implements java.io.Serializable, IAuditL
    * 
    */
   private static final long serialVersionUID = -4423203403135427412L;
+
   @Expose
   private Long id;
+
   @Expose
   private ProjectPartner projectPartner;
   @Expose
@@ -48,6 +50,28 @@ public class ProjectPartnerContribution implements java.io.Serializable, IAuditL
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectPartnerContribution other = (ProjectPartnerContribution) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -88,6 +112,14 @@ public class ProjectPartnerContribution implements java.io.Serializable, IAuditL
 
   public ProjectPartner getProjectPartnerContributor() {
     return this.projectPartnerContributor;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override
