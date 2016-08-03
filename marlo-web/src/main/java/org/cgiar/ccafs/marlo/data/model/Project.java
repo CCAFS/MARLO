@@ -212,7 +212,7 @@ public class Project implements java.io.Serializable, IAuditLog {
       }
     } else {
       for (ProjectPartner partner : projectPartners) {
-        if (partner.getPartnerPersons() != null) {
+        if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC) && person.isActive()) {

@@ -58,7 +58,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
-import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -284,7 +283,8 @@ public class ProjectPartnerAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.project.assigned.subject",
-        new String[] {projectRole, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
+        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
 
@@ -325,7 +325,8 @@ public class ProjectPartnerAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.project.unAssigned.subject",
-        new String[] {projectRole, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
+        new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+          project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
 
@@ -414,9 +415,9 @@ public class ProjectPartnerAction extends BaseAction {
 
     if (this.isHttpPost()) {
 
-      if (ActionContext.getContext().getName().equals("partners") && project.getPartners() != null) {
-        project.getPartners().clear();
-      }
+
+      project.getPartners().clear();
+
     }
 
   }
@@ -428,7 +429,8 @@ public class ProjectPartnerAction extends BaseAction {
 
       previousProject = projectManager.getProjectById(projectID);
 
-      for (ProjectPartner previousPartner : previousProject.getProjectPartners()) {
+      for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
         if (project.getPartners() == null || !project.getPartners().contains(previousPartner)) {
           projectPartnerManager.deleteProjectPartner(previousPartner.getId());
           // budgetManager.deleteBudgetsByInstitution(project.getId(), previousPartner.getInstitution(),
@@ -454,14 +456,14 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setActiveSince(db.getActiveSince());
           }
 
-
+          projectPartner.setProject(project);
           projectPartnerManager.saveProjectPartner(projectPartner);
 
           ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
           for (ProjectPartnerPerson partnerPerson : db.getProjectPartnerPersons()) {
             if (projectPartner.getPartnerPersons() == null
               || !projectPartner.getPartnerPersons().contains(partnerPerson)) {
-              projectPartnerPersonManager.deleteProjectPartnerPerson(projectPartner.getId());
+              projectPartnerPersonManager.deleteProjectPartnerPerson(partnerPerson.getId());
             }
           }
           if (projectPartner.getPartnerPersons() != null) {
@@ -485,7 +487,12 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerPerson.setActiveSince(dbPerson.getActiveSince());
 
               }
+              partnerPerson.setProjectPartner(projectPartner);
+
+
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
+
+
             }
           }
 
@@ -619,7 +626,7 @@ public class ProjectPartnerAction extends BaseAction {
       // Notifying user that is not the project leader anymore
       this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
     } else if (previousPartnerPerson != null && partnerPerson != null) {
-      if (!partnerPerson.getUser().equals(previousPartnerPerson.getUser())) {
+      if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(partnerPerson.getUser());
