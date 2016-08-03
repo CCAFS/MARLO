@@ -111,7 +111,8 @@ public class ProjectPartnerAction extends BaseAction {
     CrpPpaPartnerManager crpPpaPartnerManager, CrpManager crpManager,
     ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
-    ProjectPartnerContributionManager projectPartnerContributionManager) {
+    ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
     super(config);
 
     this.projectPartnerManager = projectPartnerManager;
@@ -126,6 +127,8 @@ public class ProjectPartnerAction extends BaseAction {
     this.sendMail = sendMail;
     this.roleManager = roleManager;
     this.projectPartnerContributionManager = projectPartnerContributionManager;
+    this.userRoleManager = userRoleManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
 
@@ -204,7 +207,7 @@ public class ProjectPartnerAction extends BaseAction {
    * @param leader is a PartnerPerson object that could be the leader or the coordinator.
    */
   private void notifyNewUserCreated(User user) {
-
+    user = userManager.getUser(user.getId());
     if (!user.isActive()) {
 
       user.setActive(true);
@@ -214,7 +217,7 @@ public class ProjectPartnerAction extends BaseAction {
       message.append(this.getText("email.newUser.part1"));
       message.append(this.getText("email.newUser.part2"));
 
-      String password = this.getText("planning.manageUsers.email.outlookPassword");
+      String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
         // Generating a random password.
         password = RandomStringUtils.randomNumeric(6);
@@ -257,10 +260,12 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       projectRole = this.getText("projectPartners.types.PC");
     }
+    userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.project.assigned", new String[] {projectRole, project.getTitle()}));
+    message.append(this.getText("email.project.assigned",
+      new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(), project.getTitle()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
@@ -278,7 +283,7 @@ public class ProjectPartnerAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("planning.manageUsers.email.project.assigned.subject",
+      this.getText("email.project.assigned.subject",
         new String[] {projectRole, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
@@ -290,6 +295,7 @@ public class ProjectPartnerAction extends BaseAction {
    * @param role is the user role that stopped contributing (Project Leader or Project Coordinator).
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
+    userUnassigned = userManager.getUser(userUnassigned.getId());
     String projectRole = null;
     if (role.getId() == plRole.getId().longValue()) {
       projectRole = this.getText("projectPartners.types.PL");
@@ -299,7 +305,8 @@ public class ProjectPartnerAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
-    message.append(this.getText("email.project.unAssigned", new String[] {projectRole, project.getTitle()}));
+    message.append(this.getText("email.project.unAssigned",
+      new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(), project.getTitle()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
@@ -317,7 +324,7 @@ public class ProjectPartnerAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("planning.manageUsers.email.project.unAssigned.subject",
+      this.getText("email.project.unAssigned.subject",
         new String[] {projectRole, project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
@@ -408,7 +415,7 @@ public class ProjectPartnerAction extends BaseAction {
     if (this.isHttpPost()) {
 
       if (ActionContext.getContext().getName().equals("partners") && project.getPartners() != null) {
-        project.getProjectPartners().clear();
+        project.getPartners().clear();
       }
     }
 
@@ -447,30 +454,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setActiveSince(db.getActiveSince());
           }
 
-          ProjectPartnerPerson leader = project.getLeaderPerson();
-          // Notify user if the project leader was created.
-          if (leader != null) {
-            this.notifyNewUserCreated(leader.getUser());
-          }
-          this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
-          ProjectPartnerPerson previousCoordinator = null;
-          if (previousProject.getCoordinatorPersons().size() > 0) {
-            previousCoordinator = previousProject.getCoordinatorPersons().get(0);
-          }
-          ProjectPartnerPerson coordinator = null;
-          if (project.getCoordinatorPersons() != null) {
-            if (project.getCoordinatorPersons().size() > 0) {
-              coordinator = project.getCoordinatorPersons().get(0);
-            }
-          }
 
-          if (coordinator != null) {
-
-            this.notifyNewUserCreated(coordinator.getUser());
-
-
-          }
-          this.updateRoles(previousCoordinator, coordinator, pcRole);
           projectPartnerManager.saveProjectPartner(projectPartner);
 
           ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
@@ -491,6 +475,7 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerPerson.setActiveSince(new Date());
 
               } else {
+
                 ProjectPartnerPerson dbPerson =
                   projectPartnerPersonManager.getProjectPartnerPersonById(partnerPerson.getId());
                 partnerPerson.setActive(true);
@@ -498,6 +483,7 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerPerson.setModifiedBy(this.getCurrentUser());
                 partnerPerson.setModificationJustification("");
                 partnerPerson.setActiveSince(dbPerson.getActiveSince());
+
               }
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
             }
@@ -507,6 +493,31 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
 
+
+      ProjectPartnerPerson leader = project.getLeaderPerson();
+      // Notify user if the project leader was created.
+      if (leader != null) {
+        this.notifyNewUserCreated(leader.getUser());
+      }
+      this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
+      ProjectPartnerPerson previousCoordinator = null;
+      if (previousProject.getCoordinatorPersons().size() > 0) {
+        previousCoordinator = previousProject.getCoordinatorPersons().get(0);
+      }
+      ProjectPartnerPerson coordinator = null;
+      if (project.getCoordinatorPersons() != null) {
+        if (project.getCoordinatorPersons().size() > 0) {
+          coordinator = project.getCoordinatorPersons().get(0);
+        }
+      }
+
+      if (coordinator != null) {
+
+        this.notifyNewUserCreated(coordinator.getUser());
+
+
+      }
+      this.updateRoles(previousCoordinator, coordinator, pcRole);
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -608,7 +619,7 @@ public class ProjectPartnerAction extends BaseAction {
       // Notifying user that is not the project leader anymore
       this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
     } else if (previousPartnerPerson != null && partnerPerson != null) {
-      if (!partnerPerson.equals(previousPartnerPerson)) {
+      if (!partnerPerson.getUser().equals(previousPartnerPerson.getUser())) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(partnerPerson.getUser());

@@ -199,7 +199,7 @@ public class Project implements java.io.Serializable, IAuditLog {
    */
   public List<ProjectPartnerPerson> getCoordinatorPersons() {
     List<ProjectPartnerPerson> projectCoordinators = new ArrayList<>();
-    if (projectPartners != null) {
+    if (partners != null) {
       for (ProjectPartner partner : partners) {
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
@@ -214,7 +214,8 @@ public class Project implements java.io.Serializable, IAuditLog {
       for (ProjectPartner partner : projectPartners) {
         if (partner.getPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+
+            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC) && person.isActive()) {
               projectCoordinators.add(person);
             }
           }
@@ -255,7 +256,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public ProjectPartner getLeader() {
 
-    if (projectPartners != null) {
+    if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
           if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
@@ -266,9 +267,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     } else {
       for (ProjectPartner partner : projectPartners) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-            return partner;
+          if (person.isActive()) {
+            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+              return partner;
+            }
           }
+
         }
       }
 
@@ -285,19 +289,24 @@ public class Project implements java.io.Serializable, IAuditLog {
    */
   public ProjectPartnerPerson getLeaderPerson() {
 
-    if (projectPartners != null) {
+    if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+
           if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
             return person;
+
           }
+
         }
       }
     } else {
       for (ProjectPartner partner : projectPartners) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-            return person;
+          if (person.isActive()) {
+            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+              return person;
+            }
           }
         }
 
