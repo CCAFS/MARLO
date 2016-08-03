@@ -147,19 +147,15 @@
     
     [#-- Partner Title --]
     <div class="blockTitle closed">
-     
-      [#-- <span class="index ${isPPA?string('ppa','')}">${index+1}</span> --]
-      [#-- <strong class="type"> ${(isLeader?string('(Leader)',''))!} ${(isCoordinator?string('(Coordinator)',''))!}</strong> --]
-      
-      
- 
+      [#-- Title --]
       <span> <span class="index_number">${index+1}</span>. ${(element.institution.composedName)!'New Project Partner'}</span>
       
-      
+      [#-- Tags --]
       <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>
       <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
       <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
       
+      [#-- Contact --]
       [#if (element.partnerPersons)?? ] <br />
         <small>[#list element.partnerPersons as partnerPerson](${partnerPerson.user.composedCompleteName}) [/#list]</small> 
       [/#if]
