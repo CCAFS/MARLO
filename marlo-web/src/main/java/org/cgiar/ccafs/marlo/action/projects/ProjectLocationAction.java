@@ -19,15 +19,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.LocationsLevels;
+import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
+import org.cgiar.ccafs.marlo.utils.LocationLevel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,37 +47,41 @@ public class ProjectLocationAction extends BaseAction {
   private static final long serialVersionUID = -3215013554941621274L;
 
 
+  private CrpManager crpManager;
+
+  private CrpProgramManager crpProgramManager;
+
+
+  private List<LocationLevel> locationsLevels;
+
+  private LocElementManager locElementManager;
+
+
+  private LocElementTypeManager locElementTypeManager;
+
   private Crp loggedCrp;
 
   private Project project;
 
 
-  private List<LocationsLevels> locationsLevels;
-
-  private CrpManager crpManager;
-
+  private Long projectID;
 
   private ProjectManager projectManager;
-
-  private LocElementTypeManager locElementTypeManager;
-
-
-  private CrpProgramManager crpProgramManager;
-
-  private Long projectId;
 
 
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
-    LocElementTypeManager locElementTypeManager, CrpProgramManager crpProgramManager) {
+    LocElementTypeManager locElementTypeManager, CrpProgramManager crpProgramManager,
+    LocElementManager locElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.locElementTypeManager = locElementTypeManager;
     this.crpProgramManager = crpProgramManager;
+    this.locElementManager = locElementManager;
   }
 
-  public List<LocationsLevels> getLocationsLevels() {
+  public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
 
@@ -88,41 +94,50 @@ public class ProjectLocationAction extends BaseAction {
     return project;
   }
 
-  public Long getProjectId() {
-    return projectId;
+  public Long getProjectID() {
+    return projectID;
   }
 
   /**
-  * 
-  */
+   * 
+   */
   public void locationLevels() {
 
     locationsLevels = new ArrayList<>();
 
+    List<CountryLocationLevel> countryLocationLevels = new ArrayList<>();
+
     LocElementType regionsElementType = locElementTypeManager.getLocElementTypeById(1);
 
-    locationsLevels.add(new LocationsLevels("Regions",
-      regionsElementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()),
-      regionsElementType.getClass()));
+    for (LocElement element : regionsElementType.getLocElements().stream().filter(le -> le.isActive())
+      .collect(Collectors.toList())) {
+      CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
+      countryLocationLevel.setName(element.getName());
+      countryLocationLevel.setCountries(new ArrayList<LocElement>(locElementManager
+        .findLocElementByParent(element.getId()).stream().filter(le -> le.isActive()).collect(Collectors.toList())));
+      countryLocationLevels.add(countryLocationLevel);
+    }
+    locationsLevels.add(new LocationLevel("Regions", countryLocationLevels, regionsElementType.getClass()));
 
-    List<Object> regionPrograms = crpProgramManager
-      .findAll().stream().filter(cp -> cp.isActive()
-        && (cp.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) && cp.getCrp().equals(loggedCrp))
-      .collect(Collectors.toList());
+    // List<Object> regionPrograms = crpProgramManager
+    // .findAll().stream().filter(cp -> cp.isActive()
+    // && (cp.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) && cp.getCrp().equals(loggedCrp))
+    // .collect(Collectors.toList());
 
-    locationsLevels.add(new LocationsLevels("Custom Regions", regionPrograms, regionPrograms.get(0).getClass()));
 
-    List<Object> customElementTypes = locElementTypeManager.findAll().stream()
-      .filter(let -> let.isActive() && let.getCrp() != null && let.getCrp().equals(loggedCrp) && let.getId() != 1)
-      .collect(Collectors.toList());
+    // locationsLevels.add(new LocationLevel("Custom Regions", regionPrograms, regionPrograms.get(0).getClass()));
 
-    locationsLevels
-      .add(new LocationsLevels("Custom Locations", customElementTypes, customElementTypes.get(0).getClass()));
+    // List<Object> customElementTypes = locElementTypeManager.findAll().stream()
+    // .filter(let -> let.isActive() && let.getCrp() != null && let.getCrp().equals(loggedCrp) && let.getId() != 1)
+    // .collect(Collectors.toList());
 
-    List<Object> elementTypes = locElementTypeManager.findAll().stream()
-      .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
+    // locationsLevels
+    // .add(new LocationLevel("Custom Locations", customElementTypes, customElementTypes.get(0).getClass()));
 
-    locationsLevels.add(new LocationsLevels("Other Locations", elementTypes, elementTypes.get(0).getClass()));
+    // List<Object> elementTypes = locElementTypeManager.findAll().stream()
+    // .filter(let -> let.isActive() && let.getCrp() == null && let.getId() != 1).collect(Collectors.toList());
+
+    // locationsLevels.add(new LocationLevel("Other Locations", elementTypes, elementTypes.get(0).getClass()));
 
   }
 
@@ -132,9 +147,9 @@ public class ProjectLocationAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    projectId = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-    project = projectManager.getProjectById(projectId);
+    project = projectManager.getProjectById(projectID);
 
     this.locationLevels();
 
@@ -145,7 +160,7 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
-  public void setLocationsLevels(List<LocationsLevels> locationsLevels) {
+  public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
 
@@ -158,7 +173,7 @@ public class ProjectLocationAction extends BaseAction {
     this.project = project;
   }
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
+  public void setProjectID(Long projectID) {
+    this.projectID = projectID;
   }
 }

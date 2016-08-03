@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,13 +55,21 @@ public interface LocElementManager {
 
 
   /**
+   * This method gets a locElement object by a parent locElement.
+   * 
+   * @param parentId is the locElement parent id.
+   * @return a LocElement object.
+   */
+  public List<LocElement> findLocElementByParent(long parentId);
+
+
+  /**
    * This method gets a locElement object by a given locElement identifier.
    * 
    * @param locElementID is the locElement identifier.
    * @return a LocElement object.
    */
   public LocElement getLocElementById(long locElementID);
-
 
   /**
    * This method gets a locElement object by a given iso code identfier.

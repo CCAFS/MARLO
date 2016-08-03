@@ -46,8 +46,8 @@
             <div id="content" class="col-md-12">
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-7">
+                [#-- Content collapsible--]
                 <div class="selectWrapper row">
-                  [#-- Content collapsible--]                  
                 </div>
               </div>
               
@@ -56,7 +56,7 @@
               </div>
                 
             </div>
-            <select name="" id="" class="selectpicker" placeholder="select an option...">
+            <select name="" id="" class="selectLocationLevel select" placeholder="select an option...">
               <option>Select an option...</option>
               <option>SADC-Southern African Development Community</option>
               <option value="">CCAFS sites</option>
@@ -85,9 +85,10 @@
   [#assign customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
-    <div class="col-md-12 locationName-content borderBox">
-      <div class=" locationLevel-option "></div> 
+    <div class="col-md-12 locationName-content borderBox opened">
       <div class="glyphicon glyphicon-chevron-down collapsible" ></div>   
+      <div class="locationLevel-option"></div> 
+      <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
     </div>
     <div class="col-md-12 locationLevel-optionContent borderBox">
       <div class="col-md-12 checkBox">
@@ -101,6 +102,7 @@
         <option>Select an option...</option>
         <option>Angola</option>
         <option value="">Nyando</option>
+        <option value="">Borana</option>
       </select>
     </div>
   </div>

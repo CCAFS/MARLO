@@ -50,7 +50,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
   private List<ProjectPartnerPerson> partnerPersons;
-  private List<ProjectPartner> partnerContributors;
+  private List<ProjectPartnerContribution> partnerContributors;
 
 
   public ProjectPartner() {
@@ -145,7 +145,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
-  public List<ProjectPartner> getPartnerContributors() {
+  public List<ProjectPartnerContribution> getPartnerContributors() {
     return partnerContributors;
   }
 
@@ -274,7 +274,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
-  public void setPartnerContributors(List<ProjectPartner> partnerContributors) {
+  public void setPartnerContributors(List<ProjectPartnerContribution> partnerContributors) {
     this.partnerContributors = partnerContributors;
   }
 

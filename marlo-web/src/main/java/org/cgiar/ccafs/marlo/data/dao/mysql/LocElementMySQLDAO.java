@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -72,6 +72,16 @@ public class LocElementMySQLDAO implements LocElementDAO {
     List<LocElement> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public List<LocElement> findLocElementByParent(Long parentId) {
+    String query = "from " + LocElement.class.getName() + " where parent_id='" + parentId + "'";
+    List<LocElement> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
     }
     return null;
   }
