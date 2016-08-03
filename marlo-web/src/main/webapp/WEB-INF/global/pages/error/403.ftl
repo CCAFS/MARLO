@@ -12,8 +12,11 @@
         <div  class="text-center" id="info">
           <div>
           <h2 >Forbidden!</h2>
-          <p>Access is denied. Administrator regulations do not allow you to view this page,<br />
+          [#-- <p>Access is denied. Administrator regulations do not allow you to view this page,<br />
              due either to process deadlines or invalid user credentials.
+          </p> --]
+          <p>Access is denied.<br /> 
+          You don't have permission to access the requested page.
           </p>
           
           </div>          
