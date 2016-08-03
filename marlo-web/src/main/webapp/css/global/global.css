@@ -394,7 +394,7 @@ textarea#justification {
   width: 98%;
   font-size: 1em;
   word-wrap: break-word;
-  color: #6D6D6D;
+  color: #828282;
   margin: 0;
 }
 
@@ -984,7 +984,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel.tertiary .panel-body ul.list li {
     list-style: none;
-    padding: 5px 10px;
+    padding: 3px 10px;
     background-color: #F7F7F7;
     border: 1px solid #E0E0E0 !important;
     box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
@@ -1042,7 +1042,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel span.listButton, .budget span.listButton {
   float:right;
-  padding: 2px 8px;
+  padding: 0px 8px;
   cursor: pointer;
 }
 
@@ -3093,7 +3093,7 @@ button.ipGraph-btn{
 
 .projectsList thead tr.header {
   height:45px;
-  background-color: #0e697d;
+  background-color: #137aa0;
 }
 
 .projectsList thead tr.subHeader {
@@ -3362,10 +3362,11 @@ textarea[id$='summary'] {
   cursor: pointer;
   color: #848484;
   padding-left: 16px;
-  margin-bottom: 7px;
-  background: url(../../images/global/filter.png) no-repeat 0px 3px;
+  /* margin-bottom: 7px; */
+  /* background: url(../../images/global/filter.png) no-repeat 0px 3px; */
   background-size: 12px;
-  float: right;
+  /* float: right; */
+  text-align: right;
   margin-top: 0;
 }
 
@@ -3406,6 +3407,7 @@ span.partnerTag {
   padding: 2px 35px 3px 35px;
 }
 .projectPartner.leader {
+    /* border-color: #9E9E9E; */
 }
 
 .projectPartner.leader .contactPerson.PL {
@@ -5504,6 +5506,16 @@ span.select2-selection.select2-selection--multiple {
 
 .select2-container--default.select2-container--focus .select2-selection--multiple {
  border: solid #d1d1d1 1px;
+}
+
+.select2-results__option {
+    padding: 3px 5px;
+    font-size: 0.95em
+}
+
+.select2-search--dropdown {
+    display: block;
+    padding: 4px;
 }
 
 
