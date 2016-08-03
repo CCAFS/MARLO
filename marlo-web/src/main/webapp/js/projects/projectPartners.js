@@ -593,7 +593,7 @@ function PartnerObject(partner) {
     $(partner).setNameIndexes(1, index);
 
     // Update index for project Partner
-    $(partner).find("> .blockTitle .index_numbre").html(index + 1);
+    $(partner).find("> .blockTitle .index_number").html(index + 1);
 
     // Update index for CCAFS Partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
@@ -646,7 +646,9 @@ function PartnerObject(partner) {
   this.checkLeader = function() {
     if($(partner).find('.contactPerson.PL').length == 0) {
       $(partner).removeClass('leader');
+      $(partner).find('.type-leader').hide();
     } else {
+      $(partner).find('.type-leader').show();
       $(partner).addClass('leader');
       types.push('Leader');
     }
@@ -654,8 +656,10 @@ function PartnerObject(partner) {
   this.checkCoordinator = function() {
     if($(partner).find('.contactPerson.PC').length == 0) {
       $(partner).removeClass('coordinator');
+      $(partner).find('.type-coordinator').hide();
     } else {
       $(partner).addClass('coordinator');
+      $(partner).find('.type-coordinator').show();
       types.push('Coordinator');
     }
   };
@@ -676,11 +680,11 @@ function PartnerObject(partner) {
     });
   };
   this.showPPAs = function() {
-    $(partner).find("> .blockTitle .index").removeClass('ppa');
+    $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
     $(this.ppaPartnersList).slideDown();
   };
   this.hidePPAs = function() {
-    $(partner).find("> .blockTitle .index").addClass('ppa');
+    $(partner).find("> .blockTitle .index").addClass('ppa').text('PPA Partner');
     $(this.ppaPartnersList).slideUp();
   };
   this.startLoader = function() {

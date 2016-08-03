@@ -155,7 +155,7 @@
       <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
       <span class="label label-default type-coordinator" style="display:${(isCoordinator?string('inline','none'))!'none'}">Coordinator</span>
       
-      [#-- Contact --]
+      [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br />
         <small>[#list element.partnerPersons as partnerPerson](${partnerPerson.user.composedCompleteName}) [/#list]</small> 
       [/#if]
