@@ -603,7 +603,7 @@ function PartnerObject(partner) {
 
     // Update index for CCAFS Partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
-      $(li).setNameIndexes(2, index);
+      $(li).setNameIndexes(2, li_index);
     });
     // Update index for partner persons
     $(partner).find('.contactPerson').each(function(i,partnerPerson) {
@@ -685,6 +685,7 @@ function PartnerObject(partner) {
   this.remove = function() {
     $(partner).hide("slow", function() {
       $(partner).remove();
+      updateProjectPPAPartnersLists();
       setProjectPartnersIndexes();
     });
   };
