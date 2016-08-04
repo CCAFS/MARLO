@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -99,8 +100,9 @@ public class ProjectPartnerAction extends BaseAction {
   private List<User> allUsers; // will be used to list all the project leaders that have the system.
   private Role plRole;
   private Role pcRole;
-
-
+  private ProjectPartnerOverall partnerOverall;
+  private AuditLogManager auditLogManager;
+  private String transaction;
   // Util
   private SendMail sendMail;
 
@@ -111,9 +113,9 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager) {
+    ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager) {
     super(config);
-
+    this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
     this.institutionTypeManager = institutionTypeManager;
@@ -139,19 +141,19 @@ public class ProjectPartnerAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   public List<Institution> getAllInstitutions() {
     return allInstitutions;
   }
+
 
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
 
-
   public List<User> getAllUsers() {
     return allUsers;
   }
-
 
   public List<LocElement> getCountries() {
     return countries;
@@ -188,6 +190,11 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  public String getTransaction() {
+    return transaction;
+  }
+
+
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
@@ -198,6 +205,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return false;
   }
+
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -245,7 +253,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
-
   /**
    * This method notify the user that is been assigned as Project Leader/Coordinator for a specific project.
    * 
@@ -287,6 +294,7 @@ public class ProjectPartnerAction extends BaseAction {
           project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
+
 
   /**
    * This method notify the the user that he/she stopped contributing to a specific project.
@@ -330,15 +338,31 @@ public class ProjectPartnerAction extends BaseAction {
       message.toString(), null, null, null, true);
   }
 
-
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    // Getting the project identified with the id parameter.
-    project = projectManager.getProjectById(projectID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
+
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
     plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
@@ -367,6 +391,7 @@ public class ProjectPartnerAction extends BaseAction {
         .filter(c -> c.isActive()).collect(Collectors.toList());
       if (!overalls.isEmpty()) {
         project.setOverall(overalls.get(0).getOverall());
+        partnerOverall = overalls.get(0);
       }
     }
     for (ProjectPartner projectPartner : project.getPartners()) {
@@ -438,6 +463,8 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
       if (project.getPartners() != null) {
+
+
         for (ProjectPartner projectPartner : project.getPartners()) {
           if (projectPartner.getId() == null) {
             projectPartner.setActive(true);
@@ -553,9 +580,26 @@ public class ProjectPartnerAction extends BaseAction {
             }
           }
 
+
         }
       }
 
+      ProjectPartnerOverall overall;
+      if (partnerOverall != null) {
+        overall = partnerOverall;
+
+      } else {
+        overall = new ProjectPartnerOverall();
+        overall.setProjectPartner(project.getPartners().get(0));
+        /**
+         * TODO
+         * ask year overall
+         */
+
+        overall.setYear(2016);
+      }
+      overall.setOverall(project.getOverall());
+      projectPartnerOverallManager.saveProjectPartnerOverall(overall);
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
@@ -634,6 +678,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.partnerPersonTypes = partnerPersonTypes;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -642,9 +687,13 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectID = projectID;
   }
 
-
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
   /**

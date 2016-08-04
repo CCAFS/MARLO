@@ -54,7 +54,7 @@
           [#-- -- -- REPORTING BLOCK -- -- --]
           <br />
           <div class="fullBlock">
-            [@customForm.textArea name="overrall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+            [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
           </div>
           
            
