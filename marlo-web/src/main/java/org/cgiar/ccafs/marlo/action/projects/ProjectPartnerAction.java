@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
@@ -79,6 +80,7 @@ public class ProjectPartnerAction extends BaseAction {
   private static final long serialVersionUID = 7833194831832715444L;
 
   private ProjectPartnerManager projectPartnerManager;
+  private ProjectComponentLesson projectComponentLesson;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ProjectPartnerContributionManager projectPartnerContributionManager;
   private ProjectPartnerOverallManager projectPartnerOverallManager;
@@ -121,7 +123,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager) {
+    ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
+    ProjectComponentLesson projectComponentLesson) {
     super(config);
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
@@ -138,6 +141,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerContributionManager = projectPartnerContributionManager;
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
+    this.projectComponentLesson = projectComponentLesson;
   }
 
 
@@ -508,6 +512,40 @@ public class ProjectPartnerAction extends BaseAction {
           pp.setPartnerContributors(contributors);
         }
 
+        if (this.isLessonsActive()) {
+          if (this.isReportingActive()) {
+            System.out.println(this.getActionName());
+            List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+                && c.getCycle().equals(APConstants.REPORTING)
+                && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessons.isEmpty()) {
+              project.setProjectComponentLesson(lessons.get(0));
+            }
+            List<ProjectComponentLesson> lessonsPreview =
+              project.getProjectComponentLessons().stream()
+                .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+                  && c.getCycle().equals(APConstants.PLANNING)
+                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessonsPreview.isEmpty()) {
+              project.setProjectComponentLessonPreview(lessonsPreview.get(0));
+            }
+          } else {
+
+            List<ProjectComponentLesson> lessons =
+              project.getProjectComponentLessons().stream()
+                .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+                  && c.getCycle().equals(APConstants.PLANNING)
+                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessons.isEmpty()) {
+              project.setProjectComponentLesson(lessons.get(0));
+            }
+          }
+        }
+
 
       }
     }
@@ -737,6 +775,8 @@ public class ProjectPartnerAction extends BaseAction {
 
 
       }
+
+
       this.updateRoles(previousCoordinator, coordinator, pcRole);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
