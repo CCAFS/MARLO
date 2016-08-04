@@ -14,6 +14,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectPartners.help" /] </p></div> 
 </div>
@@ -51,11 +52,35 @@
             [/#if]
           </div> 
           
-          [#-- -- -- REPORTING BLOCK -- -- --]
-          <br />
-          <div class="fullBlock">
-            [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+          [#-- Other fields --]
+          <div class="simpleBox">
+            [#-- -- -- REPORTING BLOCK -- -- --]
+            [#if reportingActive]
+            <br />
+            <div class="fullBlock">
+              [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+            </div>
+            [/#if]
+            
+            [#-- Lessons and progress --]
+            <div id="lessons" class="">
+              [#-- Lessons learnt from last planning/reporting cycle --]
+              [#if (projectLessonsPreview.lessons?has_content)!false]
+              <div class="fullBlock">
+                <h6>[@customForm.text name="projectPartners.previousLessons" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+                <div class="textArea "><p>${projectLessonsPreview.lessons}</p></div>
+              </div>
+              [/#if]
+              [#-- Planning/Reporting lessons --]
+              <div class="fullBlock">
+                <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
+                <input type="hidden" name="projectLessons.year" value=${reportingActive?string(reportingYear,planningYear)} />
+                <input type="hidden" name="projectLessons.componentName" value="${actionName}">
+                [@customForm.textArea name="projectLessons.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+              </div>
+            </div>
           </div>
+          
           
            
           [#-- Section Buttons & hidden inputs--]

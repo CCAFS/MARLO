@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectLocationMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -56,6 +57,15 @@ public interface ProjectLocationDAO {
    * @return a list from ProjectLocation null if no exist records
    */
   public List<ProjectLocation> findAll();
+
+  /**
+   * get a list of parent project locations
+   * 
+   * @param projectId - the project id
+   * @param parentField - the field to query
+   * @return list of parent of the project location
+   */
+  public List<Map<String, Object>> getParentLocations(long projectId, String parentField);
 
 
   /**

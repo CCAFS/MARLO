@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -57,6 +58,12 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
     return projectLocationDAO.findAll();
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getParentLocations(long projectId, String parentField) {
+
+    return projectLocationDAO.getParentLocations(projectId, parentField);
   }
 
   @Override
