@@ -470,12 +470,16 @@ public class ProjectPartnerAction extends BaseAction {
         project
           .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         if (!project.getPartners().isEmpty()) {
-          List<ProjectPartnerOverall> overalls = project.getPartners().get(0).getProjectPartnerOveralls().stream()
-            .filter(c -> c.isActive()).collect(Collectors.toList());
-          if (!overalls.isEmpty()) {
-            project.setOverall(overalls.get(0).getOverall());
-            partnerOverall = overalls.get(0);
+          if (this.isReportingActive()) {
+
+            List<ProjectPartnerOverall> overalls = project.getPartners().get(0).getProjectPartnerOveralls().stream()
+              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
+            if (!overalls.isEmpty()) {
+              project.setOverall(overalls.get(0).getOverall());
+              partnerOverall = overalls.get(0);
+            }
           }
+
         }
         for (ProjectPartner projectPartner : project.getPartners()) {
           projectPartner.setPartnerPersons(
@@ -692,23 +696,20 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
       }
+      if (this.isReportingActive()) {
+        ProjectPartnerOverall overall;
+        if (partnerOverall != null) {
+          overall = partnerOverall;
 
-      ProjectPartnerOverall overall;
-      if (partnerOverall != null) {
-        overall = partnerOverall;
-
-      } else {
-        overall = new ProjectPartnerOverall();
-        overall.setProjectPartner(project.getPartners().get(0));
-        /**
-         * TODO
-         * ask year overall
-         */
-
-        overall.setYear(2016);
+        } else {
+          overall = new ProjectPartnerOverall();
+          overall.setProjectPartner(project.getPartners().get(0));
+          overall.setYear(this.getReportingYear());
+        }
+        overall.setOverall(project.getOverall());
+        projectPartnerOverallManager.saveProjectPartnerOverall(overall);
       }
-      overall.setOverall(project.getOverall());
-      projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
