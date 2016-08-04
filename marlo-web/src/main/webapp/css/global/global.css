@@ -797,7 +797,7 @@ p.synthesisCompleted img{
 
 /* Lessons and Implications */
 #lessons {
-  padding-top: 31px;
+  padding-top: 10px;
 }
 
 /* Log History */
@@ -3094,7 +3094,7 @@ button.ipGraph-btn{
 
 .projectsList thead tr.header {
   height:45px;
-  background-color: #137aa0;
+  background-color: #7B9074;
 }
 
 .projectsList thead tr.subHeader {
@@ -5829,4 +5829,27 @@ hr {
     bottom: 1px;
     right: 1px;
     height: 25px;
+}
+
+#draggable-button {
+    background-color: #0a7ba5;
+    right: 1em;
+    bottom: 1em;
+    position: fixed;
+    color: #fff;
+    font-weight: bold;
+    padding: 6px 10px 4px 10px;
+    border-radius: 50%;
+    cursor: move;
+    box-shadow: 0px 0px 3px #5e5e5e;
+    z-index: 999;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+}
+
+#draggable-button p{
+  cursor: pointer;
+  margin: 0;
+  line-height: 17px;
 }

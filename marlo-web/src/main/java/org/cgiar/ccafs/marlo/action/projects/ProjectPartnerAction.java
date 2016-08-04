@@ -48,8 +48,13 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -58,6 +63,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -133,6 +141,32 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -146,7 +180,6 @@ public class ProjectPartnerAction extends BaseAction {
     return allInstitutions;
   }
 
-
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
@@ -154,6 +187,16 @@ public class ProjectPartnerAction extends BaseAction {
   public List<User> getAllUsers() {
     return allUsers;
   }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
 
   public List<LocElement> getCountries() {
     return countries;
@@ -189,20 +232,26 @@ public class ProjectPartnerAction extends BaseAction {
     return projectPPAPartners;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isPPA(Institution institution) {
     if (institution == null) {
       return false;
     }
-    institution = institutionManager.getInstitutionById(institution.getId());
-    if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
-      return true;
+
+    if (institution.getId() != null) {
+      institution = institutionManager.getInstitutionById(institution.getId());
+      if (institution != null) {
+        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return true;
+        }
+      }
+
     }
+
     return false;
   }
 
@@ -363,6 +412,103 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
 
+    if (project != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (Project) autoSaveReader.readFromJson(jReader);
+        this.projectPPAPartners = new ArrayList<ProjectPartner>();
+        for (ProjectPartner pp : project.getPartners()) {
+
+
+          if (pp.getInstitution() != null) {
+            Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
+            if (inst != null) {
+              if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
+                this.projectPPAPartners.add(pp);
+
+              }
+              pp.setInstitution(inst);
+            }
+
+
+          }
+
+          if (pp.getPartnerPersons() != null) {
+            for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
+              projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+            }
+          }
+
+          if (pp.getPartnerContributors() != null) {
+            for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
+              projectPartnerContribution.getProjectPartnerContributor()
+                .setInstitution(institutionManager.getInstitutionById(
+                  projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+            }
+          }
+
+
+        }
+        reader.close();
+        this.setDraft(true);
+      } else {
+
+        this.setDraft(false);
+        project
+          .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        if (!project.getPartners().isEmpty()) {
+          if (this.isReportingActive()) {
+
+            List<ProjectPartnerOverall> overalls = project.getPartners().get(0).getProjectPartnerOveralls().stream()
+              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
+            if (!overalls.isEmpty()) {
+              project.setOverall(overalls.get(0).getOverall());
+              partnerOverall = overalls.get(0);
+            }
+          }
+
+        }
+        for (ProjectPartner projectPartner : project.getPartners()) {
+          projectPartner.setPartnerPersons(
+            projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
+        this.projectPPAPartners = new ArrayList<ProjectPartner>();
+        for (ProjectPartner pp : project.getPartners()) {
+
+          if (pp.getInstitution().getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+            .size() > 0) {
+            this.projectPPAPartners.add(pp);
+
+          }
+
+          List<ProjectPartnerContribution> contributors = new ArrayList<>();
+
+
+          List<ProjectPartnerContribution> partnerContributions =
+            pp.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
+            contributors.add(projectPartnerContribution);
+          }
+          pp.setPartnerContributors(contributors);
+        }
+
+
+      }
+    }
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
     plRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PL_ROLE)));
@@ -385,21 +531,7 @@ public class ProjectPartnerAction extends BaseAction {
     // Getting all partner types
     intitutionTypes = institutionTypeManager.findAll();
 
-    project.setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-    if (!project.getPartners().isEmpty()) {
-      List<ProjectPartnerOverall> overalls = project.getPartners().get(0).getProjectPartnerOveralls().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList());
-      if (!overalls.isEmpty()) {
-        project.setOverall(overalls.get(0).getOverall());
-        partnerOverall = overalls.get(0);
-      }
-    }
-    for (ProjectPartner projectPartner : project.getPartners()) {
-      projectPartner.setPartnerPersons(
-        projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-
-    }
     ProjectPartner leader = project.getLeader();
     if (leader != null) {
       // First we remove the element from the array.
@@ -407,26 +539,7 @@ public class ProjectPartnerAction extends BaseAction {
       // then we add it to the first position.
       project.getPartners().add(0, leader);
     }
-    // Getting the list of PPA Partners for this project
-    this.projectPPAPartners = new ArrayList<ProjectPartner>();
-    for (ProjectPartner pp : project.getPartners()) {
 
-      if (pp.getInstitution().getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-        .size() > 0) {
-        this.projectPPAPartners.add(pp);
-
-      }
-
-      List<ProjectPartnerContribution> contributors = new ArrayList<>();
-
-
-      List<ProjectPartnerContribution> partnerContributions =
-        pp.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
-        contributors.add(projectPartnerContribution);
-      }
-      pp.setPartnerContributors(contributors);
-    }
 
     partnerPersonTypes = new HashMap<>();
     partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("projectPartners.types.CP"));
@@ -583,23 +696,20 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
       }
+      if (this.isReportingActive()) {
+        ProjectPartnerOverall overall;
+        if (partnerOverall != null) {
+          overall = partnerOverall;
 
-      ProjectPartnerOverall overall;
-      if (partnerOverall != null) {
-        overall = partnerOverall;
-
-      } else {
-        overall = new ProjectPartnerOverall();
-        overall.setProjectPartner(project.getPartners().get(0));
-        /**
-         * TODO
-         * ask year overall
-         */
-
-        overall.setYear(2016);
+        } else {
+          overall = new ProjectPartnerOverall();
+          overall.setProjectPartner(project.getPartners().get(0));
+          overall.setYear(this.getReportingYear());
+        }
+        overall.setOverall(project.getOverall());
+        projectPartnerOverallManager.saveProjectPartnerOverall(overall);
       }
-      overall.setOverall(project.getOverall());
-      projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
@@ -626,10 +736,19 @@ public class ProjectPartnerAction extends BaseAction {
       }
       this.updateRoles(previousCoordinator, coordinator, pcRole);
       project.setActiveSince(new Date());
+      project.setModifiedBy(this.getCurrentUser());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       projectManager.saveProject(project, this.getActionName(), relationsName);
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
       Collection<String> messages = this.getActionMessages();
+
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
         this.setActionMessages(null);

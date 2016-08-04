@@ -14,6 +14,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectPartners.help" /] </p></div> 
 </div>
@@ -51,11 +52,35 @@
             [/#if]
           </div> 
           
-          [#-- -- -- REPORTING BLOCK -- -- --]
-          <br />
-          <div class="fullBlock">
-            [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+          [#-- Other fields --]
+          <div class="simpleBox">
+            [#-- -- -- REPORTING BLOCK -- -- --]
+            [#if reportingActive]
+            <br />
+            <div class="fullBlock">
+              [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+            </div>
+            [/#if]
+            
+            [#-- Lessons and progress --]
+            <div id="lessons" class="">
+              [#-- Lessons learnt from last planning/reporting cycle --]
+              [#if (projectLessonsPreview.lessons?has_content)!false]
+              <div class="fullBlock">
+                <h6>[@customForm.text name="projectPartners.previousLessons" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+                <div class="textArea "><p>${projectLessonsPreview.lessons}</p></div>
+              </div>
+              [/#if]
+              [#-- Planning/Reporting lessons --]
+              <div class="fullBlock">
+                <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
+                <input type="hidden" name="projectLessons.year" value=${reportingActive?string(reportingYear,planningYear)} />
+                <input type="hidden" name="projectLessons.componentName" value="${actionName}">
+                [@customForm.textArea name="projectLessons.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+              </div>
+            </div>
           </div>
+          
           
            
           [#-- Section Buttons & hidden inputs--]
@@ -160,7 +185,7 @@
       
       [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br /> 
-        <small>[#list element.partnerPersons as partnerPerson][${partnerPerson.user.composedCompleteName}] [/#list]</small> 
+        <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
       [/#if]
     </div>
     
@@ -189,7 +214,7 @@
       [#-- Institution / Organization --]
       <div class="form-group partnerName">
         <p class="fieldError"></p>
-        [#if ((editable && isTemplate) || (editable && !element.institution??))]
+        [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
@@ -209,9 +234,9 @@
             [#if element.partnerContributors?has_content]
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
-                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].id" />
-                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" />
-                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!}" />
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].id" value="${(ppaPartner.id)!}" />
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" value="${(ppaPartner.projectPartnerContributor.id)!}"/>
+                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id"  value="${(ppaPartner.projectPartnerContributor.institution.id)!}"/>
                   <span class="name">${(ppaPartner.projectPartnerContributor.institution.composedName)!}</span> 
                   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
                 </li>

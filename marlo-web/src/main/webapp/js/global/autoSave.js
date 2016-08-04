@@ -21,6 +21,7 @@ $(document).ready(function() {
 function autoSave() {
   $.ajax({
       dataType: 'json',
+      method: 'POST',
       url: baseURL + '/autosaveWriter.do',
       data: {
         autoSave: JSON.stringify($('form').serializeObject())
