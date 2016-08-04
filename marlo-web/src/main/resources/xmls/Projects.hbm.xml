@@ -120,5 +120,13 @@
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" />
 
 		</set>
+		
+		 <set name="projectComponentLessons" order-by="id" table="project_component_lessons" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
+        </set>
+        
 	</class>
 </hibernate-mapping>

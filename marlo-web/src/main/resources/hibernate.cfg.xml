@@ -74,7 +74,7 @@
     <mapping resource="xmls/ProjectPartnerContributions.hbm.xml" />
     <mapping resource="xmls/ProjectPartnerPersons.hbm.xml" />
     <mapping resource="xmls/ProjectPartnerOverall.hbm.xml" />
-  
+    <mapping resource="xmls/ProjectComponentLessons.hbm.xml" />  
   </session-factory>
 </hibernate-configuration>
 
