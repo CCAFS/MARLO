@@ -23,34 +23,23 @@ import java.util.List;
  */
 public class LocationLevel implements Serializable {
 
-
   private static final long serialVersionUID = -8762435022172624443L;
 
-
   private String name;
-
   private List<CountryLocationLevel> locations;
-
-  private Object modelClass;
-
 
   public LocationLevel() {
 
   }
 
-  public LocationLevel(String name, List<CountryLocationLevel> locations, Object modelClass) {
+  public LocationLevel(String name, List<CountryLocationLevel> locations) {
     super();
     this.name = name;
     this.locations = locations;
-    this.modelClass = modelClass;
   }
 
   public List<CountryLocationLevel> getLocations() {
     return locations;
-  }
-
-  public Object getModelClass() {
-    return modelClass;
   }
 
   public String getName() {
@@ -59,10 +48,6 @@ public class LocationLevel implements Serializable {
 
   public void setLocations(List<CountryLocationLevel> locations) {
     this.locations = locations;
-  }
-
-  public void setModelClass(Object modelClass) {
-    this.modelClass = modelClass;
   }
 
   public void setName(String name) {

@@ -25,19 +25,13 @@ import java.util.List;
  */
 public class CountryLocationLevel implements Serializable {
 
-
   private static final long serialVersionUID = 5540168118630349975L;
 
-
   private String name;
-
   private List<LocElement> locElements;
-
-
   private long id;
-
   private boolean isList;
-
+  private Object modelClass;
 
   public CountryLocationLevel() {
 
@@ -49,6 +43,7 @@ public class CountryLocationLevel implements Serializable {
     this.locElements = countries;
   }
 
+
   public long getId() {
     return id;
   }
@@ -57,10 +52,14 @@ public class CountryLocationLevel implements Serializable {
     return locElements;
   }
 
+  public Object getModelClass() {
+    return modelClass;
+  }
 
   public String getName() {
     return name;
   }
+
 
   public boolean isList() {
     return isList;
@@ -76,6 +75,10 @@ public class CountryLocationLevel implements Serializable {
 
   public void setLocElements(List<LocElement> locElements) {
     this.locElements = locElements;
+  }
+
+  public void setModelClass(Object modelClass) {
+    this.modelClass = modelClass;
   }
 
   public void setName(String name) {
