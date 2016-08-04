@@ -96,13 +96,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean reportingActive;
   private boolean planningActive;
+  private boolean lessonsActive;
+
   private int reportingYear;
+
+
   private int planningYear;
 
-
   private boolean fullEditable; // If user is able to edit all the form.
-
-
   // User actions
   private boolean isEditable; // If user is able to edit the form.
 
@@ -126,11 +127,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
+
   @Inject
   private SectionStatusManager sectionStatusManager;
+
+
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
+
   private Map<String, Object> session;
   private Submission submission;
   protected boolean submit;
@@ -158,7 +163,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.addActionMessage("--warn--" + message);
   }
 
-
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
@@ -167,6 +171,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -330,7 +335,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getNamespace();
   }
 
-
   /**
    * get the number of users log in in the application
    * 
@@ -357,7 +361,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
-
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
@@ -378,6 +381,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext;
   }
 
+
   public Map<String, Object> getSession() {
     return session;
   }
@@ -390,6 +394,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
+
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -491,6 +496,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public boolean isLessonsActive() {
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString()) == 1;
+  }
 
   /**
    * Validate if the user is already logged in or not.
@@ -503,6 +511,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
@@ -519,10 +528,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return saveable;
   }
 
-
   public boolean isSubmit() {
     return submit;
   }
+
 
   public String next() {
     return NEXT;
@@ -532,7 +541,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
-
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -544,28 +552,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.add = true;
   }
 
+
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
   }
-
 
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
 
+
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
-
 
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
 
+
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
-
 
   public void setDelete(boolean delete) {
     this.delete = delete;
@@ -576,22 +584,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.draft = draft;
   }
 
+
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
   }
-
 
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
 
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
-
   public void setJustification(String justification) {
     this.justification = justification;
+  }
+
+
+  public void setLessonsActive(boolean lessonsActive) {
+    this.lessonsActive = lessonsActive;
   }
 
 
