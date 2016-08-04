@@ -160,7 +160,7 @@
       
       [#-- Contacts --]
       [#if (element.partnerPersons)?? ] <br /> 
-        <small>[#list element.partnerPersons as partnerPerson][${partnerPerson.user.composedCompleteName}] [/#list]</small> 
+        <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
       [/#if]
     </div>
     
@@ -209,9 +209,9 @@
             [#if element.partnerContributors?has_content]
               [#list element.partnerContributors as ppaPartner]
                 <li class="clearfix [#if !ppaPartner_has_next]last[/#if]">
-                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].id" />
-                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" />
-                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id" value="${(ppaPartner.projectPartnerContributor.institution.id)!}" />
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].id" value="${(ppaPartner.id)!}" />
+                  <input type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.id" value="${(ppaPartner.projectPartnerContributor.id)!}"/>
+                  <input class="id" type="hidden" name="${name}.partnerContributors[${ppaPartner_index}].projectPartnerContributor.institution.id"  value="${(ppaPartner.projectPartnerContributor.institution.id)!}"/>
                   <span class="name">${(ppaPartner.projectPartnerContributor.institution.composedName)!}</span> 
                   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
                 </li>

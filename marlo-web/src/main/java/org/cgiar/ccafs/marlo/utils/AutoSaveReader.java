@@ -85,11 +85,15 @@ public class AutoSaveReader {
       listNames.add(keyList);
     }
     for (String keyList : listNames) {
+      if (keyList.equals("partnerContributors")) {
+        System.out.println("partnerContributors");
+      }
       HashMap<String, Object> list = this.getListJsonParent(keyList, jobj);
       if (list.size() > 0) {
         jsonNew.putAll(list);
       }
     }
+
     return jsonNew;
   }
 
@@ -168,6 +172,7 @@ public class AutoSaveReader {
     HashMap<String, Object> jsonNew = new HashMap<>();
     LinkedTreeMap<String, Object> result = gson.fromJson(jobj, LinkedTreeMap.class);
     Set<String> listNames = new HashSet<>();
+    HashMap<String, Object> onetoMany = new HashMap<>();
     for (Map.Entry<String, Object> entry : result.entrySet()) {
       String key = entry.getKey();
       String keys[] = key.split("\\.");
@@ -181,11 +186,19 @@ public class AutoSaveReader {
         String key = entry.getKey();
         String keys[] = key.split("\\.");
         String keyList = keys[0];
-        if (keyList.equals(name)) {
-          relation.put(keys[1], entry.getValue());
-          jobj.remove(key);
-        }
+        if (keys.length >= 3) {
+          onetoMany = new HashMap<>();
+          onetoMany.put(key.replaceAll(keyList + "\\." + keys[1] + "\\.", ""), entry.getValue());
+          relation.put(keys[1], this.convertJSONFormat(gson.toJson(onetoMany)));
+        } else {
+          if (keyList.equals(name)) {
 
+            relation.put(keys[1], entry.getValue());
+            jobj.remove(key);
+
+
+          }
+        }
       }
 
       jsonNew.put(name, relation);
