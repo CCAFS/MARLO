@@ -104,12 +104,20 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+
+  private ProjectComponentLesson projectComponentLesson;
+  private ProjectComponentLesson projectComponentLessonPreview;
+
+
   private String overall;
+
 
   private List<ProjectPartner> partners;
 
 
   private List<ProjectLocation> locations;
+
 
   public Project() {
   }
@@ -145,6 +153,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
   }
 
+
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crp = crp;
@@ -177,7 +186,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
-
 
   public Date getActiveSince() {
     return this.activeSince;
@@ -226,7 +234,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
-
   public User getCreatedBy() {
     return this.createdBy;
   }
@@ -254,6 +261,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
+
   public ProjectPartner getLeader() {
 
     if (partners != null) {
@@ -280,7 +288,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return null;
   }
-
 
   /**
    * This method returns the project partner person who is leading the project.
@@ -322,6 +329,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.leaderResponsabilities;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
   }
@@ -344,9 +352,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -359,6 +369,18 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public List<ProjectPartner> getPartners() {
     return partners;
+  }
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return projectComponentLesson;
+  }
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
+  }
+
+  public Set<ProjectComponentLesson> getProjectComponentLessons() {
+    return projectComponentLessons;
   }
 
   public Set<ProjectFocus> getProjectFocuses() {
@@ -380,7 +402,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public String getStandardIdentifier(int typeCodification) {
     StringBuilder result = new StringBuilder();
@@ -408,6 +429,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getSummary() {
     return this.summary;
@@ -508,16 +530,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonUser(LiaisonUser liaisonUser) {
     this.liaisonUser = liaisonUser;
@@ -546,6 +565,21 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
+  }
+
+
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
+  }
+
+
+  public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
+    this.projectComponentLessons = projectComponentLessons;
   }
 
 
