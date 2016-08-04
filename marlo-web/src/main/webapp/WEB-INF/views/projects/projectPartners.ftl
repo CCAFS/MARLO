@@ -189,7 +189,7 @@
       [#-- Institution / Organization --]
       <div class="form-group partnerName">
         <p class="fieldError"></p>
-        [#if ((editable && isTemplate) || (editable && !element.institution??))]
+        [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
