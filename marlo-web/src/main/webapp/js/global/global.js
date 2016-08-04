@@ -23,6 +23,7 @@ $(document).ready(function() {
   // Tawkto Widget
   var $dragButton = $("#draggable-button");
   // hideDragButton();
+  $dragButton.animateCss('flipInY');
   $dragButton.draggable();
   $dragButton.find('p').on('click', function() {
     Tawk_API.toggle();

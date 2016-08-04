@@ -46,12 +46,41 @@ function attachEvents() {
   $('.remove-programItem').on('click', function() {
     var $parent = $(this).parent();
     var $block = $parent.parent().parent();
-    $parent.hide(function() {
-      $parent.remove();
-      checkItems($block, 'programMessage');
-      updateProgramIndexes($block);
+    var leaders = $parent.find('.userItem').length;
+    var removeThis = function() {
+      $parent.hide(function() {
+        $parent.remove();
+        checkItems($block, 'programMessage');
+        updateProgramIndexes($block);
+      });
+    }
 
+    // Alert PopUp
+    noty({
+        text: 'Please be aware you may have outcomes and cluster of activities associated to this Flagship.',
+        type: 'confirm',
+        dismissQueue: true,
+        layout: 'center',
+        theme: 'relax',
+        modal: true,
+        buttons: [
+            {
+                addClass: 'btn btn-primary',
+                text: 'Proceed',
+                onClick: function($noty) {
+                  removeThis();
+                  $noty.close();
+                }
+            }, {
+                addClass: 'btn btn-danger',
+                text: 'Cancel',
+                onClick: function($noty) {
+                  $noty.close();
+                }
+            }
+        ]
     });
+
   });
 
 // switch coordinates
