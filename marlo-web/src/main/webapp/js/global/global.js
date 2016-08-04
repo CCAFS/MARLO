@@ -20,6 +20,34 @@ $(document).ready(function() {
   showHelpText();
   applyWordCounter($("#justification"), justificationLimitWords);
 
+  // Tawkto Widget
+  var $dragButton = $("#draggable-button");
+  // hideDragButton();
+  $dragButton.draggable();
+  $dragButton.find('p').on('click', function() {
+    Tawk_API.toggle();
+  });
+
+  Tawk_API.onChatMaximized = function() {
+    $dragButton.fadeOut();
+  };
+
+  Tawk_API.onChatMinimized = function() {
+    hideDragButton();
+  };
+  Tawk_API.onChatHidden = function() {
+    hideDragButton();
+  };
+
+  function hideDragButton() {
+    if(Tawk_API.isVisitorEngaged()) {
+      $dragButton.find('.status').text('On-Going Chat');
+    } else {
+      $dragButton.find('.status').text('');
+    }
+    $dragButton.fadeIn();
+  }
+
   // Yes / No Event
   $('input.onoffswitch-radio').on('change', function(e) {
     yesnoEvent($(this));

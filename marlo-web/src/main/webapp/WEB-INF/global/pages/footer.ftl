@@ -74,7 +74,9 @@
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
+        
       })();
+      
       
       
       
@@ -91,6 +93,10 @@
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
     
     [/#compress]
+    
+    <div id="draggable-button">
+      <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>
+    </div>
     
     [#if !config.production && config.debug]
       <div id="debugPanel" class="ui-widget-content">
