@@ -87,11 +87,11 @@ public class ProjectMySQLDAO implements ProjectDAO {
   }
 
   @Override
-  public long save(Project project, String sectionName) {
+  public long save(Project project, String sectionName, List<String> relationsName) {
     if (project.getId() == null) {
-      dao.save(project, sectionName);
+      dao.save(project, sectionName, relationsName);
     } else {
-      dao.update(project, sectionName);
+      dao.update(project, sectionName, relationsName);
     }
 
 

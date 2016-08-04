@@ -412,7 +412,9 @@ public class OutcomesAction extends BaseAction {
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
       selectedProgram.setAction(this.getActionName());
-      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName());
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
+      crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();

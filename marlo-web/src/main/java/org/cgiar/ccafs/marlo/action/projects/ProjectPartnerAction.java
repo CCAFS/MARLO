@@ -581,7 +581,10 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
       this.updateRoles(previousCoordinator, coordinator, pcRole);
-
+      project.setActiveSince(new Date());
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
+      projectManager.saveProject(project, this.getActionName(), relationsName);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();

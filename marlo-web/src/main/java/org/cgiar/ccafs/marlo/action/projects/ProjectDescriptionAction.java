@@ -481,7 +481,10 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setGlobal(projectDB.isGlobal());
       project.setLeaderResponsabilities(projectDB.getLeaderResponsabilities());
 
-      projectManager.saveProject(project, this.getActionName());
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+      projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {

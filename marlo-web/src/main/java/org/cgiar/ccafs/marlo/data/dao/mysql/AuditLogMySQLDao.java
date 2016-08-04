@@ -86,7 +86,12 @@ public class AuditLogMySQLDao implements AuditLogDao {
     for (Auditlog auditlog : auditLogs) {
       auditlog.setUser(userDao.getUser(auditlog.getUserId()));
     }
-    return auditLogs.subList(0, 11);
+
+    if (auditLogs.size() > 11) {
+      return auditLogs.subList(0, 11);
+    }
+    return auditLogs;
+
   }
 
 

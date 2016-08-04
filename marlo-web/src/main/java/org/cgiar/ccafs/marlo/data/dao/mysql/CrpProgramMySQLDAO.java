@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -102,11 +102,11 @@ public class CrpProgramMySQLDAO implements CrpProgramDAO {
   }
 
   @Override
-  public long save(CrpProgram crpProgram, String actionName) {
+  public long save(CrpProgram crpProgram, String actionName, List<String> relationsName) {
     if (crpProgram.getId() == null) {
-      dao.save(crpProgram, actionName);
+      dao.save(crpProgram, actionName, relationsName);
     } else {
-      dao.update(crpProgram, actionName);
+      dao.update(crpProgram, actionName, relationsName);
     }
     return crpProgram.getId();
   }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -62,6 +63,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   private final String RELATION_NAME = "relationName";
   private String transactionId;
   private String actionName;
+  private List<String> relationsName;
 
 
   public AuditLogInterceptor() {
@@ -76,6 +78,11 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   public String getActionName() {
     return actionName;
+  }
+
+
+  public List<String> getRelationsName() {
+    return relationsName;
   }
 
 
@@ -202,9 +209,10 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put("PRINCIPAL", new Long(1));
 
       deletes.add(objects);
-      deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId()));
+      deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
     }
   }
+
 
   /**
    * this method triggered when update an object, the object is not update into database yet.
@@ -219,13 +227,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
         objects.put("PRINCIPAL", new Long(1));
 
         deletes.add(objects);
-        deletes.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId()));
+        deletes.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId(), true));
       } else {
         objects.put(ENTITY, entity);
         objects.put(PRINCIPAL, new Long(1));
         updates.add(objects);
 
-        updates.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId()));
+        updates.addAll(this.relations(currentState, types, propertyNames, ((IAuditLog) entity).getId(), true));
       }
 
     }
@@ -246,7 +254,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       inserts.add(objects);
 
 
-      inserts.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId()));
+      inserts.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
     }
     return false;
 
@@ -286,7 +294,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
   }
 
-  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id) {
+  public Set<HashMap<String, Object>> relations(Object[] state, Type[] types, String[] propertyNames, Object id,
+    boolean firstRelations) {
 
     Set<HashMap<String, Object>> relations = new HashSet<>();
     int i = 0;
@@ -300,52 +309,56 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       HashMap<String, Object> objects = new HashMap<>();
 
       if (type instanceof OrderedSetType || type instanceof SetType) {
-        Set<IAuditLog> listRelation = new HashSet<>();
-        Set<Object> set = (Set<Object>) state[i];
-        if (set != null) {
-          for (Object iAuditLog : set) {
-            if (iAuditLog instanceof IAuditLog) {
-              IAuditLog audit = (IAuditLog) iAuditLog;
-              if (audit.isActive()) {
-                try {
-                  String name = audit.getClass().getName();
-                  Class className = Class.forName(name);
 
-                  Object obj = dao.find(className, (Serializable) audit.getId());
+        if (relationsName.contains(type.getName())) {
+          Set<IAuditLog> listRelation = new HashSet<>();
+          Set<Object> set = (Set<Object>) state[i];
+          if (set != null) {
+            for (Object iAuditLog : set) {
+              if (iAuditLog instanceof IAuditLog) {
+                IAuditLog audit = (IAuditLog) iAuditLog;
+                if (audit.isActive()) {
+                  try {
+                    String name = audit.getClass().getName();
+                    Class className = Class.forName(name);
+
+                    Object obj = dao.find(className, (Serializable) audit.getId());
 
 
-                  listRelation.add((IAuditLog) obj);
-                  Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
-                  for (HashMap<String, Object> hashMap : loadList) {
-                    HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
-                    for (IAuditLog iAuditLog2 : relationAudit) {
-                      Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
+                    listRelation.add((IAuditLog) obj);
+                    Set<HashMap<String, Object>> loadList = this.loadList((IAuditLog) obj);
+                    for (HashMap<String, Object> hashMap : loadList) {
+                      HashSet<IAuditLog> relationAudit = (HashSet<IAuditLog>) hashMap.get(ENTITY);
+                      for (IAuditLog iAuditLog2 : relationAudit) {
+                        Set<HashMap<String, Object>> loadListRelations = this.loadList(iAuditLog2);
 
-                      relations.addAll(loadListRelations);
+                        relations.addAll(loadListRelations);
+                      }
                     }
+
+
+                    relations.addAll(loadList);
+                  } catch (ClassNotFoundException e) {
+
+                    LOG.error(e.getLocalizedMessage());
                   }
-
-
-                  relations.addAll(loadList);
-                } catch (ClassNotFoundException e) {
-
-                  LOG.error(e.getLocalizedMessage());
                 }
+
+
               }
 
 
             }
-
+            if (!listRelation.isEmpty()) {
+              objects.put(ENTITY, listRelation);
+              objects.put(PRINCIPAL, "3");
+              objects.put(RELATION_NAME, type.getName() + ":" + parentId);
+              relations.add(objects);
+            }
 
           }
-          if (!listRelation.isEmpty()) {
-            objects.put(ENTITY, listRelation);
-            objects.put(PRINCIPAL, "3");
-            objects.put(RELATION_NAME, type.getName() + ":" + parentId);
-            relations.add(objects);
-          }
-
         }
+
       }
       i++;
     }
@@ -353,9 +366,13 @@ public class AuditLogInterceptor extends EmptyInterceptor {
     return relations;
   }
 
-
   public void setActionName(String actionName) {
     this.actionName = actionName;
+  }
+
+
+  public void setRelationsName(List<String> relationName) {
+    this.relationsName = relationName;
   }
 
   public void setSession(Session session) {

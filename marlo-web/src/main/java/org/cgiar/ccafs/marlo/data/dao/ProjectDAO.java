@@ -77,5 +77,5 @@ public interface ProjectDAO {
    */
   public long save(Project project);
 
-  public long save(Project project, String section);
+  public long save(Project project, String section, List<String> relationsName);
 }

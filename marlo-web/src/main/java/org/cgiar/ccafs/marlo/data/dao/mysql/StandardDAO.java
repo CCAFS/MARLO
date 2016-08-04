@@ -107,7 +107,7 @@ public class StandardDAO {
 
       tx = this.initTransaction(session);
 
-      if (!session.isOpen() || !session.isConnected()) {
+      if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
         session = this.openSession();
       }
 
@@ -404,13 +404,14 @@ public class StandardDAO {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean save(Object obj, String actionName) {
+  protected boolean save(Object obj, String actionName, List<String> relationsName) {
     Session session = null;
     Transaction tx = null;
     try {
       session = this.openSession(interceptor);
       interceptor.setSession(session);
       interceptor.setActionName(actionName);
+      interceptor.setRelationsName(relationsName);
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
@@ -476,13 +477,14 @@ public class StandardDAO {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
-  protected boolean update(Object obj, String actionName) {
+  protected boolean update(Object obj, String actionName, List<String> relationsName) {
     Session session = null;
     Transaction tx = null;
     try {
       session = this.openSession(interceptor);
       interceptor.setSession(session);
       interceptor.setActionName(actionName);
+      interceptor.setRelationsName(relationsName);
       tx = this.initTransaction(session);
 
 
