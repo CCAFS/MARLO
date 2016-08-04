@@ -264,6 +264,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyNewUserCreated(User user) {
     user = userManager.getUser(user.getId());
+    Project project = projectManager.getProjectById(this.projectID);
     if (!user.isActive()) {
 
       user.setActive(true);
@@ -310,6 +311,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
     String projectRole = null;
+    Project project = projectManager.getProjectById(this.projectID);
     if (role.getId() == plRole.getId()) {
       projectRole = this.getText("projectPartners.types.PL");
     } else {
@@ -353,6 +355,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
     userUnassigned = userManager.getUser(userUnassigned.getId());
+    Project project = projectManager.getProjectById(this.projectID);
     String projectRole = null;
     if (role.getId() == plRole.getId().longValue()) {
       projectRole = this.getText("projectPartners.types.PL");
@@ -825,6 +828,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void updateRoles(ProjectPartnerPerson previousPartnerPerson, ProjectPartnerPerson partnerPerson, Role role) {
     long roleId = role.getId();
+
     String roleAcronym = role.getAcronym();
     if (previousPartnerPerson == null && partnerPerson != null) {
 
@@ -849,7 +853,7 @@ public class ProjectPartnerAction extends BaseAction {
         if (!rolesUser.isEmpty()) {
           if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
             .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-              .getId().longValue() != previousPartnerPerson.getUser().getId().longValue())
+              .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
             .collect(Collectors.toList()).size() == 0) {
             userRoleManager.deleteUserRole(rolesUser.get(0).getId());
           }
@@ -879,7 +883,7 @@ public class ProjectPartnerAction extends BaseAction {
           if (!rolesUser.isEmpty()) {
             if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
               .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
-                .getId().longValue() != previousPartnerPerson.getUser().getId().longValue())
+                .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
               .collect(Collectors.toList()).size() == 0) {
 
               userRoleManager.deleteUserRole(rolesUser.get(0).getId());
