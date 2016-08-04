@@ -31,11 +31,10 @@ function attachEvents() {
         type: $parent.parents('.usersBlock').find('.usersType').text(),
         role: $parent.parents('.usersBlock').find('.usersRole').text()
     }
-    console.log(item);
+
     $parent.hide(function() {
       $parent.remove();
       checkItems($block, 'usersMessage');
-
       if(item.type == 'programUser') {
         updateProgramIndexes($block.parents('.items-list'));
       }
