@@ -93,23 +93,41 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean dataSaved;
   protected boolean delete;
   private boolean draft;
+
+  private boolean reportingActive;
+  private boolean planningActive;
+  private int reportingYear;
+  private int planningYear;
+
+
   private boolean fullEditable; // If user is able to edit all the form.
+
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
+
+
   // Justification of the changes
   private String justification;
+
+
   protected boolean next;
+
+
   private Map<String, Object> parameters;
+
+
   private HttpServletRequest request;
+
+
   // button actions
   protected boolean save;
 
-  private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
+  private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
   @Inject
   private SectionStatusManager sectionStatusManager;
-
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
@@ -139,6 +157,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
+
 
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
@@ -226,7 +245,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpID;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -260,7 +278,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpSession;
   }
 
-
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -278,7 +295,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return u;
   }
 
-
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -289,11 +305,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public String getJustification() {
     return justification;
   }
-
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
@@ -303,7 +317,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
-
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -335,6 +348,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
+
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -343,9 +357,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
+  public int getPlanningYear() {
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+
+  }
+
+
+  public int getReportingYear() {
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+  }
+
+
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -354,6 +381,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Map<String, Object> getSession() {
     return session;
   }
+
 
   public Submission getSubmission() {
     return submission;
@@ -416,7 +444,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEdit;
   }
 
-
   public boolean isCompleteImpact(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
@@ -453,7 +480,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return isEditable;
   }
 
-
   public boolean isFullEditable() {
     return fullEditable;
   }
@@ -464,6 +490,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /**
    * Validate if the user is already logged in or not.
@@ -477,6 +504,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean isPlanningActive() {
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
+
+  }
+
+  public boolean isReportingActive() {
+
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
+
+  }
 
   public boolean isSaveable() {
     return saveable;
@@ -491,11 +528,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
-
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
+
 
   /* Override this method depending of the save action. */
   public String save() {
@@ -516,19 +553,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
-
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
+
 
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
 
-
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
+
 
   public void setDelete(boolean delete) {
     this.delete = delete;
@@ -539,10 +576,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.draft = draft;
   }
 
-
   public void setEditable(boolean isEditable) {
     this.isEditable = isEditable;
   }
+
 
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
@@ -552,12 +589,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.fullEditable = fullEditable;
   }
 
+
   public void setJustification(String justification) {
     this.justification = justification;
   }
 
+
   public void setNext(boolean next) {
     this.next = true;
+  }
+
+  public void setPlanningActive(boolean planningActive) {
+    this.planningActive = planningActive;
+  }
+
+  public void setPlanningYear(int planningYear) {
+    this.planningYear = planningYear;
+  }
+
+  public void setReportingActive(boolean reportingActive) {
+    this.reportingActive = reportingActive;
+  }
+
+  public void setReportingYear(int reportingYear) {
+    this.reportingYear = reportingYear;
   }
 
 
