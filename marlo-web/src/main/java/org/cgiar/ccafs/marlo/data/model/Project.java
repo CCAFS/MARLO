@@ -106,17 +106,21 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
+  private ProjectComponentLesson projectComponentLesson;
+  private ProjectComponentLesson projectComponentLessonPreview;
+
 
   private String overall;
 
 
   private List<ProjectPartner> partners;
 
+
   private List<ProjectLocation> locations;
+
 
   public Project() {
   }
-
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -148,6 +152,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.submissions = submissions;
     this.projectLocations = projectLocations;
   }
+
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -186,15 +191,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
   public String getAnnualReportToDornor() {
     return this.annualReportToDornor;
   }
 
-
   public String getBilateralContractName() {
     return this.bilateralContractName;
   }
-
 
   /**
    * This method gets all the coordinators working for this project.
@@ -243,20 +247,20 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.endDate;
   }
 
+
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
-
 
   public String getFlagshipValue() {
     return flagshipValue;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public ProjectPartner getLeader() {
 
@@ -320,6 +324,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   public String getLeaderResponsabilities() {
     return this.leaderResponsabilities;
   }
@@ -328,7 +333,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
   }
-
 
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
@@ -348,9 +352,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -363,6 +369,14 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public List<ProjectPartner> getPartners() {
     return partners;
+  }
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return projectComponentLesson;
+  }
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
   }
 
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
@@ -408,7 +422,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
@@ -416,6 +429,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getSummary() {
     return this.summary;
@@ -520,11 +534,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.leaderResponsabilities = leaderResponsabilities;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
-
 
   public void setLiaisonUser(LiaisonUser liaisonUser) {
     this.liaisonUser = liaisonUser;
@@ -553,6 +565,16 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
+  }
+
+
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
   }
 
 
