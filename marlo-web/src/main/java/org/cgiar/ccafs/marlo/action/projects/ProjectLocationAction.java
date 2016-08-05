@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocationType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.utils.LocationLevel;
@@ -129,10 +130,10 @@ public class ProjectLocationAction extends BaseAction {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
       countryLocationLevel.setId(element.getId());
       countryLocationLevel.setName(element.getName());
-      countryLocationLevel.setLocElements(new ArrayList<LocElement>(locElementManager
+      countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementManager
         .findLocElementByParent(element.getId()).stream().filter(le -> le.isActive()).collect(Collectors.toList())));
       countryLocationLevel.setList(true);
-      countryLocationLevel.setModelClass(regionsElementType);
+      countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_ELEMENT_TYPE.getValue());
       countryLocationLevels.add(countryLocationLevel);
     }
     locationsLevels.add(new LocationLevel("Regions", countryLocationLevels));
@@ -147,10 +148,10 @@ public class ProjectLocationAction extends BaseAction {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
       countryLocationLevel.setId(crpProgram.getId());
       countryLocationLevel.setName(crpProgram.getName());
-      countryLocationLevel.setModelClass(crpProgram);
-      countryLocationLevel.setLocElements(new ArrayList<LocElement>());
+      countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_PROGRAM_TYPE.getValue());
+      countryLocationLevel.setAllElements(new ArrayList<LocElement>());
       for (CrpProgramCountry programCountry : crpProgram.getCrpProgramCountries()) {
-        countryLocationLevel.getLocElements().add(programCountry.getLocElement());
+        countryLocationLevel.getAllElements().add(programCountry.getLocElement());
       }
       countryLocationLevel.setList(true);
       countryLocationLevels.add(countryLocationLevel);
@@ -168,8 +169,8 @@ public class ProjectLocationAction extends BaseAction {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
       countryLocationLevel.setId(locElementType.getId());
       countryLocationLevel.setName(locElementType.getName());
-      countryLocationLevel.setModelClass(locElementType);
-      countryLocationLevel.setLocElements(new ArrayList<LocElement>(locElementType.getLocElements()));
+      countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_ELEMENT_TYPE.getValue());
+      countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementType.getLocElements()));
       countryLocationLevel.setList(true);
       countryLocationLevels.add(countryLocationLevel);
     }
@@ -186,8 +187,8 @@ public class ProjectLocationAction extends BaseAction {
       CountryLocationLevel countryLocationLevel = new CountryLocationLevel();
       countryLocationLevel.setId(locElementType.getId());
       countryLocationLevel.setName(locElementType.getName());
-      countryLocationLevel.setModelClass(locElementType);
-      countryLocationLevel.setLocElements(new ArrayList<LocElement>(locElementType.getLocElements()));
+      countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_ELEMENT_TYPE.getValue());
+      countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementType.getLocElements()));
       if (locElementType.getId() != 2) {
         countryLocationLevel.setList(false);
       } else {
@@ -262,8 +263,12 @@ public class ProjectLocationAction extends BaseAction {
         countryLocationLevel.setId(program.getId());
         countryLocationLevel.setName(program.getName());
         countryLocationLevel.setList(true);
-        countryLocationLevel.setModelClass(program);
+        countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_PROGRAM_TYPE.getValue());
         countryLocationLevel.setLocElements(new ArrayList<LocElement>());
+        countryLocationLevel.setAllElements(new ArrayList<LocElement>());
+        for (CrpProgramCountry programCountry : program.getCrpProgramCountries()) {
+          countryLocationLevel.getAllElements().add(programCountry.getLocElement());
+        }
         for (ProjectLocation projectLocation : project.getLocations().stream()
           .filter(l -> l.isActive() && l.getCrpProgram() != null && l.getCrpProgram().equals(program))
           .collect(Collectors.toList())) {
@@ -282,7 +287,11 @@ public class ProjectLocationAction extends BaseAction {
         countryLocationLevel.setName(elementType.getName());
         countryLocationLevel.setLocElements(new ArrayList<LocElement>());
         countryLocationLevel.setList(true);
-        countryLocationLevel.setModelClass(elementType);
+        countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_ELEMENT_TYPE.getValue());
+        countryLocationLevel
+          .setAllElements(new ArrayList<LocElement>(locElementManager.findLocElementByParent(elementType.getId())
+            .stream().filter(le -> le.isActive()).collect(Collectors.toList())));
+
         for (ProjectLocation projectLocation : project.getLocations().stream()
           .filter(l -> l.isActive() && l.getRegionLocElement() != null && l.getRegionLocElement().equals(elementType))
           .collect(Collectors.toList())) {
@@ -297,8 +306,11 @@ public class ProjectLocationAction extends BaseAction {
           countryLocationLevel.setId(Long.parseLong(entry.getValue().toString()));
           countryLocationLevel.setName(entry.getKey());
           countryLocationLevel.setLocElements(new ArrayList<LocElement>());
-          countryLocationLevel
-            .setModelClass(locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString())));
+          countryLocationLevel.setModelClass(ProjectLocationType.PROJECT_LOCATION_ELEMENT_TYPE.getValue());
+
+          countryLocationLevel.setAllElements(new ArrayList<LocElement>(
+            locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString())).getLocElements()));
+
           for (ProjectLocation projectLocation : project.getLocations().stream()
             .filter(l -> l.isActive() && l.getCrpProgram() == null && l.getRegionLocElement() == null)
             .collect(Collectors.toList())) {
