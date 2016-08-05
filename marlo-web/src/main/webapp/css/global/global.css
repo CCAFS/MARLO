@@ -1322,7 +1322,7 @@ a#userLogOut {
 }
 
 #mainMenu .menuContent.positionFixedTop {
-  z-index: 999;
+  z-index: 1001;
   position: fixed;
   top: 0;
   height: 36px;
@@ -5842,7 +5842,7 @@ hr {
     border-radius: 50%;
     cursor: move;
     box-shadow: 0px 0px 3px #5e5e5e;
-    z-index: 999;
+    z-index: 1001;
     width: 50px;
     height: 50px;
     text-align: center;
@@ -5852,4 +5852,34 @@ hr {
   cursor: pointer;
   margin: 0;
   line-height: 17px;
+}
+
+#concurrenceBlock {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 1000;
+    
+}
+
+#concurrenceBlock .layer{
+    background-color: #fff;
+    opacity: 0.7;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    margin-top: 5px;
+}
+
+#concurrenceBlock .content{
+    font-size: 1.5em;
+    padding: 2% 2%;
+    position: absolute;
+    background: #fff;
+    text-shadow: 1px 1px 2px #ffffff;
+    width: 67%;
+    border-radius: 10%;
+    margin: 75px auto;
+    left: 0;
+    right: 0;
 }

@@ -38,3 +38,15 @@
 <div id="concurrenceMessage" class="text-center" style="display:none">
   <p><span class="glyphicon glyphicon-flash"></span> [@s.text name="project.message.concurrence"][@s.param]<span class="person"></span>[/@s.param][/@s.text]</p>
 </div>
+
+
+[#-- Concurrence Hidden Block --]
+<div id="concurrenceBlock" class="text-center" style="display:none">
+  <div class="layer"></div>
+  <div class="content">
+    <span class="glyphicon glyphicon-lock"></span>
+    <p>This section is currently being edited by someone else.</p>
+    <p>If you are not editing, please <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a>.</p>
+  </div>
+  
+</div>

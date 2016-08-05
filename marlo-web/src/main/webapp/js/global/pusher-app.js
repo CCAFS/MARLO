@@ -1,7 +1,7 @@
 /**
  * * MARLO Pusher Initializing
  */
-Pusher.logToConsole = debugMode;
+// Pusher.logToConsole = debugMode;
 
 var pusher = new Pusher(PUSHER_KEY, {
   authEndpoint: baseURL + '/pusherAutentication.do',
@@ -88,6 +88,32 @@ function showMinNotification(timer) {
 var currentSectionString = $('#currentSectionString').text();
 var presenceChannel = pusher.subscribe("presence-"+currentSectionString);
 
+if(editable && canEdit){
+  var editingChannel = pusher.subscribe("presence-"+currentSectionString+"-canEdit");
+  var owner = false;
+  var checkEditingUsers = function(){
+    
+    if(editingChannel.members.count > 1){
+      owner= true;
+      $('#concurrenceBlock').fadeIn();
+    }else{
+      owner= false;
+      $('#concurrenceBlock').fadeOut();
+    }
+  }
+  
+  editingChannel.bind('pusher:subscription_succeeded', function(members) {
+    checkEditingUsers();
+  });
+  
+  editingChannel.bind('pusher:member_removed', function(members) {
+    checkEditingUsers();
+  });
+  
+}
+ 
+
+
 presenceChannel.bind('pusher:subscription_succeeded', function(members) {
   var me = presenceChannel.members.me;
   $('#mySessionID span').text(me.id + ' '+me.info.name);
@@ -99,7 +125,7 @@ presenceChannel.bind('pusher:subscription_succeeded', function(members) {
   });
   updateUsersCount(presenceChannel.members.count);
 
-})
+});
 
 presenceChannel.bind('pusher:member_added', function(member) {
   createBadge(member);
@@ -111,7 +137,7 @@ presenceChannel.bind('pusher:member_removed', function(member) {
   removeBadge(member);
   removeMousePointer(member);
   updateUsersCount(presenceChannel.members.count);
-});   
+});
 
 presenceChannel.bind('client-mouse-moved', function(data) {
   var $mousePointer = $('#mouse-'+data.sessionID);
@@ -125,7 +151,9 @@ presenceChannel.bind('client-section-saved', function(data) {
 });
 
 function pushSave(){
-  presenceChannel.trigger("client-section-saved", presenceChannel.members.me);
+  if(isChanged()){
+    presenceChannel.trigger("client-section-saved", presenceChannel.members.me);    
+  }
 }
 
 // document.body.addEventListener('click', onMouseClick, true);
