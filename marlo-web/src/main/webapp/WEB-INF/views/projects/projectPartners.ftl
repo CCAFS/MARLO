@@ -35,48 +35,50 @@
           <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
-          <div id="projectPartnersBlock" class="simpleBox" style="display:none">
-            [#if project.partners?has_content]
-              [#list project.partners as projectPartner]
-                [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
-              [/#list]
-            [#else]
-              [#if !editable]
-                <p class="center">[@s.text name="projectPartners.empty" /]
-                <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
-                </p>
+          <div style="display:none">
+            <div id="projectPartnersBlock" class="simpleBox" >
+              [#if project.partners?has_content]
+                [#list project.partners as projectPartner]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                [/#list]
+              [#else]
+                [#if !editable]
+                  <p class="center">[@s.text name="projectPartners.empty" /]
+                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
+                  </p>
+                [/#if]
+              [/#if] 
+              [#if (editable && canEdit)]
+                <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
               [/#if]
-            [/#if] 
-            [#if (editable && canEdit)]
-              <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
-            [/#if]
-          </div> 
-          
-          [#-- Other fields --]
-          <div class="simpleBox">
-            [#-- -- -- REPORTING BLOCK -- -- --]
-            [#if reportingActive]
-            <br />
-            <div class="fullBlock">
-              [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
-            </div>
-            [/#if]
+            </div> 
             
-            [#-- Lessons and progress --]
-            <div id="lessons" class="">
-              [#-- Lessons learnt from last planning/reporting cycle --]
-              [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
+            [#-- Other fields --]
+            <div class="simpleBox">
+              [#-- -- -- REPORTING BLOCK -- -- --]
+              [#if reportingActive]
+              <br />
               <div class="fullBlock">
-                <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
-                <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
               </div>
               [/#if]
-              [#-- Planning/Reporting lessons --]
-              <div class="fullBlock">
-                <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
-                <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
-                <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+              
+              [#-- Lessons and progress --]
+              <div id="lessons" class="">
+                [#-- Lessons learnt from last planning/reporting cycle --]
+                [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
+                <div class="fullBlock">
+                  <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+                  <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+                </div>
+                [/#if]
+                [#-- Planning/Reporting lessons --]
+                <div class="fullBlock">
+                  <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
+                  <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+                  <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
+                  [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+                </div>
               </div>
             </div>
           </div>
