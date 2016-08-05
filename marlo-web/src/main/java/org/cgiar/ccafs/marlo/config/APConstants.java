@@ -102,6 +102,10 @@ public final class APConstants {
   public static final String TARGET_UNIT_NAME = "targetUnitName";
   public static final long TARGET_UNIT_OTHER_ID = 18;
 
+  // project Locations Constants
+  public static final String MODEL_CLASS_PARAMETER = "modelClass";
+  public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
+
   // Date Formats
   public static final String DATE_FORMAT = "yyyy-MM-dd";
 
