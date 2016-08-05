@@ -13,46 +13,28 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.utils;
+package org.cgiar.ccafs.marlo.data.model;
 
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class LocationLevel implements Serializable {
+public enum ProjectLocationType {
 
-  private static final long serialVersionUID = -8762435022172624443L;
+  PROJECT_LOCATION_ELEMENT_TYPE(1), PROJECT_LOCATION_PROGRAM_TYPE(2);
 
-  private String name;
-  private List<CountryLocationLevel> locations;
+  private int value;
 
-  public LocationLevel() {
-
+  private ProjectLocationType(int value) {
+    this.value = value;
   }
 
-  public LocationLevel(String name, List<CountryLocationLevel> locations) {
-    super();
-    this.name = name;
-    this.locations = locations;
+  public int getValue() {
+    return value;
   }
 
-  public List<CountryLocationLevel> getLocations() {
-    return locations;
+  public void setValue(int value) {
+    this.value = value;
   }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setLocations(List<CountryLocationLevel> locations) {
-    this.locations = locations;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
 
 }

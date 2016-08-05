@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
@@ -79,6 +80,7 @@ public class ProjectPartnerAction extends BaseAction {
   private static final long serialVersionUID = 7833194831832715444L;
 
   private ProjectPartnerManager projectPartnerManager;
+  private ProjectComponentLesson projectComponentLesson;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ProjectPartnerContributionManager projectPartnerContributionManager;
   private ProjectPartnerOverallManager projectPartnerOverallManager;
@@ -121,7 +123,8 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager) {
+    ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
+    ProjectComponentLesson projectComponentLesson) {
     super(config);
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
@@ -138,6 +141,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPartnerContributionManager = projectPartnerContributionManager;
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
+    this.projectComponentLesson = projectComponentLesson;
   }
 
 
@@ -264,6 +268,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyNewUserCreated(User user) {
     user = userManager.getUser(user.getId());
+    Project project = projectManager.getProjectById(this.projectID);
     if (!user.isActive()) {
 
       user.setActive(true);
@@ -310,6 +315,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleAssigned(User userAssigned, Role role) {
     String projectRole = null;
+    Project project = projectManager.getProjectById(this.projectID);
     if (role.getId() == plRole.getId()) {
       projectRole = this.getText("projectPartners.types.PL");
     } else {
@@ -353,6 +359,7 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void notifyRoleUnassigned(User userUnassigned, Role role) {
     userUnassigned = userManager.getUser(userUnassigned.getId());
+    Project project = projectManager.getProjectById(this.projectID);
     String projectRole = null;
     if (role.getId() == plRole.getId().longValue()) {
       projectRole = this.getText("projectPartners.types.PL");
@@ -503,6 +510,40 @@ public class ProjectPartnerAction extends BaseAction {
             contributors.add(projectPartnerContribution);
           }
           pp.setPartnerContributors(contributors);
+        }
+
+        if (this.isLessonsActive()) {
+          if (this.isReportingActive()) {
+            System.out.println(this.getActionName());
+            List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+                && c.getCycle().equals(APConstants.REPORTING)
+                && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessons.isEmpty()) {
+              project.setProjectComponentLesson(lessons.get(0));
+            }
+            List<ProjectComponentLesson> lessonsPreview =
+              project.getProjectComponentLessons().stream()
+                .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+                  && c.getCycle().equals(APConstants.PLANNING)
+                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessonsPreview.isEmpty()) {
+              project.setProjectComponentLessonPreview(lessonsPreview.get(0));
+            }
+          } else {
+
+            List<ProjectComponentLesson> lessons =
+              project.getProjectComponentLessons().stream()
+                .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+                  && c.getCycle().equals(APConstants.PLANNING)
+                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
+              .collect(Collectors.toList());
+            if (!lessons.isEmpty()) {
+              project.setProjectComponentLesson(lessons.get(0));
+            }
+          }
         }
 
 
@@ -734,6 +775,8 @@ public class ProjectPartnerAction extends BaseAction {
 
 
       }
+
+
       this.updateRoles(previousCoordinator, coordinator, pcRole);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
@@ -825,6 +868,8 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private void updateRoles(ProjectPartnerPerson previousPartnerPerson, ProjectPartnerPerson partnerPerson, Role role) {
     long roleId = role.getId();
+
+    String roleAcronym = role.getAcronym();
     if (previousPartnerPerson == null && partnerPerson != null) {
 
       UserRole userRole = new UserRole();
@@ -846,7 +891,13 @@ public class ProjectPartnerAction extends BaseAction {
         rolesUser =
           rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
         if (!rolesUser.isEmpty()) {
-          userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+          if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
+            .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
+              .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
+            .collect(Collectors.toList()).size() == 0) {
+            userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+          }
+
         }
       }
 
@@ -870,7 +921,13 @@ public class ProjectPartnerAction extends BaseAction {
           rolesUser =
             rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
           if (!rolesUser.isEmpty()) {
-            userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+            if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
+              .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
+                .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
+              .collect(Collectors.toList()).size() == 0) {
+
+              userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+            }
           }
         }
         // Notifying user that is not the project leader anymore

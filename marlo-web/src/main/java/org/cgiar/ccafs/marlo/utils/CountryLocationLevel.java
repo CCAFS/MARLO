@@ -34,10 +34,10 @@ public class CountryLocationLevel implements Serializable {
   private List<LocElement> locElements;
 
 
+  private List<LocElement> allElements;
   private long id;
-
   private boolean isList;
-
+  private int modelClass;
 
   public CountryLocationLevel() {
 
@@ -49,12 +49,20 @@ public class CountryLocationLevel implements Serializable {
     this.locElements = countries;
   }
 
+  public List<LocElement> getAllElements() {
+    return allElements;
+  }
+
   public long getId() {
     return id;
   }
 
   public List<LocElement> getLocElements() {
     return locElements;
+  }
+
+  public int getModelClass() {
+    return modelClass;
   }
 
 
@@ -66,6 +74,11 @@ public class CountryLocationLevel implements Serializable {
     return isList;
   }
 
+  public void setAllElements(List<LocElement> allElements) {
+    this.allElements = allElements;
+  }
+
+
   public void setId(long id) {
     this.id = id;
   }
@@ -76,6 +89,10 @@ public class CountryLocationLevel implements Serializable {
 
   public void setLocElements(List<LocElement> locElements) {
     this.locElements = locElements;
+  }
+
+  public void setModelClass(int modelClass) {
+    this.modelClass = modelClass;
   }
 
   public void setName(String name) {

@@ -70,6 +70,8 @@ public final class APConstants {
   public static final String PROJECT_CCAFS_COFUNDED = "CCAFS_COFUNDED";
   public static final String PROJECT_BILATERAL = "BILATERAL";
 
+  public static final String PLANNING = "Planning";
+  public static final String REPORTING = "Reporting";
   // Request variables
   public static final String EDITABLE_REQUEST = "edit";
   public static final String CRP_REQUEST = "crp";
@@ -99,6 +101,10 @@ public final class APConstants {
   // new Target unit
   public static final String TARGET_UNIT_NAME = "targetUnitName";
   public static final long TARGET_UNIT_OTHER_ID = 18;
+
+  // project Locations Constants
+  public static final String MODEL_CLASS_PARAMETER = "modelClass";
+  public static final String LOCATION_PARENT_ID_PARAMETER = "parentId";
 
   // Date Formats
   public static final String DATE_FORMAT = "yyyy-MM-dd";
