@@ -14,7 +14,7 @@
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <ul>
-    <li><p>Project Menu</p>
+    <li><p>Project Menu <br /></brq><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /])</small></p>
       <ul>
         [#list items as item]
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]

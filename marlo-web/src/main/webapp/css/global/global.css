@@ -609,12 +609,15 @@ input.target {
 }
 
 .fileUpload .remove{
-  float: left;
-  margin-right: 7px;
+  float: right;
   background-color: initial;
   background-image: url(../../images/global/icon-remove.png);
-  width: 16px;
-  height: 15px;
+  background-repeat: no-repeat;
+  background-position: 0 50%;
+  width: 15px;
+  height: 20px;
+  margin-left: 20px;
+  vertical-align: middle;
 }
 
 .fileUpload .file{
@@ -1061,7 +1064,7 @@ select#partnerSave_activityPartner_partner_type_id {
   cursor: pointer;
 }
 .remove:hover {
-  background-color: #B72E2A; 
+  /* background-color: #d5504c; */
 }
 
 .panel span.listButton.remove:hover {
@@ -1647,7 +1650,7 @@ a.currentReportingSection li, a.currentSection li {
 
 #secondaryMenu ul p {
   display: list-item;
-  height: 26px;
+  /* height: 26px; */
   margin-left: 0px;
   padding-bottom: 5px;
   padding-left: 10px;
@@ -1789,6 +1792,12 @@ a.currentReportingSection li, a.currentSection li {
   color: #1da5ce;
   text-align: center;
   font-size: 1.3em;
+  line-height: 1em;
+  margin: 0;
+}
+#secondaryMenu > ul > li > p small{
+  font-size: 0.7em;
+  color: #7fcce3;
 }
 
 #secondaryMenu.BILATERAL > ul > li > p{
@@ -3325,8 +3334,8 @@ textarea[id$='summary'] {
     margin: 0px 0px 3px 0;
 }
 
-#uploadWorkPlan p   { 
-    margin: 0px 0px 5px 2px;
+#uploadWorkPlan p   {
+    margin: 0px 0px 5px 0px;
     line-height: 15px;
 }
 
@@ -5882,4 +5891,13 @@ hr {
     margin: 75px auto;
     left: 0;
     right: 0;
+}
+
+.inputFile {
+    /* background: #f1f1f1; */
+    border: 1px dashed #d6d6d6;
+    border-radius: 2px;
+    padding: 2px 5px;
+    display: inline-block;
+    width: initial !important;
 }
