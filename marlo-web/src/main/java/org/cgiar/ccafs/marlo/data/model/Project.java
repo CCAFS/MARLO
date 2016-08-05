@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -219,7 +220,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
@@ -273,7 +274,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         }
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
@@ -308,7 +309,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         }
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {

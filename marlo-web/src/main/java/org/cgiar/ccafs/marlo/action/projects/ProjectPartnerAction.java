@@ -624,13 +624,15 @@ public class ProjectPartnerAction extends BaseAction {
 
               } else {
 
-                ProjectPartnerPerson dbPerson =
-                  projectPartnerPersonManager.getProjectPartnerPersonById(partnerPerson.getId());
+                ProjectPartnerPerson dbPerson;
+
+                dbPerson = projectPartnerPersonManager.getProjectPartnerPersonById(partnerPerson.getId());
                 partnerPerson.setActive(true);
                 partnerPerson.setCreatedBy(dbPerson.getCreatedBy());
                 partnerPerson.setModifiedBy(this.getCurrentUser());
                 partnerPerson.setModificationJustification("");
                 partnerPerson.setActiveSince(dbPerson.getActiveSince());
+
 
               }
               partnerPerson.setProjectPartner(projectPartner);
@@ -737,8 +739,10 @@ public class ProjectPartnerAction extends BaseAction {
 
 
       this.updateRoles(previousCoordinator, coordinator, pcRole);
+      project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
