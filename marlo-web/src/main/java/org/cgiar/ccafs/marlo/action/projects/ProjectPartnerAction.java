@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -83,6 +84,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectComponentLesson projectComponentLesson;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ProjectPartnerContributionManager projectPartnerContributionManager;
+
   private ProjectPartnerOverallManager projectPartnerOverallManager;
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
@@ -124,7 +126,7 @@ public class ProjectPartnerAction extends BaseAction {
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
-    ProjectComponentLesson projectComponentLesson) {
+    ProjectComponentLesson projectComponentLesson, ProjectComponentLessonManager projectComponentLessonManager) {
     super(config);
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
@@ -142,6 +144,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.projectComponentLesson = projectComponentLesson;
+
   }
 
 
@@ -495,8 +498,7 @@ public class ProjectPartnerAction extends BaseAction {
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
-          if (pp.getInstitution().getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-            .size() > 0) {
+          if (this.isPPA(pp.getInstitution())) {
             this.projectPPAPartners.add(pp);
 
           }
@@ -513,37 +515,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
 
         if (this.isLessonsActive()) {
-          if (this.isReportingActive()) {
-            System.out.println(this.getActionName());
-            List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
-              .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
-                && c.getCycle().equals(APConstants.REPORTING)
-                && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
-              .collect(Collectors.toList());
-            if (!lessons.isEmpty()) {
-              project.setProjectComponentLesson(lessons.get(0));
-            }
-            List<ProjectComponentLesson> lessonsPreview =
-              project.getProjectComponentLessons().stream()
-                .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
-                  && c.getCycle().equals(APConstants.PLANNING)
-                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
-              .collect(Collectors.toList());
-            if (!lessonsPreview.isEmpty()) {
-              project.setProjectComponentLessonPreview(lessonsPreview.get(0));
-            }
-          } else {
-
-            List<ProjectComponentLesson> lessons =
-              project.getProjectComponentLessons().stream()
-                .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
-                  && c.getCycle().equals(APConstants.PLANNING)
-                  && c.getComponentName().equals(this.getActionName().replaceAll(loggedCrp.getAcronym() + "/", "")))
-              .collect(Collectors.toList());
-            if (!lessons.isEmpty()) {
-              project.setProjectComponentLesson(lessons.get(0));
-            }
-          }
+          this.loadLessons(loggedCrp, project);
         }
 
 
@@ -627,18 +599,11 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartner.setModifiedBy(this.getCurrentUser());
             projectPartner.setModificationJustification("");
             projectPartner.setActiveSince(new Date());
+            projectPartner.setProject(project);
 
-          } else {
-            ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
-            projectPartner.setActive(true);
-            projectPartner.setCreatedBy(db.getCreatedBy());
-            projectPartner.setModifiedBy(this.getCurrentUser());
-            projectPartner.setModificationJustification("");
-            projectPartner.setActiveSince(db.getActiveSince());
+            projectPartnerManager.saveProjectPartner(projectPartner);
           }
 
-          projectPartner.setProject(project);
-          projectPartnerManager.saveProjectPartner(projectPartner);
 
           ProjectPartner db = projectPartnerManager.getProjectPartnerById(projectPartner.getId());
           for (ProjectPartnerPerson partnerPerson : db.getProjectPartnerPersons()) {
@@ -705,31 +670,21 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerContribution.setModifiedBy(this.getCurrentUser());
                 partnerContribution.setModificationJustification("");
                 partnerContribution.setActiveSince(new Date());
+                partnerContribution.setProjectPartner(projectPartner);
+                if (partnerContribution.getProjectPartnerContributor().getId() == null) {
+                  List<ProjectPartner> partenerContributor = project.getPartners().stream()
+                    .filter(c -> c.getInstitution().getId()
+                      .equals(partnerContribution.getProjectPartnerContributor().getInstitution().getId()))
+                    .collect(Collectors.toList());
+                  if (!partenerContributor.isEmpty()) {
+                    partnerContribution.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
+                  }
 
-              } else {
-
-                ProjectPartnerContribution dbContribution =
-                  projectPartnerContributionManager.getProjectPartnerContributionById(partnerContribution.getId());
-                partnerContribution.setActive(true);
-                partnerContribution.setCreatedBy(dbContribution.getCreatedBy());
-                partnerContribution.setModifiedBy(this.getCurrentUser());
-                partnerContribution.setModificationJustification("");
-                partnerContribution.setActiveSince(dbContribution.getActiveSince());
-
-              }
-              partnerContribution.setProjectPartner(projectPartner);
-              if (partnerContribution.getProjectPartnerContributor().getId() == null) {
-                List<ProjectPartner> partenerContributor = project.getPartners().stream()
-                  .filter(c -> c.getInstitution().getId()
-                    .equals(partnerContribution.getProjectPartnerContributor().getInstitution().getId()))
-                  .collect(Collectors.toList());
-                if (!partenerContributor.isEmpty()) {
-                  partnerContribution.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
                 }
+                projectPartnerContributionManager.saveProjectPartnerContribution(partnerContribution);
+
 
               }
-              projectPartnerContributionManager.saveProjectPartnerContribution(partnerContribution);
-
 
             }
           }
@@ -751,6 +706,10 @@ public class ProjectPartnerAction extends BaseAction {
         projectPartnerOverallManager.saveProjectPartnerOverall(overall);
       }
 
+
+      if (this.isLessonsActive()) {
+        this.saveLessons(loggedCrp, project);
+      }
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
@@ -782,6 +741,8 @@ public class ProjectPartnerAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PARTNERS_RELATION);
+      relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
+
       projectManager.saveProject(project, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
