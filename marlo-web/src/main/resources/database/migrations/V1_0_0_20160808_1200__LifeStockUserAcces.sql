@@ -1,0 +1,7 @@
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('1', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('844', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('1057', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('843', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('926', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('1087', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
+INSERT INTO `crp_users` (`user_id`, `crp_id`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('1088', '7', '1', '13', '2016-08-28 08:24:45', '13', ' ');
