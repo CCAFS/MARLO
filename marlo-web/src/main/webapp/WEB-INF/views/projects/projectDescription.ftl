@@ -32,35 +32,36 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
+          
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
               [#-- Project Title --]
-              <div class="fullBlock">
+              <div class="form-group">
                 [@customForm.textArea name="project.title" required=true className="project-title" editable=editable /]
               </div>
-              <div class="fullBlock">
+              <div class="form-group row">
                 [#-- Project Program Creator --]
-                <div class="halfPartBlock">
+                <div class="col-md-6">
                   [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
                 </div>
                 [#--  Project Owner Contact Person --]
-                <div class="halfPartBlock">
+                <div class="col-md-6">
                   [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
                 </div> 
               </div>  
-              <div class="fullBlock">  
+              <div class="form-group row">  
                 [#-- Start Date --]
-                <div class="halfPartBlock">
+                <div class="col-md-6">
                   [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable  /]
                 </div> 
                 [#-- End Date --]
-                <div class="halfPartBlock">
+                <div class="col-md-6">
                   [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable /]
                 </div>
               </div>
-              <div class="fullBlock">
+              <div class="form-group row">
                 [#-- Project Type --]
-                <div class="halfPartBlock"> 
+                <div class="col-md-6"> 
                   [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
                 </div>
               </div> 
@@ -82,7 +83,7 @@
               [#-- Project upload bilateral contract --]
               [#if (project.bilateralProject)!false && action.hasPermission("bilateralContract") ]
               <div class="fullBlock fileUpload bilateralContract">
-                <h6>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</h6>
+                <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
                 <div class="uploadContainer">
                   [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName" editable=editable /]
                 </div>  
@@ -90,22 +91,22 @@
               [/#if]
               
               [#-- Project Summary --]
-              <div class="fullBlock">
+              <div class="form-group">
                 [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable /]
               </div>
               
               [#-- -- -- REPORTING BLOCK -- -- --]
-              
+              [#if reportingActive]
                 [#-- Project upload annual report to donor--]
                 [#if (project.bilateralProject)!false]
                 <div class="fullBlock fileUpload annualreportDonor">
-                  <h6>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</h6>
+                  <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
                   <div class="uploadContainer">
                     [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDornor" editable=editable /]
                   </div>  
                 </div>
                 [/#if]
-               
+              [/#if]
             
               
               [#--  Regions/global and Flagships that the project is working on --]
@@ -114,7 +115,7 @@
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
                 <div id="projectFlagshipsBlock" class="">
-                  <div class="col-md-12">  
+                  <div class="col-md-6">  
                     <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -127,6 +128,10 @@
                       [/#if]
                     [/#if]
                   </div>
+                  <div class="col-md-6">  
+                   
+                  </div>
+                  
                   <div class="clearfix"></div>
                 </div> 
                 
@@ -174,9 +179,6 @@
       </div>
     </div>  
 </section>
-
-[#-- Hidden values used by js --]
-
 
 [#-- Core project list template --]
 <ul style="display:none">

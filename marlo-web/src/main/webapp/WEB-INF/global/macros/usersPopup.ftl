@@ -1,5 +1,6 @@
 [#ftl] 
 [#macro searchUsers isActive=false ]
+  <!-- Search Users Dialog -->
   <div id="dialog-searchUsers" title="Manage Users" style="display:none"> 
     <div class="dialog-content"> 
       <form class="pure-form">

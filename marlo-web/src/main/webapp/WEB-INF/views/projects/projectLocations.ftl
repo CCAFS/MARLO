@@ -12,8 +12,8 @@
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign locationLevelName = "locationLevels"/]
-[#assign locationName = "locations"/]
+[#assign locationLevelName = "locations"/]
+[#assign locationName = "locElements"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -51,6 +51,13 @@
               <div id="selectsContent" class="col-md-7">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
+                
+                [#if locationsData?has_content]
+                  [#list locationsData as locationLevels]
+                    [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index /]
+                  [/#list]
+                [/#if]
+                
                 </div>
               </div>
               
@@ -59,17 +66,18 @@
               </div>
                 
             </div>
+            [#-- locations level Select --]
             <select name="" id="" class="selectLocationLevel select " >
               [#list locationsLevels as locLevels]
                 <optgroup label="${locLevels.name}">
                 [#list locLevels.locations as locations]
-                  <option value="${locations.id}-5" >${locations.name}</option>
+                  <option value="${locations.id}-${locations.modelClass}-${locations.list?string}" >${locations.name}</option>
                 [/#list]
                 </optgroup> 
-              [/#list]            
+              [/#list]
             </select>
           </div> 
-          [#-- Section Buttons & hidden inputs--]
+          
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
              
          
@@ -78,10 +86,10 @@
     </div>  
 </section>
 
-
+[#-- Section hidden inputs--]
 [@locationLevel element={} name="" index=0 template=true /]
 
-[@location element={} name="" index=0 template=true /]
+[@locationMacro element={} name="" index=0 template=true /]
 
 <input type="hidden" id="locationLevelName" value="${locationLevelName}" />
 <input type="hidden" id="locationName" value="${locationName}" />
@@ -89,12 +97,13 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro locationLevel element  name index template=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
+    [#-- header element --]
     <div class="col-md-12 locationName-content borderBox opened">
-      <div class="glyphicon glyphicon-chevron-up collapsible" ></div>   
-      <div class="locationLevel-option"></div> 
+      <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
+      <div class="locationLevel-option">${(element.name)!}</div>
       <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
     </div>
     <div class="col-md-12 locationLevel-optionContent borderBox">
@@ -102,30 +111,48 @@
         <span class="col-md-10">Are you working in all countries on this region?</span>
         <input class="col-md-1 allCountries" type="checkbox" />
       </div>
+      [#-- Content of locations--]
       <div class="optionSelect-content row">
-      
+        [#if element.locElements?has_content]
+          [#list element.locElements as location]
+            [@locationMacro element=location name="${customName}.${locationName}" index=location_index /]
+          [/#list]
+        [/#if]
       </div>
       
-      <select name="" id="" class="selectLocation col-md-12" placeholder="select an option...">
-        <option>Select an option...</option>
-        <option value="456">Angola</option>
-        <option value="134">Nyando</option>
-        <option value="223">Borana</option>
+      <select style="display:${(element.list?? && element.list)?string('block','none')}"  class="selectLocation col-md-12" placeholder="select an option...">
+        [#if element.allElements?has_content]
+        [#list element.allElements as locElements]
+            <option value="${locElements.id}" >${locElements.name}</option>
+        [/#list]
+        [/#if]
       </select>
+        <div class="col-md-12 coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
+          <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
+          <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
+          <div class="nameWrapper"><input placeholder="name" class="name form-control" type="text" /></div>
+          <span class="addLocation glyphicon glyphicon-plus-sign button-green"></span>
+        </div>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value="${(element.class.name)!}"/>
   </div>
 [/#macro]
 
-[#macro location element  name index template=false]
-  [#assign customName = "${name}[${index}]" /]
+[#macro locationMacro element  name index template=false]
+  [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
   <div id="location-${template?string('template',index)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName"> </div>
+      <div class="locationName">${(element.name)!} </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>
     </div>
-    <input class="locationId" type="hidden" name="${locationName}[${index}].id" value=""/>
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.id)!}"/>
+    <input type="hidden" class="locElementName" name="${customName}.name" value="${(element.name)!}" />
+    <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
+    <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
+    <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
+    <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
   </div>
 [/#macro]

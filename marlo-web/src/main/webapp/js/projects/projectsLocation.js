@@ -2,13 +2,29 @@ $(document).ready(init);
 
 function init() {
 
+  $('.latitude, .longitude').numericInput();
+
+  $('.latitude, .longitude').on("keyup", function(e) {
+    var $parent = $(this).parent().parent();
+    var lat = $parent.find('.latitude').val();
+    var lng = $parent.find('.longitude').val();
+
+    if(isCoordinateValid(lat, lng)) {
+      $parent.find('.latitude, .longitude').removeClass('fieldError');
+    } else {
+      $parent.find('.latitude, .longitude').addClass('fieldError');
+    }
+  });
+
   $(".selectLocationLevel").select2({
     placeholder: "Select a location level"
   })
 
   if($(".selectWrapper").find(".locationLevel").length > 0) {
-    $(".map").show();
-    loadScript();
+    $(".map").show('slow', function() {
+      loadScript();
+    });
+
   } else {
     $(".map").hide();
   }
@@ -23,8 +39,10 @@ function attachEvents() {
   $('.selectLocationLevel').on('change', function() {
 
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
-      loadScript();
-      $(".map").show("slow");
+
+      $(".map").show("slow", function() {
+        loadScript();
+      });
     }
     var option = $(this).find("option:selected");
     if($(".selectWrapper").find("input[value=" + option.val().split("-")[0] + "]").exists()) {
@@ -35,10 +53,22 @@ function attachEvents() {
 
   });
 
-// ADD a location element-Event
+// ADD a location element by select list-Event
   $('.selectLocation').on('change', function() {
     var option = $(this).find("option:selected");
-    addLocation($(this).parent(), option);
+    addLocationList($(this).parent(), option);
+  });
+
+// ADD a location element by coordinates inputs list-Event
+  $('.addLocation').on('click', function() {
+    var latitude = $(this).parent().find(".latitude").val();
+    var longitude = $(this).parent().find(".longitude").val();
+    var name = $(this).parent().find(".name").val();
+    if(latitude != "" && latitude != null && longitude != "" && longitude != null && name != "" && name != null) {
+      if(isCoordinateValid(latitude, longitude)) {
+        addLocationForm($(this).parent().parent(), latitude, longitude, name);
+      }
+    }
   });
 
   // Remove a location level element-Event
@@ -80,6 +110,13 @@ function addLocationLevel(option) {
   var optionValue = option.val().split('-');
   var idLocationLevel = optionValue[0];
   var typeLocationLevel = optionValue[1];
+  var isList = optionValue[2];
+  console.log(isList);
+  if(isList === "true") {
+    $item.find(".selectLocation").css("display", "block");
+  } else {
+    $item.find(".coordinates-inputs").css("display", "block");
+  }
   $item.find('.locationLevelId').val(idLocationLevel);
   $item.find('.locationLevelType').val(typeLocationLevel);
   $list.append($item);
@@ -88,26 +125,44 @@ function addLocationLevel(option) {
   updateIndex();
 }
 
-function addLocation(parent,option) {
+// Add a location by select list
+function addLocationList(parent,option) {
   var $list = parent.find(".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
   $item.find('.locationName').html(option.html());
-  $item.find('.locationId').val(option.val());
+  $item.find('.locElementId').val(option.val());
+  $item.find('.locElementName').val(option.html());
   $list.append($item);
   // updateAllIndexes();
   $item.show('slow');
   updateIndex();
 }
 
+// Add a location by coordinates inputs
+function addLocationForm(parent,latitude,longitude,name) {
+  var $list = parent.find(".optionSelect-content");
+  var $item = $('#location-template').clone(true).removeAttr("id");
+  $item.find('.locationName').html(name + " <label > (" + latitude + ", " + longitude + ") </label>");
+  $item.find('.geoLatitude').val(latitude);
+  $item.find('.geoLongitude').val(longitude);
+  $item.find('.locElementName').val(name);
+  $list.append($item);
+  // updateAllIndexes();
+  $item.show('slow');
+  // empty input fields
+  parent.find(".latitude").val("");
+  parent.find(".longitude").val("");
+  parent.find(".name").val("");
+  updateIndex();
+}
+
 // Remove a location level element-Function
 function removeLocationLevelItem() {
   var $item = $(this).parents('.locationLevel');
-  console.log($item);
   $item.hide(function() {
     $item.remove();
     updateIndex();
   });
-  console.log($(".selectWrapper").find(".locationLevel").length);
   if($(".selectWrapper").find(".locationLevel").length <= 1) {
     $(".map").hide('slow');
   }
@@ -124,6 +179,7 @@ function removeLocationItem() {
 
 }
 
+// Update index
 function updateIndex() {
   var name = $("#locationLevelName").val();
   $(".selectWrapper").find('.locationLevel').each(function(i,item) {
@@ -139,7 +195,10 @@ function updateLocationIndex(item,locationLevelName) {
   $(item).find('.locElement').each(function(indexLoc,locItem) {
     console.log(locItem);
     var customName = locationLevelName + '.' + name + '[' + indexLoc + ']';
-    $(locItem).find('.locationId').attr('name', customName + '.id');
+    $(locItem).find('.locElementId').attr('name', customName + '.id');
+    $(locItem).find('.geoLatitude').attr('name', customName + '.latitude');
+    $(locItem).find('.geoLongitude').attr('name', customName + '.longitude');
+    $(locItem).find('.locElementName').attr('name', customName + '.name');
   });
 
   // Update component event
@@ -243,3 +302,6 @@ function initMap() {
       styles: style
   });
 }
+
+// Map events
+

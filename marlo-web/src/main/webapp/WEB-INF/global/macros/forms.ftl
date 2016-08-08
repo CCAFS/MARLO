@@ -194,11 +194,11 @@
 [#macro inputFile name template=false className="" fileUrl="" fileName="" editable=true]
   [#local customId][#if template]${name}-template[#else]${name}[/#if][/#local]
   [#local customFileName][@s.property value="${fileName}"/][/#local]
-  <div id="${customId}" class="${className}" style="${template?string('display:none','block')}">
+  <div id="${customId}" class="${className} form-group" style="${template?string('display:none','block')}">
     [#if customFileName?has_content && !template]
-      <p> 
-        [#if editable]<span id="remove-${name}" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-        <a href="${fileUrl}${customFileName}">${customFileName}</a>  
+      <p class="inputFile"> 
+        <span class="file"></span> <a href="${fileUrl}${customFileName}">${customFileName}</a>  
+        [#if editable]<span id="remove-${name}" class="remove"></span>[/#if] 
       </p>
     [#else]
       [#if editable]

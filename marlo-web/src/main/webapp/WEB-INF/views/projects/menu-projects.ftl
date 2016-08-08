@@ -14,11 +14,12 @@
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
   <ul>
-    <li><p>Project Menu</p>
+    <li><p>Project Menu <br /><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /])</small></p>
       <ul>
         [#list items as item]
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+            <div class="sectionColor" style="background-color:${(project.liaisonInstitution.crpProgram.color)!}"></div>
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
               [@s.text name=item.name/]
             </a>

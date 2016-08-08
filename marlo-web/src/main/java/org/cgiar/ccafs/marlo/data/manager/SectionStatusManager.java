@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -62,6 +62,7 @@ public interface SectionStatusManager {
    */
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
 
+
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
@@ -69,6 +70,14 @@ public interface SectionStatusManager {
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusById(long sectionStatusID);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @param crpProgramID is the crp program identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
 
   /**
    * This method saves the information of the given sectionStatus

@@ -18,9 +18,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -32,6 +35,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -90,6 +94,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpManager crpManager;
   // Variables
   private String crpSession;
+  private Crp currentCrp;
   protected boolean dataSaved;
   protected boolean delete;
   private boolean draft;
@@ -113,8 +118,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   protected boolean next;
-
-
+  @Inject
+  private ProjectComponentLessonManager projectComponentLessonManager;
   private Map<String, Object> parameters;
 
 
@@ -187,6 +192,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -283,6 +289,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpSession;
   }
 
+  public Crp getCurrentCrp() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Crp crp =
+          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        this.currentCrp = crp;
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user crp in the session.");
+      }
+    } else {
+
+      this.currentCrp = null;
+
+    }
+    return this.currentCrp;
+  }
+
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -352,7 +375,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -361,11 +383,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
-
 
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
@@ -391,10 +413,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
+
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
   }
-
 
   /**
    * Return the artifact version of the Marlo project pom.xml
@@ -414,6 +436,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return version;
   }
+
 
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
@@ -512,11 +535,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
 
   }
+
 
   public boolean isReportingActive() {
 
@@ -533,9 +556,40 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public void loadLessons(Crp crp, Project project) {
+    if (this.isReportingActive()) {
+
+      List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+        .filter(
+          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
+            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        project.setProjectComponentLesson(lessons.get(0));
+      }
+      List<ProjectComponentLesson> lessonsPreview = project.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessonsPreview.isEmpty()) {
+        project.setProjectComponentLessonPreview(lessonsPreview.get(0));
+      }
+    } else {
+
+      List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        project.setProjectComponentLesson(lessons.get(0));
+      }
+    }
+  }
+
   public String next() {
     return NEXT;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -545,6 +599,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
+  }
+
+  public void saveLessons(Crp crp, Project project) {
+    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+
+    project.getProjectComponentLesson().setActive(true);
+    project.getProjectComponentLesson().setActiveSince(new Date());
+    project.getProjectComponentLesson().setComponentName(actionName);
+    project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+    project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+    project.getProjectComponentLesson().setModificationJustification("");
+    project.getProjectComponentLesson().setProject(project);
+
+
+    if (this.isReportingActive()) {
+      project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+      project.getProjectComponentLesson().setYear(this.getReportingYear());
+
+    } else {
+      project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+      project.getProjectComponentLesson().setYear(this.getPlanningYear());
+    }
+    projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
+
   }
 
 

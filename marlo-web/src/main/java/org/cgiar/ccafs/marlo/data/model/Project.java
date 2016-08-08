@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -108,19 +109,14 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
-
-
   private String overall;
-
-
   private List<ProjectPartner> partners;
-
-
   private List<ProjectLocation> locations;
 
 
   public Project() {
   }
+
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -187,10 +183,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
-
 
   public String getAnnualReportToDornor() {
     return this.annualReportToDornor;
@@ -199,6 +195,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public String getBilateralContractName() {
     return this.bilateralContractName;
   }
+
 
   /**
    * This method gets all the coordinators working for this project.
@@ -219,7 +216,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         if (partner.getProjectPartnerPersons() != null) {
           for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
 
@@ -242,25 +239,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public Date getEndDate() {
     return this.endDate;
   }
-
 
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
 
+
   public String getFlagshipValue() {
     return flagshipValue;
   }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public ProjectPartner getLeader() {
 
@@ -273,7 +269,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         }
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
@@ -308,7 +304,7 @@ public class Project implements java.io.Serializable, IAuditLog {
         }
       }
     } else {
-      for (ProjectPartner partner : projectPartners) {
+      for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
         for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
           if (person.isActive()) {
             if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
@@ -329,14 +325,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.leaderResponsabilities;
   }
 
-
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
   }
 
+
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
   }
+
 
   public List<ProjectLocation> getLocations() {
     return locations;
@@ -352,20 +349,20 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public String getModificationJustification() {
     return this.modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
   }
 
+
   public String getOverall() {
     return overall;
   }
+
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -430,7 +427,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-
   public String getSummary() {
     return this.summary;
   }
@@ -438,6 +434,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public String getTitle() {
     return this.title;
   }
+
 
   public String getType() {
     return this.type;
@@ -476,6 +473,14 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public boolean isCofinancing() {
     return cofinancing;
+  }
+
+  public boolean isCoFundedProject() {
+    return (type != null) ? type.equals(APConstants.PROJECT_CCAFS_COFUNDED) : false;
+  }
+
+  public boolean isCoreProject() {
+    return (type != null) ? type.equals(APConstants.PROJECT_CORE) : false;
   }
 
   public boolean isGlobal() {

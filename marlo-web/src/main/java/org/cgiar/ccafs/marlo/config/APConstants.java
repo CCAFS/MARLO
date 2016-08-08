@@ -124,6 +124,9 @@ public final class APConstants {
   public static final String PROJECT_PARTNERS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectPartners)";
 
+  public static final String PROJECT_LESSONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectComponentLessons)";
+
 
 }
 

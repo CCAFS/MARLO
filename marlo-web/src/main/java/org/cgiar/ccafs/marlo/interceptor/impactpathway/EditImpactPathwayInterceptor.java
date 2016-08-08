@@ -156,8 +156,6 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       } else {
         throw new NullPointerException();
       }
-    } else {
-      throw new NullPointerException();
     }
   }
 

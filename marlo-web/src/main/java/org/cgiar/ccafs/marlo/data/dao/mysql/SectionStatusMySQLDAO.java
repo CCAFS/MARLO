@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -71,6 +71,17 @@ public class SectionStatusMySQLDAO implements SectionStatusDAO {
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
     String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName
       + "' and crp_program_id=" + crpProgramID;
+    List<SectionStatus> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
+    String query = "from " + SectionStatus.class.getName() + " where section_name='" + sectionName + "' and cycle='"
+      + cycle + "' and year=" + year + " and project_id=" + projectID;
     List<SectionStatus> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
