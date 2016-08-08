@@ -52,6 +52,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -96,6 +97,7 @@ public class ProjectPartnerAction extends BaseAction {
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private CrpManager crpManager;
 
+  private ProjectPartnersValidator projectPartnersValidator;
   private long projectID;
   private Crp loggedCrp;
   private Project previousProject;
@@ -126,8 +128,10 @@ public class ProjectPartnerAction extends BaseAction {
     InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
-    ProjectComponentLesson projectComponentLesson, ProjectComponentLessonManager projectComponentLessonManager) {
+    ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
+    ProjectComponentLessonManager projectComponentLessonManager) {
     super(config);
+    this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
     this.institutionManager = institutionManager;
@@ -204,7 +208,6 @@ public class ProjectPartnerAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<LocElement> getCountries() {
     return countries;
   }
@@ -239,6 +242,7 @@ public class ProjectPartnerAction extends BaseAction {
     return projectPPAPartners;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
@@ -261,7 +265,6 @@ public class ProjectPartnerAction extends BaseAction {
 
     return false;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -310,6 +313,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
   /**
    * This method notify the user that is been assigned as Project Leader/Coordinator for a specific project.
    * 
@@ -353,7 +357,6 @@ public class ProjectPartnerAction extends BaseAction {
       message.toString(), null, null, null, true);
   }
 
-
   /**
    * This method notify the the user that he/she stopped contributing to a specific project.
    * 
@@ -396,6 +399,7 @@ public class ProjectPartnerAction extends BaseAction {
           project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}),
       message.toString(), null, null, null, true);
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -572,7 +576,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
@@ -810,6 +813,7 @@ public class ProjectPartnerAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -818,10 +822,10 @@ public class ProjectPartnerAction extends BaseAction {
     this.projectPPAPartners = projectPPAPartners;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   /**
    * This method updates the role for each user (Leader/Coordinator) into the database, and notifies by email what has
@@ -900,5 +904,12 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
     this.clearPermissionsCache();
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      projectPartnersValidator.validate(this, project);
+    }
   }
 }

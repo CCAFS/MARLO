@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -43,7 +44,13 @@ public class ProjectDescriptionValidator extends BaseValidator
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
-    this.saveMissingFieldsProject(project, "description");
+
+
+    if (action.isReportingActive()) {
+      this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(), "description");
+    } else {
+      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(), "description");
+    }
   }
 
   public void validateDescription(BaseAction action, Project project) {
