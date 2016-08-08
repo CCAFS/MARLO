@@ -513,8 +513,8 @@ ul#noty_bottomRight_layout_container {
     color: #fff;
     background: #408088;
     padding: 6px;
-    border-radius: 4px 4px 0 0;
-    margin-top: 4px;
+    /* border-radius: 4px 4px 0 0; */
+    /* margin-top: 4px; */
 }
 .accordion.active:hover {
   background: #386E75;
@@ -953,7 +953,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .dialog-content {
     text-align: left;
     height: 96%;
-    margin-top: 6px;
+    /* margin-top: 6px; */
     font-size: 0.9em;
 }
 
@@ -1699,7 +1699,6 @@ a.currentReportingSection li, a.currentSection li {
   /* background-size: 11px; */
   /* background-position: 9px 45%; */
   background: #fff;
-  height: 30px;
 }
 
 #secondaryMenu ul li ul li.disabled{
@@ -5848,7 +5847,7 @@ hr {
 
 #draggable-button {
     background-color: #0a7ba5;
-    right: 1em;
+    left: 1em;
     bottom: 1em;
     position: fixed;
     color: #fff;
@@ -5911,7 +5910,7 @@ hr {
 
 .sectionColor {
     width: 5px;
-    height: 100%;
+    height: 30px;
     float: left;
     margin-right: 9px;
 }

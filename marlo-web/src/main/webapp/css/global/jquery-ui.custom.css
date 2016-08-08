@@ -447,6 +447,23 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-dialog .ui-dialog-buttonpane button { margin: 0.2em .4em .2em 0; cursor: pointer; }
 .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 2px; bottom: 2px; }
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
+
+.dialog-searchUsers.ui-dialog {overflow: hidden;border-color: #408088;}
+.dialog-searchUsers.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
+.dialog-searchUsers.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
+.dialog-searchUsers.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.dialog-searchUsers.ui-dialog .ui-dialog-titlebar-close span {display: block;margin: 3px;top: 0;left: 0;}
+.dialog-searchUsers.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.dialog-searchUsers.ui-dialog .ui-dialog-content {position: relative;border: 0;padding: 0;background: none;overflow: hidden;zoom: 1;font-size: 1.02em;text-align: left;}
+.dialog-searchUsers.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.dialog-searchUsers.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.dialog-searchUsers.ui-dialog .ui-dialog-buttonpane button { margin: 0.2em .4em .2em 0; cursor: pointer; }
+.dialog-searchUsers.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 2px; bottom: 2px; }
+.dialog-searchUsers.ui-draggable .ui-dialog-titlebar {cursor: move;display: none;}
+
+
+
+
 /*
  * jQuery UI Slider 1.8.16
  *
@@ -691,8 +708,6 @@ html, body{background-color:#ffffff;}
 
 
 
-
-
 /* Slider */
 .ui-slider{background:#d4d4d4;}
 .ui-slider .ui-slider-range{background:#47939C;}
@@ -736,5 +751,7 @@ html, body{background-color:#ffffff;}
 /* Error */
 .ui-state-error{border-color:#c31d1d;color:#ffffff;background:#c31d1d;}
 .ui-state-error .ui-icon{background-image:url(images/ui-icons_ffffff_0.png);}
+
+
 
 

@@ -1,4 +1,4 @@
-var dialog;
+var dialog, notyDialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
 var openSearchDialog, addUser, addUserMessage;
@@ -13,6 +13,7 @@ $(document).ready(function() {
       height: 420,
       width: 600,
       modal: true,
+      dialogClass: 'dialog-searchUsers',
       buttons: {
         Cancel: function() {
           $(this).dialog("close");
@@ -145,6 +146,7 @@ $(document).ready(function() {
     e.preventDefault();
     $elementSelected = $(e.target);
     dialog.dialog("open");
+    // notyDialog = noty(notyOptions);
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
@@ -152,6 +154,7 @@ $(document).ready(function() {
     $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
     $elementSelected.parents('.userField ').find("input.userId").val(userId);
     dialog.dialog("close");
+    // notyDialog.close();
   }
 
   addUserMessage = function(message) {

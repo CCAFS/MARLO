@@ -4,7 +4,8 @@
 <input type="hidden"  name="className" value="${(project.class.name)!}"/>
 <input type="hidden"  name="id" value="${(project.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
-<input type="hidden"  name="actionName" value="${(actionName)!}"/>  
+<input type="hidden"  name="actionName" value="${(actionName)!}"/>
+<input type="hidden" name="project.liaisonInstitution.crpProgram.color" value="${(project.liaisonInstitution.crpProgram.color)!}" />
 
 <div class="buttons">
   <div class="buttons-content">
