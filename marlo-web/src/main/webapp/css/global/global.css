@@ -630,7 +630,7 @@ input.target {
 }
 
 .fileUpload a{
-  vertical-align: middle;
+  /* vertical-align: middle; */
 }
 
 .fileUpload h6{
@@ -5903,9 +5903,10 @@ hr {
     /* background: #f1f1f1; */
     border: 1px dashed #d6d6d6;
     border-radius: 2px;
-    padding: 2px 5px;
+    padding: 0px 5px;
     display: inline-block;
     width: initial !important;
+    margin: 5px 0 !important;
 }
 
 .sectionColor {
