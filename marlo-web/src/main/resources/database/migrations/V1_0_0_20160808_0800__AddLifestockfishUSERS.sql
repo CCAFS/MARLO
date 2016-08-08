@@ -1,0 +1,2 @@
+INSERT INTO `users` VALUES ('1087', 'Jane', 'Poole', null, 'J.POOLE@cgiar.org', '202cb962ac59075b964b07152d234b70', '0', '13', '2016-08-08 08:49:14', '13', 'User add from livestock and fish', '1', '2016-08-08 09:14:32', '1');
+INSERT INTO `users` VALUES ('1088', 'Michael', 'Kidoido', null, 'M.Kidoido@cgiar.org', '202cb962ac59075b964b07152d234b70', '0', '13', '2016-08-08 08:49:14', '13', 'User add from livestock and fish', '1', '2016-08-08 09:14:32', '1');

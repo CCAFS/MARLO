@@ -15,8 +15,8 @@
           [#-- <p>Access is denied. Administrator regulations do not allow you to view this page,<br />
              due either to process deadlines or invalid user credentials.
           </p> --]
-          <p>Access is denied.<br /> 
-          You don't have permission to access the requested page.
+          <p>It seems you do not have permissions to access the requested site. <br /> 
+          Please contact the technical staff.
           </p>
           
           </div>          
