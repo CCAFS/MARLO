@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.UserToken;
 
@@ -81,7 +82,18 @@ public class ValidSessionCrpInterceptor extends AbstractInterceptor {
         } else {
           User user = (User) session.get(APConstants.SESSION_USER);
           if (crpUserManager.existCrpUser(user.getId(), crp.getId())) {
+            for (CrpParameter parameter : loggedCrp.getCrpParameters()) {
+              if (parameter.isActive()) {
+                session.remove(parameter.getKey());
+              }
+            }
             session.replace(APConstants.SESSION_CRP, crp);
+            // put the crp parameters in the session
+            for (CrpParameter parameter : crp.getCrpParameters()) {
+              if (parameter.isActive()) {
+                session.put(parameter.getKey(), parameter.getValue());
+              }
+            }
             this.changeSessionSection(session);
             return invocation.invoke();
           }
