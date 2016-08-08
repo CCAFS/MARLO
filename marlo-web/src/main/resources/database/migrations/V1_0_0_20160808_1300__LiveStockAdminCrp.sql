@@ -1,0 +1,1 @@
+INSERT INTO `roles` VALUES ('43', 'Admin(Livesotckfish)', 'Admin', '7');
