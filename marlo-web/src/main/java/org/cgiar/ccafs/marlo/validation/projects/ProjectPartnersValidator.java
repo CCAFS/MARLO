@@ -128,13 +128,11 @@ public class ProjectPartnersValidator extends BaseValidator {
     int c = 0;
     for (ProjectPartner partner : project.getPartners()) {
       if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
-        if (partner.getPartnerPersons() != null) {
-          if (partner.getPartnerPersons().size() > 0) {
-            action.addFieldError("project.projectPartners[" + c + "].institution",
-              action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
-            // No need to add missing fields because field error doesn't allow to save into the database.
-          }
-        }
+
+        action.addFieldError("project.projectPartners[" + c + "].institution",
+          action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
+        // No need to add missing fields because field error doesn't allow to save into the database.
+
 
       }
       c++;
@@ -144,7 +142,7 @@ public class ProjectPartnersValidator extends BaseValidator {
   private void validatePersonResponsibilities(BaseAction action, int partnerCounter, int personCounter,
     ProjectPartnerPerson person) {
     if (!projectValidator.isValidPersonResponsibilities(person.getResponsibilities())) {
-      if (person.getUser() != null && person.getUser().getId() != -1) {
+      if (person.getUser() != null && (person.getUser() != null || person.getUser().getId() != -1)) {
         this.addMessage(action.getText("projectPartners.responsibilities.for",
           new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
       }
@@ -173,10 +171,23 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   private void validateUser(BaseAction action, int partnerCounter, int personCounter, ProjectPartnerPerson person) {
-    if (person.getUser() == null || person.getUser().getId() == -1) {
-      action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
-        action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
-      // No need to add missing fields because field error doesn't allow to save into the database.
+    try {
+      if (person.getUser() == null) {
+
+        action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
+          action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+        // No need to add missing fields because field error doesn't allow to save into the database.
+
+
+      } else {
+        if (person.getUser().getId() == null || person.getUser().getId() == -1) {
+          action.addFieldError("partner-" + partnerCounter + "-person-" + personCounter,
+            action.getText("validation.required", new String[] {action.getText("projectPartners.contactPersonEmail")}));
+        }
+      }
+    } catch (Exception e) {
+
+      e.printStackTrace();
     }
   }
 
