@@ -15,16 +15,3 @@ INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('7', 'crp_cl_rol', '42', '1', '3', '2016-08-05 15:00:00', '3', ' ');
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('7', 'crp_sl_rol', '41', '1', '3', '2016-08-05 15:00:00', '3', ' ');
 
-
-INSERT INTO `crp_users` VALUES ('374', '1', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('375', '13', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('376', '14', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('377', '1060', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('378', '1061', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('379', '1062', '7', '1', '3', '2016-08-05 15:00:00', '3', '  ');
-INSERT INTO `crp_users` VALUES ('380', '1064', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('381', '988', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('382', '7', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('383', '286', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('384', '5', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-INSERT INTO `crp_users` VALUES ('385', '1057', '7', '1', '3', '2016-08-05 15:00:00', '3', ' ');
