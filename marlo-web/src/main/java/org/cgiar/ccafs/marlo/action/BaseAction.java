@@ -94,6 +94,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpManager crpManager;
   // Variables
   private String crpSession;
+  private Crp currentCrp;
   protected boolean dataSaved;
   protected boolean delete;
   private boolean draft;
@@ -286,6 +287,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.crpSession;
+  }
+
+  public Crp getCurrentCrp() {
+    if (session != null && !session.isEmpty()) {
+      try {
+        Crp crp =
+          (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
+        this.currentCrp = crp;
+      } catch (Exception e) {
+        LOG.warn("There was a problem trying to find the user crp in the session.");
+      }
+    } else {
+
+      this.currentCrp = null;
+
+    }
+    return this.currentCrp;
   }
 
   /**

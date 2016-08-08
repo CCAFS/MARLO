@@ -17,13 +17,13 @@
         [/#list]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
-            <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(crpSession?upper_case)!})
+            <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(currentCrp.name)!})
           </a>
           <ul class="subMenu">
           [#if crpList?has_content]
             [#list crpList as crp]
-              <li class="[#if crpSession?? && crpSession == crp.name?lower_case ]currentSection[/#if]">
-                <a href="[@s.url namespace="/" action="${crp.name?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">${crp.name}</a>
+              <li class="[#if crpSession?? && crpSession == crp.acronym?lower_case ]currentSection[/#if]">
+                <a href="[@s.url namespace="/" action="${crp.acronym?lower_case}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">${crp.name}</a>
               </li>
             [/#list]
            [/#if]
