@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.SendMail;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.io.BufferedReader;
@@ -83,12 +84,15 @@ public class ClusterActivitiesAction extends BaseAction {
   private AuditLogManager auditLogManager;
   private String transaction;
 
+  // Util
+  private SendMail sendMail;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
-    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager) {
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
+    SendMail sendMail) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -99,6 +103,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.crpClusterActivityLeaderManager = crpClusterActivityLeaderManager;
     this.auditLogManager = auditLogManager;
     this.validator = validator;
+    this.sendMail = sendMail;
   }
 
 
@@ -167,6 +172,44 @@ public class ClusterActivitiesAction extends BaseAction {
 
   public String getTransaction() {
     return transaction;
+  }
+
+
+  /**
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Cluster Leader)
+   * @param crpClusterPreview is the crpCluster
+   */
+  private void notifyRoleAssigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterPreview) {
+    String ClusterRole = this.getText("cluster.role");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.cluster.assigned", new String[] {ClusterRole,
+      crpClusterPreview.getCrpProgram().getName(), crpClusterPreview.getCrpProgram().getAcronym()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.cluster.assigned.subject", new String[] {ClusterRole,
+        crpClusterPreview.getCrpProgram().getName(), crpClusterPreview.getCrpProgram().getAcronym()}),
+      message.toString(), null, null, null, true);
+
   }
 
 
@@ -306,9 +349,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
+    System.out.println("============");
 
     if (this.hasPermission("*")) {
 
@@ -408,6 +451,19 @@ public class ClusterActivitiesAction extends BaseAction {
               userRole.setRole(this.roleCl);
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
+                this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
+                // UserRole Notify
+                System.out.println("============");
+                // CL
+                System.out.println("userRole: " + userRole.getRole().getAcronym());
+                // Cluster Leader
+                System.out.println("userRole: " + userRole.getRole().getDescription());
+                // CoA 1.2 Food and nutrition security futures under climate change
+                System.out.println("crpClusterPreview: " + crpClusterPreview.getDescription());
+                // F1
+                System.out.println("CrpProgram: " + crpClusterPreview.getCrpProgram().getAcronym());
+                // Priorities and Policies for CSA 3
+                System.out.println("CrpProgram: " + crpClusterPreview.getCrpProgram().getName());
               }
             }
           }

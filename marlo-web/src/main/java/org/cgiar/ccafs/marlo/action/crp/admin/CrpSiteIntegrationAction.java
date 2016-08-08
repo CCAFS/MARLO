@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,10 +65,13 @@ public class CrpSiteIntegrationAction extends BaseAction {
   private Long slRoleid;
   private Role slRole;
 
+  // Util
+  private SendMail sendMail;
+
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager) {
+    RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager, SendMail sendMail) {
     super(config);
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
@@ -76,6 +80,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.userManager = userManager;
+    this.sendMail = sendMail;
   }
 
   public List<LocElement> getCountriesList() {
@@ -120,6 +125,46 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
+  /**
+   * This method notify the user that is been assigned as Site Leaders for an specific Country
+   * 
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Program Leader)
+   * @param crpsSiteIntegration is the Site where the user is set
+   */
+  private void notifyRoleAssigned(User userAssigned, Role role, CrpsSiteIntegration crpsSiteIntegration) {
+    System.out.println("Entra a notifyRoleAssigned");
+    String siteRole = this.getText("siteIntegration.leader");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.siteIntegration.assigned", new String[] {siteRole,
+      crpsSiteIntegration.getLocElement().getName(), crpsSiteIntegration.getLocElement().getIsoAlpha2()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    System.out.println("bbcEmails");
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.siteIntegration.assigned.subject", new String[] {siteRole,
+        crpsSiteIntegration.getLocElement().getName(), crpsSiteIntegration.getLocElement().getIsoAlpha2()}),
+      message.toString(), null, null, null, true);
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -145,8 +190,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
+    System.out.println("Entra a save");
 
     if (this.hasPermission("*")) {
 
@@ -169,7 +216,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
   }
 
-
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
@@ -178,10 +224,10 @@ public class CrpSiteIntegrationAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setSlRole(Role slRole) {
     this.slRole = slRole;
   }
-
 
   public void setSlRoleid(Long slRoleid) {
     this.slRoleid = slRoleid;
@@ -225,6 +271,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
             UserRole userRole = new UserRole(slRole, userSiteLeader);
             if (!userSiteLeader.getUserRoles().contains(userRole)) {
               userRoleManager.saveUserRole(userRole);
+              this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
             }
           }
         }
@@ -248,6 +295,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
               UserRole userRole = new UserRole(slRole, userSiteLeader);
               if (!userSiteLeader.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
+                this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
               }
             }
           }
@@ -255,6 +303,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
       }
     }
   }
+
 
   private void siteIntegrationPreviusData() {
     List<CrpsSiteIntegration> siteIntegrationPrew;

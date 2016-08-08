@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,10 +73,13 @@ public class CrpAdminManagmentAction extends BaseAction {
   private UserManager userManager;
   private Role fplRole;
 
+  // Util
+  private SendMail sendMail;
+
   @Inject
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
-    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager) {
+    CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, SendMail sendMail) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -84,6 +88,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.crpParameterManager = crpParameterManager;
     this.userManager = userManager;
     this.crpProgramLeaderManager = crpProgramLeaderManager;
+    this.sendMail = sendMail;
   }
 
 
@@ -112,6 +117,86 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  /**
+   * This method notify the user that is been assigned as Program Leader for an specific Flagship
+   * 
+   * @param user userAssigned is the user been assigned
+   * @param role is the role(Program Leader)
+   * @param crpProgram is the Flagship where is assigned
+   */
+  private void notifyRoleFlagshipAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    System.out.println("Entra a ");
+
+    String flasgshipRole = this.getText("programManagement.flagship.role");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.flagship.assigned",
+      new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.flagship.assigned.subject",
+        new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym()}),
+      message.toString(), null, null, null, true);
+
+  }
+
+  /**
+   * This method notify the user that is been assigned as Program Leader for an specific Regional Program
+   * 
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Program Management)
+   */
+  private void notifyRoleProgramManagementAssigned(User userAssigned, Role role) {
+
+    String managementRole = this.getText("programManagement.role");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message
+      .append(this.getText("email.programManagement.assigned", new String[] {managementRole, loggedCrp.getName()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.programManagement.assigned.subject", new String[] {managementRole, loggedCrp.getName()}),
+      message.toString(), null, null, null, true);
+
+  }
+
+
   private void pmuRoleData() {
     Role rolePreview = roleManager.getRoleById(pmuRol);
     // Removing users roles
@@ -126,11 +211,13 @@ public class CrpAdminManagmentAction extends BaseAction {
         if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
           .collect(Collectors.toList()).isEmpty()) {
           userRoleManager.saveUserRole(userRole);
+          userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+          // Notifiy user been asigned to Program Management
+          this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
         }
       }
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -238,12 +325,16 @@ public class CrpAdminManagmentAction extends BaseAction {
 
             if (!user.getUserRoles().contains(userRole)) {
               userRoleManager.saveUserRole(userRole);
+              userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+              // Notifiy user been asigned Program Leader to Flagship
+              this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
           }
         }
       }
     }
   }
+
 
   private void programsData() {
     List<CrpProgram> fgProgramsRewiev =

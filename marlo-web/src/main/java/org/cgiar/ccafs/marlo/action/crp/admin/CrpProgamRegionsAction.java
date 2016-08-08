@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,13 +88,16 @@ public class CrpProgamRegionsAction extends BaseAction {
   private Long slRoleid;
   private Role slRole;
 
+  // Util
+  private SendMail sendMail;
+
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
     CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager) {
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMail sendMail) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -106,6 +110,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.crpProgramCountryManager = crpProgramCountryManager;
     this.crpSitesLeaderManager = crpSitesLeaderManager;
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
+    this.sendMail = sendMail;
   }
 
   private void deleteSiteIntegration(CrpProgramCountry crpProgramCountry) {
@@ -239,6 +244,44 @@ public class CrpProgamRegionsAction extends BaseAction {
     return rplRole;
   }
 
+  /**
+   * This method notify the user that is been assigned as Program Leader for an specific Regional Program
+   * 
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Program Leader)
+   * @param crpProgram is the Region Program where the user is set
+   */
+  private void notifyRoleAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    String regionRole = this.getText("regionalMapping.CrpProgram.leaders");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(
+      this.getText("email.region.assigned", new String[] {regionRole, crpProgram.getAcronym(), crpProgram.getName()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.region.assigned.subject",
+        new String[] {regionRole, crpProgram.getAcronym(), crpProgram.getName()}),
+      message.toString(), null, null, null, true);
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -287,7 +330,6 @@ public class CrpProgamRegionsAction extends BaseAction {
       regionsPrograms.clear();
     }
   }
-
 
   @Override
   public String save() {
@@ -439,6 +481,8 @@ public class CrpProgamRegionsAction extends BaseAction {
 
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
+                this.notifyRoleAssigned(user, userRole.getRole(), crpProgramLeader.getCrpProgram());
+
               }
             }
           }
@@ -462,6 +506,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
 
   }
+
 
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
     Crp crp = crpManager.getCrpById(loggedCrp.getId());
