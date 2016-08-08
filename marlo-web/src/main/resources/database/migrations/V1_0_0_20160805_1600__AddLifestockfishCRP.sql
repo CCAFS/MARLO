@@ -14,4 +14,3 @@ INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('7', 'crp_impPath_active', 'true', '1', '3', '2016-08-05 15:00:00', '3', ' ');
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('7', 'crp_cl_rol', '42', '1', '3', '2016-08-05 15:00:00', '3', ' ');
 INSERT INTO `crp_parameters` (`crp_id`, `key`, `value`, `is_active`, `created_by`, `active_since`, `modified_by`, `modification_justification`) VALUES ('7', 'crp_sl_rol', '41', '1', '3', '2016-08-05 15:00:00', '3', ' ');
-
