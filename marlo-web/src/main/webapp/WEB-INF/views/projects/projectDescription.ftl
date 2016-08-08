@@ -32,6 +32,7 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
+          
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
               [#-- Project Title --]
@@ -114,7 +115,7 @@
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
                 <div id="projectFlagshipsBlock" class="">
-                  <div class="col-md-12">  
+                  <div class="col-md-6">  
                     <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -127,6 +128,10 @@
                       [/#if]
                     [/#if]
                   </div>
+                  <div class="col-md-6">  
+                   
+                  </div>
+                  
                   <div class="clearfix"></div>
                 </div> 
                 
@@ -174,9 +179,6 @@
       </div>
     </div>  
 </section>
-
-[#-- Hidden values used by js --]
-
 
 [#-- Core project list template --]
 <ul style="display:none">
