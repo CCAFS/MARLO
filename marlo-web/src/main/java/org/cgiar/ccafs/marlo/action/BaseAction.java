@@ -18,10 +18,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -33,13 +35,19 @@ import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +56,8 @@ import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.SessionAware;
@@ -71,11 +81,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
   public static final String NEXT = "next";
-
-
   public static final String NOT_AUTHORIZED = "403";
 
   public static final String NOT_FOUND = "404";
+
   public static final String NOT_LOGGED = "401";
   public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
@@ -83,10 +92,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private AuditLogManager auditLogManager;
   private String basePermission;
-
   protected boolean cancel;
 
   private boolean canEdit; // If user is able to edit the form.
+
   protected APConfig config;
   private Long crpID;
   // Managers
@@ -98,31 +107,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean dataSaved;
   protected boolean delete;
   private boolean draft;
-
   private boolean reportingActive;
+
   private boolean planningActive;
   private boolean lessonsActive;
-
   private int reportingYear;
-
 
   private int planningYear;
 
+
   private boolean fullEditable; // If user is able to edit all the form.
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
-
-
   // Justification of the changes
   private String justification;
 
 
   protected boolean next;
   @Inject
+  private FileDBManager fileDBManager;
+
+  @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
   private Map<String, Object> parameters;
-
-
   private HttpServletRequest request;
 
 
@@ -141,7 +149,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   protected BaseSecurityContext securityContext;
 
+
   private Map<String, Object> session;
+
   private Submission submission;
   protected boolean submit;
 
@@ -177,11 +187,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
   }
+
 
   /* Override this method depending of the cancel action. */
   public String cancel() {
@@ -192,7 +202,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -211,6 +220,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return INPUT;
   }
+
 
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
@@ -321,6 +331,47 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+  public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
+
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      String md5 = DigestUtils.md5Hex(fis);
+      FileDB dbFile = null;
+
+
+      if (preview != null) {
+
+        if (preview.getFileName().equals(fileFileName) && !md5.equals(preview.getTokenId())) {
+          dbFile = new FileDB(fileFileName, md5);
+          FileDB dbFilePrev = preview;
+          Path prevFile = Paths.get(path + dbFilePrev.getFileName());
+          String newName = FilenameUtils.removeExtension(fileFileName) + "_" + UUID.randomUUID().toString() + "."
+            + FilenameUtils.getExtension(fileFileName);
+          newName = newName.replaceAll(":", "-");
+          Files.move(prevFile, prevFile.resolveSibling(newName));
+          dbFilePrev.setFileName(newName);
+          fileDBManager.saveFileDB(dbFilePrev);
+        } else {
+          if (preview.getFileName().equals(fileFileName) && md5.equals(preview.getTokenId())) {
+            dbFile = preview;
+          } else {
+            dbFile = new FileDB(fileFileName, md5);
+          }
+        }
+
+
+      } else {
+        dbFile = new FileDB(fileFileName, md5);
+      }
+      fileDBManager.saveFileDB(dbFile);
+      return dbFile;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
   }
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {

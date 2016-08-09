@@ -68,13 +68,13 @@
       
               [#-- Project upload work plan --]
               [#if !((project.bilateralProject)!false)]
-              <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplanName?has_content && !editable]display:none[/#if]">
+              <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
                 [#if action.hasPermission("workplan") ]
                   [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
                 [/#if]
                 <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
                   <div class="halfPartBlock fileUpload projectWorkplan">
-                    [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplanName" editable=editable /]
+                    [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable /]
                   </div> 
                 </div>  
               </div>
@@ -85,7 +85,7 @@
               <div class="fullBlock fileUpload bilateralContract">
                 <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
                 <div class="uploadContainer">
-                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName" editable=editable /]
+                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable /]
                 </div>  
               </div>
               [/#if]
@@ -102,7 +102,7 @@
                 <div class="fullBlock fileUpload annualreportDonor">
                   <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
                   <div class="uploadContainer">
-                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDornor" editable=editable /]
+                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable /]
                   </div>  
                 </div>
                 [/#if]
@@ -195,7 +195,7 @@
 </div>
 
 [#-- File upload Template--]
-[@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplanName" template=true /]
+[@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" template=true /]
 
 [@customForm.inputFile name="fileReporting" template=true /] 
   

@@ -210,7 +210,7 @@
     [/#if]
     
     [#if template]
-      <input type="hidden" name="${fileName}" value="" /> 
+      <input type="hidden" name="${fileName}"  /> 
     [#else]
       <input type="hidden" name="${fileName}" value="${(customFileName)!}" /> 
     [/#if]

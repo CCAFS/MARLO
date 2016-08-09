@@ -86,17 +86,19 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean requiresWorkplanUpload;
   @Expose
-  private String workplanName;
+  private FileDB annualReportToDonnor;
   @Expose
-  private String bilateralContractName;
+  private FileDB bilateralContractName;
+  @Expose
+  private FileDB workplan;
+
   @Expose
   private boolean active;
   @Expose
   private Date activeSince;
   @Expose
   private String modificationJustification;
-  @Expose
-  private String annualReportToDornor;
+
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
   private List<CrpProgram> flagships;
@@ -120,9 +122,9 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
-    boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, String workplanName,
-    String bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
-    String annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
+    boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, FileDB workplanName,
+    FileDB bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
+    FileDB annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
     Set<ProjectLocation> projectLocations) {
     this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
@@ -138,12 +140,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.cofinancing = isCofinancing;
     this.leaderResponsabilities = leaderResponsabilities;
     this.requiresWorkplanUpload = requiresWorkplanUpload;
-    this.workplanName = workplanName;
+    this.workplan = workplanName;
     this.bilateralContractName = bilateralContractName;
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
-    this.annualReportToDornor = annualReportToDornor;
+    this.annualReportToDonnor = annualReportToDornor;
     this.projectFocuses = projectFocuseses;
     this.submissions = submissions;
     this.projectLocations = projectLocations;
@@ -188,14 +190,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
-  public String getAnnualReportToDornor() {
-    return this.annualReportToDornor;
+
+  public FileDB getAnnualReportToDonnor() {
+    return annualReportToDonnor;
   }
 
-  public String getBilateralContractName() {
-    return this.bilateralContractName;
+  public FileDB getBilateralContractName() {
+    return bilateralContractName;
   }
-
 
   /**
    * This method gets all the coordinators working for this project.
@@ -239,24 +241,25 @@ public class Project implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
+
   public Date getEndDate() {
     return this.endDate;
   }
+
 
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
 
-
   public String getFlagshipValue() {
     return flagshipValue;
   }
-
 
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public ProjectPartner getLeader() {
 
@@ -325,15 +328,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.leaderResponsabilities;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
   }
 
-
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
   }
-
 
   public List<ProjectLocation> getLocations() {
     return locations;
@@ -349,20 +351,20 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
   }
 
-
   public String getOverall() {
     return overall;
   }
-
 
   public List<ProjectPartner> getPartners() {
     return partners;
@@ -427,21 +429,22 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
+
   public String getSummary() {
     return this.summary;
   }
+
 
   public String getTitle() {
     return this.title;
   }
 
-
   public String getType() {
     return this.type;
   }
 
-  public String getWorkplanName() {
-    return this.workplanName;
+  public FileDB getWorkplan() {
+    return workplan;
   }
 
   @Override
@@ -483,6 +486,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return (type != null) ? type.equals(APConstants.PROJECT_CORE) : false;
   }
 
+
   public boolean isGlobal() {
     return global;
   }
@@ -495,11 +499,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-  public void setAnnualReportToDornor(String annualReportToDornor) {
-    this.annualReportToDornor = annualReportToDornor;
+  public void setAnnualReportToDonnor(FileDB annualReportToDonnor) {
+    this.annualReportToDonnor = annualReportToDonnor;
   }
 
-  public void setBilateralContractName(String bilateralContractName) {
+  public void setBilateralContractName(FileDB bilateralContractName) {
     this.bilateralContractName = bilateralContractName;
   }
 
@@ -527,21 +531,26 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.flagshipValue = flagshipValue;
   }
 
+
   public void setGlobal(boolean global) {
     this.global = global;
   }
+
 
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonUser(LiaisonUser liaisonUser) {
     this.liaisonUser = liaisonUser;
@@ -572,26 +581,21 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.partners = partners;
   }
 
-
   public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
     this.projectComponentLesson = projectComponentLesson;
   }
-
 
   public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
     this.projectComponentLessonPreview = projectComponentLessonPreview;
   }
 
-
   public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
     this.projectComponentLessons = projectComponentLessons;
   }
 
-
   public void setProjectFocuses(Set<ProjectFocus> projectFocuseses) {
     this.projectFocuses = projectFocuseses;
   }
-
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
@@ -609,30 +613,36 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
+
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
+
 
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
   }
 
+
   public void setSummary(String summary) {
     this.summary = summary;
   }
 
+
   public void setTitle(String title) {
     this.title = title;
   }
+
 
   public void setType(String type) {
     this.type = type;
   }
 
 
-  public void setWorkplanName(String workplanName) {
-    this.workplanName = workplanName;
+  public void setWorkplan(FileDB workplan) {
+    this.workplan = workplan;
   }
+
 
   @Override
   public String toString() {
