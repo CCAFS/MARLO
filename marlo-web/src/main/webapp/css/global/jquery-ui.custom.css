@@ -448,7 +448,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 2px; bottom: 2px; }
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
-.dialog-searchUsers.ui-dialog {overflow: hidden;border-color: #408088;}
+.dialog-searchUsers.ui-dialog {overflow: hidden;border-color: #287fa1;}
 .dialog-searchUsers.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
 .dialog-searchUsers.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
 .dialog-searchUsers.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
