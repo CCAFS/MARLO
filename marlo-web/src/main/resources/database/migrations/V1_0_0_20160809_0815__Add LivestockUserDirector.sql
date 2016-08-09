@@ -1,0 +1,2 @@
+INSERT INTO `users` VALUES ('1089', 'Thomas Fitz', 'Randolph', 'trandolph', 'T.RANDOLPH@CGIAR.ORG', '202cb962ac59075b964b07152d234b70', '0', '13', '2016-08-08 08:49:14', '13', 'User add from livestock and fish', '1', '2016-08-09 09:14:32', '1');
+INSERT INTO `user_roles` (`user_id`, `role_id`) VALUES ('1089', '43');
