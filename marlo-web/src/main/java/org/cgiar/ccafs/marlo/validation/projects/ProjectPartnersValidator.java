@@ -81,7 +81,8 @@ public class ProjectPartnersValidator extends BaseValidator {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(), "partners");
       }
       // Saving missing fields.
-
+      int i = 0;
+      System.out.println(i);
     }
   }
 

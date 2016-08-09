@@ -149,7 +149,7 @@ public class User implements java.io.Serializable, IAuditLog {
    *         e.g. Tobón, Héctor <h.f.tobon@cgiar.org>
    */
   public String getComposedName() {
-    if (this.id == -1) {
+    if (this.id == null || this.id == -1) {
       return "";
     }
     return this.lastName + ", " + this.firstName + " <" + this.email + ">";

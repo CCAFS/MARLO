@@ -448,13 +448,17 @@ public class ProjectPartnerAction extends BaseAction {
 
 
           if (pp.getInstitution() != null) {
-            Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
-            if (inst != null) {
-              if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
-                this.projectPPAPartners.add(pp);
 
+            if (pp.getInstitution().getId() != null || pp.getInstitution().getId() != -1) {
+              Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
+              if (inst != null) {
+                if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+                  .size() > 0) {
+                  this.projectPPAPartners.add(pp);
+
+                }
+                pp.setInstitution(inst);
               }
-              pp.setInstitution(inst);
             }
 
 
@@ -462,15 +466,23 @@ public class ProjectPartnerAction extends BaseAction {
 
           if (pp.getPartnerPersons() != null) {
             for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
-              projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+
+              if (projectPartnerPerson.getUser().getId() != null) {
+                projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+
+              }
             }
           }
 
           if (pp.getPartnerContributors() != null) {
             for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
-              projectPartnerContribution.getProjectPartnerContributor()
-                .setInstitution(institutionManager.getInstitutionById(
-                  projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+
+              if (projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId() != null) {
+                projectPartnerContribution.getProjectPartnerContributor()
+                  .setInstitution(institutionManager.getInstitutionById(
+                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+
             }
           }
 
