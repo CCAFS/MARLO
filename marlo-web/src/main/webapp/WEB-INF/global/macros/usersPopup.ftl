@@ -4,14 +4,19 @@
   <div id="dialog-searchUsers" title="Manage Users" style="display:none"> 
     <div class="dialog-content"> 
       <form class="pure-form">
-        [#-- Search Users Form --]
-        <div id="search-users" class="accordion">
-          <span class="ui-icon ui-icon-triangle-1-s"></span>[@s.text name="users.searchUsers" /]
+        [#-- Search Users Form  --]
+        <div id="search-users">
+          <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
+          <h4 class="text-center"> Select a Person
+          <br />
+          <small> [@s.text name="users.searchUsers" /]  </small>
+          </h4>
+          <hr />
         </div>
         <div class="accordion-block">
           <div class="search-content clearfix">
             <div class="search-input">
-              [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser"/]
+              [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="First name, last name or email"/]
               <div class="search-loader" style="display:none"><img src="${baseUrl}/images/global/loading_2.gif"></div>
             </div>  
             <div class="search-button">[@s.text name="form.buttons.search" /]</div>
@@ -30,22 +35,24 @@
         </div>
         
         [#-- Create User Form --]    
-        <div id="create-user" class="accordion active">
-          <span class="ui-icon ui-icon-triangle-1-e"></span>[@s.text name="users.createUser" /]
+        <div id="create-user" class="accordion  text-center">
+          <span class="glyphicon glyphicon-plus"></span> <span class="title">[@s.text name="users.createUser" /]</span> 
         </div>
         <div class="accordion-block create-user clearfix" style="display:none">
-          <div class="loading" style="display:none"></div>
-          <p class="warning-info" style="display:none"></p> 
-          <div id="" class="tickBox-wrapper fullBlock">
-            [@customForm.checkbox name="isCCAFS" value="" i18nkey="users.isCCAFS" /]
-            <div class="tickBox-toggle">
-              <div class="halfPartBlock">[@customForm.input name="firstName" type="text" i18nkey="users.firstName"/] </div>
-              <div class="halfPartBlock">[@customForm.input name="lastName" type="text" i18nkey="users.lastName"/] </div>
-            </div>  
-          </div> 
-          <div class="fullPartBlock">[@customForm.input name="email" type="text" i18nkey="users.email"/] </div> 
-          <input id="isActive" value="${isActive?string('1','0')}" type="hidden"/>
-          <div class="button create-button">[@s.text name="users.createUser" /]</div>
+          <div class="create-user-block">
+            <div class="loading" style="display:none"></div>
+            <p class="warning-info" style="display:none"></p> 
+            <div id="" class="tickBox-wrapper fullBlock">
+              [@customForm.checkbox name="isCCAFS" value="" i18nkey="users.isCCAFS" /]
+              <div class="tickBox-toggle">
+                <div class="halfPartBlock">[@customForm.input name="firstName" type="text" i18nkey="users.firstName"/] </div>
+                <div class="halfPartBlock">[@customForm.input name="lastName" type="text" i18nkey="users.lastName"/] </div>
+              </div>  
+            </div> 
+            <div class="fullPartBlock">[@customForm.input name="email" type="text" i18nkey="users.email"/] </div> 
+            <input id="isActive" value="${isActive?string('1','0')}" type="hidden"/>
+            <div class="button create-button">[@s.text name="users.createUser" /]</div>
+          </div>
         </div> 
         
         <!-- Allow form submission with keyboard without duplicating the dialog button -->

@@ -80,14 +80,16 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
-  if(autoSaveActive) {
-    if(timeoutAutoSave) {
-      clearTimeout(timeoutAutoSave);
+  if(isChanged() || forceChange) {
+    if(autoSaveActive) {
+      if(timeoutAutoSave) {
+        clearTimeout(timeoutAutoSave);
+      }
+      // Start a timer that will search when finished
+      timeoutAutoSave = setTimeout(function() {
+        autoSave();
+      }, 10 * 1000);
     }
-    // Start a timer that will search when finished
-    timeoutAutoSave = setTimeout(function() {
-      autoSave();
-    }, 10 * 1000);
   }
 }
 

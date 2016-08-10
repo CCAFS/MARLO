@@ -511,26 +511,59 @@ ul#noty_bottomRight_layout_container {
 
 .accordion {
     color: #fff;
-    background: #408088;
-    padding: 6px;
+    background: #2a7eb7;
+    font-size: 1.5em;
+    vertical-align: middle;
+    padding: 8px;
+    /* border-bottom: 3px solid #236d8a; */
     /* border-radius: 4px 4px 0 0; */
     /* margin-top: 4px; */
+    cursor: pointer;
+    box-shadow: 0px -1px 2px #287fa1;
 }
 .accordion.active:hover {
-  background: #386E75;
-  cursor:pointer;
+  background: #2f8ac7;
 }
+
+.accordion.active {
+  background: #3498db;
+  cursor:pointer;
+  /* opacity: 0.7; */
+  color: #b1d2e8;
+}
+
 .accordion span{
-    float: left;
+    /* float: left; */
 }
 
 .accordion-block {
-    padding: 12px 15px 5px 15px;
-    margin-bottom: 14px;
-    height: 245px;
-    border: 1px solid #E5E5E5;
+    /* padding: 12px 15px 5px 15px; */
+    /* margin-bottom: 14px; */
+    height: 312px;
+    /* border: 1px solid #E5E5E5; */
     border-top: 0;
     position: relative;
+}
+
+#search-users h4{ 
+  padding: 12px;
+}
+
+#search-users hr{ 
+  margin: 0;
+}
+
+.create-user-block{
+  padding: 10px 23px;
+}
+
+.close-dialog{
+  position: absolute;
+  right:2px;
+  top: 2px;
+  font-size: 1.7em;
+  color: #6b6b6b;
+  cursor: pointer;
 }
 
 
@@ -630,7 +663,8 @@ input.target {
 }
 
 .fileUpload a{
-  /* vertical-align: middle; */
+  
+/* vertical-align: middle; */
 }
 
 .fileUpload h6{
@@ -952,7 +986,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .dialog-content {
     text-align: left;
-    height: 96%;
+    height: 100%;
     /* margin-top: 6px; */
     font-size: 0.9em;
 }
@@ -962,7 +996,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 4px;
-    margin: 3px 0 15px 0;
+    margin: 3px 8px 15px 8px;
 }
 
 .panel.primary{}
@@ -970,7 +1004,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel.secondary .panel-head{
   font-size: 1em;
   background: #CBCBCB;
-  padding: 4px;
+  /* padding: 4px; */
 }
 
 .panel.tertiary {
@@ -1016,8 +1050,8 @@ select#partnerSave_activityPartner_partner_type_id {
     font-weight: 500;
 }
 .panel .panel-body {
-    padding: 4px 3px 10px 10px;
-    min-height: 21px;
+    padding: 4px 3px 4px 3px;
+    min-height: 44px;
 }
 
 .panel .panel-body ul{
@@ -1077,7 +1111,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .search-input{
-    width: 86%; 
+    width: 85%;
     position: relative;
 }
 
@@ -1099,8 +1133,8 @@ select#partnerSave_activityPartner_partner_type_id {
     border-radius: 4px;
     cursor:pointer;
     position: absolute;
-    bottom: 0em;
-    right: 0;
+    bottom: 23%;
+    right: 11px;
     text-align: center;
 }
 .search-button:hover {
@@ -1110,10 +1144,12 @@ select#partnerSave_activityPartner_partner_type_id {
 .search-content {
     position: relative;
     margin-bottom: 0px;
+    background: #f1f1f1;
+    padding: 12px;
 }
 
 .usersList ul {
-  max-height: 145px;
+  max-height: 204px;
   overflow: auto;
 }
 
