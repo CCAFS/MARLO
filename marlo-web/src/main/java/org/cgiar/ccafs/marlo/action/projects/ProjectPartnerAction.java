@@ -922,6 +922,35 @@ public class ProjectPartnerAction extends BaseAction {
   public void validate() {
     if (save) {
       projectPartnersValidator.validate(this, project);
+      if (projectPartnersValidator.isHasErros()) {
+        if (project.getPartners() != null) {
+          for (ProjectPartner projectPartner : project.getPartners()) {
+            if (projectPartner.getInstitution().getId() != null) {
+              projectPartner
+                .setInstitution(institutionManager.getInstitutionById(projectPartner.getInstitution().getId()));
+
+            }
+
+            if (projectPartner.getPartnerPersons() != null) {
+              for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
+                if (projectPartnerPerson.getUser() != null) {
+                  projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+                }
+              }
+            }
+
+            if (projectPartner.getPartnerContributors() != null) {
+              for (ProjectPartnerContribution projectPartnerContribution : projectPartner.getPartnerContributors()) {
+
+                projectPartnerContribution.getProjectPartnerContributor()
+                  .setInstitution(institutionManager.getInstitutionById(
+                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+            }
+          }
+        }
+
+      }
     }
   }
 }

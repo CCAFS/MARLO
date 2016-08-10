@@ -33,12 +33,17 @@ import com.google.inject.Inject;
 
 public class ProjectPartnersValidator extends BaseValidator {
 
+  private boolean hasErros;
   private ProjectValidator projectValidator;
 
   @Inject
   public ProjectPartnersValidator(ProjectValidator projectValidator) {
     super();
     this.projectValidator = projectValidator;
+  }
+
+  public boolean isHasErros() {
+    return hasErros;
   }
 
   public void replaceAll(StringBuilder builder, String from, String to) {
@@ -50,7 +55,14 @@ public class ProjectPartnersValidator extends BaseValidator {
     }
   }
 
+
+  public void setHasErros(boolean hasErros) {
+    this.hasErros = hasErros;
+  }
+
+
   public void validate(BaseAction action, Project project) {
+    hasErros = false;
     if (project != null) {
 
       if (!project.getPartners().isEmpty() && (project.isCoreProject() || project.isCoFundedProject())) {
@@ -70,6 +82,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       this.validateCCAFSProject(action, project);
 
       if (!action.getFieldErrors().isEmpty()) {
+        hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {
         action
@@ -81,11 +94,9 @@ public class ProjectPartnersValidator extends BaseValidator {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(), "partners");
       }
       // Saving missing fields.
-      int i = 0;
-      System.out.println(i);
+
     }
   }
-
 
   private void validateCCAFSProject(BaseAction action, Project project) {
     this.validateInstitutionsEmpty(action, project);
