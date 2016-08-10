@@ -64,6 +64,11 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		
+		<property name="projectEditLeader" type="boolean">
+      <column name="is_project_leader_edit" />
+    </property>
+    
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
