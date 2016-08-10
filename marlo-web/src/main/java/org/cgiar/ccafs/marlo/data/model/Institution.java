@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Institution implements java.io.Serializable, IAuditLog {
 
@@ -219,5 +220,9 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.websiteLink = websiteLink;
   }
 
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
+  }
 }
 

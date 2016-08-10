@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
 /**
@@ -140,11 +141,9 @@ public class ProjectLocation implements java.io.Serializable {
     return regionLocElement;
   }
 
-
   public boolean isActive() {
     return active;
   }
-
 
   public void setActive(boolean active) {
     this.active = active;
@@ -159,6 +158,7 @@ public class ProjectLocation implements java.io.Serializable {
   public void setCreatedBy(long createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
@@ -186,6 +186,11 @@ public class ProjectLocation implements java.io.Serializable {
 
   public void setRegionLocElement(LocElement regionLocElement) {
     this.regionLocElement = regionLocElement;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
   }
 
 }

@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class InstitutionType implements java.io.Serializable {
 
@@ -77,4 +78,8 @@ public class InstitutionType implements java.io.Serializable {
     this.name = name;
   }
 
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
+  }
 }
