@@ -4855,6 +4855,13 @@ ul#deliverablesFilesMessages > li {
   text-decoration: underline;
 }
 
+.grayBlock, .grayBox {
+  background: #f1f1f1;
+  padding: 6px 16px;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
 .borderBox {
   border: 1px solid #D1D1D1;
   padding: 9px 22px 9px 22px;

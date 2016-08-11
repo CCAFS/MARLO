@@ -12,12 +12,7 @@ li.targetUnit {
 
 .srfIdo {/* padding: 5px; */}
 
-.grayBlock {
-  background: #f1f1f1;
-  padding: 6px 16px;
-  border-radius: 5px;
-  margin-top: 5px;
-}
+
 /** SLOs **/
 
 .srfSlo .blockTitle {

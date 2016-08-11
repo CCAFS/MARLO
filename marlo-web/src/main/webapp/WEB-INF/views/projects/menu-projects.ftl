@@ -31,3 +31,13 @@
 </nav>
 
 <div class="clearfix"></div>
+
+[#-- Open for Project Leaders --]
+[#if canEdit]
+<div class="grayBox">
+  [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="text-left" /]
+</div>
+[/#if]
+
+[#-- Project Submit JS --]
+[#assign customJS = [ "${baseUrl}/js/projects/projectSubmit.js" ] + customJS  /]
