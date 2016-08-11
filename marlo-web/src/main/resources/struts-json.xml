@@ -40,6 +40,22 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
+    
+    <action name="searchCountryListPL"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="projectLeaderEdit"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProjectLeaderEditAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="SubIDObyIDO"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.SubIDOListAction">
