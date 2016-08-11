@@ -11,11 +11,6 @@ $(document).ready(function() {
   $(document).on('updateComponent', changeDetected);
   $(':input').on('keyup change', changeDetected);
 
-  $('button[name="save"]').on('click', function(e) {
-    // Send push for saving
-    pushSave();
-  });
-
 });
 
 function autoSave() {

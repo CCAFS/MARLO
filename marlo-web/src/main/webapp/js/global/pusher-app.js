@@ -92,6 +92,7 @@ if(editable && canEdit){
   var editingChannel = pusher.subscribe("presence-"+currentSectionString+"-canEdit");
   var myID;
   var myTurn;
+  var savedBy;
   var currentUsers = [];
   
   editingChannel.bind('pusher:subscription_succeeded', function(members) {
@@ -101,6 +102,12 @@ if(editable && canEdit){
     });
     removeFromArray(currentUsers, myID);
     addToArray(currentUsers, myID);
+    
+    // If there is messages before save push a save action to the others members
+    if($('#generalMessages ul.messages li').exists()) {
+      pushSave();
+    }
+    
     checkEditingUsers();
   });
   
@@ -112,17 +119,39 @@ if(editable && canEdit){
   editingChannel.bind('pusher:member_removed', function(member) {
     removeFromArray(currentUsers, member.id);
     checkEditingUsers();
+    
+    if(savedBy){
+      informSavedVersion(savedBy);
+    }
+    
   });
   
+  editingChannel.bind('client-section-saved', function(data) {
+    savedBy=data.name;
+    informSavedVersion(savedBy);
+  });
+
+  function pushSave(){
+    editingChannel.trigger("client-section-saved", {name: $('#userInfo .name').text()});
+  }
+  
+  function informSavedVersion(name){
+    if(myTurn == 1){
+      $('#concurrenceMessage').find('.person').text(name); $('#concurrenceMessage').fadeIn();
+    }
+  }
   
   function checkEditingUsers(){
     myTurn = parseInt(currentUsers.indexOf(myID)) + 1
+    checkStatus();
+  }
+  
+  function checkStatus(){
     if(myTurn == 1){
-      $('#concurrenceBlock').fadeOut();
+      $('#concurrenceBlock').hide();
     }else{
-      $('#concurrenceBlock').fadeIn();
+      $('#concurrenceBlock').show();
     }
-    console.log("My turn: " + myTurn );
   }
   
   function removeFromArray(array, string){
@@ -172,20 +201,7 @@ presenceChannel.bind('client-mouse-moved', function(data) {
   $mousePointer.fadeIn();
 });
 
-presenceChannel.bind('client-section-saved', function(data) {
-  console.log('someone save');
-  console.log(data.changed);
-  if(data.changed){
-    $('#concurrenceMessage').find('.person').text(data.name);
-    $('#concurrenceMessage').fadeIn();
-  }
-});
 
-function pushSave(){
-    var data = {name: presenceChannel.members.me.info.name , changed : isChanged()}
-    console.log(data);
-    presenceChannel.trigger("client-section-saved", data);
-}
 
 // document.body.addEventListener('click', onMouseClick, true);
 function onMouseClick(ev){
