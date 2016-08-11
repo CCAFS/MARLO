@@ -78,14 +78,14 @@
 		</property>
 	
 	
-	 <many-to-one name="annualReportToDonnor" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-            <column name="file_annual_report_to_donnor" />
+	 <many-to-one name="annualReportToDonnor"   class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_annual_report_to_donnor" not-null="false" />
         </many-to-one>
         <many-to-one name="bilateralContractName" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-            <column name="file_bilateral_contract_name" />
+            <column name="file_bilateral_contract_name" not-null="false" />
         </many-to-one>
-        <many-to-one name="workplan" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
-            <column name="file_workplan" />
+        <many-to-one name="workplan"   class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_workplan" not-null="false" />
         </many-to-one>
 	
 	
