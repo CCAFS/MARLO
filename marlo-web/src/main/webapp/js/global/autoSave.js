@@ -11,7 +11,7 @@ $(document).ready(function() {
   $(document).on('updateComponent', changeDetected);
   $(':input').on('keyup change', changeDetected);
 
-  $('button[name="save"]').on('click', function() {
+  $('button[name="save"]').on('click', function(e) {
     // Send push for saving
     pushSave();
   });
@@ -80,7 +80,7 @@ function errorNotification(msj) {
 }
 
 function changeDetected(e) {
-  if(isChanged() || forceChange) {
+  if(isChanged()) {
     if(autoSaveActive) {
       if(timeoutAutoSave) {
         clearTimeout(timeoutAutoSave);

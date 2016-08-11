@@ -58,7 +58,7 @@ public class ProjectDescriptionValidator extends BaseValidator
       this.addMessage(action.getText("project.title"));
     }
 
-    if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 20)) {
+    if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 150)) {
       this.addMessage(action.getText("project.summary"));
     }
 

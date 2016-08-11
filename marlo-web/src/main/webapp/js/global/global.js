@@ -264,7 +264,7 @@ function validateEvent(fields) {
 }
 
 function isChanged() {
-  return(formBefore != getFormHash());
+  return (formBefore != getFormHash()) || forceChange;
 }
 
 function setFormHash() {

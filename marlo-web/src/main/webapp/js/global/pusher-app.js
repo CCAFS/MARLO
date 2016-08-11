@@ -173,14 +173,18 @@ presenceChannel.bind('client-mouse-moved', function(data) {
 });
 
 presenceChannel.bind('client-section-saved', function(data) {
-  $('#concurrenceMessage').find('.person').text(data.info.name);
-  $('#concurrenceMessage').fadeIn();
+  console.log('someone save');
+  console.log(data.changed);
+  if(data.changed){
+    $('#concurrenceMessage').find('.person').text(data.name);
+    $('#concurrenceMessage').fadeIn();
+  }
 });
 
 function pushSave(){
-  if(isChanged()){
-    presenceChannel.trigger("client-section-saved", presenceChannel.members.me);    
-  }
+    var data = {name: presenceChannel.members.me.info.name , changed : isChanged()}
+    console.log(data);
+    presenceChannel.trigger("client-section-saved", data);
 }
 
 // document.body.addEventListener('click', onMouseClick, true);
