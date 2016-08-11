@@ -448,13 +448,17 @@ public class ProjectPartnerAction extends BaseAction {
 
 
           if (pp.getInstitution() != null) {
-            Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
-            if (inst != null) {
-              if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
-                this.projectPPAPartners.add(pp);
 
+            if (pp.getInstitution().getId() != null || pp.getInstitution().getId() != -1) {
+              Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
+              if (inst != null) {
+                if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+                  .size() > 0) {
+                  this.projectPPAPartners.add(pp);
+
+                }
+                pp.setInstitution(inst);
               }
-              pp.setInstitution(inst);
             }
 
 
@@ -462,15 +466,23 @@ public class ProjectPartnerAction extends BaseAction {
 
           if (pp.getPartnerPersons() != null) {
             for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
-              projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+
+              if (projectPartnerPerson.getUser().getId() != null) {
+                projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+
+              }
             }
           }
 
           if (pp.getPartnerContributors() != null) {
             for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
-              projectPartnerContribution.getProjectPartnerContributor()
-                .setInstitution(institutionManager.getInstitutionById(
-                  projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+
+              if (projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId() != null) {
+                projectPartnerContribution.getProjectPartnerContributor()
+                  .setInstitution(institutionManager.getInstitutionById(
+                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+
             }
           }
 
@@ -910,6 +922,35 @@ public class ProjectPartnerAction extends BaseAction {
   public void validate() {
     if (save) {
       projectPartnersValidator.validate(this, project);
+      if (projectPartnersValidator.isHasErros()) {
+        if (project.getPartners() != null) {
+          for (ProjectPartner projectPartner : project.getPartners()) {
+            if (projectPartner.getInstitution().getId() != null) {
+              projectPartner
+                .setInstitution(institutionManager.getInstitutionById(projectPartner.getInstitution().getId()));
+
+            }
+
+            if (projectPartner.getPartnerPersons() != null) {
+              for (ProjectPartnerPerson projectPartnerPerson : projectPartner.getPartnerPersons()) {
+                if (projectPartnerPerson.getUser() != null) {
+                  projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
+                }
+              }
+            }
+
+            if (projectPartner.getPartnerContributors() != null) {
+              for (ProjectPartnerContribution projectPartnerContribution : projectPartner.getPartnerContributors()) {
+
+                projectPartnerContribution.getProjectPartnerContributor()
+                  .setInstitution(institutionManager.getInstitutionById(
+                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
+              }
+            }
+          }
+        }
+
+      }
     }
   }
 }

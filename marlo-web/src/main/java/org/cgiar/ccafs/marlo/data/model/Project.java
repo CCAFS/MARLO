@@ -39,46 +39,52 @@ public class Project implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -5737088425960023585L;
+
+
   public static final int STANDAR_IDENTIFIER = 1;
+
+
   public static final int PDF_IDENTIFIER_REPORT = 2;
   public static final int EXCEL_IDENTIFIER_REPORT = 3;
   public static final int EMAIL_SUBJECT_IDENTIFIER = 4;
-
-
   @Expose
   private Long id;
-
-
   @Expose
   private Crp crp;
+
 
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
 
   @Expose
+  private boolean projectEditLeader;
+
+  @Expose
   private LiaisonUser liaisonUser;
 
   @Expose
   private User createdBy;
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private String title;
   @Expose
   private String summary;
   @Expose
   private Date startDate;
-
-
   @Expose
   private Date endDate;
-
-
   @Expose
   private String type;
+
+
   @Expose
   private boolean global;
+
+
   @Expose
   private boolean cofinancing;
   @Expose
@@ -86,43 +92,43 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean requiresWorkplanUpload;
   @Expose
-  private String workplanName;
+  private FileDB annualReportToDonnor;
   @Expose
-  private String bilateralContractName;
+  private FileDB bilateralContractName;
+  @Expose
+  private FileDB workplan;
   @Expose
   private boolean active;
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
-  @Expose
-  private String annualReportToDornor;
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
+
   private List<CrpProgram> flagships;
   private String flagshipValue;
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-
   private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
-  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
+
   private String overall;
   private List<ProjectPartner> partners;
   private List<ProjectLocation> locations;
 
-
   public Project() {
   }
 
-
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
-    boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, String workplanName,
-    String bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
-    String annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
+    boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, FileDB workplanName,
+    FileDB bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
+    FileDB annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
     Set<ProjectLocation> projectLocations) {
     this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
@@ -138,12 +144,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.cofinancing = isCofinancing;
     this.leaderResponsabilities = leaderResponsabilities;
     this.requiresWorkplanUpload = requiresWorkplanUpload;
-    this.workplanName = workplanName;
+    this.workplan = workplanName;
     this.bilateralContractName = bilateralContractName;
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
-    this.annualReportToDornor = annualReportToDornor;
+    this.annualReportToDonnor = annualReportToDornor;
     this.projectFocuses = projectFocuseses;
     this.submissions = submissions;
     this.projectLocations = projectLocations;
@@ -160,6 +166,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -188,12 +195,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
-  public String getAnnualReportToDornor() {
-    return this.annualReportToDornor;
+  public FileDB getAnnualReportToDonnor() {
+    return annualReportToDonnor;
   }
 
-  public String getBilateralContractName() {
-    return this.bilateralContractName;
+
+  public FileDB getBilateralContractName() {
+    return bilateralContractName;
   }
 
 
@@ -440,8 +448,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.type;
   }
 
-  public String getWorkplanName() {
-    return this.workplanName;
+
+  public FileDB getWorkplan() {
+    return workplan;
   }
 
   @Override
@@ -487,6 +496,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return global;
   }
 
+  public boolean isProjectEditLeader() {
+    return projectEditLeader;
+  }
+
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -495,11 +509,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-  public void setAnnualReportToDornor(String annualReportToDornor) {
-    this.annualReportToDornor = annualReportToDornor;
+  public void setAnnualReportToDonnor(FileDB annualReportToDonnor) {
+    this.annualReportToDonnor = annualReportToDonnor;
   }
 
-  public void setBilateralContractName(String bilateralContractName) {
+  public void setBilateralContractName(FileDB bilateralContractName) {
     this.bilateralContractName = bilateralContractName;
   }
 
@@ -531,17 +545,21 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.global = global;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
+
 
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
   }
 
+
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
+
 
   public void setLiaisonUser(LiaisonUser liaisonUser) {
     this.liaisonUser = liaisonUser;
@@ -577,21 +595,21 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectComponentLesson = projectComponentLesson;
   }
 
-
   public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
     this.projectComponentLessonPreview = projectComponentLessonPreview;
   }
-
 
   public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
     this.projectComponentLessons = projectComponentLessons;
   }
 
+  public void setProjectEditLeader(boolean projectEditLeader) {
+    this.projectEditLeader = projectEditLeader;
+  }
 
   public void setProjectFocuses(Set<ProjectFocus> projectFocuseses) {
     this.projectFocuses = projectFocuseses;
   }
-
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
@@ -609,30 +627,36 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
+
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
+
 
   public void setSubmissions(Set<Submission> submissions) {
     this.submissions = submissions;
   }
 
+
   public void setSummary(String summary) {
     this.summary = summary;
   }
 
+
   public void setTitle(String title) {
     this.title = title;
   }
+
 
   public void setType(String type) {
     this.type = type;
   }
 
 
-  public void setWorkplanName(String workplanName) {
-    this.workplanName = workplanName;
+  public void setWorkplan(FileDB workplan) {
+    this.workplan = workplan;
   }
+
 
   @Override
   public String toString() {

@@ -90,25 +90,52 @@ var presenceChannel = pusher.subscribe("presence-"+currentSectionString);
 
 if(editable && canEdit){
   var editingChannel = pusher.subscribe("presence-"+currentSectionString+"-canEdit");
-  var owner = false;
-  var checkEditingUsers = function(){
-    
-    if(editingChannel.members.count > 1){
-      owner= true;
-      $('#concurrenceBlock').fadeIn();
-    }else{
-      owner= false;
-      $('#concurrenceBlock').fadeOut();
-    }
-  }
+  var myID;
+  var myTurn;
+  var currentUsers = [];
   
   editingChannel.bind('pusher:subscription_succeeded', function(members) {
+    myID = members.myID;
+    $.each(members.members, function(key, value) {
+      currentUsers.push(key);
+    });
+    removeFromArray(currentUsers, myID);
+    addToArray(currentUsers, myID);
     checkEditingUsers();
   });
   
-  editingChannel.bind('pusher:member_removed', function(members) {
+  editingChannel.bind('pusher:member_added', function(member) {
+    addToArray(currentUsers, member.id);
     checkEditingUsers();
   });
+  
+  editingChannel.bind('pusher:member_removed', function(member) {
+    removeFromArray(currentUsers, member.id);
+    checkEditingUsers();
+  });
+  
+  
+  function checkEditingUsers(){
+    myTurn = parseInt(currentUsers.indexOf(myID)) + 1
+    if(myTurn == 1){
+      $('#concurrenceBlock').fadeOut();
+    }else{
+      $('#concurrenceBlock').fadeIn();
+    }
+    console.log("My turn: " + myTurn );
+  }
+  
+  function removeFromArray(array, string){
+    var index = array.indexOf(string);
+    if (index > -1) {
+      array.splice(index, 1);
+    }
+    return array;
+  }
+    
+  function addToArray(array, string){
+    return array.push(string);
+  }
   
 }
  

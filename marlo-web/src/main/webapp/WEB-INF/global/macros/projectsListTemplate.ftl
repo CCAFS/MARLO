@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="6">General Information</th>
+        <th colspan="5">General Information</th>
         <th colspan="2">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
         <th colspan="3">Actions</th> 
       </tr>
@@ -13,7 +13,6 @@
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         <th id="projectType">[@s.text name="projectsList.projectType" /]</th>
-        <th id="projectRegions">[@s.text name="projectsList.projectRegions" /]</th>
         <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
         <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
         <th id="projectBudget">[@s.text name="projectsList.W3BILATERALprojectBudget" /]</th>
@@ -46,19 +45,19 @@
           </td>
           [#-- Project Leader --]
           <td class=""> 
-            [#if project.leadInstitutionAcronym?has_content]${project.leadInstitutionAcronym}[#else][@s.text name="projectsList.title.none" /][/#if]
+            [#if project.leader?has_content]${(project.leader.institution.acronym)!project.leader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
           </td>
           [#-- Project Type --]
           <td>
             [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
           </td>
-          [#-- Region --]
-          <td> 
-            [#if project.regionsAcronym?has_content]${project.regionsAcronym}[#else][@s.text name="projectsList.none" /][/#if]
-          </td>
-          [#-- Flagship --]
-          <td> 
-            [#if project.flagshipsAcronym?has_content]${project.flagshipsAcronym}[#else][@s.text name="projectsList.none" /][/#if]
+          [#-- Flagship / Regions --]
+          <td>
+            [#if project.flagships?has_content]
+              [#list project.flagships as element]<span class="programTag" style="background-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list]
+            [#else]
+              [@s.text name="projectsList.none" /]
+            [/#if]
           </td>
           [#-- Budget W1/W2 --]
           <td class="budget"> 

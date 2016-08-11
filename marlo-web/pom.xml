@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>org.cgiar.ciat.auth</groupId>
 			<artifactId>adauth</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 		</dependency>
 		<!-- Although struts2-core has its own freemarker dependency, it seems 
 			there is an error with its version. Thus, we had to use this version (which 

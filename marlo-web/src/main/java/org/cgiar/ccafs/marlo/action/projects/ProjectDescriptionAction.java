@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
@@ -68,6 +69,7 @@ public class ProjectDescriptionAction extends BaseAction {
   // Managers
   private ProjectManager projectManager;
   private ProjectFocusManager projectFocusManager;
+  private FileDBManager fileDBManager;
   private CrpManager crpManager;
   private CrpProgramManager programManager;
   private AuditLogManager auditLogManager;
@@ -100,7 +102,8 @@ public class ProjectDescriptionAction extends BaseAction {
   public ProjectDescriptionAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
-    ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager, ProjectDescriptionValidator validator) {
+    ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
+    ProjectDescriptionValidator validator) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -111,6 +114,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectFocusManager = projectFocusManager;
     this.validator = validator;
     this.auditLogManager = auditLogManager;
+    this.fileDBManager = fileDBManager;
     // this.liaisonUserManager = liaisonUserManager;
   }
 
@@ -258,7 +262,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -275,6 +278,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return transaction;
   }
 
+
   private String getWorkplanRelativePath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
@@ -286,7 +290,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
 
-
   /**
    * Return the absolute path where the work plan is or should be located.
    * 
@@ -296,6 +299,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -314,8 +318,21 @@ public class ProjectDescriptionAction extends BaseAction {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
       Project history = (Project) auditLogManager.getHistory(transaction);
+
       if (history != null) {
         project = history;
+        if (project.getWorkplan() != null) {
+          project.setWorkplan(fileDBManager.getFileDBById(project.getWorkplan().getId()));
+        }
+        if (project.getBilateralContractName() != null) {
+          project.setBilateralContractName(fileDBManager.getFileDBById(project.getBilateralContractName().getId()));
+        }
+        if (project.getAnnualReportToDonnor() != null) {
+          project.setAnnualReportToDonnor(fileDBManager.getFileDBById(project.getAnnualReportToDonnor().getId()));
+
+        }
+
+
       } else {
         this.transaction = null;
 
@@ -403,19 +420,17 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (!project.isBilateralProject() && project.getRequiresWorkplanUpload()) {
         if (file != null) {
-          if (projectDB.getWorkplanName() != null) {
-            // FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
-          }
-
-          project.setWorkplanName(fileFileName);
-          FileManager.copyFile(file, this.getWorplansAbsolutePath() + project.getWorkplanName());
-        } else {
 
 
-          if (project.getWorkplanName() == null || project.getWorkplanName().isEmpty()) {
-            // FileManager.deleteFile(this.getWorplansAbsolutePath() + projectDB.getWorkplanName());
-            project.setWorkplanName("");
-          }
+          project
+            .setWorkplan(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
+
+          FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
+
+        }
+        System.out.println(project.getWorkplan().getFileName());
+        if (project.getWorkplan().getFileName().isEmpty()) {
+          project.setWorkplan(null);
         }
       }
 
@@ -423,32 +438,32 @@ public class ProjectDescriptionAction extends BaseAction {
       if (projectDB.isBilateralProject()) {
 
         if (file != null) {
-          if (project.getBilateralContractName() != null) {
-            // FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
-          }
 
-          project.setBilateralContractName(fileFileName);
-          FileManager.copyFile(file, this.getBilateralContractAbsolutePath() + project.getBilateralContractName());
-        } else {
 
-          if (project.getBilateralContractName() == null || project.getBilateralContractName().isEmpty()) {
-            // FileManager.deleteFile(this.getBilateralContractAbsolutePath() + projectDB.getBilateralContractName());
-            project.setBilateralContractName("");
-          }
+          project.setBilateralContractName(this.getFileDB(projectDB.getBilateralContractName(), file, fileFileName,
+            this.getBilateralContractAbsolutePath()));
+          FileManager.copyFile(file,
+            this.getBilateralContractAbsolutePath() + project.getBilateralContractName().getFileName());
+
+
         }
+        if (project.getBilateralContractName().getFileName().isEmpty()) {
+          project.setBilateralContractName(null);
+        }
+
         if (fileReporting != null) {
           // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
+
+
+          project.setAnnualReportToDonnor(this.getFileDB(projectDB.getAnnualReportToDonnor(), fileReporting,
+            fileReportingFileName, this.getAnnualReportAbsolutePath()));
+
           FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
-          project.setAnnualReportToDornor(fileReportingFileName);
-        } else {
 
-          if (project.getAnnualReportToDornor() == null || !project.getAnnualReportToDornor().isEmpty()) {
-
-            // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + project.getAnnualReportToDornor());
-            project.setAnnualReportToDornor("");
-          }
         }
-
+        if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
+          project.setAnnualReportToDonnor(null);
+        }
       }
 
 
@@ -499,7 +514,9 @@ public class ProjectDescriptionAction extends BaseAction {
         this.addActionMessage(this.getText("saving.saved"));
       }
       return SUCCESS;
-    } else {
+    } else
+
+    {
 
       return NOT_AUTHORIZED;
     }

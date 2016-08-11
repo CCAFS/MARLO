@@ -1,6 +1,9 @@
 var dialogOptions = {};
 $(document).ready(function() {
-  $('table.projectsList').dataTable({
+
+  var $projectList = $('table.projectsList');
+
+  var table = $projectList.DataTable({
       "bPaginate": true, // This option enable the table pagination
       "bLengthChange": true, // This option disables the select table size option
       "bFilter": true, // This option enable the search
@@ -28,8 +31,13 @@ $(document).ready(function() {
           }
       ]
   });
-  $('table.projectsList').on('draw.dt', function() {
+
+  $('.programTag').on('click', filterByProgram);
+
+  $projectList.on('draw.dt', function() {
     $("a.removeProject").on("click", removeProject);
+
+    $('.programTag').on('click', filterByProgram);
   });
 
   $('table.projectsHome').dataTable({
@@ -72,6 +80,10 @@ $(document).ready(function() {
 
   addJustificationPopUp();
 });
+
+function filterByProgram() {
+  $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').val($(this).text()).trigger('keyup');
+}
 
 // Justification popup global vars
 var dialog, projectId;

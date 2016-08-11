@@ -10,15 +10,10 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 420,
-      width: 600,
+      height: 440,
+      width: 450,
       modal: true,
       dialogClass: 'dialog-searchUsers',
-      buttons: {
-        Cancel: function() {
-          $(this).dialog("close");
-        }
-      },
       open: function(event,ui) {
         $dialogContent.find("form")[0].reset();
         // $dialogContent.find("#search-users").trigger('click');
@@ -40,13 +35,30 @@ $(document).ready(function() {
   /** Events */
 
   // Event for manage the accordion function
-  $dialogContent.find(".accordion").on('click', function() {
-    $(this).parent().find('.accordion span').removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+  /*
+   * $dialogContent.find(".accordion").on('click', function() { $(this).siblings('.accordion-block').slideUp('slow');
+   * $(this).siblings('.accordion').addClass('active'); $(this).removeClass('active'); $(this).next().slideToggle(); });
+   */
+
+  $('#create-user').on('click', function() {
     $(this).siblings('.accordion-block').slideUp('slow');
-    $(this).siblings('.accordion').addClass('active');
-    $(this).removeClass('active');
-    $(this).next().slideToggle();
-    $(this).find('span').addClass('ui-icon-triangle-1-s');
+    if($(this).next().is(':visible')) {
+      $('#search-users').next().slideDown();
+      $(this).removeClass('active');
+      $(this).find('span.title').text('Create new user');
+      $(this).find('span.glyphicon').removeClass('glyphicon-search').addClass('glyphicon-plus');
+    } else {
+      $(this).next().slideDown();
+      $(this).addClass('active');
+      $(this).find('span.title').text('Search People');
+      $(this).find('span.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-search');
+
+    }
+
+  });
+
+  $('.close-dialog').on('click', function() {
+    dialog.dialog("close");
   });
 
   // Event to open dialog box and search an contact person
@@ -146,7 +158,6 @@ $(document).ready(function() {
     e.preventDefault();
     $elementSelected = $(e.target);
     dialog.dialog("open");
-    // notyDialog = noty(notyOptions);
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
 
@@ -154,7 +165,6 @@ $(document).ready(function() {
     $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
     $elementSelected.parents('.userField ').find("input.userId").val(userId);
     dialog.dialog("close");
-    // notyDialog.close();
   }
 
   addUserMessage = function(message) {

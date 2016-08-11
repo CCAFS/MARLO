@@ -60,15 +60,15 @@
 		<property name="requiresWorkplanUpload" type="java.lang.Boolean">
 			<column name="requires_workplan_upload" />
 		</property>
-		<property name="workplanName" type="string">
-			<column name="workplan_name" />
-		</property>
-		<property name="bilateralContractName" type="string">
-			<column name="bilateral_contract_name" />
-		</property>
+	
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		
+		<property name="projectEditLeader" type="boolean">
+      <column name="is_project_leader_edit" />
+    </property>
+    
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
@@ -76,9 +76,19 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
-		<property name="annualReportToDornor" type="string">
-			<column name="annual_report_to_dornor" />
-		</property>
+	
+	
+	 <many-to-one name="annualReportToDonnor" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_annual_report_to_donnor" />
+        </many-to-one>
+        <many-to-one name="bilateralContractName" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_bilateral_contract_name" />
+        </many-to-one>
+        <many-to-one name="workplan" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_workplan" />
+        </many-to-one>
+	
+	
 		<set name="projectFocuses" table="project_focuses" order-by="id"
 			inverse="true" lazy="true" fetch="select">
 			<key>

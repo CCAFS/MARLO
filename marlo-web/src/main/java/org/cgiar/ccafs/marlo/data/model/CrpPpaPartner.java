@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
@@ -102,7 +103,6 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -110,10 +110,10 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -155,6 +155,11 @@ public class CrpPpaPartner implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this);
   }
 
 }
