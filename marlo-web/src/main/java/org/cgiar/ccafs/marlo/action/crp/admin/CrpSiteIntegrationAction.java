@@ -133,8 +133,9 @@ public class CrpSiteIntegrationAction extends BaseAction {
    * @param crpsSiteIntegration is the Site where the user is set
    */
   private void notifyRoleAssigned(User userAssigned, Role role, CrpsSiteIntegration crpsSiteIntegration) {
-    System.out.println("Entra a notifyRoleAssigned");
     String siteRole = this.getText("siteIntegration.leader");
+    String siteRoleAcronym = this.getText("siteIntegration.leader.acronym");
+
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
@@ -160,8 +161,8 @@ public class CrpSiteIntegrationAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
     System.out.println("bbcEmails");
     sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.siteIntegration.assigned.subject", new String[] {siteRole,
-        crpsSiteIntegration.getLocElement().getName(), crpsSiteIntegration.getLocElement().getIsoAlpha2()}),
+      this.getText("email.siteIntegration.assigned.subject",
+        new String[] {loggedCrp.getName(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
       message.toString(), null, null, null, true);
   }
 
@@ -271,7 +272,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
             UserRole userRole = new UserRole(slRole, userSiteLeader);
             if (!userSiteLeader.getUserRoles().contains(userRole)) {
               userRoleManager.saveUserRole(userRole);
-              this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
+              // this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
             }
           }
         }
@@ -295,7 +296,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
               UserRole userRole = new UserRole(slRole, userSiteLeader);
               if (!userSiteLeader.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
-                this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
+                // this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
               }
             }
           }

@@ -154,7 +154,11 @@ public class CrpProgamRegionsAction extends BaseAction {
                 user.getUserRoles().stream().filter(ur -> ur.getRole().equals(slRole)).collect(Collectors.toList());
               if (slUserRoles != null) {
                 for (UserRole userRole : slUserRoles) {
+                  // site leader aqui notificar
                   userRoleManager.deleteUserRole(userRole.getId());
+                  userRole = userRoleManager.getUserRoleById(userRole.getId());
+
+
                 }
               }
             }
@@ -250,19 +254,20 @@ public class CrpProgamRegionsAction extends BaseAction {
    * @param userAssigned is the user been assigned
    * @param role is the role(Program Leader)
    * @param crpProgram is the Region Program where the user is set
+   * @param crpProgramCountries
    */
   private void notifyRoleAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    userAssigned = userManager.getUser(userAssigned.getId());
     String regionRole = this.getText("regionalMapping.CrpProgram.leaders");
-
+    String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
     message.append(
-      this.getText("email.region.assigned", new String[] {regionRole, crpProgram.getAcronym(), crpProgram.getName()}));
+      this.getText("email.region.assigned", new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
-
     String toEmail = null;
     String ccEmail = null;
     if (config.isProduction()) {
@@ -277,11 +282,42 @@ public class CrpProgamRegionsAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.region.assigned.subject",
-        new String[] {regionRole, crpProgram.getAcronym(), crpProgram.getName()}),
+      this.getText("email.region.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
       message.toString(), null, null, null, true);
+
   }
 
+
+  private void notifyRoleUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    userAssigned = userManager.getUser(userAssigned.getId());
+    String regionRole = this.getText("regionalMapping.CrpProgram.leaders");
+    String regionRoleAcronym = this.getText("regionalMapping.CrpProgram.leaders.acronym");
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.region.unassigned",
+      new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.region.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+      message.toString(), null, null, null, true);
+
+  }
 
   @Override
   public void prepare() throws Exception {
@@ -330,6 +366,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       regionsPrograms.clear();
     }
   }
+
 
   @Override
   public String save() {
@@ -406,6 +443,7 @@ public class CrpProgamRegionsAction extends BaseAction {
                 if (fplUserRoles != null) {
                   for (UserRole userRole : fplUserRoles) {
                     userRoleManager.deleteUserRole(userRole.getId());
+                    this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                   }
                 }
               }
@@ -442,6 +480,7 @@ public class CrpProgamRegionsAction extends BaseAction {
               crpProgramCountry.setModificationJustification("");
               crpProgramCountry.setActiveSince(new Date());
               crpProgramCountryManager.saveCrpProgramCountry(crpProgramCountry);
+              // Here is calling to saveSiteLeaderBySiteIntegration
               this.saveSiteIntegration(locElement, crpProgramPrevLeaders);
             }
 
@@ -466,7 +505,15 @@ public class CrpProgamRegionsAction extends BaseAction {
 
                 for (CrpProgramCountry crpProgramCountry : crpProgramPrevLeaders.getCrpProgramCountries().stream()
                   .filter(pc -> pc.isActive()).collect(Collectors.toList())) {
+                  // Here is called saveSiteLeaderByProgramCountry
                   this.saveSiteLeaderByProgramCountry(crpProgramCountry, crpProgramLeader.getUser());
+                }
+
+                // Notify assigned role
+                UserRole userRole = new UserRole(slRole, crpProgramLeader.getUser());
+                if (!crpProgramLeader.getUser().getUserRoles().contains(userRole)) {
+                  this.notifyRoleAssigned(crpProgramLeader.getUser(), userRole.getRole(),
+                    crpProgramLeader.getCrpProgram());
                 }
 
               }
@@ -481,7 +528,6 @@ public class CrpProgamRegionsAction extends BaseAction {
 
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
-                this.notifyRoleAssigned(user, userRole.getRole(), crpProgramLeader.getCrpProgram());
 
               }
             }
@@ -506,7 +552,6 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
 
   }
-
 
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
     Crp crp = crpManager.getCrpById(loggedCrp.getId());

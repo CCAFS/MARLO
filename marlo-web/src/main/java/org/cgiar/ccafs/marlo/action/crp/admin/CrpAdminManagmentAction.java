@@ -125,9 +125,8 @@ public class CrpAdminManagmentAction extends BaseAction {
    * @param crpProgram is the Flagship where is assigned
    */
   private void notifyRoleFlagshipAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
-    System.out.println("Entra a ");
-
     String flasgshipRole = this.getText("programManagement.flagship.role");
+    String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
@@ -152,8 +151,39 @@ public class CrpAdminManagmentAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.flagship.assigned.subject",
-        new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym()}),
+      this.getText("email.flagship.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
+      message.toString(), null, null, null, true);
+
+  }
+
+  private void notifyRoleFlagshipUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    String flasgshipRole = this.getText("programManagement.flagship.role");
+    String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.flagship.unassigned",
+      new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails,
+      this.getText("email.flagship.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
       message.toString(), null, null, null, true);
 
   }
@@ -167,6 +197,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private void notifyRoleProgramManagementAssigned(User userAssigned, Role role) {
 
     String managementRole = this.getText("programManagement.role");
+    String managementRoleAcronym = this.getText("programManagement.role.acronym");
 
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
@@ -190,12 +221,49 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.programManagement.assigned.subject", new String[] {managementRole, loggedCrp.getName()}),
-      message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.assigned.subject",
+      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
 
+
+  /**
+   * This method notify the user that is been assigned as Program Leader for an specific Regional Program
+   * 
+   * @param userAssigned is the user been assigned
+   * @param role is the role(Program Management)
+   */
+  private void notifyRoleProgramManagementUnassigned(User userAssigned, Role role) {
+    String managementRole = this.getText("programManagement.role");
+    String managementRoleAcronym = this.getText("programManagement.role.acronym");
+
+    userAssigned = userManager.getUser(userAssigned.getId());
+    StringBuilder message = new StringBuilder();
+    // Building the Email message:
+    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message
+      .append(this.getText("email.programManagement.unassigned", new String[] {managementRole, loggedCrp.getName()}));
+    message.append(this.getText("email.support"));
+    message.append(this.getText("email.bye"));
+
+    String toEmail = null;
+    String ccEmail = null;
+    if (config.isProduction()) {
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = userAssigned.getEmail();
+      // CC will be the user who is making the modification.
+      if (this.getCurrentUser() != null) {
+        ccEmail = this.getCurrentUser().getEmail();
+      }
+    }
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+    sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.unassigned.subject",
+      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
+
+
+  }
 
   private void pmuRoleData() {
     Role rolePreview = roleManager.getRoleById(pmuRol);
@@ -203,6 +271,10 @@ public class CrpAdminManagmentAction extends BaseAction {
     for (UserRole userRole : rolePreview.getUserRoles()) {
       if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
         userRoleManager.deleteUserRole(userRole.getId());
+        userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+        // Notifiy user been unassigned to Program Management
+        this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+
       }
     }
     // Add new Users roles
@@ -212,7 +284,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           .collect(Collectors.toList()).isEmpty()) {
           userRoleManager.saveUserRole(userRole);
           userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-          // Notifiy user been asigned to Program Management
+          // Notifiy user been assigned to Program Management
           this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
         }
       }
@@ -263,6 +335,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+
   private void programLeaderData() {
     for (CrpProgram crpProgram : flagshipsPrograms) {
       CrpProgram crpProgramPrev = crpProgramManager.getCrpProgramById(crpProgram.getId());
@@ -289,6 +362,9 @@ public class CrpAdminManagmentAction extends BaseAction {
               if (fplUserRoles != null || !fplUserRoles.isEmpty()) {
                 for (UserRole userRole : fplUserRoles) {
                   userRoleManager.deleteUserRole(userRole.getId());
+                  userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+                  // Notifiy user been unasigned Program Leader to Flagship
+                  this.notifyRoleFlagshipUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                 }
               }
             }
