@@ -28,6 +28,13 @@ $(document).ready(function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
 
+    $.ajax({
+        url: baseURL + "/projectLeaderEdit.do",
+        data: {
+          projectID: $('input[name="projectID"]').val()
+        }
+    });
+
     $(this).siblings().removeClass('radio-checked');
     $(this).addClass('radio-checked');
     $t.val(value);

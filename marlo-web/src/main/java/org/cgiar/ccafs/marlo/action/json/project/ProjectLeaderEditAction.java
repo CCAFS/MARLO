@@ -61,9 +61,19 @@ public class ProjectLeaderEditAction extends BaseAction {
     return Action.SUCCESS;
   }
 
+
+  public Map<String, Object> getStatus() {
+    return status;
+  }
+
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     projectId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+  }
+
+  public void setStatus(Map<String, Object> status) {
+    this.status = status;
   }
 }

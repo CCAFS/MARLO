@@ -54,6 +54,7 @@
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
+        <param name="root">status</param>
       </result>
     </action>
 
