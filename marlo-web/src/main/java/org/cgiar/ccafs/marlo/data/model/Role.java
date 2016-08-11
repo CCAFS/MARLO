@@ -137,7 +137,7 @@ public class Role implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+      return id.toString();
   }
 }
 

@@ -162,7 +162,7 @@ public class ProjectPartnerContribution implements java.io.Serializable, IAuditL
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+      return id.toString();
   }
 
 

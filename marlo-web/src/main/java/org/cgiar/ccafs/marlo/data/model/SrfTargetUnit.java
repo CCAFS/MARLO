@@ -210,7 +210,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-    return ToStringBuilder.reflectionToString(this);
+      return id.toString();
   }
 }
 
