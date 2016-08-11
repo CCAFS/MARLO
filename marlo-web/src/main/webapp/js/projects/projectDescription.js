@@ -46,7 +46,7 @@ $(document).ready(function() {
   var $coreSelect = $('#projectsList select');
   var $coreProjects = $('#projectsList .list');
 
-  loadInitialCoreProjects();
+  // loadInitialCoreProjects();
 
   /** Events */
 

@@ -20,9 +20,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,10 +77,21 @@ public class ProjectListAction extends BaseAction {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        for (Project project : myProjects) {
+          List<CrpProgram> programs = new ArrayList<>();
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            programs.add(projectFocuses.getCrpProgram());
+          }
+          project.setFlagships(programs);
+        }
       } else {
         allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
         Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
         allProjects.removeAll(myProjects);
       }
 
