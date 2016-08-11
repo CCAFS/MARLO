@@ -17,11 +17,15 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -77,6 +81,17 @@ public class ProjectManagerImpl implements ProjectManager {
       for (Map<String, Object> map : view) {
         projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
       }
+    }
+
+    for (Project project : projects) {
+
+      List<CrpProgram> programs = new ArrayList<>();
+      for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        programs.add(projectFocuses.getCrpProgram());
+      }
+      project.setFlagships(programs);
     }
 
     return projects;
