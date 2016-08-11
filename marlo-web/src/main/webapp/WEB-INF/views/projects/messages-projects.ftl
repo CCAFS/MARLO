@@ -36,7 +36,12 @@
 
 [#-- Concurrence Message --]
 <div id="concurrenceMessage" class="text-center" style="display:none">
-  <p><span class="glyphicon glyphicon-flash"></span> [@s.text name="project.message.concurrence"][@s.param]<span class="person"></span>[/@s.param][/@s.text]</p>
+  <p><span class="glyphicon glyphicon-flash"></span> 
+  [@s.text name="project.message.sectionSaved"]
+    [@s.param]<span class="person"></span>[/@s.param]
+    [@s.param] <a href="#" onclick="location.reload()">click here</a> [/@s.param]
+  [/@s.text]
+  </p>
 </div>
 
 
@@ -45,8 +50,8 @@
   <div class="layer"></div>
   <div class="content">
     <span class="glyphicon glyphicon-lock"></span>
-    <p>This section is currently being edited by someone else.</p>
-    <p>If you are not editing, please <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a>.</p>
+    <p>[@s.text name="project.message.concurrence" /]</p>
+    <p>[@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
   </div>
   
 </div>
