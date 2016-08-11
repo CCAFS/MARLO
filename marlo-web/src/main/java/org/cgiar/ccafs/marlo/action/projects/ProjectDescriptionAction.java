@@ -495,8 +495,22 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setCofinancing(projectDB.isCofinancing());
       project.setGlobal(projectDB.isGlobal());
       project.setLeaderResponsabilities(projectDB.getLeaderResponsabilities());
+      if (project.getWorkplan() != null) {
+        if (project.getWorkplan().getId() == null) {
+          project.setWorkplan(null);
+        }
+      }
 
-
+      if (project.getBilateralContractName() != null) {
+        if (project.getBilateralContractName().getId() == null) {
+          project.setBilateralContractName(null);
+        }
+      }
+      if (project.getAnnualReportToDonnor() != null) {
+        if (project.getAnnualReportToDonnor().getId() == null) {
+          project.setAnnualReportToDonnor(null);
+        }
+      }
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       projectManager.saveProject(project, this.getActionName(), relationsName);
