@@ -37,6 +37,7 @@ public class ProjectLeaderEditAction extends BaseAction {
 
   private ProjectManager projectManager;
   private long projectId;
+  private boolean projectStatus;
   private Map<String, Object> status;
 
   @Inject
@@ -51,7 +52,8 @@ public class ProjectLeaderEditAction extends BaseAction {
     status = new HashMap<String, Object>();
     status.put("ProjectId", projectId);
     if (project != null) {
-      project.setProjectEditLeader(!project.isProjectEditLeader());
+      project.setProjectEditLeader(projectStatus);
+      projectManager.saveProject(project);
       status.put("status", project.isProjectEditLeader());
       status.put("ok", true);
     } else {
@@ -71,6 +73,8 @@ public class ProjectLeaderEditAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     projectId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
+    projectStatus =
+      Boolean.parseBoolean(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
   }
 
   public void setStatus(Map<String, Object> status) {
