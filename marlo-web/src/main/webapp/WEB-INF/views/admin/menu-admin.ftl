@@ -9,8 +9,9 @@
 ]/]
 
 <nav id="secondaryMenu">
+  <p>[@s.text name="CRPAdmin.menu.title"/]</p>
   <ul>
-    <li><p>[@s.text name="CRPAdmin.menu.title"/]</p>
+    <li>
       <ul>
         [#list items as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">

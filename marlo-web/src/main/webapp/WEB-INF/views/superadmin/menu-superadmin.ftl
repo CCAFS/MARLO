@@ -19,8 +19,9 @@
 ]/]
 
 <nav id="secondaryMenu">
+  <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
   <ul>
-    <li><p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
+    <li>
       <ul>
         [#list srfItems as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
@@ -33,8 +34,9 @@
     </li>
   </ul>
   
+  <p>Standards</p>
   <ul>
-    <li><p>Standards</p>
+    <li>
       <ul>
         [#list standards as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
@@ -47,8 +49,9 @@
     </li>
   </ul> 
   
+  <p>[@s.text name="menu.superadmin.toolsMenuTitle"/]</p>
   <ul>
-    <li><p>[@s.text name="menu.superadmin.toolsMenuTitle"/]</p>
+    <li>
       <ul>
         [#list toolItems as item]
           <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
