@@ -1706,8 +1706,9 @@ a.currentReportingSection li, a.currentSection li {
   padding: 2px 0;
   font-weight: lighter;
   color: #ffffff;
-  background: #5bbedb;
+  background: #0c7ca6;
   text-align: center;
+  border-radius: 2px;
 }
 
 #secondaryMenu ul p.subText {
