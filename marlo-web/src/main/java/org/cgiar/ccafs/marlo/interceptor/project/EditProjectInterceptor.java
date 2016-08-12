@@ -26,7 +26,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -88,22 +87,20 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     if (project != null) {
 
-      String params[] = {crp.getAcronym(), project.getId() + ""};
-
-      // TODO Validate if the Project is in Planning or Reporting and get the Year
-      int currentCycleYear = 2015;
+      String params[] =
+        {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
+      System.out.println(params);
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params))) {
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_PERMISSION, params))) {
 
-          if (project.getSubmissions().stream().filter(s -> s.getYear().equals(currentCycleYear))
-            .collect(Collectors.toList()).size() > 0) {
-            canEdit = true;
-          }
+
+          canEdit = true;
+
         }
       }
 
@@ -118,8 +115,8 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
-        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+          : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 
       // Set the variable that indicates if the user can edit the section

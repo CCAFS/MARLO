@@ -1,6 +1,5 @@
 [#ftl]
-
-[#if !project.projectEditLeader]
+[#if !((project.projectEditLeader)!false)]
   [#assign menus= [
     { 'title': 'General Information',
       'items': [
