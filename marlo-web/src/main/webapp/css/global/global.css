@@ -1667,9 +1667,9 @@ a#userLogOut {
   margin-left: 0;
   /* border: 1px solid #dbdbdb; */
   border-radius: 5px 5px 5px 5px;
-  background: #fff;
+  background: #f5f5f5;
   /* box-shadow: 0px 0px 7px rgba(0,0,0,0.1); */
-  padding: 0;
+  padding: 8px 0;
 }
 
 #secondaryMenuBar {
@@ -1700,6 +1700,16 @@ a.currentReportingSection li, a.currentSection li {
   text-decoration: none;
 }
 
+#secondaryMenu ul p.menuTitle{
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+  font-weight: lighter;
+  color: #ffffff;
+  background: #2589af;
+  text-align: center;
+}
+
 #secondaryMenu ul p.subText {
   font-size: 0.8em;
   margin: 0; 
@@ -1722,23 +1732,16 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 #secondaryMenu ul li ul li {
-  /* border-bottom: 1px solid rgba(219, 219, 219, 0.78); */
-  /* padding: 5px 0 9px 28px; */
-  /* height: 30px; */
-  margin-bottom: 5px;
+  margin: 5px 0;
   list-style: none;
   font-size: 0.95em;
   border: 1px solid #e8e7e7;
   box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
-  /* background-image: url("../../images/global/list-icon.png"); */
-  /* background-repeat: no-repeat; */
-  /* background-size: 11px; */
-  /* background-position: 9px 45%; */
   background: #fff;
 }
 
 #secondaryMenu ul li ul li.disabled{
-  opacity : 0.5;
+  opacity: 0.4;
 }
 
 #secondaryMenu ul li ul li.submitted a{
@@ -1767,7 +1770,8 @@ a.currentReportingSection li, a.currentSection li {
   color: #5E5E5E;
   */
   padding: 5px 0 9px 28px;
-  padding: 6px;
+  padding: 4px 9px;
+  /* border-left: 5px solid; */
 }
 
 #secondaryMenu ul li ul li:hover{
@@ -1780,8 +1784,7 @@ a.currentReportingSection li, a.currentSection li {
   /* margin-top: 5px; */
   padding: 0;
   color: #5a5a5a;
-  background: #f5f5f5;
-  padding: 11px;
+  padding: 5px 11px;
 }
 
 #secondaryMenu a.goBack {
@@ -1823,21 +1826,15 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 
-#secondaryMenu > ul > li.currentSection > p {
-  color: white;
-  font-weight: bold;
-  /* background-color: initial; */
-}
-
-#secondaryMenu > ul > li > p{
+#secondaryMenu > p{
   color: #1da5ce;
   text-align: center;
   font-size: 1.3em;
-  line-height: 1em;
-  margin: 0;
+  line-height: 0.9em;
+  margin-bottom: 4px;
 }
-#secondaryMenu > ul > li > p small{
-  font-size: 0.7em;
+#secondaryMenu > p small{
+  font-size: 0.6em;
   color: #7fcce3;
 }
 

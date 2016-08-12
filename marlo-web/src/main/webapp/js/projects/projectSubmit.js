@@ -13,6 +13,7 @@ $(document).ready(function() {
   $(".progressbar").progressbar({
     max: tasksLength
   });
+
   // Event for validate button inside each project
   $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
 
@@ -27,17 +28,21 @@ $(document).ready(function() {
   $('.button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
-
+    var $thisLabel = $(this);
     $.ajax({
         url: baseURL + "/projectLeaderEdit.do",
         data: {
-          projectID: $('input[name="projectID"]').val()
+            projectID: $('input[name="projectID"]').val(),
+            projectStatus: value
+        },
+        success: function(data) {
+          if(data.ok) {
+            $thisLabel.siblings().removeClass('radio-checked');
+            $thisLabel.addClass('radio-checked');
+            $t.val(value);
+          }
         }
     });
-
-    $(this).siblings().removeClass('radio-checked');
-    $(this).addClass('radio-checked');
-    $t.val(value);
   });
 
   // Click on submit button
