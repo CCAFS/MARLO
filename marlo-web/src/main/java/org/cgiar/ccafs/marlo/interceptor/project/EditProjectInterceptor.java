@@ -95,13 +95,19 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DESCRIPTION_PERMISSION, params))) {
+        if (projects.contains(project)
+          && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
 
 
           canEdit = true;
 
         }
+
+        if (!project.isProjectEditLeader()
+          && !baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          canEdit = false;
+        }
+
       }
 
       // TODO Validate is the project is new

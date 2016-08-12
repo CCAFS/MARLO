@@ -80,7 +80,7 @@
 <div class="clearfix"></div>
 
 [#-- Open for Project Leaders --]
-[#if canEdit]
+[#if action.hasPermission("projectSwitch") ]
 <div class="grayBox">
   [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="text-left" /]
 </div>
