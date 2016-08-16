@@ -207,7 +207,7 @@
   <li id="keyOutput-${template?string('template',index)}" class="keyOutputItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- Key output inputs --]
     <div class="col-md-10 keyOutput">
-      <input name="${customName}.keyOutput" type="text" class="form-control keyOutputInput col-md-10" />
+      <input name="${customName}.keyOutput" value="${(element.keyOutput)!}" type="text" class="form-control keyOutputInput col-md-10" />
       <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     </div>
     [#-- Remove Button --]

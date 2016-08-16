@@ -78,6 +78,12 @@ public class ClusterActivitiesValidator extends BaseValidator {
     if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
     }
+    if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
+      this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
+    }
+    if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
+      this.addMessage(action.getText("outcome.action.cluster.key.required", params));
+    }
   }
 
 }

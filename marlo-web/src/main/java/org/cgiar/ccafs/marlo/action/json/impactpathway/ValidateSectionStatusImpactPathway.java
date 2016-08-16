@@ -158,6 +158,8 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
         crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList()));
 
       }
     }
