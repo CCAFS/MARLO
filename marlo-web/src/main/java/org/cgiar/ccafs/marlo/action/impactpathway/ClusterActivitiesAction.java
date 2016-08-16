@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
@@ -72,6 +74,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private UserManager userManager;
   private Crp loggedCrp;
   private Role roleCl;
@@ -91,8 +94,8 @@ public class ClusterActivitiesAction extends BaseAction {
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
-    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
-    SendMail sendMail) {
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMail sendMail,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -104,6 +107,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.validator = validator;
     this.sendMail = sendMail;
+    this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
   }
 
 
@@ -273,6 +277,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
           crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
       } else {
         programs = new ArrayList<>();
@@ -321,6 +328,8 @@ public class ClusterActivitiesAction extends BaseAction {
         for (CrpClusterOfActivity crpClusterOfActivity : clusterofActivities) {
 
           crpClusterOfActivity.setLeaders(crpClusterOfActivity.getCrpClusterActivityLeaders().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList()));
+          crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
         }
       }
@@ -492,6 +501,45 @@ public class ClusterActivitiesAction extends BaseAction {
         }
 
 
+        /*
+         * Check key outputs
+         */
+        crpClusterPrev = crpClusterOfActivityManager.getCrpClusterOfActivityById(crpClusterOfActivity.getId());
+        for (CrpClusterKeyOutput keyPreview : crpClusterPrev.getCrpClusterKeyOutputs().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+          if (crpClusterOfActivity.getKeyOutputs() == null) {
+            crpClusterOfActivity.setKeyOutputs(new ArrayList<>());
+          }
+          if (!crpClusterOfActivity.getKeyOutputs().contains(keyPreview)) {
+            crpClusterKeyOutputManager.deleteCrpClusterKeyOutput(keyPreview.getId());
+
+          }
+        }
+        /*
+         * Save key outputs
+         */
+        if (crpClusterOfActivity.getKeyOutputs() != null) {
+          for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
+            if (crpClusterKeyOutput.getId() == null) {
+              crpClusterKeyOutput.setCreatedBy(this.getCurrentUser());
+
+              crpClusterKeyOutput.setActiveSince(new Date());
+
+            } else {
+              CrpClusterKeyOutput crpClusterKeyOutputPrev =
+                crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutput.getId());
+              crpClusterKeyOutput.setCreatedBy(crpClusterKeyOutputPrev.getCreatedBy());
+              crpClusterKeyOutput.setActiveSince(crpClusterKeyOutputPrev.getActiveSince());
+
+            }
+            crpClusterKeyOutput.setActive(true);
+            crpClusterKeyOutput.setCrpClusterOfActivity(crpClusterOfActivity);
+            crpClusterKeyOutput.setModifiedBy(this.getCurrentUser());
+            crpClusterKeyOutput.setModificationJustification("");
+            crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutput);
+          }
+        }
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
