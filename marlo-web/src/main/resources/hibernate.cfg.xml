@@ -76,6 +76,7 @@
     <mapping resource="xmls/ProjectPartnerOverall.hbm.xml" />
     <mapping resource="xmls/ProjectComponentLessons.hbm.xml" />  
     <mapping resource="xmls/Files.hbm.xml" />  
+     <mapping resource="xmls/CrpClusterKeyOutputs.hbm.xml" />  
   </session-factory>
 </hibernate-configuration>
 
