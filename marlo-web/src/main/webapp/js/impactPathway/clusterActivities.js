@@ -10,6 +10,10 @@ function init() {
   $('.removeCluster').on('click', removeCluster);
 // Remove person
   $('.remove-userItem').on('click', removePerson);
+// Add a new Key Output
+  $('.addKeyOutput').on('click', addKeyOutput);
+// Remove key output
+  $('.button-remove').on('click', removeKeyOutput);
 
   updateClustersIndex();
 }
@@ -43,6 +47,7 @@ function updateClustersIndex() {
     $(item).find('.cluterId').attr('name', customName + '.id');
 
     updateUsersIndex(item, customName);
+    updateKeyOtuputsIndex(item, customName);
   });
 }
 
@@ -76,6 +81,27 @@ function addUserItem(composedName,userId) {
   updateClustersIndex();
 }
 
+// Key Outputs
+function addKeyOutput() {
+  console.log(this);
+  var $list = $(this).parent().parent().find('.keyOutputs');
+  var $item = $('#keyOutput-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  checkItems($list);
+  updateClustersIndex();
+}
+
+function removeKeyOutput() {
+  var $item = $(this).parents('li');
+  var $parent = $item.parent();
+  $item.hide(function() {
+    $item.remove();
+    checkItems($parent);
+    updateClustersIndex();
+  });
+}
+
 function updateUsersIndex(item,clustersName) {
   var name = $("#leaderName").val();
   $(item).find('li').each(function(indexUser,userItem) {
@@ -83,6 +109,18 @@ function updateUsersIndex(item,clustersName) {
     $(userItem).find('.user').attr('name', customName + '.user.id');
     $(userItem).find('.role').attr('name', customName + '.role.id');
     $(userItem).find('.id').attr('name', customName + '.id');
+  });
+
+  // Update component event
+  $(document).trigger('updateComponent');
+}
+
+function updateKeyOtuputsIndex(item,clustersName) {
+  var name = $("#keyOutputName").val();
+  $(item).find('.keyOutputs li').each(function(indexKeyOuput,keyOutputItem) {
+    var customName = clustersName + '.' + name + '[' + indexKeyOuput + ']';
+    $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.description');
+    $(keyOutputItem).find('.id').attr('name', customName + '.id');
   });
 
   // Update component event

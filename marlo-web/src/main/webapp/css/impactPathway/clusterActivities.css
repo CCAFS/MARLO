@@ -65,3 +65,29 @@ span.glyphicon.glyphicon-user {
 .cluster-title {
     margin-top: 20px;
 }
+
+.subtitle {
+    float: left;
+}
+
+.button-remove {
+    background: #E3685A;
+    border-bottom: 3px solid #DD5B4C;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+}
+
+.keyOutputInput {
+    height: 28px;
+}
+
+.keyOutput {
+    margin-bottom: 15px;
+}
+
+.button-remove:hover {}
+
+.button-remove:hover {
+    background: #DB6052;
+}

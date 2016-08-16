@@ -13,6 +13,7 @@
 ]/]
 [#assign clustersName = "clusters"/]
 [#assign leadersName = "leaders"/]
+[#assign keyOutputsName = "keyOutputs"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -114,8 +115,12 @@
   [@userItem element={} index=0 name="" userRole=roleCl.id template=true /]
 </ul>
 
+[#-- Key output Template --]
+[@keyOutputItem element={} index=0 name="${keyOutputsName}"  template=true /]
+
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
+<input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -156,6 +161,21 @@
         <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
       </div>
       [/#if]
+      
+      [#-- Key outputs --]
+      <span class="subtitle cold-md-12"><label>Key Outputs: </label></span>
+      <div class="keyOutputsItems-list form-group col-md-12 simpleBox">
+        <ul class="keyOutputs">
+        
+        </ul>
+        <p class="text-center" style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
+      </div>
+      [#-- Add Key output --]
+      [#if editable]
+      <div class="addPerson text-center">
+        <div class="button-green addKeyOutput"><span class="glyphicon glyphicon-plus-sign"></span>Add key output</div>
+      </div>
+      [/#if]
     </div>    
     <input class="cluterId" type="hidden" name="${clusterCustomName}.id" value="${(cluster.id)!}"/>        
            
@@ -176,6 +196,23 @@
       <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
     [/#if]
   </li>
+[/#macro]
+
+[#macro keyOutputItem element index name  template=false]
+  [#assign customName = "${name}[${index}]" /]
+  <li id="keyOutput-${template?string('template',index)}" class="keyOutputItem"  style="list-style-type:none; display:${template?string('none','block')}">
+    [#-- Key output inputs --]
+    <div class="col-md-10 keyOutput">
+      <input name="${customName}.description" type="text" class="form-control keyOutputInput col-md-10" />
+      <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    </div>
+    [#-- Remove Button --]
+    [#if editable]
+      <div class="btn-xs button-remove col-md-1"> Remove </div>
+    [/#if]
+      <div class="clearfix"></div>
+  </li>
+
 [/#macro]
 
 

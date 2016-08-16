@@ -14,7 +14,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable {
    * 
    */
   private static final long serialVersionUID = -5642790359021262160L;
+
+
   private Long id;
+
   private CrpClusterOfActivity crpClusterOfActivity;
   private User modifiedBy;
   private User createdBy;
@@ -25,7 +28,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable {
 
   public CrpClusterKeyOutput() {
   }
-
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -46,6 +48,29 @@ public class CrpClusterKeyOutput implements java.io.Serializable {
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CrpClusterKeyOutput other = (CrpClusterKeyOutput) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -74,6 +99,14 @@ public class CrpClusterKeyOutput implements java.io.Serializable {
 
   public User getModifiedBy() {
     return this.modifiedBy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   public boolean isActive() {
