@@ -18,7 +18,6 @@ package org.cgiar.ccafs.marlo.data.model;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 
 /**
@@ -35,10 +34,6 @@ public class ProjectLocation implements java.io.Serializable {
 
   @Expose
   private LocElement locElement;
-
-
-  @Expose
-  private LocElement regionLocElement;
 
   @Expose
   private Project project;
@@ -60,14 +55,11 @@ public class ProjectLocation implements java.io.Serializable {
   @Expose
   private String modificationJustification;
 
-  @Expose
-  private CrpProgram crpProgram;
-
   public ProjectLocation() {
   }
 
   public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, long createdBy,
-    long modifiedBy, String modificationJustification, CrpProgram crpProgram, LocElement regionLocElement) {
+    long modifiedBy, String modificationJustification) {
     this.locElement = locElement;
     this.project = project;
     this.active = active;
@@ -75,8 +67,6 @@ public class ProjectLocation implements java.io.Serializable {
     this.createdBy = createdBy;
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
-    this.crpProgram = crpProgram;
-    this.regionLocElement = regionLocElement;
   }
 
   @Override
@@ -109,10 +99,6 @@ public class ProjectLocation implements java.io.Serializable {
     return createdBy;
   }
 
-  public CrpProgram getCrpProgram() {
-    return crpProgram;
-  }
-
   public Long getId() {
     return id;
   }
@@ -136,11 +122,6 @@ public class ProjectLocation implements java.io.Serializable {
     return project;
   }
 
-
-  public LocElement getRegionLocElement() {
-    return regionLocElement;
-  }
-
   public boolean isActive() {
     return active;
   }
@@ -159,10 +140,6 @@ public class ProjectLocation implements java.io.Serializable {
     this.createdBy = createdBy;
   }
 
-
-  public void setCrpProgram(CrpProgram crpProgram) {
-    this.crpProgram = crpProgram;
-  }
 
   public void setId(Long id) {
     this.id = id;
@@ -184,13 +161,9 @@ public class ProjectLocation implements java.io.Serializable {
     this.project = project;
   }
 
-  public void setRegionLocElement(LocElement regionLocElement) {
-    this.regionLocElement = regionLocElement;
-  }
-
   @Override
   public String toString() {
-      return id.toString();
+    return id.toString();
   }
 
 }

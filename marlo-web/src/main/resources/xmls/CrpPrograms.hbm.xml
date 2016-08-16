@@ -103,13 +103,5 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
 		</set>
-
-		<set name="projectLocations" table="project_locations" order-by="id"
-			inverse="true" lazy="true" fetch="select">
-			<key>
-				<column name="crp_program_region_id" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
-		</set>
 	</class>
 </hibernate-mapping>

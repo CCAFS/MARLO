@@ -13,17 +13,9 @@
 			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
 			<column name="loc_element_id" not-null="true" />
 		</many-to-one>
-		<many-to-one name="regionLocElement"
-			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
-			<column name="region_loc_element" />
-		</many-to-one>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" not-null="true" />
-		</many-to-one>
-		<many-to-one name="crpProgram"
-			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
-			<column name="crp_program_region_id" />
 		</many-to-one>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

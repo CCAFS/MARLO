@@ -210,8 +210,7 @@ public class ProjectLocationAction extends BaseAction {
         countryLocationLevel.setAllElements(new ArrayList<LocElement>(
           locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString())).getLocElements()));
 
-        for (ProjectLocation projectLocation : project.getLocations().stream()
-          .filter(l -> l.isActive() && l.getCrpProgram() == null && l.getRegionLocElement() == null)
+        for (ProjectLocation projectLocation : project.getLocations().stream().filter(l -> l.isActive())
           .collect(Collectors.toList())) {
           if (projectLocation.getLocElement().getLocElementType().getId() == Long
             .parseLong(entry.getValue().toString())) {

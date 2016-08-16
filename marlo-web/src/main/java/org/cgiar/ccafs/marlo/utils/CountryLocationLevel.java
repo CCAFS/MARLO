@@ -37,7 +37,6 @@ public class CountryLocationLevel implements Serializable {
   private List<LocElement> allElements;
   private long id;
   private boolean isList;
-  private int modelClass;
 
   public CountryLocationLevel() {
 
@@ -60,11 +59,6 @@ public class CountryLocationLevel implements Serializable {
   public List<LocElement> getLocElements() {
     return locElements;
   }
-
-  public int getModelClass() {
-    return modelClass;
-  }
-
 
   public String getName() {
     return name;
@@ -89,10 +83,6 @@ public class CountryLocationLevel implements Serializable {
 
   public void setLocElements(List<LocElement> locElements) {
     this.locElements = locElements;
-  }
-
-  public void setModelClass(int modelClass) {
-    this.modelClass = modelClass;
   }
 
   public void setName(String name) {
