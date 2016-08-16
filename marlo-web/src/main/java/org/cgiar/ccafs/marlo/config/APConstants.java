@@ -59,6 +59,8 @@ public final class APConstants {
   public static final String CRP_IMPACT_PATHWAY_ACTIVE = "crp_impPath_active";
   public static final String SECTION_NAME = "sectionName";
   public static final String IDO_ID = "idoID";
+  public static final String ELEMENT_TYPE_ID = "parentId";
+
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
 

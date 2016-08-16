@@ -32,8 +32,6 @@ public class CountryLocationLevel implements Serializable {
   private String name;
 
   private List<LocElement> locElements;
-
-
   private List<LocElement> allElements;
   private long id;
   private boolean isList;

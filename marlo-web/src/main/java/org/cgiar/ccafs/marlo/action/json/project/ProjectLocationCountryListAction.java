@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
@@ -47,33 +46,25 @@ public class ProjectLocationCountryListAction extends BaseAction {
 
   private long parentId;
 
-  private int modelClass;
-
   private LocElementTypeManager locElementTypeManager;
-  private CrpProgramManager crpProgramManager;
 
   @Inject
-  public ProjectLocationCountryListAction(APConfig config, LocElementTypeManager locElementTypeManager,
-    CrpProgramManager crpProgramManager) {
+  public ProjectLocationCountryListAction(APConfig config, LocElementTypeManager locElementTypeManager) {
     super(config);
     this.locElementTypeManager = locElementTypeManager;
-    this.crpProgramManager = crpProgramManager;
   }
 
   @Override
   public String execute() throws Exception {
     Map<String, Object> locElement = new HashMap<String, Object>();
-    switch (modelClass) {
-      case 1:
-        LocElementType elementType = locElementTypeManager.getLocElementTypeById(parentId);
-        for (LocElement element : elementType.getLocElements().stream().filter(le -> le.isActive())
-          .collect(Collectors.toList())) {
-          // locElement.put("id", )
-        }
-        break;
 
-      case 2:
-        break;
+    LocElementType elementType = locElementTypeManager.getLocElementTypeById(parentId);
+    if (elementType != null) {
+      for (LocElement element : elementType.getLocElements().stream().filter(le -> le.isActive())
+        .collect(Collectors.toList())) {
+        locElement.put("id", element.getId());
+        locElement.put("name", element.getName());
+      }
     }
 
     return SUCCESS;
@@ -89,12 +80,8 @@ public class ProjectLocationCountryListAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
     Map<String, Object> parameters = this.getParameters();
-    parentId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]));
-    modelClass = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.TARGET_UNIT_NAME))[0]));
-
-
+    parentId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.ELEMENT_TYPE_ID))[0]));
   }
 
   public void setLocElements(List<Map<String, Object>> locElements) {
