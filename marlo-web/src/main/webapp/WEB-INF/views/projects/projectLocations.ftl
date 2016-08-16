@@ -37,21 +37,12 @@
            
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
-            <div >
-              [#-- yes or not option--]
-              <div class="borderBox col-md-6"> 
-                <div id="globalProject"><span>Is the project global?</span></div>
-                [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Yes" noLabel="No"cssClass="" /]
-              </div> 
-            </div>
-            
             [#-- Content--]
             <div id="content" class="col-md-12">
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-7">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
-                
                 [#if locationsData?has_content]
                   [#list locationsData as locationLevels]
                     [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index /]
@@ -71,7 +62,7 @@
               [#list locationsLevels as locLevels]
                 <optgroup label="${locLevels.name}">
                 [#list locLevels.locations as locations]
-                  <option value="${locations.id}-${locations.modelClass}-${locations.list?string}" >${locations.name}</option>
+                  <option value="${locations.id}-${locations.list?string}" >${locations.name}</option>
                 [/#list]
                 </optgroup> 
               [/#list]
@@ -85,6 +76,8 @@
       </div>
     </div>  
 </section>
+
+[#--<script src="https://maps.googleapis.com/maps/api/js?key=${config.googleApiKey}&callback=initMap"></script>--]
 
 [#-- Section hidden inputs--]
 [@locationLevel element={} name="" index=0 template=true /]
@@ -135,7 +128,7 @@
         </div>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
-    <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value="${(element.class.name)!}"/>
+    <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value=""/>
   </div>
 [/#macro]
 
@@ -144,13 +137,13 @@
   [#-- Content collapsible--]
   <div id="location-${template?string('template',index)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName">${(element.name)!} </div>
+      <div class="locationName">${(element.name)!} [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??]<label >(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!}) </label> [/#if] </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" class="locElementId" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="locElementName" name="${customName}.name" value="${(element.name)!}" />
-    <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" />
+    <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
     <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
     <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
     <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />

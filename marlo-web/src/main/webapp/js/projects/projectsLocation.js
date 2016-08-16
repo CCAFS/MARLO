@@ -1,9 +1,11 @@
 $(document).ready(init);
+var map;
 
 function init() {
 
   $('.latitude, .longitude').numericInput();
 
+  // validate latitude and longitude
   $('.latitude, .longitude').on("keyup", function(e) {
     var $parent = $(this).parent().parent();
     var lat = $parent.find('.latitude').val();
@@ -20,6 +22,7 @@ function init() {
     placeholder: "Select a location level"
   })
 
+  // validate if regions list is empty
   if($(".selectWrapper").find(".locationLevel").length > 0) {
     $(".map").show('slow', function() {
       loadScript();
@@ -41,7 +44,6 @@ function attachEvents() {
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
 
       $(".map").show("slow", function() {
-        loadScript();
       });
     }
     var option = $(this).find("option:selected");
@@ -50,6 +52,25 @@ function attachEvents() {
     } else {
       addLocationLevel(option);
     }
+
+  });
+
+  // Select location ajax
+  $('.selectLocation').on('click', function() {
+    var parent = $(this).parent().parent();
+    var url = baseURL + "/searchCountryListPL.do";
+    var data = {
+      parentId: parent.find(".locationLevelId").val()
+    }
+    console.log(data);
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: "json",
+        data: data
+    }).done(function(m) {
+      console.log(m);
+    });
 
   });
 
@@ -109,8 +130,7 @@ function addLocationLevel(option) {
   $item.find('.locationLevel-option').html(option.html());
   var optionValue = option.val().split('-');
   var idLocationLevel = optionValue[0];
-  var typeLocationLevel = optionValue[1];
-  var isList = optionValue[2];
+  var isList = optionValue[1];
   console.log(isList);
   if(isList === "true") {
     $item.find(".selectLocation").css("display", "block");
@@ -118,7 +138,6 @@ function addLocationLevel(option) {
     $item.find(".coordinates-inputs").css("display", "block");
   }
   $item.find('.locationLevelId').val(idLocationLevel);
-  $item.find('.locationLevelType').val(typeLocationLevel);
   $list.append($item);
   // updateAllIndexes();
   $item.show('slow');
@@ -153,6 +172,9 @@ function addLocationForm(parent,latitude,longitude,name) {
   parent.find(".latitude").val("");
   parent.find(".longitude").val("");
   parent.find(".name").val("");
+  // add marker
+  addMarker(map, parseInt(latitude), parseInt(longitude), name);
+  // update indexes
   updateIndex();
 }
 
@@ -209,6 +231,19 @@ function updateLocationIndex(item,locationLevelName) {
 function loadScript() {
   var script = document.createElement("script");
   script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&callback=initMap";
+  // function after load script
+  script.onload = script.onreadystatechange = function() {
+    $(".selectWrapper").find(".locationLevel").each(function(index,item) {
+      $(item).find(".locElement").each(function(i,locItem) {
+        var latitude = $(locItem).find(".geoLatitude").val();
+        var longitude = $(locItem).find(".geoLongitude").val();
+        var site = $(locItem).find(".locElementName").val()
+        if(latitude != "" && longitude != "") {
+          addMarker(map, parseInt(latitude), parseInt(longitude), site);
+        }
+      });
+    });
+  }
   document.body.appendChild(script);
 }
 
@@ -295,7 +330,7 @@ function initMap() {
       }
   ];
   var mapDiv = document.getElementById('map');
-  var map = new google.maps.Map(mapDiv, {
+  map = new google.maps.Map(mapDiv, {
       center: new google.maps.LatLng(14.41, -12.52),
       zoom: 2,
       mapTypeId: 'roadmap',
@@ -305,3 +340,16 @@ function initMap() {
 
 // Map events
 
+function addMarker(map,latitude,longitude,sites) {
+
+  var marker = new google.maps.Marker({
+      position: {
+          lat: latitude,
+          lng: longitude
+      },
+      title: sites
+  });
+
+// To add the marker to the map, call setMap();
+  marker.setMap(map);
+}

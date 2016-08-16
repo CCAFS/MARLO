@@ -91,3 +91,11 @@ span.glyphicon.glyphicon-user {
 .button-remove:hover {
     background: #DB6052;
 }
+
+.keyOutputDescription {
+    border: 1px solid #e7e7e7;
+    border-radius: 8px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 15px;
+}
