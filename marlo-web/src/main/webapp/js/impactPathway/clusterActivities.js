@@ -119,7 +119,7 @@ function updateKeyOtuputsIndex(item,clustersName) {
   var name = $("#keyOutputName").val();
   $(item).find('.keyOutputs li').each(function(indexKeyOuput,keyOutputItem) {
     var customName = clustersName + '.' + name + '[' + indexKeyOuput + ']';
-    $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.description');
+    $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
     $(keyOutputItem).find('.id').attr('name', customName + '.id');
   });
 

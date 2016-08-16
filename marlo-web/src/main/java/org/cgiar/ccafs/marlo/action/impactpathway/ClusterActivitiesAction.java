@@ -360,6 +360,11 @@ public class ClusterActivitiesAction extends BaseAction {
             clusterofActivities = new ArrayList<>();
           }
           for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
+
+
+            if (clusterOfActivity.getKeyOutputs() == null) {
+              clusterOfActivity.setKeyOutputs(new ArrayList<>());
+            }
             if (clusterOfActivity.getLeaders() != null) {
               for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
                 if (leaders.getUser() != null && leaders.getUser().getId() != null) {

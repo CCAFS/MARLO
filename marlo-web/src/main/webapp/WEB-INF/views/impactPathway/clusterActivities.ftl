@@ -167,8 +167,8 @@
       <div class="keyOutputsItems-list form-group col-md-12 simpleBox">
         <ul class="keyOutputs">
           [#if cluster.keyOutputs?has_content]
-          [#list cluster.keyOutputs as keyOutputItem]
-            [@keyOutputItem element=keyOutputItem name='${keyOutputsName}' index=keyOutputItem_index /]
+          [#list cluster.keyOutputs as keyOutputItems]
+            [@keyOutputItem element=keyOutputItems name='${keyOutputsName}' index=keyOutputItems_index /]
           [/#list]
         [/#if]
         </ul>
@@ -207,7 +207,7 @@
   <li id="keyOutput-${template?string('template',index)}" class="keyOutputItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- Key output inputs --]
     <div class="col-md-10 keyOutput">
-      <input name="${customName}.description" type="text" class="form-control keyOutputInput col-md-10" />
+      <input name="${customName}.keyOutput" type="text" class="form-control keyOutputInput col-md-10" />
       <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     </div>
     [#-- Remove Button --]
