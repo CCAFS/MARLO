@@ -166,7 +166,11 @@
       <span class="subtitle cold-md-12"><label>Key Outputs: </label></span>
       <div class="keyOutputsItems-list form-group col-md-12 simpleBox">
         <ul class="keyOutputs">
-        
+          [#if cluster.keyOutputs?has_content]
+          [#list cluster.keyOutputs as keyOutputItem]
+            [@keyOutputItem element=keyOutputItem name='${keyOutputsName}' index=keyOutputItem_index /]
+          [/#list]
+        [/#if]
         </ul>
         <p class="text-center" style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
       </div>
