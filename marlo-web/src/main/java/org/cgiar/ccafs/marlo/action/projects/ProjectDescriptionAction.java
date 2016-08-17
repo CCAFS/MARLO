@@ -452,9 +452,13 @@ public class ProjectDescriptionAction extends BaseAction {
     clusterofActivites = crpClusterOfActivityManager.findAll().stream()
       .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
       .collect(Collectors.toList());
-    regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
-      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList()));
+
+
+    // regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+    // .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+    // .collect(Collectors.toList()));
+
+
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
     projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
