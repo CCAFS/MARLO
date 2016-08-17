@@ -85,17 +85,21 @@ public class ProjectDescriptionAction extends BaseAction {
   private Crp loggedCrp;
   private Project project;
   private List<CrpProgram> programFlagships;
+  private List<CrpProgram> regionFlagships;
+
   private List<LiaisonInstitution> liaisonInstitutions;
+
+
   private Map<String, String> projectStauses;
+
   private List<LiaisonUser> allOwners;
   private Map<String, String> projectTypes;
-
   private File file;
   private File fileReporting;
+
   private String fileContentType;
   private String fileFileName;
   private String fileReportingFileName;
-
   private ProjectDescriptionValidator validator;
 
   @Inject
@@ -161,7 +165,6 @@ public class ProjectDescriptionAction extends BaseAction {
       + config.getAnualReportFolder();
   }
 
-
   public String getAnualReportURL() {
     return config.getDownloadURL() + "/" + this.getAnualReportRelativePath().replace('\\', '/');
   }
@@ -183,7 +186,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getBilateralContractAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getBilateralProposalRelativePath() + File.separator;
   }
-
 
   public String getBilateralContractURL() {
     return config.getDownloadURL() + "/" + this.getBilateralProposalRelativePath().replace('\\', '/');
@@ -262,9 +264,11 @@ public class ProjectDescriptionAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
+
 
   public Map<String, String> getProjectStauses() {
     return projectStauses;
@@ -274,10 +278,13 @@ public class ProjectDescriptionAction extends BaseAction {
     return projectTypes;
   }
 
+  public List<CrpProgram> getRegionFlagships() {
+    return regionFlagships;
+  }
+
   public String getTransaction() {
     return transaction;
   }
-
 
   private String getWorkplanRelativePath() {
 
@@ -290,6 +297,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
   }
 
+
   /**
    * Return the absolute path where the work plan is or should be located.
    * 
@@ -299,7 +307,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -395,6 +402,10 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
+    regionFlagships = new ArrayList<>();
+    regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
     projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
@@ -406,6 +417,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -539,7 +551,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
-
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
   }
@@ -599,8 +610,13 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectStauses = projectStauses;
   }
 
+
   public void setProjectTypes(Map<String, String> projectTypes) {
     this.projectTypes = projectTypes;
+  }
+
+  public void setRegionFlagships(List<CrpProgram> regionFlagships) {
+    this.regionFlagships = regionFlagships;
   }
 
 
