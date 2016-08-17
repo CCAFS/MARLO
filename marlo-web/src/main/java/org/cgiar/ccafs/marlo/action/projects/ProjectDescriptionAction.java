@@ -455,9 +455,9 @@ public class ProjectDescriptionAction extends BaseAction {
       .collect(Collectors.toList());
 
 
-    // regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
-    // .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-    // .collect(Collectors.toList()));
+    regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList()));
 
 
     projectTypes = new HashMap<>();
