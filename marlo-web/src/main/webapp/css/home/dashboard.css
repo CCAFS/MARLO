@@ -4,7 +4,7 @@
   background-color: white;
   color: black;
   border: 1px solid #dddddd;
-  top: 5px;
+  /* top: 5px; */
 }
 
 #dashboardContent li a:hover{
@@ -15,7 +15,8 @@
 #dashboardContent li.active a{
   background-color: rgb(17, 127, 168);
   color: white;
-  top: 0px;
+  bottom: 0px;
+  height: 42px;
 }
 
 #decisionTree {
