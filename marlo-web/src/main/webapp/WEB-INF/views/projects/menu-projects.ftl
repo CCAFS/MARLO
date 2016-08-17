@@ -23,15 +23,13 @@
       'items': [
       { 'slug': '',  'name': 'Project Contribution to CRP Outcomes',  'action': '',  'active': false  },
       { 'slug': '',  'name': 'Other Contributions',  'action': '',  'active': false  },
-      { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false  }
+      { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false, 'show': reportingActive }
       ]
     },
     { 'title': 'Outputs',
       'items': [
-      { 'slug': '',  'name': 'Overview by CoAs',  'action': '',  'active': false  },
       { 'slug': '',  'name': 'Deliverables',  'action': '',  'active': false  },
-      { 'slug': '',  'name': 'Next Users',  'action': '',  'active': false  },
-      { 'slug': '',  'name': 'Project Highlights',  'action': '',  'active': false  }
+      { 'slug': '',  'name': 'Project Highlights',  'action': '',  'active': false ,'show': reportingActive }
       ]
     },
     { 'title': 'Activities',
@@ -43,7 +41,7 @@
       'items': [
       { 'slug': '',  'name': 'Budget by Partners',  'action': '',  'active': false  },
       { 'slug': '',  'name': 'Budget by CoAs',  'action': '',  'active': false  },
-      { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false  }
+      { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false, 'show': reportingActive }
       ]
     }
     
@@ -65,11 +63,13 @@
       <ul><p class="menuTitle">${menu.title}</p>
         [#list menu.items as item]
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+          [#if (item.show)!true ]
           <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" style="border-color:${(project.liaisonInstitution.crpProgram.color)!}">
               [@s.text name=item.name/]
             </a>
           </li>
+          [/#if]
         [/#list] 
       </ul>
     </li>

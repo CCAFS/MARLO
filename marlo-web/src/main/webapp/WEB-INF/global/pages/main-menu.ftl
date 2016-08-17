@@ -49,10 +49,13 @@
 </div> 
 </nav> 
 
+<div class="subMainMenu">
 <div class="container">
   [#include "/WEB-INF/global/pages/breadcrumb.ftl" /]
 </div>
 
 [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
+
+</div>
 
 

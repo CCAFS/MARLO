@@ -114,8 +114,8 @@
              
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
-                <div id="projectFlagshipsBlock" class="">
-                  <div class="col-md-6">  
+                <div class="col-md-6">  
+                  <div id="projectFlagshipsBlock" class="">
                     <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -128,10 +128,10 @@
                       [/#if]
                     [/#if]
                   </div>
-                  <div class="col-md-6">  
-                   
-                   <div id="projectRegionsBlock" class="">
-                  <div class="col-md-6">  
+                </div>
+                [#-- Regions --] 
+                <div class="col-md-6">  
+                  <div id="projectRegionsBlock" class="">
                     <h5>[@s.text name="projectDescription.regions" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
@@ -144,12 +144,9 @@
                       [/#if]
                     [/#if]
                   </div>
-                   
-                   
-                  </div>
-                  
-                  <div class="clearfix"></div>
-                </div> 
+                </div>
+                <div class="clearfix"></div>
+              </div> 
                 
       
             [#-- Bilateral/Core projects only for CCAFS Projects 
