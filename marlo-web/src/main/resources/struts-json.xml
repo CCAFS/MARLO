@@ -65,6 +65,15 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		
+    <action name="ClusterActivitiesLeaders"
+      class="org.cgiar.ccafs.marlo.action.json.impactpathway.CrpClusterLeadersListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
  <action name="sendNotification"
       class="org.cgiar.ccafs.marlo.action.json.global.MessagesAction">

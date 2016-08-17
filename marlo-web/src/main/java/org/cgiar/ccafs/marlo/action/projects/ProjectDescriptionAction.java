@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -74,6 +75,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private FileDBManager fileDBManager;
   private CrpManager crpManager;
   private CrpProgramManager programManager;
+  private ProjectClusterActivityManager projectClusterActivityManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
   private String transaction;
@@ -115,7 +117,8 @@ public class ProjectDescriptionAction extends BaseAction {
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator, CrpClusterOfActivityManager crpClusterOfActivityManager) {
+    ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
+    CrpClusterOfActivityManager crpClusterOfActivityManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -127,6 +130,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.validator = validator;
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.auditLogManager = auditLogManager;
+    this.projectClusterActivityManager = projectClusterActivityManager;
     this.fileDBManager = fileDBManager;
     // this.liaisonUserManager = liaisonUserManager;
   }
