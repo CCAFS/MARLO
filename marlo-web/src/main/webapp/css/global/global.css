@@ -993,7 +993,7 @@ select#partnerSave_activityPartner_partner_type_id {
     font-size: 0.9em;
 }
 
-/* P&R Panel Style */
+/* Marlo Panel Style */
 
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
@@ -1027,7 +1027,7 @@ select#partnerSave_activityPartner_partner_type_id {
     margin-left: 1px;
 }
 
-.panel.tertiary .panel-body ul.list li {
+.panel.tertiary .panel-body > ul.list > li {
     list-style: none;
     padding: 3px 10px;
     background-color: #F7F7F7;
@@ -1038,7 +1038,7 @@ select#partnerSave_activityPartner_partner_type_id {
     position: relative;
 }
 
-.panel.tertiary .panel-body ul li.last {
+.panel.tertiary .panel-body > ul > li.last {
   /* border-bottom: 1px solid #EFEFEF; */
 }
 
@@ -1056,29 +1056,29 @@ select#partnerSave_activityPartner_partner_type_id {
     min-height: 44px;
 }
 
-.panel .panel-body ul{
+.panel .panel-body > ul{
     margin: 0;
     padding: 0 6px;
     font-weight: normal;
 }
 
-.panel .panel-body ul li {
+.panel .panel-body > ul > li {
     list-style: none; 
     padding: 5px 0 8px 0;
     border-bottom: 1px solid #ccc;
 }
-.panel .panel-body ul.list li:hover { 
+.panel .panel-body > ul.list > li:hover { 
   color: #444;
   background-color: #F4F4F4;
 }
-.panel .panel-body ul li.last { 
+.panel .panel-body > ul > li.last { 
     border-bottom: none;
 }
 
 .panel-body .list span.name {
     width: 89%;
     display: block;
-    float: left;
+    /* float: left; */
 }
 
 .panel-body a {
@@ -3313,10 +3313,6 @@ padding: 0 4px 0 6px;width: 100px;}
 
 /* Project Description*/
 
-textarea[id$='summary'] {
-    height: 90px;
-}
-
 #projects .borderBox button {
   margin-top: 10px;
 }
@@ -3404,6 +3400,13 @@ textarea[id$='summary'] {
   display: block;
   width: 90%;
   float: left;
+}
+
+li.leader{
+  color: #848484;
+  font-size: 0.9em;
+  line-height: 1.4em;
+  list-style: initial;
 }
 
 /* Project Partners*/

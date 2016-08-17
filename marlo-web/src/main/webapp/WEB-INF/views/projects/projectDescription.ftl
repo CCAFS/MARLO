@@ -35,176 +35,145 @@
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
-              [#-- Project Title --]
-              <div class="form-group">
-                [@customForm.textArea name="project.title" required=true className="project-title" editable=editable /]
+            [#-- Project Title --]
+            <div class="form-group">
+              [@customForm.textArea name="project.title" required=true className="project-title" editable=editable /]
+            </div>
+            <div class="form-group row">
+              [#-- Project Program Creator --]
+              <div class="col-md-6">
+                [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
               </div>
-              <div class="form-group row">
-                [#-- Project Program Creator --]
-                <div class="col-md-6">
-                  [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
-                </div>
-                [#--  Project Owner Contact Person --]
-                <div class="col-md-6">
-                  [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+              [#--  Project Owner Contact Person --]
+              <div class="col-md-6">
+                [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+              </div> 
+            </div>  
+            <div class="form-group row">  
+              [#-- Start Date --]
+              <div class="col-md-6">
+                [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable  /]
+              </div> 
+              [#-- End Date --]
+              <div class="col-md-6">
+                [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable /]
+              </div>
+            </div>
+            <div class="form-group row">
+              [#-- Project Type --]
+              <div class="col-md-6"> 
+                [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
+              </div>
+            </div> 
+    
+            [#-- Project upload work plan --]
+            [#if !((project.bilateralProject)!false)]
+            <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
+              [#if action.hasPermission("workplan") ]
+                [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
+              [/#if]
+              <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
+                <div class="halfPartBlock fileUpload projectWorkplan">
+                  [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable /]
                 </div> 
               </div>  
-              <div class="form-group row">  
-                [#-- Start Date --]
-                <div class="col-md-6">
-                  [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable  /]
-                </div> 
-                [#-- End Date --]
-                <div class="col-md-6">
-                  [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable /]
-                </div>
-              </div>
-              <div class="form-group row">
-                [#-- Project Type --]
-                <div class="col-md-6"> 
-                  [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
-                </div>
-              </div> 
-      
-              [#-- Project upload work plan --]
-              [#if !((project.bilateralProject)!false)]
-              <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
-                [#if action.hasPermission("workplan") ]
-                  [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
-                [/#if]
-                <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
-                  <div class="halfPartBlock fileUpload projectWorkplan">
-                    [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable /]
-                  </div> 
-                </div>  
-              </div>
-              [/#if]
-      
-              [#-- Project upload bilateral contract --]
-              [#if (project.bilateralProject)!false && action.hasPermission("bilateralContract") ]
-              <div class="fullBlock fileUpload bilateralContract">
-                <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
-                <div class="uploadContainer">
-                  [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable /]
-                </div>  
-              </div>
-              [/#if]
-              
-              [#-- Project Summary --]
-              <div class="form-group">
-                [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable /]
-              </div>
-              
-              [#-- -- -- REPORTING BLOCK -- -- --]
-              [#if reportingActive]
-                [#-- Project upload annual report to donor--]
-                [#if (project.bilateralProject)!false]
-                <div class="fullBlock fileUpload annualreportDonor">
-                  <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
-                  <div class="uploadContainer">
-                    [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable /]
-                  </div>  
-                </div>
-                [/#if]
-              [/#if]
+            </div>
+            [/#if]
+    
+            [#-- Project upload bilateral contract --]
+            [#if (project.bilateralProject)!false && action.hasPermission("bilateralContract") ]
+            <div class="fullBlock fileUpload bilateralContract">
+              <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
+              <div class="uploadContainer">
+                [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable /]
+              </div>  
+            </div>
+            [/#if]
             
-              
-              [#--  Regions/global and Flagships that the project is working on --]
-              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /]
-             
-              <div id="projectWorking" class="fullBlock clearfix">
-                [#-- Flagships --] 
-                <div class="col-md-6">  
-                  <div id="projectFlagshipsBlock" class="">
-                    <h5>[@s.text name="projectDescription.flagships" /]:</h5>
-                    [#if editable]
-                      [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
-                    [#else]
-                      [#if project.flagships?has_content]
-                        [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
-                      [#else]
-                        [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
-                      [/#if]
-                    [/#if]
-                  </div>
-                </div>
-                [#-- Regions --] 
-                <div class="col-md-6">  
-                  <div id="projectRegionsBlock" class="">
-                    <h5>[@s.text name="projectDescription.regions" /]:</h5>
-                    [#if editable]
-                      [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
-                    [#else]
-                      [#if project.regions?has_content]
-                        [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
-                      [#else]
-                        [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
-                      [/#if]
-                    [/#if]
-                  </div>
-                </div>
-                <div class="clearfix"></div>
-              </div> 
-              
-              [#-- Cluster of Activities --]
-              <div class="panel tertiary">
-                <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=true /]</div>
-                <div id="projectsList" class="panel-body"> 
-                  <ul class="list">
-                  [#if project.clusterActivities?has_content]
-                    [#list project.clusterActivities as element]
-                      <li class="clearfix [#if !element_has_next]last[/#if]">
-                        <input class="id" type="hidden" name="project.clusterActivities" value="${element.id?c}" />
-                        <span class="name">${element.id} - ${element.description}</span>
-                        <div class="leader">
-                          
-                        </div>
-                        [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-                      </li>
-                    [/#list]
-                  [#else]
-                    <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p>
-                  [/#if]  
-                  </ul>
-                  [#if editable ]
-                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="description" className="" value="" /]
-                  [/#if] 
-                </div>
+            [#-- Project Summary --]
+            <div class="form-group">
+              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable /]
+            </div>
+            
+            [#-- -- -- REPORTING BLOCK -- -- --]
+            [#if reportingActive]
+              [#-- Project upload annual report to donor--]
+              [#if (project.bilateralProject)!false]
+              <div class="fullBlock fileUpload annualreportDonor">
+                <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
+                <div class="uploadContainer">
+                  [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable /]
+                </div>  
               </div>
-      
-              [#-- Bilateral/Core projects only for CCAFS Projects 
-               <h4 id="bilateralProjects" class="subHeadTitle"> [@s.text name="projectDescription.projectsContributing" /] </h4> 
-              <div class="panel tertiary">
-                <div class="panel-head">
-                  [#if (project.bilateralProject)!false]
-                    [@customForm.text name="projectDescription.selectCoreProject" readText=!editable /]:
+              [/#if]
+            [/#if]
+          
+            
+            [#--  Regions/global and Flagships that the project is working on --]
+            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /]
+           
+            <div id="projectWorking" class="fullBlock clearfix">
+              [#-- Flagships --] 
+              <div class="col-md-6">  
+                <div id="projectFlagshipsBlock" class="">
+                  <h5>[@s.text name="projectDescription.flagships" /]:</h5>
+                  [#if editable]
+                    [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
+                    [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
                   [#else]
-                    [@customForm.text name="projectDescription.selectBilateralProject" readText=!editable /]:
+                    [#if project.flagships?has_content]
+                      [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
+                    [#else]
+                      [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
+                    [/#if]
                   [/#if]
                 </div>
-                <div id="projectsList" class="panel-body"> 
-                  <ul class="list">
-                  [#if project.linkedProjects?has_content]
-                    [#list project.linkedProjects as element]
-                      <li class="clearfix [#if !element_has_next]last[/#if]">
-                        <input class="id" type="hidden" name="project.linkedProjects" value="${element.id?c}" />
-                        <a href="[@s.url action='description'][@s.param name='projectID']${element.id}[/@s.param][/@s.url]"><span class="name">${element.id} - ${element.title}</span> </a>
-                        [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-                      </li>
-                    [/#list]
+              </div>
+              [#-- Regions --] 
+              <div class="col-md-6">  
+                <div id="projectRegionsBlock" class="">
+                  <h5>[@s.text name="projectDescription.regions" /]:</h5>
+                  [#if editable]
+                    [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
+                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
                   [#else]
-                    <p class="emptyText"> [@s.text name="projectDescription.${((project.bilateralProject)!false)?string('coreProjects','bilateralProjects')}.emptyText" /]</p>
-                  [/#if]  
-                  </ul>
-                  [#if editable ]
-                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="" keyFieldName="id" displayFieldName="" className="" value="" /]
-                  [/#if] 
+                    [#if project.regions?has_content]
+                      [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
+                    [#else]
+                      [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
+                    [/#if]
+                  [/#if]
                 </div>
-              --]
+              </div>
+              <div class="clearfix"></div>
+            </div> 
             
+            [#-- Cluster of Activities --]
+            <div class="panel tertiary">
+              <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=true /]</div>
+              <div id="projectsList" class="panel-body"> 
+                <ul class="list">
+                [#if project.clusterActivities?has_content]
+                  [#list project.clusterActivities as element]
+                    <li class="clearfix [#if !element_has_next]last[/#if]">
+                      [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      <input class="id" type="hidden" name="project.clusterActivities" value="${element.id?c}" />
+                      <div class=""><span class="name">${element.id} - ${element.description}</span></div>
+                      <div class="leaders">
+                        
+                      </div>
+                    </li>
+                  [/#list]
+                [#else]
+                  <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p>
+                [/#if]  
+                </ul>
+                [#if editable ]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                [/#if] 
+              </div>
             </div>
+            
           </div> 
            
           
@@ -220,9 +189,11 @@
 [#-- Core project list template --]
 <ul style="display:none">
   <li id="cpListTemplate" class="clearfix">
-    <input class="id" type="hidden" name="project.clusterActivities" value="" />
-    <span class="name"></span> 
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <input class="id" type="hidden" name="project.clusterActivities" value="" />
+    <div><span class="name"></span></div>
+    <ul class="leaders">
+    </ul>
   </li>
 </ul>
 

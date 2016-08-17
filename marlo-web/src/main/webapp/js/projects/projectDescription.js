@@ -138,6 +138,20 @@ $(document).ready(function() {
     var $listElement = $("#cpListTemplate").clone(true).removeAttr("id");
     $listElement.find('.id').val($item.val());
     $listElement.find('.name').html($item.text());
+
+    // Getting CoA Leaders
+    $.ajax({
+        url: baseURL + '/ClusterActivitiesLeaders.do',
+        data: {
+          clusterActivityID: $item.val()
+        },
+        success: function(data) {
+          $.each(data.leaders, function(i,e) {
+            $listElement.find('.leaders').append('<li class="leader">' + escapeHtml(e.description) + '</li>');
+          });
+        }
+    });
+
     $listElement.appendTo($coreProjects).hide().show('slow');
     $coreProjects.find('.emptyText').hide();
     $item.remove();
@@ -163,8 +177,8 @@ $(document).ready(function() {
 
   function setcoreProjectsIndexes() {
     $coreProjects.find('li').each(function(i,item) {
-      var elementName = "project.linkedProjects";
-      $(item).find('.id').attr('name', elementName);
+      // var elementName = "project.linkedProjects";
+      // $(item).find('.id').attr('name', elementName);
     });
   }
 
