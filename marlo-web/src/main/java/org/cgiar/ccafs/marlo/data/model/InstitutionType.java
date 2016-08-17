@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,13 +14,14 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class InstitutionType implements java.io.Serializable {
+public class InstitutionType implements java.io.Serializable, IAuditLog {
 
 
   static final long serialVersionUID = -943657365260109270L;
@@ -50,6 +51,7 @@ public class InstitutionType implements java.io.Serializable {
     return this.acronym;
   }
 
+  @Override
   public Long getId() {
     return this.id;
   }
@@ -58,8 +60,31 @@ public class InstitutionType implements java.io.Serializable {
     return institutions;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
+  }
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
+  }
+
   public String getName() {
     return this.name;
+  }
+
+  @Override
+  public boolean isActive() {
+
+    return true;
   }
 
   public void setAcronym(String acronym) {
@@ -80,6 +105,6 @@ public class InstitutionType implements java.io.Serializable {
 
   @Override
   public String toString() {
-      return id.toString();
+    return id.toString();
   }
 }
