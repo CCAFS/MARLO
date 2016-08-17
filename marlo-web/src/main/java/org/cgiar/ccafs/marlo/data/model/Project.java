@@ -124,12 +124,22 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
+  private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
+  private List<ProjectClusterActivity> clusterActivities;
+
 
   private ProjectComponentLesson projectComponentLesson;
+
+
   private ProjectComponentLesson projectComponentLessonPreview;
+
+
   private String overall;
 
+
   private List<ProjectPartner> partners;
+
+
   private List<ProjectLocation> locations;
 
   public Project() {
@@ -165,6 +175,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.submissions = submissions;
     this.projectLocations = projectLocations;
   }
+
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -207,11 +218,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     return annualReportToDonnor;
   }
 
-
   public FileDB getBilateralContractName() {
     return bilateralContractName;
   }
 
+  public List<ProjectClusterActivity> getClusterActivities() {
+    return clusterActivities;
+  }
 
   /**
    * This method gets all the coordinators working for this project.
@@ -247,10 +260,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
-
   public User getCreatedBy() {
     return this.createdBy;
   }
+
 
   public Crp getCrp() {
     return crp;
@@ -270,10 +283,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     return flagshipValue;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public ProjectPartner getLeader() {
 
@@ -337,11 +352,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   public String getLeaderResponsabilities() {
     return this.leaderResponsabilities;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
@@ -350,6 +363,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
   }
+
 
   public List<ProjectLocation> getLocations() {
     return locations;
@@ -370,7 +384,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
@@ -385,6 +398,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     return partners;
   }
 
+
+  public Set<ProjectClusterActivity> getProjectClusterActivities() {
+    return projectClusterActivities;
+  }
+
+
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
@@ -393,19 +412,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectComponentLessonPreview;
   }
 
-
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
-
 
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
+
 
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
@@ -470,7 +489,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return workplan;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -479,15 +497,16 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public boolean isBilateralProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_BILATERAL) : false;
   }
+
 
   /**
    * A project is bilateral stand alone if it is bilateral and it is NOT contributing to any Core project.
@@ -527,13 +546,17 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setAnnualReportToDonnor(FileDB annualReportToDonnor) {
     this.annualReportToDonnor = annualReportToDonnor;
   }
 
   public void setBilateralContractName(FileDB bilateralContractName) {
     this.bilateralContractName = bilateralContractName;
+  }
+
+
+  public void setClusterActivities(List<ProjectClusterActivity> clusterActivities) {
+    this.clusterActivities = clusterActivities;
   }
 
   public void setCofinancing(boolean cofinancing) {
@@ -572,7 +595,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.leaderResponsabilities = leaderResponsabilities;
   }
 
-
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
     this.liaisonInstitution = liaisonInstitution;
   }
@@ -605,6 +627,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
+  }
+
+
+  public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
+    this.projectClusterActivities = projectClusterActivities;
   }
 
 

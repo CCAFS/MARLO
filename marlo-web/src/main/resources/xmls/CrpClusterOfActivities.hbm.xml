@@ -50,5 +50,14 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" />
         </set>
+        
+        
+        <set name="projectClusterActivities" order-by="id" table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="cluster_activity_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
+        </set>
+        
 	</class>
 </hibernate-mapping>

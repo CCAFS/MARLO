@@ -64,6 +64,8 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
   private List<CrpClusterKeyOutput> keyOutputs;
+  private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
+  private List<ProjectClusterActivity> clusterActivities;
 
 
   public CrpClusterOfActivity() {
@@ -104,18 +106,25 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
+  public List<ProjectClusterActivity> getClusterActivities() {
+    return clusterActivities;
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Set<CrpClusterActivityLeader> getCrpClusterActivityLeaders() {
     return crpClusterActivityLeaders;
   }
 
+
   public Set<CrpClusterKeyOutput> getCrpClusterKeyOutputs() {
     return crpClusterKeyOutputs;
   }
-
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
@@ -124,7 +133,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   public String getDescription() {
     return this.description;
   }
-
 
   @Override
   public Long getId() {
@@ -140,12 +148,14 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return leaders;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public String getModificationJustification() {
     return modificationJustification;
@@ -154,6 +164,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  public Set<ProjectClusterActivity> getProjectClusterActivities() {
+    return projectClusterActivities;
   }
 
   @Override
@@ -175,6 +189,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setClusterActivities(List<ProjectClusterActivity> clusterActivities) {
+    this.clusterActivities = clusterActivities;
   }
 
   public void setCreatedBy(User createdBy) {
@@ -215,6 +233,10 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setProjectClusterActivities(Set<ProjectClusterActivity> projectClusterActivities) {
+    this.projectClusterActivities = projectClusterActivities;
   }
 
   @Override
