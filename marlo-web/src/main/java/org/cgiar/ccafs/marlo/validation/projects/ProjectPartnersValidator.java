@@ -66,11 +66,15 @@ public class ProjectPartnersValidator extends BaseValidator {
     if (project != null) {
 
       if (!project.getPartners().isEmpty() && (project.isCoreProject() || project.isCoFundedProject())) {
-        if (!this.isValidString(project.getOverall())) {
-          this.addMessage(
-            action.getText("Please provide Partnerships overall performance over the last reporting period"));
-          this.addMissingField("project.partners.overall");
+
+        if (action.isReportingActive()) {
+          if (!this.isValidString(project.getOverall())) {
+            this.addMessage(
+              action.getText("Please provide Partnerships overall performance over the last reporting period"));
+            this.addMissingField("project.partners.overall");
+          }
         }
+
       }
 
 

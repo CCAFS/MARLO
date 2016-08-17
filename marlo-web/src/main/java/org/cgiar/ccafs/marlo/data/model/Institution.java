@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Institution implements java.io.Serializable, IAuditLog {
 
@@ -96,6 +95,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
   public String getComposedName() {
+
+    if (this.getLocElement().getName() == null) {
+      this.getLocElement().setName("");
+    }
     if (this.getAcronym() != null) {
       if (this.getAcronym().length() != 0) {
         try {
@@ -222,7 +225,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   @Override
   public String toString() {
-      return id.toString();
+    return id.toString();
   }
 }
 

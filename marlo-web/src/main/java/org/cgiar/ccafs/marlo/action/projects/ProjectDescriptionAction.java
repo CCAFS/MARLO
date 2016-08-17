@@ -360,6 +360,8 @@ public class ProjectDescriptionAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {

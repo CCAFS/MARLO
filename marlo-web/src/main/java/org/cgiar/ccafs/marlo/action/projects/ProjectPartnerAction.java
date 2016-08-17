@@ -443,6 +443,8 @@ public class ProjectPartnerAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         project = (Project) autoSaveReader.readFromJson(jReader);
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
