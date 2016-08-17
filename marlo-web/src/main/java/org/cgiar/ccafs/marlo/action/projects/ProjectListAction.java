@@ -103,25 +103,27 @@ public class ProjectListAction extends BaseAction {
         project.setFlagships(programs);
         project.setRegions(regions);
       }
-
-      for (Project project : allProjects) {
-        List<CrpProgram> programs = new ArrayList<>();
-        List<CrpProgram> regions = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          programs.add(projectFocuses.getCrpProgram());
+      if (allProjects != null) {
+        for (Project project : allProjects) {
+          List<CrpProgram> programs = new ArrayList<>();
+          List<CrpProgram> regions = new ArrayList<>();
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            programs.add(projectFocuses.getCrpProgram());
+          }
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            regions.add(projectFocuses.getCrpProgram());
+          }
+          project.setFlagships(programs);
+          project.setRegions(regions);
         }
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          regions.add(projectFocuses.getCrpProgram());
-        }
-        project.setFlagships(programs);
-        project.setRegions(regions);
       }
+
 
     }
 

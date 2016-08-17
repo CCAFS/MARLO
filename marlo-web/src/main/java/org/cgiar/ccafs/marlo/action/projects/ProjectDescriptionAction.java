@@ -446,6 +446,7 @@ public class ProjectDescriptionAction extends BaseAction {
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
     programFlagships = new ArrayList<>();
+    regionFlagships = new ArrayList<>();
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
