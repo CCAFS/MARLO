@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,14 +57,17 @@ public class ProjectLocationCountryListAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    Map<String, Object> locElement = new HashMap<String, Object>();
+    locElements = new ArrayList<>();
+    Map<String, Object> locElement;
 
     LocElementType elementType = locElementTypeManager.getLocElementTypeById(parentId);
     if (elementType != null) {
       for (LocElement element : elementType.getLocElements().stream().filter(le -> le.isActive())
         .collect(Collectors.toList())) {
+        locElement = new HashMap<String, Object>();
         locElement.put("id", element.getId());
         locElement.put("name", element.getName());
+        locElements.add(locElement);
       }
     }
 

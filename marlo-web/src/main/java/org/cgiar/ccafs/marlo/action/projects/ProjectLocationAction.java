@@ -28,11 +28,13 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.utils.LocationLevel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -228,8 +230,37 @@ public class ProjectLocationAction extends BaseAction {
       }
 
     }
+
+
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
+
   }
 
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+      Project projectDB = projectManager.getProjectById(project.getId());
+      project.setActive(true);
+      project.setCreatedBy(projectDB.getCreatedBy());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("");
+      project.setActiveSince(projectDB.getActiveSince());
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    }
+
+    return SUCCESS;
+  }
 
   public void setLocationsData(List<CountryLocationLevel> locationsData) {
     this.locationsData = locationsData;
