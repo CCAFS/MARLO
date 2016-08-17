@@ -119,7 +119,7 @@
                     <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
+                      [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
                     [#else]
                       [#if project.flagships?has_content]
                         [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
@@ -135,7 +135,7 @@
                     <h5>[@s.text name="projectDescription.regions" /]:</h5>
                     [#if editable]
                       [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
+                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
                     [#else]
                       [#if project.regions?has_content]
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
