@@ -96,6 +96,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
 
+
+    if (this.getLocElement() == null) {
+      return this.getAcronym() + " - " + this.getName();
+    }
+
     if (this.getLocElement().getName() == null) {
       this.getLocElement().setName("");
     }
