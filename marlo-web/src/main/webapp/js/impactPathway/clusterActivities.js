@@ -13,7 +13,7 @@ function init() {
 // Add a new Key Output
   $('.addKeyOutput').on('click', addKeyOutput);
 // Remove key output
-  $('.button-remove').on('click', removeKeyOutput);
+  $('.removeKeyOutput').on('click', removeKeyOutput);
 
   updateClustersIndex();
 }

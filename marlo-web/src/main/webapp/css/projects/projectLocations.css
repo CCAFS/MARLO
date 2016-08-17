@@ -25,7 +25,7 @@
 .locations {
     border: 1px dashed #d1d1d1;
     background-color: #f4f4f4;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .checkBox {
@@ -109,6 +109,6 @@
 }
 
 .nameWrapper {
-    width: 50%;
+    width: 49%;
     float: left;
 }

@@ -206,18 +206,18 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="keyOutput-${template?string('template',index)}" class="keyOutputItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- Key output inputs --]
-    <div class="col-md-10 keyOutput">
+    <div class="col-md-12 keyOutput">
     [#if editable]
-      <input name="${customName}.keyOutput" value="${(element.keyOutput)!}" type="text" class="form-control keyOutputInput col-md-10" />
+    <div class="removeIcon removeKeyOutput" title="Remove key output"></div>
+    [/#if]
+    
+    [#if editable]
+      <input name="${customName}.keyOutput" value="${(element.keyOutput)!}" type="text" class="form-control keyOutputInput row" placeholder="Key Output statement" />
       <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
      [#else]
-     <div class="keyOutputDescription">${(element.keyOutput)!}</div>
+     <div class="keyOutputDescription row"><p> <strong>${index+1}.</strong> ${(element.keyOutput)!}</div>
      [/#if]
     </div>
-    [#-- Remove Button --]
-    [#if editable]
-      <div class="btn-xs button-remove col-md-1"> Remove </div>
-    [/#if]
       <div class="clearfix"></div>
   </li>
 

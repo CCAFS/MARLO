@@ -12,8 +12,9 @@
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign locationLevelName = "locations"/]
+[#assign locationLevelName = "locationsData"/]
 [#assign locationName = "locElements"/]
+[#assign countID = 0/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -40,7 +41,7 @@
             [#-- Content--]
             <div id="content" class="col-md-12">
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
-              <div id="selectsContent" class="col-md-7">
+              <div id="selectsContent" class="col-md-6">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
                 [#if locationsData?has_content]
@@ -52,7 +53,7 @@
                 </div>
               </div>
               
-              <div  class="col-md-5 map">
+              <div  class="col-md-6 map">
                 <div id="map" class="col-md-12"></div>
               </div>
                 
@@ -114,6 +115,7 @@
       </div>
       
       <select style="display:${(element.list?? && element.list)?string('block','none')}"  class="selectLocation col-md-12" placeholder="select an option...">
+        <option value="-1" >Select a location</option>
         [#if element.allElements?has_content]
         [#list element.allElements as locElements]
             <option value="${locElements.id}" >${locElements.name}</option>
@@ -134,8 +136,9 @@
 
 [#macro locationMacro element  name index template=false]
   [#local customName = "${name}[${index}]" /]
+  [#assign countID = countID+1/]
   [#-- Content collapsible--]
-  <div id="location-${template?string('template',index)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
+  <div id="location-${template?string('template',countID)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       <div class="locationName">${(element.name)!} [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??]<label >(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!}) </label> [/#if] </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>

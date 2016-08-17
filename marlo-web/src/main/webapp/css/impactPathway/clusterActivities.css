@@ -99,3 +99,7 @@ span.glyphicon.glyphicon-user {
     line-height: 30px;
     padding: 0 15px;
 }
+
+.removeKeyOutput {
+    right: 4%;
+}
