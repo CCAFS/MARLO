@@ -77,22 +77,50 @@ public class ProjectListAction extends BaseAction {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
-        for (Project project : myProjects) {
-          List<CrpProgram> programs = new ArrayList<>();
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            programs.add(projectFocuses.getCrpProgram());
-          }
-          project.setFlagships(programs);
-        }
+
       } else {
         allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
         Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
         allProjects.removeAll(myProjects);
+      }
+      for (Project project : myProjects) {
+        List<CrpProgram> programs = new ArrayList<>();
+        List<CrpProgram> regions = new ArrayList<>();
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          programs.add(projectFocuses.getCrpProgram());
+        }
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          regions.add(projectFocuses.getCrpProgram());
+        }
+        project.setFlagships(programs);
+        project.setRegions(regions);
+      }
+
+      for (Project project : allProjects) {
+        List<CrpProgram> programs = new ArrayList<>();
+        List<CrpProgram> regions = new ArrayList<>();
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          programs.add(projectFocuses.getCrpProgram());
+        }
+        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          regions.add(projectFocuses.getCrpProgram());
+        }
+        project.setFlagships(programs);
+        project.setRegions(regions);
       }
 
     }
