@@ -122,38 +122,45 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   }
 
 
-  public void loadRelations(IAuditLog entity, boolean loadUsers) {
+  public void loadRelations(IAuditLog entity, boolean loadUsers, int level) {
     ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(entity.getClass());
 
 
     String[] propertyNames = classMetadata.getPropertyNames();
     for (String name : propertyNames) {
       Object propertyValue = classMetadata.getPropertyValue(entity, name, EntityMode.POJO);
-      Type propertyType = classMetadata.getPropertyType(name);
 
-      if (propertyValue != null && propertyType instanceof ManyToOneType) {
+      if (propertyValue != null && propertyValue instanceof IAuditLog) {
+        Type propertyType = classMetadata.getPropertyType(name);
 
-        if (loadUsers) {
-          IAuditLog entityRelation = (IAuditLog) propertyValue;
+        if (propertyValue != null && propertyType instanceof ManyToOneType) {
 
-
-          Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
-
-          this.loadRelations((IAuditLog) obj, false);
-          classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
-        } else {
-          if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
+          if (loadUsers) {
             IAuditLog entityRelation = (IAuditLog) propertyValue;
+
 
             Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
 
-            // this.loadRelations((IAuditLog) obj, false);
+            this.loadRelations((IAuditLog) obj, false, 2);
             classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+          } else {
+            if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
+              IAuditLog entityRelation = (IAuditLog) propertyValue;
+
+              Object obj = dao.find(propertyType.getReturnedClass(), (Serializable) entityRelation.getId());
+              if (level == 2) {
+                this.loadRelations((IAuditLog) obj, false, 3);
+              }
+
+              // this.loadRelations((IAuditLog) obj, false);
+              classMetadata.setPropertyValue(entity, name, obj, EntityMode.POJO);
+            }
           }
+
+
         }
-
-
       }
+
     }
 
 
@@ -168,7 +175,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       Map<String, Object> map = it.next();
       if (map.get(PRINCIPAL).toString().equals("1")) {
         IAuditLog entity = (IAuditLog) map.get(ENTITY);
-        this.loadRelations(entity, true);
+        this.loadRelations(entity, true, 1);
         String json = gson.toJson(entity);
 
         dao.logIt(function, entity, json, entity.getModifiedBy().getId(), this.transactionId,
@@ -177,7 +184,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       } else {
         Set<IAuditLog> set = (Set<IAuditLog>) map.get(ENTITY);
         for (IAuditLog iAuditLog : set) {
-          this.loadRelations(iAuditLog, false);
+          this.loadRelations(iAuditLog, false, 2);
           if (iAuditLog.isActive()) {
             String json = gson.toJson(iAuditLog);
 
