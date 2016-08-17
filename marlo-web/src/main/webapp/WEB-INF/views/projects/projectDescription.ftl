@@ -110,7 +110,7 @@
             
               
               [#--  Regions/global and Flagships that the project is working on --]
-              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:
+              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /]
              
               <div id="projectWorking" class="fullBlock clearfix">
                 [#-- Flagships --] 
@@ -147,38 +147,62 @@
                 </div>
                 <div class="clearfix"></div>
               </div> 
-                
+              
+              [#-- Cluster of Activities --]
+              <div class="panel tertiary">
+                <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=true /]</div>
+                <div id="projectsList" class="panel-body"> 
+                  <ul class="list">
+                  [#if project.clusterActivities?has_content]
+                    [#list project.clusterActivities as element]
+                      <li class="clearfix [#if !element_has_next]last[/#if]">
+                        <input class="id" type="hidden" name="project.clusterActivities" value="${element.id?c}" />
+                        <span class="name">${element.id} - ${element.description}</span>
+                        <div class="leader">
+                          
+                        </div>
+                        [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      </li>
+                    [/#list]
+                  [#else]
+                    <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p>
+                  [/#if]  
+                  </ul>
+                  [#if editable ]
+                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                  [/#if] 
+                </div>
+              </div>
       
-            [#-- Bilateral/Core projects only for CCAFS Projects 
-             <h4 id="bilateralProjects" class="subHeadTitle"> [@s.text name="projectDescription.projectsContributing" /] </h4> 
-            <div class="panel tertiary">
-              <div class="panel-head">
-                [#if (project.bilateralProject)!false]
-                  [@customForm.text name="projectDescription.selectCoreProject" readText=!editable /]:
-                [#else]
-                  [@customForm.text name="projectDescription.selectBilateralProject" readText=!editable /]:
-                [/#if]
-              </div>
-              <div id="projectsList" class="panel-body"> 
-                <ul class="list">
-                [#if project.linkedProjects?has_content]
-                  [#list project.linkedProjects as element]
-                    <li class="clearfix [#if !element_has_next]last[/#if]">
-                      <input class="id" type="hidden" name="project.linkedProjects" value="${element.id?c}" />
-                      <a href="[@s.url action='description'][@s.param name='projectID']${element.id}[/@s.param][/@s.url]"><span class="name">${element.id} - ${element.title}</span> </a>
-                      [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-                    </li>
-                  [/#list]
-                [#else]
-                  <p class="emptyText"> [@s.text name="projectDescription.${((project.bilateralProject)!false)?string('coreProjects','bilateralProjects')}.emptyText" /]</p>
-                [/#if]  
-                </ul>
-                [#if editable ]
-                
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="" keyFieldName="id" displayFieldName="" className="" value="" /]
-                [/#if] 
-              </div>
-            --]
+              [#-- Bilateral/Core projects only for CCAFS Projects 
+               <h4 id="bilateralProjects" class="subHeadTitle"> [@s.text name="projectDescription.projectsContributing" /] </h4> 
+              <div class="panel tertiary">
+                <div class="panel-head">
+                  [#if (project.bilateralProject)!false]
+                    [@customForm.text name="projectDescription.selectCoreProject" readText=!editable /]:
+                  [#else]
+                    [@customForm.text name="projectDescription.selectBilateralProject" readText=!editable /]:
+                  [/#if]
+                </div>
+                <div id="projectsList" class="panel-body"> 
+                  <ul class="list">
+                  [#if project.linkedProjects?has_content]
+                    [#list project.linkedProjects as element]
+                      <li class="clearfix [#if !element_has_next]last[/#if]">
+                        <input class="id" type="hidden" name="project.linkedProjects" value="${element.id?c}" />
+                        <a href="[@s.url action='description'][@s.param name='projectID']${element.id}[/@s.param][/@s.url]"><span class="name">${element.id} - ${element.title}</span> </a>
+                        [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      </li>
+                    [/#list]
+                  [#else]
+                    <p class="emptyText"> [@s.text name="projectDescription.${((project.bilateralProject)!false)?string('coreProjects','bilateralProjects')}.emptyText" /]</p>
+                  [/#if]  
+                  </ul>
+                  [#if editable ]
+                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="" keyFieldName="id" displayFieldName="" className="" value="" /]
+                  [/#if] 
+                </div>
+              --]
             
             </div>
           </div> 
@@ -196,7 +220,7 @@
 [#-- Core project list template --]
 <ul style="display:none">
   <li id="cpListTemplate" class="clearfix">
-    <input class="id" type="hidden" name="" value="" />
+    <input class="id" type="hidden" name="project.clusterActivities" value="" />
     <span class="name"></span> 
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
   </li>

@@ -59,6 +59,7 @@ a.addLink {
 
 .select, .input {
   /* margin-bottom: 0px; */
+  font-weight: normal;
 }
 
 .select .selectList {
@@ -201,9 +202,10 @@ p.msj {
 }
 
 p.emptyText {
-    /* margin: 10px 0; */    
+    /* margin: 10px 0; */
     /* padding: 5px; */
     /* border-left: 3px solid #eee; */
+    font-weight: normal;
 }
 
 ul.fieldError {
@@ -996,7 +998,7 @@ select#partnerSave_activityPartner_partner_type_id {
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
     border-radius: 4px;
-    margin: 3px 8px 15px 8px;
+    /* margin: 3px 8px 15px 8px; */
 }
 
 .panel.primary{}
@@ -1012,7 +1014,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 .panel.tertiary .panel-head{
   background: #FFFFFF;
-  color: #554444;
+  color: #6b6a6a;
   padding: 2px 0 4px 0;
   margin-bottom: 8px;
   text-align: left;
@@ -1047,7 +1049,7 @@ select#partnerSave_activityPartner_partner_type_id {
     text-align: center;
     border-radius: 3px 3px 0px 0px;
     font-size: 1em;
-    font-weight: 500;
+    /*font-weight: 500;*/
 }
 .panel .panel-body {
     padding: 4px 3px 4px 3px;
@@ -1055,9 +1057,9 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .panel .panel-body ul{
-    margin: 0;    
+    margin: 0;
     padding: 0 6px;
- 
+    font-weight: normal;
 }
 
 .panel .panel-body ul li {
@@ -1094,6 +1096,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 .panel span.name {
   cursor:pointer;
+  padding: 5px 3px;
 }
 
 .remove {
@@ -1701,14 +1704,22 @@ a.currentReportingSection li, a.currentSection li {
 }
 
 #secondaryMenu ul p.menuTitle{
-  list-style: none;
-  margin: 0;
-  padding: 2px 0;
-  font-weight: lighter;
-  color: #ffffff;
-  background: #0b7ba6;
-  text-align: center;
-  border-radius: 2px;
+  
+list-style: none;
+  
+margin: 0;
+  
+padding: 2px 0;
+  
+font-weight: lighter;
+  
+color: #ffffff;
+  
+background: #0b7ba6;
+  
+text-align: center;
+  
+border-radius: 2px;
 }
 
 #secondaryMenu ul p.subText {

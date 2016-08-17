@@ -141,7 +141,7 @@ $(document).ready(function() {
     $listElement.appendTo($coreProjects).hide().show('slow');
     $coreProjects.find('.emptyText').hide();
     $item.remove();
-    $coreSelect.trigger("liszt:updated");
+    $coreSelect.trigger("change.select2");
     setcoreProjectsIndexes();
   }
 
@@ -153,7 +153,7 @@ $(document).ready(function() {
     };
     var $select = $item.parents('.panel').find('select');
     $select.append(setOption(data.id, data.name));
-    $select.trigger("liszt:updated");
+    $select.trigger("change.select2");
     // Removing from list
     $item.hide("slow", function() {
       $item.remove();
