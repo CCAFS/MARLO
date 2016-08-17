@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -72,6 +74,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private FileDBManager fileDBManager;
   private CrpManager crpManager;
   private CrpProgramManager programManager;
+  private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
   private String transaction;
   /*
@@ -89,16 +92,21 @@ public class ProjectDescriptionAction extends BaseAction {
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
+  private List<CrpClusterOfActivity> clusterofActivites;
+
 
   private Map<String, String> projectStauses;
 
+
   private List<LiaisonUser> allOwners;
+
   private Map<String, String> projectTypes;
+
   private File file;
   private File fileReporting;
-
   private String fileContentType;
   private String fileFileName;
+
   private String fileReportingFileName;
   private ProjectDescriptionValidator validator;
 
@@ -107,7 +115,7 @@ public class ProjectDescriptionAction extends BaseAction {
     CrpProgramManager programManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
-    ProjectDescriptionValidator validator) {
+    ProjectDescriptionValidator validator, CrpClusterOfActivityManager crpClusterOfActivityManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -117,6 +125,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.validator = validator;
+    this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.auditLogManager = auditLogManager;
     this.fileDBManager = fileDBManager;
     // this.liaisonUserManager = liaisonUserManager;
@@ -177,7 +186,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   /**
    * Return the absolute path where the bilateral contract is or should be located.
    * 
@@ -197,6 +205,10 @@ public class ProjectDescriptionAction extends BaseAction {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + config.getBilateralProjectContractProposalFolder() + File.separator;
+  }
+
+  public List<CrpClusterOfActivity> getClusterofActivites() {
+    return clusterofActivites;
   }
 
 
@@ -244,10 +256,10 @@ public class ProjectDescriptionAction extends BaseAction {
     return null;
   }
 
+
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -283,6 +295,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return regionFlagships;
   }
 
+
   public long[] getRegionsIds() {
 
     List<CrpProgram> projectFocuses = project.getRegions();
@@ -297,17 +310,16 @@ public class ProjectDescriptionAction extends BaseAction {
     return null;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   private String getWorkplanRelativePath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
       + config.getProjectWorkplanFolder() + File.separator;
   }
-
 
   public String getWorkplanURL() {
     return config.getDownloadURL() + "/" + this.getWorkplanRelativePath().replace('\\', '/');
@@ -323,6 +335,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -436,8 +449,9 @@ public class ProjectDescriptionAction extends BaseAction {
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
-
-    regionFlagships = new ArrayList<>();
+    clusterofActivites = crpClusterOfActivityManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+      .collect(Collectors.toList());
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
@@ -452,7 +466,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   }
-
 
   @Override
   public String save() {
@@ -614,8 +627,13 @@ public class ProjectDescriptionAction extends BaseAction {
 
   }
 
+
   public void setAllOwners(List<LiaisonUser> allOwners) {
     this.allOwners = allOwners;
+  }
+
+  public void setClusterofActivites(List<CrpClusterOfActivity> clusterofActivites) {
+    this.clusterofActivites = clusterofActivites;
   }
 
 
