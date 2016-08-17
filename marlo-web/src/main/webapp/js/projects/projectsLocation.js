@@ -1,9 +1,13 @@
 $(document).ready(init);
 var map;
+var markers = [];
+var countID;
 
 function init() {
 
   $('.latitude, .longitude').numericInput();
+
+  countID = $("form .locElement").length;
 
   // validate latitude and longitude
   $('.latitude, .longitude').on("keyup", function(e) {
@@ -48,29 +52,9 @@ function attachEvents() {
     }
     var option = $(this).find("option:selected");
     if($(".selectWrapper").find("input[value=" + option.val().split("-")[0] + "]").exists()) {
-      console.log("exists");
     } else {
       addLocationLevel(option);
     }
-
-  });
-
-  // Select location ajax
-  $('.selectLocation').on('click', function() {
-    var parent = $(this).parent().parent();
-    var url = baseURL + "/searchCountryListPL.do";
-    var data = {
-      parentId: parent.find(".locationLevelId").val()
-    }
-    console.log(data);
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).done(function(m) {
-      console.log(m);
-    });
 
   });
 
@@ -131,7 +115,6 @@ function addLocationLevel(option) {
   var optionValue = option.val().split('-');
   var idLocationLevel = optionValue[0];
   var isList = optionValue[1];
-  console.log(isList);
   if(isList === "true") {
     $item.find(".selectLocation").css("display", "block");
   } else {
@@ -139,28 +122,53 @@ function addLocationLevel(option) {
   }
   $item.find('.locationLevelId').val(idLocationLevel);
   $list.append($item);
-  // updateAllIndexes();
+
+  // LocElements options using ajax
+  var select = $item.find(".selectLocation ");
+  var url = baseURL + "/searchCountryListPL.do";
+  var data = {
+    parentId: idLocationLevel
+  }
+  $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: "json",
+      data: data
+  }).done(function(m) {
+    console.log(m);
+
+    select.empty();
+    select.append("<option value='-1' >Select a location</option>");
+    for(var int = 0; int < m.locElements.length; int++) {
+      select.append("<option value='" + m.locElements[int].id + "' >" + m.locElements[int].name + "</option>");
+    }
+
+  });
   $item.show('slow');
   updateIndex();
 }
 
 // Add a location by select list
 function addLocationList(parent,option) {
-  var $list = parent.find(".optionSelect-content");
-  var $item = $('#location-template').clone(true).removeAttr("id");
-  $item.find('.locationName').html(option.html());
-  $item.find('.locElementId').val(option.val());
-  $item.find('.locElementName').val(option.html());
-  $list.append($item);
-  // updateAllIndexes();
-  $item.show('slow');
-  updateIndex();
+  if(option.val() != "-1") {
+    var $list = parent.find(".optionSelect-content");
+    var $item = $('#location-template').clone(true).removeAttr("id");
+    $item.find('.locationName').html(option.html());
+    $item.find('.locElementId').val(option.val());
+    $item.find('.locElementName').val(option.html());
+    $list.append($item);
+    // updateAllIndexes();
+    $item.show('slow');
+    updateIndex();
+  }
 }
 
 // Add a location by coordinates inputs
 function addLocationForm(parent,latitude,longitude,name) {
   var $list = parent.find(".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
+  countID++;
+  $item.attr("id", "location-" + (countID));
   $item.find('.locationName').html(name + " <label > (" + latitude + ", " + longitude + ") </label>");
   $item.find('.geoLatitude').val(latitude);
   $item.find('.geoLongitude').val(longitude);
@@ -173,7 +181,7 @@ function addLocationForm(parent,latitude,longitude,name) {
   parent.find(".longitude").val("");
   parent.find(".name").val("");
   // add marker
-  addMarker(map, parseInt(latitude), parseInt(longitude), name);
+  addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name);
   // update indexes
   updateIndex();
 }
@@ -187,13 +195,18 @@ function removeLocationLevelItem() {
   });
   if($(".selectWrapper").find(".locationLevel").length <= 1) {
     $(".map").hide('slow');
+    deleteMarkers();
   }
 }
 
 // Remove a location element-Function
 function removeLocationItem() {
   var $item = $(this).parents('.locElement');
-  console.log($item);
+  var optionValue = $item.attr("id").split('-');
+  var id = optionValue[1];
+  if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
+    removeMarker(id);
+  }
   $item.hide(function() {
     $item.remove();
     updateIndex();
@@ -215,7 +228,6 @@ function updateIndex() {
 function updateLocationIndex(item,locationLevelName) {
   var name = $("#locationName").val();
   $(item).find('.locElement').each(function(indexLoc,locItem) {
-    console.log(locItem);
     var customName = locationLevelName + '.' + name + '[' + indexLoc + ']';
     $(locItem).find('.locElementId').attr('name', customName + '.id');
     $(locItem).find('.geoLatitude').attr('name', customName + '.latitude');
@@ -237,9 +249,10 @@ function loadScript() {
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
-        var site = $(locItem).find(".locElementName").val()
+        var site = $(locItem).find(".locElementName").val();
+        var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "") {
-          addMarker(map, parseInt(latitude), parseInt(longitude), site);
+          addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site);
         }
       });
     });
@@ -340,16 +353,43 @@ function initMap() {
 
 // Map events
 
-function addMarker(map,latitude,longitude,sites) {
+function addMarker(map,idMarker,latitude,longitude,sites) {
 
   var marker = new google.maps.Marker({
+      id: idMarker,
       position: {
           lat: latitude,
           lng: longitude
       },
-      title: sites
+      title: sites,
+      animation: google.maps.Animation.DROP
   });
-
+  markers[idMarker] = marker;
 // To add the marker to the map, call setMap();
   marker.setMap(map);
+}
+
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+function deleteMarkers() {
+  setAllMap(null);
+  markers = [];
+}
+
+// Sets the map on all markers in the array.
+function setAllMap(map) {
+  $.each(markers, function(index,marker) {
+    if(marker) {
+      marker.setMap(map);
+    }
+  });
+}
+
+// Remove individual marker by id
+function removeMarker(id) {
+  marker = markers[id];
+  marker.setMap(null);
+  delete markers[id];
 }
