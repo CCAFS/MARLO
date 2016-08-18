@@ -162,6 +162,9 @@
                     
                     
                       <div class=""><span class="name">${element.crpClusterOfActivity.description}</span></div>
+                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.id}" />
+                      <div class=""><span class="name">${(element.description)!'null'}</span></div>
+                      <div class="clearfix"></div>
                       <div class="leaders"></div>
                     </li>
                   [/#list]
@@ -193,6 +196,7 @@
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <div><span class="name"></span></div>
+    <div class="clearfix"></div>
     <ul class="leaders">
     </ul>
   </li>

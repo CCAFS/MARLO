@@ -1029,7 +1029,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel.tertiary .panel-body > ul.list > li {
     list-style: none;
-    padding: 6px 10px;
+    padding: 1px 4px 0px 6px;
     background-color: #F7F7F7;
     border: 1px solid #E0E0E0 !important;
     box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
@@ -1076,9 +1076,9 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .panel-body .list span.name {
-    width: 89%;
+    width: 90%;
     display: block;
-    /* float: left; */
+    float: left;
 }
 
 .panel-body a {
@@ -1103,6 +1103,7 @@ select#partnerSave_activityPartner_partner_type_id {
   background-color: #D5504C;
   color: #fff;
   border-radius: 3px;
+  font-size: 0.95em;
   cursor: pointer;
 }
 .remove:hover {
@@ -3405,8 +3406,8 @@ padding: 0 4px 0 6px;width: 100px;}
 li.leader{
   color: #848484;
   font-size: 0.9em;
-  line-height: 1.4em;
   list-style: initial;
+  margin-bottom: 6px;
 }
 
 /* Project Partners*/
