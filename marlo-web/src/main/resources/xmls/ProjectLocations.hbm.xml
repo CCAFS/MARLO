@@ -27,9 +27,6 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
-		    <property name="scope" type="integer">
-      <column name="scope" not-null="false" />
-    </property>
     <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="created_by" not-null="false" />

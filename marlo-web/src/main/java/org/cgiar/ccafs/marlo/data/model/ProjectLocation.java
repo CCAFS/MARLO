@@ -54,8 +54,6 @@ public class ProjectLocation implements java.io.Serializable {
 
   @Expose
   private String modificationJustification;
-  @Expose
-  private int scope;
 
 
   public ProjectLocation() {
@@ -124,12 +122,6 @@ public class ProjectLocation implements java.io.Serializable {
     return project;
   }
 
-
-  public int getScope() {
-    return scope;
-  }
-
-
   public boolean isActive() {
     return active;
   }
@@ -167,10 +159,6 @@ public class ProjectLocation implements java.io.Serializable {
 
   public void setProject(Project project) {
     this.project = project;
-  }
-
-  public void setScope(int scope) {
-    this.scope = scope;
   }
 
   @Override
