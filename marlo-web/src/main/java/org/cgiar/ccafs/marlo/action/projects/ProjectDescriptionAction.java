@@ -403,6 +403,13 @@ public class ProjectDescriptionAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        if (project.getClusterActivities() != null) {
+          for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+            projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
+              .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
+          }
+        }
+
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
@@ -480,7 +487,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
-
+    if (this.isHttpPost()) {
+      if (project.getClusterActivities() != null) {
+        project.getClusterActivities().clear();
+      }
+    }
 
   }
 
@@ -598,6 +609,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
+      // Removing Project Cluster Activities
 
       for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
@@ -610,7 +622,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
       }
-
+      // Add Project Cluster Activities
 
       if (project.getClusterActivities() != null) {
         for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
@@ -618,19 +630,13 @@ public class ProjectDescriptionAction extends BaseAction {
             projectClusterActivity.setCreatedBy(this.getCurrentUser());
 
             projectClusterActivity.setActiveSince(new Date());
-
-          } else {
-            ProjectClusterActivity projectClusterActivityPrev =
-              projectClusterActivityManager.getProjectClusterActivityById(projectClusterActivity.getId());
-            projectClusterActivity.setCreatedBy(projectClusterActivityPrev.getCreatedBy());
-            projectClusterActivity.setActiveSince(projectClusterActivityPrev.getActiveSince());
-
+            projectClusterActivity.setActive(true);
+            projectClusterActivity.setProject(project);
+            projectClusterActivity.setModifiedBy(this.getCurrentUser());
+            projectClusterActivity.setModificationJustification("");
+            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
           }
-          projectClusterActivity.setActive(true);
-          projectClusterActivity.setProject(project);
-          projectClusterActivity.setModifiedBy(this.getCurrentUser());
-          projectClusterActivity.setModificationJustification("");
-          projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+
         }
       }
 
@@ -658,6 +664,7 @@ public class ProjectDescriptionAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
+      project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

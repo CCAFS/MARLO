@@ -157,8 +157,11 @@
                   [#list project.clusterActivities as element]
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
                       [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.id}" />
-                      <div class=""><span class="name">${element.description}</span></div>
+                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
+                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
+                    
+                    
+                      <div class=""><span class="name">${element.crpClusterOfActivity.description}</span></div>
                       <div class="leaders"></div>
                     </li>
                   [/#list]
