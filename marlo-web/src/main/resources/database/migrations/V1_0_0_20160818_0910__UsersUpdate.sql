@@ -1,3 +1,4 @@
+START TRANSACTION;
 /*
 Navicat MySQL Data Transfer
 
@@ -920,3 +921,4 @@ INSERT INTO `users` VALUES ('1097', 'Alok', 'Jha', 'ajha', 'a.jha@cgiar.org', nu
 INSERT INTO `users` VALUES ('1098', 'Siboniso', 'Moyo', 'smoyo', 's.moyo@cgiar.org', null, '1', '926', '2016-08-11 02:02:06', '926', 'User created in MARLO livestockfish-siteIntegration', '1', null, '1');
 INSERT INTO `users` VALUES ('1099', 'Amos', 'Omore', 'aomore', 'a.omore@cgiar.org', null, '1', '1087', '2016-08-11 06:29:06', '1087', 'User created in MARLO livestockfish-siteIntegration', '1', null, '1');
 INSERT INTO `users` VALUES ('1101', 'Rodrigo', 'Sara', 'rsara', 'R.Sara@cgiar.org', '202cb962ac59075b964b07152d234b70', '1', '3', '2016-08-18 08:30:13', '3', '', '1', '2016-08-18 08:30:13', '1');
+COMMIT;

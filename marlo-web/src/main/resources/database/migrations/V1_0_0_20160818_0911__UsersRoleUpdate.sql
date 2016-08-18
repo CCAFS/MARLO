@@ -1,3 +1,4 @@
+START TRANSACTION;
 /*
 Navicat MySQL Data Transfer
 
@@ -399,3 +400,4 @@ INSERT INTO `user_roles` VALUES ('1258', '1099', '41');
 INSERT INTO `user_roles` VALUES ('1259', '132', '17');
 INSERT INTO `user_roles` VALUES ('1260', '508', '17');
 INSERT INTO `user_roles` VALUES ('1261', '1101', '17');
+COMMIT;
