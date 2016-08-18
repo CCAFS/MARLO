@@ -1,3 +1,4 @@
+START TRANSACTION;
 /*
 Navicat MySQL Data Transfer
 
@@ -441,3 +442,4 @@ INSERT INTO `crp_users` VALUES ('517', '1101', '3', '1', '3', '2016-08-18 08:31:
 INSERT INTO `crp_users` VALUES ('518', '1101', '4', '1', '3', '2016-08-18 08:31:16', '3', ' ');
 INSERT INTO `crp_users` VALUES ('520', '1101', '5', '1', '3', '2016-08-18 08:31:27', '3', ' ');
 INSERT INTO `crp_users` VALUES ('521', '1101', '7', '1', '3', '2016-08-18 08:31:35', '3', ' ');
+COMMIT
