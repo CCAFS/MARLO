@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.utils.LocationLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,7 +255,22 @@ public class ProjectLocationAction extends BaseAction {
   public void projectLocationNewData() {
     for (CountryLocationLevel locationData : locationsData) {
       if (locationData.getId() == null) {
-        // if()
+        if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
+          for (LocElement locElement : locationData.getLocElements()) {
+            LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+            ProjectLocation projectLocation = new ProjectLocation();
+            projectLocation.setProject(project);
+            projectLocation.setLocElement(element);
+            projectLocation.setActive(true);
+            projectLocation.setActiveSince(new Date());
+            projectLocation.setCreatedBy(this.getCurrentUser());
+            projectLocation.setModificationJustification("");
+            projectLocation.setModifiedBy(this.getCurrentUser());
+
+
+          }
+        }
       } else {
 
       }

@@ -23,12 +23,6 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
-		<property name="createdBy" type="long">
-			<column name="created_by" not-null="true" />
-		</property>
-		<property name="modifiedBy" type="long">
-			<column name="modified_by" not-null="true" />
-		</property>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />
@@ -36,5 +30,13 @@
 		    <property name="scope" type="integer">
       <column name="scope" not-null="false" />
     </property>
+    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="created_by" not-null="false" />
+    </many-to-one>
+    <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+      fetch="select">
+      <column name="modified_by" not-null="true" />
+    </many-to-one>
 	</class>
 </hibernate-mapping>

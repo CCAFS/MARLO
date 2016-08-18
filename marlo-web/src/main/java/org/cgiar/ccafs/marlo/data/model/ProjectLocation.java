@@ -46,11 +46,11 @@ public class ProjectLocation implements java.io.Serializable {
   private Date activeSince;
 
   @Expose
-  private long createdBy;
+  private User createdBy;
 
 
   @Expose
-  private long modifiedBy;
+  private User modifiedBy;
 
   @Expose
   private String modificationJustification;
@@ -62,8 +62,8 @@ public class ProjectLocation implements java.io.Serializable {
   }
 
 
-  public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, long createdBy,
-    long modifiedBy, String modificationJustification) {
+  public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, User createdBy,
+    User modifiedBy, String modificationJustification) {
     this.locElement = locElement;
     this.project = project;
     this.active = active;
@@ -99,7 +99,7 @@ public class ProjectLocation implements java.io.Serializable {
     return activeSince;
   }
 
-  public long getCreatedBy() {
+  public User getCreatedBy() {
     return createdBy;
   }
 
@@ -115,7 +115,7 @@ public class ProjectLocation implements java.io.Serializable {
     return modificationJustification;
   }
 
-  public long getModifiedBy() {
+  public User getModifiedBy() {
     return modifiedBy;
   }
 
@@ -143,7 +143,7 @@ public class ProjectLocation implements java.io.Serializable {
   }
 
 
-  public void setCreatedBy(long createdBy) {
+  public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
@@ -161,7 +161,7 @@ public class ProjectLocation implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
   }
 
-  public void setModifiedBy(long modifiedBy) {
+  public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
