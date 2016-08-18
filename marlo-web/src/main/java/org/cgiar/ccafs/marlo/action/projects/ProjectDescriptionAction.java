@@ -689,7 +689,7 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
-      // Removing Project Locations
+      // Removing Project Scopes
 
       for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -702,7 +702,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
         }
       }
-      // Add Project Locations
+      // Add Project Scopes
 
       if (project.getScopes() != null) {
         for (ProjectScope projectLocation : project.getScopes()) {
