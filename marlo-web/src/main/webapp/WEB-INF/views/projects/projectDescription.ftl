@@ -155,13 +155,11 @@
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
-                    <li class="clearfix [#if !element_has_next]last[/#if]">
+                    <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
                       [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-                      <input class="id" type="hidden" name="project.clusterActivities" value="${element.id?c}" />
-                      <div class=""><span class="name">${element.id} - ${element.description}</span></div>
-                      <div class="leaders">
-                        
-                      </div>
+                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].id" value="${element.id}" />
+                      <div class=""><span class="name">${element.description}</span></div>
+                      <div class="leaders"></div>
                     </li>
                   [/#list]
                 [#else]
@@ -188,9 +186,9 @@
 
 [#-- Core project list template --]
 <ul style="display:none">
-  <li id="cpListTemplate" class="clearfix">
+  <li id="cpListTemplate" class="clusterActivity clearfix">
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
-    <input class="id" type="hidden" name="project.clusterActivities" value="" />
+    <input class="id" type="hidden" name="project.clusterActivities[-1].id" value="" />
     <div><span class="name"></span></div>
     <ul class="leaders">
     </ul>

@@ -176,9 +176,8 @@ $(document).ready(function() {
   }
 
   function setcoreProjectsIndexes() {
-    $coreProjects.find('li').each(function(i,item) {
-      // var elementName = "project.linkedProjects";
-      // $(item).find('.id').attr('name', elementName);
+    $coreProjects.find('li.clusterActivity').each(function(i,item) {
+      $(item).setNameIndexes(1, i);
     });
   }
 
