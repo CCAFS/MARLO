@@ -407,6 +407,9 @@ public class ProjectDescriptionAction extends BaseAction {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
             projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
               .getCrpClusterOfActivityById(projectClusterActivity.getCrpClusterOfActivity().getId()));
+            projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
+              .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
           }
         }
 
@@ -451,6 +454,9 @@ public class ProjectDescriptionAction extends BaseAction {
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
         for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+          projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
+            .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);
         }
         project.setClusterActivities(projectClusterActivities);
