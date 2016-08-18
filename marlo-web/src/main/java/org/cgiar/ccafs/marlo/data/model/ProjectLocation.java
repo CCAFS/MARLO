@@ -54,9 +54,13 @@ public class ProjectLocation implements java.io.Serializable {
 
   @Expose
   private String modificationJustification;
+  @Expose
+  private int scope;
+
 
   public ProjectLocation() {
   }
+
 
   public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, long createdBy,
     long modifiedBy, String modificationJustification) {
@@ -107,11 +111,9 @@ public class ProjectLocation implements java.io.Serializable {
     return locElement;
   }
 
-
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   public long getModifiedBy() {
     return modifiedBy;
@@ -122,6 +124,12 @@ public class ProjectLocation implements java.io.Serializable {
     return project;
   }
 
+
+  public int getScope() {
+    return scope;
+  }
+
+
   public boolean isActive() {
     return active;
   }
@@ -129,7 +137,6 @@ public class ProjectLocation implements java.io.Serializable {
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -145,6 +152,7 @@ public class ProjectLocation implements java.io.Serializable {
     this.id = id;
   }
 
+
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
   }
@@ -159,6 +167,10 @@ public class ProjectLocation implements java.io.Serializable {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setScope(int scope) {
+    this.scope = scope;
   }
 
   @Override

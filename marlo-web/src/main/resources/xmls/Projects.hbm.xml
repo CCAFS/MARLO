@@ -65,6 +65,10 @@
 			<column name="is_active" not-null="true" />
 		</property>
 		
+		  <property name="scale" type="integer">
+      <column name="scale" not-null="false" />
+    </property>
+		
 		<property name="projectEditLeader" type="boolean">
       <column name="is_project_leader_edit" />
     </property>

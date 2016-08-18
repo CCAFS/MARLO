@@ -33,5 +33,8 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
+		    <property name="scope" type="integer">
+      <column name="scope" not-null="false" />
+    </property>
 	</class>
 </hibernate-mapping>
