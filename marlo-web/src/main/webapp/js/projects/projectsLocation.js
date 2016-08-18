@@ -139,12 +139,14 @@ function addLocationLevel(option) {
   var optionValue = option.val().split('-');
   var idLocationLevel = optionValue[0];
   var isList = optionValue[1];
+  var name = optionValue[2];
   if(isList === "true") {
     $item.find(".selectLocation").css("display", "block");
   } else {
     $item.find(".coordinates-inputs").css("display", "block");
   }
   $item.find('.locationLevelId').val(idLocationLevel);
+  $item.find('.locationLevelName').val(name);
   $list.append($item);
 
   // LocElements options using ajax
@@ -276,7 +278,7 @@ function updateIndex() {
   $(".selectWrapper").find('.locationLevel').each(function(i,item) {
     var customName = name + '[' + i + ']';
     $(item).find('.locationLevelId').attr('name', customName + '.id');
-    $(item).find('.locationLevelType').attr('name', customName + '.type');
+    $(item).find('.locationLevelName').attr('name', customName + '.name');
     $(item).find('.allCountries').attr('name', customName + '.allCountries');
     updateLocationIndex(item, customName);
   });

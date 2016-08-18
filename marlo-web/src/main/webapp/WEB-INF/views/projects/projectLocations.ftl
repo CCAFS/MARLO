@@ -63,7 +63,7 @@
               [#list locationsLevels as locLevels]s
                 <optgroup label="${locLevels.name}">
                 [#list locLevels.locations as locations]
-                  <option value="${locations.id}-${locations.list?string}" >${locations.name}</option>
+                  <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
                 [/#list]
                 </optgroup> 
               [/#list]
@@ -130,7 +130,7 @@
         </div>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
-    <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value=""/>
+    <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
   </div>
 [/#macro]
 
