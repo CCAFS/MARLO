@@ -481,7 +481,7 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         List<ProjectLocation> projectLocations = new ArrayList<>();
-        for (ProjectLocation projectLocation : project.getLocations().stream()
+        for (ProjectLocation projectLocation : project.getProjectLocations().stream()
           .filter(c -> c.isActive() && c.getScope() == 1).collect(Collectors.toList())) {
 
           projectLocations.add(projectLocation);
