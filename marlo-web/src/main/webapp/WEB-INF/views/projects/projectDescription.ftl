@@ -163,7 +163,7 @@
                       <div class="clearfix"></div>
                       <ul class="leaders">
                         [#if element.crpClusterOfActivity.leaders??]
-                          [#list element.crpClusterOfActivity.leaders as user]<li class="leader">${(user.composedName)!'null'}</li>[/#list]
+                          [#list element.crpClusterOfActivity.leaders as user]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
                         [/#if]
                       </ul>
                     </li>
@@ -198,6 +198,7 @@
   <li id="cpListTemplate" class="clusterActivity clearfix">
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
+    <input class="id" type="hidden" name="project.clusterActivities[-1].id" value="" />
     <div><span class="name"></span></div>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>
@@ -205,8 +206,8 @@
 </ul>
 
 [#-- Remove project contribution popup --]
-<div id="removeContribution-dialog" title="Remover project contribution" style="display:none">
-  <ul class="messages"><li>[@s.text name="projectDescription.removeContributionDialog" /]</li></ul>
+<div id="removeContribution-dialog" title="Remover Cluster of Activity" style="display:none">
+  <ul class="messages"><li>[@s.text name="projectDescription.removeCoADialog" /]</li></ul>
 </div>
 
 [#-- File upload Template--]
