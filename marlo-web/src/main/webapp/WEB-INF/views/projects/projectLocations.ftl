@@ -103,7 +103,7 @@
     <div class="col-md-12 locationLevel-optionContent borderBox">
       <div class="col-md-12 checkBox">
         <span class="col-md-10">Are you working in all countries on this region?</span>
-        <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox" />
+        <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox"  />
       </div>
       [#-- Content of locations--]
       <div class="optionSelect-content row">
@@ -140,7 +140,7 @@
   [#-- Content collapsible--]
   <div id="location-${template?string('template',countID)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName">${(element.name)!} [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??]<label >${(element.locElement.name)!}(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!}) </label> [/#if] </div>
+      <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??] <span class="lPos">${(element.locElement.name)!}(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span> [/#if] </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>
     </div>
     [#-- Hidden inputs --]

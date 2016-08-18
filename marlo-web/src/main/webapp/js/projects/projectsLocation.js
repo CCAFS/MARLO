@@ -1,5 +1,6 @@
 $(document).ready(init);
 var map;
+var infoWindow = null;
 var markers = [];
 var countID;
 
@@ -128,6 +129,7 @@ function attachEvents() {
           content.slideUp();
         }
       });
+
 }
 
 // FUNCTIONS
@@ -165,10 +167,9 @@ function addLocationLevel(option) {
 
     select.empty();
     select.append("<option value='-1' >Select a location</option>");
-    for(var int = 0; int < m.locElements.length; int++) {
-      select.append("<option value='" + m.locElements[int].id + "' >" + m.locElements[int].name + "</option>");
+    for(var i = 0; i < m.locElements.length; i++) {
+      select.append("<option value='" + m.locElements[i].id + "' >" + m.locElements[i].name + "</option>");
     }
-
   });
   $item.show('slow');
   updateIndex();
@@ -212,8 +213,10 @@ function addLocationForm(parent,latitude,longitude,name) {
       },
       complete: function(data) {
         $item.attr("id", "location-" + (countID));
-        $item.find('.locationName').html(
-            name + " <label > " + countryName + "(" + latitude + ", " + longitude + ")</label>");
+        $item.find('.locationName')
+            .html(
+                '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude + ', ' + longitude
+                    + ' )</span> ');
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
         $item.find('.locElementName').val(name);
@@ -410,39 +413,48 @@ function initMap() {
       mapTypeId: 'roadmap',
       styles: style
   });
+  infoWindow = new google.maps.InfoWindow();
 
 }
 
 // Map events
 
 function addMarker(map,idMarker,latitude,longitude,sites) {
-
-  var contentString = '<div id="infoContent"><input placeholder="name" class="name form-control" type="text" /></div>';
-
-  var infowindow = new google.maps.InfoWindow({
-    content: contentString
-  });
-
   var marker = new google.maps.Marker({
       id: idMarker,
+      draggable: true,
       position: {
           lat: latitude,
           lng: longitude
       },
       icon: baseURL + '/images/global/otherSite-marker.png',
-      title: sites,
+      name: sites,
       animation: google.maps.Animation.DROP
   });
   markers[idMarker] = marker;
 // To add the marker to the map, call setMap();
   marker.setMap(map);
 
+  // MARKER EVENTS
   marker.addListener('click', function() {
-    infowindow.close();
-    infowindow.open(map, marker);
+    openInfoWindow(marker, marker);
+  });
+
+  marker.addListener('drag', function() {
+    console.log("holi");
+    var markerLatLng = marker.getPosition();
+    var longitude = markerLatLng.lat();
+    var longitude = markerLatLng.lng();
+    $("#location-" + marker.id).find("input.longitude").val(longitude);
+    $("#location-" + marker.id).find("input.latitude").val(latitude);
+  });
+
+  google.maps.event.addListener(map, 'click', function() {
+    infoWindow.close();
   });
 }
 
+// Delete markers
 function deleteMarkers() {
   setAllMap(null);
   markers = [];
@@ -463,6 +475,33 @@ function removeMarker(id) {
   marker.setMap(null);
   delete markers[id];
 }
+
+// Open info window for change the country name
+function openInfoWindow(marker,content) {
+  var markerLatLng = marker.getPosition();
+  infoWindow
+      .setContent([
+        '<div id="infoContent"><input placeholder="'
+            + marker.name
+            + '" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-pencil button-green"></span></div>'
+      ].join(''));
+  infoWindow.open(map, marker);
+
+  // Edit location name from map
+  $(".editLocationName").on('click', function editLocationName() {
+    var parent = $(this).parent();
+    var newName = parent.find(".nameMap").val();
+    var location = parent.parents().find("#location-" + marker.id);
+    var markerLatLng = marker.getPosition();
+
+    // Change data marker and inputs form
+    marker.name = newName;
+    location.find(".lName").html(newName);
+    location.find(".locElementName").val(newName);
+  });
+}
+
+// Edit location name from map function
 
 // Get short and long country name
 function getResultByType(results,type) {
