@@ -60,10 +60,10 @@
             </div>
             [#-- locations level Select --]
             <select name="" id="" class="selectLocationLevel select " >
-              [#list locationsLevels as locLevels]
+              [#list locationsLevels as locLevels]s
                 <optgroup label="${locLevels.name}">
                 [#list locLevels.locations as locations]
-                  <option value="${locations.id}-${locations.list?string}" >${locations.name}</option>
+                  <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
                 [/#list]
                 </optgroup> 
               [/#list]
@@ -103,7 +103,7 @@
     <div class="col-md-12 locationLevel-optionContent borderBox">
       <div class="col-md-12 checkBox">
         <span class="col-md-10">Are you working in all countries on this region?</span>
-        <input class="col-md-1 allCountries" type="checkbox" />
+        <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox" />
       </div>
       [#-- Content of locations--]
       <div class="optionSelect-content row">
@@ -114,8 +114,8 @@
         [/#if]
       </div>
       
-      <select style="display:${(element.list?? && element.list)?string('block','none')}"  class="selectLocation col-md-12" placeholder="select an option...">
-        <option value="-1" >Select a location</option>
+      <select style="display:${(element.list?? && element.list)?string('block','none')}"  class="form-control selectLocation col-md-12" placeholder="select an option...">
+        <option selected="selected" value="-1" >Select a location</option>
         [#if element.allElements?has_content]
         [#list element.allElements as locElements]
             <option value="${locElements.id}" >${locElements.name}</option>
@@ -130,7 +130,7 @@
         </div>
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
-    <input class="locationLevelType" type="hidden" name="${locationLevelName}[${index}].type" value=""/>
+    <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
   </div>
 [/#macro]
 
@@ -140,7 +140,7 @@
   [#-- Content collapsible--]
   <div id="location-${template?string('template',countID)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName">${(element.name)!} [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??]<label >(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!}) </label> [/#if] </div>
+      <div class="locationName">${(element.name)!} [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??]<label >${(element.locElement.name)!}(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!}) </label> [/#if] </div>
       <div class="removeLocation removeIcon" title="Remove Location"></div>
     </div>
     [#-- Hidden inputs --]
