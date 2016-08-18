@@ -3,15 +3,15 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated Jul 29, 2016 11:36:56 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-	<class name="org.cgiar.ccafs.marlo.data.model.ProjectLocation"
-		table="project_locations" optimistic-lock="version">
+	<class name="org.cgiar.ccafs.marlo.data.model.ProjectScope"
+		table="project_scopes" optimistic-lock="version">
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<many-to-one name="locElement"
-			class="org.cgiar.ccafs.marlo.data.model.LocElement" fetch="select">
-			<column name="loc_element_id" not-null="true" />
+		<many-to-one name="locElementType"
+			class="org.cgiar.ccafs.marlo.data.model.LocElementType" fetch="select">
+			<column name="loc_element__type_id" not-null="true" />
 		</many-to-one>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
@@ -23,17 +23,20 @@
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
-		<property name="modificationJustification" type="string">
-			<column name="modification_justification" length="65535"
-				not-null="true" />
-		</property>
-    <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+	<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
-      <column name="created_by" not-null="false" />
+      <column name="created_by">
+        <comment>foreign key to the table users</comment>
+      </column>
     </many-to-one>
     <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
       fetch="select">
       <column name="modified_by" not-null="true" />
     </many-to-one>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" length="65535"
+				not-null="true" />
+		</property>
+		    
 	</class>
 </hibernate-mapping>

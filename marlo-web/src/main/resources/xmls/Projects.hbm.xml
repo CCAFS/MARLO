@@ -116,13 +116,23 @@
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
 
-		<set name="projectLocations" table="project_locations" inverse="true"
+		<set name="projectLocations" order-by="id" table="project_locations" inverse="true"
 			lazy="true" fetch="select">
 			<key>
 				<column name="project_id" />
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocation" />
 		</set>
+		
+		
+
+    
+     <set name="projectScopes" table="project_scopes" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectScope" />
+        </set>
 
 		<set name="projectPartners" order-by="id" table="project_partners"
 			inverse="true" lazy="true" fetch="select">
