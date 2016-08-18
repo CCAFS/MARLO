@@ -158,12 +158,12 @@
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
                       [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
-                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
-                      <div class=""><span class="name">${(element.crpClusterOfActivity.description)!'null'}</span></div>
+                      <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
+                      <span class="name">${(element.crpClusterOfActivity.description)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
                         [#if element.crpClusterOfActivity.leaders??]
-                          [#list element.crpClusterOfActivity.leaders as user]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
+                          [#list element.crpClusterOfActivity.leaders as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
                         [/#if]
                       </ul>
                     </li>
@@ -173,6 +173,7 @@
                 [/#if]  
                 </ul>
                 [#if editable ]
+                  <span style="display:none">[[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]]</span>  
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="description" className="" value="" /]
                 [/#if] 
               </div>
@@ -198,8 +199,8 @@
   <li id="cpListTemplate" class="clusterActivity clearfix">
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
-    <input class="id" type="hidden" name="project.clusterActivities[-1].id" value="" />
-    <div><span class="name"></span></div>
+    <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
+    <span class="name"></span>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>
   </li>
