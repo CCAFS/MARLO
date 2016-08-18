@@ -159,13 +159,13 @@
                       [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
-                    
-                    
-                      <div class=""><span class="name">${element.crpClusterOfActivity.description}</span></div>
-                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.id}" />
-                      <div class=""><span class="name">${(element.description)!'null'}</span></div>
+                      <div class=""><span class="name">${(element.crpClusterOfActivity.description)!'null'}</span></div>
                       <div class="clearfix"></div>
-                      <div class="leaders"></div>
+                      <ul class="leaders">
+                        [#if element.crpClusterOfActivity.leaders??]
+                          [#list element.crpClusterOfActivity.leaders as user]<li class="leader">${(user.composedName)!'null'}</li>[/#list]
+                        [/#if]
+                      </ul>
                     </li>
                   [/#list]
                 [#else]
@@ -177,6 +177,9 @@
                 [/#if] 
               </div>
             </div>
+            
+            [#-- Scale of the project --]
+            <div class="simpleBox"></div>
             
           </div> 
            
@@ -197,8 +200,7 @@
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <div><span class="name"></span></div>
     <div class="clearfix"></div>
-    <ul class="leaders">
-    </ul>
+    <ul class="leaders"></ul>
   </li>
 </ul>
 
