@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -439,6 +440,13 @@ public class ProjectDescriptionAction extends BaseAction {
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
         }
+
+        List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
+        for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
+          projectClusterActivities.add(projectClusterActivity);
+        }
+        project.setClusterActivities(projectClusterActivities);
         project.setFlagships(programs);
         project.setRegions(regions);
 
@@ -587,6 +595,43 @@ public class ProjectDescriptionAction extends BaseAction {
             projectFocusManager.saveProjectFocus(projectFocus);
           }
         }
+
+      }
+
+
+      for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+        if (project.getClusterActivities() == null) {
+          project.setClusterActivities(new ArrayList<>());
+        }
+        if (!project.getClusterActivities().contains(projectClusterActivity)) {
+          projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+
+        }
+      }
+
+
+      if (project.getClusterActivities() != null) {
+        for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+          if (projectClusterActivity.getId() == null) {
+            projectClusterActivity.setCreatedBy(this.getCurrentUser());
+
+            projectClusterActivity.setActiveSince(new Date());
+
+          } else {
+            ProjectClusterActivity projectClusterActivityPrev =
+              projectClusterActivityManager.getProjectClusterActivityById(projectClusterActivity.getId());
+            projectClusterActivity.setCreatedBy(projectClusterActivityPrev.getCreatedBy());
+            projectClusterActivity.setActiveSince(projectClusterActivityPrev.getActiveSince());
+
+          }
+          projectClusterActivity.setActive(true);
+          projectClusterActivity.setProject(project);
+          projectClusterActivity.setModifiedBy(this.getCurrentUser());
+          projectClusterActivity.setModificationJustification("");
+          projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+        }
       }
 
 
@@ -612,6 +657,7 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
+      relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

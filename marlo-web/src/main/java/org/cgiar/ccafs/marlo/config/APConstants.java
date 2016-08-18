@@ -124,6 +124,10 @@ public final class APConstants {
   public static final String PROJECT_FOCUSES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectFocuses)";
 
+  public static final String PROJECT_CLUSTER_ACTIVITIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectClusterActivities)";
+
+
   public static final String PROJECT_PARTNERS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectPartners)";
 
