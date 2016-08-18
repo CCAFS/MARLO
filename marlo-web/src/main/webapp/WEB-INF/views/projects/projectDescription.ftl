@@ -182,11 +182,12 @@
             [#-- Scale of the project --]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
-              <div id="" class=""> 
-               
+              <div id="" class="row"> 
+                <div class="col-md-2">[@customForm.checkbox name="project.national" i18nkey="project.national" editable=editable /]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.regional" i18nkey="project.regional" editable=editable /]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.global" i18nkey="project.global" editable=editable /]</div>
               </div>
             </div>
-            
             
             [#-- Scope of the project --]
             <div class="panel tertiary">
@@ -196,7 +197,7 @@
                 [#if project.scopes?has_content]
                   [#list project.scopes as element]
                     <li class="projectScope clearfix [#if !element_has_next]last[/#if]">
-                      [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if]
+                      [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
                       <input class="id" type="hidden" name="project.scopes[${element_index}].id" value="${(element.id)!}" />
                       <input class="cid" type="hidden" name="project.scopes[${element_index}].locElementType.id" value="${(element.locElementType.id)!}" />
                       <span class="name">${(element.locElementType.name)!'null'}</span>
