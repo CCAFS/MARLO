@@ -73,6 +73,9 @@ public final class APConstants {
   public static final String PROJECT_CCAFS_COFUNDED = "CCAFS_COFUNDED";
   public static final String PROJECT_BILATERAL = "BILATERAL";
 
+  public static final String PROJECT_SCAPE_NATIONAL = "1";
+  public static final String PROJECT_SCAPE_REGIONAL = "2";
+  public static final String PROJECT_SCAPE_GLOBAL = "3";
   public static final String PLANNING = "Planning";
   public static final String REPORTING = "Reporting";
   // Request variables
@@ -130,6 +133,8 @@ public final class APConstants {
 
   public static final String PROJECT_LOCATIONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLocations)";
+  public static final String PROJECT_SCOPES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectScopes)";
 
   public static final String PROJECT_PARTNERS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectPartners)";
