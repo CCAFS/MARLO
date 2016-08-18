@@ -2,7 +2,7 @@
 var lWordsElemetTitle = 20;
 var lWordsElemetDesc = 150;
 
-var $statuses, $statusDescription, coaSelectedIds;
+var $statuses, $statusDescription;
 
 $(document).ready(function() {
 
@@ -41,20 +41,34 @@ $(document).ready(function() {
   });
 
   /**
-   * CORE-Projects
+   * Cluster of Activities
    */
 
   var $coreSelect = $('#projectsList select');
   var $coreProjects = $('#projectsList .list');
 
-  coaSelectedIds = ($('#coaSelectedIds').text()).split(',');
+  var coaSelectedIds = ($('#coaSelectedIds').text()).split(',');
   $coreSelect.clearOptions(coaSelectedIds);
+
+  /**
+   * Scope of project
+   */
+
+  var $projectsScopesSelect = $('#projectsScopes select');
+  var $projectsScopes = $('#projectsScopes .list');
+
+  var scopesSelectedIds = ($('#scopesSelectedIds').text()).split(',');
+  $projectsScopesSelect.clearOptions(scopesSelectedIds);
 
   /** Events */
 
   // Event to add an item to core Project list from select option
   $coreSelect.on('change', function(e) {
     addItemList($(this).find('option:selected'));
+  });
+
+  $projectsScopesSelect.on('change', function(e) {
+    addItemScopeList($(this).find('option:selected'));
   });
 
   // Event to remove an element 'li' from core project list
@@ -110,6 +124,18 @@ $(document).ready(function() {
     $statuses.select2();
   }
 
+  function addItemScopeList($item) {
+    var $listElement = $("#projecScope-template").clone(true).removeAttr("id");
+    $listElement.find('.id').val($item.val());
+    $listElement.find('.name').html($item.text());
+
+    $listElement.appendTo($projectsScopes).hide().show('slow');
+    $projectsScopes.find('.emptyText').hide();
+    $item.remove();
+    $projectsScopesSelect.trigger("change.select2");
+    setProjectsIndexes();
+  }
+
   function addItemList($item) {
     var $listElement = $("#cpListTemplate").clone(true).removeAttr("id");
     $listElement.find('.id').val($item.val());
@@ -132,7 +158,7 @@ $(document).ready(function() {
     $coreProjects.find('.emptyText').hide();
     $item.remove();
     $coreSelect.trigger("change.select2");
-    setcoreProjectsIndexes();
+    setProjectsIndexes();
   }
 
   function removeItemList($item) {
@@ -147,12 +173,16 @@ $(document).ready(function() {
     // Removing from list
     $item.hide("slow", function() {
       $item.remove();
-      setcoreProjectsIndexes();
+      setProjectsIndexes();
     });
   }
 
-  function setcoreProjectsIndexes() {
+  function setProjectsIndexes() {
     $coreProjects.find('li.clusterActivity').each(function(i,item) {
+      $(item).setNameIndexes(1, i);
+    });
+
+    $projectsScopes.find('li.projecScope').each(function(i,item) {
       $(item).setNameIndexes(1, i);
     });
   }

@@ -182,24 +182,24 @@
             [#-- Scale of the project --]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
-              <div id="" class="panel-body"> 
-                
+              <div id="" class=""> 
+               
               </div>
             </div>
             
             
             [#-- Scope of the project --]
             <div class="panel tertiary">
-              <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:[@customForm.req required=true /]</div>
+              <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:</div>
               <div id="projectsScopes" class="panel-body"> 
                 <ul class="list">
                 [#if project.scopes?has_content]
                   [#list project.scopes as element]
                     <li class="projectScope clearfix [#if !element_has_next]last[/#if]">
                       [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if]
-                      <input class="id" type="hidden" name="project.scopes[${element_index}]..id" value="${(element.id)!}" />
+                      <input class="id" type="hidden" name="project.scopes[${element_index}].id" value="${(element.id)!}" />
                       <input class="cid" type="hidden" name="project.scopes[${element_index}].locElementType.id" value="${(element.locElementType.id)!}" />
-                      <span class="name">${(element.title)!'null'}</span>
+                      <span class="name">${(element.locElementType.name)!'null'}</span>
                     </li>
                   [/#list]
                 [#else]
@@ -208,7 +208,7 @@
                 </ul>
                 [#if editable ]
                   <span id="scopesSelectedIds" style="display:none">[#if project.scopes?has_content][#list project.scopes as e]${e.locElementType.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="locScopeElements " keyFieldName="id" displayFieldName="description" className="" value="" /]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="locScopeElements " keyFieldName="id" displayFieldName="name" className="" value="" /]
                 [/#if] 
               </div>
             </div>
@@ -231,6 +231,18 @@
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+    <ul class="leaders"></ul>
+  </li>
+</ul>
+
+[#-- project scope template --]
+<ul style="display:none">
+  <li id="projecScope-template" class="projecScope clearfix">
+    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <input class="id" type="hidden" name="project.scopes[-1].locElementType.id" value="" />
+    <input class="cid" type="hidden" name="project.scopes[-1].id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>

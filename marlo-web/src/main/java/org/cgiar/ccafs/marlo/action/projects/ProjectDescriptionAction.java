@@ -516,6 +516,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
     locScopeElements =
       locationTypeManager.findAll().stream().filter(c -> c.isActive() && c.isScope()).collect(Collectors.toList());
+
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
