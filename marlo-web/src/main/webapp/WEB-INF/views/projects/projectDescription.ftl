@@ -163,7 +163,7 @@
                       <div class="clearfix"></div>
                       <ul class="leaders">
                         [#if element.crpClusterOfActivity.leaders??]
-                          [#list element.crpClusterOfActivity.leaders as user]<li class="leader">${(user.composedName)!'null'}</li>[/#list]
+                          [#list element.crpClusterOfActivity.leaders as leader]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
                         [/#if]
                       </ul>
                     </li>
