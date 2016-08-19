@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -23,17 +25,19 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProjectLocation implements java.io.Serializable {
+public class ProjectScope implements java.io.Serializable, IAuditLog {
 
 
-  private static final long serialVersionUID = 7097495494769482469L;
-
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1054158126894011294L;
 
   @Expose
   private Long id;
 
   @Expose
-  private LocElement locElement;
+  private LocElementType locElementType;
 
   @Expose
   private Project project;
@@ -48,21 +52,19 @@ public class ProjectLocation implements java.io.Serializable {
   @Expose
   private User createdBy;
 
-
   @Expose
   private User modifiedBy;
-
   @Expose
   private String modificationJustification;
 
 
-  public ProjectLocation() {
+  public ProjectScope() {
   }
 
 
-  public ProjectLocation(LocElement locElement, Project project, boolean active, Date activeSince, User createdBy,
+  public ProjectScope(LocElementType locElementType, Project project, boolean active, Date activeSince, User createdBy,
     User modifiedBy, String modificationJustification) {
-    this.locElement = locElement;
+    this.locElementType = locElementType;
     this.project = project;
     this.active = active;
     this.activeSince = activeSince;
@@ -82,7 +84,7 @@ public class ProjectLocation implements java.io.Serializable {
     if (this.getClass() != obj.getClass()) {
       return false;
     }
-    ProjectLocation other = (ProjectLocation) obj;
+    ProjectScope other = (ProjectScope) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
@@ -93,6 +95,7 @@ public class ProjectLocation implements java.io.Serializable {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -101,18 +104,30 @@ public class ProjectLocation implements java.io.Serializable {
     return createdBy;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
 
-  public LocElement getLocElement() {
-    return locElement;
+  public LocElementType getLocElementType() {
+    return locElementType;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
   }
 
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
@@ -122,6 +137,16 @@ public class ProjectLocation implements java.io.Serializable {
     return project;
   }
 
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
   public boolean isActive() {
     return active;
   }
@@ -129,6 +154,7 @@ public class ProjectLocation implements java.io.Serializable {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -144,9 +170,8 @@ public class ProjectLocation implements java.io.Serializable {
     this.id = id;
   }
 
-
-  public void setLocElement(LocElement locElement) {
-    this.locElement = locElement;
+  public void setLocElementType(LocElementType locElementType) {
+    this.locElementType = locElementType;
   }
 
   public void setModificationJustification(String modificationJustification) {
@@ -160,6 +185,7 @@ public class ProjectLocation implements java.io.Serializable {
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   @Override
   public String toString() {

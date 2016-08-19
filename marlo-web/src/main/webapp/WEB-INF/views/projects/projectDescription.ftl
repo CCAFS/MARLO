@@ -37,26 +37,26 @@
           <div id="projectDescription" class="borderBox">
             [#-- Project Title --]
             <div class="form-group">
-              [@customForm.textArea name="project.title" required=true className="project-title" editable=editable /]
+              [@customForm.textArea name="project.title" required=true className="project-title" editable=editable && action.hasPermission("title") /]
             </div>
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
-                [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6">
-                [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+                [@customForm.select name="project.liaisonUser.id" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
               </div> 
             </div>  
             <div class="form-group row">  
               [#-- Start Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable  /]
+                [@customForm.input name="project.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
               </div> 
               [#-- End Date --]
               <div class="col-md-6">
-                [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable /]
+                [@customForm.input name="project.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
               </div>
             </div>
             <div class="form-group row">
@@ -70,11 +70,11 @@
             [#if !((project.bilateralProject)!false)]
             <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
               [#if action.hasPermission("workplan") ]
-                [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable /]
+                [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable  && action.hasPermission("workplan") /]
               [/#if]
               <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
                 <div class="halfPartBlock fileUpload projectWorkplan">
-                  [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable /]
+                  [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable && action.hasPermission("workplan") /]
                 </div> 
               </div>  
             </div>
@@ -85,14 +85,14 @@
             <div class="fullBlock fileUpload bilateralContract">
               <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
               <div class="uploadContainer">
-                [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable /]
+                [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable && action.hasPermission("bilateralContract") /]
               </div>  
             </div>
             [/#if]
             
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable /]
+              [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- -- -- REPORTING BLOCK -- -- --]
@@ -102,7 +102,7 @@
               <div class="fullBlock fileUpload annualreportDonor">
                 <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
                 <div class="uploadContainer">
-                  [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable /]
+                  [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable && action.hasPermission("bilateralContract") /]
                 </div>  
               </div>
               [/#if]
@@ -117,7 +117,7 @@
               <div class="col-md-6">  
                 <div id="projectFlagshipsBlock" class="">
                   <h5>[@s.text name="projectDescription.flagships" /]:</h5>
-                  [#if editable]
+                  [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
                     [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
                   [#else]
@@ -133,7 +133,7 @@
               <div class="col-md-6">  
                 <div id="projectRegionsBlock" class="">
                   <h5>[@s.text name="projectDescription.regions" /]:</h5>
-                  [#if editable]
+                  [#if editable && action.hasPermission("regions")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                     [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
                   [#else]
@@ -156,7 +156,7 @@
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
                     <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
-                      [#if editable]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+                      [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
                       <span class="name">${(element.crpClusterOfActivity.description)!'null'}</span>
@@ -172,15 +172,47 @@
                   <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p>
                 [/#if]  
                 </ul>
-                [#if editable ]
-                  <span style="display:none">[[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]]</span>  
+                [#if editable  && action.hasPermission("activities")]
+                  <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
                   [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="description" className="" value="" /]
                 [/#if] 
               </div>
             </div>
             
             [#-- Scale of the project --]
-            <div class="simpleBox"></div>
+            <div class="panel tertiary">
+              <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
+              <div id="" class="row"> 
+                <div class="col-md-2">[@customForm.checkbox name="project.national" i18nkey="project.national" editable=editable && action.hasPermission("scale") /]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.regional" i18nkey="project.regional" editable=editable  && action.hasPermission("scale")/]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.global" i18nkey="project.global" editable=editable && action.hasPermission("scale") /]</div>
+              </div>
+            </div>
+            
+            [#-- Scope of the project --]
+            <div class="panel tertiary">
+              <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:</div>
+              <div id="projectsScopes" class="panel-body"> 
+                <ul class="list">
+                [#if project.scopes?has_content]
+                  [#list project.scopes as element]
+                    <li class="projectScope clearfix [#if !element_has_next]last[/#if]">
+                      [#if editable && action.hasPermission("scope")]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
+                      <input class="id" type="hidden" name="project.scopes[${element_index}].id" value="${(element.id)!}" />
+                      <input class="cid" type="hidden" name="project.scopes[${element_index}].locElementType.id" value="${(element.locElementType.id)!}" />
+                      <span class="name">${(element.locElementType.name)!'null'}</span>
+                    </li>
+                  [/#list]
+                [#else]
+                  <p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p>
+                [/#if]  
+                </ul>
+                [#if editable && action.hasPermission("scope") ]
+                  <span id="scopesSelectedIds" style="display:none">[#if project.scopes?has_content][#list project.scopes as e]${e.locElementType.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="locScopeElements " keyFieldName="id" displayFieldName="name" className="" value="" /]
+                [/#if] 
+              </div>
+            </div>
             
           </div> 
            
@@ -200,6 +232,18 @@
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
     <input class="id" type="hidden" name="project.clusterActivities[-1].crpClusterOfActivity.id" value="" />
     <input class="cid" type="hidden" name="project.clusterActivities[-1].id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+    <ul class="leaders"></ul>
+  </li>
+</ul>
+
+[#-- project scope template --]
+<ul style="display:none">
+  <li id="projecScope-template" class="projecScope clearfix">
+    <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
+    <input class="id" type="hidden" name="project.scopes[-1].locElementType.id" value="" />
+    <input class="cid" type="hidden" name="project.scopes[-1].id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
     <ul class="leaders"></ul>

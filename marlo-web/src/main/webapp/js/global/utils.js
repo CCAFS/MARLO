@@ -284,6 +284,16 @@ jQuery.fn.removeOption = function(val) {
   $(this).find('option[value=' + val + ']').remove();
 };
 
+jQuery.fn.clearOptions = function(arrIds) {
+  if((arrIds.length == 1) && (arrIds[0] == "")) {
+
+  } else {
+    for(var i = 0, len = arrIds.length; i < len; i++) {
+      $(this).removeOption(arrIds[i]);
+    }
+  }
+};
+
 /**
  * Escape HTML text
  */

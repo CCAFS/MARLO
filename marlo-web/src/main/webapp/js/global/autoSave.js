@@ -83,7 +83,7 @@ function changeDetected(e) {
       // Start a timer that will search when finished
       timeoutAutoSave = setTimeout(function() {
         autoSave();
-      }, 100 * 1000);
+      }, 10 * 1000);
     }
   }
 }

@@ -41,18 +41,34 @@ $(document).ready(function() {
   });
 
   /**
-   * CORE-Projects
+   * Cluster of Activities
    */
+
   var $coreSelect = $('#projectsList select');
   var $coreProjects = $('#projectsList .list');
 
-  // loadInitialCoreProjects();
+  var coaSelectedIds = ($('#coaSelectedIds').text()).split(',');
+  $coreSelect.clearOptions(coaSelectedIds);
+
+  /**
+   * Scope of project
+   */
+
+  var $projectsScopesSelect = $('#projectsScopes select');
+  var $projectsScopes = $('#projectsScopes .list');
+
+  var scopesSelectedIds = ($('#scopesSelectedIds').text()).split(',');
+  $projectsScopesSelect.clearOptions(scopesSelectedIds);
 
   /** Events */
 
   // Event to add an item to core Project list from select option
   $coreSelect.on('change', function(e) {
     addItemList($(this).find('option:selected'));
+  });
+
+  $projectsScopesSelect.on('change', function(e) {
+    addItemScopeList($(this).find('option:selected'));
   });
 
   // Event to remove an element 'li' from core project list
@@ -108,30 +124,16 @@ $(document).ready(function() {
     $statuses.select2();
   }
 
-  // Function to load all core projects with ajax
-  function loadInitialCoreProjects() {
-    $.ajax({
-        'url': '../../' + $('#projectsAction').val(),
-        beforeSend: function() {
-          $coreSelect.empty().append(setOption(-1, "Please select a project"));
-        },
-        success: function(data) {
-          // Getting core projects previously selected
-          var coreProjectsIds = [];
-          $coreProjects.find('li input.id').each(function(i_id,id) {
-            coreProjectsIds.push($(id).val().toString());
-          });
-          // Setting core projects allowed to select
-          $.each(data.projects, function(i,project) {
-            if($.inArray(project.id.toString(), coreProjectsIds) == -1) {
-              $coreSelect.append(setOption(project.id, project.id + " - " + project.title));
-            }
-          });
-        },
-        complete: function() {
-          $coreSelect.select2();
-        }
-    });
+  function addItemScopeList($item) {
+    var $listElement = $("#projecScope-template").clone(true).removeAttr("id");
+    $listElement.find('.id').val($item.val());
+    $listElement.find('.name').html($item.text());
+
+    $listElement.appendTo($projectsScopes).hide().show('slow');
+    $projectsScopes.find('.emptyText').hide();
+    $item.remove();
+    $projectsScopesSelect.trigger("change.select2");
+    setProjectsIndexes();
   }
 
   function addItemList($item) {
@@ -156,7 +158,7 @@ $(document).ready(function() {
     $coreProjects.find('.emptyText').hide();
     $item.remove();
     $coreSelect.trigger("change.select2");
-    setcoreProjectsIndexes();
+    setProjectsIndexes();
   }
 
   function removeItemList($item) {
@@ -171,12 +173,16 @@ $(document).ready(function() {
     // Removing from list
     $item.hide("slow", function() {
       $item.remove();
-      setcoreProjectsIndexes();
+      setProjectsIndexes();
     });
   }
 
-  function setcoreProjectsIndexes() {
+  function setProjectsIndexes() {
     $coreProjects.find('li.clusterActivity').each(function(i,item) {
+      $(item).setNameIndexes(1, i);
+    });
+
+    $projectsScopes.find('li.projecScope').each(function(i,item) {
       $(item).setNameIndexes(1, i);
     });
   }

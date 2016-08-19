@@ -9,6 +9,7 @@
     border: 1px dashed #d1d1d1;
     padding: 10px;
     margin-bottom: 25px;
+    margin-top: 12px;
 }
 
 .locationLevel-option {
@@ -18,8 +19,6 @@
 }
 
 .locations span {
-    float: right;
-    cursor: pointer;
 }
 
 .locations {
@@ -86,11 +85,6 @@
     margin-right: 10px;
 }
 
-.locationName label {
-    color: darkgray;
-    font-size: 0.8em;
-}
-
 .coordinates-inputs input {
     border-radius: 8px;
     height: 25px;
@@ -111,4 +105,19 @@
 .nameWrapper {
     width: 49%;
     float: left;
+}
+
+.nameMap {
+    width: 80%;
+    display: inline-block;
+}
+
+span.lPos {
+    color: darkgray;
+    font-size: 0.8em;
+}
+
+.locations.selected {
+    background-color: #ccc;
+    border: 1px dashed #777;
 }

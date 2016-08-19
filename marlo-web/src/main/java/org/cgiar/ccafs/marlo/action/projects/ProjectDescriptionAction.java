@@ -24,19 +24,23 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectClusterActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -79,6 +83,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectClusterActivityManager projectClusterActivityManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private AuditLogManager auditLogManager;
+  private ProjectScopeManager projectScopeManager;
+  private LocElementTypeManager locationTypeManager;
   private String transaction;
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -96,6 +102,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
 
   private List<CrpClusterOfActivity> clusterofActivites;
+  private List<LocElementType> locScopeElements;
 
 
   private Map<String, String> projectStauses;
@@ -104,10 +111,16 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<LiaisonUser> allOwners;
 
   private Map<String, String> projectTypes;
+  private Map<String, String> projectScales;
+
 
   private File file;
+
+
   private File fileReporting;
+
   private String fileContentType;
+
   private String fileFileName;
 
   private String fileReportingFileName;
@@ -119,7 +132,8 @@ public class ProjectDescriptionAction extends BaseAction {
     LiaisonInstitutionManager liaisonInstitutionManager, UserManager userManager,
     ProjectFocusManager projectFocusManager, FileDBManager fileDBManager, AuditLogManager auditLogManager,
     ProjectDescriptionValidator validator, ProjectClusterActivityManager projectClusterActivityManager,
-    CrpClusterOfActivityManager crpClusterOfActivityManager) {
+    CrpClusterOfActivityManager crpClusterOfActivityManager, LocElementTypeManager locationManager,
+    ProjectScopeManager projectLocationManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;
@@ -134,6 +148,8 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectClusterActivityManager = projectClusterActivityManager;
     this.fileDBManager = fileDBManager;
     // this.liaisonUserManager = liaisonUserManager;
+    this.projectScopeManager = projectLocationManager;
+    this.locationTypeManager = locationManager;
   }
 
   @Override
@@ -204,7 +220,6 @@ public class ProjectDescriptionAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getBilateralProposalRelativePath().replace('\\', '/');
   }
 
-
   private String getBilateralProposalRelativePath() {
 
 
@@ -216,11 +231,9 @@ public class ProjectDescriptionAction extends BaseAction {
     return clusterofActivites;
   }
 
-
   public File getFile() {
     return file;
   }
-
 
   public String getFileContentType() {
     return fileContentType;
@@ -230,7 +243,6 @@ public class ProjectDescriptionAction extends BaseAction {
   public String getFileFileName() {
     return fileFileName;
   }
-
 
   public File getFileReporting() {
     return fileReporting;
@@ -266,6 +278,12 @@ public class ProjectDescriptionAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
+  public List<LocElementType> getLocScopeElements() {
+    return locScopeElements;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -280,9 +298,13 @@ public class ProjectDescriptionAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public Map<String, String> getProjectScales() {
+    return projectScales;
   }
 
 
@@ -315,6 +337,7 @@ public class ProjectDescriptionAction extends BaseAction {
     return null;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
@@ -340,7 +363,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -413,6 +435,12 @@ public class ProjectDescriptionAction extends BaseAction {
           }
         }
 
+        if (project.getScopes() != null) {
+          for (ProjectScope projectScope : project.getScopes()) {
+            projectScope
+              .setLocElementType(locationTypeManager.getLocElementTypeById(projectScope.getLocElementType().getId()));
+          }
+        }
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
@@ -459,10 +487,17 @@ public class ProjectDescriptionAction extends BaseAction {
             .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
           projectClusterActivities.add(projectClusterActivity);
         }
+
+        List<ProjectScope> projectLocations = new ArrayList<>();
+        for (ProjectScope projectLocation : project.getProjectScopes().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+
+          projectLocations.add(projectLocation);
+        }
         project.setClusterActivities(projectClusterActivities);
         project.setFlagships(programs);
         project.setRegions(regions);
-
+        project.setScopes(projectLocations);
       }
     }
 
@@ -479,6 +514,8 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
       .collect(Collectors.toList());
 
+    locScopeElements =
+      locationTypeManager.findAll().stream().filter(c -> c.isActive() && c.isScope()).collect(Collectors.toList());
 
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -490,6 +527,11 @@ public class ProjectDescriptionAction extends BaseAction {
     projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
     projectTypes.put(APConstants.PROJECT_CCAFS_COFUNDED, this.getText("project.projectType.cofounded"));
 
+    projectScales = new HashMap<>();
+    projectScales.put(APConstants.PROJECT_SCAPE_NATIONAL, this.getText("project.projectScape.national"));
+    projectScales.put(APConstants.PROJECT_SCAPE_REGIONAL, this.getText("project.projectScape.regional"));
+    projectScales.put(APConstants.PROJECT_SCAPE_GLOBAL, this.getText("project.projectType.global"));
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
@@ -500,6 +542,7 @@ public class ProjectDescriptionAction extends BaseAction {
     }
 
   }
+
 
   @Override
   public String save() {
@@ -524,7 +567,7 @@ public class ProjectDescriptionAction extends BaseAction {
           FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
 
         }
-        System.out.println(project.getWorkplan().getFileName());
+
         if (project.getWorkplan().getFileName().isEmpty()) {
           project.setWorkplan(null);
         }
@@ -647,6 +690,38 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
+      // Removing Project Scopes
+
+      for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+
+        if (project.getScopes() == null) {
+          project.setScopes(new ArrayList<>());
+        }
+        if (!project.getScopes().contains(projectLocation)) {
+          projectScopeManager.deleteProjectScope(projectLocation.getId());
+
+        }
+      }
+      // Add Project Scopes
+
+      if (project.getScopes() != null) {
+        for (ProjectScope projectLocation : project.getScopes()) {
+          if (projectLocation.getId() == null) {
+            projectLocation.setCreatedBy(this.getCurrentUser());
+
+            projectLocation.setActiveSince(new Date());
+            projectLocation.setActive(true);
+            projectLocation.setProject(project);
+            projectLocation.setModifiedBy(this.getCurrentUser());
+            projectLocation.setModificationJustification("");
+            projectScopeManager.saveProjectScope(projectLocation);
+          }
+
+        }
+      }
+
+
       project.setCrp(loggedCrp);
       project.setCofinancing(projectDB.isCofinancing());
       project.setGlobal(projectDB.isGlobal());
@@ -670,6 +745,7 @@ public class ProjectDescriptionAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_FOCUSES_RELATION);
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
+      relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
@@ -709,7 +785,6 @@ public class ProjectDescriptionAction extends BaseAction {
     this.file = file;
   }
 
-
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
@@ -735,6 +810,11 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
+  public void setLocScopeElementsType(List<LocElementType> locScopeElements) {
+    this.locScopeElements = locScopeElements;
+  }
+
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -752,6 +832,11 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setProjectScales(Map<String, String> projectScales) {
+    this.projectScales = projectScales;
   }
 
 
