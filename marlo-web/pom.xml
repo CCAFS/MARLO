@@ -206,18 +206,18 @@
 			<version>${hibbernate-core-version}</version>
 		</dependency>
 
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-c3p0</artifactId>
-      <version>${hibbernate-core-version}</version>
-    </dependency>
-    
-		
 		<dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.12.1.GA</version>
-        </dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>${hibbernate-core-version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+		</dependency>
 		<!-- Dependency needed for Hibernate -->
 		<dependency>
 			<groupId>javax.transaction</groupId>
@@ -253,13 +253,13 @@
 			<version>${jasperreports-fonts-version}</version>
 		</dependency>
 		<!-- End jasper -->
-    <!-- gson -->
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>${com.google.code.gson-version}</version>
-    </dependency>
-  <!-- End jasper -->
+		<!-- gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${com.google.code.gson-version}</version>
+		</dependency>
+		<!-- End jasper -->
 		<!-- Apache shiro -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
@@ -274,11 +274,86 @@
 		</dependency>
 
 
-<dependency>
-  <groupId>com.pusher</groupId>
-  <artifactId>pusher-http-java</artifactId>
-  <version>${pusher-http-java}</version>
-</dependency>
+		<dependency>
+			<groupId>com.pusher</groupId>
+			<artifactId>pusher-http-java</artifactId>
+			<version>${pusher-http-java}</version>
+		</dependency>
+
+		<!-- Dependency for pentaho -->
+		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-classic-core</artifactId>
+			<version>6.1.0.1-196</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-reporting-engine</groupId>
+			<artifactId>pentaho-reporting-engine-classic-extensions</artifactId>
+			<version>6.1.0.1-196</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libbase</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libdocbundle</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libfonts</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libformat</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libformula</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libloader</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>librepository</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libserializer</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libxml</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-library</groupId>
+			<artifactId>libswing</artifactId>
+			<version>6.1.0.1-196</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lowagie</groupId>
+			<artifactId>itext-rtf</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+
 	</dependencies>
 
 
@@ -380,47 +455,53 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!-- MINIFYING CSS AND JS - TEST -->
-      <plugin>
-      <groupId>com.samaxes.maven</groupId>
-      <artifactId>minify-maven-plugin</artifactId>
-      <version>1.7.4</version>
-      <executions>
-        <execution>
-          <id>default-minify</id>
-          <phase>package</phase>
-          <configuration>
-          <charset>UTF-8</charset>
-            <nosuffix>true</nosuffix>
-            <skipMerge>true</skipMerge>
-            <verbose>true</verbose>
-            <cssSourceDir>css</cssSourceDir>
-                    <cssSourceIncludes>
-                        <cssSourceInclude>**/*.css</cssSourceInclude>
-                    </cssSourceIncludes>
-            <cssTargetDir>css</cssTargetDir>
-			      <jsSourceDir>js</jsSourceDir>
-                    <jsSourceIncludes>
-                        <jsSourceInclude>**/*.js</jsSourceInclude>
-                    </jsSourceIncludes>
-            <jsTargetDir>js</jsTargetDir>
-          </configuration>
-          <goals>
-            <goal>minify</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-    <!--  END -->
-			
-			
+			<plugin>
+				<groupId>com.samaxes.maven</groupId>
+				<artifactId>minify-maven-plugin</artifactId>
+				<version>1.7.4</version>
+				<executions>
+					<execution>
+						<id>default-minify</id>
+						<phase>package</phase>
+						<configuration>
+							<charset>UTF-8</charset>
+							<nosuffix>true</nosuffix>
+							<skipMerge>true</skipMerge>
+							<verbose>true</verbose>
+							<cssSourceDir>css</cssSourceDir>
+							<cssSourceIncludes>
+								<cssSourceInclude>**/*.css</cssSourceInclude>
+							</cssSourceIncludes>
+							<cssTargetDir>css</cssTargetDir>
+							<jsSourceDir>js</jsSourceDir>
+							<jsSourceIncludes>
+								<jsSourceInclude>**/*.js</jsSourceInclude>
+							</jsSourceIncludes>
+							<jsTargetDir>js</jsTargetDir>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- END -->
+
+
 		</plugins>
 	</build>
 	<repositories>
 		<repository>
 			<id>Internal project repo</id>
 			<url>file://${basedir}/src/main/resources/libs/</url>
+		</repository>
+
+		<!-- Maven repo -->
+		<repository>
+			<id>pentaho-releases</id>
+			<url>http://repository.pentaho.org/artifactory/repo/</url>
 		</repository>
 	</repositories>
 	<licenses>
