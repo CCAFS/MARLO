@@ -420,6 +420,8 @@ function initMap() {
 // Map events
 
 function addMarker(map,idMarker,latitude,longitude,sites) {
+
+  var $item = $("#location-" + idMarker);
   var marker = new google.maps.Marker({
       id: idMarker,
       draggable: true,
@@ -438,6 +440,7 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
   // MARKER EVENTS
   marker.addListener('click', function() {
     openInfoWindow(marker, marker);
+    $item.find(".locations").addClass("selected");
   });
 
   marker.addListener('drag', function() {
@@ -446,14 +449,35 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
     var latitude = markerLatLng.lat();
     var longitude = markerLatLng.lng();
     console.log(latitude + ", " + longitude);
-    $("#location-" + marker.id).find("input.geoLongitude").val(longitude);
-    $("#location-" + marker.id).find("input.geoLatitude").val(latitude);
-    $("#location-" + marker.id).find("span.lPos").html(
+    $item.find("input.geoLongitude").val(longitude);
+    $item.find("input.geoLatitude").val(latitude);
+    $item.find("span.lPos").html(
         " (" + latitude.toString().substring(0, 7) + ", " + longitude.toString().substring(0, 7) + ")");
+    $item.find(".locations").addClass("selected");
+  });
+
+  marker.addListener('dragend', function() {
+    // GET Isoalpha
+    $.ajax({
+        'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+        'data': {
+            key: GOOGLE_API_KEY,
+            latlng: ($item.find("input.geoLatitude").val() + "," + $item.find("input.geoLongitude").val())
+        },
+        success: function(data) {
+          if(data.status == 'OK') {
+            $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
+          } else {
+            console.log(data.status);
+          }
+        }
+    });
+    $item.find(".locations").removeClass("selected");
   });
 
   google.maps.event.addListener(map, 'click', function() {
     infoWindow.close();
+    $item.find(".locations").removeClass("selected");
   });
 }
 
@@ -486,7 +510,7 @@ function openInfoWindow(marker,content) {
       .setContent([
         '<div id="infoContent"><input placeholder="'
             + marker.name
-            + '" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-pencil button-green"></span></div>'
+            + '" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-ok button-green"></span></div>'
       ].join(''));
   infoWindow.open(map, marker);
 
@@ -498,9 +522,15 @@ function openInfoWindow(marker,content) {
     var markerLatLng = marker.getPosition();
 
     // Change data marker and inputs form
-    marker.name = newName;
-    location.find(".lName").html(newName);
-    location.find(".locElementName").val(newName);
+    if(newName != "") {
+      marker.name = newName;
+      location.find(".lName").html(newName);
+      location.find(".locElementName").val(newName);
+    }
+
+    // Close infowindow
+    infoWindow.close();
+    $("#location-" + marker.id).find(".locations").removeClass("selected");
   });
 }
 

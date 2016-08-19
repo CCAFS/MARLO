@@ -116,3 +116,8 @@ span.lPos {
     color: darkgray;
     font-size: 0.8em;
 }
+
+.locations.selected {
+    background-color: #ccc;
+    border: 1px dashed #777;
+}
