@@ -1,5 +1,6 @@
 $(document).ready(init);
 var map;
+var infoWindow = null;
 var markers = [];
 var countID;
 
@@ -61,7 +62,13 @@ function attachEvents() {
 // ADD a location element by select list-Event
   $('.selectLocation').on('change', function() {
     var option = $(this).find("option:selected");
-    addLocationList($(this).parent(), option);
+    var content = $(this).parent().find(".optionSelect-content");
+    console.log(this);
+    if($(content).find("input[value=" + option.val() + "]").exists()) {
+    } else {
+      addLocationList($(this).parent(), option);
+    }
+
   });
 
 // ADD a location element by coordinates inputs list-Event
@@ -84,7 +91,25 @@ function attachEvents() {
 
   // Checkbox to working in all regions
   $(".allCountries").on("change", function() {
-    console.log("holi")
+    $(this).val(1);
+    var parent = $(this).parent().parent();
+    if($(this).is(":checked") == true) {
+      parent.find(".selectLocation").attr("disabled", true);
+      // parent.find(".selectLocation").css("cursor", "not-allowed");
+      parent.find("input.form-control").attr("disabled", true);
+      parent.find(".locElement").each(function(i,e) {
+        $(e).hide("slow");
+      })
+    } else {
+      $(this).val(0);
+      parent.find(".selectLocation").attr("disabled", false);
+      // parent.find(".selectLocation").css("cursor", "inherit");
+      parent.find("input.form-control").attr("disabled", false);
+      parent.find(".locElement").each(function(i,e) {
+        $(e).show("slow");
+      })
+    }
+    updateIndex();
   });
 
   // Collapsible
@@ -104,6 +129,7 @@ function attachEvents() {
           content.slideUp();
         }
       });
+
 }
 
 // FUNCTIONS
@@ -115,12 +141,14 @@ function addLocationLevel(option) {
   var optionValue = option.val().split('-');
   var idLocationLevel = optionValue[0];
   var isList = optionValue[1];
+  var name = optionValue[2];
   if(isList === "true") {
     $item.find(".selectLocation").css("display", "block");
   } else {
     $item.find(".coordinates-inputs").css("display", "block");
   }
   $item.find('.locationLevelId').val(idLocationLevel);
+  $item.find('.locationLevelName').val(name);
   $list.append($item);
 
   // LocElements options using ajax
@@ -139,10 +167,9 @@ function addLocationLevel(option) {
 
     select.empty();
     select.append("<option value='-1' >Select a location</option>");
-    for(var int = 0; int < m.locElements.length; int++) {
-      select.append("<option value='" + m.locElements[int].id + "' >" + m.locElements[int].name + "</option>");
+    for(var i = 0; i < m.locElements.length; i++) {
+      select.append("<option value='" + m.locElements[i].id + "' >" + m.locElements[i].name + "</option>");
     }
-
   });
   $item.show('slow');
   updateIndex();
@@ -165,30 +192,64 @@ function addLocationList(parent,option) {
 
 // Add a location by coordinates inputs
 function addLocationForm(parent,latitude,longitude,name) {
+  var countryName = "";
   var $list = parent.find(".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
   countID++;
-  $item.attr("id", "location-" + (countID));
-  $item.find('.locationName').html(name + " <label > (" + latitude + ", " + longitude + ") </label>");
-  $item.find('.geoLatitude').val(latitude);
-  $item.find('.geoLongitude').val(longitude);
-  $item.find('.locElementName').val(name);
-  $list.append($item);
-  // updateAllIndexes();
-  $item.show('slow');
-  // empty input fields
-  parent.find(".latitude").val("");
-  parent.find(".longitude").val("");
-  parent.find(".name").val("");
-  // add marker
-  addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name);
-  // update indexes
-  updateIndex();
+  // Ajax for country name
+  $.ajax({
+      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
+      'data': {
+          key: GOOGLE_API_KEY,
+          latlng: (latitude + "," + longitude)
+      },
+      success: function(data) {
+        if(data.status == 'OK') {
+          $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
+          countryName = getResultByType(data.results[0], 'country').long_name;
+        } else {
+          console.log(data.status);
+        }
+      },
+      complete: function(data) {
+        $item.attr("id", "location-" + (countID));
+        $item.find('.locationName')
+            .html(
+                '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude + ', ' + longitude
+                    + ' )</span> ');
+        $item.find('.geoLatitude').val(latitude);
+        $item.find('.geoLongitude').val(longitude);
+        $item.find('.locElementName').val(name);
+        $list.append($item);
+        // updateAllIndexes();
+        $item.show('slow');
+        // empty input fields
+        parent.find(".latitude").val("");
+        parent.find(".longitude").val("");
+        parent.find(".name").val("");
+        // add marker
+        addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name);
+        // update indexes
+        updateIndex();
+      }
+  });
+
 }
 
 // Remove a location level element-Function
 function removeLocationLevelItem() {
   var $item = $(this).parents('.locationLevel');
+
+  // REMOVE all item of this element
+  $item.find(".locElement").each(function(index,item) {
+    if($(item).find(".geoLatitude").val() != "" && $(item).find(".geoLongitude").val() != "") {
+      var optionValue = $(item).attr("id").split('-');
+      var id = optionValue[1];
+      removeMarker(id);
+    }
+  })
+
+  // Remove location level Element
   $item.hide(function() {
     $item.remove();
     updateIndex();
@@ -202,9 +263,9 @@ function removeLocationLevelItem() {
 // Remove a location element-Function
 function removeLocationItem() {
   var $item = $(this).parents('.locElement');
-  var optionValue = $item.attr("id").split('-');
-  var id = optionValue[1];
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
+    var optionValue = $item.attr("id").split('-');
+    var id = optionValue[1];
     removeMarker(id);
   }
   $item.hide(function() {
@@ -214,13 +275,14 @@ function removeLocationItem() {
 
 }
 
-// Update index
+// Update indexes
 function updateIndex() {
   var name = $("#locationLevelName").val();
   $(".selectWrapper").find('.locationLevel').each(function(i,item) {
     var customName = name + '[' + i + ']';
     $(item).find('.locationLevelId').attr('name', customName + '.id');
-    $(item).find('.locationLevelType').attr('name', customName + '.type');
+    $(item).find('.locationLevelName').attr('name', customName + '.name');
+    $(item).find('.allCountries').attr('name', customName + '.allCountries');
     updateLocationIndex(item, customName);
   });
 }
@@ -233,6 +295,8 @@ function updateLocationIndex(item,locationLevelName) {
     $(locItem).find('.geoLatitude').attr('name', customName + '.latitude');
     $(locItem).find('.geoLongitude').attr('name', customName + '.longitude');
     $(locItem).find('.locElementName').attr('name', customName + '.name');
+    $(locItem).find('.locElementCountry').attr('name', customName + '.isoAlpha2');
+    $(locItem).find('.geoId').attr('name', customName + '.locGeoposition.id');
   });
 
   // Update component event
@@ -349,30 +413,51 @@ function initMap() {
       mapTypeId: 'roadmap',
       styles: style
   });
+  infoWindow = new google.maps.InfoWindow();
+
 }
 
 // Map events
 
 function addMarker(map,idMarker,latitude,longitude,sites) {
-
   var marker = new google.maps.Marker({
       id: idMarker,
+      draggable: true,
       position: {
           lat: latitude,
           lng: longitude
       },
-      title: sites,
+      icon: baseURL + '/images/global/otherSite-marker.png',
+      name: sites,
       animation: google.maps.Animation.DROP
   });
   markers[idMarker] = marker;
 // To add the marker to the map, call setMap();
   marker.setMap(map);
+
+  // MARKER EVENTS
+  marker.addListener('click', function() {
+    openInfoWindow(marker, marker);
+  });
+
+  marker.addListener('drag', function() {
+
+    var markerLatLng = marker.getPosition();
+    var latitude = markerLatLng.lat();
+    var longitude = markerLatLng.lng();
+    console.log(latitude + ", " + longitude);
+    $("#location-" + marker.id).find("input.geoLongitude").val(longitude);
+    $("#location-" + marker.id).find("input.geoLatitude").val(latitude);
+    $("#location-" + marker.id).find("span.lPos").html(
+        " (" + latitude.toString().substring(0, 7) + ", " + longitude.toString().substring(0, 7) + ")");
+  });
+
+  google.maps.event.addListener(map, 'click', function() {
+    infoWindow.close();
+  });
 }
 
-function clearMarkers() {
-  setMapOnAll(null);
-}
-
+// Delete markers
 function deleteMarkers() {
   setAllMap(null);
   markers = [];
@@ -392,4 +477,50 @@ function removeMarker(id) {
   marker = markers[id];
   marker.setMap(null);
   delete markers[id];
+}
+
+// Open info window for change the country name
+function openInfoWindow(marker,content) {
+  var markerLatLng = marker.getPosition();
+  infoWindow
+      .setContent([
+        '<div id="infoContent"><input placeholder="'
+            + marker.name
+            + '" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-pencil button-green"></span></div>'
+      ].join(''));
+  infoWindow.open(map, marker);
+
+  // Edit location name from map
+  $(".editLocationName").on('click', function editLocationName() {
+    var parent = $(this).parent();
+    var newName = parent.find(".nameMap").val();
+    var location = parent.parents().find("#location-" + marker.id);
+    var markerLatLng = marker.getPosition();
+
+    // Change data marker and inputs form
+    marker.name = newName;
+    location.find(".lName").html(newName);
+    location.find(".locElementName").val(newName);
+  });
+}
+
+// Edit location name from map function
+
+// Get short and long country name
+function getResultByType(results,type) {
+  if(results) {
+    for(var i = 0; i < results.address_components.length; i++) {
+      var types = results.address_components[i].types;
+      for(var typeIdx = 0; typeIdx < types.length; typeIdx++) {
+        if(types[typeIdx] == type) {
+          return {
+              short_name: results.address_components[i].short_name,
+              long_name: results.address_components[i].long_name
+          };
+        }
+      }
+    }
+  } else {
+    return undefined;
+  }
 }

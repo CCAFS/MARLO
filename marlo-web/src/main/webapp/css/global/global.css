@@ -5845,6 +5845,10 @@ label.checkboxLabel {
 
 input.checkboxInput, label.checkboxLabel{line-height: 19px;}
 
+input.checkboxInput-vertical{
+ float: left;
+}
+
 hr {
   margin-top: 10px;
   margin-bottom: 10px;
