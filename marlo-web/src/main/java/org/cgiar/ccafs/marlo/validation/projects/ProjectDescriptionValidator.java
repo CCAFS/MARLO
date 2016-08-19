@@ -105,6 +105,14 @@ public class ProjectDescriptionValidator extends BaseValidator
     }
 
 
+    if (project.getScopes() != null) {
+      if (project.getScopes().size() == 0) {
+        this.addMessage(action.getText("projectDescription.scope"));
+      }
+    } else {
+      this.addMessage(action.getText("projectDescription.scope"));
+    }
+
   }
 
 }
