@@ -441,12 +441,15 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
   });
 
   marker.addListener('drag', function() {
-    console.log("holi");
+
     var markerLatLng = marker.getPosition();
-    var longitude = markerLatLng.lat();
+    var latitude = markerLatLng.lat();
     var longitude = markerLatLng.lng();
-    $("#location-" + marker.id).find("input.longitude").val(longitude);
-    $("#location-" + marker.id).find("input.latitude").val(latitude);
+    console.log(latitude + ", " + longitude);
+    $("#location-" + marker.id).find("input.geoLongitude").val(longitude);
+    $("#location-" + marker.id).find("input.geoLatitude").val(latitude);
+    $("#location-" + marker.id).find("span.lPos").html(
+        " (" + latitude.toString().substring(0, 7) + ", " + longitude.toString().substring(0, 7) + ")");
   });
 
   google.maps.event.addListener(map, 'click', function() {
