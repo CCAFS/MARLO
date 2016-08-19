@@ -73,6 +73,11 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId) {
+    return projectLocationDAO.getProjectLocationByProjectAndLocElement(projectId, LocElementId);
+  }
+
+  @Override
   public long saveProjectLocation(ProjectLocation projectLocation) {
 
     return projectLocationDAO.save(projectLocation);

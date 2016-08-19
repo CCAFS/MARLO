@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -77,13 +79,16 @@ public class ProjectLocationAction extends BaseAction {
 
   private CrpProgramManager crpProgramManager;
 
+  private LocGeopositionManager locGeopositionManager;
+
 
   private long projectID;
 
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, CrpProgramManager crpProgramManager,
-    LocElementManager locElementManager, ProjectLocationManager projectLocationManager) {
+    LocElementManager locElementManager, ProjectLocationManager projectLocationManager,
+    LocGeopositionManager locGeopositionManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -91,6 +96,7 @@ public class ProjectLocationAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.locElementManager = locElementManager;
     this.projectLocationManager = projectLocationManager;
+    this.locGeopositionManager = locGeopositionManager;
   }
 
   public List<CountryLocationLevel> getLocationsData() {
@@ -242,9 +248,6 @@ public class ProjectLocationAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (project.getLocations() != null) {
-        project.getLocations().clear();
-      }
       if (locationsData != null) {
         locationsData.clear();
       }
@@ -257,37 +260,16 @@ public class ProjectLocationAction extends BaseAction {
       if (locationData.getId() == null) {
         if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
           for (LocElement locElement : locationData.getLocElements()) {
-            LocElement element = locElementManager.getLocElementById(locElement.getId());
+            if (locElement.getId() != null) {
+              LocElement element = locElementManager.getLocElementById(locElement.getId());
 
-            ProjectLocation projectLocation = new ProjectLocation();
-            projectLocation.setProject(project);
-            projectLocation.setLocElement(element);
-            projectLocation.setActive(true);
-            projectLocation.setActiveSince(new Date());
-            projectLocation.setCreatedBy(this.getCurrentUser());
-            projectLocation.setModificationJustification("");
-            projectLocation.setModifiedBy(this.getCurrentUser());
+              ProjectLocation existProjectLocation =
+                projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
 
-            projectLocationManager.saveProjectLocation(projectLocation);
-
-
-          }
-        }
-      } else {
-
-        List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
-
-        for (CountryLocationLevel countryLocationLevel : locationsDataPrew) {
-          if (locationData.equals(countryLocationLevel)) {
-            List<LocElement> locElements = locationData.getLocElements();
-            for (LocElement element : locElements) {
-              LocElement elementNew = locElementManager.getLocElementById(element.getId());
-              if (!countryLocationLevel.getLocElements().contains(elementNew)) {
-
-
+              if (existProjectLocation == null) {
                 ProjectLocation projectLocation = new ProjectLocation();
                 projectLocation.setProject(project);
-                projectLocation.setLocElement(elementNew);
+                projectLocation.setLocElement(element);
                 projectLocation.setActive(true);
                 projectLocation.setActiveSince(new Date());
                 projectLocation.setCreatedBy(this.getCurrentUser());
@@ -295,8 +277,56 @@ public class ProjectLocationAction extends BaseAction {
                 projectLocation.setModifiedBy(this.getCurrentUser());
 
                 projectLocationManager.saveProjectLocation(projectLocation);
+
+              } else {
+
+                if (!existProjectLocation.isActive()) {
+                  existProjectLocation.setActive(true);
+                  existProjectLocation.setActiveSince(new Date());
+                  existProjectLocation.setCreatedBy(this.getCurrentUser());
+                  existProjectLocation.setModificationJustification("");
+                  existProjectLocation.setModifiedBy(this.getCurrentUser());
+                  projectLocationManager.saveProjectLocation(existProjectLocation);
+                }
+              }
+            } else {
+              this.saveGeoProjectLocation(locElement, locationData.getId());
+            }
+          }
+        }
+      } else {
+
+        for (LocElement locElement : locationData.getLocElements()) {
+          if (locElement.getId() != null) {
+            ProjectLocation existProjectLocation =
+              projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
+            if (existProjectLocation == null) {
+
+              LocElement element = locElementManager.getLocElementById(locElement.getId());
+
+              ProjectLocation projectLocation = new ProjectLocation();
+              projectLocation.setProject(project);
+              projectLocation.setLocElement(element);
+              projectLocation.setActive(true);
+              projectLocation.setActiveSince(new Date());
+              projectLocation.setCreatedBy(this.getCurrentUser());
+              projectLocation.setModificationJustification("");
+              projectLocation.setModifiedBy(this.getCurrentUser());
+
+              projectLocationManager.saveProjectLocation(projectLocation);
+            } else {
+
+              if (!existProjectLocation.isActive()) {
+                existProjectLocation.setActive(true);
+                existProjectLocation.setActiveSince(new Date());
+                existProjectLocation.setCreatedBy(this.getCurrentUser());
+                existProjectLocation.setModificationJustification("");
+                existProjectLocation.setModifiedBy(this.getCurrentUser());
+                projectLocationManager.saveProjectLocation(existProjectLocation);
               }
             }
+          } else {
+            this.saveGeoProjectLocation(locElement, locationData.getId());
           }
         }
       }
@@ -358,6 +388,49 @@ public class ProjectLocationAction extends BaseAction {
       return SUCCESS;
     }
     return SUCCESS;
+  }
+
+  public void saveGeoProjectLocation(LocElement locElement, Long elementTypeId) {
+    LocElement parentElement = locElementManager.getLocElementByISOCode(locElement.getIsoAlpha2());
+    LocElementType typeLement = locElementTypeManager.getLocElementTypeById(elementTypeId);
+
+    LocGeoposition geoposition = new LocGeoposition();
+    geoposition.setActive(true);
+    geoposition.setActiveSince(new Date());
+    geoposition.setCreatedBy(this.getCurrentUser());
+    geoposition.setModifiedBy(this.getCurrentUser());
+    geoposition.setModificationJustification("");
+    geoposition.setLatitude(locElement.getLocGeoposition().getLatitude());
+    geoposition.setLongitude(locElement.getLocGeoposition().getLongitude());
+
+    LocGeoposition geoParent =
+      locGeopositionManager.getLocGeopositionById(locGeopositionManager.saveLocGeoposition(geoposition));
+
+    LocElement element = new LocElement();
+    element.setActive(true);
+    element.setActiveSince(new Date());
+    element.setCreatedBy(this.getCurrentUser());
+    element.setModifiedBy(this.getCurrentUser());
+    element.setModificationJustification("");
+    element.setCrp(loggedCrp);
+    element.setLocElement(parentElement);
+    element.setLocElementType(typeLement);
+    element.setName(locElement.getName());
+    element.setLocGeoposition(geoParent);
+    element.setIsSiteIntegration(false);
+
+    LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(locElement));
+
+    ProjectLocation projectLocation = new ProjectLocation();
+    projectLocation.setProject(project);
+    projectLocation.setLocElement(newLocElement);
+    projectLocation.setActive(true);
+    projectLocation.setActiveSince(new Date());
+    projectLocation.setCreatedBy(this.getCurrentUser());
+    projectLocation.setModificationJustification("");
+    projectLocation.setModifiedBy(this.getCurrentUser());
+
+    projectLocationManager.saveProjectLocation(projectLocation);
   }
 
   public void setLocationsData(List<CountryLocationLevel> locationsData) {

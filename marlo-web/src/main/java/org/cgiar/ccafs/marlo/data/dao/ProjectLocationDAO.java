@@ -69,6 +69,15 @@ public interface ProjectLocationDAO {
 
 
   /**
+   * This method get a projectLocation object by the project and loc element id's.
+   * 
+   * @param projectId - The project ID
+   * @param LocElementId - The locElement ID
+   * @return a ProjectLocation Object.
+   */
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId);
+
+  /**
    * This method saves the information of the given projectLocation
    * 
    * @param projectLocation - is the projectLocation object with the new information to be added/updated.
