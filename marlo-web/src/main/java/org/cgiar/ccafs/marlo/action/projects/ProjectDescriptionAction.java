@@ -567,7 +567,7 @@ public class ProjectDescriptionAction extends BaseAction {
           FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
 
         }
-        System.out.println(project.getWorkplan().getFileName());
+
         if (project.getWorkplan().getFileName().isEmpty()) {
           project.setWorkplan(null);
         }

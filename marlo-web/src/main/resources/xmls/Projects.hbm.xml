@@ -51,6 +51,14 @@
 		<property name="global" type="boolean">
 			<column name="is_global" not-null="true" />
 		</property>
+		
+		<property name="national" type="boolean">
+      <column name="is_national" not-null="true" />
+    </property>
+    
+    <property name="regional" type="boolean">
+      <column name="is_regional" not-null="true" />
+    </property>
 		<property name="cofinancing" type="boolean">
 			<column name="is_cofinancing" not-null="true" />
 		</property>
@@ -65,9 +73,7 @@
 			<column name="is_active" not-null="true" />
 		</property>
 		
-		  <property name="scale" type="integer">
-      <column name="scale" not-null="false" />
-    </property>
+
 		
 		<property name="projectEditLeader" type="boolean">
       <column name="is_project_leader_edit" />
