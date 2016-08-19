@@ -268,11 +268,37 @@ public class ProjectLocationAction extends BaseAction {
             projectLocation.setModificationJustification("");
             projectLocation.setModifiedBy(this.getCurrentUser());
 
+            projectLocationManager.saveProjectLocation(projectLocation);
+
 
           }
         }
       } else {
 
+        List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
+
+        for (CountryLocationLevel countryLocationLevel : locationsDataPrew) {
+          if (locationData.equals(countryLocationLevel)) {
+            List<LocElement> locElements = locationData.getLocElements();
+            for (LocElement element : locElements) {
+              LocElement elementNew = locElementManager.getLocElementById(element.getId());
+              if (!countryLocationLevel.getLocElements().contains(elementNew)) {
+
+
+                ProjectLocation projectLocation = new ProjectLocation();
+                projectLocation.setProject(project);
+                projectLocation.setLocElement(elementNew);
+                projectLocation.setActive(true);
+                projectLocation.setActiveSince(new Date());
+                projectLocation.setCreatedBy(this.getCurrentUser());
+                projectLocation.setModificationJustification("");
+                projectLocation.setModifiedBy(this.getCurrentUser());
+
+                projectLocationManager.saveProjectLocation(projectLocation);
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -318,6 +344,8 @@ public class ProjectLocationAction extends BaseAction {
       project.setActiveSince(projectDB.getActiveSince());
 
       this.projectLocationPreviousData();
+
+      this.projectLocationNewData();
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
