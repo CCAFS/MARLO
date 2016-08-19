@@ -9,3 +9,4 @@ MARLO is a user-friendly, online management platform for CGIAR Research Programs
 * Synthesis 
 * Summaries
 
+[Go to Wiki](https://github.com/CCAFS/MARLO/wiki)
