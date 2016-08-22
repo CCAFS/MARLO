@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -23,7 +25,7 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProjectLocation implements java.io.Serializable {
+public class ProjectLocation implements java.io.Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = 7097495494769482469L;
@@ -101,6 +103,7 @@ public class ProjectLocation implements java.io.Serializable {
     return createdBy;
   }
 
+  @Override
   public Long getId() {
     return id;
   }
@@ -109,19 +112,31 @@ public class ProjectLocation implements java.io.Serializable {
     return locElement;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
+  }
+
   public String getModificationJustification() {
     return modificationJustification;
   }
 
+
+  @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public Project getProject() {
     return project;
   }
 
+  @Override
   public boolean isActive() {
     return active;
   }
@@ -129,6 +144,7 @@ public class ProjectLocation implements java.io.Serializable {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -143,7 +159,6 @@ public class ProjectLocation implements java.io.Serializable {
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setLocElement(LocElement locElement) {
     this.locElement = locElement;
@@ -160,6 +175,7 @@ public class ProjectLocation implements java.io.Serializable {
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   @Override
   public String toString() {

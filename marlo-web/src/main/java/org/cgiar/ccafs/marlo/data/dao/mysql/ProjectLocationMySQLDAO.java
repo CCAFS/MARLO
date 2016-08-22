@@ -75,6 +75,17 @@ public class ProjectLocationMySQLDAO implements ProjectLocationDAO {
   }
 
   @Override
+  public ProjectLocation getProjectLocationByProjectAndLocElement(Long projectId, Long LocElementId) {
+    String query = "from " + ProjectLocation.class.getName() + " where project_id='" + projectId
+      + "' and loc_element_id='" + LocElementId + "'";
+    List<ProjectLocation> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public long save(ProjectLocation projectLocation) {
     if (projectLocation.getId() == null) {
       dao.save(projectLocation);

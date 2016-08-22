@@ -1,0 +1,15 @@
+.outcomesListBlock {width: 82%;}
+
+.addOutcomeBlock {position: absolute;right: 0;bottom: 0;width: 17.5%;}
+
+.addNewOutcome {
+    position: relative;
+    margin: 13px 0;
+}
+
+ul#projectOutcomesList {}
+
+ul#projectOutcomesList li{
+    list-style: none;
+    padding-bottom: 9px;
+}

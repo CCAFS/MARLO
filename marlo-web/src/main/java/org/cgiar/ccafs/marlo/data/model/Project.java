@@ -140,9 +140,9 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
 
+
   private List<ProjectClusterActivity> clusterActivities;
-
-
+  private List<CountryLocationLevel> locationsData;
   private ProjectComponentLesson projectComponentLesson;
 
 
@@ -155,6 +155,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<ProjectPartner> partners;
 
   private List<ProjectOutcome> outcomes;
+
 
   private List<ProjectLocation> locations;
 
@@ -457,6 +458,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
+
 
 
   public Set<ProjectPartner> getProjectPartners() {

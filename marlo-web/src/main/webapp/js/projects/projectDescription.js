@@ -17,7 +17,9 @@ $(document).ready(function() {
       defaultMinDateValue: $("#minDateValue").val(),
       defaultMaxDateValue: $("#maxDateValue").val()
   });
+
   // setProgramId();
+
   setDisabledCheckedBoxes();
   addSelect2();
   applyWordCounter($("textarea.project-title"), lWordsElemetTitle);
