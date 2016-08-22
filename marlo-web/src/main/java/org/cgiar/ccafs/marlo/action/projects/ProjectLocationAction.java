@@ -62,7 +62,7 @@ public class ProjectLocationAction extends BaseAction {
 
   private List<LocationLevel> locationsLevels;
 
-  private List<CountryLocationLevel> locationsData;
+  // private List<CountryLocationLevel> locationsData;
 
 
   private CrpManager crpManager;
@@ -98,10 +98,6 @@ public class ProjectLocationAction extends BaseAction {
     this.projectLocationManager = projectLocationManager;
     this.locGeopositionManager = locGeopositionManager;
     this.auditLogManager = auditLogManager;
-  }
-
-  public List<CountryLocationLevel> getLocationsData() {
-    return locationsData;
   }
 
   public List<LocationLevel> getLocationsLevels() {
@@ -261,22 +257,22 @@ public class ProjectLocationAction extends BaseAction {
     }
 
     this.locationLevels();
-    locationsData = this.getProjectLocationsData();
+    // locationsData = this.getProjectLocationsData();
+    project.setLocationsData(this.getProjectLocationsData());
 
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LOCATION_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (locationsData != null) {
-        locationsData.clear();
+      if (project.getLocationsData() != null) {
       }
     }
 
   }
 
   public void projectLocationNewData() {
-    for (CountryLocationLevel locationData : locationsData) {
+    for (CountryLocationLevel locationData : project.getLocationsData()) {
       if (locationData.getId() == null) {
         if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
           for (LocElement locElement : locationData.getLocElements()) {
@@ -367,7 +363,7 @@ public class ProjectLocationAction extends BaseAction {
     List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
 
     for (CountryLocationLevel countryLocationLevel : locationsDataPrew) {
-      if (!locationsData.contains(countryLocationLevel)) {
+      if (!project.getLocationsData().contains(countryLocationLevel)) {
         for (LocElement locElement : countryLocationLevel.getLocElements()) {
           ProjectLocation projectLocation = project.getProjectLocations().stream()
             .filter(pl -> pl.isActive() && pl.getLocElement().getId() == locElement.getId())
@@ -375,7 +371,7 @@ public class ProjectLocationAction extends BaseAction {
           projectLocationManager.deleteProjectLocation(projectLocation.getId());
         }
       } else {
-        for (CountryLocationLevel locationData : locationsData) {
+        for (CountryLocationLevel locationData : project.getLocationsData()) {
           if (locationData.equals(countryLocationLevel)) {
             List<LocElement> locElements = countryLocationLevel.getLocElements();
             for (LocElement element : locElements) {
@@ -466,10 +462,6 @@ public class ProjectLocationAction extends BaseAction {
     projectLocation.setModifiedBy(this.getCurrentUser());
 
     projectLocationManager.saveProjectLocation(projectLocation);
-  }
-
-  public void setLocationsData(List<CountryLocationLevel> locationsData) {
-    this.locationsData = locationsData;
   }
 
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
