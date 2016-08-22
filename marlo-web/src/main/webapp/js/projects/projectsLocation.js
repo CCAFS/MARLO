@@ -36,7 +36,8 @@ function init() {
     });
 
   } else {
-    $(".map").hide();
+    loadScript();
+    // $(".map").hide();
   }
 
   /* Declaring Events */
