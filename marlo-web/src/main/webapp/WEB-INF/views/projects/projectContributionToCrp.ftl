@@ -42,9 +42,33 @@
             </p>
             
             [#-- Project Outcomes List --]
-            <div class="simpleBox">
-            
-            </div>
+            [#assign projectOutcomesList = [
+              {'name': 'National level decision-makers (Gov. ministries), national agricultural research systems, NGOs, civil society organizations, regional organizations use CCAFS science-derived decision support tools and systems to mainstream climate change into national plans and policies from local to national levels.',   'fp': 'FP3', 'canDelete': true},
+              {'name': 'Policy makers enhancing the design, investment decisions, implementation and monitoring and evaluation of agro - sectoral climate change policies through a transparent, coordinative and consultative mode from local to national level.',                                                                       'fp': 'FP4', 'canDelete': false},
+              {'name': 'Public sector institutions, innovate, plan, invest, regulate/reform/enforce laws and provide incentives for understanding, accessing and implementing low-emission/CSA technologies appropriate for local contexts through multi-stakeholder consultation.',                                                      'fp': 'FP4', 'canDelete': true}
+            ] /]
+            <ul id="projectOutcomesList" class="simpleBox">
+              [#if projectOutcomesList?has_content]
+                [#list projectOutcomesList as projectOutcome]
+                  <li class="projectOutcome">
+                    <div class="row">
+                      <div class="col-md-1">${projectOutcome.fp}</div>
+                      <div class="col-md-10">${projectOutcome.name}</div>
+                      <div class="col-md-1">
+                        [#if projectOutcome.canDelete]
+                          <a id="removeOutcome-projectOutcomeId" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
+                        [#else]
+                          <img src="${baseUrl}/images/global/trash_disable.png" title="" />
+                        [/#if]
+                      </div>
+                    </div>
+                    [#if projectOutcome_has_next]<hr />[/#if]
+                  </li>
+                [/#list]
+              [#else]
+              
+              [/#if]
+            </ul>
             
             [#-- Add a new Outcomes --]
             <div class="addNewOutcome">
