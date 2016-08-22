@@ -62,20 +62,20 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean active;
-
-
   @Expose
   private User createdBy;
+
 
   @Expose
   private Date activeSince;
 
-
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private String modificationJustification;
+
   private List<CrpMilestone> milestones;
   private List<CrpOutcomeSubIdo> subIdos;
 
@@ -124,9 +124,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  private String getComposedName() {
+    return this.getCrpProgram().getAcronym() + "-" + description;
   }
 
 
