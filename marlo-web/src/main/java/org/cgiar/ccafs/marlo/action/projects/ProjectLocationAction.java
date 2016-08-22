@@ -298,31 +298,41 @@ public class ProjectLocationAction extends BaseAction {
 
         for (LocElement locElement : locationData.getLocElements()) {
           if (locElement.getId() != null) {
-            ProjectLocation existProjectLocation =
-              projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
-            if (existProjectLocation == null) {
+            LocElement element = locElementManager.getLocElementById(locElement.getId());
+            if (element.getLocGeoposition() != null) {
+              if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())
+                || (element.getLocGeoposition().getLongitude() != locElement.getLocGeoposition().getLongitude())) {
+                element.getLocGeoposition().setLongitude(locElement.getLocGeoposition().getLongitude());
+                element.getLocGeoposition().setLatitude(locElement.getLocGeoposition().getLatitude());
 
-              LocElement element = locElementManager.getLocElementById(locElement.getId());
-
-              ProjectLocation projectLocation = new ProjectLocation();
-              projectLocation.setProject(project);
-              projectLocation.setLocElement(element);
-              projectLocation.setActive(true);
-              projectLocation.setActiveSince(new Date());
-              projectLocation.setCreatedBy(this.getCurrentUser());
-              projectLocation.setModificationJustification("");
-              projectLocation.setModifiedBy(this.getCurrentUser());
-
-              projectLocationManager.saveProjectLocation(projectLocation);
+                locGeopositionManager.saveLocGeoposition(element.getLocGeoposition());
+              }
             } else {
+              ProjectLocation existProjectLocation =
+                projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId());
+              if (existProjectLocation == null) {
 
-              if (!existProjectLocation.isActive()) {
-                existProjectLocation.setActive(true);
-                existProjectLocation.setActiveSince(new Date());
-                existProjectLocation.setCreatedBy(this.getCurrentUser());
-                existProjectLocation.setModificationJustification("");
-                existProjectLocation.setModifiedBy(this.getCurrentUser());
-                projectLocationManager.saveProjectLocation(existProjectLocation);
+
+                ProjectLocation projectLocation = new ProjectLocation();
+                projectLocation.setProject(project);
+                projectLocation.setLocElement(element);
+                projectLocation.setActive(true);
+                projectLocation.setActiveSince(new Date());
+                projectLocation.setCreatedBy(this.getCurrentUser());
+                projectLocation.setModificationJustification("");
+                projectLocation.setModifiedBy(this.getCurrentUser());
+
+                projectLocationManager.saveProjectLocation(projectLocation);
+              } else {
+
+                if (!existProjectLocation.isActive()) {
+                  existProjectLocation.setActive(true);
+                  existProjectLocation.setActiveSince(new Date());
+                  existProjectLocation.setCreatedBy(this.getCurrentUser());
+                  existProjectLocation.setModificationJustification("");
+                  existProjectLocation.setModifiedBy(this.getCurrentUser());
+                  projectLocationManager.saveProjectLocation(existProjectLocation);
+                }
               }
             }
           } else {
@@ -419,7 +429,7 @@ public class ProjectLocationAction extends BaseAction {
     element.setLocGeoposition(geoParent);
     element.setIsSiteIntegration(false);
 
-    LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(locElement));
+    LocElement newLocElement = locElementManager.getLocElementById(locElementManager.saveLocElement(element));
 
     ProjectLocation projectLocation = new ProjectLocation();
     projectLocation.setProject(project);
