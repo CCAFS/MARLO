@@ -316,6 +316,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
+  public int getCurrentCycleYear() {
+    if (this.isReportingActive()) {
+      return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+    } else {
+      return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+    }
+
+  }
+
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -426,6 +435,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
+
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -433,7 +443,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return ((String[]) paramObj)[0];
   }
-
 
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
