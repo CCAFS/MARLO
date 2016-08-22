@@ -21,7 +21,7 @@
     },
     { 'title': 'Outcomes',
       'items': [
-      { 'slug': '',  'name': 'Project Contribution to CRP Outcomes',  'action': '',  'active': false  },
+      { 'slug': 'contributionCrp',  'name': 'Project Contribution to CRP Outcomes',  'action': 'contributionCrp',  'active': true  },
       { 'slug': 'otherContributions',  'name': 'Other Contributions',  'action': 'otherContributions',  'active': true  },
       { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false, 'show': reportingActive }
       ]
