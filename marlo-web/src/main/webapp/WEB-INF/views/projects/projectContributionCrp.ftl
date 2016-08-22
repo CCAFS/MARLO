@@ -5,10 +5,11 @@
 [#assign customJS = ["${baseUrl}/js/projects/projectContributionCrp.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectContributionCrp.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "contributionCrp" /]
+[#assign currentStage = "contributionsCrpList" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"label":"projectContributionCrp", "nameSpace":"/projects", "action":""},
   {"label":"projectContributionCrp", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -43,9 +44,8 @@
           
           <div id="projectOutcome" class="borderBox">
             
-            
-            
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
+            <h4>Expected Target</h4>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
@@ -61,6 +61,7 @@
             </div>
             
             [#-- Project Outcome achieved target (AT THE END) --]
+            <h4>Achieved Target</h4>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
@@ -76,7 +77,24 @@
             </div>
             
             [#-- Project Milestones and Communications contributions per year--]
+            [#assign startYear = (project.startDate?string.yyyy)?number]
+            [#assign endYear = (project.endDate?string.yyyy)?number]
+            <h4>Milestone Progress towards to outcome  ${currentCycleYear}</h4>
             
+            
+            <ul class="nav nav-tabs" role="tablist">
+              [#list startYear .. endYear as year]
+                <li role="presentation" class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
+              [/#list]
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+              [#list startYear .. endYear as year]
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">Content ${year}</div>
+              [/#list]
+            </div>
+              
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
