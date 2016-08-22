@@ -42,22 +42,18 @@
             </p>
             
             [#-- Project Outcomes List --]
-            [#assign projectOutcomesList = [
-              {'name': 'National level decision-makers (Gov. ministries), national agricultural research systems, NGOs, civil society organizations, regional organizations use CCAFS science-derived decision support tools and systems to mainstream climate change into national plans and policies from local to national levels.',   'fp': 'FP3', 'canDelete': true},
-              {'name': 'Policy makers enhancing the design, investment decisions, implementation and monitoring and evaluation of agro - sectoral climate change policies through a transparent, coordinative and consultative mode from local to national level.',                                                                       'fp': 'FP4', 'canDelete': false},
-              {'name': 'Public sector institutions, innovate, plan, invest, regulate/reform/enforce laws and provide incentives for understanding, accessing and implementing low-emission/CSA technologies appropriate for local contexts through multi-stakeholder consultation.',                                                      'fp': 'FP4', 'canDelete': true}
-            ] /]
+        
             <ul id="projectOutcomesList" class="simpleBox">
-              [#if projectOutcomesList?has_content]
-                [#list projectOutcomesList as projectOutcome]
+              [#if project.outcomes?has_content]
+                [#list project.outcomes as projectOutcome]
                   <li class="projectOutcome">
-                    [#assign projectOutcomeID =  projectOutcome_index /] 
+                    [#assign projectOutcomeID =  projectOutcome.id /] 
                     [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectID' value=projectID /][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
                     <div class="row">
-                      <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.fp}</a></div>
-                      <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.name}</a></div>
+                      <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
+                      <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
-                        [#if projectOutcome.canDelete]
+                        [#if (projectOutcome.canDelete)!true]
                           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
@@ -76,7 +72,7 @@
             [#if canEdit]
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
-                [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomesList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
                 <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
