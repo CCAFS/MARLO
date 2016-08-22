@@ -183,9 +183,9 @@
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
               <div id="" class="row"> 
-                <div class="col-md-2">[@customForm.checkbox name="project.national" i18nkey="project.national" editable=editable && action.hasPermission("scale") /]</div>
-                <div class="col-md-2">[@customForm.checkbox name="project.regional" i18nkey="project.regional" editable=editable  && action.hasPermission("scale")/]</div>
-                <div class="col-md-2">[@customForm.checkbox name="project.global" i18nkey="project.global" editable=editable && action.hasPermission("scale") /]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.national" i18nkey="project.national" value="true" editable=editable && action.hasPermission("scale") /]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.regional" i18nkey="project.regional" value="true" editable=editable  && action.hasPermission("scale")/]</div>
+                <div class="col-md-2">[@customForm.checkbox name="project.global" i18nkey="project.global" value="true" editable=editable && action.hasPermission("scale") /]</div>
               </div>
             </div>
             
