@@ -1,15 +1,15 @@
 [#ftl]
-[#assign title = "Project Contribution to CRP" /]
+[#assign title = "Project Contributions to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectContributionCrp.js", "${baseUrl}/js/global/autoSave.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectContributionCrp.css"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectContributionsCrpList.js", "${baseUrl}/js/global/autoSave.js"] /]
+[#assign customCSS = ["${baseUrl}/css/projects/projectContributionsCrpList.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "contributionCrp" /]
+[#assign currentStage = "contributionsCrpList" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"label":"projectContributionCrp", "nameSpace":"/projects", "action":""}
+  {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""}
 ] /]
 
 
@@ -17,7 +17,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectContributionCrp.help" /] </p></div> 
+  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectContributionsCrpList.help" /] </p></div> 
 </div>
     
 <section class="container">
@@ -33,8 +33,8 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
-          <h3 class="headTitle">[@s.text name="projectContributionCrp.title" /]</h3>  
-          <div id="projectContributionCrp" class="borderBox">
+          <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>  
+          <div id="projectContributionsCrpList" class="borderBox">
             [#-- Your project contributes to the flagships --]
             <p>
               <strong>Your Project contributes to the following Flagships:</strong>  
@@ -73,7 +73,7 @@
             [#-- Add a new Outcomes --]
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
-                [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectOutcome" listName="outcomesList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomesList" keyFieldName="id" displayFieldName="description" className="" value="" /]
               </div>
               <div class="addOutcomeBlock">
                 <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
