@@ -6,3 +6,10 @@
     position: relative;
     margin: 13px 0;
 }
+
+ul#projectOutcomesList {}
+
+ul#projectOutcomesList li{
+    list-style: none;
+    padding-bottom: 9px;
+}
