@@ -13,3 +13,7 @@ ul#projectOutcomesList li{
     list-style: none;
     padding-bottom: 9px;
 }
+
+ul#projectOutcomesList li a{
+   color: #444;
+}

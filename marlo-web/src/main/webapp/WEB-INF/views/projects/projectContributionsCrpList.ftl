@@ -51,12 +51,14 @@
               [#if projectOutcomesList?has_content]
                 [#list projectOutcomesList as projectOutcome]
                   <li class="projectOutcome">
+                    [#assign projectOutcomeID =  projectOutcome_index /] 
+                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectID' value=projectID /][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
                     <div class="row">
-                      <div class="col-md-1">${projectOutcome.fp}</div>
-                      <div class="col-md-10">${projectOutcome.name}</div>
+                      <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.fp}</a></div>
+                      <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.name}</a></div>
                       <div class="col-md-1">
                         [#if projectOutcome.canDelete]
-                          <a id="removeOutcome-projectOutcomeId" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
+                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
                         [/#if]
@@ -71,6 +73,7 @@
             </ul>
             
             [#-- Add a new Outcomes --]
+            [#if canEdit]
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
                 [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomesList" keyFieldName="id" displayFieldName="description" className="" value="" /]
@@ -79,12 +82,9 @@
                 <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
               </div>
             </div>
+            [/#if]
             
           </div> 
-          
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-          
          
         [/@s.form] 
       </div>
