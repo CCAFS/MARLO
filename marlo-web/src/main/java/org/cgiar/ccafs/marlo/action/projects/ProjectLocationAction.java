@@ -17,8 +17,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
@@ -77,26 +77,27 @@ public class ProjectLocationAction extends BaseAction {
 
   private LocElementManager locElementManager;
 
-  private CrpProgramManager crpProgramManager;
-
   private LocGeopositionManager locGeopositionManager;
 
+  private String transaction;
 
   private long projectID;
 
+  private AuditLogManager auditLogManager;
+
   @Inject
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
-    LocElementTypeManager locElementTypeManager, CrpProgramManager crpProgramManager,
-    LocElementManager locElementManager, ProjectLocationManager projectLocationManager,
-    LocGeopositionManager locGeopositionManager) {
+    LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
+    ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
+    AuditLogManager auditLogManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.locElementTypeManager = locElementTypeManager;
-    this.crpProgramManager = crpProgramManager;
     this.locElementManager = locElementManager;
     this.projectLocationManager = projectLocationManager;
     this.locGeopositionManager = locGeopositionManager;
+    this.auditLogManager = auditLogManager;
   }
 
   public List<CountryLocationLevel> getLocationsData() {
@@ -118,7 +119,6 @@ public class ProjectLocationAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<CountryLocationLevel> getProjectLocationsData() {
 
@@ -184,6 +184,11 @@ public class ProjectLocationAction extends BaseAction {
     return locationLevels;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
+
   /**
   * 
   */
@@ -238,7 +243,22 @@ public class ProjectLocationAction extends BaseAction {
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-    project = projectManager.getProjectById(projectID);
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
 
     this.locationLevels();
     locationsData = this.getProjectLocationsData();
@@ -387,6 +407,11 @@ public class ProjectLocationAction extends BaseAction {
 
       this.projectLocationNewData();
 
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
+      project.setActiveSince(new Date());
+      projectManager.saveProject(project, this.getActionName(), relationsName);
+
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -451,7 +476,6 @@ public class ProjectLocationAction extends BaseAction {
     this.locationsLevels = locationsLevels;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -461,8 +485,13 @@ public class ProjectLocationAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 }
