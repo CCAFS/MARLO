@@ -137,6 +137,9 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
+  private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
+
+
   private List<ProjectClusterActivity> clusterActivities;
 
 
@@ -151,7 +154,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<ProjectPartner> partners;
 
+  private List<ProjectOutcome> outcomes;
+
   private List<ProjectLocation> locations;
+
+
   private List<ProjectScope> scopes;
 
 
@@ -190,7 +197,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
     this.projectScopes = projectScopes;
   }
-
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -240,7 +246,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return bilateralContractName;
   }
 
-
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
   }
@@ -285,9 +290,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.createdBy;
   }
 
+
   public Crp getCrp() {
     return crp;
   }
+
 
   public Date getEndDate() {
     return this.endDate;
@@ -297,6 +304,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
+
 
   public String getFlagshipValue() {
     return flagshipValue;
@@ -333,6 +341,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return null;
   }
+
 
   /**
    * This method returns the project partner person who is leading the project.
@@ -381,11 +390,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.liaisonUser;
   }
 
-
   public List<ProjectLocation> getLocations() {
     return locations;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -397,7 +404,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -405,6 +411,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
+  }
+
+
+  public List<ProjectOutcome> getOutcomes() {
+    return outcomes;
   }
 
 
@@ -421,9 +432,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectClusterActivities;
   }
 
+
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
+
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
@@ -433,24 +446,27 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectComponentLessons;
   }
 
-
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
   }
-
 
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
 
+  public Set<ProjectOutcome> getProjectOutcomes() {
+    return projectOutcomes;
+  }
+
+
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
 
+
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
   }
-
 
   public List<CrpProgram> getRegions() {
     return regions;
@@ -465,14 +481,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.requiresWorkplanUpload;
   }
 
-
   public Integer getScale() {
     return scale;
   }
 
+
   public List<ProjectScope> getScopes() {
     return scopes;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -497,15 +514,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
 
-
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getSummary() {
     return this.summary;
@@ -519,6 +535,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public String getType() {
     return this.type;
   }
+
 
   public FileDB getWorkplan() {
     return workplan;
@@ -567,19 +584,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return global;
   }
 
-
   public boolean isNational() {
     return national;
   }
-
 
   public boolean isProjectEditLeader() {
     return projectEditLeader;
   }
 
+
   public boolean isRegional() {
     return regional;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -613,7 +630,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
@@ -621,6 +637,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
+
 
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
@@ -658,9 +675,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modifiedBy = usersByModifiedBy;
   }
 
-
   public void setNational(boolean national) {
     this.national = national;
+  }
+
+  public void setOutcomes(List<ProjectOutcome> outcomes) {
+    this.outcomes = outcomes;
   }
 
 
@@ -706,6 +726,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
+  }
+
+
+  public void setProjectOutcomes(Set<ProjectOutcome> projectOutcomes) {
+    this.projectOutcomes = projectOutcomes;
   }
 
   public void setProjectPartners(Set<ProjectPartner> projectPartners) {

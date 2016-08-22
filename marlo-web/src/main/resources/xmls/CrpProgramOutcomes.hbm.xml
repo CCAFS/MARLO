@@ -58,5 +58,12 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		
+		<set name="crpMilestones" order-by="id" table="crp_milestones" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_program_outcome_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
+        </set>
 	</class>
 </hibernate-mapping>
