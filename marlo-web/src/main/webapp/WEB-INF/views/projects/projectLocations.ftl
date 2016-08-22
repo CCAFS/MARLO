@@ -12,7 +12,7 @@
   {"label":"projectLocations", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign locationLevelName = "locationsData"/]
+[#assign locationLevelName = "project.locationsData"/]
 [#assign locationName = "locElements"/]
 [#assign countID = 0/]
 
@@ -44,8 +44,8 @@
               <div id="selectsContent" class="col-md-6">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
-                [#if locationsData?has_content]
-                  [#list locationsData as locationLevels]
+                [#if project.locationsData?has_content]
+                  [#list project.locationsData as locationLevels]
                     [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index /]
                   [/#list]
                 [/#if]
