@@ -45,6 +45,14 @@
         <property name="narrativeAchieved" type="string">
             <column name="narrative_achieved" length="65535" />
         </property>
+        
+          <property name="expectedGender" type="string">
+            <column name="expetcted_gender" length="65535" />
+        </property>
+        
+          <property name="narrativeGender" type="string">
+            <column name="narrative_gender" length="65535" />
+        </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />
         </property>

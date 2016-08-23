@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -1589,3 +1591,4 @@ DELIMITER ;;
 CREATE TRIGGER `after_deliverables_update` AFTER UPDATE ON `deliverables` FOR EACH ROW BEGIN DECLARE old_concat, new_concat text; SET old_concat = MD5(CONCAT_WS(',', OLD.`id`, OLD.`project_id`, OLD.`title`, OLD.`type_id`, OLD.`type_other`, OLD.`year`, OLD.`status`, OLD.`status_description`, OLD.`is_active`, OLD.`active_since`, OLD.`created_by`)); SET new_concat = MD5(CONCAT_WS(',', NEW.`id`, NEW.`project_id`, NEW.`title`, NEW.`type_id`, NEW.`type_other`, NEW.`year`, NEW.`status`, NEW.`status_description`, NEW.`is_active`, NEW.`active_since`, NEW.`created_by`)); IF old_concat <> new_concat THEN UPDATE ccafspr_ip_history.deliverables SET active_until=NOW() WHERE record_id = NEW.`id` ORDER BY active_since DESC LIMIT 1; IF OLD.`is_active` = 1 AND NEW.`is_active` = 0 THEN   INSERT INTO ccafspr_ip_history.deliverables(  `record_id`, `project_id`, `title`, `type_id`, `type_other`, `year`, `is_active`, `status`, `status_description`, `active_since`, `active_until`, `modified_by`, `modification_justification`, `action`) VALUES ( NEW.`id`, NEW.`project_id`, NEW.`title`, NEW.`type_id`, NEW.`type_other`, NEW.`year`, NEW.`is_active`, NEW.`status`, NEW.`status_description`, NOW(), NULL, NEW.`modified_by`, NEW.`modification_justification`, 'delete'); ELSE   INSERT INTO ccafspr_ip_history.deliverables(  `record_id`, `project_id`, `title`, `type_id`, `type_other`, `year`, `is_active`, `status`, `status_description`, `active_since`, `active_until`, `modified_by`, `modification_justification`, `action`) VALUES ( NEW.`id`, NEW.`project_id`, NEW.`title`, NEW.`type_id`, NEW.`type_other`, NEW.`year`, NEW.`is_active`, NEW.`status`, NEW.`status_description`, NOW(), NULL, NEW.`modified_by`, NEW.`modification_justification`, 'update'); END IF; END IF; END
 ;;
 DELIMITER ;
+commit;

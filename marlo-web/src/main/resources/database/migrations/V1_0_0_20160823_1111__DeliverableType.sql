@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -56,3 +58,4 @@ INSERT INTO `deliverable_types` VALUES ('38', 'Other', '7', 'Algorithms', '0');
 INSERT INTO `deliverable_types` VALUES ('39', 'Workshop', '8', null, null);
 INSERT INTO `deliverable_types` VALUES ('40', 'Capacity', '9', null, null);
 INSERT INTO `deliverable_types` VALUES ('41', 'Website', '7', 'Website, blog, etc.', '0');
+commit;

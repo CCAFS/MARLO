@@ -45,6 +45,13 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   private String narrativeTarget;
   @Expose
   private String narrativeAchieved;
+
+
+  @Expose
+  private String narrativeGender;
+  @Expose
+  private String expectedGender;
+
   @Expose
   private int year;
 
@@ -69,7 +76,6 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return achievedValue;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
@@ -82,6 +88,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
 
   public CrpMilestone getCrpMilestone() {
     return crpMilestone;
+  }
+
+
+  public String getExpectedGender() {
+    return expectedGender;
   }
 
 
@@ -122,19 +133,24 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public String getNarrativeAchieved() {
     return narrativeAchieved;
   }
+
+
+  public String getNarrativeGender() {
+    return narrativeGender;
+  }
+
 
   public String getNarrativeTarget() {
     return narrativeTarget;
   }
 
-
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
-
 
   public int getYear() {
     return year;
@@ -172,6 +188,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setExpectedGender(String expectedGender) {
+    this.expectedGender = expectedGender;
+  }
+
+
   public void setExpectedUnit(long expectedUnit) {
     this.expectedUnit = expectedUnit;
   }
@@ -199,6 +220,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
 
   public void setNarrativeAchieved(String narrativeAchieved) {
     this.narrativeAchieved = narrativeAchieved;
+  }
+
+
+  public void setNarrativeGender(String narrativeGender) {
+    this.narrativeGender = narrativeGender;
   }
 
 

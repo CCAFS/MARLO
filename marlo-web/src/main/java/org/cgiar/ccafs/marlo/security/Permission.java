@@ -39,6 +39,7 @@ public class Permission {
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:location";
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
+  public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:edit";
 
 
 }
