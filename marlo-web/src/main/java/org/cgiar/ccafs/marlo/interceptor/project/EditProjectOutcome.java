@@ -99,7 +99,7 @@ public class EditProjectOutcome extends AbstractInterceptor implements Serializa
         canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(project) && baseAction
+        if (projects.contains(project.getProject()) && baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params))) {
 
 
