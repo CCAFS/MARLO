@@ -3,7 +3,6 @@
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="projects" namespace="/projects" extends="marlo-default">
-
 		<action name="{crp}/projectsList"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
 			<interceptor-ref name="projectsStack" />
