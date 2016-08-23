@@ -24,7 +24,7 @@
             <column name="communication" length="65535" not-null="true" />
         </property>
         <property name="active" type="boolean">
-            <column name="active" not-null="true" />
+            <column name="is_active" not-null="true" />
         </property>
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
