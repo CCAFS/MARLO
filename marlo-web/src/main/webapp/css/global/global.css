@@ -2344,6 +2344,10 @@ p.projectSubmitted {
   display: inline-block;
 }
 
+.button-blue a{
+  color:#fff;
+}
+
 .button-blue:hover { 
   background: #5980C7; 
 }
@@ -5845,7 +5849,8 @@ label.checkboxLabel {
 input.checkboxInput, label.checkboxLabel{line-height: 19px;}
 
 input.checkboxInput-vertical{
- float: left;
+ 
+float: left;
 }
 
 hr {

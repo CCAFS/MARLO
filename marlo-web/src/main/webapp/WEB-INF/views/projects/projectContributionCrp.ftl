@@ -42,7 +42,7 @@
           [#-- Outcomen name --]
           <p>${projectOutcome.name}</p>
           
-          <div id="projectOutcome" class="borderBox">
+          <div class="borderBox">
             
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             <h5 class="sectionSubTitle">Expected Target</h5>
@@ -75,8 +75,10 @@
                 [@customForm.textArea name="projectOutcome.achievedNarrative" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
-            
-            [#-- Project Milestones and Communications contributions per year--]
+          </div>
+          [#-- Project Milestones and Communications contributions per year--]
+          <div class="">  
+            <br />
             [#assign startYear = (project.startDate?string.yyyy)?number]
             [#assign endYear = (project.endDate?string.yyyy)?number]
             
@@ -91,23 +93,26 @@
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
                   [#-- List milestones per year --]
-                  [#list 1..2 as milestone]
-                    [@milestoneMacro element={} name="" index=milestone_index year=year /]
-                  [/#list]
+                  <div class="milestonesYearList">
+                    [#list 1..1 as milestone]
+                      [@milestoneMacro element={} name="" index=milestone_index year=year /]
+                    [/#list]
+                  </div>
                   [#-- Select a milestone --]
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone" listName="milestoneList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                  <div class="milestonesYearSelect">
+                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone" listName="milestoneList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                  </div>
                   
-                  <br />
                   <hr />
-                  <br />
                   
+                  [#-- Communications --]
                   <h5 class="sectionSubTitle">Communications </h5>
-                  <div>
+                  <div class="communicationsBlock form-group">
                     <div class="form-group">
                       [@customForm.textArea name="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
                     </div>
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.analysisCommunication" required=true className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
                     </div>
                   </div>
                   
@@ -135,7 +140,7 @@
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
-    <div class="leftHead">
+    <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId">Milestone Target ${year}</span>
     </div>
