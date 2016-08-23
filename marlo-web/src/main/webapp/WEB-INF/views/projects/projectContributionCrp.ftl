@@ -54,7 +54,7 @@
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.expectedNarrative" required=true className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
             
@@ -70,7 +70,7 @@
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
           </div>

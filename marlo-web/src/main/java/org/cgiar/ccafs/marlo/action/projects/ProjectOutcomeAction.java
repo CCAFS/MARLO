@@ -156,7 +156,7 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
     projectOutcome.setCommunications(
-      projectOutcome.getCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
     if (projectOutcome.getCommunications().size() > 0) {
