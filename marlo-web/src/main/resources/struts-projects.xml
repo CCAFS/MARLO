@@ -149,19 +149,19 @@
 			</result>
 		</action>
 
-		<action name="addNewDeliverable" method="add"
+		<action name="{crp}/addNewDeliverable" method="add"
 			class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
 			<interceptor-ref name="editProjectListStack" />
 			<result name="input">/WEB-INF/views/projects/deliverablelist.ftl
 			</result>
 			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/deliverableList</param>
+				<param name="actionName">${crpSession}/deliverable</param>
 				<param name="deliverableID">${deliverableID}</param>
 				<param name="edit">true</param>
 			</result>
 		</action>
 
-		<action name="deleteDeliverable" method="delete"
+		<action name="{crp}/deleteDeliverable" method="delete"
 			class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
 			<interceptor-ref name="editProjectListStack" />
 			<result name="success" type="redirectAction">
