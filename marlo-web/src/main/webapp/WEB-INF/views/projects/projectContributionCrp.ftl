@@ -50,7 +50,7 @@
                   [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
@@ -66,7 +66,7 @@
                   [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
@@ -92,13 +92,15 @@
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
                   [#-- List milestones per year --]
                   <div class="milestonesYearList">
-                    [#list 1..1 as milestone]
+                    [#if projectOutcome.milestones?has_content]
+                    [#list (projectOutcome.milestones) as milestone]
                       [@milestoneMacro element={} name="" index=milestone_index year=year /]
                     [/#list]
+                    [/#if]
                   </div>
                   [#-- Select a milestone --]
                   <div class="milestonesYearSelect">
-                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone" listName="milestoneList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
                   </div>
                   
                   <hr />
@@ -152,7 +154,7 @@
           [@customForm.input name="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
         <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+          [@customForm.select name="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
         </div>
       </div>
     
@@ -162,7 +164,7 @@
           [@customForm.input name="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
         <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.achievedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+          [@customForm.select name="projectOutcomeMilestone.achievedUnit" placeholder="" className="" listName="targetUnits"   keyFieldName="id" displayFieldName="name" required=true editable=editable  /]
         </div>
       </div>
       

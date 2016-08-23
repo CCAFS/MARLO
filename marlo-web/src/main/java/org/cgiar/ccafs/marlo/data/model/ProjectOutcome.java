@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -51,6 +52,9 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
+  private List<ProjectMilestone> milestones;
+  private List<ProjectCommunication> communications;
+
 
   public ProjectOutcome() {
   }
@@ -76,6 +80,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.projectMilestones = projectMilestoneses;
     this.projectCommunications = projectCommunicationses;
   }
+
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, boolean isActive,
@@ -103,6 +108,10 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
+  public List<ProjectCommunication> getCommunications() {
+    return communications;
+  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -138,6 +147,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
 
     return sb.toString();
+  }
+
+
+  public List<ProjectMilestone> getMilestones() {
+    return milestones;
   }
 
 
@@ -198,6 +212,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCommunications(List<ProjectCommunication> communications) {
+    this.communications = communications;
+  }
+
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -220,6 +239,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setMilestones(List<ProjectMilestone> milestones) {
+    this.milestones = milestones;
   }
 
 
