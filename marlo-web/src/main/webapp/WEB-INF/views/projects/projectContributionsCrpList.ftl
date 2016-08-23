@@ -54,7 +54,9 @@
                       <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
                         [#if (action.hasPermission("delete"))!true]
-                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
+                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
+                            <img src="${baseUrl}/images/global/trash.png" />
+                          </a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
                         [/#if]
@@ -75,7 +77,7 @@
                 [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
-                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&projectOutcomeID=-1">
+                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
                   <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
                 </a>
               </div>
