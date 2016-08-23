@@ -2,7 +2,7 @@
 [#assign title = "Project Contributions to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectContributionsCrpList.js", "${baseUrl}/js/global/autoSave.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectContributionsCrpList.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectContributionsCrpList.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "contributionsCrpList" /]
@@ -53,7 +53,7 @@
                       <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
                       <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
-                        [#if (projectOutcome.canDelete)!true]
+                        [#if (action.hasPermission("delete"))!true]
                           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
@@ -75,7 +75,7 @@
                 [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
-                <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
+                <a href=""><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div></a>
               </div>
             </div>
             [/#if]

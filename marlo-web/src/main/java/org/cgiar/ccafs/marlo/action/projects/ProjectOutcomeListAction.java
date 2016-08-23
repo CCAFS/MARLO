@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -78,23 +79,37 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public String addProjectOutcome() {
 
-    ProjectOutcome projectOutcome = new ProjectOutcome();
-    projectOutcome.setActive(true);
-    projectOutcome.setCreatedBy(this.getCurrentUser());
-    projectOutcome.setModificationJustification("");
-    projectOutcome.setActiveSince(new Date());
+    if (this.hasPermission("add")) {
+      ProjectOutcome projectOutcome = new ProjectOutcome();
+      projectOutcome.setActive(true);
+      projectOutcome.setCreatedBy(this.getCurrentUser());
+      projectOutcome.setModificationJustification("");
+      projectOutcome.setActiveSince(new Date());
 
-    projectOutcome.setModifiedBy(this.getCurrentUser());
-    projectOutcome.setProject(project);
-    if (this.isPlanningActive()) {
-      projectOutcome.setYear(this.getPlanningYear());
+      projectOutcome.setModifiedBy(this.getCurrentUser());
+      projectOutcome.setProject(project);
+      if (this.isPlanningActive()) {
+        projectOutcome.setYear(this.getPlanningYear());
+      } else {
+        projectOutcome.setYear(this.getReportingYear());
+      }
+      projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
+      projectOutcomeManager.saveProjectOutcome(projectOutcome);
+      projectOutcomeID = projectOutcome.getId().longValue();
+      return SUCCESS;
     } else {
-      projectOutcome.setYear(this.getReportingYear());
+      return NOT_AUTHORIZED;
     }
-    projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
-    projectOutcomeManager.saveProjectOutcome(projectOutcome);
-    projectOutcomeID = projectOutcome.getId().longValue();
-    return SUCCESS;
+
+  }
+
+  public String deleteProjectOutcome() {
+    if (this.hasPermission("delete")) {
+      projectOutcomeManager.deleteProjectOutcome(outcomeId);
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
 
@@ -149,6 +164,8 @@ public class ProjectOutcomeListAction extends BaseAction {
       outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList()));
     }
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
   }
 

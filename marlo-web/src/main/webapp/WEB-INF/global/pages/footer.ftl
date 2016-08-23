@@ -1,19 +1,22 @@
 [#ftl]
     <!-- ${actionName} Content end-->
-    <footer>
+    <footer class="footer">  
+      <div class="before">
+      <div class="col-md-4"></div>
+      <div class="col-md-4"></div>
+      <div class="col-md-4"></div>
+      </div>    
       <div class="container">
-        <div id="footerContainer" class="little">
-          <div id="reportIssue">
-            <p><b>[@s.text name="footer.report.issue"][@s.param]<a target="_blank" href="https://docs.google.com/forms/d/1EouZJYHqERbDRB2DaT6Q1cY-_-Tqe0daf4fxXrBU-ts/viewform">[@s.text name="global.here" /]</a>[/@s.param][/@s.text]</b></p>
-            <p class="lighter">&#64; Copyright 2016</p>
-            <p class="lighter">Current version ${action.getVersion()}</p>
-          </div>
-          <div id="glossary">
-            <p><b>[@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.here" /][/@s.param][/@s.text]</a></b></p>
-          </div>
-          <div class="clearfix"></div>
+        <div class="col-md-5 infoLinks">
+          <div class="col-md-5 contact"><a href="">marlo-techstaff@cgiar.org</a></div>
+          <div class="col-md-3"><a href="">About us</a></div>
+          <div class="col-md-2"><a href="">Partners</a></div>
+          <div class="col-md-2 scrollup"><a href="#">Top</a></div>
         </div>
-      </div> <!-- end container -->   
+        <div class="col-md-2 copyRight">@ Copyright 2016 <br /> Current version 4.0.2-SNAPSHOT</div>
+        <div class="col-md-4 col-md-offset-1 glossary">[@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.here" /][/@s.param][/@s.text]</a>
+        </div>
+      </div>
     </footer> 
     [#compress]
     [#-- Importing JavaScript files --]
