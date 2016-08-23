@@ -124,12 +124,17 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public List<ProjectCommunication> loadProjectCommunication(int year) {
+  public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
 
-    return projectCommunications;
+
+    if (projectCommunications.size() > 0) {
+      return projectCommunications.get(0);
+    }
+
+    return new ProjectCommunication();
 
 
   }
