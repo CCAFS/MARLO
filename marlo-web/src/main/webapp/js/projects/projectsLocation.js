@@ -529,10 +529,11 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
         }
     });
     $item.find(".locations").removeClass("selected");
+    // Update component event
+    $(document).trigger('updateComponent');
   });
 
   google.maps.event.addListener(infoWindow, 'closeclick', function() {
-    console.log("holi");
     $(".locations").removeClass("selected");
   });
 
@@ -604,11 +605,14 @@ function openInfoWindow(marker) {
       marker.name = newName;
       location.find(".lName").html(newName);
       location.find(".locElementName").val(newName);
+      // Update component event
+      $(document).trigger('updateComponent');
     }
 
     // Close infowindow
     infoWindow.close();
     $("#location-" + marker.id).find(".locations").removeClass("selected");
+
   });
 }
 
