@@ -1,12 +1,16 @@
-var $addOutcome;
+var $addOutcome, $addOutcomeSelect;
 var OUTCOME_ID_PARAMETER = 'outcomeId'
 $(document).ready(function() {
 
-  $addOutcome = $('.addOutcomeBlock a')
+  $addOutcome = $('.addOutcomeBlock a');
+  $addOutcomeSelect = $('.outcomesListBlock select');
+
+  var outcomesSelectedIds = ($('#outcomesSelectedIds').text()).split(',');
+  $addOutcomeSelect.clearOptions(outcomesSelectedIds);
 
   $('select').select2();
 
-  $('.outcomesListBlock select').on('change', function(e) {
+  $addOutcomeSelect.on('change', function(e) {
     var url = $addOutcome.attr('href');
     var uri = new Uri(url);
     var projectOutcomeID = $(this).val();

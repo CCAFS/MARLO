@@ -66,7 +66,7 @@
                   </li>
                 [/#list]
               [#else]
-              
+                <p class=" text-center">There is not a project outcome added</p>
               [/#if]
             </ul>
             
@@ -74,10 +74,11 @@
             [#if canEdit]
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
+                <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
                 [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
-                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
+                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?outcomeId=-1">
                   <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
                 </a>
               </div>
