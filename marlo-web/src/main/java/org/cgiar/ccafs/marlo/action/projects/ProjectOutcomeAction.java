@@ -23,18 +23,10 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -43,29 +35,30 @@ import org.apache.commons.lang3.StringUtils;
  * @author Sebastian Amariles - CIAT/CCAFS
  * @author Christian Garcia- CIAT/CCAFS
  */
-public class ProjectOutcomeListAction extends BaseAction {
+public class ProjectOutcomeAction extends BaseAction {
+
 
   /**
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
-
   private ProjectManager projectManager;
   private CrpManager crpManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+
+
   private ProjectOutcomeManager projectOutcomeManager;
-
-
   // Front-end
   private long projectID;
   private long projectOutcomeID;
   private Crp loggedCrp;
   private Project project;
-  private long outcomeId;
-  private List<CrpProgramOutcome> outcomes;
+
+  private ProjectOutcome projectOutcome;
+
 
   @Inject
-  public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+  public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
@@ -73,49 +66,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.crpManager = crpManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
-
-  }
-
-
-  public String addProjectOutcome() {
-
-    if (this.hasPermission("add")) {
-      ProjectOutcome projectOutcome = new ProjectOutcome();
-      projectOutcome.setActive(true);
-      projectOutcome.setCreatedBy(this.getCurrentUser());
-      projectOutcome.setModificationJustification("");
-      projectOutcome.setActiveSince(new Date());
-
-      projectOutcome.setModifiedBy(this.getCurrentUser());
-      projectOutcome.setProject(project);
-
-      projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
-      projectOutcomeManager.saveProjectOutcome(projectOutcome);
-      projectOutcomeID = projectOutcome.getId().longValue();
-      return SUCCESS;
-    } else {
-      return NOT_AUTHORIZED;
-    }
-
-  }
-
-  public String deleteProjectOutcome() {
-    if (this.hasPermission("delete")) {
-      projectOutcomeManager.deleteProjectOutcome(outcomeId);
-      return SUCCESS;
-    } else {
-      return NOT_AUTHORIZED;
-    }
-  }
-
-
-  public Long getOutcomeId() {
-    return outcomeId;
-  }
-
-
-  public List<CrpProgramOutcome> getOutcomes() {
-    return outcomes;
   }
 
 
@@ -126,6 +76,11 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public ProjectOutcome getProjectOutcome() {
+    return projectOutcome;
   }
 
 
@@ -145,40 +100,19 @@ public class ProjectOutcomeListAction extends BaseAction {
     } catch (Exception e) {
 
     }
-    project = projectManager.getProjectById(projectID);
+    try {
+      projectOutcomeID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
+    } catch (Exception e) {
 
-    List<ProjectOutcome> projectOutcomes =
-      project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-
-
-    project.setOutcomes(projectOutcomes);
-    outcomes = new ArrayList<CrpProgramOutcome>();
-    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-      .collect(Collectors.toList())) {
-
-      outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream().filter(c -> c.isActive())
-        .collect(Collectors.toList()));
     }
+    project = projectManager.getProjectById(projectID);
+    projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
   }
 
-
-  public void setOutcomeId(long outcomeId) {
-    this.outcomeId = outcomeId;
-  }
-
-
-  public void setOutcomeId(Long outcomeId) {
-    this.outcomeId = outcomeId;
-  }
-
-
-  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
-    this.outcomes = outcomes;
-  }
 
   public void setProject(Project project) {
     this.project = project;
@@ -188,8 +122,12 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectID = projectID;
   }
 
+  public void setProjectOutcome(ProjectOutcome projectOutcome) {
+    this.projectOutcome = projectOutcome;
+  }
 
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
   }
+
 }

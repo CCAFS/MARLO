@@ -42,8 +42,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private String narrativeTarget;
   @Expose
   private String narrativeAchieved;
-  @Expose
-  private int year;
+
   @Expose
   private boolean active;
   @Expose
@@ -59,7 +58,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, long expectedUnit, Long achievedValue, String narrativeTarget,
-    String narrativeAchieved, int year, boolean isActive, Date activeSince, String modificationJustification,
+    String narrativeAchieved, boolean isActive, Date activeSince, String modificationJustification,
     Set<ProjectMilestone> projectMilestoneses, Set<ProjectCommunication> projectCommunicationses) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
@@ -70,7 +69,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.achievedValue = achievedValue;
     this.narrativeTarget = narrativeTarget;
     this.narrativeAchieved = narrativeAchieved;
-    this.year = year;
+
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -79,7 +78,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, int year, boolean isActive,
+    User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
@@ -88,7 +87,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.expectedValue = expectedValue;
     this.expectedUnit = expectedUnit;
     this.narrativeTarget = narrativeTarget;
-    this.year = year;
+
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -178,11 +177,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public int getYear() {
-    return year;
-  }
-
-
   @Override
   public boolean isActive() {
     return active;
@@ -261,11 +255,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
-  }
-
-
-  public void setYear(int year) {
-    this.year = year;
   }
 
 
