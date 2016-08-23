@@ -88,11 +88,7 @@ public class ProjectOutcomeListAction extends BaseAction {
 
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setProject(project);
-      if (this.isPlanningActive()) {
-        projectOutcome.setYear(this.getPlanningYear());
-      } else {
-        projectOutcome.setYear(this.getReportingYear());
-      }
+
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
