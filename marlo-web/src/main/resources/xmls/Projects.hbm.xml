@@ -167,7 +167,7 @@
         </set>
         
         
-          <set name="projectOutcomeses" order-by="id" table="project_outcomes" inverse="true" lazy="true" fetch="select">
+          <set name="projectOutcomes" order-by="id" table="project_outcomes" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="project_id" not-null="true" />
             </key>

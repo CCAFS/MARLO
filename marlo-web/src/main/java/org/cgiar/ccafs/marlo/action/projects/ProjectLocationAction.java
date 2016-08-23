@@ -155,8 +155,10 @@ public class ProjectLocationAction extends BaseAction {
         countryLocationLevel.setName(entry.getKey());
         countryLocationLevel.setLocElements(new ArrayList<LocElement>());
 
-        countryLocationLevel.setAllElements(new ArrayList<LocElement>(
-          locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString())).getLocElements()));
+        LocElementType elementType =
+          locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString()));
+
+        countryLocationLevel.setAllElements(new ArrayList<LocElement>(elementType.getLocElements()));
 
         for (ProjectLocation projectLocation : project.getLocations().stream().filter(l -> l.isActive())
           .collect(Collectors.toList())) {
@@ -166,7 +168,7 @@ public class ProjectLocationAction extends BaseAction {
           }
         }
 
-        if (Long.parseLong(entry.getValue().toString()) != 2) {
+        if (elementType.getId() != 2 || elementType.getCrp() == null) {
           countryLocationLevel.setList(false);
         } else {
           countryLocationLevel.setList(true);
@@ -266,6 +268,7 @@ public class ProjectLocationAction extends BaseAction {
 
     if (this.isHttpPost()) {
       if (project.getLocationsData() != null) {
+        project.getLocationsData().clear();
       }
     }
 

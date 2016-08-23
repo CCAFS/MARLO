@@ -68,19 +68,39 @@
     
     
     
-    <action name="{crp}/contributionsCrpList" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+     <action name="{crp}/contributionsCrpList" class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectContributionsCrpList.ftl</result>
+        </action>
+    
+    
+    <action name="{crp}/addNewProjectOuctome" method="addProjectOutcome" class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectContributionsCrpList.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/contributionsCrpList</param>
+        <param name="namespace">/projects</param>
+        <param name="actionName">${crpSession}/contributionCrp</param>
+        <param name="projectID">${projectID}</param>
+        <param name="projectOutcomeID">${projectOutcomeID}</param>
         <param name="edit">true</param>
-         <param name="projectID">${projectID}</param>
+      </result>
+      
+      
+        </action>
+    
+    <action name="{crp}/contributionCrp" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectContributionCrp.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/contributionCrp</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
       </result>
       <result name="cancel" type="redirectAction">
-        <param name="actionName">${crpSession}/contributionsCrpList</param>
+        <param name="actionName">${crpSession}/contributionCrp</param>
         <param name="edit">true</param>
         <param name="cancel">true</param>
-         <param name="projectID">${projectID}</param>
+        <param name="projectID">${projectID}</param>
       </result>
     </action>
     
