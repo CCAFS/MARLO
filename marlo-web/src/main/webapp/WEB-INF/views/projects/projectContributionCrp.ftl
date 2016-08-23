@@ -75,6 +75,7 @@
             </div>
           </div>
           [#-- Project Milestones and Communications contributions per year--]
+          [#assign milestoneIndex = 0 /]
           <div class="">  
             <br />
             [#assign startYear = (project.startDate?string.yyyy)?number]
@@ -90,12 +91,16 @@
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
+                  [#-- Hidden Inputs --]
+                  <input type="hidden" name="projectOutcome.id" />
+                  
+                  [#-- List milestones per year --]
                   <div class="milestonesYearBlock">
-                    [#-- List milestones per year --]
                     <div class="milestonesYearList">
                       [#if projectOutcome.milestones?has_content]
                         [#list (projectOutcome.milestones) as milestone]
-                          [@milestoneMacro element={} name="projectOutcome.milestones" index=milestone_index /]
+                          [@milestoneMacro element={} name="projectOutcome.milestones" index=milestoneIndex /]
+                          [#assign milestoneIndex = milestoneIndex+1 /]
                         [/#list]
                       [/#if]
                     </div>
@@ -111,16 +116,16 @@
                   <h5 class="sectionSubTitle">Communications </h5>
                   <div class="communicationsBlock form-group">
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.projectCommunications.communicationEngagement" required=true className="limitWords-100" editable=editable /]
                     </div>
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.projectCommunications.analysisCommunication" className="limitWords-100" editable=editable /]
                     </div>
                   </div>
                   <div class="fileUpload">
-                    <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
+                    <label>[@customForm.text name="projectOutcome.projectCommunications.uploadSummary" readText=!editable /]:</label>
                     <div class="uploadContainer">
-                      [@customForm.inputFile name="file" fileUrl="${(projectOutcomeSummaryURL)!}" fileName="projectOutcome.uploadSummary" editable=editable /]
+                      [@customForm.inputFile name="file" fileUrl="${(projectOutcomeSummaryURL)!}" fileName="projectOutcome.projectCommunications.uploadSummary" editable=editable /]
                     </div>  
                   </div>
                   
@@ -153,49 +158,41 @@
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
     <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="elementId"> Milestone Target </span>
+      <span class="elementId"> Project Milestone Target </span>
     </div>
     <br />
-    
-    ${customName}
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     
     [#-- Milestone content --]
     <div class="form-group">
-      [#-- PLANNING BLOCK --]
       <div class="row form-group">
-        <div class="col-md-5">
-          [@customForm.input name="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcome.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
-        <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
+        <div class="col-md-4">
+          [@customForm.select name="${customName}.expectedUnit" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
         </div>
-      </div>
-    
-      [#-- REPORTING BLOCK --]
-      <div class="row form-group">
-        <div class="col-md-5">
-          [@customForm.input name="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        [#-- REPORTING BLOCK --]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcome.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
-        <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.achievedUnit" placeholder="" className="" listName="targetUnits"   keyFieldName="id" displayFieldName="name" required=true editable=editable  /]
-        </div>
-      </div>
-      
-      [#-- PLANNING BLOCK --]
-      <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
-      </div>
-      <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       
       [#-- REPORTING BLOCK --]
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.expectedNarrative" i18nkey="projectOutcome.expectedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.expectedGenderSocialNarrative" i18nkey="projectOutcome.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+      
+      [#-- REPORTING BLOCK --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcome.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.achievedGenderSocialNarrative" i18nkey="projectOutcome.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
     </div>
     

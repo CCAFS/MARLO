@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -48,6 +50,7 @@ public class DeliverableListAction extends BaseAction {
 
 
   private DeliverableTypeManager deliverableTypeManager;
+  private DeliverableManager deliverableManager;
 
   private CrpManager crpManager;
 
@@ -64,13 +67,56 @@ public class DeliverableListAction extends BaseAction {
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    DeliverableTypeManager deliverableTypeManager) {
+    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.deliverableTypeManager = deliverableTypeManager;
+    this.deliverableManager = deliverableManager;
   }
 
+
+  @Override
+  public String add() {
+
+    Deliverable deliverable = new Deliverable();
+    deliverable.setYear(this.getCurrentCycleYear());
+    deliverable.setCreatedBy(this.getCurrentUser());
+    deliverable.setModifiedBy(this.getCurrentUser());
+    deliverable.setModificationJustification("New expected deliverable created");
+    deliverable.setActive(true);
+    deliverable.setActiveSince(new Date());
+    deliverable.setProject(project);
+
+    Long delivarebleId = deliverableManager.saveDeliverable(deliverable);
+
+    if (delivarebleId > 0) {
+      return SUCCESS;
+    }
+
+    return INPUT;
+  }
+
+  @Override
+  public String delete() {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    if (deliverable != null) {
+      if (deliverableManager.deleteDeliverable(deliverable.getId())) {
+        this.addActionMessage(
+          this.getText("deleting.success", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+      } else {
+        this.addActionError(
+          this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+      }
+    } else {
+      this.addActionError(
+        this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+    }
+
+    return SUCCESS;
+
+  }
 
   public List<Integer> getAllYears() {
     return allYears;

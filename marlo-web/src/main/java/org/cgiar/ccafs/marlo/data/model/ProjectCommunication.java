@@ -35,6 +35,8 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   @Expose
   private String communication;
   @Expose
+  private String analysisCommunication;
+  @Expose
   private boolean active;
   @Expose
   private Date activeSince;

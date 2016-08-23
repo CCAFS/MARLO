@@ -7,7 +7,10 @@ $(document).ready(function() {
   $('.milestonesYearSelect select').on('change', function() {
     var $item = $('#milestoneYear-template').clone(true).removeAttr('id');
     var $list = $(this).parents('.milestonesYearBlock').find(".milestonesYearList");
+
     $list.append($item);
+
+    $item.show('slow');
   });
 
 });
