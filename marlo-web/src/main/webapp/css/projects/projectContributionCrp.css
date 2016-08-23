@@ -1,0 +1,42 @@
+.outcomesListBlock {width: 82%;}
+
+.addOutcomeBlock {position: absolute;right: 0;bottom: 0;width: 17.5%;}
+
+.addNewOutcome {
+    position: relative;
+    margin: 13px 0;
+}
+
+ul#projectOutcomesList {}
+
+ul#projectOutcomesList li{
+    list-style: none;
+    padding-bottom: 9px;
+}
+
+ul#projectOutcomesList li a{
+   color: #444;
+}
+
+.tab-content.projectOutcomeYear-content {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs {
+    border: 0;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs li a{
+    background-color: #f5f5f5;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a, 
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:focus, 
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:hover {
+    background-color: #fff;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li {}

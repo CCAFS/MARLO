@@ -9,7 +9,7 @@
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"label":"projectContributionCrp", "nameSpace":"/projects", "action":""},
+  {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""},
   {"label":"projectContributionCrp", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -38,14 +38,14 @@
             {'name': 'National level decision-makers (Gov. ministries), national agricultural research systems, NGOs, civil society organizations, regional organizations use CCAFS science-derived decision support tools and systems to mainstream climate change into national plans and policies from local to national levels.',   'fp': 'FP3', 'canDelete': true}
           /]
           
-          <h3 class="headTitle">${projectOutcome.fp} - Outcome</h3>  
+          <h3 class="headTitle">${projectOutcome.fp} - Outcome 2022</h3>  
           [#-- Outcomen name --]
           <p>${projectOutcome.name}</p>
           
           <div id="projectOutcome" class="borderBox">
             
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
-            <h4>Expected Target</h4>
+            <h5 class="sectionSubTitle">Expected Target</h5>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
@@ -61,7 +61,7 @@
             </div>
             
             [#-- Project Outcome achieved target (AT THE END) --]
-            <h4>Achieved Target</h4>
+            <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
@@ -79,19 +79,40 @@
             [#-- Project Milestones and Communications contributions per year--]
             [#assign startYear = (project.startDate?string.yyyy)?number]
             [#assign endYear = (project.endDate?string.yyyy)?number]
-            <h4>Milestone Progress towards to outcome  ${currentCycleYear}</h4>
             
-            
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
               [#list startYear .. endYear as year]
-                <li role="presentation" class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
               [/#list]
             </ul>
 
-            <!-- Tab panes -->
-            <div class="tab-content">
+            <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">Content ${year}</div>
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+                  <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
+                  [#-- List milestones per year --]
+                  [#list 1..2 as milestone]
+                    [@milestoneMacro element={} name="" index=milestone_index year=year /]
+                  [/#list]
+                  [#-- Select a milestone --]
+                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone" listName="milestoneList" keyFieldName="id" displayFieldName="description" className="" value="" /]
+                  
+                  <br />
+                  <hr />
+                  <br />
+                  
+                  <h5 class="sectionSubTitle">Communications </h5>
+                  <div>
+                    <div class="form-group">
+                      [@customForm.textArea name="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                    </div>
+                    <div class="form-group">
+                      [@customForm.textArea name="projectOutcome.analysisCommunication" required=true className="limitWords-100" editable=editable /]
+                    </div>
+                  </div>
+                  
+                  
+                </div>
               [/#list]
             </div>
               
@@ -107,3 +128,57 @@
 </section>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
+[#macro milestoneMacro element name index year isTemplate=false]
+  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local customName = "${name}[${index}]" /]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
+    <div class="leftHead">
+      <span class="index">${index+1}</span>
+      <span class="elementId">Milestone Target ${year}</span>
+    </div>
+    <br />
+    
+    [#-- Milestone content --]
+    <div class="form-group">
+      [#-- PLANNING BLOCK --]
+      <div class="row form-group">
+        <div class="col-md-5">
+          [@customForm.input name="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        </div>
+        <div class="col-md-7">
+          [@customForm.select name="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+        </div>
+      </div>
+    
+      [#-- REPORTING BLOCK --]
+      <div class="row form-group">
+        <div class="col-md-5">
+          [@customForm.input name="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        </div>
+        <div class="col-md-7">
+          [@customForm.select name="projectOutcomeMilestone.achievedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+        </div>
+      </div>
+      
+      [#-- PLANNING BLOCK --]
+      <div class="form-group">
+        [@customForm.textArea name="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+      <div class="form-group">
+        [@customForm.textArea name="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+      
+      [#-- REPORTING BLOCK --]
+      <div class="form-group">
+        [@customForm.textArea name="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+      <div class="form-group">
+        [@customForm.textArea name="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+      </div>
+    </div>
+    
+  </div>
+[/#macro]
