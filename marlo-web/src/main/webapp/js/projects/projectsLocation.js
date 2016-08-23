@@ -34,7 +34,6 @@ function init() {
     $(".map").show('slow', function() {
       loadScript();
     });
-
   } else {
     loadScript();
     // $(".map").hide();
@@ -93,47 +92,7 @@ function attachEvents() {
   $(".removeLocation").on("click", removeLocationItem);
 
   // Checkbox to working in all regions
-  $(".allCountries").on(
-      "change",
-      function() {
-        validateCountryList("asdasd")
-        $(this).val(true);
-        var parent = $(this).parent().parent();
-        if($(this).is(":checked") == true) {
-          /*
-           * $.each(countries, function(i,c) { console.log(c); // Draw country in the map }); var FT_Options = {
-           * suppressInfoWindows: true, query: { from: FT_TableID, select: 'kml_4326', where: "'name_0' = '" +
-           * "Colombia" + "';" }, styles: [ { polygonOptions: { fillColor: "#FF0000", fillOpacity: 0.35 } } ] }; layer =
-           * new google.maps.FusionTablesLayer(FT_Options); layer.setMap(map);
-           */
-
-          parent.find(".selectLocation").attr("disabled", true);
-          parent.find("input.form-control").attr("disabled", true);
-          parent.find(".locElement").each(function(i,e) {
-            $(e).hide("slow");
-            var id = $(e).attr("id").split('-')[1];
-            if(markers[id] != undefined) {
-              removeMarker(id);
-            }
-          })
-        } else {
-          $(this).val(false);
-          parent.find(".selectLocation").attr("disabled", false);
-          parent.find("input.form-control").attr("disabled", false);
-          parent.find(".locElement").each(
-              function(i,e) {
-                $(e).show("slow");
-                var id = $(e).attr("id").split('-')[1];
-                var isList = $(e).find(".isList");
-                if(isList.html() == "false") {
-                  console.log("holi");
-                  addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude")
-                      .val()), $(e).find(".locElementName").val());
-                }
-              })
-        }
-        updateIndex();
-      });
+  $(".allCountries").on("change", checkboxAllCountries);
 
   // Collapsible
   $('.locationLevel-option').on(
@@ -156,6 +115,46 @@ function attachEvents() {
 }
 
 // FUNCTIONS
+
+function checkboxAllCountries() {
+  validateCountryList("asdasd")
+  $(this).val(true);
+  var parent = $(this).parent().parent();
+  if($(this).is(":checked") == true) {
+    /*
+     * $.each(countries, function(i,c) { console.log(c); // Draw country in the map }); var FT_Options = {
+     * suppressInfoWindows: true, query: { from: FT_TableID, select: 'kml_4326', where: "'name_0' = '" + "Colombia" +
+     * "';" }, styles: [ { polygonOptions: { fillColor: "#FF0000", fillOpacity: 0.35 } } ] }; layer = new
+     * google.maps.FusionTablesLayer(FT_Options); layer.setMap(map);
+     */
+
+    parent.find(".selectLocation").attr("disabled", true);
+    parent.find("input.form-control").attr("disabled", true);
+    parent.find(".locElement").each(function(i,e) {
+      $(e).hide("slow");
+      var id = $(e).attr("id").split('-')[1];
+      if(markers[id] != undefined) {
+        removeMarker(id);
+      }
+    })
+  } else {
+    $(this).val(false);
+    parent.find(".selectLocation").attr("disabled", false);
+    parent.find("input.form-control").attr("disabled", false);
+    parent.find(".locElement").each(
+        function(i,e) {
+          $(e).show("slow");
+          var id = $(e).attr("id").split('-')[1];
+          var isList = $(e).find(".isList");
+          if(isList.html() == "false") {
+            console.log("holi");
+            addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude").val()),
+                $(e).find(".locElementName").val());
+          }
+        })
+  }
+  updateIndex();
+}
 
 function addLocationLevel(option) {
   var $list = $('.selectWrapper');
@@ -338,6 +337,7 @@ function loadScript() {
   script.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY + "&callback=initMap";
   // function after load script
   script.onload = script.onreadystatechange = function() {
+
     $(".selectWrapper").find(".locationLevel").each(function(index,item) {
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
