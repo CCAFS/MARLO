@@ -32,9 +32,14 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.utils.LocationLevel;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -100,6 +108,39 @@ public class ProjectLocationAction extends BaseAction {
     this.auditLogManager = auditLogManager;
   }
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
@@ -115,6 +156,7 @@ public class ProjectLocationAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<CountryLocationLevel> getProjectLocationsData() {
 
@@ -168,10 +210,10 @@ public class ProjectLocationAction extends BaseAction {
           }
         }
 
-        if (elementType.getId() != 2 || elementType.getCrp() == null) {
-          countryLocationLevel.setList(false);
-        } else {
+        if (elementType.getId() == 2 || elementType.getCrp() != null) {
           countryLocationLevel.setList(true);
+        } else {
+          countryLocationLevel.setList(false);
         }
 
         locationLevels.add(countryLocationLevel);
@@ -185,7 +227,6 @@ public class ProjectLocationAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   /**
   * 
@@ -257,10 +298,32 @@ public class ProjectLocationAction extends BaseAction {
     } else {
       project = projectManager.getProjectById(projectID);
     }
-
     this.locationLevels();
-    // locationsData = this.getProjectLocationsData();
-    project.setLocationsData(this.getProjectLocationsData());
+    if (project != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (Project) autoSaveReader.readFromJson(jReader);
+        Project projectDb = projectManager.getProjectById(project.getId());
+        reader.close();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+        project.setLocationsData(this.getProjectLocationsData());
+      }
+    }
 
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -275,8 +338,11 @@ public class ProjectLocationAction extends BaseAction {
   }
 
   public void projectLocationNewData() {
+
+    List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
+
     for (CountryLocationLevel locationData : project.getLocationsData()) {
-      if (locationData.getId() == null) {
+      if (!locationsDataPrew.contains(locationData)) {
         if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
           for (LocElement locElement : locationData.getLocElements()) {
             if (locElement.getId() != null) {
@@ -318,7 +384,7 @@ public class ProjectLocationAction extends BaseAction {
         for (LocElement locElement : locationData.getLocElements()) {
           if (locElement.getId() != null) {
             LocElement element = locElementManager.getLocElementById(locElement.getId());
-            if (element.getLocGeoposition() != null) {
+            if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {
               if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())
                 || (element.getLocGeoposition().getLongitude() != locElement.getLocGeoposition().getLongitude())) {
                 element.getLocGeoposition().setLongitude(locElement.getLocGeoposition().getLongitude());
@@ -410,7 +476,11 @@ public class ProjectLocationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
       project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);
+      Path path = this.getAutoSaveFilePath();
 
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -467,19 +537,19 @@ public class ProjectLocationAction extends BaseAction {
     projectLocationManager.saveProjectLocation(projectLocation);
   }
 
+
   public void setLocationsLevels(List<LocationLevel> locationsLevels) {
     this.locationsLevels = locationsLevels;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -488,5 +558,4 @@ public class ProjectLocationAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 }

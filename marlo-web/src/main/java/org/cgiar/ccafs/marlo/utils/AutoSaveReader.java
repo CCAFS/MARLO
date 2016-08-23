@@ -210,8 +210,9 @@ public class AutoSaveReader {
 
   public Object readFromJson(JsonObject jobj) {
 
-    Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
-      .registerTypeAdapter(Long.class, new LongTypeAdapter())
+    Gson gson = new GsonBuilder().serializeNulls().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
+      .registerTypeAdapter(Long.class, new LongTypeAdapter()).registerTypeAdapter(Double.class, new DoubleTypeAdapter())
+      .registerTypeAdapter(Float.class, new FloatTypeAdapter())
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
       .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));
