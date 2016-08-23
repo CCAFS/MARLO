@@ -34,13 +34,11 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
         
-          [#assign projectOutcome = 
-            {'name': 'National level decision-makers (Gov. ministries), national agricultural research systems, NGOs, civil society organizations, regional organizations use CCAFS science-derived decision support tools and systems to mainstream climate change into national plans and policies from local to national levels.',   'fp': 'FP3', 'canDelete': true}
-          /]
           
-          <h3 class="headTitle">${projectOutcome.fp} - Outcome 2022</h3>  
+          
+          <h3 class="headTitle">${projectOutcome.crpProgramOutcome.crpProgram.acronym} - Outcome 2022</h3>  
           [#-- Outcomen name --]
-          <p>${projectOutcome.name}</p>
+          <p>${projectOutcome.crpProgramOutcome.description}</p>
           
           <div class="borderBox">
             

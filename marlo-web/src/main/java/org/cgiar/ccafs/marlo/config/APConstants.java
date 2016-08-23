@@ -82,6 +82,7 @@ public final class APConstants {
   public static final String EDITABLE_REQUEST = "edit";
   public static final String CRP_REQUEST = "crp";
   public static final String PROJECT_REQUEST_ID = "projectID";
+  public static final String PROJECT_OUTCOME_REQUEST_ID = "projectOutcomeID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
   public static final String COUNTRY_REQUEST_ID = "countryID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";

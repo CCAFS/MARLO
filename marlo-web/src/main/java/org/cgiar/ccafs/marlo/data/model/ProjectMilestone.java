@@ -35,8 +35,23 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private long expectedValue;
+  @Expose
+  private long expectedUnit;
+  @Expose
+  private Long achievedValue;
+  @Expose
+  private String narrativeTarget;
+  @Expose
+  private String narrativeAchieved;
+  @Expose
+  private int year;
+
+
   public ProjectMilestone() {
   }
+
 
   public ProjectMilestone(CrpMilestone crpMilestone, ProjectOutcome projectOutcome, User usersByModifiedBy,
     User usersByCreatedBy, boolean isActive, Date activeSince, String modificationJustification) {
@@ -47,6 +62,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  public Long getAchievedValue() {
+    return achievedValue;
   }
 
 
@@ -62,6 +82,16 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
 
   public CrpMilestone getCrpMilestone() {
     return crpMilestone;
+  }
+
+
+  public long getExpectedUnit() {
+    return expectedUnit;
+  }
+
+
+  public long getExpectedValue() {
+    return expectedValue;
   }
 
 
@@ -92,15 +122,33 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public String getNarrativeAchieved() {
+    return narrativeAchieved;
+  }
+
+  public String getNarrativeTarget() {
+    return narrativeTarget;
+  }
+
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
 
 
+  public int getYear() {
+    return year;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public void setAchievedValue(Long achievedValue) {
+    this.achievedValue = achievedValue;
   }
 
 
@@ -124,6 +172,16 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setExpectedUnit(long expectedUnit) {
+    this.expectedUnit = expectedUnit;
+  }
+
+
+  public void setExpectedValue(long expectedValue) {
+    this.expectedValue = expectedValue;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -138,8 +196,23 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
+  public void setNarrativeAchieved(String narrativeAchieved) {
+    this.narrativeAchieved = narrativeAchieved;
+  }
+
+
+  public void setNarrativeTarget(String narrativeTarget) {
+    this.narrativeTarget = narrativeTarget;
+  }
+
+
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 
