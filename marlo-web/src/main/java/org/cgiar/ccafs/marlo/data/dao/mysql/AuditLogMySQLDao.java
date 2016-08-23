@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.utils.BigDecimalTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.DoubleTypeAdapter;
+import org.cgiar.ccafs.marlo.utils.FloatTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
 import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
@@ -99,6 +101,8 @@ public class AuditLogMySQLDao implements AuditLogDao {
     try {
       Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
         .registerTypeAdapter(Long.class, new LongTypeAdapter())
+        .registerTypeAdapter(Double.class, new DoubleTypeAdapter())
+        .registerTypeAdapter(Float.class, new FloatTypeAdapter())
         .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
         .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
       Class classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
