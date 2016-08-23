@@ -125,6 +125,8 @@
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+          <input type="hidden" name="projectOutcomeID" value="${projectOutcomeID}"/>
+          
           
          
         [/@s.form] 

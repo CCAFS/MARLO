@@ -25,12 +25,16 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +66,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private Project project;
   private List<CrpMilestone> milestones;
   private List<SrfTargetUnit> targetUnits;
-
+  private CrpProgramOutcome crpProgramOutcome;
 
   private ProjectOutcome projectOutcome;
 
@@ -119,35 +123,86 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   @Override
   public void prepare() throws Exception {
 
     // Get current CRP
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    try {
-      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    } catch (Exception e) {
 
-    }
     try {
       projectOutcomeID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_OUTCOME_REQUEST_ID)));
     } catch (Exception e) {
 
     }
-    project = projectManager.getProjectById(projectID);
     projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    project = projectOutcome.getProject();
+    projectID = project.getId();
+
+    if (projectOutcome != null) {
+      crpProgramOutcome = projectOutcome.getCrpProgramOutcome();
+      milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList());
+    }
 
     /*
      * Loading basic List
      */
     targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList());
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
+
+  }
+
+
+  @Override
+  public String save() {
+
+
+    this.saveProjectOutcome();
+    if (this.hasPermission("canEdit")) {
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else
+
+    {
+
+      return NOT_AUTHORIZED;
+    }
+  }
+
+  public void saveProjectOutcome() {
+
+    int startYear = 0;
+    int endYear = 0;
+    Calendar startDate = Calendar.getInstance();
+    startDate.setTime(project.getStartDate());
+    startYear = startDate.get(Calendar.YEAR);
+
+    Calendar endDate = Calendar.getInstance();
+    endDate.setTime(project.getEndDate());
+    endYear = endDate.get(Calendar.YEAR);
+
+    if (this.getCurrentCycleYear() == startYear || this.getCurrentCycleYear() == endYear) {
+      projectOutcome.setActive(true);
+      projectOutcome.setModifiedBy(this.getCurrentUser());
+      projectOutcome.setCreatedBy(this.getCurrentUser());
+      projectOutcome.setActiveSince(new Date());
+      projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+      projectOutcome.setProject(project);
+      projectOutcome.setId(projectOutcomeID);
+      projectOutcomeManager.saveProjectOutcome(projectOutcome);
+
+    }
 
   }
 
