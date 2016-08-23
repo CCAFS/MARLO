@@ -143,7 +143,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     }
     projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
-    project = projectOutcome.getProject();
+    project = projectManager.getProjectById(projectOutcome.getProject().getId());
     projectID = project.getId();
 
     if (projectOutcome != null) {
