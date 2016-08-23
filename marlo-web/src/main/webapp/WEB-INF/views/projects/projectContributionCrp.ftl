@@ -154,7 +154,7 @@
     [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">Milestone Target ${year}</span>
+      <span class="elementId"> Milestone Target </span>
     </div>
     <br />
     
