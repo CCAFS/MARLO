@@ -90,17 +90,19 @@
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
-                  [#-- List milestones per year --]
-                  <div class="milestonesYearList">
-                    [#if projectOutcome.milestones?has_content]
-                    [#list (projectOutcome.milestones) as milestone]
-                      [@milestoneMacro element={} name="" index=milestone_index year=year /]
-                    [/#list]
-                    [/#if]
-                  </div>
-                  [#-- Select a milestone --]
-                  <div class="milestonesYearSelect">
-                    [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                  <div class="milestonesYearBlock">
+                    [#-- List milestones per year --]
+                    <div class="milestonesYearList">
+                      [#if projectOutcome.milestones?has_content]
+                        [#list (projectOutcome.milestones) as milestone]
+                          [@milestoneMacro element={} name="projectOutcome.milestones" index=milestone_index /]
+                        [/#list]
+                      [/#if]
+                    </div>
+                    [#-- Select a milestone --]
+                    <div class="milestonesYearSelect">
+                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                    </div>
                   </div>
                   
                   <hr />
@@ -115,7 +117,12 @@
                       [@customForm.textArea name="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
                     </div>
                   </div>
-                  
+                  <div class="fileUpload">
+                    <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
+                    <div class="uploadContainer">
+                      [@customForm.inputFile name="file" fileUrl="${(projectOutcomeSummaryURL)!}" fileName="projectOutcome.uploadSummary" editable=editable /]
+                    </div>  
+                  </div>
                   
                 </div>
               [/#list]
@@ -131,11 +138,14 @@
       </div>
     </div>  
 </section>
+
+[#-- Milestone Template --]]
+[@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro milestoneMacro element name index year isTemplate=false]
+[#macro milestoneMacro element name index  isTemplate=false]
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
@@ -145,6 +155,8 @@
       <span class="elementId">Milestone Target ${year}</span>
     </div>
     <br />
+    
+    ${customName}
     
     [#-- Milestone content --]
     <div class="form-group">

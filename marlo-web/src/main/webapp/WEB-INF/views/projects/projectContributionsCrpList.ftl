@@ -42,19 +42,18 @@
             </p>
             
             [#-- Project Outcomes List --]
-        
             <ul id="projectOutcomesList" class="simpleBox">
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
                   <li class="projectOutcome">
                     [#assign projectOutcomeID =  projectOutcome.id /] 
-                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectID' value=projectID /][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
+                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
                     <div class="row">
                       <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
                       <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
                         [#if (action.hasPermission("delete"))!true]
-                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
+                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?outcomeId=${projectOutcomeID}" title="">
                             <img src="${baseUrl}/images/global/trash.png" />
                           </a>
                         [#else]
