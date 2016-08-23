@@ -28,7 +28,7 @@
     },
     { 'title': 'Outputs',
       'items': [
-      { 'slug': '',  'name': 'Deliverables',  'action': '',  'active': false  },
+      { 'slug': 'deliverableList',  'name': 'project.menu.deliverables',  'action': 'deliverableList',  'active': true  },
       { 'slug': '',  'name': 'Project Highlights',  'action': '',  'active': false ,'show': reportingActive }
       ]
     },
