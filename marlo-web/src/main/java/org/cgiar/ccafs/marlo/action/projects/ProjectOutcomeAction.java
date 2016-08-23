@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
@@ -85,10 +86,14 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public int getIndex(ProjectMilestone milestone) {
+  public int getIndex(ProjectCommunication milestone) {
     return projectOutcome.getMilestones().indexOf(milestone);
   }
 
+
+  public int getIndex(ProjectMilestone communication) {
+    return projectOutcome.getCommunications().indexOf(communication);
+  }
 
   public List<CrpMilestone> getMilestones() {
     return milestones;
@@ -118,6 +123,16 @@ public class ProjectOutcomeAction extends BaseAction {
     return targetUnits;
   }
 
+
+  public List<ProjectCommunication> loadProjectCommunication(int year) {
+
+    List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
+
+    return projectCommunications;
+
+
+  }
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
@@ -159,9 +174,6 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
-    if (projectOutcome.getCommunications().size() > 0) {
-      projectOutcome.setProjectCommunication(projectOutcome.getCommunications().get(0));
-    }
     /*
      * Loading basic List
      */
