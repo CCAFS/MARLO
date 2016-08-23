@@ -1,5 +1,6 @@
 $(document).ready(init);
 var map;
+var style;
 var infoWindow = null;
 var markers = [];
 var countID;
@@ -7,6 +8,8 @@ var FT_TableID = "19lLpgsKdJRHL2O4fNmJ406ri9JtpIIk8a-AchA";
 var countries = [];
 
 function init() {
+
+  loadScript();
 
   $('.latitude, .longitude').numericInput();
 
@@ -32,11 +35,9 @@ function init() {
   // validate if regions list is empty
   if($(".selectWrapper").find(".locationLevel").length > 0) {
     $(".map").show('slow', function() {
-      loadScript();
     });
   } else {
-    loadScript();
-    // $(".map").hide();
+    $(".map").hide();
   }
 
   /* Declaring Events */
@@ -49,8 +50,9 @@ function attachEvents() {
   $('.selectLocationLevel').on('change', function() {
 
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
-
+      var mapDiv = document.getElementById('map');
       $(".map").show("slow", function() {
+        initMap();
       });
     }
     var option = $(this).find("option:selected");
@@ -375,7 +377,7 @@ function loadScript() {
 // Initialization Google Map API
 function initMap() {
 
-  var style = [
+  style = [
       {
           "featureType": "water",
           "stylers": [
@@ -527,10 +529,11 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
         }
     });
     $item.find(".locations").removeClass("selected");
+    // Update component event
+    $(document).trigger('updateComponent');
   });
 
   google.maps.event.addListener(infoWindow, 'closeclick', function() {
-    console.log("holi");
     $(".locations").removeClass("selected");
   });
 
@@ -602,11 +605,14 @@ function openInfoWindow(marker) {
       marker.name = newName;
       location.find(".lName").html(newName);
       location.find(".locElementName").val(newName);
+      // Update component event
+      $(document).trigger('updateComponent');
     }
 
     // Close infowindow
     infoWindow.close();
     $("#location-" + marker.id).find(".locations").removeClass("selected");
+
   });
 }
 

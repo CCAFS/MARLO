@@ -36,6 +36,9 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  @Expose
+  private int year;
+
 
   public ProjectCommunication() {
   }
@@ -53,6 +56,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public ProjectCommunication(ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
     this.projectOutcome = projectOutcome;
@@ -64,6 +68,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -72,11 +77,9 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     return this.communication;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public FileDB getFile() {
     return file;
@@ -116,6 +119,11 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   }
 
 
+  public int getYear() {
+    return year;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
@@ -136,19 +144,19 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.communication = communication;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   public void setFile(FileDB file) {
     this.file = file;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
@@ -162,6 +170,11 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 

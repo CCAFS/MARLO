@@ -53,7 +53,7 @@
                       <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
                       <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
-                        [#if (projectOutcome.canDelete)!true]
+                        [#if (action.hasPermission("delete"))!true]
                           <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />

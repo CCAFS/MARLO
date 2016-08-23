@@ -32,5 +32,8 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
+        </property>
     </class>
 </hibernate-mapping>
