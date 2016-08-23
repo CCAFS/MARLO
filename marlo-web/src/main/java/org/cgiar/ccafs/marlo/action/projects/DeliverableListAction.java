@@ -24,8 +24,10 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -54,6 +56,7 @@ public class DeliverableListAction extends BaseAction {
 
   private Project project;
 
+  @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
     super(config);
     this.projectManager = projectManager;
@@ -79,6 +82,12 @@ public class DeliverableListAction extends BaseAction {
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     project = projectManager.getProjectById(projectID);
+
+    if (project != null) {
+      if (project.getDeliverables() != null) {
+        deliverables = new ArrayList<>(project.getDeliverables());
+      }
+    }
 
   }
 
