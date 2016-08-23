@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -244,6 +245,30 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+  /**
+   * This method calculates all the years between the start date and the end date.
+   * 
+   * @return a List of numbers representing all the years, or an empty list if nothing found.
+   */
+  public List<Integer> getAllYears() {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+      Calendar calendarStart = Calendar.getInstance();
+      calendarStart.setTime(startDate);
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+        // Adding the year to the list.
+        allYears.add(calendarStart.get(Calendar.YEAR));
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
+    }
+
+    return allYears;
+  }
+
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;
   }
@@ -251,6 +276,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public FileDB getBilateralContractName() {
     return bilateralContractName;
   }
+
 
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
@@ -296,10 +322,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.createdBy;
   }
 
-
   public Crp getCrp() {
     return crp;
   }
+
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -354,7 +380,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -394,10 +419,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.leaderResponsabilities;
   }
 
+
   public LiaisonInstitution getLiaisonInstitution() {
     return this.liaisonInstitution;
   }
-
 
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
@@ -434,6 +459,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return outcomes;
   }
 
+
   public String getOverall() {
     return overall;
   }
@@ -448,10 +474,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectClusterActivities;
   }
 
-
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
+
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
@@ -461,7 +487,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
-
 
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
@@ -479,6 +504,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectPartners;
   }
 
+
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
   }
@@ -488,7 +514,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return regions;
   }
 
-
   public String getRegionsValue() {
     return regionsValue;
   }
@@ -497,14 +522,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.requiresWorkplanUpload;
   }
 
+
   public Integer getScale() {
     return scale;
   }
 
-
   public List<ProjectScope> getScopes() {
     return scopes;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -530,7 +556,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
@@ -543,6 +568,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.summary;
   }
 
+
   public String getTitle() {
     return this.title;
   }
@@ -552,10 +578,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.type;
   }
 
-
   public FileDB getWorkplan() {
     return workplan;
   }
+
 
   @Override
   public int hashCode() {
@@ -564,7 +590,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -613,6 +638,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return regional;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -621,7 +647,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
-
 
   public void setAnnualReportToDonnor(FileDB annualReportToDonnor) {
     this.annualReportToDonnor = annualReportToDonnor;
@@ -659,10 +684,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.flagships = flagships;
   }
 
+
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
   }
-
 
   public void setGlobal(boolean global) {
     this.global = global;
@@ -703,6 +728,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setNational(boolean national) {
     this.national = national;
   }
+
 
   public void setOutcomes(List<ProjectOutcome> outcomes) {
     this.outcomes = outcomes;
@@ -753,7 +779,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
   }
 
-
   public void setProjectOutcomes(Set<ProjectOutcome> projectOutcomes) {
     this.projectOutcomes = projectOutcomes;
   }
@@ -777,6 +802,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setRegionsValue(String regionsValue) {
     this.regionsValue = regionsValue;
   }
+
 
   public void setRequiresWorkplanUpload(Boolean requiresWorkplanUpload) {
     this.requiresWorkplanUpload = requiresWorkplanUpload;
@@ -827,11 +853,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.workplan = workplan;
   }
 
-
   @Override
   public String toString() {
     return id.toString();
   }
-
 }
 

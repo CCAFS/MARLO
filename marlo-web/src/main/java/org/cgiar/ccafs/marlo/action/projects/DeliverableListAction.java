@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -45,26 +47,45 @@ public class DeliverableListAction extends BaseAction {
   private ProjectManager projectManager;
 
 
+  private DeliverableTypeManager deliverableTypeManager;
+
   private CrpManager crpManager;
 
 
   // Front-end
   private List<Deliverable> deliverables;
 
-
+  private List<DeliverableType> deliverablesType;
   private long projectID;
 
+  private long deliverableID;
   private Project project;
+  private List<Integer> allYears;
 
   @Inject
-  public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
+  public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+    DeliverableTypeManager deliverableTypeManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.deliverableTypeManager = deliverableTypeManager;
+  }
+
+
+  public List<Integer> getAllYears() {
+    return allYears;
+  }
+
+  public long getDeliverableID() {
+    return deliverableID;
   }
 
   public List<Deliverable> getDeliverables() {
     return deliverables;
+  }
+
+  public List<DeliverableType> getDeliverablesType() {
+    return deliverablesType;
   }
 
   public Project getProject() {
@@ -84,6 +105,13 @@ public class DeliverableListAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     if (project != null) {
+
+      allYears = project.getAllYears();
+
+      if (deliverableTypeManager.findAll() != null) {
+        deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
+      }
+
       if (project.getDeliverables() != null) {
         deliverables = new ArrayList<>(project.getDeliverables());
       }
@@ -96,8 +124,20 @@ public class DeliverableListAction extends BaseAction {
     return SUCCESS;
   }
 
+  public void setAllYears(List<Integer> allYears) {
+    this.allYears = allYears;
+  }
+
+  public void setDeliverableID(long deliverableID) {
+    this.deliverableID = deliverableID;
+  }
+
   public void setDeliverables(List<Deliverable> deliverables) {
     this.deliverables = deliverables;
+  }
+
+  public void setDeliverablesType(List<DeliverableType> deliverablesType) {
+    this.deliverablesType = deliverablesType;
   }
 
   public void setProject(Project project) {
