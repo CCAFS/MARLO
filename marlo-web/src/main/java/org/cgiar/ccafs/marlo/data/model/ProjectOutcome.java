@@ -40,14 +40,21 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private Long achievedValue;
   @Expose
+  private Long achievedUnit;
+
+  @Expose
   private String narrativeTarget;
+
+
   @Expose
   private String narrativeAchieved;
+
 
   @Expose
   private boolean active;
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
@@ -55,10 +62,8 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
 
-
   public ProjectOutcome() {
   }
-
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, long expectedUnit, Long achievedValue, String narrativeTarget,
@@ -99,6 +104,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Long getAchievedUnit() {
+    return achievedUnit;
+  }
+
+
   public Long getAchievedValue() {
     return achievedValue;
   }
@@ -113,10 +123,10 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return communications;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
@@ -194,6 +204,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public void setAchievedUnit(Long achievedUnit) {
+    this.achievedUnit = achievedUnit;
   }
 
 

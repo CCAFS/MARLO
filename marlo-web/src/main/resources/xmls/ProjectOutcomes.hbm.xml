@@ -29,9 +29,15 @@
         <property name="achievedValue" type="java.lang.Long">
             <column name="achieved_value" precision="10" scale="0" />
         </property>
+        
+         <property name="achievedUnit" type="java.lang.Long">
+            <column name="achieved_unit" precision="10" scale="0" />
+        </property>
         <property name="narrativeTarget" type="string">
             <column name="narrative_target" length="65535" not-null="false" />
         </property>
+        
+        
         <property name="narrativeAchieved" type="string">
             <column name="narrative_achieved" length="65535" />
         </property>
