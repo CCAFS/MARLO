@@ -1,0 +1,104 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+
+package org.cgiar.ccafs.marlo.data.model;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * @author Hermes Jiménez - CIAT/CCAFS
+ */
+public class DeliverableType implements java.io.Serializable {
+
+  private static final long serialVersionUID = 2591192504126616140L;
+  private Long id;
+  private DeliverableType deliverableType;
+  private String name;
+  private String description;
+  private Integer timeline;
+  private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
+  public DeliverableType() {
+  }
+
+  public DeliverableType(DeliverableType deliverableType, String name, String description, Integer timeline,
+    Set<DeliverableType> deliverableTypes, Set<Deliverable> deliverables) {
+    this.deliverableType = deliverableType;
+    this.name = name;
+    this.description = description;
+    this.timeline = timeline;
+    this.deliverableTypes = deliverableTypes;
+    this.deliverables = deliverables;
+  }
+
+  public Set<Deliverable> getDeliverables() {
+    return this.deliverables;
+  }
+
+  public DeliverableType getDeliverableType() {
+    return this.deliverableType;
+  }
+
+  public Set<DeliverableType> getDeliverableTypes() {
+    return this.deliverableTypes;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public Long getId() {
+    return this.id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public Integer getTimeline() {
+    return this.timeline;
+  }
+
+  public void setDeliverables(Set<Deliverable> deliverables) {
+    this.deliverables = deliverables;
+  }
+
+  public void setDeliverableType(DeliverableType deliverableType) {
+    this.deliverableType = deliverableType;
+  }
+
+  public void setDeliverableTypes(Set<DeliverableType> deliverableTypes) {
+    this.deliverableTypes = deliverableTypes;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setTimeline(Integer timeline) {
+    this.timeline = timeline;
+  }
+
+}
