@@ -47,7 +47,7 @@
         </property>
         
           <property name="expectedGender" type="string">
-            <column name="expetcted_gender" length="65535" />
+            <column name="expected_gender" length="65535" />
         </property>
         
           <property name="narrativeGender" type="string">
