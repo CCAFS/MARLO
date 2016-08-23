@@ -317,6 +317,7 @@ public class ProjectLocationAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
         reader.close();
         this.setDraft(true);
       } else {
