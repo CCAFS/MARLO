@@ -22,11 +22,17 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +50,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private static final long serialVersionUID = 4520862722467820286L;
   private ProjectManager projectManager;
   private CrpManager crpManager;
+  private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
 
@@ -53,26 +60,34 @@ public class ProjectOutcomeAction extends BaseAction {
   private long projectOutcomeID;
   private Crp loggedCrp;
   private Project project;
+  private List<CrpMilestone> milestones;
+  private List<SrfTargetUnit> targetUnits;
+
 
   private ProjectOutcome projectOutcome;
 
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
+    SrfTargetUnitManager srfTargetUnitManager) {
     super(config);
     this.projectManager = projectManager;
-
+    this.srfTargetUnitManager = srfTargetUnitManager;
     this.crpManager = crpManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
   }
 
 
+  public List<CrpMilestone> getMilestones() {
+    return milestones;
+  }
+
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
@@ -86,6 +101,22 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public long getProjectOutcomeID() {
     return projectOutcomeID;
+  }
+
+
+  public List<SrfTargetUnit> getTargetUnits() {
+    return targetUnits;
+  }
+
+
+  public void loadProjectOutcomes(int year) {
+    projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList()));
+
+    projectOutcome.setCommunications(projectOutcome.getCommunications().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList()));
+
+
   }
 
 
@@ -108,9 +139,21 @@ public class ProjectOutcomeAction extends BaseAction {
     }
     project = projectManager.getProjectById(projectID);
     projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
+    /*
+     * Loading basic List
+     */
+    targetUnits = srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList());
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
+  }
+
+
+  public void setMilestones(List<CrpMilestone> milestones) {
+    this.milestones = milestones;
   }
 
 
@@ -128,6 +171,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
+  }
+
+  public void setTargetUnits(List<SrfTargetUnit> targetUnits) {
+    this.targetUnits = targetUnits;
   }
 
 }

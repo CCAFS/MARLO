@@ -133,5 +133,19 @@
       </result>
     </action>
     
+    <action name="{crp}/deliverableList" class="org.cgiar.ccafs.marlo.action.projects.DeliverableListAction">
+      <interceptor-ref name="projectsStack" />      
+      <result name="input">/WEB-INF/views/projects/deliverableList.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/deliverableList</param>
+        <param name="edit">true</param>
+      </result>      
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/deliverableList</param>
+        <param name="edit">true</param>
+        <param name="cancel">true</param>
+      </result>
+    </action>
+    
   </package>
 </struts>
