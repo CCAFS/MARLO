@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -84,14 +85,19 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public int getIndex(ProjectMilestone milestone) {
+    return projectOutcome.getMilestones().indexOf(milestone);
+  }
+
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -113,12 +119,12 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public void loadProjectOutcomes(int year) {
-    projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList()));
+  public List<ProjectMilestone> loadProjectMilestones(int year) {
 
-    projectOutcome.setCommunications(projectOutcome.getCommunications().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList()));
+    List<ProjectMilestone> projectMilestones = projectOutcome.getProjectMilestones().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
+
+    return projectMilestones;
 
 
   }
@@ -146,6 +152,16 @@ public class ProjectOutcomeAction extends BaseAction {
         .collect(Collectors.toList());
     }
 
+    projectOutcome.setMilestones(
+      projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    projectOutcome.setCommunications(
+      projectOutcome.getCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+    if (projectOutcome.getCommunications().size() > 0) {
+      projectOutcome.setProjectCommunication(projectOutcome.getCommunications().get(0));
+    }
     /*
      * Loading basic List
      */

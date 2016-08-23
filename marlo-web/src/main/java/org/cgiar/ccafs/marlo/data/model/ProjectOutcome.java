@@ -61,9 +61,12 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
+  private ProjectCommunication projectCommunication;
+
 
   public ProjectOutcome() {
   }
+
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, long expectedUnit, Long achievedValue, String narrativeTarget,
@@ -86,7 +89,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.projectCommunications = projectCommunicationses;
   }
 
-
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -102,7 +104,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public Long getAchievedUnit() {
     return achievedUnit;
@@ -128,6 +129,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
@@ -136,7 +138,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public long getExpectedUnit() {
     return expectedUnit;
   }
-
 
   public long getExpectedValue() {
     return expectedValue;
@@ -188,6 +189,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
+  }
+
+
+  public ProjectCommunication getProjectCommunication() {
+    return projectCommunication;
   }
 
 
@@ -284,6 +290,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+
+  public void setProjectCommunication(ProjectCommunication projectCommunication) {
+    this.projectCommunication = projectCommunication;
   }
 
 

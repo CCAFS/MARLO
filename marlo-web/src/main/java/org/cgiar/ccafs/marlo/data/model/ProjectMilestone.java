@@ -18,8 +18,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -6474276163660867919L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private CrpMilestone crpMilestone;
   @Expose
@@ -34,31 +37,28 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
-
   @Expose
   private long expectedValue;
   @Expose
   private long expectedUnit;
+
   @Expose
   private Long achievedValue;
   @Expose
   private String narrativeTarget;
   @Expose
   private String narrativeAchieved;
-
-
   @Expose
   private String narrativeGender;
   @Expose
   private String expectedGender;
 
+
   @Expose
   private int year;
 
-
   public ProjectMilestone() {
   }
-
 
   public ProjectMilestone(CrpMilestone crpMilestone, ProjectOutcome projectOutcome, User usersByModifiedBy,
     User usersByCreatedBy, boolean isActive, Date activeSince, String modificationJustification) {
@@ -72,14 +72,37 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectMilestone other = (ProjectMilestone) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Long getAchievedValue() {
     return achievedValue;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -148,12 +171,21 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return narrativeTarget;
   }
 
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
 
   public int getYear() {
     return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
