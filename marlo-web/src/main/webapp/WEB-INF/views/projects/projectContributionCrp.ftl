@@ -86,20 +86,20 @@
                 <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
               [/#list]
             </ul>
-
+       <input type="hidden" name="projectOutcome.id" />
             <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
                   [#-- Hidden Inputs --]
-                  <input type="hidden" name="projectOutcome.id" />
+           
                   
                   [#-- List milestones per year --]
                   <div class="milestonesYearBlock">
                     <div class="milestonesYearList">
-                      [#if projectOutcome.milestones?has_content]
-                        [#list (projectOutcome.milestones) as milestone]
-                          [@milestoneMacro element={} name="projectOutcome.milestones" index=milestonesIndex /]
+                      [#if action.loadProjectMilestones(year)?has_content]
+                        [#list ( action.loadProjectMilestones(year)) as milestone]
+                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestonesIndex /]
                           [#assign milestonesIndex = milestonesIndex + 1 /]
                         [/#list]
                       [/#if]
@@ -166,7 +166,7 @@
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.crpMilestone.id)!}" class="crpMilestoneId" />
-    
+   
     [#-- Milestone Title --]
     <p class="title">${(element.crpMilestone.title)!}</p>
     
@@ -187,18 +187,18 @@
       
       [#-- REPORTING BLOCK --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.expectedNarrative" i18nkey="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       <div class="form-group">
-        [@customForm.textArea name="${customName}.expectedGenderSocialNarrative" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.expectedGender" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       
       [#-- REPORTING BLOCK --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       <div class="form-group">
-        [@customForm.textArea name="${customName}.achievedGenderSocialNarrative" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeGender" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
     </div>
     

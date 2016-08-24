@@ -96,13 +96,16 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public int getIndex(ProjectCommunication milestone) {
-    return projectOutcome.getMilestones().indexOf(milestone);
+  public int getIndex(ProjectMilestone communication) {
+    return projectOutcome.getCommunications().indexOf(communication);
   }
 
 
-  public int getIndex(ProjectMilestone communication) {
-    return projectOutcome.getCommunications().indexOf(communication);
+  public int getIndexMilestone(long id) {
+
+    ProjectMilestone projectMilestone = new ProjectMilestone();
+    projectMilestone.setId(new Long(id));
+    return projectOutcome.getMilestones().indexOf(id);
   }
 
   public List<CrpMilestone> getMilestones() {
@@ -204,10 +207,10 @@ public class ProjectOutcomeAction extends BaseAction {
   public String save() {
 
 
-    this.saveProjectOutcome();
-    this.saveMilestones();
-    this.saveCommunications();
     if (this.hasPermission("canEdit")) {
+      this.saveProjectOutcome();
+      this.saveMilestones();
+      this.saveCommunications();
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -304,6 +307,9 @@ public class ProjectOutcomeAction extends BaseAction {
           projectMilestone.setProjectOutcome(projectOutcome);
           projectMilestone.setModifiedBy(this.getCurrentUser());
           projectMilestone.setModificationJustification("");
+        }
+        if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+          projectMilestone.setExpectedUnit(null);
         }
         projectMilestoneManager.saveProjectMilestone(projectMilestone);
 
