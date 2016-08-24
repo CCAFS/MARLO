@@ -143,23 +143,18 @@ public class AutoSaveReader {
     LinkedTreeMap<String, Object> result = gson.fromJson(jobj, LinkedTreeMap.class);
 
     for (Map.Entry<String, Object> entry : result.entrySet()) {
+
       String key = entry.getKey().split("\\.")[0];
-      try {
-       
 
-        String indexStr = key.split("\\[")[1].substring(0);
-        String keyName = key.split("\\[")[0].substring(0);
-        if (keyName.equals(keyParent)) {
-          indexStr = indexStr.substring(0, indexStr.length() - 1);
+      String indexStr = key.split("\\[")[1].substring(0);
+      String keyName = key.split("\\[")[0].substring(0);
+      if (keyName.equals(keyParent)) {
+        indexStr = indexStr.substring(0, indexStr.length() - 1);
 
-          int tempIndex = Integer.parseInt(indexStr);
-          if (tempIndex > index) {
-            index = tempIndex;
-          }
+        int tempIndex = Integer.parseInt(indexStr);
+        if (tempIndex > index) {
+          index = tempIndex;
         }
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
       }
 
     }
