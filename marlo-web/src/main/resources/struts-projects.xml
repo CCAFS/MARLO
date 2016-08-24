@@ -171,7 +171,7 @@
 		
 		<action name="{crp}/deliverable" class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
       <interceptor-ref name="editProjectsStack" />
-      <result name="input">/WEB-INF/projects/deliverable.ftl</result>
+      <result name="input">/WEB-INF/projects/projectDeliverable.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/deliverable</param>
         <param name="deliverableID">${deliverable.id}</param>
