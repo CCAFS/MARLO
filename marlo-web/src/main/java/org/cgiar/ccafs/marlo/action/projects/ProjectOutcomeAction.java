@@ -226,7 +226,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
-
+    if (this.isHttpPost()) {
+      if (projectOutcome.getMilestones() != null) {
+        projectOutcome.getMilestones().clear();
+      }
+      if (projectOutcome.getCommunications() != null) {
+        projectOutcome.getCommunications().clear();
+      }
+    }
   }
 
 
@@ -350,30 +357,32 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
-        if (projectMilestone.getId() == null) {
-          projectMilestone.setCreatedBy(this.getCurrentUser());
+        if (projectMilestone != null) {
+          if (projectMilestone.getId() == null) {
+            projectMilestone.setCreatedBy(this.getCurrentUser());
 
-          projectMilestone.setActiveSince(new Date());
-          projectMilestone.setActive(true);
-          projectMilestone.setProjectOutcome(projectOutcome);
-          projectMilestone.setModifiedBy(this.getCurrentUser());
-          projectMilestone.setModificationJustification("");
+            projectMilestone.setActiveSince(new Date());
+            projectMilestone.setActive(true);
+            projectMilestone.setProjectOutcome(projectOutcome);
+            projectMilestone.setModifiedBy(this.getCurrentUser());
+            projectMilestone.setModificationJustification("");
 
-        } else {
-          ProjectMilestone projectMilestoneDB =
-            projectMilestoneManager.getProjectMilestoneById(projectMilestone.getId());
-          projectMilestone.setCreatedBy(projectMilestoneDB.getCreatedBy());
+          } else {
+            ProjectMilestone projectMilestoneDB =
+              projectMilestoneManager.getProjectMilestoneById(projectMilestone.getId());
+            projectMilestone.setCreatedBy(projectMilestoneDB.getCreatedBy());
 
-          projectMilestone.setActiveSince(projectMilestoneDB.getActiveSince());
-          projectMilestone.setActive(true);
-          projectMilestone.setProjectOutcome(projectOutcome);
-          projectMilestone.setModifiedBy(this.getCurrentUser());
-          projectMilestone.setModificationJustification("");
+            projectMilestone.setActiveSince(projectMilestoneDB.getActiveSince());
+            projectMilestone.setActive(true);
+            projectMilestone.setProjectOutcome(projectOutcome);
+            projectMilestone.setModifiedBy(this.getCurrentUser());
+            projectMilestone.setModificationJustification("");
+          }
+          if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+            projectMilestone.setExpectedUnit(null);
+          }
+          projectMilestoneManager.saveProjectMilestone(projectMilestone);
         }
-        if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
-          projectMilestone.setExpectedUnit(null);
-        }
-        projectMilestoneManager.saveProjectMilestone(projectMilestone);
 
       }
     }

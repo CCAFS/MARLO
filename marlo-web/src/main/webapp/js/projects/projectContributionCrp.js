@@ -47,6 +47,22 @@ $(document).ready(function() {
     $item.setNameIndexes(1, milestonesCount);
     milestonesCount++;
 
+    // Update milestone
+    $list.find('.milestoneYear').each(function(i,e) {
+      $(e).find('.index').text(i + 1);
+    });
+
+    // Get extra information from ajax service milestoneInformation.do?milestoneID=3
+    $.ajax({
+        url: baseURL + '/milestoneInformation.do',
+        data: {
+          milestoneID: milestonId
+        },
+        success: function(data) {
+          console.log(data);
+        }
+    });
+
   });
 
   $('.removeProjectMilestone').on('click', function() {
@@ -58,6 +74,11 @@ $(document).ready(function() {
     $parent.hide('slow', function() {
       // Remove milestone block
       $parent.remove();
+
+      // Update milestone
+      $parent.parents('.milestonesYearBlock').find('.milestoneYear').each(function(i,e) {
+        $(e).find('.index').text(i + 1);
+      });
 
       // Add milestone option again
       $select.addOption(value, name);
