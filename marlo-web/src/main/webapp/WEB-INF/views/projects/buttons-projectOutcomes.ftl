@@ -4,6 +4,9 @@
 <input type="hidden"  name="projectID" value="${project.id}" />
 
 <input type="hidden"  name="projectOutcome.id" value="${(projectOutcome.id)!}" />
+<input type="hidden"  name="projectOutcome.crpProgramOutcome.crpProgram.acronym" value="${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!}" />
+<input type="hidden"  name="projectOutcome.crpProgramOutcome.id" value="${(projectOutcome.crpProgramOutcome.id)!}" />
+<input type="hidden"  name="projectOutcome.crpProgramOutcome.description" value="${(projectOutcome.crpProgramOutcome.description)!}" />
 <input type="hidden"  name="projectOutcome.project.id" value="${(projectOutcome.project.id)!}" />
 <input type="hidden"  name="className" value="${(projectOutcome.class.name)!}"/>
 <input type="hidden"  name="id" value="${(projectOutcome.id)!}"/>

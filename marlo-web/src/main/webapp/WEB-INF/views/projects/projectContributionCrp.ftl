@@ -161,7 +161,7 @@
     [#if isTemplate]
       [#local customName = "${name}[${index}]" /]
     [#else]
-      [#local customName = "${name}[${action.getIndexMilestone(element.id)}]" /]
+      [#local customName = "${name}[${action.getIndexMilestone(element.crpMilestone.id,element.year)}]" /]
     [/#if]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
