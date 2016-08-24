@@ -103,17 +103,19 @@
                     <div class="milestonesYearList">
                       [#if action.loadProjectMilestones(year)?has_content]
                         [#list action.loadProjectMilestones(year) as milestone]
-                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=action.getIndexMilestone(milestone.id) /]
+                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestone_index /]
                         [/#list]
                       [#else]
                         <p class="emptyMessage text-center">There is not a project milestone added for this year.</p>
                       [/#if]
                     </div>
                     [#-- Select a milestone --]
+                    [#if editable]
                     <div class="milestonesYearSelect">
                       <span class="milestonesSelectedIds" style="display:none">[#if action.loadProjectMilestones(year)?has_content][#list action.loadProjectMilestones(year) as e]${e.crpMilestone.id}[#if e_has_next],[/#if][/#list][/#if]</span>
                       [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
                     </div>
+                    [/#if]
                   </div>
                   
                   [#-- Communications --]
@@ -143,11 +145,8 @@
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-          <input type="hidden" name="projectOutcomeID" value="${projectOutcomeID}"/>
-          
-          
-         
+          [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
+
         [/@s.form] 
       </div>
     </div>  
@@ -161,10 +160,15 @@
 
 [#macro milestoneMacro element name index isTemplate=false]
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]" /]
+    [#if isTemplate]
+      [#local customName = "${name}[${index}]" /]
+    [#else]
+      [#local customName = "${name}[${action.getIndexMilestone(element.id)}]" /]
+    [/#if]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     <div class="leftHead sm">
+      <span class="index"> ${index+1} </span>
       <span class="elementId"> Project Milestone Target </span>
     </div>
 
