@@ -156,7 +156,12 @@ public class ProjectOutcomeAction extends BaseAction {
       }
       i++;
     }
-    return -1;
+
+    ProjectCommunication com = new ProjectCommunication();
+    com.setYear(year);
+    projectOutcome.getCommunications().add(com);
+    return this.getIndexCommunication(year);
+
   }
 
 
@@ -178,14 +183,21 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestones;
   }
 
+  public List<CrpMilestone> getMilestonesbyYear(int year) {
+    List<CrpMilestone> milestoneList =
+      milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
+    return milestoneList;
+  }
+
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -207,7 +219,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
 
-
   private String getSummaryPath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
@@ -218,14 +229,15 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
   }
 
+
   public List<SrfTargetUnit> getTargetUnits() {
     return targetUnits;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -241,7 +253,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
@@ -371,6 +382,7 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveMilestones();
       this.saveCommunications();
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
