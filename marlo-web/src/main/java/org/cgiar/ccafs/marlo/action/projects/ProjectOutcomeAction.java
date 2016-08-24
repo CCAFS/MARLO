@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -34,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -55,6 +58,9 @@ public class ProjectOutcomeAction extends BaseAction {
    */
   private static final long serialVersionUID = 4520862722467820286L;
   private ProjectManager projectManager;
+  private ProjectMilestoneManager projectMilestoneManager;
+  private ProjectCommunicationManager projectCommunicationManager;
+
   private CrpManager crpManager;
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -76,13 +82,17 @@ public class ProjectOutcomeAction extends BaseAction {
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
-    SrfTargetUnitManager srfTargetUnitManager) {
+    SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
+    ProjectCommunicationManager projectCommunicationManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.crpManager = crpManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
+    this.projectMilestoneManager = projectMilestoneManager;
+    this.projectCommunicationManager = projectCommunicationManager;
+
   }
 
 
@@ -126,7 +136,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
-    List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+    List<ProjectCommunication> projectCommunications = projectOutcome.getCommunications().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
 
 
@@ -141,7 +151,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
-    List<ProjectMilestone> projectMilestones = projectOutcome.getProjectMilestones().stream()
+    List<ProjectMilestone> projectMilestones = projectOutcome.getMilestones().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
 
     return projectMilestones;
@@ -195,6 +205,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
     this.saveProjectOutcome();
+    this.saveMilestones();
+    this.saveCommunications();
     if (this.hasPermission("canEdit")) {
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -210,6 +222,92 @@ public class ProjectOutcomeAction extends BaseAction {
     {
 
       return NOT_AUTHORIZED;
+    }
+  }
+
+  public void saveCommunications() {
+
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    for (ProjectCommunication projectCommunication : projectOutcomeDB.getProjectCommunications().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      if (projectOutcome.getCommunications() == null) {
+        projectOutcome.setCommunications(new ArrayList<>());
+      }
+      if (!projectOutcome.getCommunications().contains(projectCommunication)) {
+        projectCommunicationManager.deleteProjectCommunication(projectCommunication.getId());
+
+      }
+    }
+
+    if (projectOutcome.getCommunications() != null) {
+      for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+        if (projectCommunication.getId() == null) {
+          projectCommunication.setCreatedBy(this.getCurrentUser());
+
+          projectCommunication.setActiveSince(new Date());
+          projectCommunication.setActive(true);
+          projectCommunication.setProjectOutcome(projectOutcome);
+          projectCommunication.setModifiedBy(this.getCurrentUser());
+          projectCommunication.setModificationJustification("");
+
+        } else {
+          ProjectCommunication projectCommunicationDB =
+            projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
+          projectCommunication.setCreatedBy(projectCommunicationDB.getCreatedBy());
+
+          projectCommunication.setActiveSince(projectCommunicationDB.getActiveSince());
+          projectCommunication.setActive(true);
+          projectCommunication.setProjectOutcome(projectOutcome);
+          projectCommunication.setModifiedBy(this.getCurrentUser());
+          projectCommunication.setModificationJustification("");
+        }
+        projectCommunicationManager.saveProjectCommunication(projectCommunication);
+
+      }
+    }
+  }
+
+  public void saveMilestones() {
+
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      if (projectOutcome.getMilestones() == null) {
+        projectOutcome.setMilestones(new ArrayList<>());
+      }
+      if (!projectOutcome.getMilestones().contains(projectMilestone)) {
+        projectMilestoneManager.deleteProjectMilestone(projectMilestone.getId());
+
+      }
+    }
+
+    if (projectOutcome.getMilestones() != null) {
+      for (ProjectMilestone projectMilestone : projectOutcome.getMilestones()) {
+        if (projectMilestone.getId() == null) {
+          projectMilestone.setCreatedBy(this.getCurrentUser());
+
+          projectMilestone.setActiveSince(new Date());
+          projectMilestone.setActive(true);
+          projectMilestone.setProjectOutcome(projectOutcome);
+          projectMilestone.setModifiedBy(this.getCurrentUser());
+          projectMilestone.setModificationJustification("");
+
+        } else {
+          ProjectMilestone projectMilestoneDB =
+            projectMilestoneManager.getProjectMilestoneById(projectMilestone.getId());
+          projectMilestone.setCreatedBy(projectMilestoneDB.getCreatedBy());
+
+          projectMilestone.setActiveSince(projectMilestoneDB.getActiveSince());
+          projectMilestone.setActive(true);
+          projectMilestone.setProjectOutcome(projectOutcome);
+          projectMilestone.setModifiedBy(this.getCurrentUser());
+          projectMilestone.setModificationJustification("");
+        }
+        projectMilestoneManager.saveProjectMilestone(projectMilestone);
+
+      }
     }
   }
 

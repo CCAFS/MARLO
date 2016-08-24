@@ -40,7 +40,7 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   @Expose
   private long expectedValue;
   @Expose
-  private long expectedUnit;
+  private SrfTargetUnit expectedUnit;
 
   @Expose
   private Long achievedValue;
@@ -119,7 +119,7 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getExpectedUnit() {
+  public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
   }
 
@@ -225,7 +225,7 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setExpectedUnit(long expectedUnit) {
+  public void setExpectedUnit(SrfTargetUnit expectedUnit) {
     this.expectedUnit = expectedUnit;
   }
 
