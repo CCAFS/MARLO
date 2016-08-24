@@ -9,7 +9,7 @@
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
 
 			<interceptor-stack name="jsonStack">
-				<interceptor-ref name="defaultStack"/>
+				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="prepare" />
 			</interceptor-stack>
@@ -18,14 +18,16 @@
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
 
-  <action name="reportingSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction" >
-      <result name="success" type="stream">
-        <param name="inputName">inputStream</param>
-       <param name="contentType">text/pdf</param>
-       <param name="contentDisposition">attachment;filename="${fileName}"</param>
-      </result>
-    </action>
+		<action name="reportingSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				     
+				<param name="contentType">text/pdf</param>
+				       
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+			</result>
+		</action>
 
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
@@ -51,15 +53,15 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
-		
-		
-		  <action name="milestoneInformation"
-      class="org.cgiar.ccafs.marlo.action.json.global.MilestoneInformationAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+
+
+		<action name="milestoneInformation"
+			class="org.cgiar.ccafs.marlo.action.json.global.MilestoneInformationAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="searchCountryListPL"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
@@ -161,6 +163,12 @@
 			</result>
 		</action>
 
-	
+		<action name="validateProjectSection"
+			class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 	</package>
 </struts>
