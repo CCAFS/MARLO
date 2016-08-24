@@ -183,14 +183,21 @@ public class ProjectOutcomeAction extends BaseAction {
     return milestones;
   }
 
+  public List<CrpMilestone> getMilestonesbyYear(int year) {
+    List<CrpMilestone> milestoneList =
+      milestones.stream().filter(c -> c.getYear() >= year).collect(Collectors.toList());
+    return milestoneList;
+  }
+
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -212,7 +219,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
 
-
   private String getSummaryPath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
@@ -223,14 +229,15 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
   }
 
+
   public List<SrfTargetUnit> getTargetUnits() {
     return targetUnits;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -246,7 +253,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
