@@ -122,18 +122,19 @@
                   [#assign comunicationIndex = action.getIndexCommunication(year) /]
                   <hr />
                   <h5 class="sectionSubTitle">Communications </h5>
+                  <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
                   <div class="communicationsBlock form-group">
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.projectCommunications[${comunicationIndex}].communicationEngagement" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
                     </div>
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.projectCommunications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
                     </div>
                   </div>
                   <div class="fileUpload">
                     <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
                     <div class="uploadContainer">
-                      [@customForm.inputFile name="projectOutcome.projectCommunications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.projectCommunications[${comunicationIndex}].summary.fileName" editable=editable /]
+                      [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
                     </div>  
                   </div>
                   
@@ -163,7 +164,7 @@
     [#if isTemplate]
       [#local customName = "${name}[${index}]" /]
     [#else]
-      [#local customName = "${name}[${action.getIndexMilestone(element.crpMilestone.id,element.year)}]" /]
+      [#local customName = "${name}[${action.getIndexMilestone(element.crpMilestone.id, element.year)}]" /]
     [/#if]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
