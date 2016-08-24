@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,9 +80,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   private ProjectOutcome projectOutcome;
 
-  private File file;
-  private String fileContentType;
-  private String fileFileName;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -99,19 +97,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
-  public File getFile() {
-    return file;
-  }
-
-
-  public String getFileContentType() {
-    return fileContentType;
-  }
-
-  public String getFileFileName() {
-    return fileFileName;
-  }
 
   public int getIndexCommunication(long id) {
 
@@ -288,6 +273,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (projectOutcome.getCommunications() != null) {
       for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+
+
         if (projectCommunication.getId() == null) {
           projectCommunication.setCreatedBy(this.getCurrentUser());
 
@@ -297,6 +284,14 @@ public class ProjectOutcomeAction extends BaseAction {
           projectCommunication.setModifiedBy(this.getCurrentUser());
           projectCommunication.setModificationJustification("");
 
+          if (projectCommunication.getFile() != null) {
+
+
+            projectCommunication.setSummary(this.getFileDB(null, projectCommunication.getFile(),
+              projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+            FileManager.copyFile(projectCommunication.getFile(),
+              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+          }
         } else {
           ProjectCommunication projectCommunicationDB =
             projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
@@ -307,7 +302,22 @@ public class ProjectOutcomeAction extends BaseAction {
           projectCommunication.setProjectOutcome(projectOutcome);
           projectCommunication.setModifiedBy(this.getCurrentUser());
           projectCommunication.setModificationJustification("");
+
+          if (projectCommunication.getFile() != null) {
+
+
+            projectCommunication.setSummary(this.getFileDB(projectCommunicationDB.getSummary(),
+              projectCommunication.getFile(), projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+            FileManager.copyFile(projectCommunication.getFile(),
+              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+          }
+
         }
+
+        if (projectCommunication.getSummary().getFileName().isEmpty()) {
+          projectCommunication.setSummary(null);
+        }
+
         projectCommunicationManager.saveProjectCommunication(projectCommunication);
 
       }
@@ -389,20 +399,6 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public void setFile(File file) {
-    this.file = file;
-  }
-
-
-  public void setFileContentType(String fileContentType) {
-    this.fileContentType = fileContentType;
-  }
-
-  public void setFileFileName(String fileFileName) {
-    this.fileFileName = fileFileName;
-  }
-
-
   public void setMilestones(List<CrpMilestone> milestones) {
     this.milestones = milestones;
   }
@@ -429,3 +425,4 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 }
+
