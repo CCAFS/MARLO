@@ -1,0 +1,15 @@
+.fair div {
+    background-color: #999;
+    margin: 0 0 5px 5px;
+    color: #fff;
+    padding: 0 7px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    margin-right: 2px;
+    font-size: 0.9em;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.fair .active {
+    background-color: #3c763d;
+}

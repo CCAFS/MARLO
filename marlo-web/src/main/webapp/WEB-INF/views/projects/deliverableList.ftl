@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "Project Deliverables" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectsLocation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
-[#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
+[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign customJS = ["${baseUrl}/js/projects/deliverableList.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css","${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 
@@ -34,11 +34,12 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
-           [#-- 
-           <div style="display:none">[@deliverableList.deliverablesList deliverables="" canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div> 
-           --]
-          
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+           
+           <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+                     
+          <div class="text-right">
+            <div class="addDeliverable button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add a Deliverable</div>
+          </div>
              
          
           [/@s.form] 
