@@ -37,6 +37,9 @@
           
           
           <h3 class="headTitle">${projectOutcome.crpProgramOutcome.crpProgram.acronym} - Outcome 2022</h3>  
+          [#-- Hidden Inputs --]
+          <input type="hidden" name="projectOutcome.id" value="${(projectOutcome.id)!}" />
+          
           [#-- Outcomen name --]
           <p>${projectOutcome.crpProgramOutcome.description}</p>
           
@@ -75,7 +78,6 @@
             </div>
           </div>
           [#-- Project Milestones and Communications contributions per year--]
-          [#assign milestonesIndex = 0 /]
           <div class="">  
             <br />
             [#assign startYear = (project.startDate?string.yyyy)?number]
@@ -86,7 +88,7 @@
                 <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
               [/#list]
             </ul>
-       <input type="hidden" name="projectOutcome.id" />
+            
             <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
@@ -99,8 +101,7 @@
                     <div class="milestonesYearList">
                       [#if action.loadProjectMilestones(year)?has_content]
                         [#list ( action.loadProjectMilestones(year)) as milestone]
-                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestonesIndex /]
-                          [#assign milestonesIndex = milestonesIndex + 1 /]
+                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=action.getIndexMilestone(milestone.id) /]
                         [/#list]
                       [/#if]
                     </div>

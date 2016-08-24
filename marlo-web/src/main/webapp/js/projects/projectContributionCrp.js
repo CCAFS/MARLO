@@ -1,4 +1,8 @@
+var milestonesCount;
+
 $(document).ready(function() {
+
+  milestonesCount = $('form .milestoneYear').length;
 
   $('select').select2({
     width: '100%'
@@ -19,7 +23,12 @@ $(document).ready(function() {
 
     $item.show('slow');
 
-    updateMilestonesIndex();
+    milestonesCount
+
+    $item.setNameIndexes(1, milestonesCount);
+    milestonesCount++;
+
+    // updateMilestonesIndex();
 
   });
 
@@ -27,7 +36,7 @@ $(document).ready(function() {
     var $parent = $(this).parent();
     $parent.hide('slow', function() {
       $parent.remove();
-      updateMilestonesIndex();
+      // updateMilestonesIndex();
     });
   });
 
