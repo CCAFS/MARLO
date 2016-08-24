@@ -50,7 +50,7 @@
                   [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.expectedUnit.id" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
@@ -66,7 +66,7 @@
                   [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.achievedUnit.id" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
@@ -164,7 +164,11 @@
     <br />
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.year" value="${(element.year)!} class="year" />
+    <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.crpMilestone.id)!}" class="crpMilestoneId" />
+    
+    [#-- Milestone Title --]
+    <p class="title">${(element.crpMilestone.title)!}</p>
     
     [#-- Milestone content --]
     <div class="form-group">
@@ -173,7 +177,7 @@
           [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
         <div class="col-md-4">
-          [@customForm.select name="${customName}.expectedUnit" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
+          [@customForm.select name="${customName}.expectedUnit.id" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
         </div>
         [#-- REPORTING BLOCK --]
         <div class="col-md-4">
