@@ -170,8 +170,10 @@
 		</action>
 		
 		<action name="{crp}/deliverable" class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
-      <interceptor-ref name="editProjectsStack" />
-      <result name="input">/WEB-INF/projects/projectDeliverable.ftl</result>
+      <interceptor-ref name="editProjectListStack" />
+      <interceptor-ref name="editDeliverable" />
+      <interceptor-ref name="defaultStack" />
+      <result name="input">/WEB-INF/views/projects/projectDeliverable.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/deliverable</param>
         <param name="deliverableID">${deliverable.id}</param>
@@ -212,7 +214,6 @@
 
 		<action name="{crp}/addNewProjectOuctome" method="addProjectOutcome"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
-
 			<result name="input">/WEB-INF/views/projects/projectContributionsCrpList.ftl
 			</result>
 			<result name="success" type="redirectAction">
@@ -230,6 +231,7 @@
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeAction">
 			<interceptor-ref name="editProjectListStack" />
 			<interceptor-ref name="editProjectOutcome" />
+			<interceptor-ref name="defaultStack" />
 			<result name="input">/WEB-INF/views/projects/projectContributionCrp.ftl
 			</result>
 			<result name="success" type="redirectAction">

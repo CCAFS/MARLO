@@ -25,11 +25,6 @@
 			<interceptor name="i18nFile"
 				class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
 
-
-			<interceptor name="editProjectOutcome"
-				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcome" />
-
-
 			<!-- Custom interceptor to prevent the unauthorized access of a inactive 
 				section -->
 			<interceptor name="accessibleStage"
@@ -61,6 +56,12 @@
 				class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
 
 			<!-- Project interceptors -->
+			<interceptor name="editProjectOutcome"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcomeInterceptor" />
+
+			<interceptor name="editDeliverable"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
+
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
@@ -131,8 +132,7 @@
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
-				<interceptor-ref name="trimInputs" />
-				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="trimInputs" />				
 			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">

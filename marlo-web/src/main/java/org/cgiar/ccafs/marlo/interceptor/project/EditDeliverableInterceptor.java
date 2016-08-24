@@ -17,11 +17,12 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -36,40 +37,41 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class EditProjectOutcome extends AbstractInterceptor implements Serializable {
+public class EditDeliverableInterceptor extends AbstractInterceptor implements Serializable {
 
-  private static final long serialVersionUID = 1423197153747668108L;
+  private static final long serialVersionUID = 7287623847333177230L;
 
   private BaseAction baseAction;
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
-  private long projectOutcomeId = 0;
+  private long deliverableId = 0;
 
-  private ProjectOutcomeManager projectOutcomeManager;
+  private DeliverableManager deliverableManager;
   private ProjectManager projectManager;
+  private CrpManager crpManager;
 
   @Inject
-  public EditProjectOutcome(ProjectOutcomeManager projectOutcomeManager, ProjectManager projectManager) {
-    this.projectOutcomeManager = projectOutcomeManager;
+  public EditDeliverableInterceptor(DeliverableManager deliverableManager, ProjectManager projectManager,
+    CrpManager crpManager) {
+    this.crpManager = crpManager;
     this.projectManager = projectManager;
-
+    this.deliverableManager = deliverableManager;
   }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-
     baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
+    crp = crpManager.getCrpById(crp.getId());
     try {
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;
-
     }
   }
 
@@ -81,33 +83,25 @@ public class EditProjectOutcome extends AbstractInterceptor implements Serializa
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
 
+    deliverableId = Long.parseLong(projectParameter);
 
-    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_OUTCOME_REQUEST_ID))[0];
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
-    projectOutcomeId = Long.parseLong(projectParameter);
+    if (deliverable != null) {
 
-    ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
-
-    if (project != null) {
-
-      String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
+      String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
       System.out.println(params);
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(project.getProject()) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params))) {
-
-
+        if (projects.contains(deliverable.getProject()) && baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params))) {
           canEdit = true;
-
         }
-
-
       }
 
       // TODO Validate is the project is new
@@ -122,7 +116,7 @@ public class EditProjectOutcome extends AbstractInterceptor implements Serializa
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION, params));
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
       }
 
       // Set the variable that indicates if the user can edit the section
