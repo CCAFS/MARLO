@@ -136,7 +136,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
-    List<ProjectCommunication> projectCommunications = projectOutcome.getProjectCommunications().stream()
+    List<ProjectCommunication> projectCommunications = projectOutcome.getCommunications().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
 
 
@@ -151,7 +151,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
-    List<ProjectMilestone> projectMilestones = projectOutcome.getProjectMilestones().stream()
+    List<ProjectMilestone> projectMilestones = projectOutcome.getMilestones().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
 
     return projectMilestones;
