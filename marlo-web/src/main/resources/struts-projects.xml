@@ -168,6 +168,26 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/deliverable" class="org.cgiar.ccafs.marlo.action.projects.DeliverableAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/projects/deliverable.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/deliverable</param>
+        <param name="deliverableID">${deliverable.id}</param>
+        <param name="edit">true</param>
+      </result>
+      <!--  
+      <result name="next" type="redirectAction">
+        <param name="actionName">impactPathway</param>
+        <param name="deliverableID">${deliverable.id}</param>
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">deliverable</param>
+        <param name="deliverableID">${deliverable.id}</param>
+      </result>
+      -->
+    </action>
 
 		<action name="{crp}/contributionsCrpList"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">

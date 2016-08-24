@@ -23,9 +23,14 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -47,17 +52,16 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableTypeManager deliverableTypeManager;
 
-
   private DeliverableManager deliverableManager;
   private CrpManager crpManager;
+
+
   private long projectID;
   private long deliverableID;
-
-
+  private List<DeliverableType> deliverableType;
   private Project project;
-
-
   private Deliverable deliverable;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -67,6 +71,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -75,14 +80,18 @@ public class DeliverableAction extends BaseAction {
     return deliverableID;
   }
 
+  public List<DeliverableType> getDeliverableType() {
+    return deliverableType;
+  }
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -105,6 +114,9 @@ public class DeliverableAction extends BaseAction {
     if (deliverable != null) {
       project = deliverable.getProject();
       projectID = project.getId();
+
+      deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
+        .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
     }
 
 
@@ -112,13 +124,17 @@ public class DeliverableAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
+  }
+
+  public void setDeliverableType(List<DeliverableType> deliverableType) {
+    this.deliverableType = deliverableType;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
