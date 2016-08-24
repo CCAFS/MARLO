@@ -26,8 +26,8 @@
 				class="org.cgiar.ccafs.marlo.interceptor.InternationalitazionFileInterceptor" />
 
 
-    <interceptor name="editProjectOutcome"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcome" />
+			<interceptor name="editProjectOutcome"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcome" />
 
 
 			<!-- Custom interceptor to prevent the unauthorized access of a inactive 
@@ -124,21 +124,16 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
-
-
-<interceptor-stack name="editProjectListStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-
-
-
+			<interceptor-stack name="editProjectListStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">
 				<interceptor-ref name="i18nFile" />

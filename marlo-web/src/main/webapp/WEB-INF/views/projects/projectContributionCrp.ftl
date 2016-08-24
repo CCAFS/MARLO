@@ -102,7 +102,7 @@
                   <div class="milestonesYearBlock">
                     <div class="milestonesYearList">
                       [#if action.loadProjectMilestones(year)?has_content]
-                        [#list ( action.loadProjectMilestones(year)) as milestone]
+                        [#list action.loadProjectMilestones(year) as milestone]
                           [@milestoneMacro element=milestone name="projectOutcome.milestones" index=action.getIndexMilestone(milestone.id) /]
                         [/#list]
                       [#else]
@@ -111,11 +111,10 @@
                     </div>
                     [#-- Select a milestone --]
                     <div class="milestonesYearSelect">
+                      <span class="milestonesSelectedIds" style="display:none">[#if action.loadProjectMilestones(year)?has_content][#list action.loadProjectMilestones(year) as e]${e.crpMilestone.id}[#if e_has_next],[/#if][/#list][/#if]</span>
                       [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
                     </div>
-                    
                   </div>
-                  
                   
                   [#-- Communications --]
                   [#if reportingActive]
@@ -168,14 +167,20 @@
     <div class="leftHead sm">
       <span class="elementId"> Project Milestone Target </span>
     </div>
-    <br />
-    [#-- Hidden inputs --]
+
+        [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.crpMilestone.id)!}" class="crpMilestoneId" />
    
     [#-- Milestone Title --]
-    <p> <strong>Milestone title:</strong> <span class="title"></span>${(element.crpMilestone.title)!}</p>
+    <div class="form-group grayBox">
+      <div class="row">
+        <div class="col-md-6"><strong>Milestone target value for ${(element.crpMilestone.year)!}:</strong> ${(element.crpMilestone.value)!}</div>
+        <div class="col-md-6"><strong>Accumulated target value to date:</strong> 0 </div>
+      </div>
+      <span class="title">${(element.crpMilestone.title)!}</span>
+    </div>
     
     [#-- Milestone content --]
     <div class="form-group">
