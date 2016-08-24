@@ -108,7 +108,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     ProjectMilestone projectMilestone = new ProjectMilestone();
     projectMilestone.setId(new Long(id));
-    return projectOutcome.getMilestones().indexOf(id);
+    return projectOutcome.getMilestones().indexOf(projectMilestone);
   }
 
   public List<CrpMilestone> getMilestones() {
