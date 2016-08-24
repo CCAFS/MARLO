@@ -4,7 +4,7 @@ $(document).ready(function() {
 
   milestonesCount = $('form .milestoneYear').length;
 
-  $('select').select2({
+  $('form select').select2({
     width: '100%'
   });
 
@@ -18,6 +18,10 @@ $(document).ready(function() {
     $item.find('.title').text(title);
     $item.find('.crpMilestoneId').val(milestonId);
     $item.find('.year').val(year);
+
+    $item.find('select').select2({
+      width: '100%'
+    });
 
     $list.append($item);
 
