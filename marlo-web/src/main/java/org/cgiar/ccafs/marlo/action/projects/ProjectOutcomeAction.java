@@ -79,9 +79,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   private ProjectOutcome projectOutcome;
 
-  private File file;
-  private String fileContentType;
-  private String fileFileName;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -99,19 +96,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
-  public File getFile() {
-    return file;
-  }
-
-
-  public String getFileContentType() {
-    return fileContentType;
-  }
-
-  public String getFileFileName() {
-    return fileFileName;
-  }
 
   public int getIndexCommunication(long id) {
 
@@ -386,20 +370,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
     }
 
-  }
-
-
-  public void setFile(File file) {
-    this.file = file;
-  }
-
-
-  public void setFileContentType(String fileContentType) {
-    this.fileContentType = fileContentType;
-  }
-
-  public void setFileFileName(String fileFileName) {
-    this.fileFileName = fileFileName;
   }
 
 

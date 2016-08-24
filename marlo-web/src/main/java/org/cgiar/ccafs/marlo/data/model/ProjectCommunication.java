@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.io.File;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -25,7 +26,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private FileDB file;
+  private FileDB sumary;
   @Expose
   private ProjectOutcome projectOutcome;
   @Expose
@@ -50,12 +51,17 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   @Expose
   private int year;
 
+
+  private File file;
+  private String fileContentType;
+  private String fileFileName;
+
   public ProjectCommunication() {
   }
 
   public ProjectCommunication(FileDB file, ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
-    this.file = file;
+    this.sumary = file;
     this.projectOutcome = projectOutcome;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -118,15 +124,10 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public FileDB getFile() {
-    return file;
-  }
-
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -152,6 +153,11 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
+  }
+
+
+  public FileDB getSummary() {
+    return sumary;
   }
 
 
@@ -199,8 +205,8 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setFile(FileDB file) {
-    this.file = file;
+  public void setFile(FileDB sumary) {
+    this.sumary = sumary;
   }
 
 
