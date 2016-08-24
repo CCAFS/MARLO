@@ -36,10 +36,15 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   private String communication;
   @Expose
   private String analysisCommunication;
+
   @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
   @Expose
@@ -100,6 +105,10 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
+  public String getAnalysisCommunication() {
+    return analysisCommunication;
+  }
 
   public String getCommunication() {
     return this.communication;
@@ -173,6 +182,11 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setAnalysisCommunication(String analysisCommunication) {
+    this.analysisCommunication = analysisCommunication;
   }
 
 
