@@ -38,8 +38,6 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">${projectOutcome.crpProgramOutcome.crpProgram.acronym} - Outcome 2022</h3>  
-          [#-- Hidden Inputs --]
-          <input type="hidden" name="projectOutcome.id" value="${(projectOutcome.id)!}" />
           
           [#-- Outcomen name --]
           <p>${projectOutcome.crpProgramOutcome.description}</p>
@@ -168,7 +166,7 @@
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     <div class="leftHead sm">
-      <span class="index"> ${index+1} </span>
+      <span class="index">${index+1}</span>
       <span class="elementId"> Project Milestone Target </span>
     </div>
 
@@ -230,7 +228,7 @@
     [#if reportingActive]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
-      [#return  ((year == currentCycleYear) || (year == currentCycleYear+1)) && (endDate gte year) ]
+      [#return  (year == currentCycleYear) && (endDate gte year) ]
     [/#if]
   [#else]
     [#return false]

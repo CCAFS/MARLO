@@ -76,7 +76,8 @@ $(document).ready(function() {
       $parent.remove();
 
       // Update milestone
-      $parent.parents('.milestonesYearBlock').find('.milestoneYear').each(function(i,e) {
+      $select.parents('.milestonesYearBlock').find('.milestoneYear').each(function(i,e) {
+        console.log($(e));
         $(e).find('.index').text(i + 1);
       });
 
