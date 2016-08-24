@@ -131,7 +131,7 @@
                   <div class="fileUpload">
                     <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
                     <div class="uploadContainer">
-                      [@customForm.inputFile name="file" fileUrl="${(projectOutcomeSummaryURL)!}" fileName="projectOutcome.projectCommunications[${year_index}].uploadSummary" editable=editable /]
+                      [@customForm.inputFile name="file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.projectCommunications[${year_index}].file.fileName" editable=editable /]
                     </div>  
                   </div>
                   [/#if]

@@ -46,7 +46,7 @@
                 <div class="selectWrapper row">
                 [#if project.locationsData?has_content]
                   [#list project.locationsData as locationLevels]
-                    [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index /]
+                    [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
                   [/#list]
                 [/#if]
                 
@@ -92,7 +92,7 @@
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
-[#macro locationLevel element  name index template=false]
+[#macro locationLevel element  name index template=false list=false]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
@@ -115,7 +115,7 @@
       <div class="optionSelect-content row">
         [#if element.locElements?has_content]
           [#list element.locElements as location]
-            [@locationMacro element=location name="${customName}.${locationName}" index=location_index list=element.list?? && element.list/]
+            [@locationMacro element=location name="${customName}.${locationName}" index=location_index /]
           [/#list]
         [/#if]
       </div>
@@ -138,10 +138,11 @@
     </div>
     <input class="locationLevelId" type="hidden" name="${locationLevelName}[${index}].id" value="${(element.id)!}"/>
     <input class="locationLevelName" type="hidden" name="${locationLevelName}[${index}].name" value="${(element.name)!}"/>
+    <input type="hidden" class="isList" name="${customName}.isList"  value="${(list)?string}"/>
   </div>
 [/#macro]
 
-[#macro locationMacro element  name index template=false list=false]
+[#macro locationMacro element  name index template=false ]
   [#local customName = "${name}[${index}]" /]
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
@@ -159,6 +160,5 @@
     <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
     <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
     <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
-    <span class="hidden isList">${(list)?string}</span>
   </div>
 [/#macro]
