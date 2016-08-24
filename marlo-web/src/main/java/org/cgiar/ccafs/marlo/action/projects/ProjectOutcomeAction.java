@@ -96,7 +96,10 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
-  public int getIndex(ProjectMilestone communication) {
+  public int getIndexCommunication(long id) {
+
+    ProjectCommunication communication = new ProjectCommunication();
+    communication.setId(id);
     return projectOutcome.getCommunications().indexOf(communication);
   }
 
