@@ -178,8 +178,12 @@
     [#-- Milestone Title --]
     <div class="form-group grayBox">
       <div class="row">
-        <div class="col-md-6"><strong>Milestone target value for ${(element.crpMilestone.year)!}:</strong> ${(element.crpMilestone.value)!}</div>
-        <div class="col-md-6"><strong>Accumulated target value to date:</strong> 0 </div>
+        <div class="col-md-6">
+          <strong>Milestone target value for <span class="crpMilestoneYear">${(element.crpMilestone.year)!}</span> :</strong> <span class="crpMilestoneValue">${(element.crpMilestone.value)!}</span> 
+        </div>
+        <div class="col-md-6">
+          <strong>Accumulated target value to date:</strong> 0 
+        </div>
       </div>
       <span class="title">${(element.crpMilestone.title)!}</span>
     </div>
