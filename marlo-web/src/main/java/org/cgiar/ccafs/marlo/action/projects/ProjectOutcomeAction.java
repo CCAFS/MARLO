@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -273,18 +274,7 @@ public class ProjectOutcomeAction extends BaseAction {
     if (projectOutcome.getCommunications() != null) {
       for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
 
-        if (projectCommunication.getFile() != null) {
 
-          /*
-           * project
-           * .setSummary(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
-           * FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
-           */
-        }
-
-        if (project.getWorkplan().getFileName().isEmpty()) {
-          project.setWorkplan(null);
-        }
         if (projectCommunication.getId() == null) {
           projectCommunication.setCreatedBy(this.getCurrentUser());
 
@@ -294,6 +284,14 @@ public class ProjectOutcomeAction extends BaseAction {
           projectCommunication.setModifiedBy(this.getCurrentUser());
           projectCommunication.setModificationJustification("");
 
+          if (projectCommunication.getFile() != null) {
+
+
+            projectCommunication.setSummary(this.getFileDB(null, projectCommunication.getFile(),
+              projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+            FileManager.copyFile(projectCommunication.getFile(),
+              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+          }
         } else {
           ProjectCommunication projectCommunicationDB =
             projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
@@ -305,9 +303,20 @@ public class ProjectOutcomeAction extends BaseAction {
           projectCommunication.setModifiedBy(this.getCurrentUser());
           projectCommunication.setModificationJustification("");
 
+          if (projectCommunication.getFile() != null) {
+
+
+            projectCommunication.setSummary(this.getFileDB(projectCommunicationDB.getSummary(),
+              projectCommunication.getFile(), projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+            FileManager.copyFile(projectCommunication.getFile(),
+              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+          }
 
         }
 
+        if (projectCommunication.getSummary().getFileName().isEmpty()) {
+          projectCommunication.setSummary(null);
+        }
 
         projectCommunicationManager.saveProjectCommunication(projectCommunication);
 
