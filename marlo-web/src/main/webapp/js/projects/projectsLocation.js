@@ -147,8 +147,8 @@ function checkboxAllCountries() {
         function(i,e) {
           $(e).show("slow");
           var id = $(e).attr("id").split('-')[1];
-          var isList = $(e).find(".isList");
-          if(isList.html() == "false") {
+          var isList = $(e).parent().parent().parent().find(".isList");
+          if(isList.val() == "false") {
             console.log("holi");
             addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude").val()),
                 $(e).find(".locElementName").val());
@@ -173,6 +173,7 @@ function addLocationLevel(option) {
   }
   $item.find('.locationLevelId').val(idLocationLevel);
   $item.find('.locationLevelName').val(name);
+  $item.find('.isList').val(isList);
   $list.append($item);
 
   // LocElements options using ajax
@@ -313,6 +314,7 @@ function updateIndex() {
     $(item).find('.locationLevelId').attr('name', customName + '.id');
     $(item).find('.locationLevelName').attr('name', customName + '.name');
     $(item).find('.allCountries').attr('name', customName + '.allCountries');
+    $(item).find('.isList').attr('name', customName + '.isList');
     updateLocationIndex(item, customName);
   });
   // Update component event
@@ -346,7 +348,7 @@ function loadScript() {
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
-        var isList = $(locItem).find(".isList").html();
+        var isList = $(locItem).parent().parent().parent().find(".isList").val();
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "") {
