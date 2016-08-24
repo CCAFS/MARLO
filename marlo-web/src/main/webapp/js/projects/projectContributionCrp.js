@@ -15,6 +15,14 @@ $(document).ready(function() {
 
     $item.show('slow');
 
+    updateMilestonesIndex();
+
   });
 
 });
+
+function updateMilestonesIndex() {
+  $('form .milestoneYear').each(function(i,e) {
+    $(e).setNameIndexes(1, i);
+  });
+}
