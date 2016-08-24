@@ -20,9 +20,15 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 
 import java.util.ArrayList;
@@ -57,6 +63,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Inject
   ProjectLocationValidator locationValidator;
+  @Inject
+  ProjectDescriptionValidator descriptionValidator;
 
 
   public ValidateProjectSectionAction(APConfig config) {
@@ -70,6 +78,9 @@ public class ValidateProjectSectionAction extends BaseAction {
       switch (ProjectSectionStatusEnum.valueOf(sectionName.toUpperCase())) {
         case LOCATIONS:
           this.validateProjectLocations();
+          break;
+        case DESCRIPTION:
+          this.validateProjectDescription();
           break;
         default:
           break;
@@ -102,10 +113,48 @@ public class ValidateProjectSectionAction extends BaseAction {
     sections.add("partners");
     sections.add("locations");
     sections.add("deliverablesList");
-
     validSection = sections.contains(sectionName);
 
 
+  }
+
+  private void validateProjectDescription() {
+    Project project = projectManager.getProjectById(projectID);
+    List<CrpProgram> programs = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList())) {
+      programs.add(projectFocuses.getCrpProgram());
+    }
+
+    List<CrpProgram> regions = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList())) {
+      regions.add(projectFocuses.getCrpProgram());
+    }
+
+    List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
+    for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+      projectClusterActivity.getCrpClusterOfActivity().setLeaders(projectClusterActivity.getCrpClusterOfActivity()
+        .getCrpClusterActivityLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      projectClusterActivities.add(projectClusterActivity);
+    }
+
+    List<ProjectScope> projectLocations = new ArrayList<>();
+    for (ProjectScope projectLocation : project.getProjectScopes().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      projectLocations.add(projectLocation);
+    }
+    project.setClusterActivities(projectClusterActivities);
+    project.setFlagships(programs);
+    project.setRegions(regions);
+    project.setScopes(projectLocations);
+
+    descriptionValidator.validate(this, project);
   }
 
   private void validateProjectLocations() {
