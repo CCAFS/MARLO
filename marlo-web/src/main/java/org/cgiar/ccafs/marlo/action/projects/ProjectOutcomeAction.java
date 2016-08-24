@@ -238,6 +238,13 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveProjectOutcome();
       this.saveMilestones();
       this.saveCommunications();
+      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+      projectOutcome.setActiveSince(new Date());
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
+      relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
+
+      projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
@@ -273,52 +280,53 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (projectOutcome.getCommunications() != null) {
       for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+        if (projectCommunication != null) {
+          if (projectCommunication.getId() == null) {
+            projectCommunication.setCreatedBy(this.getCurrentUser());
+
+            projectCommunication.setActiveSince(new Date());
+            projectCommunication.setActive(true);
+            projectCommunication.setProjectOutcome(projectOutcome);
+            projectCommunication.setModifiedBy(this.getCurrentUser());
+            projectCommunication.setModificationJustification("");
+
+            if (projectCommunication.getFile() != null) {
 
 
-        if (projectCommunication.getId() == null) {
-          projectCommunication.setCreatedBy(this.getCurrentUser());
+              projectCommunication.setSummary(this.getFileDB(null, projectCommunication.getFile(),
+                projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+              FileManager.copyFile(projectCommunication.getFile(),
+                this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+            }
+          } else {
+            ProjectCommunication projectCommunicationDB =
+              projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
+            projectCommunication.setCreatedBy(projectCommunicationDB.getCreatedBy());
 
-          projectCommunication.setActiveSince(new Date());
-          projectCommunication.setActive(true);
-          projectCommunication.setProjectOutcome(projectOutcome);
-          projectCommunication.setModifiedBy(this.getCurrentUser());
-          projectCommunication.setModificationJustification("");
+            projectCommunication.setActiveSince(projectCommunicationDB.getActiveSince());
+            projectCommunication.setActive(true);
+            projectCommunication.setProjectOutcome(projectOutcome);
+            projectCommunication.setModifiedBy(this.getCurrentUser());
+            projectCommunication.setModificationJustification("");
 
-          if (projectCommunication.getFile() != null) {
+            if (projectCommunication.getFile() != null) {
 
 
-            projectCommunication.setSummary(this.getFileDB(null, projectCommunication.getFile(),
-              projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
-            FileManager.copyFile(projectCommunication.getFile(),
-              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+              projectCommunication.setSummary(this.getFileDB(projectCommunicationDB.getSummary(),
+                projectCommunication.getFile(), projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
+              FileManager.copyFile(projectCommunication.getFile(),
+                this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+            }
+
           }
-        } else {
-          ProjectCommunication projectCommunicationDB =
-            projectCommunicationManager.getProjectCommunicationById(projectCommunication.getId());
-          projectCommunication.setCreatedBy(projectCommunicationDB.getCreatedBy());
 
-          projectCommunication.setActiveSince(projectCommunicationDB.getActiveSince());
-          projectCommunication.setActive(true);
-          projectCommunication.setProjectOutcome(projectOutcome);
-          projectCommunication.setModifiedBy(this.getCurrentUser());
-          projectCommunication.setModificationJustification("");
-
-          if (projectCommunication.getFile() != null) {
-
-
-            projectCommunication.setSummary(this.getFileDB(projectCommunicationDB.getSummary(),
-              projectCommunication.getFile(), projectCommunication.getFileFileName(), this.getSummaryAbsolutePath()));
-            FileManager.copyFile(projectCommunication.getFile(),
-              this.getSummaryAbsolutePath() + projectCommunication.getFileFileName());
+          if (projectCommunication.getSummary().getFileName().isEmpty()) {
+            projectCommunication.setSummary(null);
           }
 
+          projectCommunicationManager.saveProjectCommunication(projectCommunication);
         }
 
-        if (projectCommunication.getSummary().getFileName().isEmpty()) {
-          projectCommunication.setSummary(null);
-        }
-
-        projectCommunicationManager.saveProjectCommunication(projectCommunication);
 
       }
     }
