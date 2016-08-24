@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -36,9 +37,14 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -46,6 +52,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,16 +69,18 @@ public class ProjectOutcomeAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 4520862722467820286L;
+
+
   private ProjectManager projectManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private ProjectCommunicationManager projectCommunicationManager;
-
   private CrpManager crpManager;
+
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private AuditLogManager auditLogManager;
-
   private ProjectOutcomeManager projectOutcomeManager;
+
   // Front-end
   private long projectID;
   private long projectOutcomeID;
@@ -78,15 +89,17 @@ public class ProjectOutcomeAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
-
+  private CrpMilestoneManager crpMilestoneManager;
   private ProjectOutcome projectOutcome;
+
   private String transaction;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
-    ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager) {
+    ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
+    CrpMilestoneManager crpMilestoneManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -96,22 +109,68 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectMilestoneManager = projectMilestoneManager;
     this.projectCommunicationManager = projectCommunicationManager;
     this.auditLogManager = auditLogManager;
+    this.crpMilestoneManager = crpMilestoneManager;
+  }
+
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
   }
 
 
-  public int getIndexCommunication(long id) {
+  private Path getAutoSaveFilePath() {
+    String composedClassName = projectOutcome.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = projectOutcome.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
-    ProjectCommunication communication = new ProjectCommunication();
-    communication.setId(id);
-    return projectOutcome.getCommunications().indexOf(communication);
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public int getIndexCommunication(int year) {
+
+    int i = 0;
+    for (ProjectCommunication crpMilestone : projectOutcome.getCommunications()) {
+
+      if (crpMilestone.getYear() == year) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
 
 
-  public int getIndexMilestone(long id) {
+  public int getIndexMilestone(long milestoneId, int year) {
 
-    ProjectMilestone projectMilestone = new ProjectMilestone();
-    projectMilestone.setId(new Long(id));
-    return projectOutcome.getMilestones().indexOf(projectMilestone);
+    int i = 0;
+    for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
+
+      if (crpMilestone.getCrpMilestone().getId().longValue() == milestoneId && crpMilestone.getYear() == year) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
   }
 
 
@@ -170,8 +229,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
-    List<ProjectCommunication> projectCommunications = projectOutcome.getCommunications().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
+    List<ProjectCommunication> projectCommunications =
+      projectOutcome.getCommunications().stream().filter(c -> c.getYear() == year).collect(Collectors.toList());
 
 
     if (projectCommunications.size() > 0) {
@@ -186,8 +245,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
-    List<ProjectMilestone> projectMilestones = projectOutcome.getMilestones().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList());
+    List<ProjectMilestone> projectMilestones =
+      projectOutcome.getMilestones().stream().filter(c -> c.getYear() == year).collect(Collectors.toList());
 
     return projectMilestones;
 
@@ -225,22 +284,66 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
     }
 
-    project = projectManager.getProjectById(projectOutcome.getProject().getId());
-    projectID = project.getId();
 
     if (projectOutcome != null) {
-      crpProgramOutcome = projectOutcome.getCrpProgramOutcome();
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        projectOutcome = (ProjectOutcome) autoSaveReader.readFromJson(jReader);
+
+
+        reader.close();
+        this.setDraft(true);
+        project = projectManager.getProjectById(projectOutcome.getProject().getId());
+        projectID = project.getId();
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+
+        if (projectOutcome.getMilestones() != null) {
+          for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
+            crpMilestone
+              .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId()));
+          }
+        }
+      } else {
+        this.setDraft(false);
+        project = projectManager.getProjectById(projectOutcome.getProject().getId());
+        projectID = project.getId();
+
+
+        projectOutcome.setMilestones(
+          projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        projectOutcome.setCommunications(
+          projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      }
+
+    }
+
+    if (projectOutcome != null) {
+      crpProgramOutcome =
+        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
+
+      projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
+
       milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
         .collect(Collectors.toList());
     }
-
-    projectOutcome.setMilestones(
-      projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-    projectOutcome.setCommunications(
-      projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
     /*
      * Loading basic List
      */
@@ -281,6 +384,12 @@ public class ProjectOutcomeAction extends BaseAction {
         this.addActionWarning(this.getText("saving.saved") + validationMessage);
       } else {
         this.addActionMessage(this.getText("saving.saved"));
+      }
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
       }
       return SUCCESS;
     } else

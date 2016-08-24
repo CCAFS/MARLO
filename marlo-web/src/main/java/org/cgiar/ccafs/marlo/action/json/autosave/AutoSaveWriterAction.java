@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedWriter;
@@ -123,6 +124,10 @@ public class AutoSaveWriterAction extends BaseAction {
       String jSon = gson.toJson(result);
       if (nameClass.equals(Project.class.getName())) {
         jSon = jSon.replaceAll("project\\.", "");
+      }
+
+      if (nameClass.equals(ProjectOutcome.class.getName())) {
+        jSon = jSon.replaceAll("projectOutcome\\.", "");
       }
       try {
 
