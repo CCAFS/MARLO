@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -78,6 +79,9 @@ public class ProjectOutcomeAction extends BaseAction {
 
   private ProjectOutcome projectOutcome;
 
+  private File file;
+  private String fileContentType;
+  private String fileFileName;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -96,6 +100,19 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public File getFile() {
+    return file;
+  }
+
+
+  public String getFileContentType() {
+    return fileContentType;
+  }
+
+  public String getFileFileName() {
+    return fileFileName;
+  }
+
   public int getIndexCommunication(long id) {
 
     ProjectCommunication communication = new ProjectCommunication();
@@ -111,6 +128,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcome.getMilestones().indexOf(projectMilestone);
   }
 
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
@@ -124,7 +142,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectID;
   }
 
-
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
@@ -134,6 +151,27 @@ public class ProjectOutcomeAction extends BaseAction {
     return projectOutcomeID;
   }
 
+
+  /**
+   * Return the absolute path where the work plan is or should be located.
+   * 
+   * @param workplan name
+   * @return complete path where the image is stored
+   */
+  private String getSummaryAbsolutePath() {
+    return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
+  }
+
+
+  private String getSummaryPath() {
+
+    return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
+      + "outcome" + File.separator;
+  }
+
+  public String getSummaryURL() {
+    return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
+  }
 
   public List<SrfTargetUnit> getTargetUnits() {
     return targetUnits;
@@ -164,6 +202,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -231,6 +270,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveCommunications() {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
@@ -273,6 +313,7 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
 
   public void saveMilestones() {
 
@@ -320,6 +361,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveProjectOutcome() {
 
     int startYear = 0;
@@ -344,6 +386,20 @@ public class ProjectOutcomeAction extends BaseAction {
 
     }
 
+  }
+
+
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
   }
 
 

@@ -124,7 +124,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   private Integer scale;
   @Expose
   private String modificationJustification;
-  @Expose
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
