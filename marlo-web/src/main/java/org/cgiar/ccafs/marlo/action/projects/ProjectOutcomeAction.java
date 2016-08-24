@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
@@ -66,7 +67,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private CrpManager crpManager;
   private SrfTargetUnitManager srfTargetUnitManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
-
+  private AuditLogManager auditLogManager;
 
   private ProjectOutcomeManager projectOutcomeManager;
   // Front-end
@@ -79,13 +80,13 @@ public class ProjectOutcomeAction extends BaseAction {
   private CrpProgramOutcome crpProgramOutcome;
 
   private ProjectOutcome projectOutcome;
-
+  private String transaction;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
-    ProjectCommunicationManager projectCommunicationManager) {
+    ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -94,7 +95,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectOutcomeManager = projectOutcomeManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.projectCommunicationManager = projectCommunicationManager;
-
+    this.auditLogManager = auditLogManager;
   }
 
 
@@ -163,6 +164,10 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   public ProjectCommunication loadProjectCommunication(int year) {
 
     List<ProjectCommunication> projectCommunications = projectOutcome.getCommunications().stream()
@@ -177,6 +182,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
+
 
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
@@ -202,7 +208,23 @@ public class ProjectOutcomeAction extends BaseAction {
     } catch (Exception e) {
 
     }
-    projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      ProjectOutcome history = (ProjectOutcome) auditLogManager.getHistory(transaction);
+      if (history != null) {
+        projectOutcome = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+    } else {
+      projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    }
+
     project = projectManager.getProjectById(projectOutcome.getProject().getId());
     projectID = project.getId();
 
@@ -425,6 +447,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -439,6 +462,10 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTargetUnits(List<SrfTargetUnit> targetUnits) {
     this.targetUnits = targetUnits;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 }

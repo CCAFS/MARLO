@@ -17,16 +17,8 @@
 package org.cgiar.ccafs.marlo.data;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.StandardDAO;
-import org.cgiar.ccafs.marlo.utils.BigDecimalTypeAdapter;
-import org.cgiar.ccafs.marlo.utils.DateTypeAdapter;
-import org.cgiar.ccafs.marlo.utils.DoubleTypeAdapter;
-import org.cgiar.ccafs.marlo.utils.FloatTypeAdapter;
-import org.cgiar.ccafs.marlo.utils.IntegerTypeAdapter;
-import org.cgiar.ccafs.marlo.utils.LongTypeAdapter;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -176,11 +168,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
 
   public void logSaveAndUpdate(String function, Set<Map<String, Object>> elements) {
-    Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
-      .registerTypeAdapter(Long.class, new LongTypeAdapter()).registerTypeAdapter(Double.class, new DoubleTypeAdapter())
-      .registerTypeAdapter(Float.class, new FloatTypeAdapter())
-      .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
-      .registerTypeAdapter(Date.class, new DateTypeAdapter()).excludeFieldsWithoutExposeAnnotation().create();
+    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 
     for (Iterator<Map<String, Object>> it = elements.iterator(); it.hasNext();) {
