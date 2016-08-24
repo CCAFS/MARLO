@@ -26,7 +26,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private FileDB sumary;
+  private FileDB summary;
   @Expose
   private ProjectOutcome projectOutcome;
   @Expose
@@ -61,7 +61,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public ProjectCommunication(FileDB file, ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
-    this.sumary = file;
+    this.summary = file;
     this.projectOutcome = projectOutcome;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -124,10 +124,25 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public File getFile() {
+    return file;
+  }
+
+  public String getFileContentType() {
+    return fileContentType;
+  }
+
+
+  public String getFileFileName() {
+    return fileFileName;
+  }
+
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -157,7 +172,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
 
   public FileDB getSummary() {
-    return sumary;
+    return summary;
   }
 
 
@@ -190,7 +205,6 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setAnalysisCommunication(String analysisCommunication) {
     this.analysisCommunication = analysisCommunication;
   }
@@ -205,8 +219,19 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setFile(FileDB sumary) {
-    this.sumary = sumary;
+
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
   }
 
 
@@ -214,18 +239,22 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+
+  public void setSummary(FileDB summary) {
+    this.summary = summary;
   }
 
 

@@ -272,6 +272,19 @@ public class ProjectOutcomeAction extends BaseAction {
 
     if (projectOutcome.getCommunications() != null) {
       for (ProjectCommunication projectCommunication : projectOutcome.getCommunications()) {
+
+        if (projectCommunication.getFile() != null) {
+
+          /*
+           * project
+           * .setSummary(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
+           * FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
+           */
+        }
+
+        if (project.getWorkplan().getFileName().isEmpty()) {
+          project.setWorkplan(null);
+        }
         if (projectCommunication.getId() == null) {
           projectCommunication.setCreatedBy(this.getCurrentUser());
 
@@ -291,7 +304,11 @@ public class ProjectOutcomeAction extends BaseAction {
           projectCommunication.setProjectOutcome(projectOutcome);
           projectCommunication.setModifiedBy(this.getCurrentUser());
           projectCommunication.setModificationJustification("");
+
+
         }
+
+
         projectCommunicationManager.saveProjectCommunication(projectCommunication);
 
       }
@@ -399,3 +416,4 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 }
+
