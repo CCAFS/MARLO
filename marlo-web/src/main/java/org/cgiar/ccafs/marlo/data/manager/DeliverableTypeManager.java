@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -53,7 +53,6 @@ public interface DeliverableTypeManager {
    */
   public List<DeliverableType> findAll();
 
-
   /**
    * This method gets a deliverableType object by a given deliverableType identifier.
    * 
@@ -61,6 +60,15 @@ public interface DeliverableTypeManager {
    * @return a DeliverableType object.
    */
   public DeliverableType getDeliverableTypeById(long deliverableTypeID);
+
+
+  /**
+   * This method gets a list of SubdeliverableType
+   * 
+   * @param deliverableId is the deliverableType identifier.
+   * @return a list from DeliverableType (SubType) null if no exist records
+   */
+  public List<DeliverableType> getSubDeliverableType(Long deliverableId);
 
   /**
    * This method saves the information of the given deliverableType

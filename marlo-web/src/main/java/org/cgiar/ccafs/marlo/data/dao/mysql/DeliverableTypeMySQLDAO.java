@@ -56,13 +56,23 @@ public class DeliverableTypeMySQLDAO implements DeliverableTypeDAO {
 
   @Override
   public List<DeliverableType> findAll() {
-    String query = "from " + DeliverableType.class.getName() + " where is_active=1";
+    String query = "from " + DeliverableType.class.getName();
     List<DeliverableType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public List<DeliverableType> getSubDeliverableType(Long deliverableId) {
+    String query = "from " + DeliverableType.class.getName() + " where parent_id= " + deliverableId;
+    List<DeliverableType> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override

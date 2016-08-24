@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -159,7 +160,8 @@ public class DeliverableListAction extends BaseAction {
       }
 
       if (project.getDeliverables() != null) {
-        deliverables = new ArrayList<>(project.getDeliverables());
+        deliverables =
+          new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
       }
     }
 
