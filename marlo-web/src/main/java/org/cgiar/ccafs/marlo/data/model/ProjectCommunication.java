@@ -18,8 +18,12 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -8633549958796027690L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private FileDB file;
   @Expose
@@ -74,6 +78,29 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectCommunication other = (ProjectCommunication) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -82,7 +109,6 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   public String getAnalysisCommunication() {
     return analysisCommunication;
   }
-
 
   public String getCommunication() {
     return this.communication;
@@ -131,6 +157,15 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

@@ -61,7 +61,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
-  private ProjectCommunication projectCommunication;
 
 
   public ProjectOutcome() {
@@ -192,11 +191,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public ProjectCommunication getProjectCommunication() {
-    return projectCommunication;
-  }
-
-
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
   }
@@ -290,11 +284,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
-  }
-
-
-  public void setProjectCommunication(ProjectCommunication projectCommunication) {
-    this.projectCommunication = projectCommunication;
   }
 
 
