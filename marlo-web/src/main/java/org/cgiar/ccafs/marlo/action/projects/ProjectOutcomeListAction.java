@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -160,6 +161,15 @@ public class ProjectOutcomeListAction extends BaseAction {
       outcomes.addAll(projectFocuses.getCrpProgram().getCrpProgramOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList()));
     }
+
+    List<CrpProgram> programs = new ArrayList<>();
+    for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList())) {
+      programs.add(projectFocuses.getCrpProgram());
+    }
+    project.setFlagships(programs);
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION, params));
 
