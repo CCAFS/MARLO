@@ -2633,10 +2633,11 @@ input.userName {
   margin-bottom: 15px;
 }
 
-#dashboard .emptyMessage {
-  padding: 15px;
-  font-size: 15px;
+.emptyMessage {
+  padding: 5px;
+  font-size: 1em;
   font-style: italic;
+  color: #949494;
 }
 
 #dashboard #deadline{
