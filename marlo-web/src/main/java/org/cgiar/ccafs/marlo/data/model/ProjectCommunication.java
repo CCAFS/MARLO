@@ -32,19 +32,22 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   private String communication;
   @Expose
   private String analysisCommunication;
+
   @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
   @Expose
   private int year;
 
-
   public ProjectCommunication() {
   }
-
 
   public ProjectCommunication(FileDB file, ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
@@ -75,6 +78,12 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
+  public String getAnalysisCommunication() {
+    return analysisCommunication;
+  }
+
+
   public String getCommunication() {
     return this.communication;
   }
@@ -86,7 +95,6 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   public FileDB getFile() {
     return file;
   }
-
 
   @Override
   public Long getId() {
@@ -139,6 +147,11 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setAnalysisCommunication(String analysisCommunication) {
+    this.analysisCommunication = analysisCommunication;
   }
 
 
