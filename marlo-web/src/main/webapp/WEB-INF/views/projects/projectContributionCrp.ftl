@@ -52,7 +52,7 @@
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+                  [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
                   [@customForm.select name="projectOutcome.expectedUnit.id" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
@@ -69,7 +69,7 @@
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+                  [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
                   [@customForm.select name="projectOutcome.achievedUnit.id" i18nkey="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
@@ -117,24 +117,26 @@
                   </div>
                   
                   [#-- Communications --]
-                  [#if reportingActive]
+                  
+                  [#assign comunication = action.loadProjectCommunication(year) /]
+                  [#assign comunicationIndex = action.getIndexCommunication(year) /]
                   <hr />
                   <h5 class="sectionSubTitle">Communications </h5>
                   <div class="communicationsBlock form-group">
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.projectCommunications[${year_index}].communicationEngagement" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.projectCommunications[${comunicationIndex}].communicationEngagement" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
                     </div>
                     <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.projectCommunications[${year_index}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                      [@customForm.textArea name="projectOutcome.projectCommunications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
                     </div>
                   </div>
                   <div class="fileUpload">
                     <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
                     <div class="uploadContainer">
-                      [@customForm.inputFile name="projectOutcome.projectCommunications[${year_index}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.projectCommunications[${year_index}].summary.fileName" editable=editable /]
+                      [@customForm.inputFile name="projectOutcome.projectCommunications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.projectCommunications[${comunicationIndex}].summary.fileName" editable=editable /]
                     </div>  
                   </div>
-                  [/#if]
+                  
                   
                 </div>
               [/#list]
@@ -192,7 +194,7 @@
     <div class="form-group">
       <div class="row form-group">
         <div class="col-md-4">
-          [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+          [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
         </div>
         <div class="col-md-4">
           [@customForm.select name="${customName}.expectedUnit.id" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]

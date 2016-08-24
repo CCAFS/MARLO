@@ -8,6 +8,9 @@ $(document).ready(function() {
     width: '100%'
   });
 
+  /* Numeric Inputs */
+  $('input.targetValue').numericInput();
+
   $('form .milestonesYearSelect').each(function(i,e) {
 
     var $select = $(e).find('select');
