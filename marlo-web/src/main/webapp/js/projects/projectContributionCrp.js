@@ -1,6 +1,10 @@
+var milestonesCount;
+
 $(document).ready(function() {
 
-  $('select').select2({
+  milestonesCount = $('form .milestoneYear').length;
+
+  $('form select').select2({
     width: '100%'
   });
 
@@ -15,11 +19,20 @@ $(document).ready(function() {
     $item.find('.crpMilestoneId').val(milestonId);
     $item.find('.year').val(year);
 
+    $item.find('select').select2({
+      width: '100%'
+    });
+
     $list.append($item);
 
     $item.show('slow');
 
-    updateMilestonesIndex();
+    milestonesCount
+
+    $item.setNameIndexes(1, milestonesCount);
+    milestonesCount++;
+
+    // updateMilestonesIndex();
 
   });
 
@@ -27,7 +40,7 @@ $(document).ready(function() {
     var $parent = $(this).parent();
     $parent.hide('slow', function() {
       $parent.remove();
-      updateMilestonesIndex();
+      // updateMilestonesIndex();
     });
   });
 

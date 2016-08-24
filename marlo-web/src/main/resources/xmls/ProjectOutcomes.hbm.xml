@@ -21,14 +21,14 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <property name="expectedValue" type="long">
-            <column name="expected_value" precision="10" scale="0" not-null="false" />
+            <column name="expected_value" precision="10" scale="0" not-null="true" />
         </property>
   
         
         
                   <many-to-one name="expectedUnit"
       class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
-      <column name="expected_unit" not-null="false" />
+      <column name="expected_unit"/>
     </many-to-one>
     
     
@@ -39,13 +39,13 @@
         
           <many-to-one name="achievedUnit"
       class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
-      <column name="achieved_unit" not-null="false" />
+      <column name="achieved_unit"  />
     </many-to-one>
     
     
 
         <property name="narrativeTarget" type="string">
-            <column name="narrative_target" length="65535" not-null="false" />
+            <column name="narrative_target" length="65535"  />
         </property>
         
         
