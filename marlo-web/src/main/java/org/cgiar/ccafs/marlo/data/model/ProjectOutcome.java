@@ -36,11 +36,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private long expectedValue;
   @Expose
-  private long expectedUnit;
+  private SrfTargetUnit expectedUnit;
   @Expose
   private Long achievedValue;
   @Expose
-  private Long achievedUnit;
+  private SrfTargetUnit achievedUnit;
 
   @Expose
   private String narrativeTarget;
@@ -68,7 +68,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, long expectedUnit, Long achievedValue, String narrativeTarget,
+    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, Long achievedValue, String narrativeTarget,
     String narrativeAchieved, boolean isActive, Date activeSince, String modificationJustification,
     Set<ProjectMilestone> projectMilestoneses, Set<ProjectCommunication> projectCommunicationses) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -89,7 +89,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, boolean isActive,
+    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
@@ -104,7 +104,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-  public Long getAchievedUnit() {
+  public SrfTargetUnit getAchievedUnit() {
     return achievedUnit;
   }
 
@@ -134,7 +134,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getExpectedUnit() {
+  public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
   }
 
@@ -207,7 +207,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setAchievedUnit(Long achievedUnit) {
+  public void setAchievedUnit(SrfTargetUnit achievedUnit) {
     this.achievedUnit = achievedUnit;
   }
 
@@ -242,7 +242,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setExpectedUnit(long expectedUnit) {
+  public void setExpectedUnit(SrfTargetUnit expectedUnit) {
     this.expectedUnit = expectedUnit;
   }
 

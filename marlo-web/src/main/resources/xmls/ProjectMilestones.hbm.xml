@@ -33,9 +33,13 @@
          <property name="expectedValue" type="long">
             <column name="expected_value" precision="10" scale="0" not-null="false" />
         </property>
-        <property name="expectedUnit" type="long">
-            <column name="expected_unit" not-null="false" />
-        </property>
+
+        
+         <many-to-one name="expectedUnit"
+      class="org.cgiar.ccafs.marlo.data.model.SrfTargetUnit" fetch="select">
+      <column name="expected_unit" not-null="false" />
+    </many-to-one>
+    
         <property name="achievedValue" type="java.lang.Long">
             <column name="achieved_value" precision="10" scale="0" />
         </property>

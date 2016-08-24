@@ -23,6 +23,11 @@
         <property name="communication" type="string">
             <column name="communication" length="65535" not-null="true" />
         </property>
+        
+        
+         <property name="analysisCommunication" type="string">
+            <column name="analysis_communication" length="65535" not-null="true" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
