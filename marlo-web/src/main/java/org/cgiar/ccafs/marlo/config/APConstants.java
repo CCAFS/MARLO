@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo.config;
 
-
 /**
  * All Constants should be here.
  * 
@@ -89,6 +88,7 @@ public final class APConstants {
   public static final String COUNTRY_REQUEST_ID = "countryID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
   public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
+  public static final String CYCLE = "cycle";
   // Types of Project Partners
   public static final String PROJECT_PARTNER_PL = "PL";
   public static final String PROJECT_PARTNER_PC = "PC";
