@@ -23,6 +23,14 @@ $(document).ready(function() {
 
   });
 
+  $('.removeProjectMilestone').on('click', function() {
+    var $parent = $(this).parent();
+    $parent.hide('slow', function() {
+      $parent.remove();
+      updateMilestonesIndex();
+    });
+  });
+
 });
 
 function updateMilestonesIndex() {

@@ -157,7 +157,7 @@
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
+    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="elementId"> Project Milestone Target </span>
     </div>
