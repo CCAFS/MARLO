@@ -59,7 +59,9 @@ $(document).ready(function() {
           milestoneID: milestonId
         },
         success: function(data) {
-          console.log(data);
+          $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
+          $item.find('.crpMilestoneValue').text(data.crpMilestone.value);
+          $item.find('select').val(data.crpMilestone.targetUnit).trigger("change.select2");
         }
     });
 
@@ -77,7 +79,6 @@ $(document).ready(function() {
 
       // Update milestone
       $select.parents('.milestonesYearBlock').find('.milestoneYear').each(function(i,e) {
-        console.log($(e));
         $(e).find('.index').text(i + 1);
       });
 

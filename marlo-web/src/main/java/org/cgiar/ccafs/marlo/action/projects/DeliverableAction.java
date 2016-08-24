@@ -65,10 +65,11 @@ public class DeliverableAction extends BaseAction {
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
-    DeliverableManager deliverableManager) {
+    DeliverableManager deliverableManager, CrpManager crpManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
+    this.crpManager = crpManager;
   }
 
 

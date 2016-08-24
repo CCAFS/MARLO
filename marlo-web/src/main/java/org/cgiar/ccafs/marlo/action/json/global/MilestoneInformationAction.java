@@ -50,13 +50,13 @@ public class MilestoneInformationAction extends BaseAction {
     this.crpMilestone = new HashMap<String, Object>();
     this.crpMilestone.put("title", crpMilestone.getTitle());
     this.crpMilestone.put("year", crpMilestone.getYear());
+    this.crpMilestone.put("value", crpMilestone.getValue());
 
     if (crpMilestone.getSrfTargetUnit() == null) {
       this.crpMilestone.put("targetUnit", -1);
     } else {
       this.crpMilestone.put("targetUnit", crpMilestone.getSrfTargetUnit().getId());
     }
-
 
     return SUCCESS;
   }
