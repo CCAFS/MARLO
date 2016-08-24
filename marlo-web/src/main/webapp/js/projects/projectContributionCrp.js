@@ -8,6 +8,14 @@ $(document).ready(function() {
     width: '100%'
   });
 
+  $('form .milestonesYearSelect').each(function(i,e) {
+
+    var $select = $(e).find('select');
+    var selectedIds = ($(e).find('.milestonesSelectedIds').text()).split(',');
+
+    $select.clearOptions(selectedIds);
+  });
+
   $('.milestonesYearSelect select').on('change', function() {
     var $item = $('#milestoneYear-template').clone(true).removeAttr('id');
     var $list = $(this).parents('.milestonesYearBlock').find(".milestonesYearList");
@@ -15,39 +23,46 @@ $(document).ready(function() {
     var title = $(this).find('option:selected').text();
     var milestonId = $(this).find('option:selected').val();
 
+    // Set the milestone parameters
     $item.find('.title').text(title);
     $item.find('.crpMilestoneId').val(milestonId);
     $item.find('.year').val(year);
 
+    // Set Select2 widget
     $item.find('select').select2({
       width: '100%'
     });
 
+    // Add the milestone to the list
     $list.append($item);
 
+    // Show the milestone
     $item.show('slow');
 
-    milestonesCount
+    // Remove option from select
+    $(this).find('option:selected').remove();
+    $(this).trigger("change.select2");
 
+    // Set indexes
     $item.setNameIndexes(1, milestonesCount);
     milestonesCount++;
-
-    // updateMilestonesIndex();
 
   });
 
   $('.removeProjectMilestone').on('click', function() {
     var $parent = $(this).parent();
+    var $select = $parent.parents('.milestonesYearBlock').find('.milestonesYearSelect select');
+    var value = $parent.find('.crpMilestoneId').val();
+    var name = $parent.find('.title').text();
+
     $parent.hide('slow', function() {
+      // Remove milestone block
       $parent.remove();
-      // updateMilestonesIndex();
+
+      // Add milestone option again
+      $select.addOption(value, name);
+      $select.trigger("change.select2");
     });
   });
 
 });
-
-function updateMilestonesIndex() {
-  $('form .milestoneYear').each(function(i,e) {
-    $(e).setNameIndexes(1, i);
-  });
-}
