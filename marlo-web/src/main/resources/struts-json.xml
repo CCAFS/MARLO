@@ -162,6 +162,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="deliverableSubType"
+      class="org.cgiar.ccafs.marlo.action.json.project.deliverable.DeliverableSubTypeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 		<action name="validateProjectSection"
 			class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">

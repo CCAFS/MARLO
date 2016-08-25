@@ -24,7 +24,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -53,15 +55,21 @@ public class DeliverableAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
 
   private DeliverableManager deliverableManager;
+
+
   private CrpManager crpManager;
 
-
   private long projectID;
+
+
   private long deliverableID;
+
   private List<DeliverableType> deliverableType;
   private Project project;
-  private Deliverable deliverable;
 
+
+  private Deliverable deliverable;
+  private List<ProjectFocus> projectPrograms;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -71,7 +79,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -85,17 +92,22 @@ public class DeliverableAction extends BaseAction {
     return deliverableType;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+  public List<ProjectFocus> getProjectPrograms() {
+    return projectPrograms;
   }
 
   @Override
@@ -119,6 +131,14 @@ public class DeliverableAction extends BaseAction {
 
       deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
+
+      projectPrograms =
+        new ArrayList<>(
+          project.getProjectFocuses().stream()
+            .filter(pf -> pf.isActive()
+              && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList()));
+
     }
 
 
@@ -136,7 +156,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
@@ -144,6 +163,7 @@ public class DeliverableAction extends BaseAction {
   public void setDeliverableType(List<DeliverableType> deliverableType) {
     this.deliverableType = deliverableType;
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -156,5 +176,10 @@ public class DeliverableAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
+  public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
+    this.projectPrograms = projectPrograms;
+  }
+
 
 }
