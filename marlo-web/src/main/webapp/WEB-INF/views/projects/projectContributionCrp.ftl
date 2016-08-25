@@ -37,10 +37,13 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
-          <h3 class="headTitle">${projectOutcome.crpProgramOutcome.crpProgram.acronym} - Outcome 2022</h3>  
+          <h3 class="headTitle">Project Outcome </h3>  
           
           [#-- Outcomen name --]
-          <p>${projectOutcome.crpProgramOutcome.description}</p>
+          
+          <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong> : ${projectOutcome.crpProgramOutcome.description}</p>
+          
+          [#-- Project Targets --]
           [#assign showExpectedTarget = (!reportingActive && (startYear == currentCycleYear)) /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
@@ -83,8 +86,7 @@
           </div>
           [/#if]
           [#-- Project Milestones and Communications contributions per year--]
-          <div class="">  
-            <br />
+          <div class="">
             <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
               [#list startYear .. endYear as year]
                 <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [#if isYearRequired(year)]*[/#if]</a></li>
@@ -110,9 +112,9 @@
                     </div>
                     [#-- Select a milestone --]
                     [#if editable]
-                    <div class="milestonesYearSelect">
+                    <div class="milestonesYearSelect"> 
                       <span class="milestonesSelectedIds" style="display:none">[#if action.loadProjectMilestones(year)?has_content][#list action.loadProjectMilestones(year) as e]${e.crpMilestone.id}[#if e_has_next],[/#if][/#list][/#if]</span>
-                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="action.getMilestonesbyYear(year)" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="action.getMilestonesbyYear(${year})" keyFieldName="id" displayFieldName="title" className="" value="" /]
                     </div>
                     [/#if]
                   </div>
@@ -146,9 +148,20 @@
           </div>
           
           [#-- Next Users --]
-          <h5 class="sectionSubTitle">(Next) Users </h5>
-          <div>
-            [@nextUserMacro element={} name="" index=0 /]
+          <h4 class="headTitle">(Next) Users </h4>
+          <div class="nextUsersBlock">
+            <div class="nextUsersList">
+              [#if projectOutcome.nextUsers?has_content]
+                [#list projectOutcome.nextUsers as nextUser]
+                  [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
+                [/#list]
+              [#else]
+                [@nextUserMacro element={} name="" index=0 /]
+              [/#if]
+            </div>
+            [#if editable]
+              <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
+            [/#if]
           </div>
           
           [#-- Section Buttons & hidden inputs--]
@@ -159,8 +172,11 @@
     </div>  
 </section>
 
-[#-- Milestone Template --]]
+[#-- Milestone Template --]
 [@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
+
+[#-- Next user Template --]
+[@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -235,7 +251,7 @@
 [/#macro]
 
 [#macro nextUserMacro element name index isTemplate=false]
-  <div id="Year-${isTemplate?string('template', index)}" class="milestoneYear borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser borderBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
@@ -243,24 +259,22 @@
       <span class="index">${index+1}</span>
       <span class="elementId"> Project Next User </span>
     </div>
-
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
      
-    
     <div class="form-group">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.title" i18nkey="projectOutcomeNextUser.title" required=true className="limitWords-100" editable=editable /]
+        [@customForm.input name="${customName}.title" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable /]
       </div>
     </div>
   </div>
