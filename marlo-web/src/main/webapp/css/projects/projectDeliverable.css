@@ -8,8 +8,32 @@
     font-size: 0.9em;
     border-radius: 2px;
     cursor: pointer;
+    opacity: 0.7;
 }
 
 .fair .active {
-    background-color: #3c763d;
+    background-color: #1bfa1f;
+}
+
+#deliverableInformation input {
+    height: 28px;
+}
+
+#deliverableInformation {
+    margin-top: 60px;
+}
+
+.tab-content {
+    border: 1px solid #ddd;
+    padding: 10px 2em;
+    border-top: none;
+}
+
+.nav {
+    margin-top: 60px;
+}
+
+ul.nav li {
+    /* background-color: #f8f8f8; */
+    margin-right: 1%;
 }

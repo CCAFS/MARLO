@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = [""] /]
+[#assign pageLibs = ["select2"] /]
 [#assign customJS = [""] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
@@ -34,43 +34,44 @@
        
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-           
           
-          <h3 class="headTitle">Deliverable information</h3>  
-            [#--  Deliverable Menu --] 
-            <ul> 
-              <li class=""><a href="#deliverable-mainInformation">General Information</a></li>
-                <li class=""><a href="#deliverable-ranking">Quality check</a></li>
-                <li class=""><a href="#deliverable-disseminationMetadata">Dissemination & Metadata</a></li>
-                <li class=""><a href="#deliverable-dataSharing">Data Sharing</a></li>
+          <div class="deliverableTabs">      
+          
+          [#--  Deliverable Menu --] 
+            
+            <ul class="nav nav-tabs" role="tablist"> 
+                <li role="presentation" class="active"><a href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">General Information</a></li>
+                <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
+                <li role="presentation" class=""><a href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
+                <li role="presentation" class=""><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
             </ul>
-          <div id="deliverableInformation" class="borderBox">
-          
-            <div id="deliverable-mainInformation">
-              [#-- Deliverable Information --] 
-              [#include "/WEB-INF/projects/deliverable/deliverableInfo.ftl" /]
-            </div>
             
-            <div id="deliverable-mainInformation">
-              [#-- Deliverable Information --] 
-              [#include "/WEB-INF/projects/deliverable/deliverableQualityCheck.ftl" /]
+            <div class="tab-content col-md-12">
+              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active">
+                <h3 class="headTitle">Deliverable information</h3>  
+                [#-- Deliverable Information --] 
+                [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
+              </div>
+              
+              <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade">
+                <h3 class="headTitle">Deliverable quality check</h3>  
+                [#-- Deliverable qualityCheck --]
+              </div>
+              
+              <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade">
+                <h3 class="headTitle">Dissemination & Metadata</h3>  
+                [#-- Deliverable disseminationMetadata --] 
+              </div>
+              
+              <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade">
+              <h3 class="headTitle">Deliverable Data Sharing</h3>  
+                [#-- Deliverable dataSharing --] 
+              </div>
             </div>
-            
-            <div id="deliverable-mainInformation">
-              [#-- Deliverable Information --] 
-              [#include "/WEB-INF/projects/deliverable/deliverableInfo.ftl" /]
-            </div>
-            
-            <div id="deliverable-mainInformation">
-              [#-- Deliverable Information --] 
-              [#include "/WEB-INF/projects/deliverable/deliverableInfo.ftl" /]
-            </div>
-            
-          </div> 
-           
+           </div>
           
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+          [#include "/WEB-INF/views/projects/buttons-deliverables.ftl" /]
              
          
           [/@s.form] 
