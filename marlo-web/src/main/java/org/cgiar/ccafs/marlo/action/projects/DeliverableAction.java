@@ -68,7 +68,7 @@ public class DeliverableAction extends BaseAction {
 
   private long deliverableID;
 
-  private List<DeliverableType> deliverableType;
+  private List<DeliverableType> deliverableTypeParent;
 
 
   private Project project;
@@ -79,6 +79,7 @@ public class DeliverableAction extends BaseAction {
   private Deliverable deliverable;
 
   private List<ProjectFocus> projectPrograms;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -93,14 +94,14 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
-
   public long getDeliverableID() {
     return deliverableID;
   }
 
-  public List<DeliverableType> getDeliverableType() {
-    return deliverableType;
+  public List<DeliverableType> getDeliverableTypeParent() {
+    return deliverableTypeParent;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -117,7 +118,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
@@ -149,7 +149,7 @@ public class DeliverableAction extends BaseAction {
       }
 
 
-      deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
+      deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
 
       projectPrograms =
@@ -166,6 +166,7 @@ public class DeliverableAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
   }
 
+
   @Override
   public String save() {
     // TODO Auto-generated method stub
@@ -180,8 +181,8 @@ public class DeliverableAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-  public void setDeliverableType(List<DeliverableType> deliverableType) {
-    this.deliverableType = deliverableType;
+  public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
+    this.deliverableTypeParent = deliverableTypeParent;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
