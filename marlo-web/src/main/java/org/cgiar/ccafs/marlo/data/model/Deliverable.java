@@ -29,26 +29,34 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 1867818669925473872L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private Project project;
 
+
   @Expose
   private DeliverableType deliverableType;
+
 
   @Expose
   private String title;
 
+
   @Expose
   private String typeOther;
+
 
   @Expose
   private int year;
 
+
   @Expose
   private Integer status;
+
   @Expose
   private String statusDescription;
 
@@ -60,17 +68,31 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   @Expose
   private User createdBy;
+
   @Expose
   private User modifiedBy;
+
   @Expose
   private String modificationJustification;
+
+  @Expose
+  private CrpClusterOfActivity crpClusterOfActivity;
+
+  @Expose
+  private CrpClusterKeyOutput crpClusterKeyOutput;
+  @Expose
+  private CrpProgramOutcome crpProgramOutcome;
+
+  @Expose
+  private CrpProgram crpProgram;
 
   public Deliverable() {
   }
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
-    String modificationJustification) {
+    String modificationJustification, CrpClusterOfActivity crpClusterOfActivity,
+    CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome, CrpProgram crpProgram) {
     this.project = project;
     this.deliverableType = deliverableType;
     this.title = title;
@@ -83,6 +105,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
+    this.crpClusterOfActivity = crpClusterOfActivity;
+    this.crpProgramOutcome = crpProgramOutcome;
+    this.crpProgram = crpProgram;
+    this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
 
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -102,6 +128,22 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+  public CrpClusterKeyOutput getCrpClusterKeyOutput() {
+    return crpClusterKeyOutput;
+  }
+
+  public CrpClusterOfActivity getCrpClusterOfActivity() {
+    return crpClusterOfActivity;
+  }
+
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
+  }
+
+  public CrpProgramOutcome getCrpProgramOutcome() {
+    return crpProgramOutcome;
   }
 
   public DeliverableType getDeliverableType() {
@@ -141,16 +183,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.statusDescription;
   }
 
-
   public String getTitle() {
     return this.title;
   }
 
-
   public String getTypeOther() {
     return this.typeOther;
   }
-
 
   public int getYear() {
     return this.year;
@@ -161,9 +200,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -172,6 +213,23 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
+    this.crpClusterKeyOutput = crpClusterKeyOutput;
+  }
+
+  public void setCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
+    this.crpClusterOfActivity = crpClusterOfActivity;
+  }
+
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
+  }
+
+
+  public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
+    this.crpProgramOutcome = crpProgramOutcome;
   }
 
 

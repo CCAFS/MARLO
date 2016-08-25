@@ -43,21 +43,30 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader" />
 		</set>
-		
-		 <set name="crpClusterKeyOutputs" order-by="id" table="crp_cluster_key_outputs" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="cluster_activity_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" />
-        </set>
-        
-        
-        <set name="projectClusterActivities" order-by="id" table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="cluster_activity_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
-        </set>
-        
+
+		<set name="crpClusterKeyOutputs" order-by="id"
+			table="crp_cluster_key_outputs" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="cluster_activity_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" />
+		</set>
+
+		<set name="projectClusterActivities" order-by="id"
+			table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="cluster_activity_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
+		</set>
+		<set name="deliverables" table="deliverables" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="cluster_activity_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+		</set>
+
 	</class>
 </hibernate-mapping>

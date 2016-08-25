@@ -24,12 +24,18 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -53,15 +59,26 @@ public class DeliverableAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
 
   private DeliverableManager deliverableManager;
+
+
   private CrpManager crpManager;
 
-
   private long projectID;
+
+
   private long deliverableID;
+
   private List<DeliverableType> deliverableType;
+
+
   private Project project;
+
+  private Map<String, String> status;
+
+
   private Deliverable deliverable;
 
+  private List<ProjectFocus> projectPrograms;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -72,10 +89,10 @@ public class DeliverableAction extends BaseAction {
     this.crpManager = crpManager;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -93,10 +110,19 @@ public class DeliverableAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
+  public List<ProjectFocus> getProjectPrograms() {
+    return projectPrograms;
+  }
+
+
+  public Map<String, String> getStatus() {
+    return status;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -116,8 +142,23 @@ public class DeliverableAction extends BaseAction {
       project = deliverable.getProject();
       projectID = project.getId();
 
+      status = new HashMap<>();
+      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      for (ProjectStatusEnum projectStatusEnum : list) {
+        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
+
+
       deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
+
+      projectPrograms =
+        new ArrayList<>(
+          project.getProjectFocuses().stream()
+            .filter(pf -> pf.isActive()
+              && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList()));
+
     }
 
 
@@ -125,10 +166,15 @@ public class DeliverableAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
   }
 
+  @Override
+  public String save() {
+    // TODO Auto-generated method stub
+    return super.save();
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -146,8 +192,17 @@ public class DeliverableAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setProjectPrograms(List<ProjectFocus> projectPrograms) {
+    this.projectPrograms = projectPrograms;
+  }
+
+  public void setStatus(Map<String, String> status) {
+    this.status = status;
   }
 
 }
