@@ -112,7 +112,7 @@
                     [#if editable]
                     <div class="milestonesYearSelect">
                       <span class="milestonesSelectedIds" style="display:none">[#if action.loadProjectMilestones(year)?has_content][#list action.loadProjectMilestones(year) as e]${e.crpMilestone.id}[#if e_has_next],[/#if][/#list][/#if]</span>
-                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="milestones" keyFieldName="id" displayFieldName="title" className="" value="" /]
+                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="action.getMilestonesbyYear(year)" keyFieldName="id" displayFieldName="title" className="" value="" /]
                     </div>
                     [/#if]
                   </div>
