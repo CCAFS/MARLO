@@ -91,6 +91,7 @@
               [/#list]
             </ul>
             
+            [#-- Year Tabs for milestones and communications --]
             <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
@@ -117,33 +118,38 @@
                   </div>
                   
                   [#-- Communications --]
-                  
-                  [#assign comunication = action.loadProjectCommunication(year) /]
-                  [#assign comunicationIndex = action.getIndexCommunication(year) /]
-                  <hr />
-                  <h5 class="sectionSubTitle">Communications </h5>
-                  <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
-                  <div class="communicationsBlock form-group">
-                    <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                  [#if reportingActive]
+                    [#assign comunication = action.loadProjectCommunication(year) /]
+                    [#assign comunicationIndex = action.getIndexCommunication(year) /]
+                    <hr />
+                    <h5 class="sectionSubTitle">Communications </h5>
+                    <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
+                    <div class="communicationsBlock form-group">
+                      <div class="form-group">
+                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                      </div>
+                      <div class="form-group">
+                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                      </div>
                     </div>
-                    <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                    <div class="fileUpload">
+                      <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
+                      <div class="uploadContainer">
+                        [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
+                      </div>  
                     </div>
-                  </div>
-                  <div class="fileUpload">
-                    <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
-                    <div class="uploadContainer">
-                      [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
-                    </div>  
-                  </div>
-                  
+                  [/#if]
                   
                 </div>
               [/#list]
             </div>
-              
-          </div> 
+          </div>
+          
+          [#-- Next Users --]
+          <h5 class="sectionSubTitle">(Next) Users </h5>
+          <div>
+            [@nextUserMacro element={} name="" index=0 /]
+          </div>
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
@@ -225,6 +231,38 @@
       [/#if]
     </div>
     
+  </div>
+[/#macro]
+
+[#macro nextUserMacro element name index isTemplate=false]
+  <div id="Year-${isTemplate?string('template', index)}" class="milestoneYear borderBox" style="display:${isTemplate?string('none','block')}">
+    [#local customName = "${name}[${index}]" /]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId"> Project Next User </span>
+    </div>
+
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
+     
+    
+    <div class="form-group">
+      [#-- Title --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.title" i18nkey="projectOutcomeNextUser.title" required=true className="limitWords-100" editable=editable /]
+      </div>
+      [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" required=true className="limitWords-100" editable=editable /]
+      </div>
+      [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" required=true className="limitWords-100" editable=editable /]
+      </div>
+    </div>
   </div>
 [/#macro]
 
