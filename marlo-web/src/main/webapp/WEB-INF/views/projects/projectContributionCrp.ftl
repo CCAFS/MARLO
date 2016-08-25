@@ -168,7 +168,7 @@
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
-              <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+              <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
               <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
@@ -177,7 +177,7 @@
               <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
               <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
+              [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
             </div>
           </div>
         
