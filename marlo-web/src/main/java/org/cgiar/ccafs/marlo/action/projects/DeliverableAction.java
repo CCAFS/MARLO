@@ -27,11 +27,15 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -65,10 +69,15 @@ public class DeliverableAction extends BaseAction {
   private long deliverableID;
 
   private List<DeliverableType> deliverableType;
+
+
   private Project project;
+
+  private Map<String, String> status;
 
 
   private Deliverable deliverable;
+
   private List<ProjectFocus> projectPrograms;
 
   @Inject
@@ -84,6 +93,7 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -92,11 +102,9 @@ public class DeliverableAction extends BaseAction {
     return deliverableType;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public Project getProject() {
     return project;
@@ -109,6 +117,12 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
+
+
+  public Map<String, String> getStatus() {
+    return status;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -127,6 +141,12 @@ public class DeliverableAction extends BaseAction {
     if (deliverable != null) {
       project = deliverable.getProject();
       projectID = project.getId();
+
+      status = new HashMap<>();
+      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      for (ProjectStatusEnum projectStatusEnum : list) {
+        status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
 
 
       deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
@@ -164,7 +184,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverableType = deliverableType;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -172,6 +191,7 @@ public class DeliverableAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -181,5 +201,8 @@ public class DeliverableAction extends BaseAction {
     this.projectPrograms = projectPrograms;
   }
 
+  public void setStatus(Map<String, String> status) {
+    this.status = status;
+  }
 
 }
