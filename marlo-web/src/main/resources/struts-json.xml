@@ -142,6 +142,31 @@
 				<param name="defaultEncoding">utf-8</param>
 			</result>
 		</action>
+		
+		    
+    <action name="deliverableSubType"
+      class="org.cgiar.ccafs.marlo.action.json.project.DeliverableSubTypeAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="programOutcomesList"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProgramOutcomeListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+
+    <action name="validateProjectSection"
+      class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 	</package>
 
@@ -166,22 +191,6 @@
 
 		<action name="impactPathwayFullGraph"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.ImpactPathwayFullGraph">
-			<result type="json">
-				<param name="noCache">true</param>
-				<param name="excludeNullProperties">true</param>
-			</result>
-		</action>
-		
-		<action name="deliverableSubType"
-      class="org.cgiar.ccafs.marlo.action.json.project.DeliverableSubTypeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-
-		<action name="validateProjectSection"
-			class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
