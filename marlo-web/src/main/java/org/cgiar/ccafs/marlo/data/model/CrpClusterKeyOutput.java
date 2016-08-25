@@ -5,6 +5,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -19,10 +21,13 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -5642790359021262160L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private CrpClusterOfActivity crpClusterOfActivity;
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -36,17 +41,20 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
   public CrpClusterKeyOutput() {
   }
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
-    boolean isActive, Date activeSince, String modificationJustification) {
+    boolean isActive, Date activeSince, String modificationJustification, Set<Deliverable> deliverables) {
     this.crpClusterOfActivity = crpClusterOfActivity;
     this.modifiedBy = usersByModifiedBy;
     this.keyOutput = keyOutput;
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+    this.deliverables = deliverables;
   }
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, User usersByCreatedBy,
@@ -59,7 +67,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -87,12 +94,17 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
   public User getCreatedBy() {
     return this.createdBy;
   }
 
   public CrpClusterOfActivity getCrpClusterOfActivity() {
     return this.crpClusterOfActivity;
+  }
+
+  public Set<Deliverable> getDeliverables() {
+    return deliverables;
   }
 
   @Override
@@ -147,6 +159,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   public void setCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
     this.crpClusterOfActivity = crpClusterOfActivity;
+  }
+
+  public void setDeliverables(Set<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setId(Long id) {

@@ -116,6 +116,7 @@ public class DeliverableAction extends BaseAction {
       project = deliverable.getProject();
       projectID = project.getId();
 
+
       deliverableType = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
     }
@@ -123,6 +124,12 @@ public class DeliverableAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+  }
+
+  @Override
+  public String save() {
+    // TODO Auto-generated method stub
+    return super.save();
   }
 
   public void setDeliverable(Deliverable deliverable) {

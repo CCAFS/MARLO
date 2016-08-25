@@ -31,6 +31,7 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
+
   /**
    * 
    */
@@ -43,32 +44,32 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private CrpProgram crpProgram;
 
+
   @Expose
   private SrfTargetUnit srfTargetUnit;
+
   @Expose
   private String description;
 
   @Expose
   private Integer year;
-
   @Expose
   private BigDecimal value;
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
 
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
+
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
-
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
   @Expose
   private boolean active;
   @Expose
   private User createdBy;
 
-
   @Expose
   private Date activeSince;
-
   @Expose
   private User modifiedBy;
 
@@ -77,6 +78,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   private List<CrpMilestone> milestones;
+
+
   private List<CrpOutcomeSubIdo> subIdos;
 
   public CrpProgramOutcome() {
@@ -92,7 +95,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   }
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, Integer year,
-    BigDecimal value, Set<CrpOutcomeSubIdo> crpOutcomeSubIdos, Set<CrpMilestone> crpMilestones) {
+    BigDecimal value, Set<CrpOutcomeSubIdo> crpOutcomeSubIdos, Set<CrpMilestone> crpMilestones,
+    Set<Deliverable> deliverables) {
     this.crpProgram = crpProgram;
     this.srfTargetUnit = srfTargetUnit;
     this.description = description;
@@ -100,6 +104,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.value = value;
     this.crpOutcomeSubIdos = crpOutcomeSubIdos;
     this.crpMilestones = crpMilestones;
+    this.deliverables = deliverables;
   }
 
   @Override
@@ -128,11 +133,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   private String getComposedName() {
     return this.getCrpProgram().getAcronym() + "-" + description;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -148,8 +151,14 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.crpOutcomeSubIdos;
   }
 
+
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
+  }
+
+
+  public Set<Deliverable> getDeliverables() {
+    return deliverables;
   }
 
   public String getDescription() {
@@ -201,7 +210,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -211,6 +219,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -230,6 +239,10 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
+  }
+
+  public void setDeliverables(Set<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setDescription(String description) {

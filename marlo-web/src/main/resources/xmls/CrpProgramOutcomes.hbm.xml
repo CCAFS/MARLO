@@ -58,12 +58,20 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		
-		 <set name="projectOutcomes" order-by="id" table="project_outcomes" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="outcome_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
-        </set>
+
+		<set name="projectOutcomes" order-by="id" table="project_outcomes"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="outcome_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
+		</set>
+		<set name="deliverables" table="deliverables" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="outcome_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+		</set>
 	</class>
 </hibernate-mapping>
