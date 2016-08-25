@@ -61,6 +61,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
+  private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
 
 
   public ProjectOutcome() {
@@ -88,6 +89,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.projectCommunications = projectCommunicationses;
   }
 
+
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -104,15 +106,14 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public SrfTargetUnit getAchievedUnit() {
     return achievedUnit;
   }
 
-
   public Long getAchievedValue() {
     return achievedValue;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
@@ -138,6 +139,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return expectedUnit;
   }
 
+
   public long getExpectedValue() {
     return expectedValue;
   }
@@ -147,7 +149,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -198,6 +199,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectMilestone> getProjectMilestones() {
     return projectMilestones;
+  }
+
+
+  public Set<ProjectNextuser> getProjectNextusers() {
+    return projectNextusers;
   }
 
 
@@ -294,6 +300,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
+  }
+
+
+  public void setProjectNextusers(Set<ProjectNextuser> projectNextusers) {
+    this.projectNextusers = projectNextusers;
   }
 
 

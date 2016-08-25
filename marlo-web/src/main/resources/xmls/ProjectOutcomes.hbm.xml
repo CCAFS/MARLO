@@ -74,5 +74,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectCommunication" />
         </set>
+        
+        <set name="projectNextusers" order-by="id" table="project_nextusers" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_outcome_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectNextuser" />
+        </set>
     </class>
 </hibernate-mapping>
