@@ -61,7 +61,12 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
+  private List<ProjectNextuser> nextUsers;
+
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+  private ProjectComponentLesson projectComponentLesson;
+  private ProjectComponentLesson projectComponentLessonPreview;
 
 
   public ProjectOutcome() {
@@ -111,9 +116,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return achievedUnit;
   }
 
+
   public Long getAchievedValue() {
     return achievedValue;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -160,7 +167,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public List<ProjectMilestone> getMilestones() {
     return milestones;
   }
@@ -187,13 +193,32 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<ProjectNextuser> getNextUsers() {
+    return nextUsers;
+  }
+
+
   public Project getProject() {
     return project;
   }
 
-
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return projectComponentLesson;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
+  }
+
+
+  public Set<ProjectComponentLesson> getProjectComponentLessons() {
+    return projectComponentLessons;
   }
 
 
@@ -288,6 +313,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setNextUsers(List<ProjectNextuser> nextUsers) {
+    this.nextUsers = nextUsers;
+  }
+
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -295,6 +325,21 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectCommunications(Set<ProjectCommunication> projectCommunications) {
     this.projectCommunications = projectCommunications;
+  }
+
+
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
+  }
+
+
+  public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
+    this.projectComponentLessons = projectComponentLessons;
   }
 
 

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -42,7 +43,7 @@ public class DeliverableSubTypeAction extends BaseAction {
 
   private List<Map<String, Object>> deliverableSubTypes;
 
-
+  @Inject
   public DeliverableSubTypeAction(APConfig config, DeliverableTypeManager deliverableTypeManager) {
     super(config);
     this.deliverableTypeManager = deliverableTypeManager;

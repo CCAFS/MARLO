@@ -27,10 +27,10 @@
 [#-- Status and year expected selects --] 
 <div class="col-md-12 form-group">
   <div class="col-md-6">
-    [@customForm.select name="deliverable.status" label=""  i18nkey="project.deliverable.status" listName="status" keyFieldName="id"  displayFieldName="name" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="deliverable.status" label=""  i18nkey="project.deliverable.status" listName="status"  value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
   </div>
   <div class="col-md-6">
-    [@customForm.select name="deliverable.year" label=""  i18nkey="Year of expected completion" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="Year of expected completion" listName="project.allYears"  value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
   </div>
 </div>
 

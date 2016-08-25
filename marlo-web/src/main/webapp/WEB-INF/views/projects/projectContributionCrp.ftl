@@ -155,7 +155,7 @@
                   [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
                 [/#list]
               [#else]
-                [@nextUserMacro element={} name="" index=0 /]
+                [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
               [/#if]
             </div>
             [#if editable]
@@ -166,18 +166,18 @@
           [#-- Lessons and progress --]
           <div id="lessons" class="borderBox">
             [#-- Lessons learnt from last planning/reporting cycle --]
-            [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
+            [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
-              <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
-              <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+              <h6>[@customForm.text name="projectOutcome.projectComponentLessonPreview" i18nkey="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+              <div class="textArea "><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
             [#-- Planning/Reporting lessons --]
             <div class="fullBlock">
-              <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
-              <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
-              <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
+              <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
+              <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+              <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
             </div>
           </div>
         
@@ -283,7 +283,7 @@
     <div class="form-group">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
+        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">

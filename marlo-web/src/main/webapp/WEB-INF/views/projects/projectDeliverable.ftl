@@ -2,7 +2,7 @@
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [""] /]
+[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverable general information" /]
