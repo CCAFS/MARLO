@@ -40,7 +40,6 @@
           <h3 class="headTitle">Project Outcome </h3>  
           
           [#-- Outcomen name --]
-          
           <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong> : ${projectOutcome.crpProgramOutcome.description}</p>
           
           [#-- Project Targets --]
@@ -254,14 +253,13 @@
   <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser borderBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
       <span class="elementId"> Project Next User </span>
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
      
     <div class="form-group">
       [#-- Title --]
