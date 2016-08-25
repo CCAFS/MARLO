@@ -27,8 +27,6 @@ public class ClusterOfActivitiesListAction extends BaseAction {
 
   private Long programOutcomeId;
 
-  private
-
   public ClusterOfActivitiesListAction(APConfig config) {
     super(config);
     // TODO Auto-generated constructor stub
