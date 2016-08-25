@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCommunicationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectNextuserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCommunication;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
+import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -80,7 +82,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private AuditLogManager auditLogManager;
   private ProjectOutcomeManager projectOutcomeManager;
-
+  private ProjectNextuserManager projectNextuserManager;
   // Front-end
   private long projectID;
   private long projectOutcomeID;
@@ -99,7 +101,7 @@ public class ProjectOutcomeAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
-    CrpMilestoneManager crpMilestoneManager) {
+    CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -110,6 +112,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.projectCommunicationManager = projectCommunicationManager;
     this.auditLogManager = auditLogManager;
     this.crpMilestoneManager = crpMilestoneManager;
+    this.projectNextuserManager = projectNextuserManager;
   }
 
   @Override
@@ -340,6 +343,8 @@ public class ProjectOutcomeAction extends BaseAction {
 
         projectOutcome.setCommunications(
           projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        projectOutcome.setNextUsers(
+          projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
       }
@@ -369,6 +374,10 @@ public class ProjectOutcomeAction extends BaseAction {
       if (projectOutcome.getCommunications() != null) {
         projectOutcome.getCommunications().clear();
       }
+
+      if (projectOutcome.getNextUsers() != null) {
+        projectOutcome.getNextUsers().clear();
+      }
     }
   }
 
@@ -381,13 +390,14 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveProjectOutcome();
       this.saveMilestones();
       this.saveCommunications();
+      this.saveNextUsers();
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
-
+      relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -531,6 +541,50 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+  public void saveNextUsers() {
+
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+    for (ProjectNextuser projectNextuser : projectOutcomeDB.getProjectNextusers().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      if (projectOutcome.getNextUsers() == null) {
+        projectOutcome.setNextUsers(new ArrayList<>());
+      }
+      if (!projectOutcome.getNextUsers().contains(projectNextuser)) {
+        projectNextuserManager.deleteProjectNextuser(projectNextuser.getId());
+
+      }
+    }
+
+    if (projectOutcome.getNextUsers() != null) {
+      for (ProjectNextuser projectNextuser : projectOutcome.getNextUsers()) {
+        if (projectNextuser != null) {
+          if (projectNextuser.getId() == null) {
+            projectNextuser.setCreatedBy(this.getCurrentUser());
+
+            projectNextuser.setActiveSince(new Date());
+            projectNextuser.setActive(true);
+            projectNextuser.setProjectOutcome(projectOutcome);
+            projectNextuser.setModifiedBy(this.getCurrentUser());
+            projectNextuser.setModificationJustification("");
+
+          } else {
+            ProjectNextuser projectNextuserDB = projectNextuserManager.getProjectNextuserById(projectNextuser.getId());
+            projectNextuser.setCreatedBy(projectNextuserDB.getCreatedBy());
+
+            projectNextuser.setActiveSince(projectNextuserDB.getActiveSince());
+            projectNextuser.setActive(true);
+            projectNextuser.setProjectOutcome(projectOutcome);
+            projectNextuser.setModifiedBy(this.getCurrentUser());
+            projectNextuser.setModificationJustification("");
+          }
+
+          projectNextuserManager.saveProjectNextuser(projectNextuser);
+        }
+
+      }
+    }
+  }
 
   public void saveProjectOutcome() {
 

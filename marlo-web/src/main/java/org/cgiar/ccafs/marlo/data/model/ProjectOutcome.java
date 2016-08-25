@@ -61,6 +61,8 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
   private List<ProjectCommunication> communications;
+  private List<ProjectNextuser> nextUsers;
+
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
 
 
@@ -111,19 +113,19 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return achievedUnit;
   }
 
+
   public Long getAchievedValue() {
     return achievedValue;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
   }
 
-
   public List<ProjectCommunication> getCommunications() {
     return communications;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -150,6 +152,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -164,7 +167,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public List<ProjectMilestone> getMilestones() {
     return milestones;
   }
-
 
   public String getModificationJustification() {
     return modificationJustification;
@@ -184,6 +186,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public String getNarrativeTarget() {
     return narrativeTarget;
+  }
+
+
+  public List<ProjectNextuser> getNextUsers() {
+    return nextUsers;
   }
 
 
@@ -285,6 +292,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setNarrativeTarget(String narrativeTarget) {
     this.narrativeTarget = narrativeTarget;
+  }
+
+
+  public void setNextUsers(List<ProjectNextuser> nextUsers) {
+    this.nextUsers = nextUsers;
   }
 
 

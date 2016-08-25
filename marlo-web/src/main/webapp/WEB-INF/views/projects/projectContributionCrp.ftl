@@ -155,7 +155,7 @@
                   [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
                 [/#list]
               [#else]
-                [@nextUserMacro element={} name="" index=0 /]
+                [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
               [/#if]
             </div>
             [#if editable]
@@ -264,7 +264,7 @@
     <div class="form-group">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
+        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
