@@ -65,6 +65,8 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+  private ProjectComponentLesson projectComponentLesson;
+  private ProjectComponentLesson projectComponentLessonPreview;
 
 
   public ProjectOutcome() {
@@ -134,9 +136,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
+
 
   public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
@@ -153,7 +157,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -163,7 +166,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
   }
-
 
   public List<ProjectMilestone> getMilestones() {
     return milestones;
@@ -179,6 +181,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public String getNarrativeAchieved() {
     return narrativeAchieved;
@@ -199,9 +202,18 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return projectComponentLesson;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
   }
 
 
@@ -313,6 +325,16 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectCommunications(Set<ProjectCommunication> projectCommunications) {
     this.projectCommunications = projectCommunications;
+  }
+
+
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
   }
 
 

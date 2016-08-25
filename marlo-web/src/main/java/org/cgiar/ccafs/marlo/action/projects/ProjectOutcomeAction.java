@@ -346,6 +346,9 @@ public class ProjectOutcomeAction extends BaseAction {
         projectOutcome.setNextUsers(
           projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        if (this.isLessonsActive()) {
+          this.loadLessonsOutcome(loggedCrp, projectOutcome);
+        }
 
       }
 
@@ -391,6 +394,9 @@ public class ProjectOutcomeAction extends BaseAction {
       this.saveMilestones();
       this.saveCommunications();
       this.saveNextUsers();
+      if (this.isLessonsActive()) {
+        this.saveLessonsOutcome(loggedCrp, projectOutcome);
+      }
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setActiveSince(new Date());
@@ -398,6 +404,7 @@ public class ProjectOutcomeAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_OUTCOMES_MILESTONE_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOMES_COMMUNICATION_RELATION);
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
+      relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
