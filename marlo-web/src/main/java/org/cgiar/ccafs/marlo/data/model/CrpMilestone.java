@@ -105,6 +105,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public String getComposedName() {
+    return this.year + " - " + this.title;
+  }
+
   public User getCreatedBy() {
     return createdBy;
   }
