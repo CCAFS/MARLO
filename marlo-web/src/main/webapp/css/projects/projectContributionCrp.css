@@ -19,8 +19,9 @@ ul#projectOutcomesList li a{
 }
 
 .tab-content.projectOutcomeYear-content {
-    border: 1px solid #ddd;
+    border: 1px solid #d1d1d1;
     padding: 10px 2em;
+    border-radius: 0px 4px 4px 4px;
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs {
@@ -41,7 +42,7 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:hover {
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li {
     border-bottom: 1px solid #dddddd;
-    margin-bottom: -2px;
+    margin-bottom: -1px;
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active {

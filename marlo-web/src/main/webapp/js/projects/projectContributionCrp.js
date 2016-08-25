@@ -1,8 +1,9 @@
-var milestonesCount;
+var milestonesCount, outcomeID;
 $(document).ready(init);
 
 function init() {
   milestonesCount = $('form .milestoneYear').length;
+  outcomeID = $('#outcomeId').val();
 
   // Set Select2 widget to already saved data
   $('form select').select2({
@@ -36,10 +37,30 @@ function attachEvents() {
 /** FUNCTIONS * */
 
 function loadMilestonesByYear(i,e) {
+  var $parent = $(e).parents('.tab-pane');
   var $select = $(e).find('select');
   var selectedIds = ($(e).find('.milestonesSelectedIds').text()).split(',');
+  var year = ($parent.attr('id')).split('-')[1];
 
-  $select.clearOptions(selectedIds);
+  // Getting Milestones list milestonesYear.do?year=2017&outcomeID=33
+  $.ajax({
+      url: baseURL + '/milestonesYear.do',
+      data: {
+          year: year,
+          outcomeID: outcomeID
+      },
+      success: function(data) {
+        for(var i = 0, len = data.crpMilestones.length; i < len; i++) {
+          $select.addOption(data.crpMilestones[i].id, data.crpMilestones[i].description);
+        }
+
+        // Clear options
+        $select.clearOptions(selectedIds);
+
+        $select.trigger("change.select2");
+      }
+  });
+
 }
 
 function addMilestone() {

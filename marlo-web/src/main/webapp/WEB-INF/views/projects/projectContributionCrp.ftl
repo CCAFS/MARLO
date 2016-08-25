@@ -148,7 +148,7 @@
           
           [#-- Next Users --]
           <h4 class="headTitle">(Next) Users </h4>
-          <div class="nextUsersBlock">
+          <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
               [#if projectOutcome.nextUsers?has_content]
                 [#list projectOutcome.nextUsers as nextUser]
@@ -162,6 +162,25 @@
               <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
             [/#if]
           </div>
+          
+          [#-- Lessons and progress --]
+          <div id="lessons" class="borderBox">
+            [#-- Lessons learnt from last planning/reporting cycle --]
+            [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
+            <div class="fullBlock">
+              <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+              <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+            </div>
+            [/#if]
+            [#-- Planning/Reporting lessons --]
+            <div class="fullBlock">
+              <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
+              <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+              <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
+              [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
+            </div>
+          </div>
+        
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
@@ -194,7 +213,7 @@
       <span class="elementId"> Project Milestone Target </span>
     </div>
 
-        [#-- Hidden inputs --]
+    [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.crpMilestone.id)!}" class="crpMilestoneId" />
@@ -250,7 +269,7 @@
 [/#macro]
 
 [#macro nextUserMacro element name index isTemplate=false]
-  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser borderBox" style="display:${isTemplate?string('none','block')}">
+  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser simpleBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove Button --]
     [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
@@ -291,4 +310,3 @@
     [#return false]
   [/#if]
 [/#function]
-
