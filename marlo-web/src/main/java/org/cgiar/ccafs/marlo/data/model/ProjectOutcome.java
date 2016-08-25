@@ -64,6 +64,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private List<ProjectNextuser> nextUsers;
 
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
 
   public ProjectOutcome() {
@@ -123,19 +124,19 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public List<ProjectCommunication> getCommunications() {
     return communications;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
-
 
   public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
@@ -168,6 +169,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return milestones;
   }
 
+
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -177,7 +179,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
-
 
   public String getNarrativeAchieved() {
     return narrativeAchieved;
@@ -201,6 +202,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
+  }
+
+
+  public Set<ProjectComponentLesson> getProjectComponentLessons() {
+    return projectComponentLessons;
   }
 
 
@@ -307,6 +313,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectCommunications(Set<ProjectCommunication> projectCommunications) {
     this.projectCommunications = projectCommunications;
+  }
+
+
+  public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
+    this.projectComponentLessons = projectComponentLessons;
   }
 
 
