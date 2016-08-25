@@ -61,13 +61,16 @@ public class KeyOutputListAction extends BaseAction {
     Map<String, Object> keyOutput;
 
     CrpClusterOfActivity activity = crpClusterOfActivityManager.getCrpClusterOfActivityById(clusterOfActivityId);
-
-    for (CrpClusterKeyOutput clusterKeyOutput : activity.getCrpClusterKeyOutputs().stream().filter(ko -> ko.isActive())
-      .collect(Collectors.toList())) {
-      keyOutput = new HashMap<String, Object>();
-      keyOutput.put("id", clusterKeyOutput.getId());
-      keyOutput.put("description", clusterKeyOutput.getKeyOutput());
-      keyOutputs.add(keyOutput);
+    if (activity != null) {
+      if (activity.getCrpClusterKeyOutputs() != null) {
+        for (CrpClusterKeyOutput clusterKeyOutput : activity.getCrpClusterKeyOutputs().stream()
+          .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+          keyOutput = new HashMap<String, Object>();
+          keyOutput.put("id", clusterKeyOutput.getId());
+          keyOutput.put("description", clusterKeyOutput.getKeyOutput());
+          keyOutputs.add(keyOutput);
+        }
+      }
     }
 
     return SUCCESS;

@@ -158,6 +158,10 @@ public class DeliverableAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+
+    }
   }
 
 

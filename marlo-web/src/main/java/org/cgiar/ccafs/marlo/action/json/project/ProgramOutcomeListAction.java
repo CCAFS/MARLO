@@ -65,20 +65,24 @@ public class ProgramOutcomeListAction extends BaseAction {
     CrpProgram program = crpProgramManager.getCrpProgramById(crpProgramId);
 
     if (program != null) {
-      for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
-        .collect(Collectors.toList())) {
-        programOutcome = new HashMap<String, Object>();
-        programOutcome.put("id", outcome.getId());
-        programOutcome.put("description", outcome.getDescription());
-        programOutcomes.add(programOutcome);
+      if (program.getCrpProgramOutcomes() != null) {
+        for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
+          .collect(Collectors.toList())) {
+          programOutcome = new HashMap<String, Object>();
+          programOutcome.put("id", outcome.getId());
+          programOutcome.put("description", outcome.getDescription());
+          programOutcomes.add(programOutcome);
+        }
       }
 
-      for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
-        .collect(Collectors.toList())) {
-        clusterOfActivity = new HashMap<String, Object>();
-        clusterOfActivity.put("id", activity.getId());
-        clusterOfActivity.put("description", activity.getDescription());
-        clusterOfActivities.add(clusterOfActivity);
+      if (program.getCrpClusterOfActivities() != null) {
+        for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
+          .collect(Collectors.toList())) {
+          clusterOfActivity = new HashMap<String, Object>();
+          clusterOfActivity.put("id", activity.getId());
+          clusterOfActivity.put("description", activity.getDescription());
+          clusterOfActivities.add(clusterOfActivity);
+        }
       }
     }
 
