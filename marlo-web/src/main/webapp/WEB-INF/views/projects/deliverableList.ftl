@@ -2,7 +2,7 @@
 [#assign title = "Project Deliverables" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/projects/deliverableList.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableList.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css","${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]

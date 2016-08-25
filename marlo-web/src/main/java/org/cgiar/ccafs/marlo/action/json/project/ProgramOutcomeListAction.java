@@ -1,5 +1,5 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
+ * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,75 @@
 
 package org.cgiar.ccafs.marlo.action.json.project;
 
+import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class ProgramOutcomeListAction {
+public class ProgramOutcomeListAction extends BaseAction {
+
+
+  private static final long serialVersionUID = -5595055892247130791L;
+
+
+  private CrpProgramManager crpProgramManager;
+
+  private List<Map<String, Object>> programOutcomes;
+
+  private Long crpProgramId;
+
+  @Inject
+  public ProgramOutcomeListAction(APConfig config, CrpProgramManager crpProgramManager) {
+    super(config);
+    this.crpProgramManager = crpProgramManager;
+  }
+
+  @Override
+  public String execute() throws Exception {
+    programOutcomes = new ArrayList<Map<String, Object>>();
+    Map<String, Object> programOutcome;
+
+    CrpProgram program = crpProgramManager.getCrpProgramById(crpProgramId);
+
+    if (program != null) {
+      for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
+        .collect(Collectors.toList())) {
+        programOutcome = new HashMap<String, Object>();
+        programOutcome.put("id", outcome.getId());
+        programOutcome.put("description", outcome.getDescription());
+        programOutcomes.add(programOutcome);
+      }
+    }
+
+    return SUCCESS;
+  }
+
+  public List<Map<String, Object>> getProgramOutcomes() {
+    return programOutcomes;
+  }
+
+  @Override
+  public void prepare() throws Exception {
+    Map<String, Object> parameters = this.getParameters();
+    crpProgramId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+  }
+
+  public void setProgramOutcomes(List<Map<String, Object>> programOutcomes) {
+    this.programOutcomes = programOutcomes;
+  }
 
 }
