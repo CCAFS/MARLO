@@ -1,3 +1,4 @@
+START TRANSACTION;
 ALTER TABLE `deliverables`
 ADD COLUMN `program_id`  bigint(20) NULL AFTER `modification_justification`,
 ADD COLUMN `outcome_id`  bigint(20) NULL AFTER `program_id`,
@@ -11,3 +12,4 @@ ALTER TABLE `deliverables` ADD CONSTRAINT `deliverables_outcomes_fk` FOREIGN KEY
 ALTER TABLE `deliverables` ADD CONSTRAINT `deliverables_cluster_activities_fk` FOREIGN KEY (`cluster_activity_id`) REFERENCES `crp_cluster_of_activities` (`id`);
 
 ALTER TABLE `deliverables` ADD CONSTRAINT `deliverables_key_output_id` FOREIGN KEY (`key_output_id`) REFERENCES `crp_cluster_key_outputs` (`id`);
+COMMIT;
