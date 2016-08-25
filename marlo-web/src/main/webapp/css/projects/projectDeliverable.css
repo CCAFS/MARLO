@@ -33,7 +33,11 @@
     margin-top: 60px;
 }
 
-ul.nav li {
-    /* background-color: #f8f8f8; */
-    margin-right: 1%;
+ul.nav li a {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.title {
+    padding: 2px;
 }
