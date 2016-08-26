@@ -51,7 +51,7 @@
           </td>
           [#-- Deliverable Status --]
           <td>
-            ${(deliverable.status)!'none'}
+            ${(deliverable.statusName)!'none'}
           </td>
           [#-- Deliverable required fields --]
           <td>

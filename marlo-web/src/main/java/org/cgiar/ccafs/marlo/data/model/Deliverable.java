@@ -17,9 +17,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
@@ -186,14 +184,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public String getStatusName() {
-    String statusName = "";
-    List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
-    for (ProjectStatusEnum projectStatusEnum : list) {
-      if (Integer.parseInt(projectStatusEnum.getStatusId()) == this.status) {
-        statusName = projectStatusEnum.getStatus();
-      }
+    if (this.status != null) {
+      return ProjectStatusEnum.getValue(this.status).getStatus() != null
+        ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
+    } else {
+      return "";
     }
-    return statusName;
   }
 
   public String getTitle() {
