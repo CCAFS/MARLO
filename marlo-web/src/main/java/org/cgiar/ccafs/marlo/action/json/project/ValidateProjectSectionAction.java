@@ -27,15 +27,19 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,29 +48,33 @@ import org.slf4j.LoggerFactory;
  */
 public class ValidateProjectSectionAction extends BaseAction {
 
+
   private static final long serialVersionUID = 2334147747892988744L;
+
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
 
   // Model
   private boolean existProject;
-  private boolean validSection;
-  private String sectionName;
-  private int projectID;
 
+  private boolean validSection;
+
+  private String sectionName;
+  private Long projectID;
+  private SectionStatus sectionStatus;
+  private Map<String, Object> section;
   // Managers
   @Inject
   private SectionStatusManager sectionStatusManager;
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   ProjectLocationValidator locationValidator;
   @Inject
   ProjectDescriptionValidator descriptionValidator;
 
-
+  @Inject
   public ValidateProjectSectionAction(APConfig config) {
     super(config);
   }
@@ -88,24 +96,32 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
       }
     }
-
+    String cycle = "";
+    if (this.isPlanningActive()) {
+      cycle = APConstants.PLANNING;
+    } else {
+      cycle = APConstants.REPORTING;
+    }
+    sectionStatus =
+      sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+    section = new HashMap<String, Object>();
+    section.put("sectionName", sectionStatus.getSectionName());
+    section.put("missingFields", sectionStatus.getMissingFields());
+    Thread.sleep(500);
     return SUCCESS;
+  }
+
+  public Map<String, Object> getSection() {
+    return section;
   }
 
   @Override
   public void prepare() throws Exception {
-    sectionName = this.getRequest().getParameter(APConstants.SECTION_NAME);
+    Map<String, Object> parameters = this.getParameters();
 
-    projectID = -1;
-    if (this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID) != null) {
-      try {
-        projectID = Integer.parseInt(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
-      } catch (NumberFormatException e) {
-        LOG.error("There was an exception trying to parse the project id = {} ",
-          this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
-      }
-    }
+    sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
+    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
     // Validate if project exists.
     existProject = projectManager.existProject(projectID);
 
@@ -118,6 +134,10 @@ public class ValidateProjectSectionAction extends BaseAction {
     validSection = sections.contains(sectionName);
 
 
+  }
+
+  public void setSection(Map<String, Object> section) {
+    this.section = section;
   }
 
   private void validateProjectDescription() {

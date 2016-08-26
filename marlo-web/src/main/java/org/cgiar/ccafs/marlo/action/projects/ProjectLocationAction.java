@@ -318,6 +318,7 @@ public class ProjectLocationAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setProjectLocations(projectDb.getProjectLocations());
         reader.close();
         this.setDraft(true);
       } else {
@@ -475,7 +476,9 @@ public class ProjectLocationAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
+      project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
+      project.setModifiedBy(this.getCurrentUser());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

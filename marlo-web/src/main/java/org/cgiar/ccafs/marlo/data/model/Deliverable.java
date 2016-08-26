@@ -183,6 +183,15 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.statusDescription;
   }
 
+  public String getStatusName() {
+    if (this.status != null) {
+      return ProjectStatusEnum.getValue(this.status).getStatus() != null
+        ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
+    } else {
+      return "";
+    }
+  }
+
   public String getTitle() {
     return this.title;
   }

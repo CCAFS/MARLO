@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -44,6 +45,9 @@ public class ProgramOutcomeListAction extends BaseAction {
 
   private List<Map<String, Object>> programOutcomes;
 
+
+  private List<Map<String, Object>> clusterOfActivities;
+
   private Long crpProgramId;
 
   @Inject
@@ -55,21 +59,45 @@ public class ProgramOutcomeListAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     programOutcomes = new ArrayList<Map<String, Object>>();
+    clusterOfActivities = new ArrayList<Map<String, Object>>();
     Map<String, Object> programOutcome;
+    Map<String, Object> clusterOfActivity;
 
     CrpProgram program = crpProgramManager.getCrpProgramById(crpProgramId);
 
     if (program != null) {
-      for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
-        .collect(Collectors.toList())) {
-        programOutcome = new HashMap<String, Object>();
-        programOutcome.put("id", outcome.getId());
-        programOutcome.put("description", outcome.getDescription());
-        programOutcomes.add(programOutcome);
+      if (program.getCrpProgramOutcomes().stream().filter(po -> po.isActive()).collect(Collectors.toList()) != null) {
+        for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
+          .collect(Collectors.toList())) {
+          if (outcome != null) {
+            programOutcome = new HashMap<String, Object>();
+            programOutcome.put("id", outcome.getId());
+            programOutcome.put("description", outcome.getDescription());
+            programOutcomes.add(programOutcome);
+          }
+        }
+      }
+
+      if (program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
+        .collect(Collectors.toList()) != null) {
+        for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
+          .collect(Collectors.toList())) {
+          if (activity != null) {
+            clusterOfActivity = new HashMap<String, Object>();
+            clusterOfActivity.put("id", activity.getId());
+            clusterOfActivity.put("description", activity.getDescription());
+            clusterOfActivities.add(clusterOfActivity);
+          }
+
+        }
       }
     }
 
     return SUCCESS;
+  }
+
+  public List<Map<String, Object>> getClusterOfActivities() {
+    return clusterOfActivities;
   }
 
   public List<Map<String, Object>> getProgramOutcomes() {
@@ -80,6 +108,10 @@ public class ProgramOutcomeListAction extends BaseAction {
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
     crpProgramId = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.CRP_PROGRAM_ID))[0]));
+  }
+
+  public void setClusterOfActivities(List<Map<String, Object>> clusterOfActivities) {
+    this.clusterOfActivities = clusterOfActivities;
   }
 
   public void setProgramOutcomes(List<Map<String, Object>> programOutcomes) {

@@ -80,6 +80,8 @@ function addMilestone() {
     width: '100%'
   });
 
+  $list.find('.emptyMessage').hide();
+
   // Add the milestone to the list
   $list.append($item);
 

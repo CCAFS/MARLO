@@ -25,7 +25,14 @@
 [#-- Privileges Message --]
 [#if !canEdit && !(transaction??) && !(submission?has_content)]
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-[/#if] 
+[/#if]
+
+[#-- Project End --]
+[#if project.endDate?? && ((project.endDate?string.yyyy)?number lt currentCycleYear)]
+  <p class="readPrivileges">This project ended on ${project.endDate}</p>
+[/#if]
+
+
 
 [#-- Program completed Message--]
 [#if canSubmit && !submission?has_content && completed]

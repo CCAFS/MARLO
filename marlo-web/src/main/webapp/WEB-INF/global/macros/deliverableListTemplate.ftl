@@ -36,11 +36,11 @@
           </td>
           [#-- Deliverable Type --]
           <td>
-            [@s.text name="${(deliverable.deliverableType.name?lower_case)!'none'}" /]
+            ${(deliverable.deliverableType.name?lower_case)!'none'}
           </td>
           [#-- Deliverable Year --]
           <td>
-            [@s.text name="${(deliverable.year)!'none'}" /]
+            ${(deliverable.year)!'none'}
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
@@ -51,7 +51,7 @@
           </td>
           [#-- Deliverable Status --]
           <td>
-            [@s.text name="${(deliverable.statusDescription)!'none'}" /]
+            ${(deliverable.statusName)!'none'}
           </td>
           [#-- Deliverable required fields --]
           <td>

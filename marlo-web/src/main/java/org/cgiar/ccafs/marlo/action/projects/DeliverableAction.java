@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -53,9 +52,6 @@ public class DeliverableAction extends BaseAction {
   private Crp loggedCrp;
 
   // Managers
-  private ProjectManager projectManager;
-
-
   private DeliverableTypeManager deliverableTypeManager;
 
   private DeliverableManager deliverableManager;
@@ -158,12 +154,24 @@ public class DeliverableAction extends BaseAction {
             .filter(pf -> pf.isActive()
               && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList()));
-
     }
-
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (deliverableTypeParent != null) {
+        deliverableTypeParent.clear();
+      }
+
+      if (projectPrograms != null) {
+        projectPrograms.clear();
+      }
+
+      if (status != null) {
+        status.clear();
+      }
+    }
   }
 
 
