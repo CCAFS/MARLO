@@ -2344,6 +2344,10 @@ p.projectSubmitted {
   display: inline-block;
 }
 
+.button-blue a{
+  color:#fff;
+}
+
 .button-blue:hover { 
   background: #5980C7; 
 }
@@ -2629,10 +2633,11 @@ input.userName {
   margin-bottom: 15px;
 }
 
-#dashboard .emptyMessage {
-  padding: 15px;
-  font-size: 15px;
+.emptyMessage {
+  padding: 5px;
+  font-size: 1em;
   font-style: italic;
+  color: #949494;
 }
 
 #dashboard #deadline{
@@ -3262,7 +3267,7 @@ p.projectValidateButton-message {
 }
 
 .projectsList #projectFlagships {
-  width: 77px;
+  width: 50px;
 }
 
 .projectsList #projectBudget {
@@ -5845,7 +5850,8 @@ label.checkboxLabel {
 input.checkboxInput, label.checkboxLabel{line-height: 19px;}
 
 input.checkboxInput-vertical{
- float: left;
+ 
+float: left;
 }
 
 hr {
@@ -5979,14 +5985,20 @@ hr {
 }
 
 span.programTag {
-    color: #fff;
-    padding: 0 7px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    margin-right: 2px;
+    /* color: #4a4a4a; */
+    border-bottom: 3px solid;
+    /* border-bottom: 1px solid; */
+    /* border-right: 1px solid; */
+    /* border-top: 1px solid; */
+    background: #f4f4f4;
+    border-radius: 1px;
+    padding: 0px 6px;
+    margin-right: 0px;
+    margin-bottom: 4px;
     font-size: 0.9em;
-    border-radius: 2px;
     cursor: pointer;
-    opacity: 0.7;
+    opacity: 0.9;
+    /* float: left; */
 }
 
 .subMainMenu {

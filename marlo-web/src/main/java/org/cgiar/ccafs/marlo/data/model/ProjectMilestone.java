@@ -18,8 +18,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -6474276163660867919L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private CrpMilestone crpMilestone;
   @Expose
@@ -34,6 +37,25 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  @Expose
+  private Long expectedValue;
+  @Expose
+  private SrfTargetUnit expectedUnit;
+
+  @Expose
+  private Long achievedValue;
+  @Expose
+  private String narrativeTarget;
+  @Expose
+  private String narrativeAchieved;
+  @Expose
+  private String narrativeGender;
+  @Expose
+  private String expectedGender;
+
+
+  @Expose
+  private int year;
 
   public ProjectMilestone() {
   }
@@ -50,10 +72,37 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectMilestone other = (ProjectMilestone) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
+  public Long getAchievedValue() {
+    return achievedValue;
+  }
+
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -62,6 +111,21 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
 
   public CrpMilestone getCrpMilestone() {
     return crpMilestone;
+  }
+
+
+  public String getExpectedGender() {
+    return expectedGender;
+  }
+
+
+  public SrfTargetUnit getExpectedUnit() {
+    return expectedUnit;
+  }
+
+
+  public Long getExpectedValue() {
+    return expectedValue;
   }
 
 
@@ -93,14 +157,46 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getNarrativeAchieved() {
+    return narrativeAchieved;
+  }
+
+
+  public String getNarrativeGender() {
+    return narrativeGender;
+  }
+
+
+  public String getNarrativeTarget() {
+    return narrativeTarget;
+  }
+
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
+  }
+
+  public int getYear() {
+    return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public void setAchievedValue(Long achievedValue) {
+    this.achievedValue = achievedValue;
   }
 
 
@@ -124,6 +220,21 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setExpectedGender(String expectedGender) {
+    this.expectedGender = expectedGender;
+  }
+
+
+  public void setExpectedUnit(SrfTargetUnit expectedUnit) {
+    this.expectedUnit = expectedUnit;
+  }
+
+
+  public void setExpectedValue(Long expectedValue) {
+    this.expectedValue = expectedValue;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -138,8 +249,28 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
+  public void setNarrativeAchieved(String narrativeAchieved) {
+    this.narrativeAchieved = narrativeAchieved;
+  }
+
+
+  public void setNarrativeGender(String narrativeGender) {
+    this.narrativeGender = narrativeGender;
+  }
+
+
+  public void setNarrativeTarget(String narrativeTarget) {
+    this.narrativeTarget = narrativeTarget;
+  }
+
+
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 

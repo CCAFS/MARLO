@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.io.File;
 import java.util.Date;
 
 import com.google.gson.annotations.Expose;
@@ -18,10 +19,14 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -8633549958796027690L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
-  private FileDB file;
+  private FileDB summary;
   @Expose
   private ProjectOutcome projectOutcome;
   @Expose
@@ -31,19 +36,32 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   @Expose
   private String communication;
   @Expose
+  private String analysisCommunication;
+
+  @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
+
   @Expose
   private String modificationJustification;
+  @Expose
+  private int year;
+
+
+  private File file;
+  private String fileContentType;
+  private String fileFileName;
 
   public ProjectCommunication() {
   }
 
-
   public ProjectCommunication(FileDB file, ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
-    this.file = file;
+    this.summary = file;
     this.projectOutcome = projectOutcome;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -52,6 +70,7 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public ProjectCommunication(ProjectOutcome projectOutcome, User usersByModifiedBy, User usersByCreatedBy,
     String communication, boolean isActive, Date activeSince, String modificationJustification) {
@@ -64,22 +83,58 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectCommunication other = (ProjectCommunication) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return this.activeSince;
+  }
+
+
+  public String getAnalysisCommunication() {
+    return analysisCommunication;
   }
 
   public String getCommunication() {
     return this.communication;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
 
-
-  public FileDB getFile() {
+  public File getFile() {
     return file;
+  }
+
+  public String getFileContentType() {
+    return fileContentType;
+  }
+
+
+  public String getFileFileName() {
+    return fileFileName;
   }
 
 
@@ -116,6 +171,25 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
   }
 
 
+  public FileDB getSummary() {
+    return summary;
+  }
+
+
+  public int getYear() {
+    return year;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
@@ -131,19 +205,35 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+  public void setAnalysisCommunication(String analysisCommunication) {
+    this.analysisCommunication = analysisCommunication;
+  }
+
 
   public void setCommunication(String communication) {
     this.communication = communication;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
 
-  public void setFile(FileDB file) {
+  public void setFile(File file) {
     this.file = file;
   }
+
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
+  }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -154,14 +244,22 @@ public class ProjectCommunication implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
+  }
+
+
+  public void setSummary(FileDB summary) {
+    this.summary = summary;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 

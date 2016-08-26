@@ -55,8 +55,7 @@
           [#-- Flagship / Regions --]
           <td>
             [#if project.flagships?has_content || project.regions?has_content]
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="background-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
-              [#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="background-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
+              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -129,7 +128,7 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#local]
+        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
           <td class="projectId">
@@ -181,7 +180,51 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]"> P${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]"> P${project.id}</a>
+        </td>
+          [#-- Project Title --]
+          <td class="left"> 
+            [#if project.title?has_content]
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url]" title="${project.title}">
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#else]
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url] ">
+                [@s.text name="projectsList.title.none" /]
+              </a>
+            [/#if]
+          </td>
+          [#-- Project Type --]
+          <td>
+            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
+          </td>
+        </tr>  
+      [/#list]
+    [/#if]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro deliverablesList deliverable={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="deliverables"]
+  <table class="projectsList" id="projects">
+    <thead>
+      <tr class="subHeader">
+        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
+        <th id="deliverableTitles" >Deliverable Name</th>
+        <th id="deliverableType">[@s.text name="projectsList.projectType" /]</th>
+        <th id="deliverableEDY">Expected delivery year</th>
+        <th id="deliverableFC">FAIR compliance</th>
+        <th id="deliverableStatus">Status</th>
+        <th id="deliverableRF">Required Fields</th>
+        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>
+      </tr>
+    </thead>
+    <tbody>
+    [#if projects?has_content]
+      [#list projects as project]
+        <tr>
+        [#-- ID --]
+        <td class="projectId">
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${deliverable.id?c}[/@s.param][/@s.url]"> P${deliverable.id}</a>
         </td>
           [#-- Project Title --]
           <td class="left"> 

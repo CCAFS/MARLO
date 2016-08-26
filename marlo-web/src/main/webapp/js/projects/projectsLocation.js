@@ -1,5 +1,6 @@
 $(document).ready(init);
 var map;
+var style;
 var infoWindow = null;
 var markers = [];
 var countID;
@@ -7,6 +8,8 @@ var FT_TableID = "19lLpgsKdJRHL2O4fNmJ406ri9JtpIIk8a-AchA";
 var countries = [];
 
 function init() {
+
+  loadScript();
 
   $('.latitude, .longitude').numericInput();
 
@@ -32,11 +35,9 @@ function init() {
   // validate if regions list is empty
   if($(".selectWrapper").find(".locationLevel").length > 0) {
     $(".map").show('slow', function() {
-      loadScript();
     });
   } else {
-    loadScript();
-    // $(".map").hide();
+    $(".map").hide();
   }
 
   /* Declaring Events */
@@ -49,8 +50,9 @@ function attachEvents() {
   $('.selectLocationLevel').on('change', function() {
 
     if($(".selectWrapper").find(".locationLevel").length <= 0) {
-
+      var mapDiv = document.getElementById('map');
       $(".map").show("slow", function() {
+        initMap();
       });
     }
     var option = $(this).find("option:selected");
@@ -145,8 +147,8 @@ function checkboxAllCountries() {
         function(i,e) {
           $(e).show("slow");
           var id = $(e).attr("id").split('-')[1];
-          var isList = $(e).find(".isList");
-          if(isList.html() == "false") {
+          var isList = $(e).parent().parent().parent().find(".isList");
+          if(isList.val() == "false") {
             console.log("holi");
             addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude").val()),
                 $(e).find(".locElementName").val());
@@ -171,6 +173,7 @@ function addLocationLevel(option) {
   }
   $item.find('.locationLevelId').val(idLocationLevel);
   $item.find('.locationLevelName').val(name);
+  $item.find('.isList').val(isList);
   $list.append($item);
 
   // LocElements options using ajax
@@ -254,7 +257,7 @@ function addLocationForm(parent,latitude,longitude,name) {
         parent.find(".longitude").val("");
         parent.find(".name").val("");
         // add marker
-        addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name);
+        addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name, "false");
         // update indexes
         updateIndex();
       }
@@ -311,8 +314,11 @@ function updateIndex() {
     $(item).find('.locationLevelId').attr('name', customName + '.id');
     $(item).find('.locationLevelName').attr('name', customName + '.name');
     $(item).find('.allCountries').attr('name', customName + '.allCountries');
+    $(item).find('.isList').attr('name', customName + '.isList');
     updateLocationIndex(item, customName);
   });
+  // Update component event
+  $(document).trigger('updateComponent');
 }
 
 function updateLocationIndex(item,locationLevelName) {
@@ -342,10 +348,11 @@ function loadScript() {
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
+        var isList = $(locItem).parent().parent().parent().find(".isList").val();
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "") {
-          addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site);
+          addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site, isList);
         }
         // ADD country into countries list
         $.ajax({
@@ -375,7 +382,7 @@ function loadScript() {
 // Initialization Google Map API
 function initMap() {
 
-  var style = [
+  style = [
       {
           "featureType": "water",
           "stylers": [
@@ -467,9 +474,9 @@ function initMap() {
 
 // Map events
 
-function addMarker(map,idMarker,latitude,longitude,sites) {
+function addMarker(map,idMarker,latitude,longitude,sites,isList) {
   var drag;
-  if(editable) {
+  if(editable && isList == "false") {
     drag = true;
   } else {
     drag = false;
@@ -527,10 +534,11 @@ function addMarker(map,idMarker,latitude,longitude,sites) {
         }
     });
     $item.find(".locations").removeClass("selected");
+    // Update component event
+    $(document).trigger('updateComponent');
   });
 
   google.maps.event.addListener(infoWindow, 'closeclick', function() {
-    console.log("holi");
     $(".locations").removeClass("selected");
   });
 
@@ -602,11 +610,14 @@ function openInfoWindow(marker) {
       marker.name = newName;
       location.find(".lName").html(newName);
       location.find(".locElementName").val(newName);
+      // Update component event
+      $(document).trigger('updateComponent');
     }
 
     // Close infowindow
     infoWindow.close();
     $("#location-" + marker.id).find(".locations").removeClass("selected");
+
   });
 }
 

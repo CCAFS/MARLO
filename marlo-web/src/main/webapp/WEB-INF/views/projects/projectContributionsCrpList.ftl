@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Contributions to CRP" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectContributionsCrpList.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectContributionsCrpList.css"] /]
 [#assign currentSection = "projects" /]
@@ -42,19 +42,20 @@
             </p>
             
             [#-- Project Outcomes List --]
-        
             <ul id="projectOutcomesList" class="simpleBox">
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
                   <li class="projectOutcome">
                     [#assign projectOutcomeID =  projectOutcome.id /] 
-                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectID' value=projectID /][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
+                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
                     <div class="row">
                       <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
                       <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
                       <div class="col-md-1">
-                        [#if (projectOutcome.canDelete)!true]
-                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="#" title=""><img src="${baseUrl}/images/global/trash.png" /></a>
+                        [#if (action.hasPermission("delete"))!true]
+                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?outcomeId=${projectOutcomeID}" title="">
+                            <img src="${baseUrl}/images/global/trash.png" />
+                          </a>
                         [#else]
                           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
                         [/#if]
@@ -64,7 +65,7 @@
                   </li>
                 [/#list]
               [#else]
-              
+                <p class=" text-center">There is not a project outcome added</p>
               [/#if]
             </ul>
             
@@ -72,10 +73,13 @@
             [#if canEdit]
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
+                <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
                 [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
-                <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
+                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
+                  <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
+                </a>
               </div>
             </div>
             [/#if]

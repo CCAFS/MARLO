@@ -17,6 +17,9 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign startYear = (project.startDate?string.yyyy)?number]
+[#assign endYear = (project.endDate?string.yyyy)?number]
+
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectContributionCrp.help" /] </p></div> 
 </div>
@@ -33,152 +36,277 @@
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-        
-          [#assign projectOutcome = 
-            {'name': 'National level decision-makers (Gov. ministries), national agricultural research systems, NGOs, civil society organizations, regional organizations use CCAFS science-derived decision support tools and systems to mainstream climate change into national plans and policies from local to national levels.',   'fp': 'FP3', 'canDelete': true}
-          /]
           
-          <h3 class="headTitle">${projectOutcome.fp} - Outcome 2022</h3>  
+          <h3 class="headTitle">Project Outcome </h3>  
+          
           [#-- Outcomen name --]
-          <p>${projectOutcome.name}</p>
+          <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}</p>
           
-          <div id="projectOutcome" class="borderBox">
-            
+          [#-- Project Targets --]
+          [#assign showExpectedTarget = (!reportingActive && (startYear == currentCycleYear)) /]
+          [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
+          
+          [#if showExpectedTarget || showAchievedTarget]
+          <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
+            [#if showExpectedTarget]
             <h5 class="sectionSubTitle">Expected Target</h5>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+                  [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.expectedUnit.id" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.expectedNarrative" required=true className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
-            
+            [/#if]
             [#-- Project Outcome achieved target (AT THE END) --]
+            [#if showAchievedTarget]
             <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
               <div class="row form-group">
                 <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+                  [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.achievedUnit.id" i18nkey="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
-            
-            [#-- Project Milestones and Communications contributions per year--]
-            [#assign startYear = (project.startDate?string.yyyy)?number]
-            [#assign endYear = (project.endDate?string.yyyy)?number]
-            
+            [/#if]
+          </div>
+          [/#if]
+          [#-- Project Milestones and Communications contributions per year--]
+          <div class="">
             <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
               [#list startYear .. endYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year}</a></li>
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [#if isYearRequired(year)]*[/#if]</a></li>
               [/#list]
             </ul>
-
+            
+            [#-- Year Tabs for milestones and communications --]
             <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   <h5 class="sectionSubTitle">Milestones/ progress towards your outcome target contribution </h5>
+
                   [#-- List milestones per year --]
-                  [#list 1..2 as milestone]
-                    [@milestoneMacro element={} name="" index=milestone_index year=year /]
-                  [/#list]
-                  [#-- Select a milestone --]
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone" listName="milestoneList" keyFieldName="id" displayFieldName="description" className="" value="" /]
-                  
-                  <br />
-                  <hr />
-                  <br />
-                  
-                  <h5 class="sectionSubTitle">Communications </h5>
-                  <div>
-                    <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                  <div class="milestonesYearBlock">
+                    <div class="milestonesYearList">
+                      [#if action.loadProjectMilestones(year)?has_content]
+                        [#list action.loadProjectMilestones(year) as milestone]
+                          [@milestoneMacro element=milestone name="projectOutcome.milestones" index=milestone_index /]
+                        [/#list]
+                      [#else]
+                        <p class="emptyMessage text-center">There is not a project milestone added for this year.</p>
+                      [/#if]
                     </div>
-                    <div class="form-group">
-                      [@customForm.textArea name="projectOutcome.analysisCommunication" required=true className="limitWords-100" editable=editable /]
+                    [#-- Select a milestone --]
+                    [#if editable]
+                    <div class="milestonesYearSelect"> 
+                      <span class="milestonesSelectedIds" style="display:none">[#if action.loadProjectMilestones(year)?has_content][#list action.loadProjectMilestones(year) as e]${e.crpMilestone.id}[#if e_has_next],[/#if][/#list][/#if]</span>
+                      [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="action.getMilestonesbyYear(${year})" keyFieldName="id" displayFieldName="title" className="" value="" /]
                     </div>
+                    [/#if]
                   </div>
                   
+                  [#-- Communications --]
+                  [#if reportingActive]
+                    [#assign comunication = action.loadProjectCommunication(year) /]
+                    [#assign comunicationIndex = action.getIndexCommunication(year) /]
+                    <hr />
+                    <h5 class="sectionSubTitle">Communications </h5>
+                    <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${year}"/>
+                    <div class="communicationsBlock form-group">
+                      <div class="form-group">
+                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=true className="limitWords-100" editable=editable /]
+                      </div>
+                      <div class="form-group">
+                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100" editable=editable /]
+                      </div>
+                    </div>
+                    <div class="fileUpload">
+                      <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
+                      <div class="uploadContainer">
+                        [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
+                      </div>  
+                    </div>
+                  [/#if]
                   
                 </div>
               [/#list]
             </div>
-              
-          </div> 
+          </div>
+          
+          [#-- Next Users --]
+          <h4 class="headTitle">(Next) Users </h4>
+          <div class="nextUsersBlock borderBox">
+            <div class="nextUsersList">
+              [#if projectOutcome.nextUsers?has_content]
+                [#list projectOutcome.nextUsers as nextUser]
+                  [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
+                [/#list]
+              [#else]
+                [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
+              [/#if]
+            </div>
+            [#if editable]
+              <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
+            [/#if]
+          </div>
+          
+          [#-- Lessons and progress --]
+          <div id="lessons" class="borderBox">
+            [#-- Lessons learnt from last planning/reporting cycle --]
+            [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
+            <div class="fullBlock">
+              <h6>[@customForm.text name="projectOutcome.projectComponentLessonPreview" i18nkey="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+              <div class="textArea "><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
+            </div>
+            [/#if]
+            [#-- Planning/Reporting lessons --]
+            <div class="fullBlock">
+              <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
+              <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+              <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
+            </div>
+          </div>
+        
           
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-          
-         
+          [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]
+
         [/@s.form] 
       </div>
     </div>  
 </section>
+
+[#-- Milestone Template --]
+[@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
+
+[#-- Next user Template --]
+[@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro milestoneMacro element name index year isTemplate=false]
+[#macro milestoneMacro element name index isTemplate=false]
   <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]" /]
+    [#if isTemplate]
+      [#local customName = "${name}[${index}]" /]
+    [#else]
+      [#local customName = "${name}[${action.getIndexMilestone(element.crpMilestone.id, element.year)}]" /]
+    [/#if]
     [#-- Remove Button --]
-    [#if editable]<div class="removeIcon" title="Remove"></div>[/#if]
-    <div class="leftHead">
+    [#if editable]<div class="removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
+    <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">Milestone Target ${year}</span>
+      <span class="elementId"> Project Milestone Target </span>
     </div>
-    <br />
+
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.year" value="${(element.year)!}" class="year" />
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.crpMilestone.id)!}" class="crpMilestoneId" />
+   
+    [#-- Milestone Title --]
+    <div class="form-group grayBox">
+      <div class="row">
+        <div class="col-md-6">
+          <strong>Milestone target value for <span class="crpMilestoneYear">${(element.crpMilestone.year)!}</span> :</strong> <span class="crpMilestoneValue">${(element.crpMilestone.value)!}</span> 
+        </div>
+        <div class="col-md-6">
+          <strong>Accumulated target value to date:</strong> 0 
+        </div>
+      </div>
+      <span class="title">${(element.crpMilestone.title)!}</span>
+    </div>
     
     [#-- Milestone content --]
     <div class="form-group">
-      [#-- PLANNING BLOCK --]
       <div class="row form-group">
-        <div class="col-md-5">
-          [@customForm.input name="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
         </div>
-        <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
+        <div class="col-md-4">
+          [@customForm.select name="${customName}.expectedUnit.id" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
         </div>
-      </div>
-    
-      [#-- REPORTING BLOCK --]
-      <div class="row form-group">
-        <div class="col-md-5">
-          [@customForm.input name="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
+        [#-- REPORTING BLOCK --]
+        [#if reportingActive]
+        <div class="col-md-4">
+          [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=true editable=editable /]
         </div>
-        <div class="col-md-7">
-          [@customForm.select name="projectOutcomeMilestone.achievedUnit" placeholder="" className="" listName="targetUnitList"  required=true editable=editable  /]
-        </div>
+        [/#if]
       </div>
       
-      [#-- PLANNING BLOCK --]
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.expectedGender" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
-      
       [#-- REPORTING BLOCK --]
+      [#if reportingActive]
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
       <div class="form-group">
-        [@customForm.textArea name="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
+        [@customForm.textArea name="${customName}.narrativeGender" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
+      [/#if]
     </div>
     
   </div>
 [/#macro]
+
+[#macro nextUserMacro element name index isTemplate=false]
+  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser simpleBox" style="display:${isTemplate?string('none','block')}">
+    [#local customName = "${name}[${index}]" /]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
+    <div class="leftHead sm">
+      <span class="index">${index+1}</span>
+      <span class="elementId"> Project Next User </span>
+    </div>
+    [#-- Hidden inputs --]
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+     
+    <div class="form-group">
+      [#-- Title --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-100" editable=editable /]
+      </div>
+      [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable /]
+      </div>
+      [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable /]
+      </div>
+    </div>
+  </div>
+[/#macro]
+
+[#-- Get if the year is required--]
+[#function isYearRequired year]
+  [#if project.endDate??]
+    [#assign endDate = (project.endDate?string.yyyy)?number]
+    [#if reportingActive]
+      [#return  (year == currentCycleYear)  && (endDate gte year) ]
+    [#else]
+      [#return  (year == currentCycleYear) && (endDate gte year) ]
+    [/#if]
+  [#else]
+    [#return false]
+  [/#if]
+[/#function]

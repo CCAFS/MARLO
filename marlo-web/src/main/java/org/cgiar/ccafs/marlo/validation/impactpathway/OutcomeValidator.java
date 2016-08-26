@@ -99,9 +99,13 @@ public class OutcomeValidator extends BaseValidator
     if (!(this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 100)) {
       this.addMessage(action.getText("outcome.action.title.required", params));
     }
-    if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
-      this.addMessage(action.getText("outcome.action.milestone.value.required", params));
-    }
+
+    /*
+     * if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
+     * this.addMessage(action.getText("outcome.action.milestone.value.required", params));
+     * }
+     */
+
     if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
       this.addMessage(action.getText("outcome.action.milestone.year.required", params));
     }
@@ -113,10 +117,12 @@ public class OutcomeValidator extends BaseValidator
         this.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
     }
-    if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
-      this.addMessage(action.getText("outcome.action.milestone.srfTargetUnit.required", params));
-      milestone.setSrfTargetUnit(null);
-    }
+    /*
+     * if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
+     * this.addMessage(action.getText("outcome.action.milestone.srfTargetUnit.required", params));
+     * milestone.setSrfTargetUnit(null);
+     * }
+     */
   }
 
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {

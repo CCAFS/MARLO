@@ -247,11 +247,11 @@
     <br />
     [#-- Milestone Statement --]
     <div class="form-group">
-      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=false className="milestone-statement limitWords-100" editable=editable /]
+      [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editable /]
     </div>
     <div class="row form-group">
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=false editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.year" type="text"   i18nkey="outcome.milestone.inputTargetYear" placeholder="outcome.milestone.inputTargetYear.placeholder" className="targetYear milestoneYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]

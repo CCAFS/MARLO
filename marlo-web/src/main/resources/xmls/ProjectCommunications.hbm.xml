@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+        <many-to-one name="summary" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
             <column name="file_communication" />
         </many-to-one>
         <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
@@ -23,14 +23,22 @@
         <property name="communication" type="string">
             <column name="communication" length="65535" not-null="true" />
         </property>
+        
+        
+         <property name="analysisCommunication" type="string">
+            <column name="analysis_communication" length="65535" not-null="true" />
+        </property>
         <property name="active" type="boolean">
-            <column name="active" not-null="true" />
+            <column name="is_active" not-null="true" />
         </property>
         <property name="activeSince" type="timestamp">
             <column name="active_since" length="19" not-null="true" />
         </property>
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
+        </property>
+        <property name="year" type="int">
+            <column name="year" not-null="true" />
         </property>
     </class>
 </hibernate-mapping>

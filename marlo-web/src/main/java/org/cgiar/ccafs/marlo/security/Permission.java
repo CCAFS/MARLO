@@ -33,11 +33,19 @@ public class Permission {
   public static final String IMPACT_PATHWAY_EDIT_PRIVILEGES = "crp:{0}:impactPathway:{1}:*";
   public static final String IMPACT_PATHWAY_VISIBLE_PRIVILEGES = "crp:{0}:impactPathway:canAcess";
   public static final String PROJECT_DESCRIPTION_BASE_PERMISSION = "crp:{0}:project:{1}:description";
+  public static final String PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION = "crp:{0}:project:{1}:contributionCrp";
   public static final String PROJECT_DESCRIPTION_PERMISSION = "crp:{0}:project:{1}:description:*";
   public static final String PROJECT_PARTNER_BASE_PERMISSION = "crp:{0}:project:{1}:partners";
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:location";
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
+  public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";
+  public static final String PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverablesList:canEdit";
+  public static final String PROJECT_DELIVERABLE_LIST_ADD_PERMISSION =
+    "crp:{0}:project:{1}:deliverablesList:addDeliverable";
+  public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =
+    "crp:{0}:project:{1}:deliverablesList:removeOldDeliverables";
+  public static final String PROJECT_DELIVERABLE_BASE_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";
 
 
 }

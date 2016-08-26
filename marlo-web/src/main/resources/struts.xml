@@ -56,6 +56,12 @@
 				class="org.cgiar.ccafs.marlo.interceptor.impactpathway.EditImpactPathwayInterceptor" />
 
 			<!-- Project interceptors -->
+			<interceptor name="editProjectOutcome"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectOutcomeInterceptor" />
+
+			<interceptor name="editDeliverable"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
+
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
@@ -117,6 +123,16 @@
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
+			<interceptor-stack name="editProjectListStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />				
 			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">

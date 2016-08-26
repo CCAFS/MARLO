@@ -45,7 +45,6 @@ public class ProjectDescriptionValidator extends BaseValidator
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
 
-
     if (action.isReportingActive()) {
       this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(), "description");
     } else {

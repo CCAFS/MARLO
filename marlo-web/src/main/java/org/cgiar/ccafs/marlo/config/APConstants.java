@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo.config;
 
-
 /**
  * All Constants should be here.
  * 
@@ -61,6 +60,7 @@ public final class APConstants {
   public static final String IDO_ID = "idoID";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String ELEMENT_TYPE_ID = "parentId";
+  public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
@@ -82,9 +82,15 @@ public final class APConstants {
   public static final String EDITABLE_REQUEST = "edit";
   public static final String CRP_REQUEST = "crp";
   public static final String PROJECT_REQUEST_ID = "projectID";
+  public static final String YEAR_REQUEST = "year";
+  public static final String MILESTONE_REQUEST_ID = "milestoneID";
+  public static final String PROJECT_OUTCOME_REQUEST_ID = "projectOutcomeID";
+  public static final String OUTCOME_REQUEST_ID = "outcomeID";
   public static final String AUTOSAVE_REQUEST = "autoSave";
   public static final String COUNTRY_REQUEST_ID = "countryID";
   public static final String INSTITUTION_TYPE_REQUEST_ID = "institutionTypeID";
+  public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
+  public static final String CYCLE = "cycle";
   // Types of Project Partners
   public static final String PROJECT_PARTNER_PL = "PL";
   public static final String PROJECT_PARTNER_PC = "PC";
@@ -128,6 +134,16 @@ public final class APConstants {
   public static final String PROJECT_FOCUSES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectFocuses)";
 
+
+  public static final String PROJECT_OUTCOMES_MILESTONE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectMilestones)";
+
+  public static final String PROJECT_OUTCOMES_COMMUNICATION_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectCommunications)";
+
+  public static final String PROJECT_NEXT_USERS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectNextusers)";
+
   public static final String PROJECT_CLUSTER_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectClusterActivities)";
 
@@ -141,6 +157,8 @@ public final class APConstants {
 
   public static final String PROJECT_LESSONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectComponentLessons)";
+  public static final String PROJECT_OUTCOME_LESSONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectComponentLessons)";
 
 
 }

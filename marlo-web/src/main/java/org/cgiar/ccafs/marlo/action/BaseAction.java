@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -646,6 +647,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
+  public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
+    if (this.isReportingActive()) {
+
+      List<ProjectComponentLesson> lessons = projectOutcome.getProjectComponentLessons().stream()
+        .filter(
+          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
+            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        projectOutcome.setProjectComponentLesson(lessons.get(0));
+      }
+      List<ProjectComponentLesson> lessonsPreview = projectOutcome.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessonsPreview.isEmpty()) {
+        projectOutcome.setProjectComponentLessonPreview(lessonsPreview.get(0));
+      }
+    } else {
+
+      List<ProjectComponentLesson> lessons = projectOutcome.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        projectOutcome.setProjectComponentLesson(lessons.get(0));
+      }
+    }
+  }
+
   public String next() {
     return NEXT;
   }
@@ -682,6 +714,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project.getProjectComponentLesson().setYear(this.getPlanningYear());
     }
     projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
+
+  }
+
+  public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
+    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+
+    projectOutcome.getProjectComponentLesson().setActive(true);
+    projectOutcome.getProjectComponentLesson().setActiveSince(new Date());
+    projectOutcome.getProjectComponentLesson().setComponentName(actionName);
+    projectOutcome.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+    projectOutcome.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+    projectOutcome.getProjectComponentLesson().setModificationJustification("");
+    projectOutcome.getProjectComponentLesson().setProjectOutcome(projectOutcome);
+
+
+    if (this.isReportingActive()) {
+      projectOutcome.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+      projectOutcome.getProjectComponentLesson().setYear(this.getReportingYear());
+
+    } else {
+      projectOutcome.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+      projectOutcome.getProjectComponentLesson().setYear(this.getPlanningYear());
+    }
+    projectComponentLessonManager.saveProjectComponentLesson(projectOutcome.getProjectComponentLesson());
 
   }
 

@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -35,31 +36,46 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private long expectedValue;
   @Expose
-  private long expectedUnit;
+  private SrfTargetUnit expectedUnit;
   @Expose
   private Long achievedValue;
   @Expose
+  private SrfTargetUnit achievedUnit;
+
+  @Expose
   private String narrativeTarget;
+
+
   @Expose
   private String narrativeAchieved;
-  @Expose
-  private int year;
+
+
   @Expose
   private boolean active;
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
+  private List<ProjectMilestone> milestones;
+  private List<ProjectCommunication> communications;
+  private List<ProjectNextuser> nextUsers;
+
+  private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+  private ProjectComponentLesson projectComponentLesson;
+  private ProjectComponentLesson projectComponentLessonPreview;
+
 
   public ProjectOutcome() {
   }
 
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, long expectedUnit, Long achievedValue, String narrativeTarget,
-    String narrativeAchieved, int year, boolean isActive, Date activeSince, String modificationJustification,
+    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, Long achievedValue, String narrativeTarget,
+    String narrativeAchieved, boolean isActive, Date activeSince, String modificationJustification,
     Set<ProjectMilestone> projectMilestoneses, Set<ProjectCommunication> projectCommunicationses) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
@@ -70,7 +86,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.achievedValue = achievedValue;
     this.narrativeTarget = narrativeTarget;
     this.narrativeAchieved = narrativeAchieved;
-    this.year = year;
+
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -78,8 +94,9 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.projectCommunications = projectCommunicationses;
   }
 
+
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, long expectedUnit, String narrativeTarget, int year, boolean isActive,
+    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
@@ -88,10 +105,15 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.expectedValue = expectedValue;
     this.expectedUnit = expectedUnit;
     this.narrativeTarget = narrativeTarget;
-    this.year = year;
+
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  public SrfTargetUnit getAchievedUnit() {
+    return achievedUnit;
   }
 
 
@@ -105,6 +127,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<ProjectCommunication> getCommunications() {
+    return communications;
+  }
+
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -115,7 +142,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getExpectedUnit() {
+  public SrfTargetUnit getExpectedUnit() {
     return expectedUnit;
   }
 
@@ -130,7 +157,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -139,6 +165,10 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
 
     return sb.toString();
+  }
+
+  public List<ProjectMilestone> getMilestones() {
+    return milestones;
   }
 
 
@@ -163,13 +193,32 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<ProjectNextuser> getNextUsers() {
+    return nextUsers;
+  }
+
+
   public Project getProject() {
     return project;
   }
 
-
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return projectComponentLesson;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
+  }
+
+
+  public Set<ProjectComponentLesson> getProjectComponentLessons() {
+    return projectComponentLessons;
   }
 
 
@@ -178,14 +227,19 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public int getYear() {
-    return year;
+  public Set<ProjectNextuser> getProjectNextusers() {
+    return projectNextusers;
   }
 
 
   @Override
   public boolean isActive() {
     return active;
+  }
+
+
+  public void setAchievedUnit(SrfTargetUnit achievedUnit) {
+    this.achievedUnit = achievedUnit;
   }
 
 
@@ -204,6 +258,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCommunications(List<ProjectCommunication> communications) {
+    this.communications = communications;
+  }
+
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -214,7 +273,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setExpectedUnit(long expectedUnit) {
+  public void setExpectedUnit(SrfTargetUnit expectedUnit) {
     this.expectedUnit = expectedUnit;
   }
 
@@ -226,6 +285,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setMilestones(List<ProjectMilestone> milestones) {
+    this.milestones = milestones;
   }
 
 
@@ -249,6 +313,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setNextUsers(List<ProjectNextuser> nextUsers) {
+    this.nextUsers = nextUsers;
+  }
+
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -259,13 +328,28 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
+  }
+
+
+  public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
+    this.projectComponentLessons = projectComponentLessons;
+  }
+
+
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
   }
 
 
-  public void setYear(int year) {
-    this.year = year;
+  public void setProjectNextusers(Set<ProjectNextuser> projectNextusers) {
+    this.projectNextusers = projectNextusers;
   }
 
 

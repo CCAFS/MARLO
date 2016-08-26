@@ -50,6 +50,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private String acronym;
 
+
   @Expose
   private int programType;
 
@@ -60,22 +61,24 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private Set<CrpProgramLeader> crpProgramLeaders = new HashSet<CrpProgramLeader>(0);
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   private Set<CrpProgramCountry> crpProgramCountries = new HashSet<CrpProgramCountry>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
-
 
   private List<String> selectedCountries;
   private List<CrpProgramOutcome> outcomes;
 
 
   private List<CrpClusterOfActivity> clusterofActivities;
-
-
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
+
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+
+
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   @Expose
   private boolean active;
@@ -86,10 +89,8 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private Date activeSince;
 
-
   @Expose
   private User modifiedBy;
-
 
   @Expose
   private String modificationJustification;
@@ -97,8 +98,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   private List<CrpProgramLeader> leaders;
 
+
   @Expose
   private String color;
+
 
   public CrpProgram() {
   }
@@ -110,10 +113,9 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.programType = programType;
   }
 
-
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
-    Set<CrpProgramOutcome> crpProgramOutcomes) {
+    Set<CrpProgramOutcome> crpProgramOutcomes, Set<Deliverable> deliverables) {
     this.crp = crps;
     this.name = name;
     this.acronym = acronym;
@@ -121,6 +123,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivities = crpClusterOfActivities;
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
+    this.deliverables = deliverables;
   }
 
   @Override
@@ -145,23 +148,24 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public String getAcronym() {
     return this.acronym;
   }
-
 
   public String getAction() {
     return action;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
 
+
   public List<CrpClusterOfActivity> getClusterofActivities() {
     return clusterofActivities;
   }
+
 
   public String getColor() {
     return color;
@@ -183,25 +187,29 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     return this.crpClusterOfActivities;
   }
 
-
   public Set<CrpProgramCountry> getCrpProgramCountries() {
     return crpProgramCountries;
   }
 
-
   public Set<CrpProgramLeader> getCrpProgramLeaders() {
     return this.crpProgramLeaders;
   }
+
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
   }
 
 
+  public Set<Deliverable> getDeliverables() {
+    return deliverables;
+  }
+
   @Override
   public Long getId() {
     return this.id;
   }
+
 
   public List<CrpProgramLeader> getLeaders() {
     return leaders;
@@ -267,7 +275,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.acronym = acronym;
   }
 
-
   public void setAction(String action) {
     this.action = action;
   }
@@ -276,6 +283,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -297,10 +305,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   public void setCrpClusterOfActivities(Set<CrpClusterOfActivity> crpClusterOfActivities) {
     this.crpClusterOfActivities = crpClusterOfActivities;
   }
+
 
   public void setCrpProgramCountries(Set<CrpProgramCountry> crpProgramCountries) {
     this.crpProgramCountries = crpProgramCountries;
@@ -312,6 +320,10 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crpProgramOutcomes = crpProgramOutcomes;
+  }
+
+  public void setDeliverables(Set<Deliverable> deliverables) {
+    this.deliverables = deliverables;
   }
 
   public void setId(Long id) {
