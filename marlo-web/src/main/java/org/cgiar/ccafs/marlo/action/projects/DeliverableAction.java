@@ -160,7 +160,17 @@ public class DeliverableAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
+      if (deliverableTypeParent != null) {
+        deliverableTypeParent.clear();
+      }
 
+      if (projectPrograms != null) {
+        projectPrograms.clear();
+      }
+
+      if (status != null) {
+        status.clear();
+      }
     }
   }
 
