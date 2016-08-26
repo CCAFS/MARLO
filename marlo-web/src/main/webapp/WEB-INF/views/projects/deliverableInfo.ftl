@@ -42,27 +42,27 @@
 [#-- Flagship select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="" label=""  i18nkey="Flagship" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="" label=""  i18nkey="Flagship" listName="projectPrograms" keyFieldName="crpProgram.id"  displayFieldName="crpProgram.composedName"  multiple=false required=true  className=" form-control input-sm flagship" disabled=!editable/]
   </div>
 </div>
 
 [#-- Outcome select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="" label=""  i18nkey="Outcome" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="" label=""  i18nkey="Outcome" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="" label=""  i18nkey="CoA" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="" label=""  i18nkey="CoA" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm cluster" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="" label=""  i18nkey="CoA Outputs" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="" label=""  i18nkey="CoA Outputs" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
   </div>
 </div>

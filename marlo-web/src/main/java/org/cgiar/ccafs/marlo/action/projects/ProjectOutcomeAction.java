@@ -326,12 +326,20 @@ public class ProjectOutcomeAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
 
+        List<ProjectMilestone> milestones = new ArrayList<>();
+
         if (projectOutcome.getMilestones() != null) {
           for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
-            crpMilestone
-              .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId()));
+            if (crpMilestone.getCrpMilestone() != null) {
+              crpMilestone
+                .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId()));
+              milestones.add(crpMilestone);
+            }
+
           }
         }
+        projectOutcome.setMilestones(milestones);
+
       } else {
         this.setDraft(false);
         project = projectManager.getProjectById(projectOutcome.getProject().getId());

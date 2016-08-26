@@ -40,7 +40,7 @@
           <h3 class="headTitle">Project Outcome </h3>  
           
           [#-- Outcomen name --]
-          <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong> : ${projectOutcome.crpProgramOutcome.description}</p>
+          <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}</p>
           
           [#-- Project Targets --]
           [#assign showExpectedTarget = (!reportingActive && (startYear == currentCycleYear)) /]
