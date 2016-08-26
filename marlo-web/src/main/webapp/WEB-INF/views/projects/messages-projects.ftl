@@ -27,10 +27,7 @@
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if]
 
-[#-- Project End --]
-[#if project.endDate?? && ((project.endDate?string.yyyy)?number lt currentCycleYear)]
-  <p class="readPrivileges">This project ended on ${project.endDate}</p>
-[/#if]
+
 
 
 
