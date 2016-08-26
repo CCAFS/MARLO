@@ -59,6 +59,7 @@ public class ProgramOutcomeListAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     programOutcomes = new ArrayList<Map<String, Object>>();
+    clusterOfActivities = new ArrayList<Map<String, Object>>();
     Map<String, Object> programOutcome;
     Map<String, Object> clusterOfActivity;
 
@@ -68,10 +69,12 @@ public class ProgramOutcomeListAction extends BaseAction {
       if (program.getCrpProgramOutcomes().stream().filter(po -> po.isActive()).collect(Collectors.toList()) != null) {
         for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
           .collect(Collectors.toList())) {
-          programOutcome = new HashMap<String, Object>();
-          programOutcome.put("id", outcome.getId());
-          programOutcome.put("description", outcome.getDescription());
-          programOutcomes.add(programOutcome);
+          if (outcome != null) {
+            programOutcome = new HashMap<String, Object>();
+            programOutcome.put("id", outcome.getId());
+            programOutcome.put("description", outcome.getDescription());
+            programOutcomes.add(programOutcome);
+          }
         }
       }
 
@@ -79,10 +82,13 @@ public class ProgramOutcomeListAction extends BaseAction {
         .collect(Collectors.toList()) != null) {
         for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
           .collect(Collectors.toList())) {
-          clusterOfActivity = new HashMap<String, Object>();
-          clusterOfActivity.put("id", activity.getId());
-          clusterOfActivity.put("description", activity.getDescription());
-          clusterOfActivities.add(clusterOfActivity);
+          if (activity != null) {
+            clusterOfActivity = new HashMap<String, Object>();
+            clusterOfActivity.put("id", activity.getId());
+            clusterOfActivity.put("description", activity.getDescription());
+            clusterOfActivities.add(clusterOfActivity);
+          }
+
         }
       }
     }
