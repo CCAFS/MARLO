@@ -18,7 +18,6 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,10 +28,7 @@ import java.util.Date;
 
 import com.google.inject.Inject;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
-import org.pentaho.reporting.engine.classic.core.DataFactory;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.modules.misc.datafactory.sql.DriverConnectionProvider;
-import org.pentaho.reporting.engine.classic.core.modules.misc.datafactory.sql.SQLReportDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -72,16 +68,23 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    final ResourceManager manager = new ResourceManager();
+    ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
 
-    final Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/example.prpt"), MasterReport.class);
+    Resource reportResource =
+      manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
 
-    final MasterReport masterReport = (MasterReport) reportResource.getResource();
-    // masterReport.getDataFactory().ge
-    masterReport
-      .setDataFactory(this.getDataFactory(masterReport.getQuery(), masterReport.getDataFactory().getQueryNames()[0]));
+    MasterReport masterReport = (MasterReport) reportResource.getResource();
+
+    Number idParam = 2;
+    Number yearParam = 2016;
+    String cycleParam = "Planning";
+
+    masterReport.getParameterValues().put("p_id", idParam);
+    masterReport.getParameterValues().put("p_year", yearParam);
+    masterReport.getParameterValues().put("p_cycle", cycleParam);
+
+
     PdfReportUtil.createPDF(masterReport, os);
     bytesXLS = os.toByteArray();
     os.close();
@@ -94,27 +97,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return bytesXLS.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/pdf";
-  }
-
-  public DataFactory getDataFactory(String query, String queryName) {
-
-    PropertiesManager manager = new PropertiesManager();
-    final DriverConnectionProvider sampleDriverConnectionProvider = new DriverConnectionProvider();
-    String urlMysql = "jdbc:mysql://" + manager.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
-      + manager.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
-      + manager.getPropertiesAsString(APConfig.MYSQL_DATABASE);
-    sampleDriverConnectionProvider.setDriver("com.mysql.jdbc.Driver");
-    sampleDriverConnectionProvider.setUrl(urlMysql);
-    sampleDriverConnectionProvider.setProperty("user", manager.getPropertiesAsString(APConfig.MYSQL_USER));
-    sampleDriverConnectionProvider.setProperty("password", manager.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
-
-    final SQLReportDataFactory dataFactory = new SQLReportDataFactory(sampleDriverConnectionProvider);
-    // dataFactory.setQuery(queryName, query);
-    return dataFactory;
   }
 
   private File getFile(String fileName) {
@@ -132,7 +117,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("MyFirstReport-");
+    fileName.append("ProjectReport-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
 
@@ -155,6 +140,5 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
   }
-
 
 }

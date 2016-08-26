@@ -5,7 +5,7 @@ var currentCycle;
 $(document).ready(function() {
 
   sections = [
-      "description", "partners", "locations"
+      "description", "partners", "locations", "contributionsCrpList", "deliverableList"
   ];
 
   // Progress bar
@@ -98,7 +98,7 @@ function processTasks(tasks,id,button) {
       var $sectionMenu = $('#menu-' + sectionName + '');
       $
           .ajax({
-              url: baseURL + '/projects/validateProject.do',
+              url: baseURL + '/validateProjectSection.do',
               data: {
                   projectID: id,
                   sectionName: sectionName,
