@@ -33,9 +33,11 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +55,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   private boolean existProject;
   private boolean validSection;
   private String sectionName;
-  private int projectID;
+  private Long projectID;
 
   // Managers
   @Inject
@@ -92,18 +94,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    sectionName = this.getRequest().getParameter(APConstants.SECTION_NAME);
+    Map<String, Object> parameters = this.getParameters();
 
-    projectID = -1;
-    if (this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID) != null) {
-      try {
-        projectID = Integer.parseInt(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
-      } catch (NumberFormatException e) {
-        LOG.error("There was an exception trying to parse the project id = {} ",
-          this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
-      }
-    }
+    sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
+    projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
     // Validate if project exists.
     existProject = projectManager.existProject(projectID);
 
