@@ -65,7 +65,7 @@ public class ProgramOutcomeListAction extends BaseAction {
     CrpProgram program = crpProgramManager.getCrpProgramById(crpProgramId);
 
     if (program != null) {
-      if (program.getCrpProgramOutcomes() != null) {
+      if (program.getCrpProgramOutcomes().stream().filter(po -> po.isActive()).collect(Collectors.toList()) != null) {
         for (CrpProgramOutcome outcome : program.getCrpProgramOutcomes().stream().filter(po -> po.isActive())
           .collect(Collectors.toList())) {
           programOutcome = new HashMap<String, Object>();
@@ -75,7 +75,8 @@ public class ProgramOutcomeListAction extends BaseAction {
         }
       }
 
-      if (program.getCrpClusterOfActivities() != null) {
+      if (program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
+        .collect(Collectors.toList()) != null) {
         for (CrpClusterOfActivity activity : program.getCrpClusterOfActivities().stream().filter(ca -> ca.isActive())
           .collect(Collectors.toList())) {
           clusterOfActivity = new HashMap<String, Object>();
