@@ -41,6 +41,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -93,7 +94,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private CrpProgramOutcome crpProgramOutcome;
   private CrpMilestoneManager crpMilestoneManager;
   private ProjectOutcome projectOutcome;
-
+  private ProjectOutcomeValidator projectOutcomeValidator;
   private String transaction;
 
   @Inject
@@ -101,7 +102,8 @@ public class ProjectOutcomeAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager,
     SrfTargetUnitManager srfTargetUnitManager, ProjectMilestoneManager projectMilestoneManager,
     ProjectCommunicationManager projectCommunicationManager, AuditLogManager auditLogManager,
-    CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager) {
+    CrpMilestoneManager crpMilestoneManager, ProjectNextuserManager projectNextuserManager,
+    ProjectOutcomeValidator projectOutcomeValidator) {
     super(config);
     this.projectManager = projectManager;
     this.srfTargetUnitManager = srfTargetUnitManager;
@@ -113,6 +115,7 @@ public class ProjectOutcomeAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.crpMilestoneManager = crpMilestoneManager;
     this.projectNextuserManager = projectNextuserManager;
+    this.projectOutcomeValidator = projectOutcomeValidator;
   }
 
   @Override
@@ -538,9 +541,13 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestone.setModifiedBy(this.getCurrentUser());
             projectMilestone.setModificationJustification("");
           }
-          if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
-            projectMilestone.setExpectedUnit(null);
+
+          if (projectMilestone.getExpectedUnit() != null) {
+            if (projectMilestone.getExpectedUnit().getId().longValue() == -1) {
+              projectMilestone.setExpectedUnit(null);
+            }
           }
+
           projectMilestoneManager.saveProjectMilestone(projectMilestone);
         }
 
@@ -624,7 +631,6 @@ public class ProjectOutcomeAction extends BaseAction {
     this.milestones = milestones;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -633,6 +639,7 @@ public class ProjectOutcomeAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
@@ -648,6 +655,13 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      projectOutcomeValidator.validate(this, projectOutcome);
+    }
   }
 
 }

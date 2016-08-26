@@ -82,6 +82,8 @@ public class ValidateProjectSectionAction extends BaseAction {
         case DESCRIPTION:
           this.validateProjectDescription();
           break;
+          
+          
         default:
           break;
       }

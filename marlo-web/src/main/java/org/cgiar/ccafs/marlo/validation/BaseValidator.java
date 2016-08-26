@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -176,6 +177,21 @@ public class BaseValidator {
   }
 
   protected void validateLessonsLearn(BaseAction action, Project project) {
+    if (project.getProjectComponentLesson() != null) {
+      ProjectComponentLesson lesson = project.getProjectComponentLesson();
+      if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
+        // Let them save.
+        this.addMessage("Lessons");
+
+        this.addMissingField("projectLessons.lessons");
+
+      }
+    }
+
+  }
+
+
+  protected void validateLessonsLearnOutcome(BaseAction action, ProjectOutcome project) {
     if (project.getProjectComponentLesson() != null) {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();
       if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
