@@ -1,8 +1,13 @@
 $(document).ready(init);
 
 function init() {
+  /* Init Select2 plugin */
+  $('select').select2();
+
+  /* Events select */
   subTypes();
   outcomesAndCoa();
+  keyOutputs();
 }
 
 function subTypes() {
@@ -12,23 +17,27 @@ function subTypes() {
   typeSelect.on("change", function() {
 
     subTypeSelect.empty();
+    subTypeSelect.append("<option value='-1' >Select an option... </option>");
+    subTypeSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
-    var data = {
-      deliverableTypeId: option.val()
+
+    if(option.val() != "-1") {
+      var data = {
+        deliverableTypeId: option.val()
+      }
+      $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).success(
+          function(m) {
+            for(var i = 0; i < m.deliverableSubTypes.length; i++) {
+              subTypeSelect.append("<option value='" + m.deliverableSubTypes[i].id + "' >"
+                  + m.deliverableSubTypes[i].name + "</option>");
+            }
+          });
     }
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).success(
-        function(m) {
-          console.log(m.deliverableSubTypes[0].id);
-          for(var i = 0; i < m.deliverableSubTypes.length; i++) {
-            subTypeSelect.append("<option value='" + m.deliverableSubTypes[i].id + "' >"
-                + m.deliverableSubTypes[i].name + "</option>");
-          }
-        });
   });
 }
 
@@ -43,32 +52,50 @@ function outcomesAndCoa() {
     outcomeSelect.empty();
     clusterSelect.empty();
     keyOutputSelect.empty();
+    outcomeSelect.append("<option value='-1' >Select an option... </option>");
+    clusterSelect.append("<option value='-1' >Select an option... </option>");
+    keyOutputSelect.append("<option value='-1' >Select an option... </option>");
+    outcomeSelect.trigger("change.select2");
+    clusterSelect.trigger("change.select2");
+    keyOutputSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
     console.log(option.val());
-    var data = {
-      crpProgramID: option.val()
+    if(option.val() != "-1") {
+      var data = {
+        crpProgramID: option.val()
+      }
+      $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).success(
+          function(m) {
+            for(var i = 0; i < m.programOutcomes.length; i++) {
+              outcomeSelect.append("<option value='" + m.programOutcomes[i].id + "' >"
+                  + m.programOutcomes[i].description + "</option>");
+            }
+            for(var i = 0; i < m.clusterOfActivities.length; i++) {
+              clusterSelect.append("<option value='" + m.clusterOfActivities[i].id + "' >"
+                  + m.clusterOfActivities[i].description + "</option>");
+            }
+          });
     }
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).success(function(m) {
-      console.log(m);
-    });
   });
 }
 
 function keyOutputs() {
-  var url = baseURL + "/??.do";
-  var typeSelect = $(".typeSelect");
-  var subTypeSelect = $(".subTypeSelect");
-  typeSelect.on("change", function() {
+  var url = baseURL + "/keyOutputList.do";
+  var clusterSelect = $(".cluster");
+  var keyOutputSelect = $(".keyOutput");
+  clusterSelect.on("change", function() {
 
-    subTypeSelect.empty();
+    keyOutputSelect.empty();
+    keyOutputSelect.append("<option value='-1' >Select an option... </option>");
+    keyOutputSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
     var data = {
-      deliverableTypeId: option.val()
+      clusterActivityID: option.val()
     }
     $.ajax({
         url: url,
@@ -77,10 +104,10 @@ function keyOutputs() {
         data: data
     }).success(
         function(m) {
-          console.log(m.deliverableSubTypes[0].id);
-          for(var i = 0; i < m.deliverableSubTypes.length; i++) {
-            subTypeSelect.append("<option value='" + m.deliverableSubTypes[i].id + "' >"
-                + m.deliverableSubTypes[i].name + "</option>");
+          console.log(m);
+          for(var i = 0; i < m.keyOutputs.length; i++) {
+            keyOutputSelect.append("<option value='" + m.keyOutputs[i].id + "' >" + m.keyOutputs[i].description
+                + "</option>");
           }
         });
   });
