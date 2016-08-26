@@ -68,13 +68,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    final ResourceManager manager = new ResourceManager();
+    ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
 
-    final Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/example.prpt"), MasterReport.class);
+    Resource reportResource =
+      manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
 
-    final MasterReport masterReport = (MasterReport) reportResource.getResource();
+    MasterReport masterReport = (MasterReport) reportResource.getResource();
+
+    Number idParam = 2;
+    Number yearParam = 2016;
+    String cycleParam = "Planning";
+
+    masterReport.getParameterValues().put("p_id", idParam);
+    masterReport.getParameterValues().put("p_year", yearParam);
+    masterReport.getParameterValues().put("p_cycle", cycleParam);
+
 
     PdfReportUtil.createPDF(masterReport, os);
     bytesXLS = os.toByteArray();
@@ -108,7 +117,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("MyFirstReport-");
+    fileName.append("ProjectReport-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
 
