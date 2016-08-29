@@ -61,12 +61,11 @@
             [#if editable]
             [#-- locations level Select --]
             <select name="" id="" class="selectLocationLevel select " >
-              [#list locationsLevels as locLevels]s
-                <optgroup label="${locLevels.name}">
+            <option value="-1" >Select an option...</option>
+              [#list locationsLevels as locLevels]
                 [#list locLevels.locations as locations]
                   <option value="${locations.id}-${locations.list?string}-${locations.name}" >${locations.name}</option>
                 [/#list]
-                </optgroup> 
               [/#list]
             </select>
             [/#if]
@@ -97,7 +96,7 @@
   [#-- Content collapsible--]
   <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
-    <div class="col-md-12 locationName-content borderBox opened">
+    <div class="col-md-12 locationName-content borderBox closed">
       <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
       <div class="locationLevel-option">${(element.name)!}</div>
       [#if editable]
@@ -115,7 +114,7 @@
       <div class="optionSelect-content row">
         [#if element.locElements?has_content]
           [#list element.locElements as location]
-            [@locationMacro element=location name="${customName}.${locationName}" index=location_index /]
+            [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list/]
           [/#list]
         [/#if]
       </div>
@@ -142,13 +141,13 @@
   </div>
 [/#macro]
 
-[#macro locationMacro element  name index template=false ]
+[#macro locationMacro element  name index template=false isList=false ]
   [#local customName = "${name}[${index}]" /]
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
   <div id="location-${template?string('template',countID)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
-      <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude??] <span class="lPos">(${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span> [/#if] </div>
+      <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
       [#if editable]
       <div class="removeLocation removeIcon" title="Remove Location"></div>
       [/#if]
@@ -158,7 +157,8 @@
     <input type="hidden" class="locElementName" name="${customName}.name" value="${(element.name)!}" />
     <input type="hidden" class="locElementCountry" name="${customName}.locElement.isoAlpha2" value="${(element.isoAlpha2)!}" />
     <input type="hidden" class="geoId" name="${customName}.locGeoposition.id"  value="${(element.locGeoposition.id)!}" />
-    <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition.latitude)!}" />
-    <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition.longitude)!}" />
+    
+    <input type="hidden" class="geoLatitude" name="${customName}.locGeoposition.latitude"  value="${(element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.latitude!=0)?string((element.locGeoposition.latitude)!,'')}" /> 
+    <input type="hidden" class="geoLongitude" name="${customName}.locGeoposition.longitude"  value="${(element.locGeoposition?? && element.locGeoposition.longitude?? && element.locGeoposition.longitude!=0)?string((element.locGeoposition.longitude)!,'')}" />
   </div>
 [/#macro]

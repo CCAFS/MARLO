@@ -210,7 +210,7 @@
     [#if editable]
     <div class="removeIcon removeKeyOutput" title="Remove key output"></div>
     [/#if]
-      [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50" editable=editable /]
+      [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50 keyOutputInput" editable=editable /]
       <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     </div>
       <div class="clearfix"></div>

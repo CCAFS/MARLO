@@ -125,3 +125,7 @@ span.lPos {
     background-color: #ccc;
     border: 1px dashed #777;
 }
+
+.locationName {
+    cursor: pointer;
+}
