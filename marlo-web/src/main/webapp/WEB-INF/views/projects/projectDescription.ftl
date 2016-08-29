@@ -169,7 +169,7 @@
                     </li>
                   [/#list]
                 [#else]
-                  <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p>
+                  [#-- <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> --]
                 [/#if]  
                 </ul>
                 [#if editable  && action.hasPermission("activities")]
@@ -204,7 +204,7 @@
                     </li>
                   [/#list]
                 [#else]
-                  <p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p>
+                  [#--  <p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p> --]
                 [/#if]  
                 </ul>
                 [#if editable && action.hasPermission("scope") ]
