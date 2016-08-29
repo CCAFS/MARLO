@@ -114,7 +114,7 @@
            
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
-              <div class="col-md-6">  
+              <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="">
                   <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                   [#if editable && action.hasPermission("flagships")]

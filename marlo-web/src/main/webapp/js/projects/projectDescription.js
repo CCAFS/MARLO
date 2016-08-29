@@ -3,6 +3,7 @@ var lWordsElemetTitle = 20;
 var lWordsElemetDesc = 150;
 
 var $statuses, $statusDescription;
+var flagshipsIds;
 
 $(document).ready(function() {
 
@@ -40,6 +41,31 @@ $(document).ready(function() {
     $parent.empty().append($inputFile);
     $inputFile.hide().fadeIn('slow');
     forceChange = true;
+  });
+
+  /**
+   * Project Flagships
+   */
+
+  flagshipsIds = function() {
+    var arr = [];
+    $('#projectFlagshipsBlock input:checked').each(function(i,e) {
+      arr.push($(e).val());
+    });
+    return arr
+  }
+
+  $('#projectFlagshipsBlock input').on('change', function() {
+    console.log(flagshipsIds());
+    $.ajax({
+        url: '',
+        data: {
+          ids: flagshipsIds()
+        },
+        success: function(data) {
+          console.log(data);
+        }
+    });
   });
 
   /**
