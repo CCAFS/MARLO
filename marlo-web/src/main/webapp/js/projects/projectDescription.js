@@ -58,9 +58,10 @@ $(document).ready(function() {
   $('#projectFlagshipsBlock input').on('change', function() {
     console.log(flagshipsIds());
     $.ajax({
-        url: '',
+        url: baseURL + '/clusterList.do',
+        method: 'POST',
         data: {
-          ids: flagshipsIds()
+          flagshipsId: flagshipsIds()
         },
         success: function(data) {
           console.log(data);
