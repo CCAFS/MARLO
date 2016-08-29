@@ -52,7 +52,7 @@ $(document).ready(function() {
     $('#projectFlagshipsBlock input:checked').each(function(i,e) {
       arr.push($(e).val());
     });
-    return arr
+    return arr.join()
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {

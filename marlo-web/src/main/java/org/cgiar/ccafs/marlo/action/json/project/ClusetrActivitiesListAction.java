@@ -38,7 +38,7 @@ public class ClusetrActivitiesListAction extends BaseAction {
   private static final long serialVersionUID = 4663544283175165587L;
 
 
-  private String flagshipsId[];
+  private String flagshipsId;
 
 
   private CrpProgramManager crpProgramManager;
@@ -56,10 +56,10 @@ public class ClusetrActivitiesListAction extends BaseAction {
   public String execute() throws Exception {
 
     clusterOfActivities = new ArrayList<>();
+    String flagshipIds[] = flagshipsId.split(",");
+    for (int i = 0; i < flagshipIds.length; i++) {
 
-    for (int i = 0; i < flagshipsId.length; i++) {
-
-      CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(flagshipsId[i]));
+      CrpProgram crpProgram = crpProgramManager.getCrpProgramById(Long.parseLong(flagshipIds[i]));
       if (crpProgram != null) {
 
         for (CrpClusterOfActivity clusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
@@ -85,7 +85,7 @@ public class ClusetrActivitiesListAction extends BaseAction {
   }
 
 
-  public String[] getFlagshipsId() {
+  public String getFlagshipsId() {
     return flagshipsId;
   }
 
@@ -100,7 +100,7 @@ public class ClusetrActivitiesListAction extends BaseAction {
     this.clusterOfActivities = clusterOfActivities;
   }
 
-  public void setFlagshipsId(String[] flagshipsId) {
+  public void setFlagshipsId(String flagshipsId) {
     this.flagshipsId = flagshipsId;
   }
 
