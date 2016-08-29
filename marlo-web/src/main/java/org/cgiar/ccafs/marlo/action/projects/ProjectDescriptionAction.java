@@ -510,10 +510,19 @@ public class ProjectDescriptionAction extends BaseAction {
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
-    clusterofActivites = crpClusterOfActivityManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
-      .collect(Collectors.toList());
 
+    clusterofActivites = new ArrayList<>();
+
+    for (CrpProgram crpProgram : project.getFlagships()) {
+      crpProgram = programManager.getCrpProgramById(crpProgram.getId());
+      clusterofActivites
+        .addAll(crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+    /*
+     * clusterofActivites = crpClusterOfActivityManager.findAll().stream()
+     * .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
+     * .collect(Collectors.toList());
+     */
     locScopeElements =
       locationTypeManager.findAll().stream().filter(c -> c.isActive() && c.isScope()).collect(Collectors.toList());
 

@@ -168,6 +168,14 @@
       </result>
     </action>
 
+
+<action name="clusterList"
+      class="org.cgiar.ccafs.marlo.action.json.project.ClusetrActivitiesListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
     <action name="validateProjectSection"
       class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
       <result type="json">
