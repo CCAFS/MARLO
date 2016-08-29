@@ -84,6 +84,9 @@ span.glyphicon.glyphicon-user {
 
 .keyOutput {
     margin-bottom: 15px;
+    background-color: whitesmoke;
+    margin-top: 15px;
+    border-radius: 8px;
 }
 
 .button-remove:hover {}
@@ -101,5 +104,14 @@ span.glyphicon.glyphicon-user {
 }
 
 .removeKeyOutput {
-    right: 4%;
+    right: 0%;
+}
+
+.keyOutputsItems-list {
+    padding-left: 0;
+    margin-left: 0;
+}
+
+ul.keyOutputs {
+    padding-left: 15px;
 }

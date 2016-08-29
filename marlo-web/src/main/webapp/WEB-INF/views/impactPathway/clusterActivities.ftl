@@ -99,7 +99,7 @@
       </div>
     </div>
     [#else]
-      <p class="text-center borderBox">There is not flagships added</p>
+      <p class="text-center borderBox inf">There is not flagships added</p>
     [/#if]
   </div>
 </section>
@@ -153,7 +153,7 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center" style="display:${(cluster.leaders?has_content)?string('none','block')}">[@s.text name="siteIntegration.notUsers" /]</p>
+        <p class="text-center inf" style="display:${(cluster.leaders?has_content)?string('none','block')}">[@s.text name="siteIntegration.notUsers" /]</p>
       </div>
       [#-- Add CoA Leader --]
       [#if editable]
@@ -172,7 +172,7 @@
           [/#list]
         [/#if]
         </ul>
-        <p class="text-center" style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
+        <p class="text-center inf" style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
       </div>
       [#-- Add Key output --]
       [#if editable]
@@ -210,13 +210,8 @@
     [#if editable]
     <div class="removeIcon removeKeyOutput" title="Remove key output"></div>
     [/#if]
-    
-    [#if editable]
-      <input name="${customName}.keyOutput" value="${(element.keyOutput)!}" type="text" class="form-control keyOutputInput row" placeholder="Key Output statement" />
+      [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50" editable=editable /]
       <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-     [#else]
-     <div class="keyOutputDescription row"><p> <strong>${index+1}.</strong> ${(element.keyOutput)!}</div>
-     [/#if]
     </div>
       <div class="clearfix"></div>
   </li>

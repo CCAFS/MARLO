@@ -131,8 +131,8 @@ function checkItems(block) {
   console.log(block);
   var items = $(block).find('li').length;
   if(items == 0) {
-    $(block).parent().find('p').fadeIn();
+    $(block).parent().find('p.inf').fadeIn();
   } else {
-    $(block).parent().find('p').fadeOut();
+    $(block).parent().find('p.inf').fadeOut();
   }
 }
