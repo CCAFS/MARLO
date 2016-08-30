@@ -43,27 +43,10 @@
             </p>
             
             [#-- Project Outcomes List --]
-            <ul id="projectOutcomesList" class="simpleBox">
+            <ul id="projectOutcomesList" class="simpleBox"> 
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
-                  <li class="projectOutcome">
-                    [#assign projectOutcomeID =  projectOutcome.id /] 
-                    [#assign projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#assign]
-                    <div class="row">
-                      <div class="col-md-1"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</a></div>
-                      <div class="col-md-10"><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></div>
-                      <div class="col-md-1">
-                        [#if (action.hasPermission("delete"))!true]
-                          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?outcomeId=${projectOutcomeID}" title="">
-                            <img src="${baseUrl}/images/global/trash.png" />
-                          </a>
-                        [#else]
-                          <img src="${baseUrl}/images/global/trash_disable.png" title="" />
-                        [/#if]
-                      </div>
-                    </div>
-                    [#if projectOutcome_has_next]<hr />[/#if]
-                  </li>
+                  [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
                 [/#list]
               [#else]
                 <p class=" text-center">There is not a project outcome added</p>
@@ -75,7 +58,7 @@
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
                 <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" value="outcomeId" /]
+                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" /]
               </div>
               <div class="addOutcomeBlock">
                 <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
@@ -93,3 +76,27 @@
 </section>
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+[#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
+  <li class="projectOutcome">
+    [#local projectOutcomeID =  projectOutcome.id /] 
+    [#local projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#local]
+    <div class="row"> 
+      <div class="col-md-11">
+        <a href="${projectOutcomeUrl}">
+          <strong>${projectOutcome.crpProgramOutcome.crpProgram.acronym} Outcome ${projectOutcome.crpProgramOutcome.year} </strong> <br />
+           ${projectOutcome.crpProgramOutcome.description}
+        </a>
+      </div>
+      <div class="col-md-1">
+        [#if ((action.hasPermission("delete"))!true) && canEdit]
+          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?outcomeId=${projectOutcomeID}" title="">
+            <img src="${baseUrl}/images/global/trash.png" />
+          </a>
+        [#else]
+          <img src="${baseUrl}/images/global/trash_disable.png" title="" />
+        [/#if]
+      </div>
+    </div>
+  </li>
+[/#macro]

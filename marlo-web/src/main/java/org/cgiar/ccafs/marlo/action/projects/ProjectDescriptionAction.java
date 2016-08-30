@@ -733,7 +733,7 @@ public class ProjectDescriptionAction extends BaseAction {
 
       project.setCrp(loggedCrp);
       project.setCofinancing(projectDB.isCofinancing());
-      project.setGlobal(projectDB.isGlobal());
+      // project.setGlobal(projectDB.isGlobal());
       project.setLeaderResponsabilities(projectDB.getLeaderResponsabilities());
       if (project.getWorkplan() != null) {
         if (project.getWorkplan().getId() == null) {

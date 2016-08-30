@@ -29,8 +29,17 @@ $(document).ready(function() {
       noty(notyOptions);
     } else {
       window.location.href = url;
+
+      addNewOutcome();
     }
 
   });
 
 });
+
+function addNewOutcome() {
+  var value = $addOutcomeSelect.find('option:selected').val();
+  var name = $addOutcomeSelect.find('option:selected').text();
+  console.log(value)
+  console.log(name)
+}

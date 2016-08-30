@@ -85,13 +85,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private String type;
   @Expose
-  private boolean global;
-  @Expose
-  private boolean national;
+  private int scape;
 
-
-  @Expose
-  private boolean regional;
 
   @Expose
   private boolean cofinancing;
@@ -187,7 +182,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.startDate = startDate;
     this.endDate = endDate;
     this.type = type;
-    this.global = isGlobal;
+
     this.cofinancing = isCofinancing;
     this.leaderResponsabilities = leaderResponsabilities;
     this.requiresWorkplanUpload = requiresWorkplanUpload;
@@ -209,7 +204,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     Date activeSince, String modificationJustification) {
     this.crp = crp;
     this.modifiedBy = usersByModifiedBy;
-    this.global = isGlobal;
+
     this.cofinancing = isCofinancing;
     this.active = isActive;
     this.activeSince = activeSince;
@@ -527,6 +522,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return scale;
   }
 
+  public int getScape() {
+    return scape;
+  }
+
+
   public List<ProjectScope> getScopes() {
     return scopes;
   }
@@ -535,7 +535,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public String getStandardIdentifier(int typeCodification) {
     StringBuilder result = new StringBuilder();
@@ -564,6 +563,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
+
   public String getSummary() {
     return this.summary;
   }
@@ -573,15 +573,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.title;
   }
 
-
   public String getType() {
     return this.type;
   }
 
+
   public FileDB getWorkplan() {
     return workplan;
   }
-
 
   @Override
   public int hashCode() {
@@ -618,31 +617,20 @@ public class Project implements java.io.Serializable, IAuditLog {
     return (type != null) ? type.equals(APConstants.PROJECT_CCAFS_COFUNDED) : false;
   }
 
+
   public boolean isCoreProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_CORE) : false;
   }
 
-  public boolean isGlobal() {
-    return global;
-  }
-
-  public boolean isNational() {
-    return national;
-  }
 
   public boolean isProjectEditLeader() {
     return projectEditLeader;
-  }
-
-  public boolean isRegional() {
-    return regional;
   }
 
 
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -680,6 +668,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.endDate = endDate;
   }
 
+
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
@@ -687,10 +676,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
-  }
-
-  public void setGlobal(boolean global) {
-    this.global = global;
   }
 
   public void setId(Long id) {
@@ -721,12 +706,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
-  }
-
-  public void setNational(boolean national) {
-    this.national = national;
   }
 
 
@@ -774,7 +756,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectFocuses = projectFocuseses;
   }
 
-
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
   }
@@ -787,13 +768,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectPartners = projectPartners;
   }
 
+
   public void setProjectScopes(Set<ProjectScope> projectScopes) {
     this.projectScopes = projectScopes;
   }
 
-  public void setRegional(boolean regional) {
-    this.regional = regional;
-  }
 
   public void setRegions(List<CrpProgram> regions) {
     this.regions = regions;
@@ -803,7 +782,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.regionsValue = regionsValue;
   }
 
-
   public void setRequiresWorkplanUpload(Boolean requiresWorkplanUpload) {
     this.requiresWorkplanUpload = requiresWorkplanUpload;
   }
@@ -811,6 +789,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setScale(Integer scale) {
     this.scale = scale;
+  }
+
+
+  public void setScape(int scape) {
+    this.scape = scape;
   }
 
 

@@ -79,7 +79,6 @@ public class ProjectOutcomeListAction extends BaseAction {
 
 
   public String addProjectOutcome() {
-
     if (this.hasPermission("add")) {
       ProjectOutcome projectOutcome = new ProjectOutcome();
       projectOutcome.setActive(true);
