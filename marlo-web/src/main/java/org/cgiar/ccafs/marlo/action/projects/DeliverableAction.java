@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -56,6 +57,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableManager deliverableManager;
 
+  private ProjectManager projectManager;
 
   private CrpManager crpManager;
 
@@ -79,11 +81,12 @@ public class DeliverableAction extends BaseAction {
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
-    DeliverableManager deliverableManager, CrpManager crpManager) {
+    DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.projectManager = projectManager;
   }
 
   public Deliverable getDeliverable() {
@@ -177,8 +180,30 @@ public class DeliverableAction extends BaseAction {
 
   @Override
   public String save() {
-    // TODO Auto-generated method stub
-    return super.save();
+    if (this.hasPermission("canEdit")) {
+
+      Project projectDB = projectManager.getProjectById(project.getId());
+      project.setActive(true);
+      project.setCreatedBy(projectDB.getCreatedBy());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("");
+      project.setActiveSince(projectDB.getActiveSince());
+
+      Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
+
+      deliverablePrew.setTitle(deliverable.getTitle());
+      deliverablePrew.setYear(deliverable.getYear());
+
+      DeliverableType deliverableType =
+        deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getDeliverableType().getId());
+
+      deliverablePrew.setDeliverableType(deliverableType);
+
+
+    }
+
+
+    return SUCCESS;
   }
 
   public void setDeliverable(Deliverable deliverable) {
