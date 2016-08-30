@@ -100,6 +100,8 @@
     <action name="{crp}/contributionCrp" class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeAction">
       <interceptor-ref name="editProjectListStack" />
       <interceptor-ref name="editProjectOutcome" />
+     
+      <interceptor-ref name="defaultStack" />
       <result name="input">/WEB-INF/views/projects/projectContributionCrp.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/contributionCrp</param>
