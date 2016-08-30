@@ -8,6 +8,26 @@ function init() {
   subTypes();
   outcomesAndCoa();
   keyOutputs();
+
+  var optionSelected = $(".typeSelect").find("option:selected");
+  if(optionSelected.val() != "-1") {
+    var url = baseURL + "/deliverableSubType.do";
+    var data = {
+      deliverableTypeId: optionSelected.val()
+    }
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: "json",
+        data: data
+    }).success(
+        function(m) {
+          for(var i = 0; i < m.deliverableSubTypes.length; i++) {
+            $(".subTypeSelect").append(
+                "<option value='" + m.deliverableSubTypes[i].id + "' >" + m.deliverableSubTypes[i].name + "</option>");
+          }
+        });
+  }
 }
 
 function subTypes() {
