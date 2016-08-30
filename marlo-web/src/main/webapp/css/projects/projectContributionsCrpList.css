@@ -29,3 +29,7 @@ thead {
 td {
     vertical-align: middle !important;
 }
+
+span.icon-20 {
+    margin-top: 7px;
+}
