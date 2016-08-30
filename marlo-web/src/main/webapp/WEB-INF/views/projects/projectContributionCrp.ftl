@@ -17,8 +17,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number]
-[#assign endYear = (project.endDate?string.yyyy)?number]
+[#assign startYear = (project.startDate?string.yyyy)?number /]
+[#assign endYear = (project.endDate?string.yyyy)?number /]
 
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectContributionCrp.help" /] </p></div> 

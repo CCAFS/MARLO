@@ -92,6 +92,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
+      
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
