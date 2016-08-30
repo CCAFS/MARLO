@@ -79,16 +79,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   @Expose
-  private CrpClusterOfActivity crpClusterOfActivity;
-
-  @Expose
   private CrpClusterKeyOutput crpClusterKeyOutput;
 
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
-  @Expose
-  private CrpProgram crpProgram;
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
   public Deliverable() {
@@ -96,8 +91,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
-    String modificationJustification, CrpClusterOfActivity crpClusterOfActivity,
-    CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome, CrpProgram crpProgram,
+    String modificationJustification, CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome,
     Set<DeliverablePartnership> deliverablePartnerships) {
     this.project = project;
     this.deliverableType = deliverableType;
@@ -111,9 +105,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
-    this.crpClusterOfActivity = crpClusterOfActivity;
     this.crpProgramOutcome = crpProgramOutcome;
-    this.crpProgram = crpProgram;
     this.crpClusterKeyOutput = crpClusterKeyOutput;
     this.deliverablePartnerships = deliverablePartnerships;
   }
@@ -139,14 +131,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
-  }
-
-  public CrpClusterOfActivity getCrpClusterOfActivity() {
-    return crpClusterOfActivity;
-  }
-
-  public CrpProgram getCrpProgram() {
-    return crpProgram;
   }
 
   public CrpProgramOutcome getCrpProgramOutcome() {
@@ -237,14 +221,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
-  }
-
-  public void setCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {
-    this.crpClusterOfActivity = crpClusterOfActivity;
-  }
-
-  public void setCrpProgram(CrpProgram crpProgram) {
-    this.crpProgram = crpProgram;
   }
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {

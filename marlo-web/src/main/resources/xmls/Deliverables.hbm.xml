@@ -48,10 +48,6 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
-		<many-to-one name="crpClusterOfActivity"
-			class="org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity" fetch="select">
-			<column name="cluster_activity_id" />
-		</many-to-one>
 		<many-to-one name="crpClusterKeyOutput"
 			class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" fetch="select">
 			<column name="key_output_id" />
@@ -59,10 +55,6 @@
 		<many-to-one name="crpProgramOutcome"
 			class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
 			<column name="outcome_id" />
-		</many-to-one>
-		<many-to-one name="crpProgram"
-			class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
-			<column name="program_id" />
 		</many-to-one>
 		<set name="deliverablePartnerships" table="deliverable_partnerships"
 			inverse="true" lazy="true" fetch="select">
