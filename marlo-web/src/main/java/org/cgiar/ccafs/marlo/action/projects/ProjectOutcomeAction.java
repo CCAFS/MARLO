@@ -52,7 +52,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -90,8 +92,13 @@ public class ProjectOutcomeAction extends BaseAction {
   private Crp loggedCrp;
   private Project project;
   private List<CrpMilestone> milestones;
+  private List<CrpMilestone> milestonesProject;
+
   private List<SrfTargetUnit> targetUnits;
+
+
   private CrpProgramOutcome crpProgramOutcome;
+
   private CrpMilestoneManager crpMilestoneManager;
   private ProjectOutcome projectOutcome;
   private ProjectOutcomeValidator projectOutcomeValidator;
@@ -143,7 +150,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = projectOutcome.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -185,9 +191,30 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public ProjectMilestone getMilestone(long milestoneId, int year) {
+    ProjectMilestone projectMilestone = new ProjectMilestone();
+    if (projectOutcome.getMilestones() != null) {
+      int index = this.getIndexMilestone(milestoneId, year);
+      if (index != -1) {
+        projectMilestone = projectOutcome.getMilestones().get(index);
+      } else {
+        projectMilestone.setYear(year);
+        projectMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(milestoneId));
+      }
+    } else {
+      projectMilestone.setYear(year);
+      projectMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(milestoneId));
+    }
+
+    return projectMilestone;
+
+
+  }
+
   public List<CrpMilestone> getMilestones() {
     return milestones;
   }
+
 
   public List<CrpMilestone> getMilestonesbyYear(int year) {
     List<CrpMilestone> milestoneList =
@@ -196,14 +223,18 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
 
+  public List<CrpMilestone> getMilestonesProject() {
+    return milestonesProject;
+  }
+
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
@@ -225,6 +256,7 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getUploadsBaseFolder() + File.separator + this.getSummaryPath() + File.separator;
   }
 
+
   private String getSummaryPath() {
 
     return config.getProjectsBaseFolder(loggedCrp.getAcronym()) + File.separator + project.getId() + File.separator
@@ -235,15 +267,14 @@ public class ProjectOutcomeAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getSummaryPath().replace('\\', '/');
   }
 
-
   public List<SrfTargetUnit> getTargetUnits() {
     return targetUnits;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public ProjectCommunication loadProjectCommunication(int year) {
 
@@ -260,6 +291,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
+
   public List<ProjectMilestone> loadProjectMilestones(int year) {
 
     List<ProjectMilestone> projectMilestones =
@@ -269,7 +301,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -365,6 +396,16 @@ public class ProjectOutcomeAction extends BaseAction {
 
     }
 
+
+    Set<CrpMilestone> crpMilestones = new HashSet<>();
+    if (projectOutcome.getMilestones() != null) {
+      for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
+        crpMilestones.add(crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId()));
+      }
+
+    }
+    milestonesProject = new ArrayList<>();
+    crpMilestones.addAll(crpMilestones);
     if (projectOutcome != null) {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());
@@ -563,6 +604,7 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+
   public void saveNextUsers() {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
@@ -634,9 +676,13 @@ public class ProjectOutcomeAction extends BaseAction {
 
   }
 
-
   public void setMilestones(List<CrpMilestone> milestones) {
     this.milestones = milestones;
+  }
+
+
+  public void setMilestonesProject(List<CrpMilestone> milestonesProject) {
+    this.milestonesProject = milestonesProject;
   }
 
   public void setProject(Project project) {
