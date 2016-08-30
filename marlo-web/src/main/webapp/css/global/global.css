@@ -5999,6 +5999,7 @@ span.programTag {
     cursor: pointer;
     opacity: 0.9;
     /* float: left; */
+    margin-left: 1px;
 }
 
 .subMainMenu {

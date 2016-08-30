@@ -38,7 +38,8 @@
             [#-- Your project contributes to the flagships --]
             <p>
               <strong>Your Project contributes to the following Flagships:</strong>  
-              [#if project.flagships?has_content][#list project.flagships as element]<span>${element.acronym}</span>[/#list][/#if]
+              
+              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
             </p>
             
             [#-- Project Outcomes List --]
@@ -74,7 +75,7 @@
             <div class="addNewOutcome">
               <div class="outcomesListBlock">
                 <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="description" className="" value="outcomeId" /]
+                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" value="outcomeId" /]
               </div>
               <div class="addOutcomeBlock">
                 <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">

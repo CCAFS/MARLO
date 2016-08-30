@@ -56,15 +56,20 @@ $(document).ready(function() {
   }
 
   $('#projectFlagshipsBlock input').on('change', function() {
-    console.log(flagshipsIds());
     $.ajax({
         url: baseURL + '/clusterList.do',
         method: 'POST',
         data: {
           flagshipsId: flagshipsIds()
         },
+        beforeSend: function() {
+          $coreSelect.empty();
+          $coreSelect.addOption(-1, 'Select an option');
+        },
         success: function(data) {
-          console.log(data);
+          $.each(data.clusterOfActivities, function(i,e) {
+            $coreSelect.addOption(e.id, e.description);
+          });
         }
     });
   });
