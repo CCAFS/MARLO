@@ -78,8 +78,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
   private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
 
 
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-
   @Expose
   private boolean active;
 
@@ -115,7 +113,7 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public CrpProgram(Crp crps, String name, String acronym, int programType,
     Set<CrpClusterOfActivity> crpClusterOfActivities, Set<CrpProgramLeader> crpProgramLeaders,
-    Set<CrpProgramOutcome> crpProgramOutcomes, Set<Deliverable> deliverables) {
+    Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crp = crps;
     this.name = name;
     this.acronym = acronym;
@@ -123,7 +121,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
     this.crpClusterOfActivities = crpClusterOfActivities;
     this.crpProgramLeaders = crpProgramLeaders;
     this.crpProgramOutcomes = crpProgramOutcomes;
-    this.deliverables = deliverables;
   }
 
   @Override
@@ -198,11 +195,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
-  }
-
-
-  public Set<Deliverable> getDeliverables() {
-    return deliverables;
   }
 
   @Override
@@ -320,10 +312,6 @@ public class CrpProgram implements java.io.Serializable, IAuditLog {
 
   public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crpProgramOutcomes = crpProgramOutcomes;
-  }
-
-  public void setDeliverables(Set<Deliverable> deliverables) {
-    this.deliverables = deliverables;
   }
 
   public void setId(Long id) {

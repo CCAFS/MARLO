@@ -102,12 +102,5 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocus" />
 		</set>
-		<set name="deliverables" table="deliverables" inverse="true" lazy="true"
-			fetch="select">
-			<key>
-				<column name="program_id" />
-			</key>
-			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
-		</set>
 	</class>
 </hibernate-mapping>

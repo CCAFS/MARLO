@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -55,19 +57,23 @@ public class DeliverableAction extends BaseAction {
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
 
+
   private DeliverableManager deliverableManager;
 
   private ProjectManager projectManager;
+
 
   private CrpManager crpManager;
 
   private long projectID;
 
-
   private long deliverableID;
 
   private List<DeliverableType> deliverableTypeParent;
 
+  private List<ProjectOutcome> projectOutcome;
+
+  private List<CrpClusterKeyOutput> keyOutputs;
 
   private Project project;
 
@@ -93,6 +99,7 @@ public class DeliverableAction extends BaseAction {
     return deliverable;
   }
 
+
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -114,6 +121,10 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
+  public List<ProjectOutcome> getProjectOutcome() {
+    return projectOutcome;
+  }
+
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
@@ -121,7 +132,6 @@ public class DeliverableAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -151,12 +161,21 @@ public class DeliverableAction extends BaseAction {
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-      projectPrograms =
-        new ArrayList<>(
-          project.getProjectFocuses().stream()
-            .filter(pf -> pf.isActive()
-              && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList()));
+      if (project.getProjectOutcomes() != null) {
+        projectOutcome = new ArrayList<>(project.getProjectOutcomes());
+      }
+
+      if (project.getClusterActivities() != null) {
+
+        keyOutputs = new ArrayList<>();
+
+        for (ProjectClusterActivity clusterActivity : project.getClusterActivities().stream()
+          .filter(ca -> ca.isActive()).collect(Collectors.toList())) {
+          keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs());
+        }
+      }
+
+
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
@@ -167,8 +186,8 @@ public class DeliverableAction extends BaseAction {
         deliverableTypeParent.clear();
       }
 
-      if (projectPrograms != null) {
-        projectPrograms.clear();
+      if (projectOutcome != null) {
+        projectOutcome.clear();
       }
 
       if (status != null) {
@@ -176,7 +195,6 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
-
 
   @Override
   public String save() {
@@ -206,9 +224,11 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -226,9 +246,13 @@ public class DeliverableAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+
+  public void setProjectOutcome(List<ProjectOutcome> projectOutcome) {
+    this.projectOutcome = projectOutcome;
   }
 
   public void setProjectPrograms(List<ProjectFocus> projectPrograms) {

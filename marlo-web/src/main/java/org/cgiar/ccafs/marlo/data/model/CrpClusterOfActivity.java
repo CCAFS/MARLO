@@ -55,8 +55,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-
   private List<CrpClusterActivityLeader> leaders;
 
   private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
@@ -128,11 +126,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
-  }
-
-
-  public Set<Deliverable> getDeliverables() {
-    return deliverables;
   }
 
   public String getDescription() {
@@ -214,10 +207,6 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
-  }
-
-  public void setDeliverables(Set<Deliverable> deliverables) {
-    this.deliverables = deliverables;
   }
 
   public void setDescription(String description) {
