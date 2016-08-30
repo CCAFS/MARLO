@@ -36,14 +36,25 @@
           <h3 class="headTitle">[@s.text name="projectContributionsCrpList.title" /]</h3>  
           <div id="projectContributionsCrpList" class="borderBox">
             [#-- Your project contributes to the flagships --]
-            <p>
-              <strong>Your Project contributes to the following Flagships:</strong>  
-              
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
-            </p>
+            <div class="form-group">
+              <p>
+                <strong>Your Project contributes to the following Flagships:</strong>  
+                [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${element.color}">${element.acronym}</span>[/#list][/#if]
+                <div class="clearfix"></div>
+              </p>
+            </div>
             
             [#-- Project Outcomes List --]
-            <ul id="projectOutcomesList" class="simpleBox"> 
+            <table id="projectOutcomesList" class="table table-striped table-hover ">
+              <thead>
+                <tr>
+                  <th>Flagship</th>
+                  <th>Outcome 2022</th>
+                  <th>Status</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody>
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
                   [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
@@ -51,7 +62,8 @@
               [#else]
                 <p class=" text-center">There is not a project outcome added</p>
               [/#if]
-            </ul>
+              </tbody> 
+            </table>
             
             [#-- Add a new Outcomes --]
             [#if canEdit]
@@ -78,25 +90,31 @@
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
-  <li class="projectOutcome">
-    [#local projectOutcomeID =  projectOutcome.id /] 
-    [#local projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#local]
-    <div class="row"> 
-      <div class="col-md-11">
-        <a href="${projectOutcomeUrl}">
-          <strong>${projectOutcome.crpProgramOutcome.crpProgram.acronym} Outcome ${projectOutcome.crpProgramOutcome.year} </strong> <br />
-           ${projectOutcome.crpProgramOutcome.description}
-        </a>
-      </div>
-      <div class="col-md-1">
+  [#local projectOutcomeID =  projectOutcome.id /] 
+  [#local projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#local]
+  <tr class="projectOutcome">
+      [#-- Flagship outcome --]
+      <td class="text-center">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</td>
+      [#-- Title --]
+      <td><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></td>
+      [#-- Contribution Status --]
+      <td class="text-center">
+        [#assign contributionStatus = false /]
+        [#if !contributionStatus?has_content] 
+          <span class="icon-20 icon-check" title="Complete"></span> 
+        [#else]
+          <span class="icon-20 icon-uncheck" title=""></span>  
+        [/#if]
+      </td>
+      [#-- Remove Contribution--]
+      <td class="text-center">
         [#if ((action.hasPermission("delete"))!true) && canEdit]
-          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?outcomeId=${projectOutcomeID}" title="">
+          <a id="removeOutcome-${projectOutcomeID}" class="removeOutcome" href="${baseUrl}/projects/${crpSession}/removeProjectOuctome.do?projectID=${projectID}&outcomeId=${projectOutcomeID}" title="">
             <img src="${baseUrl}/images/global/trash.png" />
           </a>
         [#else]
           <img src="${baseUrl}/images/global/trash_disable.png" title="" />
         [/#if]
-      </div>
-    </div>
-  </li>
+      </td>
+  </tr>
 [/#macro]
