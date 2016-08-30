@@ -85,7 +85,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   @Expose
   private String type;
   @Expose
-  private int scape;
+  private int scale;
 
 
   @Expose
@@ -115,8 +115,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private Date activeSince;
-  @Expose
-  private Integer scale;
+
   @Expose
   private String modificationJustification;
 
@@ -518,12 +517,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Integer getScale() {
+  public int getScale() {
     return scale;
-  }
-
-  public int getScape() {
-    return scape;
   }
 
 
@@ -531,10 +526,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return scopes;
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   public String getStandardIdentifier(int typeCodification) {
     StringBuilder result = new StringBuilder();
@@ -563,7 +558,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-
   public String getSummary() {
     return this.summary;
   }
@@ -573,14 +567,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.title;
   }
 
+
   public String getType() {
     return this.type;
   }
 
-
   public FileDB getWorkplan() {
     return workplan;
   }
+
 
   @Override
   public int hashCode() {
@@ -617,7 +612,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return (type != null) ? type.equals(APConstants.PROJECT_CCAFS_COFUNDED) : false;
   }
 
-
   public boolean isCoreProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_CORE) : false;
   }
@@ -631,6 +625,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -668,7 +663,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.endDate = endDate;
   }
 
-
   public void setFlagships(List<CrpProgram> flagships) {
     this.flagships = flagships;
   }
@@ -677,6 +671,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -705,7 +700,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
-
 
   public void setModifiedBy(User usersByModifiedBy) {
     this.modifiedBy = usersByModifiedBy;
@@ -756,6 +750,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectFocuses = projectFocuseses;
   }
 
+
   public void setProjectLocations(Set<ProjectLocation> projectLocations) {
     this.projectLocations = projectLocations;
   }
@@ -768,7 +763,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectPartners = projectPartners;
   }
 
-
   public void setProjectScopes(Set<ProjectScope> projectScopes) {
     this.projectScopes = projectScopes;
   }
@@ -778,6 +772,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.regions = regions;
   }
 
+
   public void setRegionsValue(String regionsValue) {
     this.regionsValue = regionsValue;
   }
@@ -786,14 +781,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.requiresWorkplanUpload = requiresWorkplanUpload;
   }
 
-
-  public void setScale(Integer scale) {
+  public void setScale(int scale) {
     this.scale = scale;
-  }
-
-
-  public void setScape(int scape) {
-    this.scape = scape;
   }
 
 

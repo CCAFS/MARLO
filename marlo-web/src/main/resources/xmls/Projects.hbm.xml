@@ -48,8 +48,8 @@
 		<property name="type" type="string">
 			<column name="type" length="14" />
 		</property>
-		<property name="scape" type="integer">
-			<column name="scape" not-null="true" />
+		<property name="scale" type="integer">
+			<column name="scale" not-null="true" />
 		</property>
 
 		
