@@ -169,7 +169,7 @@
                     </li>
                   [/#list]
                 [#else]
-                  [#-- <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> --]
+                  [#if !editable] <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> [/#if]
                 [/#if]  
                 </ul>
                 [#if editable  && action.hasPermission("activities")]
@@ -183,9 +183,18 @@
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
               <div id="" class="projectScale">
-                <label class="radio-inline" for="isProjectNational"><input type="radio" name="project.scale" id="isProjectNational"  value="1" /> [@s.text name="project.national"/]</label>
-                <label class="radio-inline" for="isProjectRegional"><input type="radio" name="project.scale" id="isProjectRegional" value="2" /> [@s.text name="project.regional"/]</label>
-                <label class="radio-inline" for="isProjectGlobal"><input type="radio" name="project.scale" id="isProjectGlobal" value="3" /> [@s.text name="project.global"/]</label>
+                <label class="radio-inline" for="isProjectNational">
+                  [#if editable]<input type="radio" name="project.scale" id="isProjectNational"  value="1"  [#if (project.scale?? && (project.scale == 1))]checked="checked"[/#if]/> [/#if]
+                  [#if editable || (project.scale?? && (project.scale == 1))] [@s.text name="project.national"/] [/#if]
+                </label>
+                <label class="radio-inline" for="isProjectRegional">
+                  [#if editable]<input type="radio" name="project.scale" id="isProjectRegional" value="2" [#if (project.scale?? && (project.scale == 2))]checked="checked"[/#if]/> [/#if]
+                  [#if editable || (project.scale?? && (project.scale == 2))] [@s.text name="project.regional"/] [/#if]
+                </label>
+                <label class="radio-inline" for="isProjectGlobal">
+                  [#if editable]<input type="radio" name="project.scale" id="isProjectGlobal" value="3" [#if (project.scale?? && (project.scale == 3))]checked="checked"[/#if]/> [/#if]
+                  [#if editable || (project.scale?? && (project.scale == 3))] [@s.text name="project.global"/] [/#if]
+                </label>
               </div>
             </div>
             
@@ -204,7 +213,7 @@
                     </li>
                   [/#list]
                 [#else]
-                  [#--  <p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p> --]
+                  [#if !editable]<p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p> [/#if]
                 [/#if]  
                 </ul>
                 [#if editable && action.hasPermission("scope") ]
