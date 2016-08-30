@@ -182,10 +182,10 @@
             [#-- Scale of the project --]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
-              <div id="" class="row"> 
-                <div class="col-md-2">[@customForm.checkbox name="project.national" i18nkey="project.national" value="true" editable=editable && action.hasPermission("scale") /]</div>
-                <div class="col-md-2">[@customForm.checkbox name="project.regional" i18nkey="project.regional" value="true" editable=editable  && action.hasPermission("scale")/]</div>
-                <div class="col-md-2">[@customForm.checkbox name="project.global" i18nkey="project.global" value="true" editable=editable && action.hasPermission("scale") /]</div>
+              <div id="" class="">
+                <label for="isProjectNational"><input type="radio" name="project.scale" id="isProjectNational"  value="1" /> [@s.text name="project.national"/]</label>
+                <label for="isProjectRegional"><input type="radio" name="project.scale" id="isProjectRegional" value="2" /> [@s.text name="project.regional"/]</label>
+                <label for="isProjectGlobal"><input type="radio" name="project.scale" id="isProjectGlobal" value="3" /> [@s.text name="project.global"/]</label>
               </div>
             </div>
             
