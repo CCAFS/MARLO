@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -32,7 +34,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Long id;
-
 
   @Expose
   private Project project;
@@ -57,8 +58,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private Integer status;
 
+
   @Expose
   private String statusDescription;
+
 
   @Expose
   private boolean active;
@@ -80,11 +83,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   @Expose
   private CrpClusterKeyOutput crpClusterKeyOutput;
+
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
   @Expose
   private CrpProgram crpProgram;
+  private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
   public Deliverable() {
   }
@@ -92,7 +97,8 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification, CrpClusterOfActivity crpClusterOfActivity,
-    CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome, CrpProgram crpProgram) {
+    CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome, CrpProgram crpProgram,
+    Set<DeliverablePartnership> deliverablePartnerships) {
     this.project = project;
     this.deliverableType = deliverableType;
     this.title = title;
@@ -109,6 +115,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crpProgramOutcome = crpProgramOutcome;
     this.crpProgram = crpProgram;
     this.crpClusterKeyOutput = crpClusterKeyOutput;
+    this.deliverablePartnerships = deliverablePartnerships;
   }
 
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -144,6 +151,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
+  }
+
+  public Set<DeliverablePartnership> getDeliverablePartnerships() {
+    return deliverablePartnerships;
   }
 
   public DeliverableType getDeliverableType() {
@@ -209,7 +220,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -224,6 +234,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
@@ -236,9 +247,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crpProgram = crpProgram;
   }
 
-
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
+  }
+
+
+  public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
+    this.deliverablePartnerships = deliverablePartnerships;
   }
 
 

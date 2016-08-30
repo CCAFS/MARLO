@@ -85,6 +85,7 @@
     <mapping resource="xmls/Deliverables.hbm.xml"/>
     <mapping resource="xmls/DeliverableTypes.hbm.xml"/>
     <mapping resource="xmls/ProjectNextusers.hbm.xml"/>
+    <mapping resource="xmls/DeliverablePartnerships.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
 
