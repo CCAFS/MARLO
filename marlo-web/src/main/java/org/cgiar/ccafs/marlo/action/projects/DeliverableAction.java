@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -62,10 +64,12 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   private CrpManager crpManager;
 
   private long projectID;
+
 
   private long deliverableID;
 
@@ -75,10 +79,11 @@ public class DeliverableAction extends BaseAction {
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
+  private List<ProjectPartnerPerson> partnerPersons;
+
   private Project project;
 
   private Map<String, String> status;
-
 
   private Deliverable deliverable;
 
@@ -87,12 +92,14 @@ public class DeliverableAction extends BaseAction {
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
-    DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager) {
+    DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
     this.projectManager = projectManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
   public Deliverable getDeliverable() {
@@ -112,6 +119,11 @@ public class DeliverableAction extends BaseAction {
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
+  public List<ProjectPartnerPerson> getPartnerPersons() {
+    return partnerPersons;
+  }
+
 
   public Project getProject() {
     return project;
@@ -175,6 +187,11 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      if (projectPartnerPersonManager.findAll() != null) {
+        partnerPersons = new ArrayList<>(projectPartnerPersonManager.findAll().stream()
+          .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
+          .collect(Collectors.toList()));
+      }
 
     }
 
@@ -192,6 +209,10 @@ public class DeliverableAction extends BaseAction {
 
       if (status != null) {
         status.clear();
+      }
+
+      if (keyOutputs != null) {
+        keyOutputs.clear();
       }
     }
   }
@@ -224,7 +245,6 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -234,12 +254,17 @@ public class DeliverableAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
+
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
+    this.partnerPersons = partnerPersons;
   }
 
   public void setProject(Project project) {

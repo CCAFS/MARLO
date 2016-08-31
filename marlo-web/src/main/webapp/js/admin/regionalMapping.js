@@ -14,7 +14,7 @@ function init() {
   });
 
   /* Color picker widget */
-  $('.color-picker').colorPicker();
+  $('form .color-picker').colorPicker();
 
 }
 

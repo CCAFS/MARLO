@@ -9,7 +9,7 @@ function init() {
   yesnoEvent = yesnoEventLocations;
 
   /* Color picker widget */
-  $('.color-picker').colorPicker();
+  $('form .color-picker').colorPicker();
 }
 
 function attachEvents() {
