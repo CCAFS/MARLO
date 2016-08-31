@@ -187,7 +187,13 @@ public class ProjectOutcomeAction extends BaseAction {
       }
       i++;
     }
-    return -1;
+
+
+    ProjectMilestone projectMilestone = new ProjectMilestone();
+    projectMilestone.setYear(year);
+    projectMilestone.setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(milestoneId));
+    projectOutcome.getMilestones().add(projectMilestone);
+    return this.getIndexMilestone(milestoneId, year);
   }
 
 
