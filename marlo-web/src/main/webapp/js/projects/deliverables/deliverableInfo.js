@@ -47,6 +47,7 @@ function init() {
           validation.parent().hide("slow", function() {
             $(this).remove();
           })
+          // Show message
           var text = option.html() + ' was removed from contact persons list';
           notify(text);
         } else {
