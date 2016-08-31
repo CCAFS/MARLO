@@ -6,12 +6,12 @@
     <thead>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="deliverableTitles" >Deliverable Name</th>
-        <th id="deliverableType">Type</th>
-        <th id="deliverableEDY">Expected delivery year</th>
-        <th id="deliverableFC">FAIR compliance</th>
-        <th id="deliverableStatus">Status</th>
-        <th id="deliverableRF">Required Fields</th>
+        <th id="deliverableTitles" >[@s.text name="projectDeliverableList.deliverableName" /]</th>
+        <th id="deliverableType">[@s.text name="projectDeliverableList.type" /]</th>
+        <th id="deliverableEDY">[@s.text name="projectDeliverableList.expectedYear" /]</th>
+        <th id="deliverableFC">[@s.text name="projectDeliverableList.fairCompliance" /]</th>
+        <th id="deliverableStatus">[@s.text name="projectDeliverableList.status" /]</th>
+        <th id="deliverableRF">[@s.text name="projectDeliverableList.requiredFields" /]</th>
         <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -44,10 +44,10 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
-            <div class="col-md-2 active">F</div>
-            <div class="col-md-2 active">A</div>
-            <div class="col-md-2 ">I</div>
-            <div class="col-md-2 ">R</div>
+            <span class="col-md-2 active">F</span>
+            <span class="col-md-2 active">A</span>
+            <span class="col-md-2 ">I</span>
+            <span class="col-md-2 ">R</span>
           </td>
           [#-- Deliverable Status --]
           <td>
@@ -62,10 +62,10 @@
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
             [#if true]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
-                <img src="${baseUrl}/images/global/trash.png" title="Delete deliverable" /> 
+                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectDeliverable.removeDeliverable" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/images/global/trash_disable.png" title="Delete deliverable" />
+              <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="projectDeliverable.cannotDelete" /]" />
             [/#if]
           </td>
         </tr>  
@@ -74,3 +74,31 @@
     </tbody>
   </table>
 [/#macro]
+
+[#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
+  <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('simpleBox','borderBox')} row" style="display:${template?string('none','')}">
+    [#if editable && !isResponsable]
+      <div class="removeElement removeLink" title="[@s.text name="planning.deliverables.removePartnerContribution" /]"></div> 
+    [/#if]
+    [#if !isResponsable]
+    <div class="leftHead">
+      <span class="index">${dp_index+1}</span>
+    </div> 
+    [/#if]
+    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
+    <input class="id" type="hidden" name="${customName}.id" value="${(dp.id)!'-1'}">
+    <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
+    [#if template]
+      [#-- Partner Name --]
+      <div class="fullPartBlock partnerName chosen col-md-12"> 
+        [@customForm.select name="" value="-1" className="partner form-control input-sm" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName" value="" multiple=false required=false  className=" form-control input-sm partner" disabled=!editable /]
+      </div>
+    [#else]
+      [#-- Partner Name --]
+      [#assign partnerId][#if dp.partner??]${dp.partner.id}[#else]-1[/#if][/#assign]
+      <div class="fullPartBlock partnerName chosen col-md-12"> 
+        [@customForm.select name="" value="" className="partner form-control input-sm" required=isResponsable label="" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName" value="" multiple=false required=false  className=" form-control input-sm partner" disabled=!editable/]
+      </div>
+    [/#if] 
+  </div> 
+[/#macro] 

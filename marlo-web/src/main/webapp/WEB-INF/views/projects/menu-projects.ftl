@@ -22,7 +22,7 @@
     { 'title': 'Outcomes',
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true  },
-      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': false  },
+      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': true  },
       { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false, 'show': reportingActive }
       ]
     },
@@ -52,7 +52,6 @@
 [#assign submission = (action.submission)! /]
 [#assign canSubmit = (action.hasPersmissionSubmit())!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
-
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">

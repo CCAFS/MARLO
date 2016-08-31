@@ -107,6 +107,10 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getComposedName() {
+    return this.projectPartner.getInstitution().getAcronym() + " - " + this.user.getComposedName();
+  }
+
   public String getContactType() {
     return this.contactType;
   }
@@ -158,7 +162,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   public User getUser() {
     return this.user;
   }
-
 
   @Override
   public int hashCode() {

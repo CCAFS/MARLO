@@ -12,7 +12,8 @@
 }
 
 .fair .active {
-    background-color: #4cd577;
+    background-color: #0a8829;
+    color: white;
 }
 
 #deliverableInformation input {
@@ -40,4 +41,20 @@ ul.nav li a {
 
 .title {
     padding: 2px;
+}
+
+.fair span {
+    background: #f9f9f9;
+    border-radius: 3px;
+    padding: 0px 6px;
+    margin-right: 0px;
+    margin-bottom: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    opacity: 0.9;
+    margin-left: 1px;
+}
+
+#deliverable-partnership {
+    margin-top: 20px;
 }

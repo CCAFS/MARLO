@@ -91,8 +91,7 @@
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
   [#local projectOutcomeID =  projectOutcome.id /] 
-  [#-- local projectOutcomeUrl][@s.url namespace="projects" action="contributionCrp"][@s.param name='projectOutcomeID' value=projectOutcomeID /][@s.param name='edit' value="true" /][/@s.url][/#local --]
-  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectID=${projectID}&projectOutcomeID=${projectOutcomeID}&edit=true" /]
+  [#local projectOutcomeUrl = "${baseUrl}/projects/${crpSession}/contributionCrp.do?projectOutcomeID=${projectOutcomeID}&edit=true" /]
   <tr class="projectOutcome">
       [#-- Flagship outcome --]
       <td class="text-center">${projectOutcome.crpProgramOutcome.crpProgram.acronym}</td>

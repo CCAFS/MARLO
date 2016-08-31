@@ -20,7 +20,7 @@
 </div>
 
 [#-- Status and year expected selects --] 
-<div class="form-group">
+<div class="col-md-12 form-group">
 [#if reportingActive]
   <div class="col-md-6">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.status" listName="status"  multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
@@ -33,35 +33,59 @@
 
 [#-- Status justification textArea --] 
 [#if reportingActive]
-<div class="form-group">
+<div class="col-md-12 form-group">
   <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
 [/#if]
 
-[#-- Flagship select --] 
-<div class=" form-group">
-  <div class="col-md-12">
-    [@customForm.select name="deliverable.crpProgram" label=""  i18nkey="Flagship" listName="projectPrograms" keyFieldName="crpProgram.id"  displayFieldName="crpProgram.composedName"  multiple=false required=true  className=" form-control input-sm flagship" disabled=!editable/]
-  </div>
-</div>
-
 [#-- Outcome select --] 
-<div class=" form-group">
+<div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="deliverable.crpProgramOutcome" label=""  i18nkey="Outcome" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
-  </div>
-</div>
-
-[#-- CoA select --] 
-<div class="form-group">
-  <div class="col-md-12">
-    [@customForm.select name="deliverable.crpClusterOfActivity" label=""  i18nkey="CoA" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm cluster" disabled=!editable/]
+    [@customForm.select name="projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome.crpProgramOutcome" keyFieldName="id"  displayFieldName="description" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
-<div class=" form-group">
+<div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="deliverable.crpClusterKeyOutput" label=""  i18nkey="CoA Outputs" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
+    [@customForm.select name="keyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutput" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
   </div>
 </div>
+
+[#-- Partners --] 
+
+<div id="deliverable-partnership" class="clearfix col-md-12">
+<h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
+  <div class="fullBlock ">
+    [#-- Partner who is responsible --]
+    <div class="fullBlock">
+    [@deliverableList.deliverablePartner dp={} dp_name="" dp_index=0 isResponsable=true editable=editable /]
+    </div>
+    [#-- Other contact person that will contribute --]
+    [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
+    <p style="display:${displayOtherPerson}">[@customForm.text name="Other contact person(s) that will contribute to this deliverable:" readText=!editable/]</p>
+    <div class="simpleBox personList col-md-12" style="display:${displayOtherPerson}">
+    [#if deliverable.otherPartners?has_content]
+        [#list deliverable.otherPartners as dp]
+          [@deliverableList.deliverablePartner dp=dp dp_name=params.partners.name dp_index=dp_index editable=editable /]
+        [/#list]
+      [#else]
+        <p class="emptyText center"> [@s.text name="projectDeliverable.partnership.emptyText" /] </p>
+      [/#if]
+    </div>
+    [#if editable && canEdit]
+        <div id="addPartnerBlock" class="addPerson text-right">
+        <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPerson" /]</div>
+      </div>
+      [/#if]
+  </div>
+  [#if editable]
+    <div class="partnerListMsj note">
+      [@s.text name="preplanning.projectBudget.partnerNotList" /]
+      <a href="[@s.url action='partners'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]"> 
+        [@s.text name="deliverable.generalInformation.partnersLink" /] 
+      </a>
+    </div>
+  [/#if]
+</div>
+

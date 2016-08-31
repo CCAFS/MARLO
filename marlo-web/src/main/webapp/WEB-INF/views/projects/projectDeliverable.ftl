@@ -15,6 +15,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectDescription.help" /] </p></div> 
@@ -49,8 +50,8 @@
             </ul>
             
             <div class="tab-content col-md-12">
-              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active">
-                <h3 class="headTitle">Deliverable information</h3>  
+              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active row">
+                <h3 class="headTitle col-md-12">Deliverable information</h3>  
                 [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
@@ -81,5 +82,7 @@
     </div>  
 </section>
 
+[#-- deliverable Partner Template --]
+[@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
