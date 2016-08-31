@@ -40,13 +40,12 @@ function loadMilestonesByYear(i,e) {
   var $parent = $(e).parents('.tab-pane');
   var $select = $(e).find('select');
   var selectedIds = ($(e).find('.milestonesSelectedIds').text()).split(',');
-  var year = ($parent.attr('id')).split('-')[1];
 
   // Getting Milestones list milestonesYear.do?year=2017&outcomeID=33
   $.ajax({
       url: baseURL + '/milestonesYear.do',
       data: {
-          year: year,
+          year: currentCycleYear,
           outcomeID: outcomeID
       },
       success: function(data) {
@@ -66,14 +65,14 @@ function loadMilestonesByYear(i,e) {
 function addMilestone() {
   var $item = $('#milestoneYear-template').clone(true).removeAttr('id');
   var $list = $(this).parents('.milestonesYearBlock').find(".milestonesYearList");
-  var year = ($list.parents('.tab-pane').attr('id')).split('-')[1];
+  // var year = ($list.parents('.tab-pane').attr('id')).split('-')[1];
   var title = $(this).find('option:selected').text();
   var milestonId = $(this).find('option:selected').val();
 
   // Set the milestone parameters
   $item.find('.title').text(title);
   $item.find('.crpMilestoneId').val(milestonId);
-  $item.find('.year').val(year);
+  // $item.find('.year').val(year);
 
   // Set Select2 widget
   $item.find('select').select2({
