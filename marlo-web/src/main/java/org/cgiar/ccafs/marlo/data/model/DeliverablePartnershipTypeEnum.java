@@ -20,9 +20,7 @@ package org.cgiar.ccafs.marlo.data.model;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public enum DeliverablePartnershipTypeEnum {
-  LOGON_SUCCESS("You have successfully logged in"),
-  ERROR_NO_SUCH_USER("The CGIAR email provided does not exist, please try again");
-
+  RESPONSIBLE("Resp"), OTHER("Other");
 
   private String value;
 

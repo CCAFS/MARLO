@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -166,8 +168,24 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+  public List<DeliverablePartnership> getOtherPartners() {
+    return this.getDeliverablePartnerships().stream()
+      .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+      .collect(Collectors.toList());
+  }
+
   public Project getProject() {
     return project;
+  }
+
+  public DeliverablePartnership getResponsiblePartner() {
+    DeliverablePartnership partnership =
+      this.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+
+    return partnership;
   }
 
   public Integer getStatus() {
@@ -204,6 +222,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -218,10 +237,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
+
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -232,10 +251,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverablePartnerships = deliverablePartnerships;
   }
 
-
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
   }
+
 
   public void setId(Long id) {
     this.id = id;
@@ -245,7 +264,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
