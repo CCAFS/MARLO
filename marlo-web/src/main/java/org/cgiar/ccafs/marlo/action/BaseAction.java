@@ -273,7 +273,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return List<Crp> object
    */
   public List<Crp> getCrpList() {
-    return crpManager.findAll();
+    return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
 
   /**
