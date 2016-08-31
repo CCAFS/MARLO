@@ -33,6 +33,16 @@ function init() {
 
   $(".addPartner").on("click", addPartnerEvent);
   $(".removeElement").on("click", removePartnerEvent);
+  // Update value of responsible person
+  $(".responsible").on("change", function() {
+    var option = $(this).find("option:selected");
+    $(this).parent().parent().parent().parent().find(".id").val(option.val());
+  });
+// Update value of partner
+  $(".partner").on("change", function() {
+    var option = $(this).find("option:selected");
+    $(this).parent().parent().parent().parent().find(".id").val(option.val());
+  });
 
 }
 
@@ -62,7 +72,7 @@ function removePartnerEvent() {
 }
 
 function updatePartners() {
-  var name = "";
+  var name = "deliverable.deliverablePartnerships";
   $(".personList").find('.deliverablePartner').each(function(i,item) {
 
     var customName = name + '[' + i + ']';

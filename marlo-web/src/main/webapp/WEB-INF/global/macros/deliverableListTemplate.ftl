@@ -86,18 +86,17 @@
     </div> 
     [/#if]
     [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
-    <input class="id" type="hidden" name="${customName}.id" value="${(dp.id)!'-1'}">
+    <input class="id" type="hidden" name="${customName}.id" value="${(dp.projectPartnerPerson.id)!'-1'}">
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1" className="partner form-control input-sm" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName" value="" multiple=false required=false  className=" form-control input-sm partner" disabled=!editable /]
+        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable /]
       </div>
     [#else]
       [#-- Partner Name --]
-      [#assign partnerId][#if dp.partner??]${dp.partner.id}[#else]-1[/#if][/#assign]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="" className="partner form-control input-sm" required=isResponsable label="" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName" value="" multiple=false required=false  className=" form-control input-sm partner" disabled=!editable/]
+        [@customForm.select name="" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false   className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable/]
       </div>
     [/#if] 
   </div> 

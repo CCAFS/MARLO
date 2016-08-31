@@ -41,14 +41,14 @@
 [#-- Outcome select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome.crpProgramOutcome" keyFieldName="id"  displayFieldName="description" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
+    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="id"  displayFieldName="description" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="keyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutput" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
+    [@customForm.select name="deliverable.keyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutput" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
   </div>
 </div>
 
@@ -59,7 +59,7 @@
   <div class="fullBlock ">
     [#-- Partner who is responsible --]
     <div class="fullBlock">
-    [@deliverableList.deliverablePartner dp={} dp_name="" dp_index=0 isResponsable=true editable=editable /]
+    [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
     </div>
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
@@ -81,9 +81,9 @@
   </div>
   [#if editable]
     <div class="partnerListMsj note">
-      [@s.text name="preplanning.projectBudget.partnerNotList" /]
+      [@s.text name="projectDeliverable.generalInformation.partnerNotList" /]
       <a href="[@s.url action='partners'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]"> 
-        [@s.text name="deliverable.generalInformation.partnersLink" /] 
+        [@s.text name="projectDeliverable.generalInformation.partnersLink" /] 
       </a>
     </div>
   [/#if]
