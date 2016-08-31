@@ -112,5 +112,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		
+		<property name="marlo" type="boolean">
+      <column name="is_marlo" not-null="true" />
+    </property>
 	</class>
 </hibernate-mapping>
