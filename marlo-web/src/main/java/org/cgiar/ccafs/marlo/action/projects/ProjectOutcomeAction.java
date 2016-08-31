@@ -406,12 +406,17 @@ public class ProjectOutcomeAction extends BaseAction {
     Set<CrpMilestone> crpMilestones = new HashSet<>();
     if (projectOutcome.getMilestones() != null) {
       for (ProjectMilestone crpMilestone : projectOutcome.getMilestones()) {
-        crpMilestones.add(crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId()));
+        CrpMilestone milestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getCrpMilestone().getId());
+
+        milestone.setIndex(crpMilestone.getId());
+        crpMilestones.add(milestone);
+
       }
 
     }
     milestonesProject = new ArrayList<>();
     milestonesProject.addAll(crpMilestones);
+    // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
     if (projectOutcome != null) {
       crpProgramOutcome =
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId());

@@ -42,9 +42,11 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String title;
+  private Long index;
 
   @Expose
   private Integer year;
+
 
   @Expose
   private BigDecimal value;
@@ -65,10 +67,8 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
 
-
   public CrpMilestone() {
   }
-
 
   public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
@@ -78,6 +78,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     this.year = year;
     this.value = value;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -110,6 +111,7 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return this.year + " - " + this.title;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
@@ -121,6 +123,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Long getIndex() {
+    return index;
   }
 
   @Override
@@ -156,10 +162,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     return this.value;
   }
 
-
   public Integer getYear() {
     return this.year;
   }
+
 
   @Override
   public int hashCode() {
@@ -178,10 +184,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -193,6 +199,10 @@ public class CrpMilestone implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIndex(Long index) {
+    this.index = index;
   }
 
   public void setModificationJustification(String modificationJustification) {

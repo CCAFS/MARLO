@@ -31,7 +31,8 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs {
 ul.nav.nav-tabs.projectOutcomeYear-tabs li a{
     background-color: #f5f5f5;
     line-height: 1em;
-    padding: 7px 15px;
+    padding: 5px 15px;
+    height: 29px;
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a, 
@@ -42,12 +43,13 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:hover {
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li {
-    border-bottom: 1px solid #dddddd;
+    /* border-bottom: 1px solid #dddddd; */
     margin-bottom: -1px;
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active {
     border-bottom: 1px solid #fff;
+    z-index: 10;
 }
 
 ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {

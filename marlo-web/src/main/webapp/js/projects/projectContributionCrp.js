@@ -2,7 +2,7 @@ var milestonesCount, outcomeID;
 $(document).ready(init);
 
 function init() {
-  milestonesCount = $('form .milestoneYear').length;
+  milestonesCount = $('form .outcomeMilestoneYear').length;
   outcomeID = $('#outcomeId').val();
 
   // Set Select2 widget to already saved data
@@ -91,15 +91,6 @@ function addMilestone() {
   $(this).find('option:selected').remove();
   $(this).trigger("change.select2");
 
-  // Set indexes
-  $item.setNameIndexes(1, milestonesCount);
-  milestonesCount++;
-
-  // Update milestone
-  $list.find('.milestoneYear').each(function(i,e) {
-    $(e).find('.index').text(i + 1);
-  });
-
   // Get extra information from ajax service milestoneInformation.do?milestoneID=3
   $.ajax({
       url: baseURL + '/milestoneInformation.do',
@@ -110,6 +101,40 @@ function addMilestone() {
         $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
         $item.find('.crpMilestoneValue').text(data.crpMilestone.value);
         $item.find('select').val(data.crpMilestone.targetUnit).trigger("change.select2");
+
+        // Set year tabs pane indexes
+        $item.find('.year-tab a').each(function(i,e) {
+          var arr = $(e).attr('href').split('-');
+          var year = arr[arr.length - 1];
+          $(e).attr('href', '#milestoneYear' + milestonesCount + '-' + year);
+
+          if(year > data.crpMilestone.year) {
+            $(e).parent().remove();
+          }
+        });
+
+        // Set year tabs indexes
+        $item.find('.tab-pane').each(function(i,e) {
+          var arr = $(e).attr('id').split('-');
+          var year = arr[arr.length - 1];
+          $(e).attr('id', 'milestoneYear' + milestonesCount + '-' + year);
+
+          if(year > data.crpMilestone.year) {
+            $(e).remove();
+          }
+        });
+
+        // Set indexes
+        $item.find('.outcomeMilestoneYear').each(function(i,e) {
+          $(e).setNameIndexes(1, milestonesCount);
+          milestonesCount++;
+        });
+
+        // Update milestone
+        $list.find('.milestoneYear').each(function(i,e) {
+          $(e).find('.index').text(i + 1);
+        });
+
       }
   });
 }

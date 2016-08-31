@@ -55,6 +55,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     this.validateProjectOutcome(action, projectOutcome);
     if (!action.getFieldErrors().isEmpty()) {
+      System.out.println(action.getFieldErrors());
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action
@@ -74,25 +75,31 @@ public class ProjectOutcomeValidator extends BaseValidator {
   public void validateProjectMilestone(BaseAction action, ProjectMilestone projectMilestone, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
+    if (projectMilestone != null) {
+      if (projectMilestone.getYear() == action.getCurrentCycleYear()) {
+
+        if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
+          || projectMilestone.getExpectedUnit().getId() == -1) {
+          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
+          projectMilestone.setExpectedUnit(null);
+        }
+        if (projectMilestone.getExpectedValue() == null
+          || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
+          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
+        }
+
+        if (!(this.isValidString(projectMilestone.getNarrativeTarget())
+          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
+          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
+        }
+
+        if (!(this.isValidString(projectMilestone.getExpectedGender())
+          && this.wordCount(projectMilestone.getExpectedGender()) <= 100)) {
+          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedGenderSocialNarrative", params));
+        }
+      }
 
 
-    if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == -1) {
-      this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
-      projectMilestone.setExpectedUnit(null);
-    }
-    if (projectMilestone.getExpectedValue() == null
-      || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
-      this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
-    }
-
-    if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-      && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
-      this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
-    }
-
-    if (!(this.isValidString(projectMilestone.getExpectedGender())
-      && this.wordCount(projectMilestone.getExpectedGender()) <= 100)) {
-      this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedGenderSocialNarrative", params));
     }
 
 
