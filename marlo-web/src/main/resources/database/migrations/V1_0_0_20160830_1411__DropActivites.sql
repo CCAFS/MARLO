@@ -1,3 +1,3 @@
 START TRANSACTION;
-DROP TABLE project_cluster_activites;
+DROP TABLE IF EXISTS  project_cluster_activites;
 COMMIT;
