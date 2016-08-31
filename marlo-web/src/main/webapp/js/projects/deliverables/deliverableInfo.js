@@ -2,13 +2,15 @@ $(document).ready(init);
 
 function init() {
   /* Init Select2 plugin */
-  $('select').select2();
+  $('form select').select2({
+    width: "100%"
+  });
 
   /* Events select */
   subTypes();
-  outcomesAndCoa();
   keyOutputs();
 
+  // validate option type for ajax service
   var optionSelected = $(".typeSelect").find("option:selected");
   if(optionSelected.val() != "-1") {
     var url = baseURL + "/deliverableSubType.do";
@@ -28,6 +30,46 @@ function init() {
           }
         });
   }
+
+  $(".addPartner").on("click", addPartnerEvent);
+  $(".removeElement").on("click", removePartnerEvent);
+
+}
+
+// Add a new person element
+function addPartnerEvent() {
+  var $list = $(".personList");
+  var $item = $("#deliverablePartner-template").clone(true).removeAttr("id");
+  $list.append($item);
+  $item.find('select').select2({
+    width: "100%"
+  });
+  $item.show('slow');
+  checkItems($list);
+  updatePartners();
+}
+
+// Remove person element
+function removePartnerEvent() {
+  var $list = $(this).parents('.personList');
+  var $item = $(this).parents('.deliverablePartner');
+  $item.hide(1000, function() {
+    $item.remove();
+    checkItems($list);
+    updatePartners();
+  });
+
+}
+
+function updatePartners() {
+  var name = "";
+  $(".personList").find('.deliverablePartner').each(function(i,item) {
+
+    var customName = name + '[' + i + ']';
+    $(item).find('span.index').html(i + 1);
+    $(item).find('.id').attr('name', customName + '.id');
+    $(item).find('.type').attr('name', customName + '.type');
+  });
 }
 
 function subTypes() {
@@ -61,49 +103,6 @@ function subTypes() {
   });
 }
 
-function outcomesAndCoa() {
-  var url = baseURL + "/programOutcomeList.do";
-  var flagshipSelect = $(".flagship");
-  var outcomeSelect = $(".outcome");
-  var clusterSelect = $(".cluster");
-  var keyOutputSelect = $(".keyOutput");
-
-  flagshipSelect.on("change", function() {
-    outcomeSelect.empty();
-    clusterSelect.empty();
-    keyOutputSelect.empty();
-    outcomeSelect.append("<option value='-1' >Select an option... </option>");
-    clusterSelect.append("<option value='-1' >Select an option... </option>");
-    keyOutputSelect.append("<option value='-1' >Select an option... </option>");
-    outcomeSelect.trigger("change.select2");
-    clusterSelect.trigger("change.select2");
-    keyOutputSelect.trigger("change.select2");
-    var option = $(this).find("option:selected");
-    console.log(option.val());
-    if(option.val() != "-1") {
-      var data = {
-        crpProgramID: option.val()
-      }
-      $.ajax({
-          url: url,
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).success(
-          function(m) {
-            for(var i = 0; i < m.programOutcomes.length; i++) {
-              outcomeSelect.append("<option value='" + m.programOutcomes[i].id + "' >"
-                  + m.programOutcomes[i].description + "</option>");
-            }
-            for(var i = 0; i < m.clusterOfActivities.length; i++) {
-              clusterSelect.append("<option value='" + m.clusterOfActivities[i].id + "' >"
-                  + m.clusterOfActivities[i].description + "</option>");
-            }
-          });
-    }
-  });
-}
-
 function keyOutputs() {
   var url = baseURL + "/keyOutputList.do";
   var clusterSelect = $(".cluster");
@@ -131,4 +130,14 @@ function keyOutputs() {
           }
         });
   });
+}
+
+function checkItems(block) {
+  console.log(block);
+  var items = $(block).find('.deliverablePartner').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
