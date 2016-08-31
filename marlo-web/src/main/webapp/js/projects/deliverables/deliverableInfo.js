@@ -34,10 +34,26 @@ function init() {
   $(".addPartner").on("click", addPartnerEvent);
   $(".removeElement").on("click", removePartnerEvent);
   // Update value of responsible person
-  $(".responsible").on("change", function() {
-    var option = $(this).find("option:selected");
-    $(this).parent().parent().parent().parent().find(".id").val(option.val());
-  });
+  $(".responsible").on(
+      "change",
+      function() {
+        var option = $(this).find("option:selected");
+
+        // validate if exists this person in contact person list
+        var validation =
+            $(this).parents(".fullBlock").parent().find(".personList").find("input[value=" + option.val() + "]");
+        if(validation.exists()) {
+          // Remove from contact person list
+          validation.parent().hide("slow", function() {
+            $(this).remove();
+          })
+          var text = option.html() + ' was removed from contact persons list';
+          notify(text);
+        } else {
+          $(this).parent().parent().parent().parent().find(".id").val(option.val());
+        }
+
+      });
 // Update value of partner
   $(".partner").on("change", function() {
     var option = $(this).find("option:selected");
@@ -150,4 +166,11 @@ function checkItems(block) {
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
   }
+}
+
+function notify(text) {
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
+  notyOptions.text = text;
+  notyOptions.type = 'alert';
+  noty(notyOptions);
 }

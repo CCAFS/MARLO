@@ -40,8 +40,9 @@
 
 [#-- Outcome select --] 
 <div class="col-md-12 form-group">
+
   <div class="col-md-12">
-    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="id"  displayFieldName="description" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
+    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
   </div>
 </div>
 
