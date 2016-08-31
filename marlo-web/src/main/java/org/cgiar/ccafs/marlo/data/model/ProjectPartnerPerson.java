@@ -80,10 +80,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-  public String composedName() {
-    return this.projectPartner.getInstitution().getAcronym() + " - " + this.user.getComposedName();
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -106,9 +102,13 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
+  }
+
+
+  public String getComposedName() {
+    return this.projectPartner.getInstitution().getAcronym() + " - " + this.user.getComposedName();
   }
 
   public String getContactType() {
