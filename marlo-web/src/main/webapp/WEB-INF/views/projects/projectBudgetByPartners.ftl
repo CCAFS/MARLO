@@ -35,13 +35,15 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
-          <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>  
-          
+          [#-- Section Title --]
+          <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
+          [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">
             [#list startYear .. endYear as year]
               <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
             [/#list]
           </ul>
+          [#-- Years Content --]
           <div class="tab-content budget-content">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
@@ -66,6 +68,9 @@
       </div>
     </div>  
 </section>
+
+[#-- Bilateral Co-Funded Project Popup --]
+[#include "/WEB-INF/global/macros/bilateralCoFundedPopup.ftl"]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -101,59 +106,68 @@
             <th class="text-center">W3</td>
             <th class="text-center">Bilateral</th>
             <th class="text-center">Center Funds</th>
-            </tr>
+          </tr>
         </thead>
         <tbody>
           [#-- Budget Amount --]
           <tr>
             <td class="amountType"> Budget: </td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-          </th>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
+          </tr>
           [#-- Budget Percentage --]
+          [#if project.projectEditLeader]
           <tr>
             <td class="amountType"> Gender %:</td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-            <td></td>
-            <td></td>
-            <td>[@customForm.input name="" showTitle=false required=true editable=editable /]</td>
-          </th>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
+            <td class="budgetColumn"></td>
+            <td class="budgetColumn"></td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
+          </tr>
+          [/#if]
         </thead>
       </table>
       
+      [#if project.projectEditLeader]
       <h5 class="sectionSubTitle">W3 Funds & Bilateral:</h5>
-      <div class="simpleBox">
-        [#list 1..2 as funds]
-          <div class="grayBox">
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum dolores fugiat velit odit atque neque maiores nemo saepe quidem reiciendis corporis</p>
-            <div class="row w3bilateralFund">
-              <div class="col-md-4">
-                <div class="row">
-                  <div class="col-md-4"><strong>Type:</strong></div>
-                  <div class="col-md-8">[@customForm.select name="" showTitle=false  disabled=!editable  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]</div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="row">
-                  <div class="col-md-4"><strong>Amount:</strong></div>
-                  <div class="col-md-8">[@customForm.input name="" showTitle=false required=true editable=editable /]</div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="row">
-                  <div class="col-md-5"><strong>Gender %:</strong></div>
-                  <div class="col-md-7">[@customForm.input name="" showTitle=false required=true editable=editable /]</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        [/#list]
+      <div class="projectW3bilateralFund-block">
+        <div class="projectW3bilateralFund-list simpleBox">
+          [#list 1..2 as funds]
+            [@w3bilateralFundMacro element={} name="" index=funds_index /]
+          [/#list]
+        </div>
+        <div class="text-right">
+          <div class="searchProject button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.selectProject" /]</div>
+        </div>
       </div>
-      
+      [/#if]
     </div>
-  
+  </div>
+[/#macro]
+
+[#macro w3bilateralFundMacro element name index=-1 isTemplate=false]
+  <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
+    [#-- remove --]
+    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
+    [#-- Project Title --]
+    <p class="title">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum dolores fugiat velit odit atque neque maiores nemo saepe quidem reiciendis corporis</p>
+    [#-- Project Fund --]
+    <div class="row w3bilateralFund">
+      <div class="col-md-5">
+        <div class="row col-md-5"><strong>Type:</strong>  </div>
+        <div class="row col-md-9">[@customForm.select name="" showTitle=false  disabled=!editable  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]</div>
+      </div>
+      <div class="col-md-4">
+        <div class="row col-md-6"><strong>Amount:</strong>  </div>
+        <div class="row col-md-7">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</div>
+      </div>
+      <div class="col-md-3">
+        <div class="row col-md-8"><strong>Gender %:</strong>  </div>
+        <div class="row col-md-7">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</div>
+      </div>
+    </div>
   </div>
 [/#macro]
 

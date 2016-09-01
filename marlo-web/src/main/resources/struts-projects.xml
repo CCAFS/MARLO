@@ -187,7 +187,7 @@
     
     
     <action name="{crp}/budgetByPartners"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectPartnerAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByPartnersAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectBudgetByPartners.ftl</result>
       <result name="success" type="redirectAction">
