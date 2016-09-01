@@ -110,7 +110,7 @@ function removePartnerEvent() {
 }
 
 function updatePartners() {
-  var name = "deliverable.deliverablePartnerships";
+  var name = "deliverable.responsiblePartnership.projectPartnerPerson";
   $(".personList").find('.deliverablePartner').each(function(i,item) {
 
     var customName = name + '[' + i + ']';

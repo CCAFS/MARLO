@@ -68,7 +68,7 @@
     <div class="simpleBox personList col-md-12" style="display:${displayOtherPerson}">
     [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]
-          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.deliverablePartnerships" dp_index=dp_index editable=editable /]
+          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.responsiblePartnership.projectPartnerPerson" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
         <p class="emptyText center"> [@s.text name="projectDeliverable.partnership.emptyText" /] </p>
