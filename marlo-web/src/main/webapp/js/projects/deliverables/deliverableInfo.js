@@ -6,6 +6,8 @@ function init() {
     width: "100%"
   });
 
+  // select name
+  $(".outcome").attr("name", "deliverable.crpProgramOutcome.id");
   /* Events select */
   subTypes();
   keyOutputs();
