@@ -42,14 +42,14 @@
 <div class="col-md-12 form-group">
 
   <div class="col-md-12">
-    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName" value="" multiple=false required=true  className=" form-control input-sm outcome" disabled=!editable/]
+    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName" value="" multiple=false required=true  className=" outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="deliverable.keyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutput" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
+    [@customForm.select name="delivarable.crpClusterKeyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className="keyOutput" disabled=!editable/]
   </div>
 </div>
 
@@ -57,10 +57,10 @@
 
 <div id="deliverable-partnership" class="clearfix col-md-12">
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
-  <div class="fullBlock ">
+  <div class="fullBlock partnerWrapper">
     [#-- Partner who is responsible --]
-    <div class="fullBlock">
-    [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
+    <div class="fullBlock responsibleWrapper">
+    [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner.projectPartnerPerson" dp_index=0 isResponsable=true  editable=editable /]
     </div>
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
@@ -68,7 +68,7 @@
     <div class="simpleBox personList col-md-12" style="display:${displayOtherPerson}">
     [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]
-          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.deliverablePartnerships" dp_index=dp_index editable=editable /]
+          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
         <p class="emptyText center"> [@s.text name="projectDeliverable.partnership.emptyText" /] </p>
@@ -83,7 +83,7 @@
   [#if editable]
     <div class="partnerListMsj note">
       [@s.text name="projectDeliverable.generalInformation.partnerNotList" /]
-      <a href="[@s.url action='partners'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]"> 
+      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]"> 
         [@s.text name="projectDeliverable.generalInformation.partnersLink" /] 
       </a>
     </div>

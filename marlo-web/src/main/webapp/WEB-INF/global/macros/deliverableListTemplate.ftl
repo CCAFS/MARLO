@@ -44,10 +44,10 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
-            <span class="col-md-2 active">F</span>
-            <span class="col-md-2 active">A</span>
-            <span class="col-md-2 ">I</span>
-            <span class="col-md-2 ">R</span>
+            <span class=" active">F</span>
+            <span class=" ">A</span>
+            <span class="active ">I</span>
+            <span class=" ">R</span>
           </td>
           [#-- Deliverable Status --]
           <td>
@@ -58,7 +58,7 @@
             {TODO}
           </td>
           [#-- Delete Deliverable--]
-          <td>
+          <td class="text-center">
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
             [#if true]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
@@ -85,7 +85,7 @@
       <span class="index">${dp_index+1}</span>
     </div> 
     [/#if]
-    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}][/#if][/#assign]
+    [#assign customName]${dp_name}[#if !isResponsable][${dp_index}].projectPartnerPerson[/#if][/#assign]
     <input class="id" type="hidden" name="${customName}.id" value="${(dp.projectPartnerPerson.id)!'-1'}">
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
     [#if template]

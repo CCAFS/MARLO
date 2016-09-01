@@ -6,6 +6,9 @@ function init() {
     width: "100%"
   });
 
+  // select name
+  $(".outcome").attr("name", "deliverable.crpProgramOutcome.id");
+  $(".keyOutput").attr("name", "delivarable.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
   keyOutputs();
@@ -38,28 +41,46 @@ function init() {
       "change",
       function() {
         var option = $(this).find("option:selected");
-
         // validate if exists this person in contact person list
         var validation =
             $(this).parents(".fullBlock").parent().find(".personList").find("input[value=" + option.val() + "]");
-        if(validation.exists()) {
-          // Remove from contact person list
-          validation.parent().hide("slow", function() {
-            $(this).remove();
-          })
-          // Show message
-          var text = option.html() + ' was removed from contact persons list';
-          notify(text);
+        if(option.val() != "-1") {
+          if(validation.exists()) {
+            // Remove from contact person list
+            validation.parent().hide("slow", function() {
+              $(this).remove();
+              updatePartners();
+            })
+            // Show message
+            var text = option.html() + ' was removed from contact persons list';
+            notify(text);
+            $(this).parents(".responsiblePartner").find(".id").val(option.val());
+          } else {
+            $(this).parents(".responsiblePartner").find(".id").val(option.val());
+          }
         } else {
-          $(this).parent().parent().parent().parent().find(".id").val(option.val());
+          $(this).parents(".responsiblePartner").find(".id").val(-1);
         }
 
       });
 // Update value of partner
-  $(".partner").on("change", function() {
-    var option = $(this).find("option:selected");
-    $(this).parent().parent().parent().parent().find(".id").val(option.val());
-  });
+  $(".partner").on(
+      "change",
+      function() {
+        var option = $(this).find("option:selected");
+        // validate if exists this person in contact person list
+        var validation =
+            $(this).parents(".partnerWrapper").find(".responsibleWrapper").find("input[value=" + option.val() + "]");
+        if(validation.exists()) {
+          option.parent().val(-1);
+          $(this).parents(".deliverablePartner").find(".id").val(-1);
+          // Show message
+          var text = option.html() + ' is the responsible person of this deliverable';
+          notify(text);
+        } else {
+          $(this).parents(".deliverablePartner").find(".id").val(option.val());
+        }
+      });
 
 }
 
@@ -89,13 +110,13 @@ function removePartnerEvent() {
 }
 
 function updatePartners() {
-  var name = "deliverable.deliverablePartnerships";
+  var name = "deliverable.OtherPartners";
   $(".personList").find('.deliverablePartner').each(function(i,item) {
 
     var customName = name + '[' + i + ']';
     $(item).find('span.index').html(i + 1);
-    $(item).find('.id').attr('name', customName + '.id');
-    $(item).find('.type').attr('name', customName + '.type');
+    $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
+    $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
   });
 }
 

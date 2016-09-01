@@ -44,14 +44,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private DeliverableType deliverableType;
 
-
   @Expose
   private String title;
 
 
   @Expose
   private String typeOther;
-
 
   @Expose
   private int year;
@@ -68,14 +66,18 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User createdBy;
 
+
   @Expose
   private User modifiedBy;
+
 
   @Expose
   private String modificationJustification;
@@ -87,6 +89,8 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private CrpProgramOutcome crpProgramOutcome;
 
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
+
+  private DeliverablePartnership responsiblePartner;
 
   public Deliverable() {
   }
@@ -169,9 +173,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public List<DeliverablePartnership> getOtherPartners() {
-    return this.getDeliverablePartnerships().stream()
+    List<DeliverablePartnership> list = this.getDeliverablePartnerships().stream()
       .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
       .collect(Collectors.toList());
+    return list;
   }
 
   public Project getProject() {
@@ -179,13 +184,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public DeliverablePartnership getResponsiblePartner() {
-    DeliverablePartnership partnership =
-      this.getDeliverablePartnerships().stream()
-        .filter(
-          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-        .collect(Collectors.toList()).get(0);
-
-    return partnership;
+    return responsiblePartner;
   }
 
   public Integer getStatus() {
@@ -222,11 +221,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -237,6 +234,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
@@ -246,10 +244,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
-
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
+
 
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
@@ -260,17 +258,22 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.id = id;
   }
 
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
+
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setResponsiblePartner(DeliverablePartnership responsiblePartner) {
+    this.responsiblePartner = responsiblePartner;
   }
 
   public void setStatus(Integer status) {
