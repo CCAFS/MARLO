@@ -8,6 +8,7 @@ function init() {
 
   // select name
   $(".outcome").attr("name", "deliverable.crpProgramOutcome.id");
+  $(".keyOutput").attr("name", "delivarable.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
   keyOutputs();
