@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
@@ -64,16 +66,17 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   private CrpManager crpManager;
 
   private long projectID;
 
-
   private long deliverableID;
 
   private List<DeliverableType> deliverableTypeParent;
+
 
   private List<ProjectOutcome> projectOutcome;
 
@@ -88,7 +91,6 @@ public class DeliverableAction extends BaseAction {
   private Deliverable deliverable;
 
   private List<ProjectFocus> projectPrograms;
-
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -116,18 +118,23 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<CrpClusterKeyOutput> getKeyOutputs() {
+    return keyOutputs;
+  }
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -163,6 +170,8 @@ public class DeliverableAction extends BaseAction {
       project = deliverable.getProject();
       projectID = project.getId();
 
+      deliverable.setResponsiblePartner(this.responsiblePartner());
+
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
       for (ProjectStatusEnum projectStatusEnum : list) {
@@ -177,11 +186,11 @@ public class DeliverableAction extends BaseAction {
         projectOutcome = new ArrayList<>(project.getProjectOutcomes());
       }
 
-      if (project.getClusterActivities() != null) {
+      if (project.getProjectClusterActivities() != null) {
 
         keyOutputs = new ArrayList<>();
 
-        for (ProjectClusterActivity clusterActivity : project.getClusterActivities().stream()
+        for (ProjectClusterActivity clusterActivity : project.getProjectClusterActivities().stream()
           .filter(ca -> ca.isActive()).collect(Collectors.toList())) {
           keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs());
         }
@@ -218,6 +227,15 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  private DeliverablePartnership responsiblePartner() {
+    DeliverablePartnership partnership =
+      deliverable.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+    return partnership;
+  }
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -250,7 +268,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverable = deliverable;
   }
 
-
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
@@ -258,6 +275,11 @@ public class DeliverableAction extends BaseAction {
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
+  }
+
+
+  public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
+    this.keyOutputs = keyOutputs;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
