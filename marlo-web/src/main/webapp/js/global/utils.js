@@ -286,6 +286,9 @@ function setCurrency(event) {
 
 function removeCurrency(event) {
   var $input = $(event.target);
+  if($input.val().length == 0) {
+    $input.val("0");
+  }
   $input.val(removeCurrencyFormat($input.val()));
   if($input.val() == "0") {
     $input.val("");

@@ -10,7 +10,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 620,
+      height: 600,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',

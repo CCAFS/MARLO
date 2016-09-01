@@ -17,4 +17,18 @@ function init() {
 
 function attachEvents() {
 
+  /**
+   * General
+   */
+  $('.blockTitle').on('click', function() {
+    if($(this).hasClass('closed')) {
+      $('.blockContent').slideUp();
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
+    }
+    $(this).next().slideToggle('slow');
+  });
+
 }

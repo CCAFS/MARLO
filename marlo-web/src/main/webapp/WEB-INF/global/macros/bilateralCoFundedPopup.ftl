@@ -26,7 +26,7 @@
           <div class="panel-head"> Projects list </div>
           <div class="panel-body"> 
             <p class="userMessage">
-              [@s.text name="users.notUsersFound"][@s.param]<span class="link">[@s.text name="form.buttons.clickingHere" /]</span>[/@s.param][/@s.text] 
+              If you do not find the bilateral co-funded project, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
             </p>
             <ul></ul>
           </div>
@@ -47,7 +47,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.input name="" i18nkey="projectCofunded.title"/] 
+                [@customForm.textArea name="" i18nkey="projectCofunded.title"/] 
               </div>
             </div>
           </div>
@@ -110,5 +110,5 @@
 </div>
 
 [#-- Project Bilateral Co-Funded  Popup JS --]
-[#assign customJS = customJS + [ "${baseUrl}/js/global/bilateralCoFundedPopup.js" ]  /]
+[#assign customJS =  [ "${baseUrl}/js/global/bilateralCoFundedPopup.js" ]  + customJS/]
   

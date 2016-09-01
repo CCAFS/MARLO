@@ -43,21 +43,42 @@
               <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
             [/#list]
           </ul>
+          
+          [#assign selectedYear = currentCycleYear /]
           [#-- Years Content --]
           <div class="tab-content budget-content">
-            [#list startYear .. endYear as year]
-              <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-                
-                [#if project.partners?has_content]
-                  [#list project.partners as projectPartner]
-                    [#if action.isPPA(projectPartner.institution)]
-                      [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
-                    [/#if]
-                  [/#list]
-                [/#if] 
-                  
+            <div role="tabpanel" class="tab-pane active" id="year-${selectedYear}">
+
+              <div class="fieldset clearfix">
+                <h5 class="">Overall ${selectedYear} budget</h5>
+                <div class="row">
+                  <div class="col-md-3">
+                    <h5 class="subTitle">W1/W2</h5>
+                    <p class="">US$ <span>0.00</span></p>
+                  </div>
+                  <div class="col-md-3">
+                    <h5 class="subTitle">W3</h5>
+                    <p class="">US$ <span>0.00</span></p>
+                  </div>
+                  <div class="col-md-3">
+                    <h5 class="subTitle">Bilateral</h5>
+                    <p class="">US$ <span>0.00</span></p>
+                  </div>
+                  <div class="col-md-3">
+                    <h5 class="subTitle">Center Funds</h5>
+                    <p class="">US$ <span>0.00</span></p>
+                  </div>
+                </div>
               </div>
-            [/#list]
+            
+              [#if project.partners?has_content]
+                [#list project.partners as projectPartner]
+                  [#if action.isPPA(projectPartner.institution)]
+                    [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                  [/#if]
+                [/#list]
+              [/#if]
+            </div>
           </div>
           
           [#-- Section Buttons & hidden inputs--]
@@ -82,7 +103,7 @@
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
-    <div class="blockTitle closed">
+    <div class="blockTitle ${(isLeader?string('opened','closed'))!}">
       [#-- Title --]
       <span><span class="partnerTitle"></span>${(element.institution.composedName)!'New Project Partner'}</span>
 
@@ -93,9 +114,10 @@
         <span class="index ${isPPA?string('ppa','')}">${isPPA?string('PPA Partner','Partner')}</span>
       </div>
       
+      <div class="clearfix"></div>
     </div>
     
-    <div class="blockContent" style="display:block">
+    <div class="blockContent" style="display:${(isLeader?string('block','none'))!}">
       <hr />
       
       <table class="table">
@@ -122,8 +144,8 @@
           <tr>
             <td class="amountType"> Gender %:</td>
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
-            <td class="budgetColumn"></td>
-            <td class="budgetColumn"></td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
           </tr>
           [/#if]
