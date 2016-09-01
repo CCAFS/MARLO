@@ -38,28 +38,46 @@ function init() {
       "change",
       function() {
         var option = $(this).find("option:selected");
-
         // validate if exists this person in contact person list
         var validation =
             $(this).parents(".fullBlock").parent().find(".personList").find("input[value=" + option.val() + "]");
-        if(validation.exists()) {
-          // Remove from contact person list
-          validation.parent().hide("slow", function() {
-            $(this).remove();
-          })
-          // Show message
-          var text = option.html() + ' was removed from contact persons list';
-          notify(text);
+        if(option.val() != "-1") {
+          if(validation.exists()) {
+            // Remove from contact person list
+            validation.parent().hide("slow", function() {
+              $(this).remove();
+              updatePartners();
+            })
+            // Show message
+            var text = option.html() + ' was removed from contact persons list';
+            notify(text);
+            $(this).parents(".responsiblePartner").find(".id").val(option.val());
+          } else {
+            $(this).parents(".responsiblePartner").find(".id").val(option.val());
+          }
         } else {
-          $(this).parent().parent().parent().parent().find(".id").val(option.val());
+          $(this).parents(".responsiblePartner").find(".id").val(-1);
         }
 
       });
 // Update value of partner
-  $(".partner").on("change", function() {
-    var option = $(this).find("option:selected");
-    $(this).parent().parent().parent().parent().find(".id").val(option.val());
-  });
+  $(".partner").on(
+      "change",
+      function() {
+        var option = $(this).find("option:selected");
+        // validate if exists this person in contact person list
+        var validation =
+            $(this).parents(".partnerWrapper").find(".responsibleWrapper").find("input[value=" + option.val() + "]");
+        if(validation.exists()) {
+          option.parent().val(-1);
+          $(this).parents(".deliverablePartner").find(".id").val(-1);
+          // Show message
+          var text = option.html() + ' is the responsible person of this deliverable';
+          notify(text);
+        } else {
+          $(this).parents(".deliverablePartner").find(".id").val(option.val());
+        }
+      });
 
 }
 

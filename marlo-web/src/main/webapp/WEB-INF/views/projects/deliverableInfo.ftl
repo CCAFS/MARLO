@@ -57,9 +57,9 @@
 
 <div id="deliverable-partnership" class="clearfix col-md-12">
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
-  <div class="fullBlock ">
+  <div class="fullBlock partnerWrapper">
     [#-- Partner who is responsible --]
-    <div class="fullBlock">
+    <div class="fullBlock responsibleWrapper">
     [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
     </div>
     [#-- Other contact person that will contribute --]
@@ -83,7 +83,7 @@
   [#if editable]
     <div class="partnerListMsj note">
       [@s.text name="projectDeliverable.generalInformation.partnerNotList" /]
-      <a href="[@s.url action='partners'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]"> 
+      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]"> 
         [@s.text name="projectDeliverable.generalInformation.partnersLink" /] 
       </a>
     </div>

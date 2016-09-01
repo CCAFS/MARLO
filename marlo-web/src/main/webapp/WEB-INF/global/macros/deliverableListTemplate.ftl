@@ -44,10 +44,10 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
-            <span class="col-md-2 active">F</span>
-            <span class="col-md-2 active">A</span>
-            <span class="col-md-2 ">I</span>
-            <span class="col-md-2 ">R</span>
+            <span class=" active">F</span>
+            <span class=" ">A</span>
+            <span class="active ">I</span>
+            <span class=" ">R</span>
           </td>
           [#-- Deliverable Status --]
           <td>
