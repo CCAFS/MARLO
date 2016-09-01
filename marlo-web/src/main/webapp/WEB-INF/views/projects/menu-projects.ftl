@@ -39,7 +39,7 @@
     },
     { 'title': 'Budget',
       'items': [
-      { 'slug': '',  'name': 'Budget by Partners',  'action': '',  'active': false  },
+      { 'slug': 'budgetByPartners',  'name': 'Budget by Partners',  'action': 'budgetByPartners',  'active': true  },
       { 'slug': '',  'name': 'Budget by CoAs',  'action': '',  'active': false  },
       { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false, 'show': reportingActive }
       ]
