@@ -60,7 +60,7 @@
   <div class="fullBlock partnerWrapper">
     [#-- Partner who is responsible --]
     <div class="fullBlock responsibleWrapper">
-    [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner" dp_index=0 isResponsable=true  editable=editable /]
+    [@deliverableList.deliverablePartner dp=deliverable.responsiblePartner dp_name="deliverable.responsiblePartner.projectPartnerPerson" dp_index=0 isResponsable=true  editable=editable /]
     </div>
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
@@ -68,7 +68,7 @@
     <div class="simpleBox personList col-md-12" style="display:${displayOtherPerson}">
     [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]
-          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.responsiblePartnership.projectPartnerPerson" dp_index=dp_index editable=editable /]
+          [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.OtherPartners.projectPartnerPerson" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
         <p class="emptyText center"> [@s.text name="projectDeliverable.partnership.emptyText" /] </p>

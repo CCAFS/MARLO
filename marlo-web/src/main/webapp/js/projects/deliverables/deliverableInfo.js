@@ -110,13 +110,13 @@ function removePartnerEvent() {
 }
 
 function updatePartners() {
-  var name = "deliverable.responsiblePartnership.projectPartnerPerson";
+  var name = "deliverable.OtherPartners";
   $(".personList").find('.deliverablePartner').each(function(i,item) {
 
     var customName = name + '[' + i + ']';
     $(item).find('span.index').html(i + 1);
-    $(item).find('.id').attr('name', customName + '.id');
-    $(item).find('.type').attr('name', customName + '.type');
+    $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
+    $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
   });
 }
 

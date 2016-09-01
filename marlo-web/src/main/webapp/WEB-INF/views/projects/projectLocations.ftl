@@ -105,7 +105,7 @@
     </div>
     <div class="col-md-12 locationLevel-optionContent ">
       [#if editable]
-      <div class="col-md-12 checkBox">
+      <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
         <span class="col-md-10">Are you working in all countries on this region?</span>
         <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox" value="" />
       </div>
