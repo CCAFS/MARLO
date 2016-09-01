@@ -49,7 +49,7 @@
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="deliverable.keyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutput" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
+    [@customForm.select name="deliverable.keyOutputs" label=""  i18nkey="CoA Outputs" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className=" form-control input-sm keyOutput" disabled=!editable/]
   </div>
 </div>
 
