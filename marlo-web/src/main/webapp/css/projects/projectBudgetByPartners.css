@@ -1,0 +1,51 @@
+.tab-content.budget-content {
+    border: 1px solid #d1d1d1;
+    padding: 10px 2em;
+    border-radius: 0px 4px 4px 4px;
+}
+
+ul.nav.nav-tabs.budget-tabs {
+    border: 0;
+}
+
+ul.nav.nav-tabs.budget-tabs li a{
+    background-color: #f5f5f5;
+    line-height: 1em;
+    padding: 5px 15px;
+    height: 29px;
+}
+
+ul.nav.nav-tabs.budget-tabs>li.active>a, 
+ul.nav.nav-tabs.budget-tabs>li.active>a:focus, 
+ul.nav.nav-tabs.budget-tabs>li.active>a:hover {
+    background-color: #fff;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs.budget-tabs>li {
+    /* border-bottom: 1px solid #dddddd; */
+    margin-bottom: -1px;
+}
+
+ul.nav.nav-tabs.budget-tabs>li.active {
+    border-bottom: 1px solid #fff;
+    z-index: 10;
+}
+
+ul.nav.nav-tabs.budget-tabs>li>a:hover {
+    border-color: #eee #eee #fff;
+}
+
+.projectPartner {
+    padding: 5px 0px 5px 16px;
+}
+
+.amountType {
+    font-weight: bold;
+    width: 90px;
+    color: #ceb286;
+}
+
+.w3bilateralFund {
+    font-size: 0.85em;
+}
