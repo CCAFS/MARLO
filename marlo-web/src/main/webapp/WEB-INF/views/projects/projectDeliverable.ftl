@@ -18,7 +18,7 @@
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 
 <div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectDescription.help" /] </p></div> 
+  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> </p></div> 
 </div>
     
 <section class="container">
