@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -37,12 +36,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private Project project;
 
 
   @Expose
   private DeliverableType deliverableType;
+
 
   @Expose
   private String title;
@@ -51,13 +52,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private String typeOther;
 
+
   @Expose
   private int year;
 
 
   @Expose
   private Integer status;
-
 
   @Expose
   private String statusDescription;
@@ -66,14 +67,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
-
   @Expose
   private Date activeSince;
 
 
   @Expose
   private User createdBy;
-
 
   @Expose
   private User modifiedBy;
@@ -82,15 +81,23 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
 
+
   @Expose
   private CrpClusterKeyOutput crpClusterKeyOutput;
+
 
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
+
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
 
+
   private DeliverablePartnership responsiblePartner;
+
+
+  private List<DeliverablePartnership> otherPartners;
+
 
   public Deliverable() {
   }
@@ -151,6 +158,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.deliverableType;
   }
 
+
   @Override
   public Long getId() {
     return id;
@@ -173,10 +181,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public List<DeliverablePartnership> getOtherPartners() {
-    List<DeliverablePartnership> list = this.getDeliverablePartnerships().stream()
-      .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
-      .collect(Collectors.toList());
-    return list;
+    return otherPartners;
   }
 
   public Project getProject() {
@@ -190,6 +195,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Integer getStatus() {
     return this.status;
   }
+
 
   public String getStatusDescription() {
     return this.statusDescription;
@@ -229,11 +235,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
-
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
@@ -247,7 +251,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
-
 
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
@@ -265,6 +268,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+
+  public void setOtherPartners(List<DeliverablePartnership> otherPartners) {
+    this.otherPartners = otherPartners;
   }
 
 
@@ -288,11 +296,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.title = title;
   }
 
+
   public void setTypeOther(String typeOther) {
     this.typeOther = typeOther;
   }
 
+
   public void setYear(int year) {
     this.year = year;
   }
+
 }

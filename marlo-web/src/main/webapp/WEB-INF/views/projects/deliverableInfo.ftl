@@ -42,14 +42,14 @@
 <div class="col-md-12 form-group">
 
   <div class="col-md-12">
-    [@customForm.select name="deliverable.projectOutcome.crpProgramOutcome" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName" value="" multiple=false required=true  className=" outcome" disabled=!editable/]
+    [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName" value="" multiple=false required=true  className=" outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="delivarable.crpClusterKeyOutput" label=""  i18nkey="CoA Outputs" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className="keyOutput" disabled=!editable/]
+    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="CoA Outputs" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput" value="" multiple=false required=true  className="keyOutput" disabled=!editable/]
   </div>
 </div>
 
