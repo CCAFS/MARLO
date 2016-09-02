@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
@@ -40,15 +41,24 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -75,6 +85,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverablePartnershipManager deliverablePartnershipManager;
 
   private ProjectPartnerPersonManager projectPartnerPersonManager;
+
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
@@ -104,12 +115,16 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectFocus> projectPrograms;
 
+  private String transaction;
+
+  private AuditLogManager auditLogManager;
+
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager,
-    DeliverablePartnershipManager deliverablePartnershipManager) {
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
+    AuditLogManager auditLogManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -119,6 +134,40 @@ public class DeliverableAction extends BaseAction {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
+    this.auditLogManager = auditLogManager;
+  }
+
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public Deliverable getDeliverable() {
@@ -173,6 +222,10 @@ public class DeliverableAction extends BaseAction {
     return status;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   public List<DeliverablePartnership> otherPartners() {
     List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
       .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
@@ -182,7 +235,7 @@ public class DeliverableAction extends BaseAction {
 
   public void parnershipNewData() {
     for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
-      if (deliverablePartnership.getId() == null) {
+      if (deliverablePartnership.getId() == null || deliverablePartnership.getId() == -1) {
 
         ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
           .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
@@ -231,10 +284,54 @@ public class DeliverableAction extends BaseAction {
 
     }
 
-    deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      deliverable = deliverableManager.getDeliverableById(deliverableID);
+    }
+
     if (deliverable != null) {
+
       project = deliverable.getProject();
       projectID = project.getId();
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
+        Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
+        project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
+        project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
+        reader.close();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+      }
+
 
       deliverable.setResponsiblePartner(this.responsiblePartner());
 
@@ -380,16 +477,38 @@ public class DeliverableAction extends BaseAction {
       this.partnershipPreviousData(deliverableSave);
       this.parnershipNewData();
 
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+      deliverable = deliverableManager.getDeliverableById(deliverableID);
+      deliverable.setActiveSince(new Date());
+      deliverable.setModifiedBy(this.getCurrentUser());
+      deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
+      Path path = this.getAutoSaveFilePath();
 
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      return SUCCESS;
+
+    } else {
+      return NOT_AUTHORIZED;
     }
 
-
-    return SUCCESS;
   }
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -399,7 +518,6 @@ public class DeliverableAction extends BaseAction {
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
-
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
@@ -417,10 +535,10 @@ public class DeliverableAction extends BaseAction {
     this.partnerPersons = partnerPersons;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -438,5 +556,7 @@ public class DeliverableAction extends BaseAction {
     this.status = status;
   }
 
-
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
+  }
 }
