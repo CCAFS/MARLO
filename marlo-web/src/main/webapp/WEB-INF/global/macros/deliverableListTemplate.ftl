@@ -44,18 +44,18 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
-            <span class=" active">F</span>
-            <span class=" ">A</span>
-            <span class="active ">I</span>
-            <span class=" ">R</span>
+            <span class="${(findable?string('findable'))!} ">F</span>
+            <span class="${(accesible?string('accesible'))!} ">A</span>
+            <span class="${(interoperable?string('interoperable'))!} ">I</span>
+            <span class="${(reusable?string('reusable'))!} ">R</span>
           </td>
           [#-- Deliverable Status --]
           <td>
             ${(deliverable.statusName)!'none'}
           </td>
           [#-- Deliverable required fields --]
-          <td>
-            {TODO}
+          <td class="text-center">
+            <span class="icon-20 icon-uncheck" title=""></span> 
           </td>
           [#-- Delete Deliverable--]
           <td class="text-center">
@@ -88,6 +88,9 @@
     [#assign customName]${dp_name}[#if !isResponsable][${dp_index}].projectPartnerPerson[/#if][/#assign]
     <input class="id" type="hidden" name="${customName}.id" value="${(dp.projectPartnerPerson.id)!'-1'}">
     <input class="type" type="hidden" name="${customName}.type" value="${isResponsable?string('Resp','Other')}">
+    [#if !isResponsable]
+    <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
+    [/#if]
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 

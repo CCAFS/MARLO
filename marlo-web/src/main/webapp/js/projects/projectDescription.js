@@ -242,7 +242,7 @@ function datePickerConfig(element) {
       dateFormat: "yy-mm-dd",
 
       minDate: '2015-01-01',
-      maxDate: '2019-12-31',
+      maxDate: '2030-12-31',
       changeMonth: true,
       changeYear: true,
       defaultDate: null,
@@ -262,7 +262,7 @@ function datePickerConfig(element) {
   $(element.endDate).datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2015-01-01',
-      maxDate: '2019-12-31',
+      maxDate: '2030-12-31',
       changeMonth: true,
       changeYear: true,
       defaultDate: null,

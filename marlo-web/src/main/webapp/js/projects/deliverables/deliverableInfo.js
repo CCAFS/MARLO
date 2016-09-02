@@ -123,13 +123,13 @@ function updatePartners() {
 	$(".personList").find('.deliverablePartner').each(
 			function(i, item) {
 
-				var customName = name + '[' + i + ']';
-				$(item).find('span.index').html(i + 1);
-				$(item).find('.id').attr('name',
-						customName + '.projectPartnerPerson.id');
-				$(item).find('.type').attr('name',
-						customName + '.projectPartnerPerson.type');
-			});
+
+    var customName = name + '[' + i + ']';
+    $(item).find('span.index').html(i + 1);
+    $(item).find('.id').attr('name', customName + '.projectPartnerPerson.id');
+    $(item).find('.type').attr('name', customName + '.projectPartnerPerson.type');
+    $(item).find('.element').attr('name', customName + '.id');
+  });
 }
 
 function subTypes() {

@@ -44,7 +44,7 @@ ul.nav li a {
 }
 
 .fair span {
-    background: #f9f9f9;
+    background: #999;
     border-radius: 3px;
     padding: 0px 4px;
     margin-right: 0px;
@@ -52,6 +52,7 @@ ul.nav li a {
     font-size: 0.9em;
     cursor: pointer;
     opacity: 0.9;
+    color: white;
     margin-left: 1px;
 }
 

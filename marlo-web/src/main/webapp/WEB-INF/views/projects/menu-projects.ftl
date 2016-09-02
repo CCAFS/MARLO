@@ -5,7 +5,7 @@
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
-      { 'slug': 'budget',  'name': 'Budget',  'action': 'locations',  'active': false  }
+      { 'slug': 'budgetByPartners',  'name': 'Budget',  'action': 'budgetByPartners',  'active': true  }
       ]
     }
     
@@ -34,7 +34,7 @@
     },
     { 'title': 'Activities',
       'items': [
-      { 'slug': '',  'name': 'Activities',  'action': '',  'active': false  }
+      { 'slug': '',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  }
       ]
     },
     { 'title': 'Budget',

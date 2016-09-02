@@ -75,10 +75,10 @@
       [/#if]
     </div>
     [#if editable && canEdit]
-        <div id="addPartnerBlock" class="addPerson text-right">
+      <div id="addPartnerBlock" class="addPerson text-right">
         <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addPerson" /]</div>
       </div>
-      [/#if]
+    [/#if]
   </div>
   [#if editable]
     <div class="partnerListMsj note">

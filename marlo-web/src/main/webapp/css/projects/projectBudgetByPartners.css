@@ -33,11 +33,11 @@ ul.nav.nav-tabs.budget-tabs>li.active {
 }
 
 ul.nav.nav-tabs.budget-tabs>li>a:hover {
-    border-color: #eee #eee #fff;
+    border-color: #d1d1d1 #d1d1d1 #fff;
 }
 
 .projectPartner {
-    padding: 5px 0px 5px 16px;
+    padding: 10px 0px 12px 0px;
 }
 
 .amountType {
@@ -48,4 +48,26 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 
 .w3bilateralFund {
     font-size: 0.85em;
+}
+
+.w3bilateralFund strong{
+    padding-top: 4px;
+    /* text-align: right; */
+    display: block;
+}
+
+.budgetColumn {
+    padding: 5px 22px !important;
+}
+
+.budgetColumn input {
+    height: 25px;
+}
+
+.blockTitle {
+    margin-left: 20px;
+}
+
+.accordion-block {
+    height: 471px;
 }
