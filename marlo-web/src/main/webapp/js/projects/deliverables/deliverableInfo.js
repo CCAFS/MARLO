@@ -52,6 +52,7 @@ function init() {
             $(this).parents(".partnerWrapper").find(".responsibleWrapper").find("input[value=" + option.val() + "]");
         if(validation.exists()) {
           option.parent().val(-1);
+          option.parent().trigger("change.select2");
           $(this).parents(".deliverablePartner").find(".id").val(-1);
           // Show message
           var text = option.html() + ' is the responsible person of this deliverable';
