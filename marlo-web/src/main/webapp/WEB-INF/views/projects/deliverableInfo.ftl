@@ -42,7 +42,6 @@
 <div class="col-md-12 form-group">
 
   <div class="col-md-12">
-  ${deliverable.crpProgramOutcome.id}
     [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName"  multiple=false required=true  className=" outcome" disabled=!editable/]
   </div>
 </div>
@@ -65,7 +64,7 @@
     </div>
     [#-- Other contact person that will contribute --]
     [#assign displayOtherPerson = (!deliverable.otherPartners?has_content && !editable)?string('none','block') /]
-    <p style="display:${displayOtherPerson}">[@customForm.text name="Other contact person(s) that will contribute to this deliverable:" readText=!editable/]</p>
+    <p style="display:${displayOtherPerson}"><b>[@customForm.text name="Other contact person(s) that will contribute to this deliverable:" readText=!editable/]</b></p>
     <div class="simpleBox personList col-md-12" style="display:${displayOtherPerson}">
     [#if deliverable.otherPartners?has_content]
         [#list deliverable.otherPartners as dp]

@@ -25,7 +25,7 @@
 
           Thank you for helping us improve the platform!</p>
           </div>          
-          <div onclick="history.go(-2);" class="button-goBack block-center">Go back!</div>
+          <div onclick="history.go(-1);" class="button-goBack block-center">Go back!</div>
         </div>
         
       </div>

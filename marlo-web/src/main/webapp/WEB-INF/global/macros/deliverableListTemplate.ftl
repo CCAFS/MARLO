@@ -103,4 +103,5 @@
       </div>
     [/#if] 
   </div> 
+  <div class="clearfix"></div>
 [/#macro] 

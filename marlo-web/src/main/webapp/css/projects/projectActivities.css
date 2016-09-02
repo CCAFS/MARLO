@@ -1,0 +1,38 @@
+.activityIndex {
+    padding: 5px 20px;
+    position: absolute;
+    top: -15px;
+    left: 44%;
+    cursor: pointer;
+    border: 1px solid #d1d1d1;
+    background-color: white;
+}
+
+.projectActivity {
+    padding-top: 30px;
+    margin-bottom: 30px;
+}
+
+.activitiesOG-content {
+    margin-top: 30px;
+}
+
+
+.activityIndex span {
+    color: #337ab7;
+}
+
+.subTitle {
+    /* margin-bottom: 30px; */
+    /* color: #772323; */
+}
+
+.blockContent {}
+
+.simpleBox hr {
+    margin-bottom: 30px;
+}
+
+.activitiesC-content {
+    margin-top: 20px;
+}

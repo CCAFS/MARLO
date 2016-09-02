@@ -16,7 +16,7 @@
           <span ><strong>  The page you requested was not found</strong></span>
           
           </div>          
-          <div onclick="history.go(-2);" class="button-goBack block-center">Go back!</div>
+          <div onclick="history.go(-1);" class="button-goBack block-center">Go back!</div>
         </div>
         
       </div>
