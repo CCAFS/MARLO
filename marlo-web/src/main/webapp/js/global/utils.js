@@ -55,6 +55,30 @@ jQuery.fn.percentageInput = function() {
   });
 };
 
+jQuery.fn.currencyInput = function() {
+  var $inputs = $(this);
+  $inputs.addClass('currencyInput');
+  $inputs.on("keydown", isNumber);
+  $inputs.on("focusout", setCurrency);
+  $inputs.on("focus", removeCurrency);
+  $inputs.on("keyup", function(e) {
+    isNumber(e);
+  });
+  $inputs.on("click", function() {
+    $(this).select();
+  });
+  // Active initial currency format to all inputs
+  $inputs.attr("autocomplete", "off").trigger("focusout");
+
+  $("form").submit(function(event) {
+    $inputs.each(function() {
+      $(this).attr("readonly", true);
+      $(this).val(removeCurrencyFormat($(this).val() || "0"));
+    });
+    return;
+  });
+};
+
 $.fn.scrollBottom = function() {
   return $(document).height() - this.scrollTop() - this.height();
 };
@@ -222,7 +246,7 @@ function getCrpFromUrl() {
 }
 
 /**
- * Serch from url that has GET parameters
+ * Search from url that has GET parameters
  */
 function getParameterByName(name,url) {
   if(!url) {
@@ -250,6 +274,25 @@ function getSerializeForm() {
     });
   });
   return result
+}
+
+function setCurrency(event) {
+  var $input = $(event.target);
+  if($input.val().length == 0) {
+    $input.val("0");
+  }
+  $input.val(setCurrencyFormat($input.val()));
+}
+
+function removeCurrency(event) {
+  var $input = $(event.target);
+  if($input.val().length == 0) {
+    $input.val("0");
+  }
+  $input.val(removeCurrencyFormat($input.val()));
+  if($input.val() == "0") {
+    $input.val("");
+  }
 }
 
 function setPercentage(event) {

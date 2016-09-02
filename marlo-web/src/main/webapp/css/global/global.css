@@ -81,9 +81,13 @@ a.addLink {
 }
 
 .button {
-    background: #E6E6E6;    padding: 5px 0;        
+    background: #E6E6E6;
+    padding: 5px 0;
     width: 20%;
-    border-radius: 4px;    cursor: pointer;                text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
 }
 
 .button:hover {
@@ -1131,7 +1135,8 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .search-button {
-    background: #E6E6E6;
+    background: #2a7eb7;
+    color: #fff;
     padding: 5px 0;
     width: 74px;
     border-radius: 4px;
@@ -1142,7 +1147,7 @@ select#partnerSave_activityPartner_partner_type_id {
     text-align: center;
 }
 .search-button:hover {
-    background: #D8D8D8; 
+    background: #318dcc;
 }
 
 .search-content {
@@ -2338,6 +2343,7 @@ p.projectSubmitted {
   /* margin-top: 3px; */
   text-align: center;
   background: #668fda;
+  border-bottom: 1px solid #5f81c1;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
@@ -4883,6 +4889,7 @@ ul#deliverablesFilesMessages > li {
   padding: 6px 16px;
   border-radius: 5px;
   margin-top: 5px;
+  position: relative;
 }
 
 .borderBox {
