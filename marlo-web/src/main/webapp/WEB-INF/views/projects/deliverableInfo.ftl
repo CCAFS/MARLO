@@ -10,7 +10,7 @@
     [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="Type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" disabled=!editable/]
   </div>
   <div class="col-md-6">
-    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="Subtype" listName="" keyFieldName=""  displayFieldName="" value="" multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="Subtype" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
   </div>
 </div>
 
