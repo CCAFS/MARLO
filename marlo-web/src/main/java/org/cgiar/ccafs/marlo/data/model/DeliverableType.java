@@ -18,17 +18,25 @@ package org.cgiar.ccafs.marlo.data.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class DeliverableType implements java.io.Serializable {
 
   private static final long serialVersionUID = 2591192504126616140L;
+  @Expose
   private Long id;
+  @Expose
   private DeliverableType deliverableType;
+  @Expose
   private String name;
+  @Expose
   private String description;
+  @Expose
   private Integer timeline;
+  
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
