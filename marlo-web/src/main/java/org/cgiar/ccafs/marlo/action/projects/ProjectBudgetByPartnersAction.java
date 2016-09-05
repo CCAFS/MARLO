@@ -18,8 +18,11 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -30,7 +33,11 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,33 +54,56 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
    */
   private static final long serialVersionUID = 7833194831832715444L;
   private InstitutionManager institutionManager;
+  private BudgetTypeManager budgetTypeManager;
   private ProjectManager projectManager;
+  private ProjectBudgetManager projectBudgetManager;
   private CrpManager crpManager;
   private long projectID;
   private Crp loggedCrp;
   private Project project;
-
-
+  private String transaction;
+  private AuditLogManager auditLogManager;
   // Model for the view
   private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
-    ProjectManager projectManager, CrpManager crpManager) {
+    ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
+    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager) {
     super(config);
 
     this.institutionManager = institutionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.projectBudgetManager = projectBudgetManager;
+    this.auditLogManager = auditLogManager;
+    this.budgetTypeManager = budgetTypeManager;
   }
-
 
   @Override
   public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
     return SUCCESS;
   }
-
 
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
@@ -84,12 +114,27 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public ProjectBudget getBudget(Long institutionId, int year, long type) {
+
+    return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
+  }
+
+
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
       int i = 0;
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-          && year == projectBudget.getYear() && type == projectBudget.getBudgetType()) {
+          && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
           return i;
         }
         i++;
@@ -102,7 +147,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ProjectBudget projectBudget = new ProjectBudget();
     projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
     projectBudget.setYear(year);
-    projectBudget.setBudgetType(type);
+    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
     project.getBudgets().add(projectBudget);
 
     return this.getIndexBudget(institutionId, year, type);
@@ -118,7 +163,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -126,6 +170,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
+  }
+
+
+  public String getTransaction() {
+    return transaction;
   }
 
 
@@ -153,6 +202,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return false;
   }
 
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -162,8 +212,24 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     w3bilateralBudgetTypes = new HashMap<>();
     w3bilateralBudgetTypes.put("w3", "W3");
     w3bilateralBudgetTypes.put("bilateral", "Bilateral");
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
-    project = projectManager.getProjectById(projectID);
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
+
 
     if (project != null) {
       this.setDraft(false);
@@ -183,7 +249,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
     project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
 
 
     ProjectPartner leader = project.getLeader();
@@ -202,14 +268,81 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   @Override
   public String save() {
-    return SUCCESS;
+    if (this.hasPermission("canEdit")) {
+      this.saveBasicBudgets();
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
+      project.setModifiedBy(this.getCurrentUser());
+      project.setActiveSince(new Date());
+      projectManager.saveProject(project, this.getActionName(), relationsName);
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
   }
 
+  public void saveBasicBudgets() {
+    Project projectDB = projectManager.getProjectById(projectID);
+    for (ProjectBudget projectBudget : projectDB.getProjectBudgets().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      if (project.getBudgets() == null) {
+        project.setBudgets(new ArrayList<>());
+      }
+      if (!project.getBudgets().contains(projectBudget)) {
+        projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+
+      }
+    }
+
+    if (project.getBudgets() != null) {
+      for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (projectBudget != null) {
+          if (projectBudget.getId() == null) {
+            projectBudget.setCreatedBy(this.getCurrentUser());
+
+            projectBudget.setActiveSince(new Date());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+
+          } else {
+            ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+
+            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+          }
+
+
+          projectBudgetManager.saveProjectBudget(projectBudget);
+        }
+
+      }
+    }
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setProject(Project project) {
     this.project = project;
@@ -223,6 +356,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 
