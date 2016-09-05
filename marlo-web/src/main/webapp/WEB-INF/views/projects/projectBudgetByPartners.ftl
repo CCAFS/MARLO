@@ -138,14 +138,18 @@
             <td class="amountType"> Budget: </td>
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w1w2 partnerid-" required=true editable=editable /]</td>
+             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,1) ]
+            <td class="budgetColumn">[@customForm.input name="project.budgets[${index_budget}].ammount" showTitle=false className="currencyInput type-w1w2" required=true editable=editable /]</td>
             [/#if]
             [#-- W3 --]
+             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,2) ]
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
             [#-- Bilateral  --]
+             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,3) ]
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]</td>
             [#-- Center Funds --]
             [#if !project.bilateralProject]
+             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,4) ]
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-centerFunds" required=true editable=editable /]</td>
             [/#if]
           </tr>

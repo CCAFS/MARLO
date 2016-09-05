@@ -145,12 +145,12 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
+  private List<ProjectBudget> budgets;
 
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
 
   private List<ProjectClusterActivity> clusterActivities;
-
 
   private List<CountryLocationLevel> locationsData;
 
@@ -166,14 +166,16 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private List<ProjectPartner> partners;
 
+
   private List<ProjectOutcome> outcomes;
 
+
   private List<ProjectLocation> locations;
+
   private List<ProjectScope> scopes;
 
   public Project() {
   }
-
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -219,6 +221,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -241,11 +244,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
-
 
   public Set<Activity> getActivities() {
     return activities;
@@ -286,10 +287,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return bilateralContractName;
   }
 
+
+  public List<ProjectBudget> getBudgets() {
+    return budgets;
+  }
+
+
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
   }
-
 
   /**
    * This method gets all the coordinators working for this project.
@@ -340,6 +346,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return deliverables;
   }
 
+
   public Date getEndDate() {
     return this.endDate;
   }
@@ -347,7 +354,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
-
 
   public String getFlagshipValue() {
     return flagshipValue;
@@ -387,6 +393,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
+
   /**
    * This method returns the project partner person who is leading the project.
    * 
@@ -421,7 +428,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     return null;
   }
-
 
   public String getLeaderResponsabilities() {
     return this.leaderResponsabilities;
@@ -458,6 +464,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -467,10 +474,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
-
   public List<ProjectOutcome> getOutcomes() {
     return outcomes;
   }
+
 
   public String getOverall() {
     return overall;
@@ -500,7 +507,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectComponentLessonPreview;
   }
 
-
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
@@ -515,10 +521,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.projectFocuses;
   }
 
+
   public Set<ProjectLocation> getProjectLocations() {
     return projectLocations;
   }
-
 
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
@@ -528,6 +534,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
+
 
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
@@ -545,7 +552,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.requiresWorkplanUpload;
   }
 
-
   public int getScale() {
     return scale;
   }
@@ -554,6 +560,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<ProjectScope> getScopes() {
     return scopes;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -578,7 +585,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
@@ -588,14 +594,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
+
   public String getSummary() {
     return this.summary;
   }
 
-
   public String getTitle() {
     return this.title;
   }
+
 
   public String getType() {
     return this.type;
@@ -613,7 +620,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
@@ -623,6 +629,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public boolean isBilateralProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_BILATERAL) : false;
   }
+
 
   /**
    * A project is bilateral stand alone if it is bilateral and it is NOT contributing to any Core project.
@@ -634,10 +641,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return (type != null) ? (this.isBilateralProject() && !this.cofinancing) : false;
   }
 
-
   public boolean isCofinancing() {
     return cofinancing;
   }
+
 
   public boolean isCoFundedProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_CCAFS_COFUNDED) : false;
@@ -663,7 +670,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activities = activities;
   }
 
-
   public void setAnnualReportToDonnor(FileDB annualReportToDonnor) {
     this.annualReportToDonnor = annualReportToDonnor;
   }
@@ -671,6 +677,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setBilateralContractName(FileDB bilateralContractName) {
     this.bilateralContractName = bilateralContractName;
+  }
+
+
+  public void setBudgets(List<ProjectBudget> budgets) {
+    this.budgets = budgets;
   }
 
 
