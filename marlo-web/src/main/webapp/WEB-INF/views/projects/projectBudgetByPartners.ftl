@@ -185,24 +185,24 @@
             [#if !project.bilateralProject]
             <td class="budgetColumn">
               [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,1) ]
-              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-w1w2" required=true editable=editable /]
+              [@customForm.input name="project.budgets[${index_budget}].genderPercentage" showTitle=false className="percentageInput type-w1w2" required=true editable=editable /]
             </td>
             [/#if]
             [#-- W3 --]
             <td class="budgetColumn">
               [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,2) ]
-              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]
+              [@customForm.input name="project.budgets[${index_budget}].genderPercentage" showTitle=false className="percentageInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]
             </td>
             [#-- Bilateral  --]
             <td class="budgetColumn">
               [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,3) ]
-              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]
+              [@customForm.input name="project.budgets[${index_budget}].genderPercentage" showTitle=false className="percentageInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]
             </td>
             [#-- Center Funds --]
             [#if !project.bilateralProject]
             <td class="budgetColumn">
               [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,4) ]
-              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-centerFunds" required=true editable=editable /]
+              [@customForm.input name="project.budgets[${index_budget}].genderPercentage" showTitle=false className="percentageInput type-centerFunds" required=true editable=editable /]
             </td>
             [/#if]
           </tr>
