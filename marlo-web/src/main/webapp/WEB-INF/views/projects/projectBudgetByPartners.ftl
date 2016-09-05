@@ -54,15 +54,15 @@
                 <div class="row">
                   [#-- W1/W2 --]
                   [#if !project.bilateralProject]
-                  <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span>0.00</span></small></h5></div>
+                  <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-w1w2">0.00</span></small></h5></div>
                   [/#if]
                   [#-- W3 --]
-                  <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span>0.00</span></small></h5></div>
+                  <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-w3">0.00</span></small></h5></div>
                   [#-- Bilateral  --]
-                  <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span>0.00</span></small></h5></div>
+                  <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-bilateral">0.00</span></small></h5></div>
                   [#-- Center Funds --]
                   [#if !project.bilateralProject]
-                  <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span>0.00</span></small></h5></div>
+                  <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-centerFunds">0.00</span></small></h5></div>
                   [/#if]
                 </div>
               </div>
@@ -95,7 +95,7 @@
   [#local isCoordinator = (element.coordinator)!false/]
   [#local isPPA = (action.isPPA(element.institution))!false /]
   
-  <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+  <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
     <div class="blockTitle opened">
       [#-- Title --]
@@ -138,7 +138,7 @@
             <td class="amountType"> Budget: </td>
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w1w2" required=true editable=editable /]</td>
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w1w2 partnerid-" required=true editable=editable /]</td>
             [/#if]
             [#-- W3 --]
             <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
@@ -190,7 +190,7 @@
 [#macro w3bilateralFundMacro element name index=-1 isTemplate=false]
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#-- remove --]
-    [#if editable]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
+    [#if editable]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
     <p class="title">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum dolores fugiat velit odit atque neque maiores nemo saepe quidem reiciendis corporis</p>
     [#-- Project Fund --]
