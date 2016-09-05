@@ -24,6 +24,9 @@ package org.cgiar.ccafs.marlo.config;
  */
 public final class APConstants {
 
+  // end year
+  public static Integer END_YEAR = 2022;
+
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";

@@ -163,9 +163,9 @@ public class DeliverableAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = project.getClass().getSimpleName();
+    String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -233,6 +233,26 @@ public class DeliverableAction extends BaseAction {
     return list;
   }
 
+  public List<DeliverablePartnership> otherPartnersAutoSave() {
+    List<DeliverablePartnership> list = new ArrayList<>();
+    for (DeliverablePartnership partnership : deliverable.getOtherPartners()) {
+      if (partnership.getId() == null || partnership.getId() == -1) {
+        ProjectPartnerPerson partnerPerson =
+          projectPartnerPersonManager.getProjectPartnerPersonById(partnership.getProjectPartnerPerson().getId());
+        DeliverablePartnership partnershipOth = new DeliverablePartnership();
+
+        partnershipOth.setDeliverable(deliverable);
+        partnershipOth.setProjectPartnerPerson(partnerPerson);
+        partnershipOth.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+        partnershipOth.setActive(true);
+        list.add(partnershipOth);
+      } else {
+        list.add(deliverablePartnershipManager.getDeliverablePartnershipById(partnership.getId()));
+      }
+    }
+    return list;
+  }
+
   public void parnershipNewData() {
     for (DeliverablePartnership deliverablePartnership : deliverable.getOtherPartners()) {
       if (deliverablePartnership.getId() == null || deliverablePartnership.getId() == -1) {
@@ -288,10 +308,10 @@ public class DeliverableAction extends BaseAction {
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      Project history = (Project) auditLogManager.getHistory(transaction);
+      Deliverable history = (Deliverable) auditLogManager.getHistory(transaction);
 
       if (history != null) {
-        project = history;
+        deliverable = history;
       } else {
         this.transaction = null;
 
@@ -304,7 +324,7 @@ public class DeliverableAction extends BaseAction {
 
     if (deliverable != null) {
 
-      project = deliverable.getProject();
+      project = projectManager.getProjectById(deliverable.getProject().getId());
       projectID = project.getId();
 
       Path path = this.getAutoSaveFilePath();
@@ -327,15 +347,17 @@ public class DeliverableAction extends BaseAction {
         project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
         reader.close();
+
+        deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
+        deliverable.setOtherPartners(this.otherPartnersAutoSave());
+
         this.setDraft(true);
       } else {
+        deliverable.setResponsiblePartner(this.responsiblePartner());
+        deliverable.setOtherPartners(this.otherPartners());
         this.setDraft(false);
       }
 
-
-      deliverable.setResponsiblePartner(this.responsiblePartner());
-
-      deliverable.setOtherPartners(this.otherPartners());
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -411,6 +433,21 @@ public class DeliverableAction extends BaseAction {
     return partnership;
   }
 
+  private DeliverablePartnership responsiblePartnerAutoSave() {
+
+    ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
+      .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
+
+    DeliverablePartnership partnership = new DeliverablePartnership();
+
+    partnership.setDeliverable(deliverable);
+    partnership.setProjectPartnerPerson(partnerPerson);
+    partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+    partnership.setActive(true);
+
+    return partnership;
+  }
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -447,8 +484,8 @@ public class DeliverableAction extends BaseAction {
           dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
         .collect(Collectors.toList()).get(0);
 
-      ProjectPartnerPerson partnerPerson = deliverablePartnershipManager
-        .getDeliverablePartnershipById(deliverable.getResponsiblePartner().getId()).getProjectPartnerPerson();
+      ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
+        .getProjectPartnerPersonById(deliverable.getResponsiblePartner().getProjectPartnerPerson().getId());
 
       Long deliverableSaveId = deliverableManager.saveDeliverable(deliverablePrew);
       Deliverable deliverableSave = deliverableManager.getDeliverableById(deliverableSaveId);
