@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -32,6 +34,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,27 +52,31 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
    */
   private static final long serialVersionUID = 7833194831832715444L;
   private InstitutionManager institutionManager;
+  private BudgetTypeManager budgetTypeManager;
   private ProjectManager projectManager;
   private ProjectBudgetManager projectBudgetManager;
   private CrpManager crpManager;
   private long projectID;
   private Crp loggedCrp;
   private Project project;
-
-
+  private String transaction;
+  private AuditLogManager auditLogManager;
   // Model for the view
   private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
-    ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager) {
+    ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
+    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager) {
     super(config);
 
     this.institutionManager = institutionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.projectBudgetManager = projectBudgetManager;
+    this.auditLogManager = auditLogManager;
+    this.budgetTypeManager = budgetTypeManager;
   }
 
 
@@ -99,7 +106,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       int i = 0;
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-          && year == projectBudget.getYear() && type == projectBudget.getBudgetType()) {
+          && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
           return i;
         }
         i++;
@@ -112,11 +119,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ProjectBudget projectBudget = new ProjectBudget();
     projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
     projectBudget.setYear(year);
-    projectBudget.setBudgetType(type);
+    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
     project.getBudgets().add(projectBudget);
 
     return this.getIndexBudget(institutionId, year, type);
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -127,7 +135,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -135,6 +142,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
+  }
+
+
+  public String getTransaction() {
+    return transaction;
   }
 
 
@@ -162,6 +174,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return false;
   }
 
+
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -171,8 +184,24 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     w3bilateralBudgetTypes = new HashMap<>();
     w3bilateralBudgetTypes.put("w3", "W3");
     w3bilateralBudgetTypes.put("bilateral", "Bilateral");
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
-    project = projectManager.getProjectById(projectID);
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
+
 
     if (project != null) {
       this.setDraft(false);
@@ -213,6 +242,19 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
+      project.setModifiedBy(this.getCurrentUser());
+      project.setActiveSince(new Date());
+      projectManager.saveProject(project, this.getActionName(), relationsName);
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -269,7 +311,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -282,6 +323,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
+  }
+
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 

@@ -35,7 +35,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private long budgetType;
+  private BudgetType budgetType;
 
 
   @Expose
@@ -83,7 +83,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return amount;
   }
 
-  public long getBudgetType() {
+  public BudgetType getBudgetType() {
     return budgetType;
   }
 
@@ -158,7 +158,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.amount = amount;
   }
 
-  public void setBudgetType(long budgetType) {
+  public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
 

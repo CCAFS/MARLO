@@ -27,9 +27,9 @@
             <column name="amount" />
         </property>
        
-        <property name="budgetType" type="long">
+       <many-to-one name="budgetType" class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
             <column name="budget_type" not-null="true" />
-        </property>
+        </many-to-one>
         <property name="year" type="int">
             <column name="year" not-null="true" />
         </property>
