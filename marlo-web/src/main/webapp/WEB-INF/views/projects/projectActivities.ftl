@@ -69,12 +69,12 @@
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
-[#macro projectActivityMacro element name index=-1 isTemplate=false]
+[#macro projectActivityMacro element name index=0 isTemplate=false]
   
     <div id="projectActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     <div class="activityIndex"><span><b>Activity #${index+1}</b></span></div>
     [#if editable ] [#--&& (isTemplate) --]
-      <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
+      <div class="removeLink"><div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name="projectActivities.removeActivity" /]"></div></div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle opened">
@@ -93,11 +93,11 @@
       <div class="form-group row">  
         [#-- Start Date --]
         <div class="col-md-6">
-          [@customForm.input name="activities.startDate" type="text" disabled=!editable  required=true editable=editable && action.hasPermission("startDate")  /]
+          [@customForm.input name="startDate" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
         </div> 
         [#-- End Date --]
         <div class="col-md-6">
-         [@customForm.input name="activities.endDate" type="text" disabled=!editable required=true editable=editable && action.hasPermission("endDate")  /]
+         [@customForm.input name="endDate" className="endDate" type="text" disabled=!editable required=true editable=editable  /]
         </div>
       </div>
       
@@ -112,7 +112,7 @@
       </div>
       
       [#-- Progress in reporting cycle --]
-      [@customForm.textArea  name="activities.progressDescription" i18nkey="Describe overall activity or progress made during this reporting cycle" value="${(element.progressDescription)!}" required=true className="limitWords-150 activityDescription" editable=editable /]
+      [@customForm.textArea  name="activities.progressDescription" i18nkey="Describe overall activity or progress made during this reporting cycle" value="${(element.progressDescription)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
       
       [#-- Activity deliverables --]
       <div class="form-group">
@@ -120,5 +120,11 @@
       </div>
     </div>
   
+  </div>
+[/#macro]
+
+[#macro deliverablesMacro element name index=-1 isTemplate=false]
+  
+  <div id="projectActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
   </div>
 [/#macro]
