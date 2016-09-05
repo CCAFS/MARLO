@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableType implements java.io.Serializable {
+public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 2591192504126616140L;
   @Expose
@@ -36,7 +38,7 @@ public class DeliverableType implements java.io.Serializable {
   private String description;
   @Expose
   private Integer timeline;
-  
+
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
@@ -69,8 +71,26 @@ public class DeliverableType implements java.io.Serializable {
     return this.description;
   }
 
+  @Override
   public Long getId() {
     return this.id;
+  }
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Id : ").append(this.getId());
+
+
+    return sb.toString();
+  }
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
   }
 
   public String getName() {
@@ -79,6 +99,11 @@ public class DeliverableType implements java.io.Serializable {
 
   public Integer getTimeline() {
     return this.timeline;
+  }
+
+  @Override
+  public boolean isActive() {
+    return true;
   }
 
   public void setDeliverables(Set<Deliverable> deliverables) {
