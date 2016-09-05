@@ -144,7 +144,7 @@
               [#local budgetW1W2 = action.getBudget(element.institution.id,selectedYear,1) ]
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].id" value="${(element.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].institution.id" value="${(element.institution.id)!}"/>
-              <input type="hidden" name="project.budgets[${indexBudgetW1W2}].type" value="1"/>
+              <input type="hidden" name="project.budgets[${indexBudgetW1W2}].type.id" value="1"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].year" value="${(selectedYear)!}"/>
               [#if editable]
                 [@customForm.input name="project.budgets[${indexBudgetW1W2}].amount" showTitle=false className="currencyInput type-w1w2" required=true  /]
@@ -159,7 +159,7 @@
               [#local budgetW3 = action.getBudget(element.institution.id,selectedYear,2) ]
               <input type="hidden" name="project.budgets[${indexBudgetW3}].id" value="${(budgetW3.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW3}].institution.id" value="${(element.institution.id)!}"/>
-              <input type="hidden" name="project.budgets[${indexBudgetW3}].type" value="2"/>
+              <input type="hidden" name="project.budgets[${indexBudgetW3}].type.id" value="2"/>
               <input type="hidden" name="project.budgets[${indexBudgetW3}].year" value="${(selectedYear)!}"/>
               [#if editable && project.bilateralProject]
                 [@customForm.input name="project.budgets[${indexBudgetW3}].amount" showTitle=false className="currencyInput type-w3" required=true   /]
@@ -173,7 +173,7 @@
               [#local budgetBilateral = action.getBudget(element.institution.id,selectedYear,3) ]
               <input type="hidden" name="project.budgets[${indexBudgetBilateral}].id" value="${(budgetBilateral.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetBilateral}].institution.id" value="${(element.institution.id)!}"/>
-              <input type="hidden" name="project.budgets[${indexBudgetBilateral}].type" value="3"/>
+              <input type="hidden" name="project.budgets[${indexBudgetBilateral}].type.id" value="3"/>
               <input type="hidden" name="project.budgets[${indexBudgetBilateral}].year" value="${(selectedYear)!}"/>
               [#if editable && project.bilateralProject]
                 [@customForm.input name="project.budgets[${indexBudgetBilateral}].amount" showTitle=false className="currencyInput type-bilateral" required=true   /]
@@ -188,7 +188,7 @@
               [#local budgetCenterFunds = action.getBudget(element.institution.id,selectedYear,4) ]
               <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].id" value="${(budgetCenterFunds.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].institution.id" value="${(element.institution.id)!}"/>
-              <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].type" value="4"/>
+              <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].type.id" value="4"/>
               <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].year" value="${(selectedYear)!}"/>
               [#if editable]
                 [@customForm.input name="project.budgets[${indexBudgetCenterFunds}].amount" showTitle=false className="currencyInput type-centerFunds" required=true /]
