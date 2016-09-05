@@ -64,6 +64,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
 		</set>
+		<set name="deliverableActivities" table="deliverables"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
+    </set>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />
