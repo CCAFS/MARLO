@@ -88,6 +88,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  public ProjectBudget getBudget(Long institutionId, int year, long type) {
+
+    return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
+  }
+
+
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
       int i = 0;
@@ -111,7 +117,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return this.getIndexBudget(institutionId, year, type);
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
