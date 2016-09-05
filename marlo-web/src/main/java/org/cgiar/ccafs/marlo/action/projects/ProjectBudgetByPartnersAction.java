@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -52,6 +53,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private Crp loggedCrp;
   private Project project;
 
+
   // Model for the view
   private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
@@ -79,6 +81,31 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
+  }
+
+
+  public int getIndexBudget(Long institutionId, int year, long type) {
+    if (project.getBudgets() != null) {
+      int i = 0;
+      for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+          && year == projectBudget.getYear() && type == projectBudget.getBudgetType()) {
+          return i;
+        }
+        i++;
+      }
+
+    } else {
+      project.setBudgets(new ArrayList<>());
+    }
+
+    ProjectBudget projectBudget = new ProjectBudget();
+    projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
+    projectBudget.setYear(year);
+    projectBudget.setBudgetType(type);
+    project.getBudgets().add(projectBudget);
+
+    return this.getIndexBudget(institutionId, year, type);
   }
 
 
@@ -126,7 +153,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return false;
   }
 
-
   @Override
   public void prepare() throws Exception {
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -155,7 +181,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
       }
     }
-
+    project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
 
@@ -173,7 +199,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public String save() {
