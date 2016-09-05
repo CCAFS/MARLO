@@ -49,33 +49,27 @@
           <div class="tab-content budget-content">
             <div role="tabpanel" class="tab-pane active" id="year-${selectedYear}">
 
-              <div class="fieldset clearfix">
-                <h5 class="">Overall ${selectedYear} budget</h5>
+              <div class="overallYearBudget fieldset clearfix">
+                <h5 class="title">Overall ${selectedYear} budget</h5>
                 <div class="row">
-                  <div class="col-md-3">
-                    <h5 class="subTitle">W1/W2</h5>
-                    <p class="">US$ <span>0.00</span></p>
-                  </div>
-                  <div class="col-md-3">
-                    <h5 class="subTitle">W3</h5>
-                    <p class="">US$ <span>0.00</span></p>
-                  </div>
-                  <div class="col-md-3">
-                    <h5 class="subTitle">Bilateral</h5>
-                    <p class="">US$ <span>0.00</span></p>
-                  </div>
-                  <div class="col-md-3">
-                    <h5 class="subTitle">Center Funds</h5>
-                    <p class="">US$ <span>0.00</span></p>
-                  </div>
+                  [#-- W1/W2 --]
+                  [#if !project.bilateralProject]
+                  <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span>0.00</span></small></h5></div>
+                  [/#if]
+                  [#-- W3 --]
+                  <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span>0.00</span></small></h5></div>
+                  [#-- Bilateral  --]
+                  <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span>0.00</span></small></h5></div>
+                  [#-- Center Funds --]
+                  [#if !project.bilateralProject]
+                  <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span>0.00</span></small></h5></div>
+                  [/#if]
                 </div>
               </div>
             
-              [#if project.partners?has_content]
-                [#list project.partners as projectPartner]
-                  [#if action.isPPA(projectPartner.institution)]
-                    [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
-                  [/#if]
+              [#if projectPPAPartners?has_content]
+                [#list projectPPAPartners as projectPartner]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
                 [/#list]
               [/#if]
             </div>
@@ -103,7 +97,7 @@
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
-    <div class="blockTitle ${(isLeader?string('opened','closed'))!}">
+    <div class="blockTitle opened">
       [#-- Title --]
       <span><span class="partnerTitle"></span>${(element.institution.composedName)!'New Project Partner'}</span>
 
@@ -117,42 +111,66 @@
       <div class="clearfix"></div>
     </div>
     
-    <div class="blockContent" style="display:${(isLeader?string('block','none'))!}">
+    <div class="blockContent" style="display:block">
       <hr />
       
       <table class="table">
         <thead>
           <tr>
             <th class="amountType"> </th>
+            [#-- W1/W2 --]
+            [#if !project.bilateralProject]
             <th class="text-center">W1/W2</th>
+            [/#if]
+            [#-- W3 --]
             <th class="text-center">W3</td>
+            [#-- Bilateral  --]
             <th class="text-center">Bilateral</th>
+            [#-- Center Funds --]
+            [#if !project.bilateralProject]
             <th class="text-center">Center Funds</th>
+            [/#if]
           </tr>
         </thead>
         <tbody>
           [#-- Budget Amount --]
           <tr>
             <td class="amountType"> Budget: </td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput" required=true editable=editable /]</td>
+            [#-- W1/W2 --]
+            [#if !project.bilateralProject]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w1w2" required=true editable=editable /]</td>
+            [/#if]
+            [#-- W3 --]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            [#-- Bilateral  --]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            [#-- Center Funds --]
+            [#if !project.bilateralProject]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-centerFunds" required=true editable=editable /]</td>
+            [/#if]
           </tr>
           [#-- Budget Percentage --]
           [#if project.projectEditLeader]
           <tr>
             <td class="amountType"> Gender %:</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</td>
+            [#-- W1/W2 --]
+            [#if !project.bilateralProject]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-w1w2" required=true editable=editable /]</td>
+            [/#if]
+            [#-- W3 --]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            [#-- Bilateral  --]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            [#-- Center Funds --]
+            [#if !project.bilateralProject]
+            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-centerFunds" required=true editable=editable /]</td>
+            [/#if]
           </tr>
           [/#if]
         </thead>
       </table>
       
-      [#if project.projectEditLeader]
+      [#if project.projectEditLeader && !project.bilateralProject]
       <h5 class="sectionSubTitle">W3 Funds & Bilateral:</h5>
       <div class="projectW3bilateralFund-block">
         <div class="projectW3bilateralFund-list simpleBox">
@@ -179,7 +197,7 @@
     <div class="row w3bilateralFund">
       <div class="col-md-5">
         <div class="row col-md-5"><strong>Type:</strong>  </div>
-        <div class="row col-md-9">[@customForm.select name="" showTitle=false  disabled=!editable  listName="" keyFieldName=""  displayFieldName="" required=true editable=editable /]</div>
+        <div class="row col-md-9">[@customForm.select name="" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>

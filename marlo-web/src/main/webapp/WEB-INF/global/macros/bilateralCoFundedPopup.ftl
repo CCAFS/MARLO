@@ -47,33 +47,33 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.textArea name="" i18nkey="projectCofunded.title"/] 
+                [@customForm.textArea name="title" i18nkey="projectCofunded.title"/] 
               </div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-4">[@customForm.input name="" i18nkey="projectCofunded.startDate"/] </div>
-              <div class="col-md-4">[@customForm.input name="" i18nkey="projectCofunded.endDate"/] </div>
-              <div class="col-md-4">[@customForm.input name="" i18nkey="projectCofunded.financeCode"/] </div>
+              <div class="col-md-4">[@customForm.input name="startDate" i18nkey="projectCofunded.startDate"/] </div>
+              <div class="col-md-4">[@customForm.input name="endDate" i18nkey="projectCofunded.endDate"/] </div>
+              <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode"/] </div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.select name="" i18nkey="projectCofunded.agreementStatus"  listName="" keyFieldName=""  displayFieldName="" required=true /] </div>
-              <div class="col-md-6">[@customForm.input name="" i18nkey="projectCofunded.budgetAgreementPeriod" className="currencyInput"/]</div>
+              <div class="col-md-6">[@customForm.select name="agreementStatus" i18nkey="projectCofunded.agreementStatus"  listName="" keyFieldName=""  displayFieldName="" required=true /] </div>
+              <div class="col-md-6">[@customForm.input name="budgetAgreementPeriod" i18nkey="projectCofunded.budgetAgreementPeriod" className="currencyInput"/]</div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.input name="" i18nkey="projectCofunded.contactName"/]</div>
-              <div class="col-md-6">[@customForm.input name="" i18nkey="projectCofunded.contactEmail"/]</div>
+              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName"/]</div>
+              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail"/]</div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="" i18nkey="projectCofunded.donor"  listName="" keyFieldName=""  displayFieldName="" required=true /]
+                [@customForm.select name="donor" i18nkey="projectCofunded.donor"  listName="" keyFieldName=""  displayFieldName="" required=true /]
               </div>
             </div>
           </div>
