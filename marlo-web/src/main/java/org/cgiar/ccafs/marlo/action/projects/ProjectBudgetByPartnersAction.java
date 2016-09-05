@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private static final long serialVersionUID = 7833194831832715444L;
   private InstitutionManager institutionManager;
   private ProjectManager projectManager;
+  private ProjectBudgetManager projectBudgetManager;
   private CrpManager crpManager;
   private long projectID;
   private Crp loggedCrp;
@@ -60,12 +63,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
-    ProjectManager projectManager, CrpManager crpManager) {
+    ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager) {
     super(config);
 
     this.institutionManager = institutionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.projectBudgetManager = projectBudgetManager;
   }
 
 
@@ -183,7 +187,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
     project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_PARTNER_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
 
 
     ProjectPartner leader = project.getLeader();
@@ -202,9 +206,59 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   @Override
   public String save() {
-    return SUCCESS;
+    if (this.hasPermission("canEdit")) {
+      this.saveBasicBudgets();
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
   }
 
+  public void saveBasicBudgets() {
+    Project projectDB = projectManager.getProjectById(projectID);
+    for (ProjectBudget projectBudget : projectDB.getProjectBudgets().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      if (project.getBudgets() == null) {
+        project.setBudgets(new ArrayList<>());
+      }
+      if (!project.getBudgets().contains(projectBudget)) {
+        projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+
+      }
+    }
+
+    if (project.getBudgets() != null) {
+      for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (projectBudget != null) {
+          if (projectBudget.getId() == null) {
+            projectBudget.setCreatedBy(this.getCurrentUser());
+
+            projectBudget.setActiveSince(new Date());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+
+          } else {
+            ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+
+            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+          }
+
+
+          projectBudgetManager.saveProjectBudget(projectBudget);
+        }
+
+      }
+    }
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;

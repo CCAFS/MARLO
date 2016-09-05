@@ -26,9 +26,7 @@
         <property name="amount" type="java.lang.Long">
             <column name="amount" />
         </property>
-        <property name="centerAmount" type="java.lang.Long">
-            <column name="center_amount" />
-        </property>
+       
         <property name="budgetType" type="long">
             <column name="budget_type" not-null="true" />
         </property>
@@ -38,9 +36,7 @@
         <property name="genderPercentage" type="java.lang.Double">
             <column name="gender_percentage" precision="22" scale="0" />
         </property>
-         <property name="centerGender" type="java.lang.Double">
-            <column name="center_gender" precision="22" scale="0" />
-        </property>
+       
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

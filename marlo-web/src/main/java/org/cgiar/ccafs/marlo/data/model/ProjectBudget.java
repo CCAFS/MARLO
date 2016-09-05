@@ -32,8 +32,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private Long amount;
-  @Expose
-  private Long centerAmount;
+
 
   @Expose
   private long budgetType;
@@ -46,9 +45,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private Double genderPercentage;
 
-
-  @Expose
-  private Double centerGender;
 
   @Expose
   private boolean active;
@@ -91,13 +87,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-  public Long getCenterAmount() {
-    return centerAmount;
-  }
-
-  public Double getCenterGender() {
-    return centerGender;
-  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -173,13 +162,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.budgetType = budgetType;
   }
 
-  public void setCenterAmount(Long centerAmount) {
-    this.centerAmount = centerAmount;
-  }
-
-  public void setCenterGender(Double centerGender) {
-    this.centerGender = centerGender;
-  }
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
