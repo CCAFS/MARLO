@@ -22,9 +22,8 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private Long id;
   @Expose
   private Institution institution;
-  @Expose
+
   private Project projectCofinance;
-  @Expose
   private Project project;
   @Expose
   private User createdBy;
