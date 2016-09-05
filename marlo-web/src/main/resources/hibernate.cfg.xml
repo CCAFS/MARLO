@@ -89,6 +89,7 @@
     <mapping resource="xmls/Activities.hbm.xml"/>
     <mapping resource="xmls/ProjectCrpContributions.hbm.xml"/>
     <mapping resource="xmls/ProjectBudgets.hbm.xml"/>
+    <mapping resource="xmls/BudgetTypes.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
 
