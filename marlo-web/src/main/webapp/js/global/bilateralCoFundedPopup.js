@@ -35,11 +35,6 @@ $(document).ready(function() {
   /** Events */
 
   // Event for manage the accordion function
-  /*
-   * $dialogContent.find(".accordion").on('click', function() { $(this).siblings('.accordion-block').slideUp('slow');
-   * $(this).siblings('.accordion').addClass('active'); $(this).removeClass('active'); $(this).next().slideToggle(); });
-   */
-
   $('#create-user').on('click', function() {
     $(this).siblings('.accordion-block').slideUp('slow');
     if($(this).next().is(':visible')) {
@@ -52,7 +47,6 @@ $(document).ready(function() {
       $(this).addClass('active');
       $(this).find('span.title').text('Search bilateral project');
       $(this).find('span.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-search');
-
     }
 
   });
@@ -91,22 +85,10 @@ $(document).ready(function() {
   $dialogContent.find(".create-button").on("click", function() {
     $dialogContent.find('.warning-info').empty().hide();
     var invalidFields = [];
-    var user = {};
-    user.actionName = $('#actionName').val();
-    user.email = $dialogContent.find("#email").val().trim();
-    var isCGIAREmail = ((user.email).indexOf("cgiar") > -1);
-    if(!isCGIAREmail) {
-      $('#isCCAFS').prop('checked', true);
-      $dialogContent.find(".tickBox-toggle").show();
-    } else {
-      $('#isCCAFS').prop('checked', false);
-      $dialogContent.find(".tickBox-toggle").hide();
-    }
+    var project = {};
 
-    if($dialogContent.find("#isCCAFS").is(':checked') && !isCGIAREmail) {
-      user.firstName = $dialogContent.find("#firstName").val();
-      user.lastName = $dialogContent.find("#lastName").val();
-    }
+    project.actionName = $('#actionName').val();
+    project.email = $dialogContent.find("#email").val().trim();
 
     user.isActive = $dialogContent.find("#isActive").val();
 

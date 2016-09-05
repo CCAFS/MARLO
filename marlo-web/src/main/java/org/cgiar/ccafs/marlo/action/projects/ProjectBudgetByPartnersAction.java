@@ -18,47 +18,23 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
-import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerContributionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerOverallManager;
-import org.cgiar.ccafs.marlo.data.manager.RoleManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionType;
-import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
-import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.SendMail;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,76 +45,30 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 7833194831832715444L;
-
   private InstitutionManager institutionManager;
-
-  private UserManager userManager;
-  private RoleManager roleManager;
   private ProjectManager projectManager;
   private CrpManager crpManager;
-
   private long projectID;
   private Crp loggedCrp;
-
   private Project project;
+
   // Model for the view
-  private List<InstitutionType> intitutionTypes;
-  private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
-
-  private List<LocElement> countries;
-  private List<Institution> allInstitutions; // Is used to list all the partner institutions that have the system.
-  private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
+  private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
-  private List<User> allUsers; // will be used to list all the project leaders that have the system.
-
-  private AuditLogManager auditLogManager;
-  private String transaction;
-
 
   @Inject
-  public ProjectBudgetByPartnersAction(APConfig config, ProjectPartnerManager projectPartnerManager,
-    InstitutionManager institutionManager, LocElementManager locationManager, ProjectManager projectManager,
-    CrpPpaPartnerManager crpPpaPartnerManager, CrpManager crpManager,
-    ProjectPartnerOverallManager projectPartnerOverallManager, UserManager userManager,
-    InstitutionTypeManager institutionTypeManager, SendMail sendMail, RoleManager roleManager,
-    ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager) {
+  public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
+    ProjectManager projectManager, CrpManager crpManager) {
     super(config);
 
-
     this.institutionManager = institutionManager;
-
     this.projectManager = projectManager;
-    this.userManager = userManager;
     this.crpManager = crpManager;
-
-    this.roleManager = roleManager;
-
-
   }
 
 
   @Override
   public String cancel() {
-
-    Path path = this.getAutoSaveFilePath();
-
-    if (path.toFile().exists()) {
-
-      boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
-    }
-
-    this.setDraft(false);
-    Collection<String> messages = this.getActionMessages();
-    if (!messages.isEmpty()) {
-      String validationMessage = messages.iterator().next();
-      this.setActionMessages(null);
-      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
-    } else {
-      this.addActionMessage(this.getText("cancel.autoSave"));
-    }
-    messages = this.getActionMessages();
-
     return SUCCESS;
   }
 
@@ -152,44 +82,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public List<Institution> getAllInstitutions() {
-    return allInstitutions;
-  }
-
-  public List<Institution> getAllPPAInstitutions() {
-    return allPPAInstitutions;
-  }
-
-  public List<User> getAllUsers() {
-    return allUsers;
-  }
-
-
-  private Path getAutoSaveFilePath() {
-    String composedClassName = project.getClass().getSimpleName();
-    String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
-
-    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
-
-  public List<LocElement> getCountries() {
-    return countries;
-  }
-
-
-  public List<InstitutionType> getIntitutionTypes() {
-    return intitutionTypes;
-  }
-
-
   public Crp getLoggedCrp() {
     return loggedCrp;
-  }
-
-
-  public Map<String, String> getPartnerPersonTypes() {
-    return partnerPersonTypes;
   }
 
 
@@ -208,9 +102,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public String getTransaction() {
-    return transaction;
+  public Map<String, String> getW3bilateralBudgetTypes() {
+    return w3bilateralBudgetTypes;
   }
+
 
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -238,125 +133,26 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
+    w3bilateralBudgetTypes = new HashMap<>();
+    w3bilateralBudgetTypes.put("w3", "W3");
+    w3bilateralBudgetTypes.put("bilateral", "Bilateral");
 
-    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-
-
-      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      Project history = (Project) auditLogManager.getHistory(transaction);
-      if (history != null) {
-        project = history;
-      } else {
-        this.transaction = null;
-
-        this.setTransaction("-1");
-      }
-
-    } else {
-      project = projectManager.getProjectById(projectID);
-    }
-
+    project = projectManager.getProjectById(projectID);
 
     if (project != null) {
-      Path path = this.getAutoSaveFilePath();
+      this.setDraft(false);
+      project.setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+      for (ProjectPartner projectPartner : project.getPartners()) {
+        projectPartner.setPartnerPersons(
+          projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      }
 
-        BufferedReader reader = null;
-
-        reader = new BufferedReader(new FileReader(path.toFile()));
-
-        Gson gson = new GsonBuilder().create();
-
-
-        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-
-        AutoSaveReader autoSaveReader = new AutoSaveReader();
-
-        project = (Project) autoSaveReader.readFromJson(jReader);
-        Project projectDb = projectManager.getProjectById(project.getId());
-        project.setProjectEditLeader(projectDb.isProjectEditLeader());
-        this.projectPPAPartners = new ArrayList<ProjectPartner>();
-        for (ProjectPartner pp : project.getPartners()) {
-
-
-          if (pp.getInstitution() != null) {
-
-            if (pp.getInstitution().getId() != null || pp.getInstitution().getId() != -1) {
-              Institution inst = institutionManager.getInstitutionById(pp.getInstitution().getId());
-              if (inst != null) {
-                if (inst.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-                  .size() > 0) {
-                  this.projectPPAPartners.add(pp);
-
-                }
-                pp.setInstitution(inst);
-              }
-            }
-
-
-          }
-
-          if (pp.getPartnerPersons() != null) {
-            for (ProjectPartnerPerson projectPartnerPerson : pp.getPartnerPersons()) {
-
-              if (projectPartnerPerson.getUser().getId() != null) {
-                projectPartnerPerson.setUser(userManager.getUser(projectPartnerPerson.getUser().getId()));
-
-              }
-            }
-          }
-
-          if (pp.getPartnerContributors() != null) {
-            for (ProjectPartnerContribution projectPartnerContribution : pp.getPartnerContributors()) {
-
-              if (projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId() != null) {
-                projectPartnerContribution.getProjectPartnerContributor()
-                  .setInstitution(institutionManager.getInstitutionById(
-                    projectPartnerContribution.getProjectPartnerContributor().getInstitution().getId()));
-              }
-
-            }
-          }
-
-
+      this.projectPPAPartners = new ArrayList<ProjectPartner>();
+      for (ProjectPartner pp : project.getPartners()) {
+        if (this.isPPA(pp.getInstitution())) {
+          this.projectPPAPartners.add(pp);
         }
-        reader.close();
-        this.setDraft(true);
-      } else {
-
-        this.setDraft(false);
-        project
-          .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-        for (ProjectPartner projectPartner : project.getPartners()) {
-          projectPartner.setPartnerPersons(
-            projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        }
-        this.projectPPAPartners = new ArrayList<ProjectPartner>();
-        for (ProjectPartner pp : project.getPartners()) {
-
-          if (this.isPPA(pp.getInstitution())) {
-            this.projectPPAPartners.add(pp);
-
-          }
-
-          List<ProjectPartnerContribution> contributors = new ArrayList<>();
-
-
-          List<ProjectPartnerContribution> partnerContributions =
-            pp.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-          for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
-            contributors.add(projectPartnerContribution);
-          }
-          pp.setPartnerContributors(contributors);
-        }
-
-        if (this.isLessonsActive()) {
-          this.loadLessons(loggedCrp, project);
-        }
-
-
       }
     }
 
@@ -378,44 +174,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
   }
 
 
-  public void setAllInstitutions(List<Institution> allInstitutions) {
-    this.allInstitutions = allInstitutions;
-  }
-
-
-  public void setAllPPAInstitutions(List<Institution> allPPAInstitutions) {
-    this.allPPAInstitutions = allPPAInstitutions;
-  }
-
-
-  public void setAllUsers(List<User> allUsers) {
-    this.allUsers = allUsers;
-  }
-
-
-  public void setCountries(List<LocElement> countries) {
-    this.countries = countries;
-  }
-
-
-  public void setIntitutionTypes(List<InstitutionType> intitutionTypes) {
-    this.intitutionTypes = intitutionTypes;
-  }
-
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setPartnerPersonTypes(Map<String, String> partnerPersonTypes) {
-    this.partnerPersonTypes = partnerPersonTypes;
   }
 
 
@@ -428,12 +195,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectID = projectID;
   }
 
+
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
   }
 
-  public void setTransaction(String transaction) {
-    this.transaction = transaction;
+
+  public void setW3bilateralBudgetTypes(Map<String, String> w3bilateralBudgetTypes) {
+    this.w3bilateralBudgetTypes = w3bilateralBudgetTypes;
   }
 
 
