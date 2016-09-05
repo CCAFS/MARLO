@@ -71,3 +71,20 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 .accordion-block {
     height: 471px;
 }
+
+.overallYearBudget {
+
+}
+
+
+.overallYearBudget .title{
+    margin: 0;
+    font-weight: bold;
+    color: #5f96c5;
+    padding: 5px 0px;
+}
+
+.overallYearBudget .subTitle{
+    margin: 0;
+    padding: 0 0 9px 0px;
+}
