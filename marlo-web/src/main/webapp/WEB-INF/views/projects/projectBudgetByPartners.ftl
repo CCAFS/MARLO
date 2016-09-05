@@ -138,19 +138,43 @@
             <td class="amountType"> Budget: </td>
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
-             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,1) ]
-            <td class="budgetColumn">[@customForm.input name="project.budgets[${index_budget}].ammount" showTitle=false className="currencyInput type-w1w2" required=true editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,1) ]
+              <input type="hidden" name="project.budgets[${index_budget}].id" value="${(element.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].institution.id" value="${(element.institution.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].type" value="1"/>
+              <input type="hidden" name="project.budgets[${index_budget}].year" value="${(selectedYear)!}"/>
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="currencyInput type-w1w2" required=true editable=editable /]
+            </td>
             [/#if]
             [#-- W3 --]
-             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,2) ]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,2) ]
+              <input type="hidden" name="project.budgets[${index_budget}].id" value="${(element.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].institution.id" value="${(element.institution.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].type" value="2"/>
+              <input type="hidden" name="project.budgets[${index_budget}].year" value="${(selectedYear)!}"/>
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="currencyInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]
+            </td>
             [#-- Bilateral  --]
-             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,3) ]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,3) ]
+              <input type="hidden" name="project.budgets[${index_budget}].id" value="${(element.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].institution.id" value="${(element.institution.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].type" value="3"/>
+              <input type="hidden" name="project.budgets[${index_budget}].year" value="${(selectedYear)!}"/>
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="currencyInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]
+            </td>
             [#-- Center Funds --]
             [#if !project.bilateralProject]
-             [#assign index_budget=action.getIndexBudget(element.instituion.id,selectedYear,4) ]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="currencyInput type-centerFunds" required=true editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,4) ]
+              <input type="hidden" name="project.budgets[${index_budget}].id" value="${(element.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].institution.id" value="${(element.institution.id)!}"/>
+              <input type="hidden" name="project.budgets[${index_budget}].type" value="4"/>
+              <input type="hidden" name="project.budgets[${index_budget}].year" value="${(selectedYear)!}"/>
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="currencyInput type-centerFunds" required=true editable=editable /]
+            </td>
             [/#if]
           </tr>
           [#-- Budget Percentage --]
@@ -159,15 +183,27 @@
             <td class="amountType"> Gender %:</td>
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-w1w2" required=true editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,1) ]
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-w1w2" required=true editable=editable /]
+            </td>
             [/#if]
             [#-- W3 --]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,2) ]
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-w3" required=true disabled=!project.bilateralProject editable=editable /]
+            </td>
             [#-- Bilateral  --]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,3) ]
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-bilateral" required=true disabled=!project.bilateralProject editable=editable /]
+            </td>
             [#-- Center Funds --]
             [#if !project.bilateralProject]
-            <td class="budgetColumn">[@customForm.input name="" showTitle=false className="percentageInput type-centerFunds" required=true editable=editable /]</td>
+            <td class="budgetColumn">
+              [#local index_budget=action.getIndexBudget(element.institution.id,selectedYear,4) ]
+              [@customForm.input name="project.budgets[${index_budget}].amount" showTitle=false className="percentageInput type-centerFunds" required=true editable=editable /]
+            </td>
             [/#if]
           </tr>
           [/#if]

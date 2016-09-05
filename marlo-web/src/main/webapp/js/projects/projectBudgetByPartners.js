@@ -64,6 +64,7 @@ function attachEvents() {
   $('input.currencyInput').on('keyup', function() {
     var type = getBudgetType($(this));
     updateBudgetCurrency(type);
+
   });
 
 }
@@ -73,7 +74,10 @@ function updateBudgetCurrency(type) {
   if(type == "w3" || "bilateral") {
     console.log('asd');
   }
-  $('span.totalByYear-' + type).text(setCurrencyFormat(total));
+  var $target = $('span.totalByYear-' + type);
+  $target.text(setCurrencyFormat(total));
+  // Animate CSS
+  $target.aminateCss('flipInX');
 }
 
 function calculateBudgetCurrency(type) {
