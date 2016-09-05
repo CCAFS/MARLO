@@ -48,9 +48,12 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
+  private Set<Activity> activities = new HashSet<Activity>(0);
+
 
   public ProjectPartnerPerson() {
   }
+
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
@@ -106,10 +109,14 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+  public Set<Activity> getActivities() {
+    return activities;
+  }
 
   public String getComposedName() {
     return this.projectPartner.getInstitution().getAcronym() + " - " + this.user.getComposedName();
   }
+
 
   public String getContactType() {
     return this.contactType;
@@ -182,6 +189,10 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setActivities(Set<Activity> activities) {
+    this.activities = activities;
   }
 
 

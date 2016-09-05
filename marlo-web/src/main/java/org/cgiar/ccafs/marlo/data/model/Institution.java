@@ -57,6 +57,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
+  private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
 
   public Institution() {
@@ -68,6 +69,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.name = name;
     this.added = added;
   }
+
 
   public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
     Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement) {
@@ -81,6 +83,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
     this.locElement = locElement;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -171,6 +174,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.programId;
   }
 
+  public Set<ProjectBudget> getProjectBudgets() {
+    return projectBudgets;
+  }
+
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
@@ -222,6 +229,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setProgramId(Long programId) {
     this.programId = programId;
+  }
+
+  public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
+    this.projectBudgets = projectBudgets;
   }
 
   public void setProjectPartners(Set<ProjectPartner> projectPartners) {
