@@ -33,6 +33,8 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -79,12 +81,29 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.budgetTypeManager = budgetTypeManager;
   }
 
-
   @Override
   public String cancel() {
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
     return SUCCESS;
   }
-
 
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
@@ -92,6 +111,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
+  }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
@@ -247,6 +275,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
         String validationMessage = messages.iterator().next();
