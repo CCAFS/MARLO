@@ -118,7 +118,7 @@ public class ProjectActivitiesAction extends BaseAction {
               .collect(Collectors.toList())));
 
       project
-        .setOpenProjectActivities(
+        .setClosedProjectActivities(
           new ArrayList<Activity>(
             project.getActivities().stream()
               .filter(a -> a.isActive()
