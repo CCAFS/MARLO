@@ -21,13 +21,23 @@
 		<action name="reportingSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
 			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				     
+				<param name="projectID">${projectID}</param>
+				<param name="inputName">inputStream</param>				     
 				<param name="contentType">text/pdf</param>
 				       
 				<param name="contentDisposition">attachment;filename="${fileName}"</param>
 			</result>
 		</action>
+		
+		<action name="institutionsLeader"
+      class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>            
+        <param name="contentType">text/xls</param>
+               
+        <param name="contentDisposition">attachment;filename="${fileName}"</param>
+      </result>
+    </action>
 
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
@@ -65,13 +75,13 @@
 
 
 
-    <action name="milestonesYear"
-      class="org.cgiar.ccafs.marlo.action.json.global.MilestonesbyYearAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="milestonesYear"
+			class="org.cgiar.ccafs.marlo.action.json.global.MilestonesbyYearAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 		<action name="searchCountryListPL"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
 			<result type="json">
@@ -142,47 +152,47 @@
 				<param name="defaultEncoding">utf-8</param>
 			</result>
 		</action>
-		
-		    
-    <action name="deliverableSubType"
-      class="org.cgiar.ccafs.marlo.action.json.project.DeliverableSubTypeAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="programOutcomeList"
-      class="org.cgiar.ccafs.marlo.action.json.project.ProgramOutcomeListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    
-    <action name="keyOutputList"
-      class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
 
 
-<action name="clusterList"
-      class="org.cgiar.ccafs.marlo.action.json.project.ClusetrActivitiesListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
-    <action name="validateProjectSection"
-      class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="deliverableSubType"
+			class="org.cgiar.ccafs.marlo.action.json.project.DeliverableSubTypeAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="programOutcomeList"
+			class="org.cgiar.ccafs.marlo.action.json.project.ProgramOutcomeListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="keyOutputList"
+			class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+
+		<action name="clusterList"
+			class="org.cgiar.ccafs.marlo.action.json.project.ClusetrActivitiesListAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		<action name="validateProjectSection"
+			class="org.cgiar.ccafs.marlo.action.json.project.ValidateProjectSectionAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 	</package>
 

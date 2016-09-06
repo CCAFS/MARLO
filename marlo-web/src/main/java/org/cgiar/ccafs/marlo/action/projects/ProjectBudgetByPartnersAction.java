@@ -306,10 +306,16 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     ProjectPartner leader = project.getLeader();
     if (leader != null) {
-      // First we remove the element from the array.
-      project.getPartners().remove(leader);
-      // then we add it to the first position.
-      project.getPartners().add(0, leader);
+      if (project.isBilateralProject()) {
+        project.getPartners().clear();
+        project.getPartners().add(leader);
+      } else {
+        // First we remove the element from the array.
+        project.getPartners().remove(leader);
+        // then we add it to the first position.
+        project.getPartners().add(0, leader);
+      }
+
     }
 
     if (this.isHttpPost()) {

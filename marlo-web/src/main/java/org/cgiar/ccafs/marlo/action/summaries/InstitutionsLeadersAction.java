@@ -1,23 +1,24 @@
 /*****************************************************************
- * This file is part of CCAFS Planning and Reporting Platform.
- * CCAFS P&R is free software: you can redistribute it and/or modify
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * at your option) any later version.
- * CCAFS P&R is distributed in the hope that it will be useful,
+ * MARLO is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -28,46 +29,39 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.google.inject.Inject;
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
-import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
-public class ReportingSummaryAction extends BaseAction implements Summary {
+
+public class InstitutionsLeadersAction extends BaseAction implements Summary {
 
   /**
    * 
    */
-  private static final long serialVersionUID = -624982650510682813L;
-
-  private static Logger LOG = LoggerFactory.getLogger(ManageUsersAction.class);
-
-
+  private static final long serialVersionUID = 1L;
+  // Variables
+  private Crp loggedCrp;
   private CrpManager crpManager;
-  // Front-end
-  private long projectID;
-
   // XLS bytes
-  private byte[] bytesPDF;
+  private byte[] bytesXLS;
   // Streams
   InputStream inputStream;
 
   @Inject
-  public ReportingSummaryAction(APConfig config, CrpManager crpManager) {
+  public InstitutionsLeadersAction(APConfig config, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
 
   @Override
   public String execute() throws Exception {
-    System.out.println("This is the " + projectID);
+    System.out.println("This is the crp #: " + loggedCrp.getId());
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
@@ -75,21 +69,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     manager.registerDefaults();
 
     Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/institutions_leaders.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-    Number idParam = projectID;
-    Number yearParam = 2016;
-    String cycleParam = "Planning";
+    Number idParam = loggedCrp.getId();
 
-    masterReport.getParameterValues().put("p_id", idParam);
-    masterReport.getParameterValues().put("p_year", yearParam);
-    masterReport.getParameterValues().put("p_cycle", cycleParam);
+    masterReport.getParameterValues().put("crp_id", idParam);
 
-
-    PdfReportUtil.createPDF(masterReport, os);
-    bytesPDF = os.toByteArray();
+    ExcelReportUtil.createXLS(masterReport, os);
+    bytesXLS = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -97,12 +86,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public int getContentLength() {
-    return bytesPDF.length;
+    return bytesXLS.length;
   }
 
   @Override
   public String getContentType() {
-    return "application/pdf";
+    return "application/xls";
   }
 
   private File getFile(String fileName) {
@@ -120,33 +109,32 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ProjectReport-");
+    fileName.append("ProjectLeadingInstitutions-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".pdf");
+    fileName.append(".xls");
 
     return fileName.toString();
 
   }
 
-
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesPDF);
+      inputStream = new ByteArrayInputStream(bytesXLS);
     }
     return inputStream;
   }
 
 
-  public long getProjectID() {
-    return projectID;
+  public Crp getLoggedCrp() {
+    return loggedCrp;
   }
 
   @Override
   public void prepare() {
     try {
-      this
-        .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
+      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
 
     }
@@ -154,8 +142,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-  public void setProjectID(long projectID) {
-    this.projectID = projectID;
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
 
