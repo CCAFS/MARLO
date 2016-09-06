@@ -45,8 +45,8 @@ function attachEvents() {
       $inputs.addClass('type-' + value);
     }
     // Update overalls
-    updateBudgetCurrency('w3');
-    updateBudgetCurrency('bilateral');
+    updateActiveYearCurrency('w3');
+    updateActiveYearCurrency('bilateral');
   });
 
   $('.removeW3bilateralFund').on('click', function() {
@@ -55,8 +55,8 @@ function attachEvents() {
       $parent.remove();
 
       // Update overalls
-      updateBudgetCurrency('w3');
-      updateBudgetCurrency('bilateral');
+      updateActiveYearCurrency('w3');
+      updateActiveYearCurrency('bilateral');
     });
 
   });
@@ -66,7 +66,7 @@ function attachEvents() {
    */
   $('input.currencyInput').on('keyup', function() {
     var type = getBudgetType($(this));
-    updateBudgetCurrency(type);
+    updateActiveYearCurrency(type);
   });
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
@@ -75,7 +75,7 @@ function attachEvents() {
 
 }
 
-function updateBudgetCurrency(type) {
+function updateActiveYearCurrency(type) {
   var total = calculateBudgetCurrency(type);
   var $target = $('.tab-pane.active .totalByYear-' + type);
   $target.text(setCurrencyFormat(total));
@@ -109,8 +109,8 @@ function getBudgetType(input) {
 }
 
 function updateAllCurrencies() {
-  updateBudgetCurrency('w1w2');
-  updateBudgetCurrency('w3');
-  updateBudgetCurrency('bilateral');
-  updateBudgetCurrency('centerFunds');
+  updateActiveYearCurrency('w1w2');
+  updateActiveYearCurrency('w3');
+  updateActiveYearCurrency('bilateral');
+  updateActiveYearCurrency('centerFunds');
 }
