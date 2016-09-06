@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -101,6 +102,9 @@ public class ProjectActivitiesAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
 
     if (project != null) {
+
+      project.setProjectActivities(new ArrayList<Activity>(
+        project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
