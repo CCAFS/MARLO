@@ -31,20 +31,12 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private Long amount;
-
-
   @Expose
   private BudgetType budgetType;
-
-
   @Expose
   private int year;
-
-
   @Expose
   private Double genderPercentage;
-
-
   @Expose
   private boolean active;
   @Expose
