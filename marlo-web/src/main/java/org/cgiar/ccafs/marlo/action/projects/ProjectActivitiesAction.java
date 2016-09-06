@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -63,12 +64,16 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private CrpManager crpManager;
 
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
+
 
   @Inject
-  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
+  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
   public Crp getLoggedCrp() {
@@ -115,6 +120,9 @@ public class ProjectActivitiesAction extends BaseAction {
       project.setProjectDeliverables(new ArrayList<Deliverable>(
         project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
 
+      partnerPersons = projectPartnerPersonManager.findAll().stream()
+        .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
+        .collect(Collectors.toList());
 
     }
 
