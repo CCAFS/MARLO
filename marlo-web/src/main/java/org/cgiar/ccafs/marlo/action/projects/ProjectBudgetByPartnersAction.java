@@ -134,7 +134,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
   }
 
-
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
       int i = 0;
@@ -159,7 +158,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return this.getIndexBudget(institutionId, year, type);
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -169,13 +167,31 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
-
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
+  }
+
+
+  public long getTotalYear(int year, long type) {
+    long total = 0;
+    if (project.getBudgets() != null) {
+
+      for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+          if (projectBudget.getAmount() != null) {
+            total = total + projectBudget.getAmount();
+          }
+
+        }
+
+      }
+    }
+    return total;
   }
 
 
