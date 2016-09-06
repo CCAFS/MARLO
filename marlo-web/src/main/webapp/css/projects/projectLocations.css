@@ -69,7 +69,7 @@
 .selectWrapper {
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 300px;
 }
 
 #map {
@@ -79,6 +79,7 @@
 
 .map {
     height: 300px;
+    margin-bottom: 30px;
 }
 
 .selectLocationLevel {

@@ -39,7 +39,6 @@
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
             [#-- Content--]
-            <div id="content" class="col-md-12">
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-6">
                 [#-- Content collapsible--]
@@ -57,7 +56,6 @@
                 <div id="map" class="col-md-12"></div>
               </div>
                 
-            </div>
             [#if editable]
             [#-- locations level Select --]
             <select name="" id="" class="selectLocationLevel select " >

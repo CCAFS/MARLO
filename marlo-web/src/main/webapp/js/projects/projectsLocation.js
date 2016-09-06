@@ -189,6 +189,7 @@ function addLocationLevel(option) {
   var name = optionValue[2];
   if(isList === "true") {
     $item.find(".selectLocation").css("display", "block");
+    $item.find(".checkBox").css("display", "block");
   } else {
     $item.find(".coordinates-inputs").css("display", "block");
   }
