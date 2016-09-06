@@ -32,7 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -43,6 +46,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -232,8 +238,33 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
     if (project != null) {
+      Path path = this.getAutoSaveFilePath();
 
-      this.setDraft(false);
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (Project) autoSaveReader.readFromJson(jReader);
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        reader.close();
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+        project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      }
+
+
       Project projectBD = projectManager.getProjectById(projectID);
       project.setStartDate(projectBD.getStartDate());
       project.setEndDate(projectBD.getEndDate());
@@ -253,7 +284,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
       }
     }
-    project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
 
@@ -278,6 +308,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       this.saveBasicBudgets();
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
+
+      project = projectManager.getProjectById(projectID);
       project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
       projectManager.saveProject(project, this.getActionName(), relationsName);

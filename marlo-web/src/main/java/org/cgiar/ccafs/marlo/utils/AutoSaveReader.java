@@ -85,9 +85,7 @@ public class AutoSaveReader {
       listNames.add(keyList);
     }
     for (String keyList : listNames) {
-      if (keyList.equals("partnerContributors")) {
-        System.out.println("partnerContributors");
-      }
+
       HashMap<String, Object> list = this.getListJsonParent(keyList, jobj);
       if (list.size() > 0) {
         jsonNew.putAll(list);
