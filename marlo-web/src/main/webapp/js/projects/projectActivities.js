@@ -7,11 +7,11 @@ function init() {
     width: "100%"
   });
 
-  // ids for inputs date
-  $(".activitiesOG-content").find(".startDate").each(function(index,item) {
-    $(item).attr("id", "startDate-" + index)
-    $(item).parent().parent().find(".endDate").attr("id", "endDate-" + index);
-    date("startDate-" + index, "endDate-" + index);
+  // Ids for inputs date
+  $("form .startDate").each(function(index,item) {
+    $(item).attr("id", "startDate-" + index);
+    $(item).parent().parent().parent().find(".endDate").attr("id", "endDate-" + index);
+    date("#startDate-" + index, "#endDate-" + index);
     countID = index;
   })
 
@@ -19,6 +19,9 @@ function init() {
   $(".addActivity").on("click", addActivity);
   $(".removeActivity").on("click", removeactivity);
   $(".deliverableList").on("change", addDeliverable);
+  $(".activityTitle").on("change", changeTitle);
+  $(".activityTitle").on("keyup", changeTitle);
+  $(".removeDeliverable").on("click", removeDeliverable);
 
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -33,8 +36,20 @@ function init() {
   });
 }
 
+// FUNCTIONS
+
+// change title
+function changeTitle() {
+  var $blockTitle = $(this).parents(".projectActivity").find(".blockTitle");
+  $blockTitle.find("b").html($(this).val());
+  if($blockTitle.find("b").html() == "") {
+    $blockTitle.find("b").html("New Activity");
+  }
+}
+
 // Add a new activity element
 function addActivity() {
+  countID++;
   var $list = $(".activitiesOG-content");
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
   $item.find(".startDate").attr("id", "startDate-" + countID);
@@ -46,12 +61,10 @@ function addActivity() {
     $item.find("select").select2({
       width: "100%"
     });
+    date("#startDate-" + countID, "#endDate-" + countID);
   });
   checkItems($list);
   updateActivities();
-  date("#startDate-" + countID, "#endDate-" + countID);
-  countID++;
-
 }
 
 // Remove activity element
@@ -68,7 +81,7 @@ function removeactivity() {
 
 // Update activities
 function updateActivities() {
-  var name = "activities";
+  var name = "project.openProjectActivities";
   $(".activitiesOG-content").find('.projectActivity').each(function(i,item) {
 
     var customName = name + '[' + i + ']';
@@ -77,7 +90,9 @@ function updateActivities() {
     $(item).find('.activityDescription').attr('name', customName + '.description');
     $(item).find('.startDate').attr('name', customName + '.startDate');
     $(item).find('.endDate').attr('name', customName + '.endDate');
-    $(item).find('.progressDescription').attr('name', customName + '.progressDescription');
+    $(item).find('.activityLeader').attr('name', customName + '.projectPartnerPerson');
+    $(item).find('.activityStatus').attr('name', customName + '.activityStatus');
+    $(item).find('.progressDescription').attr('name', customName + '.activityProgress');
   });
 }
 
@@ -94,12 +109,26 @@ function checkItems(block) {
 
 // Add a new deliverable element
 function addDeliverable() {
-  var $list = $(".deliverableWrapper");
+  var option = $(this).find("option:selected");
+  console.log(option);
+  var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
+  $item.find(".name").html(option.html());
+  $item.find(".id").html(option.val());
   $list.append($item);
   $item.show('slow');
-  checkItems($list);
   updateActivities();
+}
+
+// Remove a new deliverable element
+function removeDeliverable() {
+  var $list = $(this).parents('.deliverableWrapper');
+  var $item = $(this).parents('.deliverableActivity');
+  $item.hide(1000, function() {
+    $item.remove();
+    checkItems($list);
+    updateActivities();
+  });
 
 }
 
