@@ -590,7 +590,6 @@ public class DeliverableAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
@@ -607,10 +606,10 @@ public class DeliverableAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
-
 
   public void setProject(Project project) {
     this.project = project;

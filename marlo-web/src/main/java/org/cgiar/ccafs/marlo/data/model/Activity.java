@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -35,8 +36,12 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   @Expose
   private ProjectPartnerPerson projectPartnerPerson;
+
+
   @Expose
   private Project project;
+
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -60,6 +65,7 @@ public class Activity implements java.io.Serializable, IAuditLog {
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
   @Expose
   private String modificationJustification;
+  private List<DeliverableActivity> deliverables;
 
   public Activity() {
   }
@@ -94,11 +100,9 @@ public class Activity implements java.io.Serializable, IAuditLog {
     return activityProgress;
   }
 
-
   public Integer getActivityStatus() {
     return activityStatus;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -107,6 +111,11 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
+  }
+
+
+  public List<DeliverableActivity> getDeliverables() {
+    return deliverables;
   }
 
 
@@ -207,6 +216,11 @@ public class Activity implements java.io.Serializable, IAuditLog {
 
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
+  }
+
+
+  public void setDeliverables(List<DeliverableActivity> deliverables) {
+    this.deliverables = deliverables;
   }
 
 

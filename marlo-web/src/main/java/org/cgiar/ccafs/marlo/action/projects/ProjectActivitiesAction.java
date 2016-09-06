@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -117,6 +118,11 @@ public class ProjectActivitiesAction extends BaseAction {
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
               .collect(Collectors.toList())));
 
+      for (Activity openActivity : project.getOpenProjectActivities()) {
+        openActivity.setDeliverables(new ArrayList<DeliverableActivity>(
+          openActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      }
+
       project
         .setClosedProjectActivities(
           new ArrayList<Activity>(
@@ -125,6 +131,11 @@ public class ProjectActivitiesAction extends BaseAction {
                 && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
               .collect(Collectors.toList())));
+
+      for (Activity closedActivity : project.getClosedProjectActivities()) {
+        closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(
+          closedActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      }
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -169,26 +180,32 @@ public class ProjectActivitiesAction extends BaseAction {
     }
   }
 
+  public void saveOpenActivities() {
+
+  }
+
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
 
+
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
+
 
 }
