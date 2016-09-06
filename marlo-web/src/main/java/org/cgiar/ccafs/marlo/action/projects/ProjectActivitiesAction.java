@@ -108,8 +108,23 @@ public class ProjectActivitiesAction extends BaseAction {
 
     if (project != null) {
 
-      project.setProjectActivities(new ArrayList<Activity>(
-        project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
+      project
+        .setOpenProjectActivities(
+          new ArrayList<Activity>(
+            project.getActivities().stream()
+              .filter(a -> a.isActive()
+                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+              .collect(Collectors.toList())));
+
+      project
+        .setClosedProjectActivities(
+          new ArrayList<Activity>(
+            project.getActivities().stream()
+              .filter(a -> a.isActive()
+                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+              .collect(Collectors.toList())));
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -130,10 +145,29 @@ public class ProjectActivitiesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_ACTIVITIES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // TODO
+      if (project.getOpenProjectActivities() != null) {
+        project.getOpenProjectActivities().clear();
+      }
+
+      if (project.getClosedProjectActivities() != null) {
+        project.getClosedProjectActivities().clear();
+      }
+
+      if (partnerPersons != null) {
+        partnerPersons.clear();
+      }
     }
   }
 
+  @Override
+  public String save() {
+    if (this.hasPermission("*")) {
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
