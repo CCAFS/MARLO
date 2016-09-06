@@ -38,6 +38,7 @@ public enum ProjectStatusEnum {
     return null;
   }
 
+
   private String status;
 
   private String statusId;
@@ -47,7 +48,6 @@ public enum ProjectStatusEnum {
     this.status = status;
   }
 
-
   public String getStatus() {
     return status;
   }
@@ -55,7 +55,6 @@ public enum ProjectStatusEnum {
   public String getStatusId() {
     return statusId;
   }
-
 
   public void setStatusId(String statusId) {
     this.statusId = statusId;
