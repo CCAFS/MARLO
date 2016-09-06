@@ -136,7 +136,11 @@
       [#-- Activity deliverables --]
       <label for="" class="${editable?string('editable', 'readOnly')}">Deliverables in this activity:</label>
       <div class="deliverableWrapper simpleBox form-group">
-        
+        [#if project.openProjectActivities.deliverables?has_content]
+            [#list project.openProjectActivities.deliverables as deliverable]
+                [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
+            [/#list]
+          [/#if]
       </div>
       <div class="form-group">
         [@customForm.select name="" label=""  i18nkey="Select to add a deliverable" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
@@ -150,7 +154,7 @@
   [#assign deliverableCustomName = "${name}[${index}]" /]
   <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
-    <input class="id" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
+    <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.id)!-1}" />
     <span class="name">${(element.title)!'null'}</span>
     <div class="clearfix"></div>
   </div>
