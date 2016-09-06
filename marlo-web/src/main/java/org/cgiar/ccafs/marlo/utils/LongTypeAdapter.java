@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.utils;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
@@ -32,10 +33,14 @@ public class LongTypeAdapter extends TypeAdapter<Long> {
       return null;
     }
     String stringValue = reader.nextString();
+    // stringValue = stringValue.replaceAll(",", "");
     try {
-      Long value = Long.valueOf(stringValue);
+
+
+      Long value = NumberFormat.getNumberInstance(java.util.Locale.US).parse(stringValue).longValue();
+
       return value;
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
       return null;
     }
   }

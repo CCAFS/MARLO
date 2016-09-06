@@ -54,15 +54,15 @@
                   <div class="row">
                     [#-- W1/W2 --]
                     [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-w1w2">0.00</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-w1w2">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
                     [/#if]
                     [#-- W3 --]
-                    <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-w3">0.00</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-w3">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
                     [#-- Bilateral  --]
-                    <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-bilateral">0.00</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-bilateral">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
                     [#-- Center Funds --]
                     [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-centerFunds">0.00</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-centerFunds">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
                     [/#if]
                   </div>
                 </div>
