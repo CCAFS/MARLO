@@ -45,8 +45,11 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
    * 
    */
   private static final long serialVersionUID = 1L;
+
   // Variables
   private Crp loggedCrp;
+
+
   private CrpManager crpManager;
   // XLS bytes
   private byte[] bytesXLS;
@@ -58,6 +61,7 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
     super(config);
     this.crpManager = crpManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -76,6 +80,7 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
     Number idParam = loggedCrp.getId();
 
     masterReport.getParameterValues().put("crp_id", idParam);
+
 
     ExcelReportUtil.createXLS(masterReport, os);
     bytesXLS = os.toByteArray();
@@ -125,10 +130,10 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   @Override
   public void prepare() {
@@ -141,6 +146,7 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
 
 
   }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
