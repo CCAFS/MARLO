@@ -6053,3 +6053,7 @@ span.programTag {
 .contact {
     font-size: 0.9em;
 }
+
+textarea{
+	resize:none;
+}
