@@ -118,9 +118,11 @@ public class ProjectActivitiesAction extends BaseAction {
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
               .collect(Collectors.toList())));
 
-      for (Activity openActivity : project.getOpenProjectActivities()) {
-        openActivity.setDeliverables(new ArrayList<DeliverableActivity>(
-          openActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      if (project.getOpenProjectActivities() != null) {
+        for (Activity openActivity : project.getOpenProjectActivities()) {
+          openActivity.setDeliverables(new ArrayList<DeliverableActivity>(
+            openActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+        }
       }
 
       project
@@ -132,9 +134,11 @@ public class ProjectActivitiesAction extends BaseAction {
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
               .collect(Collectors.toList())));
 
-      for (Activity closedActivity : project.getClosedProjectActivities()) {
-        closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(
-          closedActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      if (project.getClosedProjectActivities() != null) {
+        for (Activity closedActivity : project.getClosedProjectActivities()) {
+          closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
+            .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+        }
       }
 
       status = new HashMap<>();
