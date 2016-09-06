@@ -232,8 +232,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
     if (project != null) {
+
       this.setDraft(false);
-      project.setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      Project projectBD = projectManager.getProjectById(projectID);
+      project.setStartDate(projectBD.getStartDate());
+      project.setEndDate(projectBD.getEndDate());
+
+      project
+        .setPartners(projectBD.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
       for (ProjectPartner projectPartner : project.getPartners()) {
         projectPartner.setPartnerPersons(
