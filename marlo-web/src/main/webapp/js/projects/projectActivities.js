@@ -18,6 +18,7 @@ function init() {
   // Events
   $(".addActivity").on("click", addActivity);
   $(".removeActivity").on("click", removeactivity);
+  $(".deliverableList").on("change", addDeliverable);
 
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -38,12 +39,19 @@ function addActivity() {
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
   $item.find(".startDate").attr("id", "startDate-" + countID);
   $item.find(".endDate").attr("id", "endDate-" + countID);
+
   $list.append($item);
-  $item.show('slow');
+  $item.show('slow', function() {
+    $item.find("textarea").autoGrow();
+    $item.find("select").select2({
+      width: "100%"
+    });
+  });
   checkItems($list);
   updateActivities();
   date("#startDate-" + countID, "#endDate-" + countID);
   countID++;
+
 }
 
 // Remove activity element
@@ -82,6 +90,17 @@ function checkItems(block) {
   } else {
     $(block).parent().find('p.emptyText').fadeOut();
   }
+}
+
+// Add a new deliverable element
+function addDeliverable() {
+  var $list = $(".deliverableWrapper");
+  var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  checkItems($list);
+  updateActivities();
+
 }
 
 function date(start,end) {
