@@ -24,6 +24,9 @@ package org.cgiar.ccafs.marlo.config;
  */
 public final class APConstants {
 
+  // end year
+  public static Integer END_YEAR = 2022;
+
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";
@@ -134,6 +137,8 @@ public final class APConstants {
   public static final String PROJECT_FOCUSES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectFocuses)";
 
+  public static final String PROJECT_BUDGETS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgets)";
 
   public static final String PROJECT_OUTCOMES_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectMilestones)";

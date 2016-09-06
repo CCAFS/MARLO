@@ -176,9 +176,11 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     return projectOutcome;
   }
 
+
   public int getYear() {
     return year;
   }
+
 
   @Override
   public int hashCode() {
@@ -264,7 +266,6 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
     this.narrativeTarget = narrativeTarget;
   }
 
-
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;
   }
@@ -272,7 +273,6 @@ public class ProjectMilestone implements java.io.Serializable, IAuditLog {
   public void setYear(int year) {
     this.year = year;
   }
-
 
 }
 

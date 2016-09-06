@@ -36,6 +36,7 @@ public class Permission {
   public static final String PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION = "crp:{0}:project:{1}:contributionCrp";
   public static final String PROJECT_DESCRIPTION_PERMISSION = "crp:{0}:project:{1}:description:*";
   public static final String PROJECT_PARTNER_BASE_PERMISSION = "crp:{0}:project:{1}:partners";
+  public static final String PROJECT_BUDGET_BASE_PERMISSION = "crp:{0}:project:{1}:budget";
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:location";
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
@@ -46,6 +47,7 @@ public class Permission {
   public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =
     "crp:{0}:project:{1}:deliverablesList:removeOldDeliverables";
   public static final String PROJECT_DELIVERABLE_BASE_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";
+  public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities:canEdit";
 
 
 }

@@ -66,6 +66,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -86,7 +87,11 @@ public class OutcomesAction extends BaseAction {
 
 
   private CrpMilestoneManager crpMilestoneManager;
+
+
   private long crpProgramID;
+
+
   private String transaction;
   private CrpProgramManager crpProgramManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -105,8 +110,7 @@ public class OutcomesAction extends BaseAction {
   private CrpManager crpManager;
   private UserManager userManager;
   private List<SrfIdo> srfIdos;
-
-
+  private List<Integer> milestoneYears;
   private AuditLogManager auditLogManager;
 
   @Inject
@@ -129,6 +133,7 @@ public class OutcomesAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.srfSubIdoManager = srfSubIdoManager;
   }
+
 
   @Override
   public String cancel() {
@@ -161,11 +166,9 @@ public class OutcomesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public long getCrpProgramID() {
     return crpProgramID;
   }
-
 
   public HashMap<Long, String> getIdoList() {
     return idoList;
@@ -177,14 +180,19 @@ public class OutcomesAction extends BaseAction {
   }
 
 
+  public List<Integer> getMilestoneYears() {
+    return milestoneYears;
+  }
+
+
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
 
+
   public List<CrpProgram> getPrograms() {
     return programs;
   }
-
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -198,6 +206,27 @@ public class OutcomesAction extends BaseAction {
 
   public HashMap<Long, String> getTargetUnitList() {
     return targetUnitList;
+  }
+
+
+  public List<Integer> getTargetYears() {
+    List<Integer> targetYears = new ArrayList<>();
+
+    Date date = new Date();
+    Calendar calendarStart = Calendar.getInstance();
+    calendarStart.setTime(date);
+
+    Calendar calendarEnd = Calendar.getInstance();
+    calendarEnd.set(Calendar.YEAR, APConstants.END_YEAR);
+
+    while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
+      // Adding the year to the list.
+      targetYears.add(calendarStart.get(Calendar.YEAR));
+      // Adding a year (365 days) to the start date.
+      calendarStart.add(Calendar.YEAR, 1);
+    }
+
+    return targetYears;
   }
 
   public String getTransaction() {
@@ -330,6 +359,8 @@ public class OutcomesAction extends BaseAction {
       }
 
       if (selectedProgram != null) {
+
+        milestoneYears = this.getTargetYears();
 
         Path path = this.getAutoSaveFilePath();
 
@@ -681,6 +712,11 @@ public class OutcomesAction extends BaseAction {
   }
 
 
+  public void setMilestoneYears(List<Integer> milestoneYears) {
+    this.milestoneYears = milestoneYears;
+  }
+
+
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
   }
@@ -690,7 +726,6 @@ public class OutcomesAction extends BaseAction {
     this.programs = programs;
   }
 
-
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
   }
@@ -699,10 +734,10 @@ public class OutcomesAction extends BaseAction {
     this.srfIdos = srfIdos;
   }
 
+
   public void setTargetUnitList(HashMap<Long, String> targetUnitList) {
     this.targetUnitList = targetUnitList;
   }
-
 
   public void setTransaction(String transactionId) {
     this.transaction = transactionId;

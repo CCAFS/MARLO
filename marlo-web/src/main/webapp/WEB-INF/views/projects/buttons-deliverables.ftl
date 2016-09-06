@@ -12,7 +12,7 @@
     [#-- History Log --]
     [#if action.getListLog(deliverable)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=action.getListLog(deliverable) itemName="projectID" itemId=deliverable.id /]
+      [@logHistory.logList list=action.getListLog(deliverable) itemName="deliverableID" itemId=deliverable.id /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
