@@ -11,6 +11,9 @@ function init() {
   // Setting Percentage Inputs
   $('input.percentageInput').percentageInput();
 
+  // Update totals year once
+  updateAllCurrencies();
+
   // Attaching events
   attachEvents();
 }
@@ -64,25 +67,30 @@ function attachEvents() {
   $('input.currencyInput').on('keyup', function() {
     var type = getBudgetType($(this));
     updateBudgetCurrency(type);
-
   });
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    updateAllCurrencies();
+  })
 
 }
 
 function updateBudgetCurrency(type) {
   var total = calculateBudgetCurrency(type);
-  if(type == "w3" || "bilateral") {
-    console.log('asd');
-  }
-  var $target = $('span.totalByYear-' + type);
+  var $target = $('.tab-pane.active .totalByYear-' + type);
   $target.text(setCurrencyFormat(total));
   // Animate CSS
-  $target.aminateCss('flipInX');
+  $target.parent().animateCss('flipInX');
+
+  if((type == "w3") || (type == "bilateral")) {
+    console.log($('.tab-pane.active .totalByPartner-' + type));
+    $('.tab-pane.active .totalByPartner-' + type).text(setCurrencyFormat(total));
+  }
 }
 
 function calculateBudgetCurrency(type) {
   var total = 0
-  $('input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
+  $('.tab-pane.active input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val());
   });
   return total
@@ -98,4 +106,11 @@ function getBudgetType(input) {
     }
   });
   return((type.join(' ')) || 'none')
+}
+
+function updateAllCurrencies() {
+  updateBudgetCurrency('w1w2');
+  updateBudgetCurrency('w3');
+  updateBudgetCurrency('bilateral');
+  updateBudgetCurrency('centerFunds');
 }

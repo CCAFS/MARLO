@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -62,12 +64,16 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private CrpManager crpManager;
 
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
+
 
   @Inject
-  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
+  public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+    ProjectPartnerPersonManager projectPartnerPersonManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.projectPartnerPersonManager = projectPartnerPersonManager;
   }
 
   public Crp getLoggedCrp() {
@@ -102,6 +108,9 @@ public class ProjectActivitiesAction extends BaseAction {
 
     if (project != null) {
 
+      project.setProjectActivities(new ArrayList<Activity>(
+        project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
+
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
       for (ProjectStatusEnum projectStatusEnum : list) {
@@ -111,6 +120,9 @@ public class ProjectActivitiesAction extends BaseAction {
       project.setProjectDeliverables(new ArrayList<Deliverable>(
         project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
 
+      partnerPersons = projectPartnerPersonManager.findAll().stream()
+        .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
+        .collect(Collectors.toList());
 
     }
 
