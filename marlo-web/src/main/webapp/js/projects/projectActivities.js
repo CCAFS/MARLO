@@ -87,12 +87,15 @@ function updateActivities() {
     var customName = name + '[' + i + ']';
     $(item).find('.activityIndex span b').html("Activity #" + (i + 1));
     $(item).find('.activityTitle').attr('name', customName + '.title');
+    $(item).find('.activityId').attr('name', customName + '.id');
     $(item).find('.activityDescription').attr('name', customName + '.description');
     $(item).find('.startDate').attr('name', customName + '.startDate');
     $(item).find('.endDate').attr('name', customName + '.endDate');
     $(item).find('.activityLeader').attr('name', customName + '.projectPartnerPerson');
     $(item).find('.activityStatus').attr('name', customName + '.activityStatus');
     $(item).find('.progressDescription').attr('name', customName + '.activityProgress');
+
+    updateDeliverable(item, customName);
   });
 }
 
@@ -114,7 +117,7 @@ function addDeliverable() {
   var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
   $item.find(".name").html(option.html());
-  $item.find(".id").html(option.val());
+  $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');
   updateActivities();
@@ -130,6 +133,14 @@ function removeDeliverable() {
     updateActivities();
   });
 
+}
+
+function updateDeliverable(item,activityName) {
+  var name = "deliverables";
+  $(item).find('.deliverableActivity').each(function(indexDeliverable,deliverableItem) {
+    var customName = activityName + '.' + name + '[' + indexDeliverable + ']';
+    $(deliverableItem).find('.id').attr('name', customName + 'deliverable.id');
+  });
 }
 
 function date(start,end) {
