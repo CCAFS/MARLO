@@ -11,9 +11,6 @@ function init() {
   // Setting Percentage Inputs
   $('input.percentageInput').percentageInput();
 
-  // Update totals year once
-  updateAllCurrencies();
-
   // Attaching events
   attachEvents();
 }
@@ -21,8 +18,9 @@ function init() {
 function attachEvents() {
 
   /**
-   * General
+   * General:
    */
+  // Collapsible partners content
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
       // $('.blockContent').slideUp();
@@ -37,55 +35,69 @@ function attachEvents() {
   /**
    * W3 Bilateral Funds
    */
+
+  // Change W3/Bilateral Funds budget type
   $('.w3bilateralFund select').on('change', function() {
     var value = $(this).val();
     var $inputs = $(this).parents('.w3bilateralFund').find('input.currencyInput, input.percentageInput');
+    var $partner = $(this).parents('.projectPartner');
     $inputs.removeClass('type-w3 type-bilateral');
     if(value != "-1") {
       $inputs.addClass('type-' + value);
     }
     // Update overalls
-    updateActiveYearCurrency('w3');
-    updateActiveYearCurrency('bilateral');
+    updateActiveYearCurrency('w3', $partner);
+    updateActiveYearCurrency('bilateral', $partner);
   });
 
+  // Remove a W3/Bilateral Fund
   $('.removeW3bilateralFund').on('click', function() {
     var $parent = $(this).parent();
+    var $partner = $(this).parents('.projectPartner');
     $parent.slideUp('slow', function() {
       $parent.remove();
 
       // Update overalls
-      updateActiveYearCurrency('w3');
-      updateActiveYearCurrency('bilateral');
+      updateActiveYearCurrency('w3', $partner);
+      updateActiveYearCurrency('bilateral', $partner);
     });
 
   });
 
   /**
-   * Calculate currency
+   * Calculate currency and percentage
    */
-  $('input.currencyInput').on('keyup', function() {
-    var type = getBudgetType($(this));
-    updateActiveYearCurrency(type);
+  $('input.currencyInput, input.percentageInput').on('keyup', function() {
+    var type = getClassParameter($(this), 'type');
+    var $partner = $(this).parents('.projectPartner');
+    updateActiveYearCurrency(type, $partner)
   });
-
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-    updateAllCurrencies();
-  })
 
 }
 
-function updateActiveYearCurrency(type) {
-  var total = calculateBudgetCurrency(type);
+function updateActiveYearCurrency(type,partner) {
+  var totalyear = calculateBudgetCurrency(type);
   var $target = $('.tab-pane.active .totalByYear-' + type);
-  $target.text(setCurrencyFormat(total));
+  // Set total budget amount of the active year
+  $target.text(setCurrencyFormat(totalyear));
   // Animate CSS
   $target.parent().animateCss('flipInX');
 
+  // If the partner has W3 or Bilateral budgets
   if((type == "w3") || (type == "bilateral")) {
-    console.log($('.tab-pane.active .totalByPartner-' + type));
-    $('.tab-pane.active .totalByPartner-' + type).text(setCurrencyFormat(total));
+    // For each partner
+    $('.tab-pane.active .projectPartner').each(function(i,e) {
+      var totalPartner = calculateBudgetCurrencyByPartner(type, $(e));
+      // Set label no editable amount
+      var $targetPartner = $(e).find('.currencyInput.totalByPartner-' + type);
+      $targetPartner.text(setCurrencyFormat(totalPartner));
+      // Animate CSS
+      $targetPartner.parent().animateCss('flipInX');
+    });
   }
+
+  // Calculate gender
+  calculateGenderBudget(type, $(partner));
 }
 
 function calculateBudgetCurrency(type) {
@@ -93,24 +105,44 @@ function calculateBudgetCurrency(type) {
   $('.tab-pane.active input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
     total = total + removeCurrencyFormat($(e).val());
   });
-  return total
+  return total;
 }
 
-function getBudgetType(input) {
-  var cssName = "type";
-  var check = cssName + "-";
-  var className = $(input).attr('class') || '';
-  var type = $.map(className.split(' '), function(val,i) {
-    if(val.indexOf(check) > -1) {
-      return val.slice(check.length, val.length);
-    }
+function calculateBudgetCurrencyByPartner(type,partner) {
+  var total = 0
+  $(partner).find('input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
+    total = total + removeCurrencyFormat($(e).val());
   });
-  return((type.join(' ')) || 'none')
+  return total;
 }
 
-function updateAllCurrencies() {
-  updateActiveYearCurrency('w1w2');
-  updateActiveYearCurrency('w3');
-  updateActiveYearCurrency('bilateral');
-  updateActiveYearCurrency('centerFunds');
+function calculateGenderBudget(type,partner) {
+  var totalAmount = 0;
+  var percentage = 0;
+  var genderAmount = 0;
+
+  if(((type == "w3") || (type == "bilateral") || (type == "none")) && $('.projectW3bilateralFund').exists()) {
+
+    $(partner).find('.projectW3bilateralFund').each(function(i,e) {
+
+      var amount = removeCurrencyFormat($(e).find('input.currencyInput.type-' + type + ':enabled').val() || "0");
+      var pcg = removePercentageFormat($(e).find('input.percentageInput.type-' + type + ':enabled').val() || "0");
+      totalAmount = totalAmount + amount;
+      genderAmount = genderAmount + ((amount / 100) * pcg);
+    });
+    percentage = ((genderAmount / totalAmount) * 100).toFixed(2);
+
+    if(isNaN(percentage)) {
+      percentage = 0;
+    }
+
+    $(partner).find('.percentageInput.totalByPartner-' + type).text(setPercentageFormat(percentage));
+
+  } else {
+    totalAmount = removeCurrencyFormat($(partner).find('input.currencyInput.type-' + type + ':enabled').val());
+    percentage = removePercentageFormat($(partner).find('input.percentageInput.type-' + type + ':enabled').val());
+    genderAmount = (totalAmount / 100) * percentage;
+  }
+
+  $(partner).find('.percentageAmount.type-' + type + ' span').text(setCurrencyFormat(genderAmount));
 }
