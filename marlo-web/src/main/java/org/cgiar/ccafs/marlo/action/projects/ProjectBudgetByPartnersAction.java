@@ -389,10 +389,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectPartner.setPartnerPersons(
           projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       }
-      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        projectBudget.setProjectBilateralCofinancing(projectBilateralCofinancingManager
-          .getProjectBilateralCofinancingById(projectBudget.getProjectBilateralCofinancing().getId()));
+
+      if (project.getBudgetsCofinancing() != null) {
+        for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
+          projectBudget.setProjectBilateralCofinancing(projectBilateralCofinancingManager
+            .getProjectBilateralCofinancingById(projectBudget.getProjectBilateralCofinancing().getId()));
+        }
       }
+
       this.projectPPAPartners = new ArrayList<ProjectPartner>();
       for (ProjectPartner pp : project.getPartners()) {
         if (this.isPPA(pp.getInstitution())) {
