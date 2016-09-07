@@ -247,11 +247,11 @@
       <h5 class="sectionSubTitle">W3 Funds & Bilateral:</h5>
       <div class="projectW3bilateralFund-block">
         <div class="projectW3bilateralFund-list simpleBox">
-          [#list project.budgetsCofinancing as element]
+          [#list project.budgetsCofinancing as found]
           
-          [#if element.year=selectedYear]
-           [#local indexBudgetBilateral=action.getIndexBudgetCofinancing(element.institution.id,element.projectBilateralCofinancing.id,selectedYear,3) ]
-            [@w3bilateralFundMacro element=element name="project.budgetsCofinancing" index=indexBudgetBilateral /]
+          [#if found.year=selectedYear && element.institution.id=found.institution.id] 
+           [#local indexBudgetBilateral=action.getIndexBudgetCofinancing(found.institution.id,found.projectBilateralCofinancing.id,selectedYear,3) ]
+            [@w3bilateralFundMacro element=found name="project.budgetsCofinancing" index=indexBudgetBilateral /]
           [/#if]
           [/#list]
         </div>
@@ -270,11 +270,12 @@
     [#if editable]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
     <p class="title">${element.projectBilateralCofinancing.title}</p>
-    <p class="title">${element.amount}</p>
+
     <input type="hidden" name="project.budgetsCofinancing[${index}].id" value="${(element.id)!}"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].budgetType.id" value="4"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].year" value="${(selectedYear)!}"/>
+    <input type="hidden" name="project.budgetsCofinancing[${index}].projectBilateralCofinancing.id" value="${(element.projectBilateralCofinancing.id)!}"/>
              
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
@@ -288,7 +289,7 @@
       </div>
       <div class="col-md-3">
         <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="" showTitle=false className="percentageInput" required=true editable=editable /]</div>
+        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPorcentage" showTitle=false className="percentageInput" required=true editable=editable /]</div>
       </div>
     </div>
   </div>
