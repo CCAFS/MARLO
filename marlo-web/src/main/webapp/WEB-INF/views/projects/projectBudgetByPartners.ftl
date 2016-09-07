@@ -307,7 +307,7 @@
       </div>
       <div class="col-md-3">
         <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPorcentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
+        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
       </div>
     </div>
   </div>

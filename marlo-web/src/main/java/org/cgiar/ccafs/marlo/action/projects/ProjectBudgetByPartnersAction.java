@@ -148,10 +148,18 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectBudget.setAmount(new Long(0));
         projectBudget.setGenderPercentage(new Double(0));
         for (ProjectBudget budget : project.getBudgetsCofinancing()) {
-          if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
-            && type == budget.getBudgetType().getId().longValue()) {
-            projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
-            projectBudget.setGenderPercentage(projectBudget.getGenderPercentage() + budget.getGenderPercentage());
+          try {
+            if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
+              && type == budget.getBudgetType().getId().longValue()) {
+              if (budget.getGenderPercentage() != null) {
+                projectBudget.setGenderPercentage(projectBudget.getGenderPercentage() + budget.getGenderPercentage());
+              }
+              if (budget.getAmount() != null) {
+                projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
+              }
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
           }
 
         }
@@ -433,6 +441,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
+      Project projectDB = projectManager.getProjectById(projectID);
+      if (!projectDB.isBilateralProject()) {
+        this.saveBilateralBudgets();
+      }
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
 
@@ -491,6 +503,62 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     if (project.getBudgets() != null) {
       for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (projectBudget != null) {
+          if (projectBudget.getId() == null) {
+            projectBudget.setCreatedBy(this.getCurrentUser());
+
+            projectBudget.setActiveSince(new Date());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+
+          } else {
+            ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+
+            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
+            projectBudget.setActive(true);
+            projectBudget.setProject(project);
+            projectBudget.setModifiedBy(this.getCurrentUser());
+            projectBudget.setModificationJustification("");
+          }
+
+
+          projectBudgetManager.saveProjectBudget(projectBudget);
+        }
+
+      }
+    }
+  }
+
+
+  public void saveBilateralBudgets() {
+    Project projectDB = projectManager.getProjectById(projectID);
+
+    if (!projectDB.isBilateralProject()) {
+
+      project.setBudgets(projectDB.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
+          && c.getProjectBilateralCofinancing() != null)
+        .collect(Collectors.toList()));
+
+
+    }
+    for (ProjectBudget projectBudget : project.getBudgets().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+
+      if (project.getBudgetsCofinancing() == null) {
+        project.setBudgets(new ArrayList<>());
+      }
+      if (!project.getBudgetsCofinancing().contains(projectBudget)) {
+        projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+
+      }
+    }
+
+    if (project.getBudgetsCofinancing() != null) {
+      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
         if (projectBudget != null) {
           if (projectBudget.getId() == null) {
             projectBudget.setCreatedBy(this.getCurrentUser());
