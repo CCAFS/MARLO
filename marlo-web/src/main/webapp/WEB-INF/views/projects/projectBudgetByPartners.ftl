@@ -299,8 +299,8 @@
     <div class="row w3bilateralFund">
       <div class="col-md-5">
         <div class="row col-md-5"><strong>Type:</strong>  </div>
-        ${(project.budgetsCofinancing[index].budgetType.id)!}
-        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id"  value="${project.budgetsCofinancing[index].budgetType.id}" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
+    
+        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id"  value="${project.budgetsCofinancing[index].getBudgetType().id}" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>
