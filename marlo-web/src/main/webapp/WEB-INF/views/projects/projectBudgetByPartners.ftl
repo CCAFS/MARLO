@@ -287,7 +287,7 @@
     [#-- remove --]
     [#if editable]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="title">${element.projectBilateralCofinancing.title}</p>
+    <p class="title">P${element.projectBilateralCofinancing.id} ${element.projectBilateralCofinancing.title}</p>
 
     <input type="hidden" name="project.budgetsCofinancing[${index}].id" value="${(element.id)!}"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].institution.id" value="${(element.institution.id)!}"/>

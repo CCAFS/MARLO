@@ -136,7 +136,31 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public ProjectBudget getBudget(Long institutionId, int year, long type) {
 
-    return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
+    if (!project.isBilateralProject()) {
+      if (type == 1 || type == 4) {
+
+        return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
+      } else {
+        ProjectBudget projectBudget = new ProjectBudget();
+        projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
+        projectBudget.setYear(year);
+        projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
+        projectBudget.setAmount(new Long(0));
+        projectBudget.setGenderPercentage(new Double(0));
+        for (ProjectBudget budget : project.getBudgetsCofinancing()) {
+          if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
+            && type == budget.getBudgetType().getId().longValue()) {
+            projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
+            projectBudget.setGenderPercentage(projectBudget.getGenderPercentage() + budget.getGenderPercentage());
+          }
+
+        }
+        return projectBudget;
+      }
+    } else {
+
+      return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
+    }
   }
 
   public ProjectBudget getBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
@@ -234,6 +258,19 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       }
     }
+
+    if (project.getBudgetsCofinancing() != null) {
+
+      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
+        if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+          if (projectBudget.getAmount() != null) {
+            total = total + projectBudget.getAmount();
+          }
+
+        }
+
+      }
+    }
     return total;
   }
 
@@ -319,13 +356,24 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setBudgets(project.getProjectBudgets().stream()
-          .filter(c -> c.isActive() && c.getBudgetType().getId() != 3 && c.getProjectBilateralCofinancing() == null)
-          .collect(Collectors.toList()));
 
-        project.setBudgetsCofinancing(project.getProjectBudgets().stream()
-          .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getProjectBilateralCofinancing() != null)
-          .collect(Collectors.toList()));
+        if (!project.isBilateralProject()) {
+          project.setBudgets(project.getProjectBudgets().stream()
+            .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
+              && c.getProjectBilateralCofinancing() == null)
+            .collect(Collectors.toList()));
+
+          project.setBudgetsCofinancing(project.getProjectBudgets().stream()
+            .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
+              && c.getProjectBilateralCofinancing() != null)
+            .collect(Collectors.toList()));
+        } else {
+          project
+            .setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+        }
+
 
       }
 
@@ -372,6 +420,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     if (this.isHttpPost()) {
       project.getPartners().clear();
+
     }
 
   }
@@ -409,7 +458,22 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
-    for (ProjectBudget projectBudget : projectDB.getProjectBudgets().stream().filter(c -> c.isActive())
+
+    if (!projectDB.isBilateralProject()) {
+      projectDB.setBudgets(projectDB.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
+          && c.getProjectBilateralCofinancing() == null)
+        .collect(Collectors.toList()));
+
+
+    } else {
+      projectDB
+        .setBudgets(projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+    }
+
+    for (ProjectBudget projectBudget : projectDB.getBudgets().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
 
       if (project.getBudgets() == null) {

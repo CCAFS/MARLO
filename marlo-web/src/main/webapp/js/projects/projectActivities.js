@@ -91,7 +91,7 @@ function updateActivities() {
     $(item).find('.activityDescription').attr('name', customName + '.description');
     $(item).find('.startDate').attr('name', customName + '.startDate');
     $(item).find('.endDate').attr('name', customName + '.endDate');
-    $(item).find('.activityLeader').attr('name', customName + '.projectPartnerPerson');
+    $(item).find('.activityLeader').attr('name', customName + '.projectPartnerPerson.id');
     $(item).find('.activityStatus').attr('name', customName + '.activityStatus');
     $(item).find('.progressDescription').attr('name', customName + '.activityProgress');
 
