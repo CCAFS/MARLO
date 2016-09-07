@@ -32,12 +32,12 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           
-          <h3 class="headTitle">[@s.text name="projectActivities.title" /]</h3>
+          <h3 class="headTitle">Project Activities</h3>
           
           
           
           <div class="activitiesOG-content simpleBox">
-          <h4 class="subTitle headTitle">Activities on going</h4>
+          <h4 class="subTitle headTitle">On going activities</h4>
           <hr />
           [#if project.openProjectActivities?has_content]
             [#list project.openProjectActivities as activity]
@@ -136,11 +136,11 @@
       [#-- Activity deliverables --]
       <label for="" class="${editable?string('editable', 'readOnly')}">Deliverables in this activity:</label>
       <div class="deliverableWrapper simpleBox form-group">
-        [#if project.openProjectActivities.deliverables?has_content]
-            [#list project.openProjectActivities.deliverables as deliverable]
-                [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
-            [/#list]
-          [/#if]
+        [#if element.deliverables?has_content]
+          [#list element.deliverables as deliverable]
+              [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
+          [/#list]
+        [/#if]
       </div>
       <div class="form-group">
         [@customForm.select name="" label=""  i18nkey="Select to add a deliverable" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
