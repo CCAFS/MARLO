@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -63,6 +64,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private BudgetTypeManager budgetTypeManager;
   private ProjectManager projectManager;
   private ProjectBudgetManager projectBudgetManager;
+  private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
   private CrpManager crpManager;
   private long projectID;
   private Crp loggedCrp;
@@ -76,7 +78,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
-    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager) {
+    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
+    ProjectBilateralCofinancingManager projectBilateralCofinancingManager) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -85,6 +88,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
+    this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
+
   }
 
   @Override
@@ -134,6 +139,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
   }
 
+  public ProjectBudget getBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
+
+    return project.getBudgetsCofinancing()
+      .get(this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type));
+  }
+
+
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
       int i = 0;
@@ -156,6 +168,37 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     project.getBudgets().add(projectBudget);
 
     return this.getIndexBudget(institutionId, year, type);
+  }
+
+  public int getIndexBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
+    if (project.getBudgetsCofinancing() != null) {
+      int i = 0;
+      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
+        if (projectBudget.getProjectBilateralCofinancing() != null
+          || projectBudget.getProjectBilateralCofinancing().getId() != null) {
+          if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+            && projectBudget.getProjectBilateralCofinancing().getId().longValue() == projectCofinanceId.longValue()
+            && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+            return i;
+          }
+        }
+
+        i++;
+      }
+
+    } else {
+      project.setBudgets(new ArrayList<>());
+    }
+
+    ProjectBudget projectBudget = new ProjectBudget();
+    projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
+    projectBudget.setYear(year);
+    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
+    projectBudget.setProjectBilateralCofinancing(
+      projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectCofinanceId));
+    project.getBudgetsCofinancing().add(projectBudget);
+
+    return this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type);
   }
 
   public Crp getLoggedCrp() {
@@ -276,7 +319,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setBudgets(project.getProjectBudgets().stream()
+          .filter(c -> c.isActive() && c.getBudgetType().getId() != 3 && c.getProjectBilateralCofinancing() == null)
+          .collect(Collectors.toList()));
+
+        project.setBudgetsCofinancing(project.getProjectBudgets().stream()
+          .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getProjectBilateralCofinancing() != null)
+          .collect(Collectors.toList()));
 
       }
 
