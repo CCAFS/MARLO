@@ -120,7 +120,7 @@
       
       [#-- Activity leader --]
       <div class="form-group">
-        [@customForm.select name="${customName}.projectPartnerPerson" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" disabled=!editable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" disabled=!editable/]
       </div>
       
       [#-- Activity status --]
@@ -138,7 +138,7 @@
       <div class="deliverableWrapper simpleBox form-group">
         [#if element.deliverables?has_content]
           [#list element.deliverables as deliverable]
-              [@deliverablesMacro element=deliverable name="${customName}.deliverableActivities"  index=deliverable_index isActive=false /]
+              [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
           [/#list]
         [/#if]
       </div>
@@ -154,7 +154,8 @@
   [#assign deliverableCustomName = "${name}[${index}]" /]
   <div id="deliverableActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="deliverableActivity  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
-    <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.id)!-1}" />
+    <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
+    <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
     <span class="name">${(element.title)!'null'}</span>
     <div class="clearfix"></div>
   </div>
