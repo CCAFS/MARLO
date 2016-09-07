@@ -211,6 +211,7 @@ public class AutoSaveReader {
     Gson gson = new GsonBuilder().serializeNulls().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
       .registerTypeAdapter(Long.class, new LongTypeAdapter()).registerTypeAdapter(Double.class, new DoubleTypeAdapter())
       .registerTypeAdapter(Float.class, new FloatTypeAdapter())
+      .registerTypeAdapter(Number.class, new IntegerTypeAdapter())
       .registerTypeAdapter(BigDecimal.class, new BigDecimalTypeAdapter())
       .registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
     HashMap<String, Object> jsonNew = this.convertJSONFormat(gson.toJson(jobj));

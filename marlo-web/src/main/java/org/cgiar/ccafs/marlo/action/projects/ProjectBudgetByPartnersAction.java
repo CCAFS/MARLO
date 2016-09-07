@@ -275,8 +275,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     w3bilateralBudgetTypes = new HashMap<>();
-    w3bilateralBudgetTypes.put("w3", "W3");
-    w3bilateralBudgetTypes.put("bilateral", "Bilateral");
+    w3bilateralBudgetTypes.put("2", "W3");
+    w3bilateralBudgetTypes.put("3", "Bilateral");
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
@@ -341,7 +341,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectPartner.setPartnerPersons(
           projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       }
-
+      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
+        projectBudget.setProjectBilateralCofinancing(projectBilateralCofinancingManager
+          .getProjectBilateralCofinancingById(projectBudget.getProjectBilateralCofinancing().getId()));
+      }
       this.projectPPAPartners = new ArrayList<ProjectPartner>();
       for (ProjectPartner pp : project.getPartners()) {
         if (this.isPPA(pp.getInstitution())) {

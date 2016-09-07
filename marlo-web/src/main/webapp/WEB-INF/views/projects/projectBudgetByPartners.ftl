@@ -251,7 +251,7 @@
           
           [#if found.year=selectedYear && element.institution.id=found.institution.id] 
            [#local indexBudgetBilateral=action.getIndexBudgetCofinancing(found.institution.id,found.projectBilateralCofinancing.id,selectedYear,3) ]
-            [@w3bilateralFundMacro element=found name="project.budgetsCofinancing" index=indexBudgetBilateral /]
+            [@w3bilateralFundMacro element=found name="project.budgetsCofinancing" selectedYear=selectedYear  index=indexBudgetBilateral /]
           [/#if]
           [/#list]
         </div>
@@ -264,7 +264,7 @@
   </div>
 [/#macro]
 
-[#macro w3bilateralFundMacro element name index=-1 isTemplate=false]
+[#macro w3bilateralFundMacro element name selectedYear index=-1  isTemplate=false]
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#-- remove --]
     [#if editable]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
@@ -273,7 +273,7 @@
 
     <input type="hidden" name="project.budgetsCofinancing[${index}].id" value="${(element.id)!}"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].institution.id" value="${(element.institution.id)!}"/>
-    <input type="hidden" name="project.budgetsCofinancing[${index}].budgetType.id" value="4"/>
+
     <input type="hidden" name="project.budgetsCofinancing[${index}].year" value="${(selectedYear)!}"/>
     <input type="hidden" name="project.budgetsCofinancing[${index}].projectBilateralCofinancing.id" value="${(element.projectBilateralCofinancing.id)!}"/>
              
@@ -281,7 +281,7 @@
     <div class="row w3bilateralFund">
       <div class="col-md-5">
         <div class="row col-md-5"><strong>Type:</strong>  </div>
-        <div class="row col-md-9">[@customForm.select name="" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
+        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id" value="${project.budgetsCofinancing[index].budgetType.id}" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>
