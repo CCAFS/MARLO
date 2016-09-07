@@ -94,3 +94,8 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
     margin: 0;
     padding: 0 0 9px 0px;
 }
+
+.percentageAmount {
+    color: #ccc;
+    /* font-style: italic; */
+}

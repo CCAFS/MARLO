@@ -140,8 +140,13 @@
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
             <td class="budgetColumn">
-              [#local indexBudgetW1W2 =action.getIndexBudget(element.institution.id,selectedYear,1) ]
-              [#local budgetW1W2 = action.getBudget(element.institution.id,selectedYear,1) ]
+              [#attempt]
+                [#local indexBudgetW1W2 =action.getIndexBudget(element.institution.id,selectedYear,1) ]
+                [#local budgetW1W2 = action.getBudget(element.institution.id,selectedYear,1) ]
+              [#recover]
+                [#local indexBudgetW1W2 = 0 ]
+                [#local budgetW1W2 = {} ]
+              [/#attempt]
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].id" value="${(budgetW1W2.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].institution.id" value="${(element.institution.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].budgetType.id" value="1"/>

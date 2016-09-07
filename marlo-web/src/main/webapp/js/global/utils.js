@@ -263,6 +263,27 @@ function getParameterByName(name,url) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+/**
+ * Get Parameter from a class, example:
+ * <p class="parameter-100">, the function will return 100
+ * 
+ * @param selector
+ *          <p class="parameter-100">
+ *          </p>
+ * @param cssName parameter
+ * @returns
+ */
+function getClassParameter(selector,cssName) {
+  var check = cssName + "-";
+  var className = $(selector).attr('class') || '';
+  var type = $.map(className.split(' '), function(val,i) {
+    if(val.indexOf(check) > -1) {
+      return val.slice(check.length, val.length);
+    }
+  });
+  return((type.join(' ')) || 'none');
+}
+
 function getSerializeForm() {
   var result = '';
   $("form").each(function(indexForm,form) {
@@ -273,7 +294,7 @@ function getSerializeForm() {
       }
     });
   });
-  return result
+  return result;
 }
 
 function setCurrency(event) {
