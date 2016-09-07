@@ -138,10 +138,11 @@ function removeDeliverable() {
 }
 
 function updateDeliverable(item,activityName) {
-  var name = "deliverableActivities";
+  var name = "deliverables";
   $(item).find('.deliverableActivity').each(function(indexDeliverable,deliverableItem) {
     var customName = activityName + '.' + name + '[' + indexDeliverable + ']';
     $(deliverableItem).find('.id').attr('name', customName + '.deliverable.id');
+    $(deliverableItem).find('.idTable').attr('name', customName + '.id');
   });
 }
 
