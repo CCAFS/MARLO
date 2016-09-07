@@ -161,6 +161,9 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
 
+  public static final String PROJECT_ACTIVITIES_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
+
   public static final String PROJECT_SCOPES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectScopes)";
 

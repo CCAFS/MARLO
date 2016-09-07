@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -64,6 +64,17 @@ public class DeliverableActivityMySQLDAO implements DeliverableActivityDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId) {
+    String query = "from " + DeliverableActivity.class.getName() + " where deliverable_id= " + deliverableId
+      + " and activity_id= " + activityId;
+    List<DeliverableActivity> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
   }
 
   @Override
