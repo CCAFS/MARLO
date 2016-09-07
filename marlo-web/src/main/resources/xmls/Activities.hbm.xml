@@ -61,7 +61,7 @@
 				<column name="activity_id" not-null="true" />
 			</key>
 			<one-to-many
-				class="org.cgiar.ccafs.marlo.data.model.Activity" />
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
 		</set>
 	</class>
 </hibernate-mapping>
