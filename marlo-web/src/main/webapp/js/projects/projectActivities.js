@@ -116,7 +116,9 @@ function addDeliverable() {
   console.log(option);
   var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
-  $item.find(".name").html(option.html());
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+  $item.find(".name").attr("title", $(option).text()).tooltip();
+  $item.find(".name").html(v);
   $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');

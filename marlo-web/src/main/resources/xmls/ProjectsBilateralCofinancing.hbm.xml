@@ -44,5 +44,14 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
+         <property name="budget" type="java.lang.Long">
+            <column name="budget" precision="10" scale="0" />
+        </property>
+        <set name="projectBudgets" table="project_budgets" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="cofinance_project_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+        </set>
     </class>
 </hibernate-mapping>
