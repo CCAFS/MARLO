@@ -88,12 +88,17 @@ function attachEvents() {
     var latitude = $(this).parent().find(".latitude").val();
     var longitude = $(this).parent().find(".longitude").val();
     var name = $(this).parent().find(".name").val();
-    if(latitude != "" && latitude != null && longitude != "" && longitude != null && name != "" && name != null) {
-      if(isCoordinateValid(latitude, longitude)) {
-        addLocationForm($(this).parent().parent(), latitude, longitude, name);
+    if(name != "") {
+      $(this).parent().find(".name").removeClass('fieldError');
+      if(latitude != "" && latitude != null && longitude != "" && longitude != null) {
+        if(isCoordinateValid(latitude, longitude)) {
+          addLocationForm($(this).parent().parent(), latitude, longitude, name);
+        }
+      } else {
+        addLocationForm($(this).parent().parent(), 9, -8, name);
       }
     } else {
-      addLocationForm($(this).parent().parent(), 9, -8, 'New location');
+      $(this).parent().find(".name").addClass('fieldError');
     }
 
   });
@@ -137,9 +142,48 @@ function attachEvents() {
     }
   });
 
+  $(".yes-button-label").on("click", changeLayout);
+  $(".no-button-label").on("click", changeLayout2);
+
 }
 
 // FUNCTIONS
+
+// Changes layout
+function changeLayout() {
+  var selectWrapper = $("#selectsContent");
+  var map = $(".map")
+  map.insertAfter("#selectsContent");
+  selectWrapper.removeClass("col-md-12").addClass("col-md-6");
+  selectWrapper.removeClass("selectWrapper-horizontal");
+  map.removeClass("col-md-12").addClass("col-md-6");
+  selectWrapper.find(".locationLevel").removeClass("locationLevel-horizontal").addClass("col-md-12");
+  selectWrapper.find(".selectWrapper").removeClass("select-horizontal");
+  selectWrapper.find(".selectWrapper").css("width", "auto");
+  // calculateWidthSelect();
+  initMap();
+  showMarkers();
+}
+
+function changeLayout2() {
+  var selectWrapper = $("#selectsContent");
+  var map = $(".map")
+  selectWrapper.insertAfter(".map");
+  selectWrapper.removeClass("col-md-6").addClass("col-md-12");
+  selectWrapper.addClass("selectWrapper-horizontal");
+  map.removeClass("col-md-6").addClass("col-md-12");
+  selectWrapper.find(".locationLevel").removeClass("col-md-12").addClass("locationLevel-horizontal");
+  selectWrapper.find(".selectWrapper").addClass("select-horizontal");
+  calculateWidthSelect();
+  initMap();
+  showMarkers();
+}
+
+// Change width of selectWrapper
+function calculateWidthSelect() {
+  var widthSelect = ($("form .locationLevel").length) * 420;
+  $(".select-horizontal").css("width", widthSelect + "px");
+}
 
 function checkboxAllCountries() {
   $(this).val(true);
@@ -193,10 +237,20 @@ function addLocationLevel(option) {
   } else {
     $item.find(".coordinates-inputs").css("display", "block");
   }
+
   $item.find('.locationLevelId').val(idLocationLevel);
   $item.find('.locationLevelName').val(name);
   $item.find('.isList').val(isList);
-  $list.append($item);
+
+  // Other layout
+  if($list.hasClass("select-horizontal")) {
+    $item.removeClass("col-md-12").addClass("locationLevel-horizontal");
+    var widthSelect = ($("form .locationLevel").length) * 420;
+    $(".select-horizontal").css("width", (widthSelect + 420) + "px");
+    $list.prepend($item);
+  } else {
+    $list.append($item);
+  }
 
   // LocElements options using ajax
   var select = $item.find(".selectLocation ");
@@ -306,6 +360,7 @@ function removeLocationLevelItem() {
   $item.hide(function() {
     $item.remove();
     updateIndex();
+    calculateWidthSelect();
   });
   if($(".selectWrapper").find(".locationLevel").length <= 1) {
     $(".map").hide('slow');

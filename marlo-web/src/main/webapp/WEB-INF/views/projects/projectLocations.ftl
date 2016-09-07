@@ -2,7 +2,7 @@
 [#assign title = "Project Locations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectsLocation.js", "${baseUrl}/js/global/autoSave.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customJS = ["${baseUrl}/js/projects/projectLocations.js", "${baseUrl}/js/global/autoSave.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectLocations.css" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
@@ -39,6 +39,8 @@
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
             [#-- Content--]
+              [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="L1" noLabel="L2" cssClass="" /]
+              
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-6">
                 [#-- Content collapsible--]
@@ -128,7 +130,7 @@
         <div class="col-md-12 coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
           <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
           <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
-          <div class="nameWrapper"><input placeholder="name" class="name form-control" type="text" /></div>
+          <div class="nameWrapper"><input placeholder="name(Required)" class="name form-control" type="text" /></div>
           <span class="addLocation glyphicon glyphicon-plus-sign button-green"></span>
         </div>
         [/#if]

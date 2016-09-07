@@ -58,6 +58,7 @@
     padding: 9px 22px 9px 22px;
     border-radius: 4px;
     position: relative;
+    /* min-height: 100px; */
 }
 
 .collapsible {
@@ -73,6 +74,7 @@
 }
 
 #map {
+    padding: 0;
     height: 100%;
     border: 2px solid #aaa;
 }
@@ -129,4 +131,29 @@ span.lPos {
 
 .locationName {
     cursor: pointer;
+}
+
+.selectWrapper-horizontal {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: 300px;
+    max-width: 100%;
+}
+
+.select-horizontal {
+    width: 2000px;
+}
+
+.locationLevel-horizontal {
+    width: 400px;
+    float: left;
+    margin-right: 20px;
+}
+
+span.select2.select2-container.select2-container--default {
+    margin-top: 15px;
+}
+
+.onoffswitch {
+    margin-bottom: 20px;
 }
