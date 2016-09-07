@@ -120,7 +120,7 @@
       
       [#-- Activity leader --]
       <div class="form-group">
-        [@customForm.select name="${customName}.projectPartnerPerson" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" disabled=!editable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" disabled=!editable/]
       </div>
       
       [#-- Activity status --]
