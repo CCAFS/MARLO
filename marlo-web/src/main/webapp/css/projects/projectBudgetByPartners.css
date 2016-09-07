@@ -99,3 +99,7 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
     color: #ccc;
     /* font-style: italic; */
 }
+
+.projectW3bilateralFund {
+    border: 1px solid #f3f2f2;
+}
