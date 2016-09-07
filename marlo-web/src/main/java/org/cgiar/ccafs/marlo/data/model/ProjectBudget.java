@@ -22,8 +22,9 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private Long id;
   @Expose
   private Institution institution;
+  @Expose
+  private ProjectBilateralCofinancing projectBilateralCofinancing;
 
-  private Project projectCofinance;
   private Project project;
   @Expose
   private User createdBy;
@@ -116,8 +117,9 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-  public Project getProjectCofinance() {
-    return projectCofinance;
+
+  public ProjectBilateralCofinancing getProjectBilateralCofinancing() {
+    return projectBilateralCofinancing;
   }
 
   public int getYear() {
@@ -149,10 +151,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.amount = amount;
   }
 
+
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
-
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -178,12 +180,14 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
   }
 
-  public void setProjectCofinance(Project projectCofinance) {
-    this.projectCofinance = projectCofinance;
+
+  public void setProjectBilateralCofinancing(ProjectBilateralCofinancing projectBilateralCofinancing) {
+    this.projectBilateralCofinancing = projectBilateralCofinancing;
   }
 
   public void setYear(int year) {
