@@ -265,7 +265,7 @@
           [#list project.budgetsCofinancing as found]
           
           [#if found.year=selectedYear && element.institution.id=found.institution.id] 
-           [#local indexBudgetBilateral=action.getIndexBudgetCofinancing(found.institution.id,found.projectBilateralCofinancing.id,selectedYear,3) ]
+           [#local indexBudgetBilateral=action.getIndexBudgetCofinancing(found.institution.id,found.projectBilateralCofinancing.id,selectedYear,found.budgetType.id) ]
             [@w3bilateralFundMacro element=found name="project.budgetsCofinancing" selectedYear=selectedYear  index=indexBudgetBilateral /]
           [/#if]
           [/#list]
@@ -296,7 +296,8 @@
     <div class="row w3bilateralFund">
       <div class="col-md-5">
         <div class="row col-md-5"><strong>Type:</strong>  </div>
-        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
+    
+        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id"  value="${project.budgetsCofinancing[index].getBudgetType().id}" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>
@@ -304,7 +305,7 @@
       </div>
       <div class="col-md-3">
         <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPorcentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
+        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
       </div>
     </div>
   </div>
