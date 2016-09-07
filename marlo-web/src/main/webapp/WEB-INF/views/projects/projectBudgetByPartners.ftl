@@ -17,6 +17,12 @@
 
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign type = { 
+  'w1w2': 'w1w2',
+  'w3': '2',
+  'bilateral': '3',
+  'centerFunds': 'centerFunds'
+} /]
 
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectBudgetByPartners.help" /] </p></div> 
@@ -54,15 +60,15 @@
                   <div class="row">
                     [#-- W1/W2 --]
                     [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-w1w2">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
                     [/#if]
                     [#-- W3 --]
-                    <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-w3">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
                     [#-- Bilateral  --]
-                    <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-bilateral">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
                     [#-- Center Funds --]
                     [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-centerFunds">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
+                    <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
                     [/#if]
                   </div>
                 </div>
@@ -140,21 +146,16 @@
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
             <td class="budgetColumn">
-              [#attempt]
-                [#local indexBudgetW1W2 =action.getIndexBudget(element.institution.id,selectedYear,1) ]
-                [#local budgetW1W2 = action.getBudget(element.institution.id,selectedYear,1) ]
-              [#recover]
-                [#local indexBudgetW1W2 = 0 ]
-                [#local budgetW1W2 = {} ]
-              [/#attempt]
+              [#local indexBudgetW1W2 =action.getIndexBudget(element.institution.id,selectedYear,1) ]
+              [#local budgetW1W2 = action.getBudget(element.institution.id,selectedYear,1) ]
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].id" value="${(budgetW1W2.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].institution.id" value="${(element.institution.id)!}"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].budgetType.id" value="1"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].year" value="${(selectedYear)!}"/>
               [#if editable]
-                [@customForm.input name="project.budgets[${indexBudgetW1W2}].amount" showTitle=false className="currencyInput type-w1w2" required=true  /]
+                [@customForm.input name="project.budgets[${indexBudgetW1W2}].amount" showTitle=false className="currencyInput type-${type.w1w2}" required=true  /]
               [#else]
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-w1w2">${((budgetW1W2.amount)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w1w2}">${((budgetW1W2.amount)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
             </td>
             [/#if]
@@ -167,9 +168,9 @@
               <input type="hidden" name="project.budgets[${indexBudgetW3}].budgetType.id" value="2"/>
               <input type="hidden" name="project.budgets[${indexBudgetW3}].year" value="${(selectedYear)!}"/>
               [#if editable && project.bilateralProject]
-                [@customForm.input name="project.budgets[${indexBudgetW3}].amount" showTitle=false className="currencyInput type-w3" required=true   /]
+                [@customForm.input name="project.budgets[${indexBudgetW3}].amount" showTitle=false className="currencyInput type-${type.w3}" required=true   /]
               [#else]
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-w3">${((budgetW3.amount)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w3}">${((budgetW3.amount)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
             </td>
             [#-- Bilateral  --]
@@ -181,9 +182,9 @@
               <input type="hidden" name="project.budgets[${indexBudgetBilateral}].budgetType.id" value="3"/>
               <input type="hidden" name="project.budgets[${indexBudgetBilateral}].year" value="${(selectedYear)!}"/>
               [#if editable && project.bilateralProject]
-                [@customForm.input name="project.budgets[${indexBudgetBilateral}].amount" showTitle=false className="currencyInput type-bilateral" required=true   /]
+                [@customForm.input name="project.budgets[${indexBudgetBilateral}].amount" showTitle=false className="currencyInput type-${type.bilateral}" required=true   /]
               [#else]
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-bilateral">${((budgetBilateral.amount)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.bilateral}">${((budgetBilateral.amount)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
             </td>
             [#-- Center Funds --]
@@ -196,9 +197,9 @@
               <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].budgetType.id" value="4"/>
               <input type="hidden" name="project.budgets[${indexBudgetCenterFunds}].year" value="${(selectedYear)!}"/>
               [#if editable]
-                [@customForm.input name="project.budgets[${indexBudgetCenterFunds}].amount" showTitle=false className="currencyInput type-centerFunds" required=true /]
+                [@customForm.input name="project.budgets[${indexBudgetCenterFunds}].amount" showTitle=false className="currencyInput type-${type.centerFunds}" required=true /]
               [#else]
-                <div class="input"><p>US$ <span class="currencyInput totalByPartner-centerFunds">${((budgetCenterFunds.amount)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.centerFunds}">${((budgetCenterFunds.amount)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
             </td>
             [/#if]
@@ -211,36 +212,48 @@
             [#if !project.bilateralProject]
             <td class="budgetColumn">
               [#if editable]
-                [@customForm.input name="project.budgets[${indexBudgetW1W2}].genderPercentage" showTitle=false className="percentageInput type-w1w2" required=true  /]
+                [@customForm.input name="project.budgets[${indexBudgetW1W2}].genderPercentage" showTitle=false className="percentageInput type-${type.w1w2}" required=true  /]
               [#else]
-                <div class="input"><p>US$ <span>${((budgetW1W2.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="percentageInput type-${type.w1w2}">${((budgetW1W2.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
+              <div class="percentageAmount type-w1w2 text-center">
+                <small>US$ <span class="percentageInput totalByPartner-${type.w1w2}">${(((budgetW1W2.amount/100)*budgetW1W2.genderPercentage)!0)?string(",##0.00")}</span></small>
+              </div>
             </td>
             [/#if]
             [#-- W3 --]
             <td class="budgetColumn">
               [#if editable && project.bilateralProject]
-                [@customForm.input name="project.budgets[${indexBudgetW3}].genderPercentage" showTitle=false className="percentageInput type-w3" required=true /]
+                [@customForm.input name="project.budgets[${indexBudgetW3}].genderPercentage" showTitle=false className="percentageInput type-${type.w3}" required=true /]
               [#else]
-                <div class="input"><p>US$ <span>${((budgetW3.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="percentageInput type-${type.w3}">${((budgetW3.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
+              <div class="percentageAmount type-${type.w3} text-center">
+                <small>US$ <span>${(((budgetW3.amount/100)*budgetW3.genderPercentage)!0)?string(",##0.00")}</span></small>
+              </div>
             </td>
             [#-- Bilateral  --]
             <td class="budgetColumn">
               [#if editable && project.bilateralProject]
-                [@customForm.input name="project.budgets[${indexBudgetBilateral}].genderPercentage" showTitle=false className="percentageInput type-bilateral" required=true /]
+                [@customForm.input name="project.budgets[${indexBudgetBilateral}].genderPercentage" showTitle=false className="percentageInput type-${type.bilateral}" required=true /]
               [#else]
-                <div class="input"><p>US$ <span>${((budgetBilateral.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="percentageInput type-${type.bilateral}">${((budgetBilateral.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
+              <div class="percentageAmount type-${type.bilateral} text-center">
+                <small>US$ <span>${(((budgetBilateral.amount/100)*budgetBilateral.genderPercentage)!0)?string(",##0.00")}</span></small>
+              </div>
             </td>
             [#-- Center Funds --]
             [#if !project.bilateralProject]
             <td class="budgetColumn">
               [#if editable]
-                [@customForm.input name="project.budgets[${indexBudgetCenterFunds}].genderPercentage" showTitle=false className="percentageInput type-centerFunds" required=true /]
+                [@customForm.input name="project.budgets[${indexBudgetCenterFunds}].genderPercentage" showTitle=false className="percentageInput type-${type.centerFunds}" required=true /]
               [#else]
-                <div class="input"><p>US$ <span>${((budgetCenterFunds.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
+                <div class="input"><p>US$ <span class="percentageInput type-${type.centerFunds}">${((budgetCenterFunds.genderPercentage)!0)?number?string(",##0.00")}</span></p></div>
               [/#if]
+              <div class="row percentageAmount type-${type.centerFunds} text-center">
+                <small>US$ <span>${(((budgetCenterFunds.amount/100)*budgetCenterFunds.genderPercentage)!0)?string(",##0.00")}</span></small>
+              </div>
             </td>
             [/#if]
           </tr>
@@ -286,15 +299,15 @@
     <div class="row w3bilateralFund">
       <div class="col-md-5">
         <div class="row col-md-5"><strong>Type:</strong>  </div>
-        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id" value="${project.budgetsCofinancing[index].budgetType.id}" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
+        <div class="row col-md-9">[@customForm.select name="project.budgetsCofinancing[${index}].budgetType.id" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].amount" showTitle=false className="currencyInput" required=true editable=editable /]</div>
+        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].amount" showTitle=false className="currencyInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
       </div>
       <div class="col-md-3">
         <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPorcentage" showTitle=false className="percentageInput" required=true editable=editable /]</div>
+        <div class="row col-md-7">[@customForm.input name="project.budgetsCofinancing[${index}].genderPorcentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
       </div>
     </div>
   </div>

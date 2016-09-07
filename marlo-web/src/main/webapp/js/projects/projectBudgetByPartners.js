@@ -41,13 +41,13 @@ function attachEvents() {
     var value = $(this).val();
     var $inputs = $(this).parents('.w3bilateralFund').find('input.currencyInput, input.percentageInput');
     var $partner = $(this).parents('.projectPartner');
-    $inputs.removeClass('type-w3 type-bilateral');
+    $inputs.removeClass('type-2 type-3');
     if(value != "-1") {
       $inputs.addClass('type-' + value);
     }
     // Update overalls
-    updateActiveYearCurrency('w3', $partner);
-    updateActiveYearCurrency('bilateral', $partner);
+    updateActiveYearCurrency('2', $partner);
+    updateActiveYearCurrency('3', $partner);
   });
 
   // Remove a W3/Bilateral Fund
@@ -58,8 +58,8 @@ function attachEvents() {
       $parent.remove();
 
       // Update overalls
-      updateActiveYearCurrency('w3', $partner);
-      updateActiveYearCurrency('bilateral', $partner);
+      updateActiveYearCurrency('2', $partner);
+      updateActiveYearCurrency('3', $partner);
     });
 
   });
@@ -84,7 +84,7 @@ function updateActiveYearCurrency(type,partner) {
   $target.parent().animateCss('flipInX');
 
   // If the partner has W3 or Bilateral budgets
-  if((type == "w3") || (type == "bilateral")) {
+  if((type == "2") || (type == "3")) {
     // For each partner
     $('.tab-pane.active .projectPartner').each(function(i,e) {
       var totalPartner = calculateBudgetCurrencyByPartner(type, $(e));
@@ -121,10 +121,9 @@ function calculateGenderBudget(type,partner) {
   var percentage = 0;
   var genderAmount = 0;
 
-  if(((type == "w3") || (type == "bilateral") || (type == "none")) && $('.projectW3bilateralFund').exists()) {
+  if(((type == "2") || (type == "3") || (type == "none")) && $('.projectW3bilateralFund').exists()) {
 
     $(partner).find('.projectW3bilateralFund').each(function(i,e) {
-
       var amount = removeCurrencyFormat($(e).find('input.currencyInput.type-' + type + ':enabled').val() || "0");
       var pcg = removePercentageFormat($(e).find('input.percentageInput.type-' + type + ':enabled').val() || "0");
       totalAmount = totalAmount + amount;
@@ -135,8 +134,8 @@ function calculateGenderBudget(type,partner) {
     if(isNaN(percentage)) {
       percentage = 0;
     }
-
-    $(partner).find('.percentageInput.totalByPartner-' + type).text(setPercentageFormat(percentage));
+    console.log(percentage);
+    $(partner).find('.percentageInput.type-' + type).text(setPercentageFormat(percentage));
 
   } else {
     totalAmount = removeCurrencyFormat($(partner).find('input.currencyInput.type-' + type + ':enabled').val());
