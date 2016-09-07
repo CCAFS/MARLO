@@ -138,7 +138,7 @@
       <div class="deliverableWrapper simpleBox form-group">
         [#if element.deliverables?has_content]
           [#list element.deliverables as deliverable]
-              [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
+              [@deliverablesMacro element=deliverable name="${customName}.deliverableActivities"  index=deliverable_index isActive=false /]
           [/#list]
         [/#if]
       </div>
