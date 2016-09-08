@@ -93,7 +93,11 @@
 
 [#-- Bilateral Co-Funded Project Popup --]
 [#include "/WEB-INF/global/macros/bilateralCoFundedPopup.ftl"]
-  
+
+[#-- W3/bilaterl Fund Template --]
+[@w3bilateralFundMacro element={} name="project.budgetsCofinancing" selectedYear=-1 index=-1  isTemplate=true /]
+
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
@@ -105,8 +109,9 @@
   <div id="projectPartner-${isTemplate?string('template',(element.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
     [#-- Partner Title --]
     <div class="blockTitle opened">
-      [#-- Title --]
-      <span><span class="partnerTitle"></span>${(element.institution.composedName)!'New Project Partner'}</span>
+      [#-- Title --] 
+      <span class="partnerTitle">${(element.institution.composedName)!''}</span>
+      <span class="partnerInstitutionId" style="display:none">${(element.institution.id)!}</span>
       [#-- Tags --]
       <div class="partnerTags pull-right">
         <span class="label label-success type-leader" style="display:${(isLeader?string('inline','none'))!'none'}">Leader</span>
@@ -288,7 +293,7 @@
     [#-- Remove --]
     [#if editable]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="title">P${element.projectBilateralCofinancing.id} -  ${element.projectBilateralCofinancing.title}</p>
+    <p class="title">P${(element.projectBilateralCofinancing.id)!} -  ${(element.projectBilateralCofinancing.title)!}</p>
 
     <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" name="${customName}.institution.id" value="${(element.institution.id)!}"/>

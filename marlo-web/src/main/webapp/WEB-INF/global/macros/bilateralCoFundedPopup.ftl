@@ -9,7 +9,7 @@
         <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
         <h4 class="text-center"> Search a Bilateral Co-funded Project
         <br />
-        <small> {CGIAR Center}  </small>
+        <small class="cgiarCenter"> {CGIAR Center}  </small>
         </h4>
         <hr />
       </div>
@@ -46,9 +46,7 @@
           [#-- Project title --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">
-                [@customForm.textArea name="title" i18nkey="projectCofunded.title"/] 
-              </div>
+              <div class="col-md-12">[@customForm.textArea name="title" i18nkey="projectCofunded.title"/] </div>
             </div>
           </div>
           <div class="form-group">
@@ -60,8 +58,8 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.select name="agreementStatus" i18nkey="projectCofunded.agreementStatus"  listName="" keyFieldName=""  displayFieldName="" required=true /] </div>
-              <div class="col-md-6">[@customForm.input name="budgetAgreementPeriod" i18nkey="projectCofunded.budgetAgreementPeriod" className="currencyInput"/]</div>
+              <div class="col-md-6">[@customForm.select name="agreementStatus" i18nkey="projectCofunded.agreementStatus"  listName="" keyFieldName=""  displayFieldName="" /] </div>
+              <div class="col-md-6">[@customForm.input name="budgetAgreementPeriod" i18nkey="projectCofunded.budgetAgreementPeriod" className=""/]</div>
             </div>
           </div>
           <div class="form-group">
@@ -84,7 +82,7 @@
           [#-- Save button --]
           <br />
           <div class="text-right">
-            <div class="button create-button"> Create Project</div>
+            <div class="button create-button"> Create Project </div>
           </div>
         </div>
       </div> 
@@ -97,9 +95,11 @@
     [#-- User Template --]
     <ul style="display:none"> 
       <li id="userTemplate">
-        <span class="contact name">{composedName}</span>  
-        <span class="listButton select">[@s.text name="form.buttons.select" /]</span>
-        <span class="contactId" style="display:none">{userId}</span>
+        <div class="row">
+          <div class="col-md-1">P<span class="contactId">{userId}</span></div>
+          <div class="col-md-10"><span class="contact name">{composedName}</span></div>
+          <div class="col-md-1"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
+        </div>
       </li> 
     </ul>  
     

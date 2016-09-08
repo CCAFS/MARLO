@@ -1001,7 +1001,7 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel {
     border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 4px;
+    border-radius: 0;
     /* margin: 3px 8px 15px 8px; */
 }
 
@@ -1051,13 +1051,13 @@ select#partnerSave_activityPartner_partner_type_id {
     color: #fff;
     padding: 6px;
     text-align: center;
-    border-radius: 3px 3px 0px 0px;
+    border-radius: 0;
     font-size: 1em;
     /*font-weight: 500;*/
 }
 .panel .panel-body {
     padding: 4px 3px 4px 3px;
-    min-height: 44px;
+    min-height: 68px;
 }
 
 .panel .panel-body > ul{
@@ -1158,8 +1158,9 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .usersList ul {
-  max-height: 204px;
+  max-height: 353px;
   overflow: auto;
+  overflow-x: hidden;
 }
 
 .usersList p.userMessage {
