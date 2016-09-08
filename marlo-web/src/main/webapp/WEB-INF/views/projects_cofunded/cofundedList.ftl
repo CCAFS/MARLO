@@ -2,7 +2,7 @@
 [#assign title = "MARLO Projects cofunded" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
+[#assign customJS = ["${baseUrl}/js/projects_cofunded/cofundedList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "projects cofunded" /]
 
@@ -21,7 +21,6 @@
     <h3 class="headTitle text-center">[@s.text name="Bilateral Co-Funded Projects you are leading  "/]</h3>
     <div class="loadingBlock"></div>
     <div style="display:none">[@cofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="" defaultAction="${(crpSession)!}/cofundedList" /]</div>
-
     <div class="clearfix"></div>
     
   </article>

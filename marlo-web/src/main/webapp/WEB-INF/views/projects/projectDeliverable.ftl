@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
