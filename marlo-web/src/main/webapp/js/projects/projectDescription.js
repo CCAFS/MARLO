@@ -19,10 +19,10 @@ $(document).ready(function() {
       defaultMaxDateValue: $("#maxDateValue").val()
   });
 
-  // setProgramId();
-
   setDisabledCheckedBoxes();
+
   addSelect2();
+
   applyWordCounter($("textarea.project-title"), lWordsElemetTitle);
   applyWordCounter($("textarea.project-description"), lWordsElemetDesc);
 
@@ -72,6 +72,15 @@ $(document).ready(function() {
           });
         }
     });
+  });
+
+  // No regional programmatic focus
+  $('#projectNoRegional').on('click', function() {
+    if(this.checked) {
+      $('input.rpInput').attr("onclick", "return false").addClass('disabled').prop("checked", false);
+    } else {
+      $('input.rpInput').attr("onclick", "").removeClass('disabled');
+    }
   });
 
   /**
@@ -279,12 +288,6 @@ function addSelect2() {
   $("form select").select2();
 }
 
-// Set default Program ID
-function setProgramId() {
-  var programId = $("input#programID").val();
-  $("#projectWorking input[value='" + programId + "']").attr("checked", true).attr("onclick", "return false");
-}
-
 function setDisabledCheckedBoxes() {
-  $('#projectWorking input[type=checkbox]:checked').attr("onclick", "return false").addClass('disabled');
+  $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
 }
