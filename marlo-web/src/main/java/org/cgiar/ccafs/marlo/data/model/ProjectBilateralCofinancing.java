@@ -20,8 +20,12 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
    * 
    */
   private static final long serialVersionUID = -5725787908570331052L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private Institution institution;
   @Expose
@@ -48,13 +52,13 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   private String modificationJustification;
   @Expose
   private Long budget;
+  @Expose
+  private Crp crp;
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-
 
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public Integer getAgreement() {
     return agreement;
@@ -69,6 +73,12 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   public User getCreatedBy() {
     return createdBy;
   }
+
+
+  public Crp getCrp() {
+    return crp;
+  }
+
 
   public Date getEndDate() {
     return endDate;
@@ -142,6 +152,10 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setEndDate(Date endDate) {
