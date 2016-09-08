@@ -139,7 +139,7 @@
         <tbody>
           [#-- Budget Amount --]
           <tr>
-            <td class="amountType"> Budget: </td>
+            <td class="amountType"> Budget:</td>
             [#-- W1/W2 --]
             [#if !project.bilateralProject]
             <td class="budgetColumn">
@@ -298,16 +298,28 @@
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-5">
-        <div class="row col-md-5"><strong>Type:</strong>  </div>
+        <div class="row col-md-4"><strong>Type:</strong>  </div>
         <div class="row col-md-9">[@customForm.select name="${customName}.budgetType.id"  showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=editable /]</div>
       </div>
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Amount:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="${customName}.amount" showTitle=false className="currencyInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
+        <div class="row col-md-7">
+        [#if editable]
+          [@customForm.input name="${customName}.amount" showTitle=false className="currencyInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]
+        [#else]    
+          <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
+        [/#if]  
+        </div>
       </div>
       <div class="col-md-3">
         <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">[@customForm.input name="${customName}.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]</div>
+        <div class="row col-md-7">
+        [#if editable]
+          [@customForm.input name="${customName}.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true editable=editable /]
+        [#else]  
+          <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+        [/#if]
+        </div>
       </div>
     </div>
   </div>

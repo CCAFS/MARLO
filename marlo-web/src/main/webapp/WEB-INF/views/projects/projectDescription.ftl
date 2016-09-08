@@ -31,7 +31,6 @@
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-           
           
           <h3 class="headTitle">[@s.text name="projectDescription.title" /]</h3>  
           <div id="projectDescription" class="borderBox">
@@ -119,7 +118,7 @@
                   <h5>[@s.text name="projectDescription.flagships" /]:</h5>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
-                    [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="flagshipIds" /]
+                    [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
                   [#else]
                     [#if project.flagships?has_content]
                       [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
@@ -135,7 +134,9 @@
                   <h5>[@s.text name="projectDescription.regions" /]:</h5>
                   [#if editable && action.hasPermission("regions")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput"  value="regionsIds" /]
+                    <input type="checkbox" name="project.noRegional" value="1" id="projectNoRegional" class="checkboxInput">
+                    <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
+                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput"  value="regionsIds" /]
                   [#else]
                     [#if project.regions?has_content]
                       [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
@@ -236,7 +237,7 @@
     </div>  
 </section>
 
-[#-- Core project list template --]
+[#-- Cluster of activity list template --]
 <ul style="display:none">
   <li id="cpListTemplate" class="clusterActivity clearfix">
     <span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>
