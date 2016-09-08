@@ -19,6 +19,8 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
@@ -26,27 +28,28 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = 5926712975974248056L;
 
+  @Expose
   private Long id;
 
-
+  @Expose
   private User modifiedBy;
 
-
+  @Expose
   private User createdBy;
 
-
+  @Expose
   private Activity activity;
 
-
+  @Expose
   private Deliverable deliverable;
 
-
+  @Expose
   private boolean active;
 
-
+  @Expose
   private Date activeSince;
 
-
+  @Expose
   private String modificationJustification;
 
 
@@ -65,6 +68,7 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public DeliverableActivity(User modifiedBy, User createdBy, boolean active, Date activeSince,
     String modificationJustification) {
     this.modifiedBy = modifiedBy;
@@ -72,6 +76,29 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableActivity other = (DeliverableActivity) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Date getActiveSince() {
@@ -109,6 +136,14 @@ public class DeliverableActivity implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

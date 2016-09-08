@@ -400,6 +400,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       if (project.getBudgetsCofinancing() != null) {
         for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
+
           projectBudget.setProjectBilateralCofinancing(projectBilateralCofinancingManager
             .getProjectBilateralCofinancingById(projectBudget.getProjectBilateralCofinancing().getId()));
         }
@@ -432,6 +433,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     if (this.isHttpPost()) {
       project.getPartners().clear();
+      project.getBudgetsCofinancing().clear();
+      project.getBudgets().clear();
 
     }
 

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,6 +56,15 @@ public interface DeliverableActivityDAO {
    * @return a list from DeliverableActivity null if no exist records
    */
   public List<DeliverableActivity> findAll();
+
+  /**
+   * This method gets a deliverableActivity object by a given deliverable and activity identifier.
+   * 
+   * @param deliverableId - deliverable identifier
+   * @param activityId - activity identifier
+   * @return a DeliverableActivity object.
+   */
+  public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId);
 
 
   /**

@@ -110,7 +110,7 @@
           
             
             [#--  Regions/global and Flagships that the project is working on --]
-            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /]
+            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /] </h5>
            
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
@@ -199,6 +199,7 @@
             </div>
             
             [#-- Scope of the project --]
+            [#if locScopeElements?has_content]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:</div>
               <div id="projectsScopes" class="panel-body"> 
@@ -222,10 +223,10 @@
                 [/#if] 
               </div>
             </div>
+            [/#if]
             
           </div> 
            
-          
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
              

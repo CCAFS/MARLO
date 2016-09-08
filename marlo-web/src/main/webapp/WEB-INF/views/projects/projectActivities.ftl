@@ -2,7 +2,7 @@
 [#assign title = "Project Activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectActivities.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "activities" /]
@@ -139,7 +139,7 @@
       <div class="deliverableWrapper simpleBox form-group">
         [#if element.deliverables?has_content]
           [#list element.deliverables as deliverable]
-              [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index isActive=false /]
+              [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index /]
           [/#list]
         [/#if]
       </div>
@@ -157,7 +157,8 @@
     [#if editable]<div class="removeDeliverable removeIcon" title="Remove deliverable"></div>[/#if] 
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
-    <span class="name">${(element.title)!'null'}</span>
+    <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.title" value="${(element.deliverable.title)!'null'}" />
+    <span class="name">${(element.deliverable.title)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

@@ -143,6 +143,7 @@ function updateDeliverable(item,activityName) {
     var customName = activityName + '.' + name + '[' + indexDeliverable + ']';
     $(deliverableItem).find('.id').attr('name', customName + '.deliverable.id');
     $(deliverableItem).find('.idTable').attr('name', customName + '.id');
+    $(deliverableItem).find('.title').attr('name', customName + '.deliverable.title');
   });
 }
 

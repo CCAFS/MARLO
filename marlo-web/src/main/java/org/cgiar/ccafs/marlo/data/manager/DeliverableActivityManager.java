@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,6 +55,15 @@ public interface DeliverableActivityManager {
 
 
   /**
+   * This method gets a deliverableActivity object by a given deliverable and activity identifier.
+   * 
+   * @param deliverableId - deliverable identifier
+   * @param activityId - activity identifier
+   * @return a DeliverableActivity object.
+   */
+  public DeliverableActivity findByDeliverableAndActivitie(long deliverableId, long activityId);
+
+  /**
    * This method gets a deliverableActivity object by a given deliverableActivity identifier.
    * 
    * @param deliverableActivityID is the deliverableActivity identifier.
@@ -71,6 +80,4 @@ public interface DeliverableActivityManager {
    *         or -1 is some error occurred.
    */
   public long saveDeliverableActivity(DeliverableActivity deliverableActivity);
-
-
 }
