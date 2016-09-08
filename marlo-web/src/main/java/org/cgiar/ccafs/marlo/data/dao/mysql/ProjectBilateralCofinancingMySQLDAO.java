@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,8 +20,10 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectBilateralCofinancingDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import com.ibm.icu.text.SimpleDateFormat;
 
 public class ProjectBilateralCofinancingMySQLDAO implements ProjectBilateralCofinancingDAO {
 
@@ -78,5 +80,17 @@ public class ProjectBilateralCofinancingMySQLDAO implements ProjectBilateralCofi
     return projectBilateralCofinancing.getId();
   }
 
-
+  @Override
+  public List<ProjectBilateralCofinancing> searchProject(String searchValue, long institutionID, int year) {
+    StringBuilder query = new StringBuilder();
+    query.append("from " + ProjectBilateralCofinancing.class.getName());
+    query.append(" where title like '%" + searchValue + "%' ");
+    query.append("OR id like '%" + searchValue + "%' ");
+    List<ProjectBilateralCofinancing> listProjects = dao.findAll(query.toString());
+    SimpleDateFormat df = new SimpleDateFormat("yyyy");
+    return listProjects.stream()
+      .filter(c -> c.isActive() && c.getLiaisonInstitution().getInstitution().getId().longValue() == institutionID
+        && year <= Integer.parseInt(df.format(c.getEndDate())))
+      .collect(Collectors.toList());
+  }
 }
