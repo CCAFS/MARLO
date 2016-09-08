@@ -105,12 +105,11 @@ public class StandardDAO {
     try {
       session = this.openSession();
 
-      tx = this.initTransaction(session);
 
       if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
         session = this.openSession();
       }
-
+      tx = this.initTransaction(session);
       this.commitTransaction(tx);
       obj = (T) session.get(clazz, (Serializable) id);
 
