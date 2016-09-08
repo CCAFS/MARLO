@@ -63,7 +63,6 @@
           </div>
           
             
-      </div> 
            
           
           [#-- Section Buttons & hidden inputs--]
@@ -72,10 +71,11 @@
          
           [/@s.form] 
       </div> 
+    </div> 
 </section>
 
 [#-- Activity Template --]
-[@projectActivityMacro element={} name=""  index=0 isTemplate=true isActive=false/]
+[@projectActivityMacro element={} name=""  index=0 isTemplate=true isActive=true/]
 
 [#-- Activity Template --]
 [@deliverablesMacro element={} name="" index=0 isTemplate=true /]
@@ -87,9 +87,11 @@
 [#macro projectActivityMacro element name index=0 isTemplate=false isActive=false]
   [#assign customName = "${name}[${index}]" /]
     <div id="projectActivity-${isTemplate?string('template',(projectActivity.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    <div class="activityIndex"><span><b>Activity #${index+1}</b></span></div>
+    <div class="activityIndex"><span>Activity #${index+1}</span></div>
     [#if isActive && editable] [#--&& (isTemplate) --]
-      <div class="removeLink"><div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name="projectActivities.removeActivity" /]"></div></div>
+      <div class="removeLink">
+        <div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+      </div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">

@@ -41,9 +41,9 @@ function init() {
 // change title
 function changeTitle() {
   var $blockTitle = $(this).parents(".projectActivity").find(".blockTitle");
-  $blockTitle.find("b").html($(this).val());
-  if($blockTitle.find("b").html() == "") {
-    $blockTitle.find("b").html("New Activity");
+  $blockTitle.html($(this).val());
+  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
+    $blockTitle.html("New Activity");
   }
 }
 
