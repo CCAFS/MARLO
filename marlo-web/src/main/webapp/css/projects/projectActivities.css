@@ -3,7 +3,7 @@
     position: absolute;
     top: -12px;
     left: 44%;
-    cursor: pointer;
+    /* cursor: pointer; */
     border: 1px solid #d1d1d1;
     background-color: #ffffff;
     border-radius: 10px;

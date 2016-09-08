@@ -132,9 +132,11 @@ function attachEvents() {
 
   // Clicking location
   $('.locationName').on('click', function() {
+    $(".locations").removeClass("selected");
     var id = $(this).parent().parent().attr("id").split('-')[1];
     var marker = markers[id];
     if(marker) {
+      $(this).parent().addClass("selected");
       openInfoWindow(marker);
       map.setCenter(marker.getPosition());
     } else {
@@ -551,6 +553,17 @@ function initMap() {
   });
   infoWindow = new google.maps.InfoWindow();
 
+  google.maps.event.addListener(infoWindow, 'closeclick', function() {
+    $(".locations").removeClass("selected");
+    console.log("holi");
+
+  });
+
+  google.maps.event.addListener(map, 'click', function(event) {
+    infoWindow.close();
+    $(".locations").removeClass("selected");
+  });
+
 }
 
 // Map events
@@ -623,15 +636,6 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
     $(document).trigger('updateComponent');
   });
 
-  google.maps.event.addListener(infoWindow, 'closeclick', function() {
-    $(".locations").removeClass("selected");
-
-  });
-
-  google.maps.event.addListener(map, 'click', function(event) {
-    infoWindow.close();
-    $item.find(".locations").removeClass("selected");
-  });
 }
 
 // Delete markers

@@ -8,9 +8,9 @@ function init() {
   });
 
   // Ids for inputs date
-  $("form .startDate").each(function(index,item) {
+  $("form input.startDate").each(function(index,item) {
     $(item).attr("id", "startDate-" + index);
-    $(item).parent().parent().parent().find(".endDate").attr("id", "endDate-" + index);
+    $(item).parent().parent().parent().find("input.endDate").attr("id", "endDate-" + index);
     date("#startDate-" + index, "#endDate-" + index);
     countID = index;
   })
@@ -52,8 +52,8 @@ function addActivity() {
   countID++;
   var $list = $(".activitiesOG-content");
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
-  $item.find(".startDate").attr("id", "startDate-" + countID);
-  $item.find(".endDate").attr("id", "endDate-" + countID);
+  $item.find("input.startDate").attr("id", "startDate-" + countID);
+  $item.find("input.endDate").attr("id", "endDate-" + countID);
 
   $list.append($item);
   $item.show('slow', function() {

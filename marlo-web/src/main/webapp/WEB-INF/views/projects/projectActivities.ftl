@@ -93,7 +93,7 @@
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <b>${(element.title)!'New Activity'}</b>
+      ${(element.title)!'New Activity'}
     <div class="clearfix"></div>
     </div>
     
@@ -116,6 +116,7 @@
         <div class="col-md-6">
          [@customForm.input name="${customName}.endDate" i18nkey="End date" className="endDate" type="text" disabled=!editable required=true editable=editable  /]
         </div>
+        <div class="clearfix"></div>
       </div>
       
       [#-- Activity leader --]
