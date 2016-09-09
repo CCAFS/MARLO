@@ -31,8 +31,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   @Expose
   private LiaisonInstitution liaisonInstitution;
   @Expose
-  private LiaisonUser liaisonUser;
-  @Expose
   private User createdBy;
   @Expose
   private User modifiedBy;
@@ -95,10 +93,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
-  }
-
-  public LiaisonUser getLiaisonUser() {
-    return liaisonUser;
   }
 
   @Override
@@ -174,10 +168,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     this.liaisonInstitution = liaisonInstitution;
   }
 
-  public void setLiaisonUser(LiaisonUser liaisonUser) {
-    this.liaisonUser = liaisonUser;
-  }
-
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
@@ -198,7 +188,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   public void setTitle(String title) {
     this.title = title;
   }
-
 
 }
 

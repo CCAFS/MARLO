@@ -17,10 +17,6 @@
 			class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
 			<column name="liason_institution" />
 		</many-to-one>
-		<many-to-one name="liaisonUser"
-			class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" fetch="select">
-			<column name="liason_user" />
-		</many-to-one>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" />
