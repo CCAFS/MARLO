@@ -52,7 +52,7 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   private String modificationJustification;
   @Expose
   private Long budget;
-  @Expose
+
   private Crp crp;
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
