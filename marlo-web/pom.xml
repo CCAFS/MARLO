@@ -34,6 +34,7 @@
 		<jasper-reports-version>6.2.2</jasper-reports-version>
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
+		<log-properties>0.9.28</log-properties>
 	</properties>
 
 	<developers>
@@ -224,11 +225,17 @@
 			<artifactId>jta</artifactId>
 			<version>${jta-version}</version>
 		</dependency>
-		<dependency>
+		  <!-- <dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>${commons-logging-version}</version>
 		</dependency>
+		 -->
+		<dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <version>${log-properties}</version>
+      </dependency>
 		<!-- END Hibernate -->
 		<!-- jasper -->
 		<dependency>
