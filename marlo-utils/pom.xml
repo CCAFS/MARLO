@@ -26,6 +26,7 @@
    <properties>
       <javax-mail.version>1.5.5</javax-mail.version>
       <com.sun.mail.version>1.5.5</com.sun.mail.version>
+      <log-properties>0.9.28</log-properties>
    </properties>
    
    <dependencies>
@@ -40,6 +41,12 @@
          <groupId>com.sun.mail</groupId>
          <artifactId>javax.mail</artifactId>
          <version>${com.sun.mail.version}</version>
+      </dependency>
+      
+       <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <version>${log-properties}</version>
       </dependency>
    </dependencies>
    

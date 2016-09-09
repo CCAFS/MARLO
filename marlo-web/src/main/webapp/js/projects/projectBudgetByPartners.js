@@ -16,7 +16,6 @@ function init() {
 }
 
 function attachEvents() {
-
   /**
    * General:
    */
@@ -45,7 +44,7 @@ function attachEvents() {
     if(value != "-1") {
       $inputs.addClass('type-' + value);
     }
-    // Update overalls
+    // Update overalls; Type-2: w3, type-3: bilateral
     updateActiveYearCurrency('3', $partner);
     updateActiveYearCurrency('2', $partner);
   });
@@ -57,7 +56,7 @@ function attachEvents() {
     $parent.slideUp('slow', function() {
       $parent.remove();
 
-      // Update overalls
+      // Update overalls; Type-2: w3, type-3: bilateral
       updateActiveYearCurrency('3', $partner);
       updateActiveYearCurrency('2', $partner);
     });
@@ -73,6 +72,23 @@ function attachEvents() {
     updateActiveYearCurrency(type, $partner)
   });
 
+  addProject = function(composedName,projectId) {
+    dialog.dialog("close");
+
+    var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
+    var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
+
+    console.log($item);
+    console.log($list);
+
+    // Add the W3bilateralFund to the list
+    $list.append($item);
+
+    // Show the W3bilateralFund
+    $item.show('slow');
+
+  }
+
 }
 
 function updateActiveYearCurrency(type,partner) {
@@ -83,7 +99,7 @@ function updateActiveYearCurrency(type,partner) {
   // Animate CSS
   $target.parent().animateCss('flipInX');
 
-  // If the partner has W3 or Bilateral budgets
+  // If the partner has W3 or Bilateral budgets; Type-2: w3, type-3: bilateral
   if((type == "2") || (type == "3")) {
     // For each partner
     $('.tab-pane.active .projectPartner').each(function(i,e) {
@@ -121,6 +137,7 @@ function calculateGenderBudget(type,partner) {
   var percentage = 0;
   var genderAmount = 0;
 
+  // Type-2: w3, type-3: bilateral
   if(((type == "2") || (type == "3") || (type == "none")) && $('.projectW3bilateralFund').exists()) {
     $(partner).find('.projectW3bilateralFund').each(function(i,e) {
       var amount = removeCurrencyFormat($(e).find('input.currencyInput.type-' + type + ':enabled').val() || "0");

@@ -52,6 +52,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<CrpParameter> crpParameters = new HashSet<CrpParameter>(0);
 
+
   private Set<CrpProgram> crpPrograms = new HashSet<CrpProgram>(0);
 
   private Set<CrpsSiteIntegration> crpsSitesIntegrations = new HashSet<CrpsSiteIntegration>(0);
@@ -62,22 +63,23 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
-
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
+
+  private Set<ProjectBilateralCofinancing> ProjectBilateralCofinancings = new HashSet<ProjectBilateralCofinancing>(0);
 
 
   @Expose
   private boolean active;
+
   @Expose
   private boolean marlo;
 
 
   @Expose
   private User createdBy;
-
-
   @Expose
   private Date activeSince;
+
 
   @Expose
   private User modifiedBy;
@@ -87,6 +89,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+
 
   private Set<LocElement> locElements = new HashSet<LocElement>(0);
 
@@ -143,19 +146,19 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return acronym;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public List<CrpPpaPartner> getCrpInstitutionsPartners() {
     return crpInstitutionsPartners;
   }
+
 
   public Set<CrpParameter> getCrpParameters() {
     return this.crpParameters;
@@ -190,7 +193,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return liaisonInstitutions;
   }
 
-
   public Set<LiaisonUser> getLiasonUsers() {
     return liasonUsers;
   }
@@ -198,6 +200,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public List<LocElementType> getLocationElementTypes() {
     return locationElementTypes;
   }
+
 
   public Set<LocElement> getLocElements() {
     return locElements;
@@ -229,6 +232,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
+  }
+
+  public Set<ProjectBilateralCofinancing> getProjectBilateralCofinancings() {
+    return ProjectBilateralCofinancings;
   }
 
   public Set<Project> getProjects() {
@@ -264,7 +271,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return marlo;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
@@ -284,6 +290,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
+
   public void setCrpInstitutionsPartners(List<CrpPpaPartner> crpInstitutionsPartners) {
     this.crpInstitutionsPartners = crpInstitutionsPartners;
   }
@@ -291,7 +298,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
   public void setCrpParameters(Set<CrpParameter> crpParameters) {
     this.crpParameters = crpParameters;
   }
-
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
@@ -337,6 +343,7 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.liasonUsers = liasonUsers;
   }
 
+
   public void setLocationElementTypes(List<LocElementType> locationElementTypes) {
     this.locationElementTypes = locationElementTypes;
   }
@@ -367,6 +374,10 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   public void setProgramManagmenTeam(List<UserRole> programManagmenTeam) {
     this.programManagmenTeam = programManagmenTeam;
+  }
+
+  public void setProjectBilateralCofinancings(Set<ProjectBilateralCofinancing> projectBilateralCofinancings) {
+    ProjectBilateralCofinancings = projectBilateralCofinancings;
   }
 
   public void setProjects(Set<Project> projects) {

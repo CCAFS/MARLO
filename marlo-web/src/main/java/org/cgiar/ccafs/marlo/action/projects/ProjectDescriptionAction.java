@@ -472,6 +472,10 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         List<CrpProgram> regions = new ArrayList<>();
+        for (ProjectFocus projectFocuses : project.getProjectFocuses()) {
+          System.out.println(projectFocuses.getId() + " " + projectFocuses.isActive() + " "
+            + projectFocuses.getCrpProgram().getAcronym());
+        }
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -624,19 +628,22 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       if (project.getFlagshipValue() != null || project.getFlagshipValue().length() > 0) {
         for (String programID : project.getFlagshipValue().trim().split(",")) {
-          CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-          ProjectFocus projectFocus = new ProjectFocus();
-          projectFocus.setCrpProgram(program);
-          projectFocus.setProject(project);
-          if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-            .contains(projectFocus)) {
-            projectFocus.setActive(true);
-            projectFocus.setActiveSince(new Date());
-            projectFocus.setCreatedBy(this.getCurrentUser());
-            projectFocus.setModifiedBy(this.getCurrentUser());
-            projectFocus.setModificationJustification("");
-            projectFocusManager.saveProjectFocus(projectFocus);
+          if (programID.length() > 0) {
+            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+            ProjectFocus projectFocus = new ProjectFocus();
+            projectFocus.setCrpProgram(program);
+            projectFocus.setProject(project);
+            if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+              .contains(projectFocus)) {
+              projectFocus.setActive(true);
+              projectFocus.setActiveSince(new Date());
+              projectFocus.setCreatedBy(this.getCurrentUser());
+              projectFocus.setModifiedBy(this.getCurrentUser());
+              projectFocus.setModificationJustification("");
+              projectFocusManager.saveProjectFocus(projectFocus);
+            }
           }
+
         }
       }
 
@@ -650,19 +657,22 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       if (project.getRegionsValue() != null || project.getRegionsValue().length() > 0) {
         for (String programID : project.getRegionsValue().trim().split(",")) {
-          CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-          ProjectFocus projectFocus = new ProjectFocus();
-          projectFocus.setCrpProgram(program);
-          projectFocus.setProject(project);
-          if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-            .contains(projectFocus)) {
-            projectFocus.setActive(true);
-            projectFocus.setActiveSince(new Date());
-            projectFocus.setCreatedBy(this.getCurrentUser());
-            projectFocus.setModifiedBy(this.getCurrentUser());
-            projectFocus.setModificationJustification("");
-            projectFocusManager.saveProjectFocus(projectFocus);
+          if (programID.length() > 0) {
+            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+            ProjectFocus projectFocus = new ProjectFocus();
+            projectFocus.setCrpProgram(program);
+            projectFocus.setProject(project);
+            if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+              .contains(projectFocus)) {
+              projectFocus.setActive(true);
+              projectFocus.setActiveSince(new Date());
+              projectFocus.setCreatedBy(this.getCurrentUser());
+              projectFocus.setModifiedBy(this.getCurrentUser());
+              projectFocus.setModificationJustification("");
+              projectFocusManager.saveProjectFocus(projectFocus);
+            }
           }
+
         }
 
       }

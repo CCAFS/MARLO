@@ -34,6 +34,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
@@ -43,10 +45,10 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 @Singleton
 public class StandardDAO {
 
+  private static final Logger LOG = LoggerFactory.getLogger(StandardDAO.class);
   private SessionFactory sessionFactory;
   @Inject
   private AuditLogInterceptor interceptor;
-
 
   public StandardDAO() {
 
@@ -105,12 +107,11 @@ public class StandardDAO {
     try {
       session = this.openSession();
 
-      tx = this.initTransaction(session);
 
       if (!session.isOpen() || !session.isConnected() || session.connection().isClosed()) {
         session = this.openSession();
       }
-
+      tx = this.initTransaction(session);
       this.commitTransaction(tx);
       obj = (T) session.get(clazz, (Serializable) id);
 
@@ -329,6 +330,7 @@ public class StandardDAO {
 
     }
 
+
     return sessionFactory.openSession();
 
   }
@@ -345,7 +347,6 @@ public class StandardDAO {
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
-
     return sessionFactory.openSession(interceptor);
 
 

@@ -90,6 +90,14 @@
 			</result>
 		</action>
 
+
+    <action name="projectsBilateralList"
+      class="org.cgiar.ccafs.marlo.action.json.project.ProjectsBilaterCofinancingListAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 		<action name="projectLeaderEdit"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLeaderEditAction">
 			<result type="json">

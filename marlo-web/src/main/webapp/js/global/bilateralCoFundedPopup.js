@@ -1,7 +1,8 @@
 var dialog, notyDialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
-var openSearchDialog, addUser, addUserMessage;
+var openSearchDialog, addProject, addUserMessage;
+var institutionSelected, selectedPartnerTitle;
 
 $(document).ready(function() {
 
@@ -62,10 +63,11 @@ $(document).ready(function() {
 
   // Event when the user select the contact person
   $dialogContent.find("span.select, span.name").on("click", function() {
-    var userId = $(this).parent().find(".contactId").text();
-    var composedName = $(this).parent().find(".name").text();
+    var $parent = $(this).parent().parent();
+    var projectId = $parent.find(".contactId").text();
+    var composedName = "P" + projectId + " - " + $parent.find(".name").text();
     // Add user
-    addUser(composedName, userId);
+    addProject(composedName, projectId);
   });
 
   // Event to find an user according to search field
@@ -86,21 +88,25 @@ $(document).ready(function() {
     $dialogContent.find('.warning-info').empty().hide();
     var invalidFields = [];
     var project = {};
-
-    project.actionName = $('#actionName').val();
-    project.email = $dialogContent.find("#email").val().trim();
-
-    user.isActive = $dialogContent.find("#isActive").val();
+    project.title = $dialogContent.find("#title").val().trim();
+    project.startDate = $dialogContent.find("#startDate").val().trim();
+    project.endDate = $dialogContent.find("#endDate").val().trim();
+    project.financeCode = $dialogContent.find("#financeCode").val().trim();
+    project.agreementStatus = $dialogContent.find("#agreementStatus").val().trim();
+    project.budgetAgreementPeriod = $dialogContent.find("#budgetAgreementPeriod").val().trim();
+    project.contactName = $dialogContent.find("#contactName").val().trim();
+    project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+    project.donor = $dialogContent.find("#donor").val().trim();
 
     // Validate if fields are filled
-    $.each(user, function(key,value) {
+    $.each(project, function(key,value) {
       if(value.length < 1) {
         invalidFields.push($('label[for="' + key + '"]').text().trim().replace(':', ''));
       }
     });
     // Validate Email
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-    if(!emailReg.test(user.email)) {
+    if(!emailReg.test(project.contactEmail)) {
       invalidFields.push('valid email');
     }
 
@@ -118,7 +124,7 @@ $(document).ready(function() {
             if(data.message) {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             } else {
-              addUser(data.users[0].composedName, data.users[0].id);
+              addProject(data.users[0].composedName, data.users[0].id);
               addUserMessage($('#created-message').val());
             }
           },
@@ -139,13 +145,23 @@ $(document).ready(function() {
   openSearchDialog = function(e) {
     e.preventDefault();
     $elementSelected = $(e.target);
+    selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
+    $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
+    institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
+
     dialog.dialog("open");
+
+    // Hide search loader
     $dialogContent.find(".search-loader").fadeOut("slow");
+
+    // Set currency format
+    $dialogContent.find('#budgetAgreementPeriod').currencyInput();
+
+    // Set dates
+    date('#startDate', '#endDate');
   }
 
-  addUser = function(composedName,userId) {
-    $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
-    $elementSelected.parents('.userField ').find("input.userId").val(userId);
+  addProject = function(composedName,projectId) {
     dialog.dialog("close");
   }
 
@@ -172,23 +188,25 @@ $(document).ready(function() {
 
   function getData(query) {
     $.ajax({
-        'url': baseURL + '/searchUsers.do',
+        'url': baseURL + '/projectsBilateralList.do',
         'data': {
-          q: query
+            q: query,
+            institutionID: institutionSelected,
+            year: new Date().getFullYear()
         },
         'dataType': "json",
-        beforeSend: function() {
+        beforeSend: function(xhr,opts) {
           $dialogContent.find(".search-loader").show();
           $dialogContent.find(".panel-body ul").empty();
         },
         success: function(data) {
-          var usersFound = (data.users).length;
+          var usersFound = (data.projects).length;
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
-            $.each(data.users, function(i,user) {
+            $.each(data.projects, function(i,project) {
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-              $item.find('.name').html(escapeHtml(user.composedName));
-              $item.find('.contactId').html(user.id);
+              $item.find('.name').html(project.title);
+              $item.find('.contactId').html(project.id);
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
@@ -207,3 +225,35 @@ $(document).ready(function() {
   }
 
 });
+
+function date(start,end) {
+  var dateFormat = "yy-mm-dd", from = $(start).datepicker({
+      dateFormat: dateFormat,
+      minDate: '2015-01-01',
+      maxDate: '2030-12-31',
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true
+  }).on("change", function() {
+    to.datepicker("option", "minDate", getDate(this));
+  }), to = $(end).datepicker({
+      dateFormat: dateFormat,
+      minDate: '2015-01-01',
+      maxDate: '2030-12-31',
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true
+  }).on("change", function() {
+    from.datepicker("option", "maxDate", getDate(this));
+  });
+
+  function getDate(element) {
+    var date;
+    try {
+      date = $.datepicker.parseDate(dateFormat, element.value);
+    } catch(error) {
+      date = null;
+    }
+    return date;
+  }
+}

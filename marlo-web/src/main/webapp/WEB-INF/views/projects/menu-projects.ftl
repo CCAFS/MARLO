@@ -34,7 +34,7 @@
     },
     { 'title': 'Activities',
       'items': [
-      { 'slug': '',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  }
+      { 'slug': 'activities',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  }
       ]
     },
     { 'title': 'Budget',

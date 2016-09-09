@@ -14,14 +14,17 @@
     <property name="connection.autoReconnect">true</property>
     <property name="connection.autoReconnectForPools">true</property>
     <property name="connection.is-connection-validation-required">true</property>
+    <property name="show_sql">false</property>
+    <property name="use_sql_comments">false</property> 
+    <property name="generate_statistics">false</property>
+    
+
     
     
     
-    
-    
-    <property name="hibernate.c3p0.idle_test_period">10</property>
-		<property name="hibernate.c3p0.timeout">10</property>
-		<property name="hibernate.c3p0.max_size">3000</property>
+    <property name="hibernate.c3p0.idle_test_period">6</property>
+		<property name="hibernate.c3p0.timeout">6</property>
+		<property name="hibernate.c3p0.max_size">7000</property>
 		<property name="hibernate.c3p0.min_size">20</property>
 		<property name="hibernate.c3p0.max_statements">100</property>
 		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
