@@ -6,7 +6,7 @@
 		<action name="{crp}/cofundedList"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
 			<!-- TODO  <interceptor-ref name="projectsStack" /> -->
-			<result name="input">/WEB-INF/views/projects/cofundedList.ftl</result>
+			<result name="input">/WEB-INF/views/projects_cofunded/cofundedList.ftl</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/cofundedList</param>
 				<param name="edit">true</param>
