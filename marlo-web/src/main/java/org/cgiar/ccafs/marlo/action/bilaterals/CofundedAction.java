@@ -129,11 +129,10 @@ public class CofundedAction extends BaseAction {
       }
 
       institutions = institutionManager.findAll().stream()
-        .filter(i -> i.isActive() && i.getInstitutionType().getId() == APConstants.INSTITUTION_DONOR_TYPE)
-        .collect(Collectors.toList());
+        .filter(i -> i.getInstitutionType().getId() == APConstants.INSTITUTION_DONOR_TYPE).collect(Collectors.toList());
 
       liaisonInstitutions = liaisonInstitutionManager.findAll().stream()
-        .filter(li -> li.isActive() && li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
+        .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
 
     }
 

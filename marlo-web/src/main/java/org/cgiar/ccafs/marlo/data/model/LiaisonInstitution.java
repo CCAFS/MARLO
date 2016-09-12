@@ -149,7 +149,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   @Override
   public boolean isActive() {
-
     return true;
   }
 
