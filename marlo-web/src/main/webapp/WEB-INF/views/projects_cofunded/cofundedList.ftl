@@ -20,7 +20,7 @@
     [#-- Projects List (My Projects) --]
     <h3 class="headTitle text-center">[@s.text name="Bilateral Co-Funded Projects you are leading  "/]</h3>
     <div class="loadingBlock"></div>
-    <div style="display:none">[@CofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="" defaultAction="" /]</div>
+    <div style="display:none">[@CofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="/bilaterals" defaultAction="${(crpSession)!}/cofunded" /]</div>
     <div class="clearfix"></div>
     
   </article>
