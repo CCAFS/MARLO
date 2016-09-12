@@ -60,6 +60,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -571,6 +572,8 @@ public class ProjectPartnerAction extends BaseAction {
       project.getPartners().add(0, leader);
     }
 
+    Collections.sort(project.getPartners(),
+      (p1, p2) -> Boolean.compare(this.isPPA(p2.getInstitution()), this.isPPA(p1.getInstitution())));
 
     partnerPersonTypes = new HashMap<>();
     partnerPersonTypes.put(APConstants.PROJECT_PARTNER_CP, this.getText("projectPartners.types.CP"));

@@ -97,8 +97,8 @@
       <li id="userTemplate">
         <div class="row">
           <div class="col-md-1">P<span class="contactId">{userId}</span></div>
-          <div class="col-md-10"><span class="contact name">{composedName}</span></div>
-          <div class="col-md-1"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
+          <div class="col-md-9"><span class="contact name">{composedName}</span></div>
+          <div class="col-md-2"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
         </div>
       </li> 
     </ul>  
