@@ -41,7 +41,7 @@
           [#--  Deliverable Menu --] 
             
             <ul class="nav nav-tabs" role="tablist"> 
-                <li role="presentation" class="active"><a href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">General Information</a></li>
+                <li role="presentation" class="active"><a href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
                 [#if reportingActive]
                 <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class=""><a href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
@@ -51,7 +51,7 @@
             
             <div class="tab-content col-md-12">
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active row">
-                <h3 class="headTitle col-md-12">Deliverable information</h3>  
+                <h3 class="headTitle col-md-12">[@s.text name="project.deliverable.generalInformation.sectionTitle" /]</h3>  
                 [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
