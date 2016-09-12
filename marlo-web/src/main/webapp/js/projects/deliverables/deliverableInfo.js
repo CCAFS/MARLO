@@ -78,7 +78,7 @@ function init() {
     statusSelect.find("option").each(function(i,e) {
       e.remove();
     });
-    $(statusSelect).append("<option value='2'>On-going</option>");
+    $(statusSelect).append("<option value='-1'>Select an option...</option><option value='2'>On-going</option>");
   }
 }
 

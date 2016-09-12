@@ -260,7 +260,7 @@
             [/#if]
           </tr>
           [/#if]
-        </thead>
+        </tbody>
       </table>
       
       [#if project.projectEditLeader && !project.bilateralProject]
