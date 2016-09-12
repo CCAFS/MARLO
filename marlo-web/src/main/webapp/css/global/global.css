@@ -1100,7 +1100,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 .panel span.name {
   cursor:pointer;
-  padding: 5px 3px;
+  /* padding: 5px 3px; */
 }
 
 .remove {

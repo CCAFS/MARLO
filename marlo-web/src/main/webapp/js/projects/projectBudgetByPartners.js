@@ -1,15 +1,21 @@
+var countW3BilateralFunds;
+
 $(document).ready(init);
 
 function init() {
 
+  countW3BilateralFunds = $('form .projectW3bilateralFund').length;
+
+  addProject = addBilateralFundProject;
+
   // Setting Numeric Inputs
-  $('input.currencyInput, input.percentageInput').numericInput();
+  $('form input.currencyInput, input.percentageInput').numericInput();
 
   // Setting Currency Inputs
-  $('input.currencyInput').currencyInput();
+  $('form input.currencyInput').currencyInput();
 
   // Setting Percentage Inputs
-  $('input.percentageInput').percentageInput();
+  $('form input.percentageInput').percentageInput();
 
   // Attaching events
   attachEvents();
@@ -34,61 +40,79 @@ function attachEvents() {
   /**
    * W3 Bilateral Funds
    */
-
   // Change W3/Bilateral Funds budget type
-  $('.w3bilateralFund select').on('change', function() {
-    var value = $(this).val();
-    var $inputs = $(this).parents('.w3bilateralFund').find('input.currencyInput, input.percentageInput');
-    var $partner = $(this).parents('.projectPartner');
-    $inputs.removeClass('type-2 type-3');
-    if(value != "-1") {
-      $inputs.addClass('type-' + value);
-    }
+  $('.w3bilateralFund select').on('change', changeBilateralFund);
+
+  // Remove a W3/Bilateral Fund
+  $('.removeW3bilateralFund').on('click', removeBilateralFund);
+
+  // Calculate currency and percentage
+  $('input.currencyInput, input.percentageInput').on('keyup', calculateCurrencyPercentage);
+
+}
+
+/**
+ * Events Functions
+ */
+
+function changeBilateralFund() {
+  var value = $(this).val();
+  var $inputs = $(this).parents('.w3bilateralFund').find('input.currencyInput, input.percentageInput');
+  var $partner = $(this).parents('.projectPartner');
+  $inputs.removeClass('type-2 type-3 type-none');
+  if(value != "-1") {
+    $inputs.addClass('type-' + value);
+  }
+  // Update overalls; Type-2: w3, type-3: bilateral
+  updateActiveYearCurrency('3', $partner);
+  updateActiveYearCurrency('2', $partner);
+}
+
+function removeBilateralFund() {
+  var $parent = $(this).parent();
+  var $partner = $(this).parents('.projectPartner');
+  $parent.slideUp('slow', function() {
+    $parent.remove();
     // Update overalls; Type-2: w3, type-3: bilateral
     updateActiveYearCurrency('3', $partner);
     updateActiveYearCurrency('2', $partner);
   });
+}
 
-  // Remove a W3/Bilateral Fund
-  $('.removeW3bilateralFund').on('click', function() {
-    var $parent = $(this).parent();
-    var $partner = $(this).parents('.projectPartner');
-    $parent.slideUp('slow', function() {
-      $parent.remove();
+function calculateCurrencyPercentage() {
+  var type = getClassParameter($(this), 'type');
+  console.log(type);
+  var $partner = $(this).parents('.projectPartner');
+  updateActiveYearCurrency(type, $partner)
+}
 
-      // Update overalls; Type-2: w3, type-3: bilateral
-      updateActiveYearCurrency('3', $partner);
-      updateActiveYearCurrency('2', $partner);
-    });
+/**
+ * General Functions
+ */
 
-  });
-
-  /**
-   * Calculate currency and percentage
-   */
-  $('input.currencyInput, input.percentageInput').on('keyup', function() {
-    var type = getClassParameter($(this), 'type');
-    var $partner = $(this).parents('.projectPartner');
-    updateActiveYearCurrency(type, $partner)
-  });
-
-  addProject = function(composedName,projectId) {
-    dialog.dialog("close");
-
-    var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
-    var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
-
-    console.log($item);
-    console.log($list);
-
-    // Add the W3bilateralFund to the list
-    $list.append($item);
-
-    // Show the W3bilateralFund
-    $item.show('slow');
-
-  }
-
+// Add bilateral project function
+function addBilateralFundProject(composedName,projectId) {
+  dialog.dialog("close");
+  var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
+  var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
+  // Setting parameters
+  $item.find('.title').text(composedName);
+  $item.find('.institutionId').val(institutionSelected);
+  $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
+  $item.find('.projectId').val(projectId);
+  // Setting Currency Inputs
+  $item.find('input.currencyInput').currencyInput();
+  // Setting Percentage Inputs
+  $item.find('input.percentageInput').percentageInput();
+  // Update Index
+  $item.setNameIndexes(1, countW3BilateralFunds);
+  countW3BilateralFunds++;
+  // Add the W3bilateralFund to the list
+  $list.append($item);
+  // Remove emptyMessage
+  $list.find('.emptyMessage').remove();
+  // Show the W3bilateralFund
+  $item.show('slow');
 }
 
 function updateActiveYearCurrency(type,partner) {
@@ -119,7 +143,7 @@ function updateActiveYearCurrency(type,partner) {
 function calculateBudgetCurrency(type) {
   var total = 0
   $('.tab-pane.active input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
-    total = total + removeCurrencyFormat($(e).val());
+    total = total + removeCurrencyFormat($(e).val() || "0");
   });
   return total;
 }
@@ -127,7 +151,7 @@ function calculateBudgetCurrency(type) {
 function calculateBudgetCurrencyByPartner(type,partner) {
   var total = 0
   $(partner).find('input.currencyInput.type-' + type + ':enabled').each(function(i,e) {
-    total = total + removeCurrencyFormat($(e).val());
+    total = total + removeCurrencyFormat($(e).val() || "0");
   });
   return total;
 }
@@ -151,8 +175,9 @@ function calculateGenderBudget(type,partner) {
     }
     $(partner).find('.percentageLabel.type-' + type).text(setPercentageFormat(percentage));
   } else {
-    totalAmount = removeCurrencyFormat($(partner).find('input.currencyInput.type-' + type + ':enabled').val());
-    percentage = removePercentageFormat($(partner).find('input.percentageInput.type-' + type + ':enabled').val());
+    totalAmount = removeCurrencyFormat($(partner).find('input.currencyInput.type-' + type + ':enabled').val() || "0");
+    percentage =
+        removePercentageFormat($(partner).find('input.percentageInput.type-' + type + ':enabled').val() || "0");
     genderAmount = (totalAmount / 100) * percentage;
   }
   $(partner).find('.percentageAmount.type-' + type + ' span').text(setCurrencyFormat(genderAmount));
