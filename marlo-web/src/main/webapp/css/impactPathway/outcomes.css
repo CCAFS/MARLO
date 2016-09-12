@@ -141,3 +141,8 @@ p.contributioRem {
 .selectSubIDO {
     cursor: pointer;
 }
+
+.milestone {
+    padding-top: 21px;
+    padding-bottom: 0px;
+}

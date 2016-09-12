@@ -15,10 +15,6 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectBilateralCofinancing implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -5725787908570331052L;
 
 
@@ -73,6 +69,7 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   private String contactPersonEmail;
   private Crp crp;
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
 
   public Date getActiveSince() {
     return activeSince;
