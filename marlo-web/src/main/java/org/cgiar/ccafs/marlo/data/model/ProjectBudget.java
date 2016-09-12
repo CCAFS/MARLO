@@ -39,9 +39,15 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private Double genderPercentage;
   @Expose
+  private Double genderValue;
+
+  @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
 
@@ -79,13 +85,17 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
 
   public Double getGenderPercentage() {
     return genderPercentage;
+  }
+
+
+  public Double getGenderValue() {
+    return genderValue;
   }
 
   @Override
@@ -117,10 +127,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public ProjectBilateralCofinancing getProjectBilateralCofinancing() {
     return projectBilateralCofinancing;
   }
+
 
   public int getYear() {
     return year;
@@ -151,10 +161,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.amount = amount;
   }
 
-
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -162,6 +172,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   public void setGenderPercentage(Double genderPercentage) {
     this.genderPercentage = genderPercentage;
+  }
+
+  public void setGenderValue(Double genderValue) {
+    this.genderValue = genderValue;
   }
 
   public void setId(Long id) {

@@ -5,7 +5,7 @@
 	<package name="bilaterals" namespace="/bilaterals" extends="marlo-default">
 		<action name="{crp}/cofundedList"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<!-- TODO <interceptor-ref name="projectsStack" /> -->
+			<interceptor-ref name="projectsStack" />
 			<result name="input">/WEB-INF/views/projects_cofunded/cofundedList.ftl
 			</result>
 			<result name="success" type="redirectAction">
@@ -22,8 +22,8 @@
 		<action name="{crp}/cofunded"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedAction">
 			<interceptor-ref name="editProjectListStack" />
-			<interceptor-ref name="editDeliverable" />
-			<interceptor-ref name="defaultStack" />
+      <interceptor-ref name="editCofunded" />
+      <interceptor-ref name="defaultStack" />
 			<result name="input">/WEB-INF/views/projects_cofunded/projectCofunded.ftl
 			</result>
 			<result name="success" type="redirectAction">

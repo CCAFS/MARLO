@@ -182,6 +182,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Project() {
   }
 
+
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
     boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, FileDB workplanName,
@@ -284,10 +285,22 @@ public class Project implements java.io.Serializable, IAuditLog {
     return annualReportToDonnor;
   }
 
+  public long getBilateralBudget() {
+    long total = 0;
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 3).collect(Collectors.toList())) {
+      if (projectBudget.getAmount() != null) {
+        total = total + projectBudget.getAmount();
+      }
+    }
+
+    return total;
+  }
 
   public FileDB getBilateralContractName() {
     return bilateralContractName;
   }
+
 
   public List<ProjectBudget> getBudgets() {
     return budgets;
@@ -304,7 +317,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
   }
-
 
   /**
    * This method gets all the coordinators working for this project.
@@ -340,6 +352,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
+
+  public long getCoreBudget() {
+    long total = 0;
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 1).collect(Collectors.toList())) {
+      if (projectBudget.getAmount() != null) {
+        total = total + projectBudget.getAmount();
+      }
+    }
+
+    return total;
+  }
+
   public User getCreatedBy() {
     return this.createdBy;
   }
@@ -347,7 +372,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Crp getCrp() {
     return crp;
   }
-
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -373,6 +397,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
+
 
   public ProjectPartner getLeader() {
 
@@ -400,7 +425,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return null;
   }
-
 
   /**
    * This method returns the project partner person who is leading the project.
@@ -452,6 +476,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.liaisonUser;
   }
 
+
   public List<ProjectLocation> getLocations() {
     return locations;
   }
@@ -459,7 +484,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<CountryLocationLevel> getLocationsData() {
     return locationsData;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -482,10 +506,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.modifiedBy;
   }
 
+
   public List<Activity> getOpenProjectActivities() {
     return openProjectActivities;
   }
-
 
   public List<ProjectOutcome> getOutcomes() {
     return outcomes;
@@ -516,14 +540,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectClusterActivities;
   }
 
+
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
 
-
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
   }
+
 
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
@@ -553,7 +578,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectPartners;
   }
 
-
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
   }
@@ -568,10 +592,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return regionsValue;
   }
 
+
   public Boolean getRequiresWorkplanUpload() {
     return this.requiresWorkplanUpload;
   }
-
 
   public int getScale() {
     return scale;
@@ -581,6 +605,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<ProjectScope> getScopes() {
     return scopes;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -613,7 +638,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return submissions;
   }
 
-
   public String getSummary() {
     return this.summary;
   }
@@ -623,8 +647,21 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.title;
   }
 
+
   public String getType() {
     return this.type;
+  }
+
+  public long getW3Budget() {
+    long total = 0;
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 2).collect(Collectors.toList())) {
+      if (projectBudget.getAmount() != null) {
+        total = total + projectBudget.getAmount();
+      }
+    }
+
+    return total;
   }
 
   public FileDB getWorkplan() {

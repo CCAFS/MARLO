@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,6 @@ public class CofundedListAction extends BaseAction {
 
   private Crp loggedCrp;
 
-
   private List<ProjectBilateralCofinancing> myProjects;
 
 
@@ -51,12 +51,35 @@ public class CofundedListAction extends BaseAction {
 
   private CrpManager crpManager;
 
+
+  private long projectID;
+
+
   @Inject
   public CofundedListAction(APConfig config, ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
     CrpManager crpManager) {
     super(config);
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
     this.crpManager = crpManager;
+  }
+
+  @Override
+  public String add() {
+    ProjectBilateralCofinancing project = new ProjectBilateralCofinancing();
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("New expected project bilateral cofunded created");
+    project.setActive(true);
+    project.setActiveSince(new Date());
+    project.setCrp(loggedCrp);
+
+    projectID = projectBilateralCofinancingManager.saveProjectBilateralCofinancing(project);
+
+    if (projectID > 0) {
+      return SUCCESS;
+    }
+
+    return INPUT;
   }
 
   public List<ProjectBilateralCofinancing> getAllProjects() {
@@ -69,6 +92,10 @@ public class CofundedListAction extends BaseAction {
 
   public List<ProjectBilateralCofinancing> getMyProjects() {
     return myProjects;
+  }
+
+  public long getProjectID() {
+    return projectID;
   }
 
   @Override
@@ -94,6 +121,7 @@ public class CofundedListAction extends BaseAction {
 
   }
 
+
   public void setAllProjects(List<ProjectBilateralCofinancing> allProjects) {
     this.allProjects = allProjects;
   }
@@ -104,6 +132,10 @@ public class CofundedListAction extends BaseAction {
 
   public void setMyProjects(List<ProjectBilateralCofinancing> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
 }

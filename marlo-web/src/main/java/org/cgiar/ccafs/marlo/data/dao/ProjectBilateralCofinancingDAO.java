@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectBilateralCofinancingMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -57,6 +58,15 @@ public interface ProjectBilateralCofinancingDAO {
    */
   public List<ProjectBilateralCofinancing> findAll();
 
+
+  /**
+   * Get the list of permissions that the user can access and edit.
+   * 
+   * @param userId - The user Id.
+   * @param crp - The crp acronym that the user has logged.
+   * @return a permissions user list.
+   */
+  public List<Map<String, Object>> getUserCofundedProjects(long userId, String crp);
 
   /**
    * This method saves the information of the given projectBilateralCofinancing
