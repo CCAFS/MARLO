@@ -28,16 +28,28 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   @Expose
   private Institution institution;
+
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
+
+
   @Expose
   private User createdBy;
+
+
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private String title;
+
+
   @Expose
   private Date startDate;
+
+
   @Expose
   private Date endDate;
   @Expose
@@ -50,7 +62,12 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   private String modificationJustification;
   @Expose
   private Long budget;
-
+  @Expose
+  private String fincanceCode;
+  @Expose
+  private String contactPersonName;
+  @Expose
+  private String contactPersonEmail;
   private Crp crp;
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
@@ -62,34 +79,46 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     return agreement;
   }
 
-
   public Long getBudget() {
     return budget;
   }
 
+  public String getContactPersonEmail() {
+    return contactPersonEmail;
+  }
+
+  public String getContactPersonName() {
+    return contactPersonName;
+  }
 
   public User getCreatedBy() {
     return createdBy;
   }
 
-
   public Crp getCrp() {
     return crp;
   }
 
-
   public Date getEndDate() {
     return endDate;
   }
+
+
+  public String getFincanceCode() {
+    return fincanceCode;
+  }
+
 
   @Override
   public Long getId() {
     return id;
   }
 
+
   public Institution getInstitution() {
     return institution;
   }
+
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -144,6 +173,14 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     this.budget = budget;
   }
 
+  public void setContactPersonEmail(String contactPersonEmail) {
+    this.contactPersonEmail = contactPersonEmail;
+  }
+
+  public void setContactPersonName(String contactPersonName) {
+    this.contactPersonName = contactPersonName;
+  }
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
@@ -154,6 +191,10 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+  public void setFincanceCode(String fincanceCode) {
+    this.fincanceCode = fincanceCode;
   }
 
   public void setId(Long id) {

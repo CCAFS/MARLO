@@ -32,6 +32,15 @@
 		<property name="title" type="string">
 			<column name="title" length="65535" />
 		</property>
+		<property name="contactPersonEmail" type="string">
+      <column name="contact_person_email" length="65535" />
+    </property>
+    <property name="fincanceCode" type="string">
+      <column name="fincance_code" length="65535" />
+    </property>
+    <property name="contactPersonName" type="string">
+      <column name="contact_person_name" length="65535" />
+    </property>
 		<property name="startDate" type="timestamp">
 			<column name="start_date" length="19" />
 		</property>
