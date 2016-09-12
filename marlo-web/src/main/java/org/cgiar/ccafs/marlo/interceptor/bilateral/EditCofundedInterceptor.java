@@ -78,7 +78,7 @@ public class EditCofundedInterceptor extends AbstractInterceptor implements Seri
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
 
-    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
+    String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
 
     projectId = Long.parseLong(projectParameter);
 
