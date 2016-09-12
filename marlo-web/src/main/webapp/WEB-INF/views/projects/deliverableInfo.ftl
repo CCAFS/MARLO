@@ -1,51 +1,51 @@
 [#ftl]
 [#-- Title input --] 
 <div class="col-md-12 form-group">
-  [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-15" required=true editable=editable /]
+  [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-15" required=true editable=editable /]
 </div>
 
 [#-- Type and subtype inputs --] 
 <div class=" form-group">
   <div class="col-md-6">
-    [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="Type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" disabled=!editable/]
   </div>
   <div class="col-md-6">
-    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="Subtype" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
   </div>
 </div>
 
 [#-- Description textArea --] 
 <div class="form-group">
-  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="Description" required=true className="limitWords-15" editable=editable /]</div>
+  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
 </div>
 
 [#-- Status and year expected selects --] 
 <div class="col-md-12 form-group">
   <div class="col-md-6">
-    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.status" listName="status"  multiple=false required=true  className=" status" disabled=!editable/]
+    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true  className=" status" disabled=!editable/]
   </div>
   <div class="col-md-6">
-    [@customForm.select name="deliverable.year" label=""  i18nkey="Year of expected completion" listName="project.allYears"   multiple=false required=true  className="yearExpected" disabled=!editable/]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" disabled=!editable/]
   </div>
 </div>
 
 [#-- Status justification textArea --] 
 <div class="col-md-12 form-group justificationContent">
-  <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
+  <div class="col-md-12">[@customForm.textArea  name="project.deliverable.generalInformation.justification" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
 
 [#-- Outcome select --] 
 <div class="col-md-12 form-group">
 
   <div class="col-md-12">
-    [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="Outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName"  multiple=false required=true  className=" outcome" disabled=!editable/]
+    [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName"  multiple=false required=true  className=" outcome" disabled=!editable/]
   </div>
 </div>
 
 [#-- CoA Outputs select --] 
 <div class="col-md-12 form-group">
   <div class="col-md-12">
-    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="CoA Outputs" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" disabled=!editable/]
+    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" disabled=!editable/]
   </div>
 </div>
 
@@ -67,7 +67,7 @@
           [@deliverableList.deliverablePartner dp=dp dp_name="deliverable.otherPartners" dp_index=dp_index editable=editable /]
         [/#list]
       [#else]
-        <p class="emptyText center"> [@s.text name="projectDeliverable.partnership.emptyText" /] </p>
+        <p class="emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
       [/#if]
     </div>
     [#if editable && canEdit]
@@ -78,9 +78,9 @@
   </div>
   [#if editable]
     <div class="partnerListMsj note">
-      [@s.text name="projectDeliverable.generalInformation.partnerNotList" /]
+      [@s.text name="project.deliverable.generalInformation.partnerNotList" /]
       <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]"> 
-        [@s.text name="projectDeliverable.generalInformation.partnersLink" /] 
+        [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
       </a>
     </div>
   [/#if]

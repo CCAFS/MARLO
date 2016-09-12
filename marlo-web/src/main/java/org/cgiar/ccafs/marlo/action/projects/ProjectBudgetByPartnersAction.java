@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -147,22 +148,43 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
         projectBudget.setAmount(new Long(0));
         projectBudget.setGenderPercentage(new Double(0));
-        for (ProjectBudget budget : project.getBudgetsCofinancing()) {
-          try {
-            if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
-              && type == budget.getBudgetType().getId().longValue()) {
-              if (budget.getGenderPercentage() != null) {
-                projectBudget.setGenderPercentage(projectBudget.getGenderPercentage() + budget.getGenderPercentage());
+        projectBudget.setGenderValue(new Double(0));
+        if (project.getBudgetsCofinancing() != null) {
+          for (ProjectBudget budget : project.getBudgetsCofinancing()) {
+            try {
+              if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
+                && type == budget.getBudgetType().getId().longValue()) {
+                if (budget.getGenderPercentage() != null) {
+
+                  if (budget.getAmount() != null) {
+                    projectBudget.setGenderValue(
+                      projectBudget.getGenderValue() + ((budget.getGenderPercentage() / 100) * budget.getAmount()));
+                  }
+
+                }
+                if (budget.getAmount() != null) {
+                  projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
+                }
               }
-              if (budget.getAmount() != null) {
-                projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
-              }
+
+
+            } catch (Exception e) {
+              e.printStackTrace();
             }
-          } catch (Exception e) {
-            e.printStackTrace();
+
+          }
+
+          if (projectBudget.getAmount() > 0) {
+            System.out.println(projectBudget.getGenderValue());
+            projectBudget.setGenderPercentage(
+              new BigDecimal(String.valueOf((projectBudget.getGenderValue() / projectBudget.getAmount()) * 100))
+                .setScale(2, BigDecimal.ROUND_FLOOR).doubleValue()
+
+            );
           }
 
         }
+
         return projectBudget;
       }
     } else {
@@ -182,9 +204,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       int i = 0;
       for (ProjectBudget projectBudget : project.getBudgets()) {
-        if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-          && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-          return i;
+        if (projectBudget.getInstitution() != null) {
+          if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+            && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+            return i;
+          }
+
         }
         i++;
       }
@@ -361,6 +386,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         reader.close();
+        if (project.getBudgetsCofinancing() == null) {
+          project.setBudgetsCofinancing(new ArrayList<>());
+        }
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -432,9 +460,18 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
     if (this.isHttpPost()) {
-      project.getPartners().clear();
-      project.getBudgetsCofinancing().clear();
-      project.getBudgets().clear();
+      if (project.getPartners() != null) {
+        project.getPartners().clear();
+      }
+
+      if (project.getBudgetsCofinancing() != null) {
+        project.getBudgetsCofinancing().clear();
+      }
+      if (project.getBudgets() != null) {
+        project.getBudgets().clear();
+
+      }
+
 
     }
 
