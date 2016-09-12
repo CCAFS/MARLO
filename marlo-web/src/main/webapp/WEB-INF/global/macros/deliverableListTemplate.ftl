@@ -6,12 +6,12 @@
     <thead>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="deliverableTitles" >[@s.text name="projectDeliverableList.deliverableName" /]</th>
-        <th id="deliverableType">[@s.text name="projectDeliverableList.type" /]</th>
-        <th id="deliverableEDY">[@s.text name="projectDeliverableList.expectedYear" /]</th>
-        <th id="deliverableFC">[@s.text name="projectDeliverableList.fairCompliance" /]</th>
-        <th id="deliverableStatus">[@s.text name="projectDeliverableList.status" /]</th>
-        <th id="deliverableRF">[@s.text name="projectDeliverableList.requiredFields" /]</th>
+        <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
+        <th id="deliverableType">[@s.text name="project.deliverableList.type" /]</th>
+        <th id="deliverableEDY">[@s.text name="project.deliverableList.expectedYear" /]</th>
+        <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
+        <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
+        <th id="deliverableRF">[@s.text name="project.deliverableList.requiredFields" /]</th>
         <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -35,11 +35,11 @@
             [/#if]
           </td>
           [#-- Deliverable Type --]
-          <td>
+          <td >
             ${(deliverable.deliverableType.name?lower_case)!'none'}
           </td>
           [#-- Deliverable Year --]
-          <td>
+          <td class="text-center">
             ${(deliverable.year)!'none'}
           </td>
           [#-- Deliverable FAIR compliance --]
@@ -62,10 +62,10 @@
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
             [#if true]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
-                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectDeliverable.removeDeliverable" /]" /> 
+                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
             [#else]
-              <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="projectDeliverable.cannotDelete" /]" />
+              <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
             [/#if]
           </td>
         </tr>  
@@ -78,7 +78,7 @@
 [#macro deliverablePartner dp={} dp_name="" dp_index="" isResponsable=false template=false editable=true]
   <div id="deliverablePartner-${template?string('template', dp_index)}" class="${isResponsable?string('responsiblePartner','deliverablePartner')} ${isResponsable?string('simpleBox','borderBox')} row" style="display:${template?string('none','')}">
     [#if editable && !isResponsable]
-      <div class="removeElement removeLink" title="[@s.text name="planning.deliverables.removePartnerContribution" /]"></div> 
+      <div class="removeElement removeLink" title="[@s.text name="project.deliverable.removePartnerContribution" /]"></div> 
     [/#if]
     [#if !isResponsable]
     <div class="leftHead">
@@ -94,12 +94,12 @@
     [#if template]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable /]
+        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable /]
       </div>
     [#else]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('Partner who is responsible for the delivery of this deliverable','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false   className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable/]
+        [@customForm.select name="" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false   className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable/]
       </div>
     [/#if] 
   </div> 

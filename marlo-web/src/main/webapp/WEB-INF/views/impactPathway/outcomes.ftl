@@ -177,18 +177,20 @@
     <div class="form-group">
       [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
     </div>
-    <div class="row form-group">
+    <div class="row form-group target-block">
       [#-- Target Year --]
       <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2022}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
-        [#if editable]
-        <div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>
-        [/#if]
+        [#-- If you dont find the target unit in the list, please add a new one clicking here --]
+        [#if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if]
       </div>
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]</div>
+      [#local showTargetValue = (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
+      <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
+        [@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+      </div>
     </div>  
     <br />
     [#-- Outcome Milestones List --]
@@ -244,12 +246,12 @@
     [#if editable]
       <div class="removeMilestone removeElement sm" title="Remove Milestone"></div>
     [/#if]
-    <br />
+    
     [#-- Milestone Statement --]
     <div class="form-group">
       [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editable /]
     </div>
-    <div class="row form-group">
+    <div class="row form-group target-block">
       [#-- Target Year --]
       ${(outcome.milestone.targetYears)!}
       <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.year"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  multiple=false required=true  className=" targetYear milestoneYear" disabled=!editable/]</div>
@@ -261,7 +263,10 @@
         [/#if]
       </div>
       [#-- Target Value --]
-      <div class="col-md-4">[@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=false editable=editable /]</div>
+      [#local showTargetValue = (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
+      <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
+        [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
+      </div>
 
     </div>
   </div>
