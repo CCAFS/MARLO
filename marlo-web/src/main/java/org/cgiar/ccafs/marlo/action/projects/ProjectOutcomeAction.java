@@ -673,7 +673,7 @@ public class ProjectOutcomeAction extends BaseAction {
     endDate.setTime(project.getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    if (this.getCurrentCycleYear() == startYear || this.getCurrentCycleYear() == endYear) {
+    if (this.isPlanningActive() || this.getCurrentCycleYear() == endYear) {
       projectOutcome.setActive(true);
       projectOutcome.setModifiedBy(this.getCurrentUser());
       projectOutcome.setCreatedBy(this.getCurrentUser());
