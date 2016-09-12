@@ -21,22 +21,18 @@
 
 [#-- Status and year expected selects --] 
 <div class="col-md-12 form-group">
-[#if reportingActive]
   <div class="col-md-6">
-    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.status" listName="status"  multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.status" listName="status"  multiple=false required=true  className=" status" disabled=!editable/]
   </div>
-[/#if]  
   <div class="col-md-6">
-    [@customForm.select name="deliverable.year" label=""  i18nkey="Year of expected completion" listName="project.allYears"   multiple=false required=true  className=" form-control input-sm" disabled=!editable/]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="Year of expected completion" listName="project.allYears"   multiple=false required=true  className="yearExpected" disabled=!editable/]
   </div>
 </div>
 
 [#-- Status justification textArea --] 
-[#if reportingActive]
-<div class="col-md-12 form-group">
+<div class="col-md-12 form-group justificationContent">
   <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
-[/#if]
 
 [#-- Outcome select --] 
 <div class="col-md-12 form-group">

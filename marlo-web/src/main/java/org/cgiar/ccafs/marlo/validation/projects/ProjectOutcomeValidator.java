@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -74,7 +75,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   public void validateProjectMilestone(BaseAction action, ProjectMilestone projectMilestone, int i) {
     List<String> params = new ArrayList<String>();
-    params.add(String.valueOf(i + 1));
+    int counter = i + 1;
+    params.add(String.valueOf(counter));
     if (projectMilestone != null) {
       if (projectMilestone.getYear() == action.getCurrentCycleYear()) {
 
@@ -162,9 +164,18 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
 
     if (projectOutcome.getMilestones() != null || projectOutcome.getMilestones().size() > 0) {
-      for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
-        this.validateProjectMilestone(action, projectOutcome.getMilestones().get(i), i);
+      if (action.isPlanningActive()) {
+        List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
+          .filter(c -> c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
+        for (int i = 0; i < milestones.size(); i++) {
+          this.validateProjectMilestone(action, milestones.get(i), i);
+        }
+      } else {
+        for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
+          this.validateProjectMilestone(action, projectOutcome.getMilestones().get(i), i);
+        }
       }
+
     } else {
       this.addMessage(action.getText("projectOutcome.milestones"));
     }

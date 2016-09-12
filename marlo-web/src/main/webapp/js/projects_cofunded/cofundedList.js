@@ -9,7 +9,7 @@ $(document).ready(function() {
       "bFilter": true, // This option enable the search
       "bSort": true, // this option enable the sort of contents by columns
       "bAutoWidth": false, // This option enables the auto adjust columns width
-      "iDisplayLength": 15, // Number of rows to show on the table
+      "iDisplayLength": 20, // Number of rows to show on the table
       "fnDrawCallback": function() {
         // This function locates the add activity button at left to the filter box
         var table = $(this).parent().find("table");
@@ -36,7 +36,7 @@ $(document).ready(function() {
     $("a.removeProject").on("click", removeProject);
   });
 
-  $('.loadingBlock').hide().next().fadeIn(500);
+  $('.loadingBlock').hide().next().fadeIn(1000);
 
   addJustificationPopUp();
 });

@@ -144,8 +144,8 @@ function attachEvents() {
     }
   });
 
-  $(".yes-button-label").on("click", changeLayout);
-  $(".no-button-label").on("click", changeLayout2);
+  $("form .yes-button-label").on("click", changeLayout);
+  $("form .no-button-label").on("click", changeLayout2);
 
 }
 
@@ -183,7 +183,7 @@ function changeLayout2() {
 
 // Change width of selectWrapper
 function calculateWidthSelect() {
-  var widthSelect = ($("form .locationLevel").length) * 420;
+  var widthSelect = ($("form .locationLevel").length) * 430;
   $(".select-horizontal").css("width", widthSelect + "px");
 }
 
@@ -247,8 +247,8 @@ function addLocationLevel(option) {
   // Other layout
   if($list.hasClass("select-horizontal")) {
     $item.removeClass("col-md-12").addClass("locationLevel-horizontal");
-    var widthSelect = ($("form .locationLevel").length) * 420;
-    $(".select-horizontal").css("width", (widthSelect + 420) + "px");
+    var widthSelect = ($("form .locationLevel").length) * 430;
+    $(".select-horizontal").css("width", (widthSelect + 430) + "px");
     $list.prepend($item);
   } else {
     $list.append($item);
