@@ -39,7 +39,7 @@
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
             [#-- Content--]
-              [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="L1" noLabel="L2" cssClass="" /]
+              [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="View 1" noLabel="View 2" cssClass="" /]
               
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-6">
@@ -106,7 +106,7 @@
     <div class="col-md-12 locationLevel-optionContent ">
       [#if editable]
       <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
-        <span class="col-md-10">Are you working in all countries on this region?</span>
+        <span class="col-md-10">Select all sites</span>
         <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox" value="" />
       </div>
       [/#if]
