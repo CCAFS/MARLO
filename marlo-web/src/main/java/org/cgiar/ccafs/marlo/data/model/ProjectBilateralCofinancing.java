@@ -25,7 +25,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   @Expose
   private Long id;
 
-
   @Expose
   private Institution institution;
 
@@ -52,8 +51,12 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   @Expose
   private Date endDate;
+
+
   @Expose
   private Integer agreement;
+
+
   @Expose
   private boolean active;
   @Expose
@@ -63,7 +66,7 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   @Expose
   private Long budget;
   @Expose
-  private String fincanceCode;
+  private String financeCode;
   @Expose
   private String contactPersonName;
   @Expose
@@ -103,17 +106,14 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     return endDate;
   }
 
-
-  public String getFincanceCode() {
-    return fincanceCode;
+  public String getFinanceCode() {
+    return financeCode;
   }
-
 
   @Override
   public Long getId() {
     return id;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -123,6 +123,7 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -202,8 +203,8 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     this.endDate = endDate;
   }
 
-  public void setFincanceCode(String fincanceCode) {
-    this.fincanceCode = fincanceCode;
+  public void setFinanceCode(String financeCode) {
+    this.financeCode = financeCode;
   }
 
   public void setId(Long id) {
