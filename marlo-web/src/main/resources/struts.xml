@@ -63,7 +63,7 @@
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
 			<interceptor name="editCofunded"
-				class="org.cgiar.ccafs.marlo.interceptor.project.EditCofundedInterceptor" />
+				class="org.cgiar.ccafs.marlo.interceptor.bilateral.EditCofundedInterceptor" />
 
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
