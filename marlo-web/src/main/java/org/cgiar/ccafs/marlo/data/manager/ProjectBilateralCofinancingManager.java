@@ -63,6 +63,15 @@ public interface ProjectBilateralCofinancingManager {
   public ProjectBilateralCofinancing getProjectBilateralCofinancingById(long projectBilateralCofinancingID);
 
   /**
+   * Get the list of permissions that the user can access and edit.
+   * 
+   * @param userId - The user Id.
+   * @param crp - The crp acronym that the user has logged.
+   * @return a permissions user list.
+   */
+  public List<ProjectBilateralCofinancing> getUserCofundedProjects(long userId, String crp);
+
+  /**
    * This method saves the information of the given projectBilateralCofinancing
    * 
    * @param projectBilateralCofinancing - is the projectBilateralCofinancing object with the new information to be

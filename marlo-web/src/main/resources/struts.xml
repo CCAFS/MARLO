@@ -62,6 +62,9 @@
 			<interceptor name="editDeliverable"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
+			<interceptor name="editCofunded"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditCofundedInterceptor" />
+
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
@@ -132,7 +135,7 @@
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
-				<interceptor-ref name="trimInputs" />				
+				<interceptor-ref name="trimInputs" />
 			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">
