@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        <th colspan="2">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
+        <th colspan="3">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
         <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -15,7 +15,8 @@
         <th id="projectType">[@s.text name="projectsList.projectType" /]</th>
         <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
         <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
-        <th id="projectBudget">[@s.text name="projectsList.W3BILATERALprojectBudget" /]</th>
+        <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
+        <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
@@ -62,16 +63,23 @@
           </td>
           [#-- Budget W1/W2 --]
           <td class="budget"> 
-            [#if project.totalBudget?has_content]
-              <p id="">US$ <span id="">${((project.totalCcafsBudget)!0)?string(",##0.00")}</span></p> 
+            [#if project.getCoreBudget()?has_content]
+              <p id="">US$ <span id="">${((project.getCoreBudget())!0)?string(",##0.00")}</span></p> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
           [#-- Budget W3/ Bilateral --]
           <td class="budget"> 
-            [#if project.totalBudget?has_content]
-              <p id="">US$ <span id="">${((project.totalBilateralBudget)!0)?string(",##0.00")}</span></p> 
+            [#if project.getW3Budget()?has_content]
+              <p id="">US$ <span id="">${((project.getW3Budget())!0)?string(",##0.00")}</span></p> 
+            [#else]
+              [@s.text name="projectsList.none" /]
+            [/#if]
+          </td>
+           <td class="budget"> 
+            [#if project.getBilateralBudget()?has_content]
+              <p id="">US$ <span id="">${((project.getBilateralBudget())!0)?string(",##0.00")}</span></p> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
