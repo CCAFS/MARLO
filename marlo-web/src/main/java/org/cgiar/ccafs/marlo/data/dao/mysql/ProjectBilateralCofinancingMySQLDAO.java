@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectBilateralCofinancingDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -66,6 +67,13 @@ public class ProjectBilateralCofinancingMySQLDAO implements ProjectBilateralCofi
     }
     return null;
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getUserCofundedProjects(long userId, String crp) {
+    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
+      + "' and permission_id = 438 and project_id is not null";
+    return dao.findCustomQuery(query);
   }
 
   @Override

@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectBilateralCofinancingDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -63,6 +65,20 @@ public class ProjectBilateralCofinancingManagerImpl implements ProjectBilateralC
   public ProjectBilateralCofinancing getProjectBilateralCofinancingById(long projectBilateralCofinancingID) {
 
     return projectBilateralCofinancingDAO.find(projectBilateralCofinancingID);
+  }
+
+  @Override
+  public List<ProjectBilateralCofinancing> getUserCofundedProjects(long userId, String crp) {
+    List<ProjectBilateralCofinancing> projects = new ArrayList<>();
+
+    List<Map<String, Object>> view = projectBilateralCofinancingDAO.getUserCofundedProjects(userId, crp);
+
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        projects.add(this.getProjectBilateralCofinancingById((Long.parseLong(map.get("project_id").toString()))));
+      }
+    }
+    return projects;
   }
 
   @Override
