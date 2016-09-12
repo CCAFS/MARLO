@@ -148,6 +148,15 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     return startDate;
   }
 
+  public String getStatusName() {
+    if (this.agreement != null) {
+      return AgreementStatusEnum.getValue(this.agreement).getStatus() != null
+        ? AgreementStatusEnum.getValue(this.agreement).getStatus() : "";
+    } else {
+      return "";
+    }
+  }
+
   public String getTitle() {
     return title;
   }
@@ -221,10 +230,10 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     this.projectBudgets = projectBudgets;
   }
 
+
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
-
 
   public void setTitle(String title) {
     this.title = title;
