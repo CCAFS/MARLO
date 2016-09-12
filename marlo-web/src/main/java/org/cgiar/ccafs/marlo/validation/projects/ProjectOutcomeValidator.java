@@ -82,11 +82,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
           || projectMilestone.getExpectedUnit().getId() == -1) {
           this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
           projectMilestone.setExpectedUnit(null);
+        } else {
+          if (projectMilestone.getExpectedValue() == null
+            || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
+            this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
+          }
         }
-        if (projectMilestone.getExpectedValue() == null
-          || !this.isValidNumber(String.valueOf(projectMilestone.getExpectedValue()))) {
-          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedValue", params));
-        }
+
 
         if (!(this.isValidString(projectMilestone.getNarrativeTarget())
           && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
@@ -141,7 +143,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       this.replaceAll(validationMessage, "Lessons",
         "Lessons regarding partnerships and possible implications for the coming planning cycle");
     }
-    if (action.getCurrentCycleYear() == startYear) {
+    if (action.isPlanningActive()) {
 
       if (projectOutcome.getExpectedUnit() == null || projectOutcome.getExpectedUnit().getId() == -1) {
         this.addMessage(action.getText("projectOutcome.expectedUnit"));
