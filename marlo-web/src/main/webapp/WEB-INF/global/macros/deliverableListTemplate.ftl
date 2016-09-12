@@ -35,11 +35,11 @@
             [/#if]
           </td>
           [#-- Deliverable Type --]
-          <td>
+          <td >
             ${(deliverable.deliverableType.name?lower_case)!'none'}
           </td>
           [#-- Deliverable Year --]
-          <td>
+          <td class="text-center">
             ${(deliverable.year)!'none'}
           </td>
           [#-- Deliverable FAIR compliance --]

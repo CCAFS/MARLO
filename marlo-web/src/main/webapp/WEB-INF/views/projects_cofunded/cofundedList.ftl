@@ -13,14 +13,14 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-[#import "/WEB-INF/global/macros/cofundedListTemplate.ftl" as cofundedList /]
+[#import "/WEB-INF/global/macros/cofundedListTemplate.ftl" as CofundedList /]
     
 <section class="container">
   <article class="fullBlock" id="mainInformation">
     [#-- Projects List (My Projects) --]
     <h3 class="headTitle text-center">[@s.text name="Bilateral Co-Funded Projects you are leading  "/]</h3>
     <div class="loadingBlock"></div>
-    <div style="display:none">[@cofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="" defaultAction="${(crpSession)!}/cofundedList" /]</div>
+    <div style="display:none">[@CofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="" defaultAction="" /]</div>
     <div class="clearfix"></div>
     
   </article>
