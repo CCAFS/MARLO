@@ -8,7 +8,7 @@ function init() {
   attachEvents();
 
   /* Init Select2 plugin */
-  // $('outcomes-list select').select2();
+  $('.outcomes-list select').select2();
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
 
@@ -18,6 +18,18 @@ function init() {
 }
 
 function attachEvents() {
+
+  // Change a target unit
+  $('select.targetUnit').on('change', function() {
+    var valueId = $(this).val();
+    var $targetValue = $(this).parents('.target-block').find('.targetValue-block');
+    if(valueId != "-1") {
+      $targetValue.show('slow');
+    } else {
+      $targetValue.hide('slow');
+    }
+
+  });
 
   // Add an Outcome
   $('.addOutcome').on('click', addOutcome);
