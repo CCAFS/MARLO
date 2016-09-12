@@ -603,19 +603,23 @@ public class ProjectDescriptionAction extends BaseAction {
           project.setBilateralContractName(null);
         }
 
-        if (fileReporting != null) {
-          // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
+
+        if (this.isReportingActive()) {
+          if (fileReporting != null) {
+            // FileManager.deleteFile(this.getAnnualReportAbsolutePath() + projectDB.getAnnualReportToDornor());
 
 
-          project.setAnnualReportToDonnor(this.getFileDB(projectDB.getAnnualReportToDonnor(), fileReporting,
-            fileReportingFileName, this.getAnnualReportAbsolutePath()));
+            project.setAnnualReportToDonnor(this.getFileDB(projectDB.getAnnualReportToDonnor(), fileReporting,
+              fileReportingFileName, this.getAnnualReportAbsolutePath()));
 
-          FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
+            FileManager.copyFile(fileReporting, this.getAnnualReportAbsolutePath() + fileReportingFileName);
 
+          }
+          if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
+            project.setAnnualReportToDonnor(null);
+          }
         }
-        if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
-          project.setAnnualReportToDonnor(null);
-        }
+
       }
 
 
