@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        <th colspan="2">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
+        <th colspan="3">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
         <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">
