@@ -65,7 +65,7 @@
               </div>
             </div> 
     
-            [#-- Project upload work plan --]
+            [#-- Project upload work plan 
             [#if !((project.bilateralProject)!false)]
             <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
               [#if action.hasPermission("workplan") ]
@@ -77,8 +77,8 @@
                 </div> 
               </div>  
             </div>
-            [/#if]
-    
+            [/#if]--]
+            
             [#-- Project upload bilateral contract --]
             [#if (project.bilateralProject)!false && action.hasPermission("bilateralContract") ]
             <div class="fullBlock fileUpload bilateralContract">

@@ -51,10 +51,10 @@
           <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}</p>
           
           [#-- Project Targets --]
-          [#assign showExpectedTarget = (!reportingActive && (startYear == currentCycleYear)) /]
+          [#assign showExpectedTarget = true /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
-          [#if showExpectedTarget || showAchievedTarget]
+          
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
@@ -91,7 +91,7 @@
             </div>
             [/#if]
           </div>
-          [/#if]
+          
           [#-- Project Milestones and Communications contributions per year--]
           <h4 class="headTitle">Milestones/ progress towards your outcome target contribution </h4>
           

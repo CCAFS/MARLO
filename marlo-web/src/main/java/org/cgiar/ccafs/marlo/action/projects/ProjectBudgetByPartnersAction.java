@@ -84,7 +84,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
-	private ProjectBudgetsValidator projectBudgetsValidator;
+  private ProjectBudgetsValidator projectBudgetsValidator;
 
   private CrpManager crpManager;
   private long projectID;
@@ -105,7 +105,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
     ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
-    LiaisonInstitutionManager liaisonInstitutionManager,ProjectBudgetsValidator projectBudgetsValidator) {
+    LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -597,10 +597,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (project.getBudgets() == null) {
         project.setBudgets(new ArrayList<>());
       }
-      if (!project.getBudgets().contains(projectBudget)) {
-        projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
+        if (!project.getBudgets().contains(projectBudget)) {
+          projectBudgetManager.deleteProjectBudget(projectBudget.getId());
 
+        }
       }
+
     }
 
     if (project.getBudgets() != null) {
@@ -652,10 +655,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (project.getBudgetsCofinancing() == null) {
         project.setBudgets(new ArrayList<>());
       }
-      if (!project.getBudgetsCofinancing().contains(projectBudget)) {
-        projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
+        if (!project.getBudgetsCofinancing().contains(projectBudget)) {
 
+          projectBudgetManager.deleteProjectBudget(projectBudget.getId());
+
+        }
       }
+
     }
 
     if (project.getBudgetsCofinancing() != null) {

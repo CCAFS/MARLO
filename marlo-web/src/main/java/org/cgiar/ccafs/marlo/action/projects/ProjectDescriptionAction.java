@@ -569,24 +569,18 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
 
-
-      if (!project.isBilateralProject() && project.getRequiresWorkplanUpload()) {
-        if (file != null) {
-
-
-          project
-            .setWorkplan(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
-
-          FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
-
-        }
-
-        if (project.getWorkplan().getFileName().isEmpty()) {
-          project.setWorkplan(null);
-        }
-      }
-
-
+      /*
+       * if (!projectDB.isBilateralProject()) {
+       * if (file != null) {
+       * project
+       * .setWorkplan(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
+       * FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
+       * }
+       * if (project.getWorkplan().getFileName().isEmpty()) {
+       * project.setWorkplan(null);
+       * }
+       * }
+       */
       if (projectDB.isBilateralProject()) {
 
         if (file != null) {
@@ -623,14 +617,18 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
-      for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+      if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
+
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+
+          if (!project.getFlagshipValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
+
+          }
         }
-      }
-      if (project.getFlagshipValue() != null || project.getFlagshipValue().length() > 0) {
         for (String programID : project.getFlagshipValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
@@ -652,14 +650,15 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
-      for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
-        if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-          projectFocusManager.deleteProjectFocus(projectFocus.getId());
+      if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
+        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+          .filter(
+            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+          .collect(Collectors.toList())) {
+          if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+            projectFocusManager.deleteProjectFocus(projectFocus.getId());
+          }
         }
-      }
-      if (project.getRegionsValue() != null || project.getRegionsValue().length() > 0) {
         for (String programID : project.getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));

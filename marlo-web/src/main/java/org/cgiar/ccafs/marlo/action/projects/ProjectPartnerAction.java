@@ -596,7 +596,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("update")) {
+    if (this.hasPermission("canEdit")) {
 
       previousProject = projectManager.getProjectById(projectID);
 
