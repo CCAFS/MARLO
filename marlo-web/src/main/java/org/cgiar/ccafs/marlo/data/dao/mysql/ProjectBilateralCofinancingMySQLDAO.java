@@ -89,6 +89,16 @@ public class ProjectBilateralCofinancingMySQLDAO implements ProjectBilateralCofi
   }
 
   @Override
+  public long save(ProjectBilateralCofinancing project, String section, List<String> relationsName) {
+    if (project.getId() == null) {
+      dao.save(project, section, relationsName);
+    } else {
+      dao.update(project, section, relationsName);
+    }
+    return project.getId();
+  }
+
+  @Override
   public List<ProjectBilateralCofinancing> searchProject(String searchValue, long institutionID, int year) {
     StringBuilder query = new StringBuilder();
     query.append("from " + ProjectBilateralCofinancing.class.getName());

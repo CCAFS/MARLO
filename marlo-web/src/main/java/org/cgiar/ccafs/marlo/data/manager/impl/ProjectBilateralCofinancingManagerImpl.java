@@ -88,6 +88,12 @@ public class ProjectBilateralCofinancingManagerImpl implements ProjectBilateralC
   }
 
   @Override
+  public long saveProjectBilateralCofinancing(ProjectBilateralCofinancing project, String section,
+    List<String> relationsName) {
+    return projectBilateralCofinancingDAO.save(project, section, relationsName);
+  }
+
+  @Override
   public List<ProjectBilateralCofinancing> searchProject(String searchValue, long institutionID, int year) {
     return projectBilateralCofinancingDAO.searchProject(searchValue, institutionID, year);
   }

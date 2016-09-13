@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,66 @@ public class CofundedAction extends BaseAction {
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_W3_COFUNDED_BASE_PERMISSION, params));
+
+    if (this.isHttpPost()) {
+      if (institutions != null) {
+        institutions.clear();
+      }
+
+      if (liaisonInstitutions != null) {
+        liaisonInstitutions.clear();
+      }
+
+      if (status != null) {
+        status.clear();
+      }
+    }
+  }
+
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+      ProjectBilateralCofinancing projectDB =
+        projectBilateralCofinancingManager.getProjectBilateralCofinancingById(project.getId());
+      projectDB.setActive(true);
+      projectDB.setCreatedBy(projectDB.getCreatedBy());
+      projectDB.setModifiedBy(this.getCurrentUser());
+      projectDB.setModificationJustification("");
+      projectDB.setActiveSince(projectDB.getActiveSince());
+
+      projectDB.setTitle(project.getTitle());
+
+      LiaisonInstitution liaisonInstitution =
+        liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId());
+      projectDB.setLiaisonInstitution(liaisonInstitution);
+
+      Institution institution = institutionManager.getInstitutionById(project.getInstitution().getId());
+      projectDB.setInstitution(institution);
+
+      projectDB.setStartDate(project.getStartDate());
+      projectDB.setEndDate(project.getEndDate());
+
+      projectDB.setFinanceCode(project.getFinanceCode());
+      projectDB.setContactPersonEmail(project.getContactPersonEmail());
+      projectDB.setContactPersonName(project.getContactPersonName());
+      projectDB.setBudget(project.getBudget());
+
+      projectBilateralCofinancingManager.saveProjectBilateralCofinancing(projectDB);
+
+      Collection<String> messages = this.getActionMessages();
+      if (!messages.isEmpty()) {
+        String validationMessage = messages.iterator().next();
+        this.setActionMessages(null);
+        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      } else {
+        this.addActionMessage(this.getText("saving.saved"));
+      }
+
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
   }
 
   public void setInstitutions(List<Institution> institutions) {
