@@ -69,7 +69,10 @@
         [@s.text name="projectCofunded.donor.disclaimer" /]
       </div>
     </div>
+    [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
   </div>
+  
   [/@s.form] 
   </article>
 </section>

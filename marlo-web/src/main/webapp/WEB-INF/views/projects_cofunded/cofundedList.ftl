@@ -22,6 +22,11 @@
     <div class="loadingBlock"></div>
     <div style="display:none">[@CofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="/bilaterals" defaultAction="${(crpSession)!}/cofunded" /]</div>
     <div class="clearfix"></div>
+    <div class="text-right">
+      <div class="addProject button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewCofunded'][/@s.url]">
+        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Bilateral Cofunded
+        </a></div>
+    </div>
     
   </article>
 </section>
