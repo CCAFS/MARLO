@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -83,6 +84,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
+	private ProjectBudgetsValidator projectBudgetsValidator;
 
   private CrpManager crpManager;
   private long projectID;
@@ -103,7 +105,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
     ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager,ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -114,7 +116,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.budgetTypeManager = budgetTypeManager;
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
-
+    this.projectBudgetsValidator = projectBudgetsValidator;
   }
 
   @Override
@@ -215,6 +217,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+
   public ProjectBudget getBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
 
     return project.getBudgetsCofinancing()
@@ -247,6 +250,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return this.getIndexBudget(institutionId, year, type);
   }
+
 
   public int getIndexBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
     if (project.getBudgetsCofinancing() != null) {
@@ -302,6 +306,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
@@ -309,7 +314,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -702,7 +706,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
@@ -730,6 +733,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      projectBudgetsValidator.validate(this, project);
     }
   }
+
+
 }
