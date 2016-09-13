@@ -35,7 +35,6 @@
 
 		<action name="{crp}/addNewCofunded" method="add"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<interceptor-ref name="editProjectsStack" />
 			<result name="input">/WEB-INF/views/projects_cofunded/projectCofunded.ftl
 			</result>
 			<result name="success" type="redirectAction">
