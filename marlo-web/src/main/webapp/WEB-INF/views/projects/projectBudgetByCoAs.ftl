@@ -17,6 +17,7 @@
 
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
+[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
 [#assign budgetCounter = 0 /]
 [#assign type = { 
   'w1w2': 'w1w2',
@@ -41,8 +42,7 @@
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          
-          
+        
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByCoAs.title" /]</h3>
           
@@ -50,27 +50,43 @@
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. endYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
               [/#list]
             </ul>
             [#-- Years Content --]
             <div class="tab-content budget-content">
               [#list startYear .. endYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+                <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                   <div class="overallYearBudget fieldset clearfix">
                     <h5 class="title">Remaining ${year} total budget amount</h5>
                     <div class="row">
                       [#-- W1/W2 --]
                       [#if !project.bilateralProject]
-                      <div class="col-md-3"><h5 class="subTitle">W1/W2 <small><span class="totalByYear-${type.w1w2}">0%</span></small></h5></div>
+                      <div class="col-md-3"><h5 class="subTitle">W1/W2 <small><span class="totalByYear-${type.w1w2}">100%</span></small></h5></div>
                       [/#if]
                       [#-- W3 --]
-                      <div class="col-md-3"><h5 class="subTitle">W3 <small> <span class="totalByYear-${type.w3}">0%</span></small></h5></div>
+                      <div class="col-md-3"><h5 class="subTitle">W3 <small> <span class="totalByYear-${type.w3}">100%</span></small></h5></div>
                       [#-- Bilateral  --]
-                      <div class="col-md-3"><h5 class="subTitle">Bilateral <small> <span class="totalByYear-${type.bilateral}">0%</span></small></h5></div>
+                      <div class="col-md-3"><h5 class="subTitle">Bilateral <small> <span class="totalByYear-${type.bilateral}">100%</span></small></h5></div>
                       [#-- Center Funds --]
                       [#if !project.bilateralProject]
-                      <div class="col-md-3"><h5 class="subTitle">Center Funds <small> <span class="totalByYear-${type.centerFunds}">0%</span></small></h5></div>
+                      <div class="col-md-3"><h5 class="subTitle">Center Funds <small> <span class="totalByYear-${type.centerFunds}">100%</span></small></h5></div>
+                      [/#if]
+                    </div>
+                    
+                    <h5 class="title">Remaining ${year} gender amount</h5>
+                    <div class="row">
+                      [#-- W1/W2 --]
+                      [#if !project.bilateralProject]
+                      <div class="col-md-3"><h5 class="subTitle">W1/W2 <small><span class="totalByYear-${type.w1w2}">100%</span></small></h5></div>
+                      [/#if]
+                      [#-- W3 --]
+                      <div class="col-md-3"><h5 class="subTitle">W3 <small> <span class="totalByYear-${type.w3}">100%</span></small></h5></div>
+                      [#-- Bilateral  --]
+                      <div class="col-md-3"><h5 class="subTitle">Bilateral <small> <span class="totalByYear-${type.bilateral}">100%</span></small></h5></div>
+                      [#-- Center Funds --]
+                      [#if !project.bilateralProject]
+                      <div class="col-md-3"><h5 class="subTitle">Center Funds <small> <span class="totalByYear-${type.centerFunds}">100%</span></small></h5></div>
                       [/#if]
                     </div>
                   </div>

@@ -30,8 +30,7 @@ import com.google.inject.Inject;
 
 
 /**
- * @author Hernán David Carvajal B. - CIAT/CCAFS
- * @author Héctor Fabio Tobón R. - CIAT/CCAFS
+ * @author Christian Garcia. - CIAT/CCAFS
  */
 
 public class ProjectBudgetsValidator extends BaseValidator {
@@ -75,21 +74,26 @@ public class ProjectBudgetsValidator extends BaseValidator {
           int i = 0;
           for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
             List<String> params = new ArrayList<String>();
-            params.add(institutionManager.getInstitutionById(projectBudget.getInstitution().getId()).getAcronym());
-            params.add(String.valueOf(projectBudget.getProjectBilateralCofinancing().getId()));
 
-            if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-              if (!this.isValidNumber(String.valueOf(projectBudget.getAmount())) || projectBudget.getAmount() == 0) {
-                this.addMessage(action.getText("projectBudgetCofinaning.requeried.amount", params));
+            if (projectBudget != null) {
+              params.add(institutionManager.getInstitutionById(projectBudget.getInstitution().getId()).getAcronym());
+              params.add(String.valueOf(projectBudget.getProjectBilateralCofinancing().getId()));
+
+              if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                if (!this.isValidNumber(String.valueOf(projectBudget.getAmount())) || projectBudget.getAmount() == 0) {
+                  this.addMessage(action.getText("projectBudgetCofinaning.requeried.amount", params));
+                }
+              }
+
+              if (projectBudget.getBudgetType() == null || projectBudget.getBudgetType().getId() == null
+                || projectBudget.getBudgetType().getId() == -1) {
+                action.addFieldError("project.budgetsCofinancing[" + i + "].budgetType.id",
+                  action.getText("validation.required", new String[] {action.getText("budget.budgetType")}));
+                this.addMessage(action.getText("projectBudgetCofinaning.requeried.type", params));
               }
             }
 
-            if (projectBudget.getBudgetType() == null || projectBudget.getBudgetType().getId() == null
-              || projectBudget.getBudgetType().getId() == -1) {
-              action.addFieldError("project.budgetsCofinancing[" + i + "].budgetType.id",
-                action.getText("validation.required", new String[] {action.getText("budget.budgetType")}));
-              this.addMessage(action.getText("projectBudgetCofinaning.requeried.type", params));
-            }
+
             i++;
           }
         }
