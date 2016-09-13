@@ -83,5 +83,19 @@ public interface ProjectBilateralCofinancingManager {
    */
   public long saveProjectBilateralCofinancing(ProjectBilateralCofinancing projectBilateralCofinancing);
 
+  /**
+   * This method saves the information of the given project and save the history in the auditlog
+   * 
+   * @param deliverable - is the deliverable object with the new information to be added/updated.
+   * @param section - the action name of the section that execute the save method
+   * @param relationsName - the model class relations of project that save in the auditlog.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectBilateralCofinancing was
+   *         updated
+   *         or -1 is some error occurred.
+   */
+  public long saveProjectBilateralCofinancing(ProjectBilateralCofinancing project, String section,
+    List<String> relationsName);
+
   public List<ProjectBilateralCofinancing> searchProject(String searchValue, long institutionID, int year);
 }
