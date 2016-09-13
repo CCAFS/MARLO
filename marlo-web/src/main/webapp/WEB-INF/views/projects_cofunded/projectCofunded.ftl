@@ -2,7 +2,7 @@
 [#assign title = "MARLO Projects Bilateral Co-funded" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
+[#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "project co-funded" /]
 
@@ -15,6 +15,8 @@
     
 <section class="container">
   <article class="fullBlock col-md-12" id="mainInformation">
+  
+  [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
   <h4 class="sectionTitle">[@s.text name="Project summary overview" /]</h4>
   <div class="col-md-12">
@@ -68,6 +70,7 @@
       </div>
     </div>
   </div>
+  [/@s.form] 
   </article>
 </section>
 
