@@ -35,7 +35,8 @@
 
 		<action name="{crp}/addNewCofunded" method="add"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<result name="input">/WEB-INF/views/projects_cofunded/projectCofunded.ftl
+			<interceptor-ref name="projectsStack" />
+			<result name="input">/WEB-INF/views/projects_cofunded/cofundedList.ftl
 			</result>
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/cofunded</param>
@@ -46,7 +47,7 @@
 
 		<action name="{crp}/deleteCofunded" method="delete"
 			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<interceptor-ref name="editProjectsStack" />
+			<interceptor-ref name="projectsStack" />
 			<result name="success" type="redirectAction">
 				<param name="actionName">${crpSession}/cofundedList</param>
 				<param name="projectID">${projectID}</param>

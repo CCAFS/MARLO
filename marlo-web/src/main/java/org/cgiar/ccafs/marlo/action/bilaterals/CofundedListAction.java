@@ -82,6 +82,27 @@ public class CofundedListAction extends BaseAction {
     return INPUT;
   }
 
+  @Override
+  public String delete() {
+    ProjectBilateralCofinancing project =
+      projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectID);
+
+    if (project != null) {
+      if (projectBilateralCofinancingManager.deleteProjectBilateralCofinancing(project.getId())) {
+        this.addActionMessage(
+          this.getText("deleting.success", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+      } else {
+        this.addActionError(
+          this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+      }
+    } else {
+      this.addActionError(
+        this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+    }
+
+    return SUCCESS;
+  }
+
   public List<ProjectBilateralCofinancing> getAllProjects() {
     return allProjects;
   }
