@@ -22,11 +22,14 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -42,6 +45,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,18 +66,36 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = 7833194831832715444L;
+
+
   private InstitutionManager institutionManager;
+
+
   private BudgetTypeManager budgetTypeManager;
+
+
   private ProjectManager projectManager;
+
+
   private ProjectBudgetManager projectBudgetManager;
+
+
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
+
+  private LiaisonInstitutionManager liaisonInstitutionManager;
+
+	private ProjectBudgetsValidator projectBudgetsValidator;
+
   private CrpManager crpManager;
   private long projectID;
   private Crp loggedCrp;
   private Project project;
   private String transaction;
   private AuditLogManager auditLogManager;
-  private ProjectBudgetsValidator projectBudgetsValidator;
+  // Pre-loaded List to Bilateral Co-funded Projects Service.
+  private Map<String, String> status;
+  private List<LiaisonInstitution> liaisonInstitutions;
+  private List<Institution> institutions;
   // Model for the view
   private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
@@ -83,7 +105,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
     ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
-    ProjectBudgetsValidator projectBudgetsValidator) {
+    LiaisonInstitutionManager liaisonInstitutionManager,ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -93,6 +115,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
   }
 
@@ -135,7 +158,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public ProjectBudget getBudget(Long institutionId, int year, long type) {
 
@@ -261,6 +283,16 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type);
   }
 
+  public List<Institution> getInstitutions() {
+    return institutions;
+  }
+
+
+  public List<LiaisonInstitution> getLiaisonInstitutions() {
+    return liaisonInstitutions;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -277,6 +309,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
+  }
+
+  public Map<String, String> getStatus() {
+    return status;
   }
 
   public long getTotalYear(int year, long type) {
@@ -314,7 +350,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return transaction;
   }
 
-
   public Map<String, String> getW3bilateralBudgetTypes() {
     return w3bilateralBudgetTypes;
   }
@@ -337,6 +372,26 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
     return false;
+  }
+
+
+  /**
+   * Load the Lists whit the information to created a project bilateral co-funded, this is a pre-load to show in the
+   * project bilateral co-funded creation popup
+   */
+  public void loadCofundedInfoList() {
+    status = new HashMap<>();
+    List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
+    for (AgreementStatusEnum agreementStatusEnum : list) {
+      status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
+    }
+
+    institutions = institutionManager.findAll().stream()
+      .filter(i -> i.getInstitutionType().getId() == APConstants.INSTITUTION_DONOR_TYPE).collect(Collectors.toList());
+
+    liaisonInstitutions = liaisonInstitutionManager.findAll().stream()
+      .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
+
   }
 
 
@@ -414,6 +469,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
       }
+
+      // Pre-load Project Co-Funded Lists.
+      this.loadCofundedInfoList();
 
 
       Project projectBD = projectManager.getProjectById(projectID);
@@ -514,6 +572,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
   }
+
 
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
@@ -630,6 +689,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
+  }
+
+
+  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+    this.liaisonInstitutions = liaisonInstitutions;
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -649,10 +716,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
+  public void setStatus(Map<String, String> status) {
+    this.status = status;
+  }
+
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   public void setW3bilateralBudgetTypes(Map<String, String> w3bilateralBudgetTypes) {
     this.w3bilateralBudgetTypes = w3bilateralBudgetTypes;
