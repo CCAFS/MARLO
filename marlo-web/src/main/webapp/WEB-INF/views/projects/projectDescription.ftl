@@ -109,17 +109,18 @@
           
             
             [#--  Regions/global and Flagships that the project is working on --]
-            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:[@customForm.req required=true /] </h5>
+            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
            
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="">
-                  <h5>[@s.text name="projectDescription.flagships" /]:</h5>
+                  <h5>[@s.text name="projectDescription.flagships" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </h5>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
                     [@s.checkboxlist name="project.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
                   [#else]
+                    <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
                     [#if project.flagships?has_content]
                       [#list project.flagships as element]<p class="checked">${element.composedName}</p>[/#list]
                     [#else]
@@ -131,17 +132,18 @@
               [#-- Regions --] 
               <div class="col-md-6">  
                 <div id="projectRegionsBlock" class="">
-                  <h5>[@s.text name="projectDescription.regions" /]:</h5>
+                  <h5>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</h5>
                   [#if editable && action.hasPermission("regions")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
                     <input type="checkbox" name="project.noRegional" value="1" id="projectNoRegional" class="checkboxInput">
                     <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
                     [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput"  value="regionsIds" /]
                   [#else]
+                    <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                     [#if project.regions?has_content]
                       [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
                     [#else]
-                      [#if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if]
+                      [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
                     [/#if]
                   [/#if]
                 </div>
@@ -151,7 +153,7 @@
             
             [#-- Cluster of Activities --]
             <div class="panel tertiary">
-              <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=true /]</div>
+              <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</div>
               <div id="projectsList" class="panel-body"> 
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
@@ -170,7 +172,7 @@
                     </li>
                   [/#list]
                 [#else]
-                  [#if !editable] <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> [/#if]
+                  [#if !action.hasPermission("activities")] <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> [/#if]
                 [/#if]  
                 </ul>
                 [#if editable  && action.hasPermission("activities")]
