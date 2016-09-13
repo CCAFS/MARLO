@@ -287,9 +287,9 @@
     [#local canEditLeader=(editable && action.hasPermission("leader"))!false /]
     [#local canEditCoordinator=(editable && action.hasPermission("coordinator"))!false /]
     
-    [#if (contact.leader)!false]
+    [#if (element.contactType == "PL")!false]
       [#local canEditContactType = (editable && action.hasPermission("leader"))!false /]
-    [#elseif (contact.coordinator)!false]
+    [#elseif (element.contactType == "PC")!false]
       [#local canEditContactType = (editable && action.hasPermission("coordinator"))!false /]
     [#else]
       [#local canEditContactType = editable || isTemplate /]
@@ -299,7 +299,7 @@
     <div class="form-group">
       <div class="partnerPerson-type halfPartBlock clearfix">
         [#if canEditContactType]
-          [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" editable=canEditLeader required=true /]
+          [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
         [#else]
           <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
           <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
