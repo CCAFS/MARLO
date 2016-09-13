@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -72,6 +73,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private Project project;
   private String transaction;
   private AuditLogManager auditLogManager;
+  private ProjectBudgetsValidator projectBudgetsValidator;
   // Model for the view
   private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
@@ -80,7 +82,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
-    ProjectBilateralCofinancingManager projectBilateralCofinancingManager) {
+    ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
+    ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
     this.institutionManager = institutionManager;
@@ -90,7 +93,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
-
+    this.projectBudgetsValidator = projectBudgetsValidator;
   }
 
   @Override
@@ -124,7 +127,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
@@ -193,12 +195,12 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+
   public ProjectBudget getBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
 
     return project.getBudgetsCofinancing()
       .get(this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type));
   }
-
 
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
@@ -226,6 +228,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     return this.getIndexBudget(institutionId, year, type);
   }
+
 
   public int getIndexBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
     if (project.getBudgetsCofinancing() != null) {
@@ -262,7 +265,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return loggedCrp;
   }
 
-
   public Project getProject() {
     return project;
   }
@@ -272,10 +274,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
-
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -477,6 +479,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -572,7 +575,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
-
   public void saveBilateralBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
@@ -628,6 +630,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -635,7 +638,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
-
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -660,6 +662,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      projectBudgetsValidator.validate(this, project);
     }
   }
+
+
 }
