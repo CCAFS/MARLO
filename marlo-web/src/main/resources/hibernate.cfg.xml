@@ -95,6 +95,7 @@
     <mapping resource="xmls/BudgetTypes.hbm.xml"/>
     <mapping resource="xmls/DeliverableActivities.hbm.xml"/>
     <mapping resource="xmls/ProjectsBilateralCofinancing.hbm.xml"/>
+    <mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
 

@@ -204,7 +204,7 @@
     </action>
     
     <action name="{crp}/budgetByCoAs"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByClusterOfActivitiesAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectBudgetByCoAs.ftl</result>
       <result name="success" type="redirectAction">
