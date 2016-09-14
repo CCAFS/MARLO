@@ -166,7 +166,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     if (projectOutcome.getMilestones() != null || projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
-          .filter(c -> c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
+          .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
         for (int i = 0; i < milestones.size(); i++) {
           this.validateProjectMilestone(action, milestones.get(i), i);
         }

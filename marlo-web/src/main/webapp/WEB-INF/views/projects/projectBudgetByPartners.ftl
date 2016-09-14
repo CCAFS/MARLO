@@ -313,7 +313,6 @@
     [#-- Project Title --]
     <p class="title">P${(element.projectBilateralCofinancing.id)!} -  ${(element.projectBilateralCofinancing.title)!}</p>
 
-
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
