@@ -1,7 +1,12 @@
 $(document).ready(init);
 
 function init() {
+// Setting Currency Inputs
+  $('.currencyInput').currencyInput();
   date("form #project\\.startDate", "form #project\\.endDate");
+  $('form select').select2({
+    width: "100%"
+  });
 }
 
 function date(start,end) {
