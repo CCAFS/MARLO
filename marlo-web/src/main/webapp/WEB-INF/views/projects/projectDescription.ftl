@@ -106,7 +106,6 @@
               </div>
               [/#if]
             [/#if]
-          
             
             [#--  Regions/global and Flagships that the project is working on --]
             <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
