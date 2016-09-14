@@ -58,8 +58,8 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.select name="agreementStatus" i18nkey="projectCofunded.agreementStatus"  listName="" keyFieldName=""  displayFieldName="" /] </div>
-              <div class="col-md-6">[@customForm.input name="budgetAgreementPeriod" i18nkey="projectCofunded.budgetAgreementPeriod" className=""/]</div>
+              <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" /] </div>
+              <div class="col-md-6">[@customForm.input name="budget" i18nkey="projectCofunded.budgetAgreementPeriod" className=""/]</div>
             </div>
           </div>
           <div class="form-group">
@@ -71,7 +71,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">
-                [@customForm.select name="donor" i18nkey="projectCofunded.donor"  listName="" keyFieldName=""  displayFieldName="" required=true /]
+                [@customForm.select name="institution" i18nkey="projectCofunded.donor"  listName="institutions " keyFieldName="id"  displayFieldName="composedName" required=true /]
               </div>
             </div>
           </div>
