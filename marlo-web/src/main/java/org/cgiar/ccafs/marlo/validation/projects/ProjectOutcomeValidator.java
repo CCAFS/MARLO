@@ -82,7 +82,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
-          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
+          // this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
           projectMilestone.setExpectedUnit(null);
         } else {
           if (projectMilestone.getExpectedValue() == null

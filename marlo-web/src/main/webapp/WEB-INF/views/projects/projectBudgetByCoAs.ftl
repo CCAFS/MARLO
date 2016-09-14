@@ -179,7 +179,7 @@
                 <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].crpClusterOfActivity.id" value="${(element.id)!}"/>
                 <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].budgetType.id" value="2"/>
                 <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterW3}].year" value="${(selectedYear)!}"/>
-              [#if editable]
+              [#if editable && action.hasBudgets(2,selectedYear)]
                   
                 [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW3}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput type-${type.w3}" required=true   /]
               [#else]
@@ -195,7 +195,7 @@
                 <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].budgetType.id" value="3"/>
                 <input type="hidden" name="project.budgetsCluserActvities[${budgetCounterBilateral}].year" value="${(selectedYear)!}"/>
 
-              [#if editable]
+              [#if editable && action.hasBudgets(3,selectedYear)]
                 [@customForm.input name="project.budgetsCluserActvities[${budgetCounterBilateral}].amount" i18nkey="budget.amount" showTitle=false className="percentageInput type-${type.bilateral}" required=true   /]
               [#else]
                 <div class="input"><p><span class="percentageInput totalByPartner-${type.bilateral}">${((budgetBilateral.amount)!0)?number?string(",##0.00")}</span></p></div>
@@ -236,7 +236,7 @@
             [/#if]
             [#-- W3 --]
             <td class="budgetColumn">
-              [#if editable]
+              [#if editable && action.hasBudgets(2,selectedYear)]
                 
                 [@customForm.input name="project.budgetsCluserActvities[${budgetCounterW3}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput type-${type.w3}" required=true   /]
               [#else]
@@ -245,7 +245,7 @@
             </td>
             [#-- Bilateral  --]
             <td class="budgetColumn">
-              [#if editable]
+              [#if editable && action.hasBudgets(3,selectedYear)]
                  
                 [@customForm.input name="project.budgetsCluserActvities[${budgetCounterBilateral}].genderPercentage" i18nkey="budget.amount" showTitle=false className="percentageInput type-${type.bilateral}" required=true   /]
               [#else]
