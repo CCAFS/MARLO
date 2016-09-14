@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.bilaterals;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -29,6 +30,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +54,6 @@ public class CofundedAction extends BaseAction {
 
   private CrpManager crpManager;
 
-
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
 
 
@@ -59,6 +61,8 @@ public class CofundedAction extends BaseAction {
 
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
+  private AuditLogManager auditLogManager;
 
 
   private Crp loggedCrp;
@@ -75,18 +79,55 @@ public class CofundedAction extends BaseAction {
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
+
   private List<Institution> institutions;
 
+
+  private String transaction;
 
   @Inject
   public CofundedAction(APConfig config, CrpManager crpManager,
     ProjectBilateralCofinancingManager projectBilateralCofinancingManager, InstitutionManager institutionManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, AuditLogManager auditLogManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
     this.institutionManager = institutionManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.auditLogManager = auditLogManager;
+  }
+
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+      System.out.println(fileDeleted);
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+    } else {
+      this.addActionMessage(this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public List<Institution> getInstitutions() {
@@ -113,6 +154,10 @@ public class CofundedAction extends BaseAction {
     return status;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
@@ -120,7 +165,24 @@ public class CofundedAction extends BaseAction {
 
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-    project = projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectID);
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      ProjectBilateralCofinancing history = (ProjectBilateralCofinancing) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectID);
+    }
+
 
     if (project != null) {
 
@@ -137,7 +199,8 @@ public class CofundedAction extends BaseAction {
         .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
 
       project.setBudgets(
-        new ArrayList<>(project.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+        new ArrayList<>(projectBilateralCofinancingManager.getProjectBilateralCofinancingById(project.getId())
+          .getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
     }
 
@@ -189,7 +252,12 @@ public class CofundedAction extends BaseAction {
       projectDB.setContactPersonName(project.getContactPersonName());
       projectDB.setBudget(project.getBudget());
 
-      projectBilateralCofinancingManager.saveProjectBilateralCofinancing(projectDB);
+
+      projectDB.setAgreement(project.getAgreement());
+
+      List<String> relationsName = new ArrayList<>();
+      projectBilateralCofinancingManager.saveProjectBilateralCofinancing(projectDB, this.getActionName(),
+        relationsName);
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {
@@ -210,10 +278,10 @@ public class CofundedAction extends BaseAction {
     this.institutions = institutions;
   }
 
+
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
-
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
@@ -229,6 +297,10 @@ public class CofundedAction extends BaseAction {
 
   public void setStatus(Map<String, String> status) {
     this.status = status;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 }

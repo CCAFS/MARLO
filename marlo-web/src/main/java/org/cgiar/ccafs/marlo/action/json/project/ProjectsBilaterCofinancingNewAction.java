@@ -46,7 +46,11 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
 
 
   private static String TITLE = "title";
+
+
   private static String START_DATE = "startDate";
+
+
   private static String END_DATE = "endDate";
   private static String FINANCE_CODE = "financeCode";
   private static String STATUS = "status";
@@ -55,14 +59,13 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
   private static String DONOR = "institution";
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
-
-
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
+
   private InstitutionManager institutionManager;
   private ProjectBilateralCofinancing project;
   private List<Map<String, Object>> projectCreated;
-
 
   @Inject
   public ProjectsBilaterCofinancingNewAction(APConfig config,
@@ -74,52 +77,12 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
-
   @Override
   public String execute() throws Exception {
-
-    projectCreated = new ArrayList<>();
-
-    project.setActive(true);
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setModificationJustification("");
-    project.setActiveSince(new Date());
-
-    Long projectId = projectBilateralCofinancingManager.saveProjectBilateralCofinancing(project);
-
-    Map<String, Object> projectProp = new HashMap<>();
-
-    if (projectId > 0) {
-      projectProp.put("id", projectId);
-      projectProp.put("title", project.getTitle());
-      projectProp.put("status", "Ok");
-
-    } else {
-      projectProp.put("status", "Fail");
-      projectProp.put("message", this.getText("manageUsers.email.notAdded"));
-    }
-
-    projectCreated.add(projectProp);
-
-    return SUCCESS;
-  }
-
-  public ProjectBilateralCofinancing getProject() {
-    return project;
-  }
-
-  public List<Map<String, Object>> getProjectCreated() {
-    return projectCreated;
-  }
-
-  @Override
-  public void prepare() throws Exception {
 
     Map<String, Object> parameters = ActionContext.getContext().getParameters();
 
     project = new ProjectBilateralCofinancing();
-    project.setId((long) -1);
 
     project.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
 
@@ -148,7 +111,52 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     project.setBudget(Long.parseLong(StringUtils.trim(((String[]) parameters.get(BUDGET))[0])));
     project.setAgreement(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
 
+    projectCreated = new ArrayList<>();
 
+    project.setActive(true);
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("");
+    project.setActiveSince(new Date());
+
+    Long projectId = projectBilateralCofinancingManager.saveProjectBilateralCofinancing(project);
+
+    Map<String, Object> projectProp = new HashMap<>();
+
+    if (projectId > 0) {
+      projectProp.put("id", projectId);
+      projectProp.put("title", project.getTitle());
+      projectProp.put("status", "Ok");
+
+    } else {
+      projectProp.put("status", "Fail");
+      projectProp.put("message", this.getText("manageUsers.email.notAdded"));
+    }
+
+    projectCreated.add(projectProp);
+
+    return SUCCESS;
+  }
+
+
+  public ProjectBilateralCofinancing getProject() {
+    return project;
+  }
+
+
+  public List<Map<String, Object>> getProjectCreated() {
+    return projectCreated;
+  }
+
+  @Override
+  public void prepare() throws Exception {
+
+
+  }
+
+
+  public void setProjectCreated(List<Map<String, Object>> projectCreated) {
+    this.projectCreated = projectCreated;
   }
 
 }
