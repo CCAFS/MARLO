@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,6 +56,14 @@ public interface LiaisonInstitutionDAO {
    * @return a list from LiaisonInstitution null if no exist records
    */
   public List<LiaisonInstitution> findAll();
+
+  /**
+   * This method gets a liaisonInstitution object by a given liaisonInstitution acronym.
+   * 
+   * @param acronym is the liaisonInstitution acronym.
+   * @return a LiaisonInstitution object.
+   */
+  public LiaisonInstitution findByAcronym(String acronym);
 
 
   /**

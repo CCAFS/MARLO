@@ -67,6 +67,16 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   }
 
   @Override
+  public LiaisonInstitution findByAcronym(String acronym) {
+    String query = "from " + LiaisonInstitution.class.getName() + " where acronym='" + acronym + "'";
+    List<LiaisonInstitution> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
   public long save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
       dao.save(liaisonInstitution);

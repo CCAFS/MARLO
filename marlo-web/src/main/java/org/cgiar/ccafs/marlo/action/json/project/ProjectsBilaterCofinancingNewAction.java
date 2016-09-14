@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -44,48 +45,22 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
   private static final long serialVersionUID = 8684072284268214629L;
 
 
-  private String title;
-
-
-  private String startDate;
-
-
-  private String endDate;
-
-
-  private String financeCode;
-
-
-  private String status;
-
-
-  private String budget;
-
-
-  private String liaisonInstitution;
-
-
-  private String institution;
-
-
-  private String contactName;
-
-
-  private String contactEmail;
+  private static String TITLE = "title";
+  private static String START_DATE = "startDate";
+  private static String END_DATE = "endDate";
+  private static String FINANCE_CODE = "financeCode";
+  private static String STATUS = "status";
+  private static String BUDGET = "budget";
+  private static String LEAD_CENTER = "liaisonInstitution";
+  private static String DONOR = "institution";
+  private static String CONTACT_NAME = "contactName";
+  private static String CONTACT_EMAIL = "contactEmail";
 
 
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
-
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private InstitutionManager institutionManager;
-
-
   private ProjectBilateralCofinancing project;
-
-
   private List<Map<String, Object>> projectCreated;
 
 
@@ -117,6 +92,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
 
     if (projectId > 0) {
       projectProp.put("id", projectId);
+      projectProp.put("title", project.getTitle());
       projectProp.put("status", "Ok");
 
     } else {
@@ -128,36 +104,6 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     return SUCCESS;
   }
 
-
-  public String getBudget() {
-    return budget;
-  }
-
-
-  public String getContactEmail() {
-    return contactEmail;
-  }
-
-  public String getContactName() {
-    return contactName;
-  }
-
-  public String getEndDate() {
-    return endDate;
-  }
-
-  public String getFinanceCode() {
-    return financeCode;
-  }
-
-  public String getInstitution() {
-    return institution;
-  }
-
-  public String getLiaisonInstitution() {
-    return liaisonInstitution;
-  }
-
   public ProjectBilateralCofinancing getProject() {
     return project;
   }
@@ -166,102 +112,42 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     return projectCreated;
   }
 
-  public String getStartDate() {
-    return startDate;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-
   @Override
   public void prepare() throws Exception {
 
-    Map<String, Object> parameters = this.getParameters();
+    Map<String, Object> parameters = ActionContext.getContext().getParameters();
 
     project = new ProjectBilateralCofinancing();
     project.setId((long) -1);
 
-    project.setTitle(StringUtils.trim(((String[]) parameters.get(title))[0]));
+    project.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
 
 
-    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(
-      Long.parseLong(StringUtils.trim(((String[]) parameters.get(this.liaisonInstitution))[0])));
+    Institution institutionLead = institutionManager
+      .getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(LEAD_CENTER))[0])));
+
+    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.findByAcronym(institutionLead.getAcronym());
+
     project.setLiaisonInstitution(liaisonInstitution);
 
-    Institution institution = institutionManager
-      .getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(this.institution))[0])));
-    project.setInstitution(institution);
+
+    Institution institutionDonor =
+      institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
+    project.setInstitution(institutionDonor);
 
 
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
 
-    project.setStartDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(this.startDate))[0])));
-    project.setEndDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(this.endDate))[0])));
+    project.setStartDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(START_DATE))[0])));
+    project.setEndDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(END_DATE))[0])));
 
-    project.setFinanceCode(StringUtils.trim(((String[]) parameters.get(financeCode))[0]));
-    project.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(contactEmail))[0]));
-    project.setContactPersonName(StringUtils.trim(((String[]) parameters.get(contactName))[0]));
-    project.setBudget(Long.parseLong(StringUtils.trim(((String[]) parameters.get(budget))[0])));
+    project.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
+    project.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
+    project.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
+    project.setBudget(Long.parseLong(StringUtils.trim(((String[]) parameters.get(BUDGET))[0])));
+    project.setAgreement(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
 
 
   }
-
-
-  public void setBudget(String budget) {
-    this.budget = budget;
-  }
-
-  public void setContactEmail(String contactEmail) {
-    this.contactEmail = contactEmail;
-  }
-
-  public void setContactName(String contactName) {
-    this.contactName = contactName;
-  }
-
-
-  public void setEndDate(String endDate) {
-    this.endDate = endDate;
-  }
-
-
-  public void setFinanceCode(String financeCode) {
-    this.financeCode = financeCode;
-  }
-
-  public void setInstitution(String institution) {
-    this.institution = institution;
-  }
-
-  public void setLiaisonInstitution(String liaisonInstitution) {
-    this.liaisonInstitution = liaisonInstitution;
-  }
-
-  public void setProject(ProjectBilateralCofinancing project) {
-    this.project = project;
-  }
-
-  public void setProjectCreated(List<Map<String, Object>> projectCreated) {
-    this.projectCreated = projectCreated;
-  }
-
-  public void setStartDate(String startDate) {
-    this.startDate = startDate;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public void setTittle(String title) {
-    this.title = title;
-  }
-
 
 }
