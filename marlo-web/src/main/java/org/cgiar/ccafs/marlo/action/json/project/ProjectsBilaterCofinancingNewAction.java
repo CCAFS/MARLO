@@ -44,7 +44,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
   private static final long serialVersionUID = 8684072284268214629L;
 
 
-  private String tittle;
+  private String title;
 
 
   private String startDate;
@@ -174,8 +174,8 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     return status;
   }
 
-  public String getTittle() {
-    return tittle;
+  public String getTitle() {
+    return title;
   }
 
 
@@ -187,7 +187,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     project = new ProjectBilateralCofinancing();
     project.setId((long) -1);
 
-    project.setTitle(StringUtils.trim(((String[]) parameters.get(tittle))[0]));
+    project.setTitle(StringUtils.trim(((String[]) parameters.get(title))[0]));
 
 
     LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(
@@ -259,8 +259,8 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     this.status = status;
   }
 
-  public void setTittle(String tittle) {
-    this.tittle = tittle;
+  public void setTittle(String title) {
+    this.title = title;
   }
 
 

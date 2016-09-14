@@ -74,7 +74,7 @@ function init() {
   $(".yearExpected").on("change", validateCurrentDate);
 
   if(!reportingActive) {
-    var statusSelect = $(".status");
+    var statusSelect = $("form .status");
     statusSelect.find("option").each(function(i,e) {
       e.remove();
     });
@@ -85,7 +85,7 @@ function init() {
 function validateCurrentDate() {
   if(reportingActive) {
     var yearSelect = $(".yearExpected");
-    var statusSelect = $(".status");
+    var statusSelect = $("form .status");
     var option = $(yearSelect).find("option:selected");
     if(option.val() <= currentCycleYear) {
       console.log("holi");

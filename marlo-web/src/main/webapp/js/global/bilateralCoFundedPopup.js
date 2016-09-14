@@ -92,11 +92,12 @@ $(document).ready(function() {
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
-    project.agreementStatus = $dialogContent.find("#agreementStatus").val().trim();
-    project.budgetAgreementPeriod = $dialogContent.find("#budgetAgreementPeriod").val().trim();
+    project.status = $dialogContent.find("#status").val().trim();
+    project.budget = $dialogContent.find("#budget").val().trim();
+    project.liaisonInstitution = institutionSelected;
+    project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
-    project.donor = $dialogContent.find("#donor").val().trim();
 
     // Validate if fields are filled
     $.each(project, function(key,value) {
@@ -107,7 +108,7 @@ $(document).ready(function() {
     // Validate Email
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
     if(!emailReg.test(project.contactEmail)) {
-      invalidFields.push('valid email');
+      invalidFields.push('valid contact email');
     }
 
     if(invalidFields.length > 0) {
@@ -115,8 +116,9 @@ $(document).ready(function() {
       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
     } else {
       $.ajax({
-          'url': baseURL + '/createUser.do',
-          data: user,
+          'url': baseURL + '/projectsBilateralAdd.do',
+          method: 'POST',
+          data: project,
           beforeSend: function() {
             $dialogContent.find('.loading').show();
           },
