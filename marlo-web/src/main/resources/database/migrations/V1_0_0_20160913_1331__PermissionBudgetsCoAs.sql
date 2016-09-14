@@ -1,0 +1,1 @@
+UPDATE `permissions` SET `permission`='crp:{0}:project:{1}:budgetByCluster:*' WHERE (`id`='209')
