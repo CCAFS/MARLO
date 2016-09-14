@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -134,6 +135,9 @@ public class CofundedAction extends BaseAction {
 
       liaisonInstitutions = liaisonInstitutionManager.findAll().stream()
         .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
+
+      project.setBudgets(
+        new ArrayList<>(project.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
     }
 
