@@ -46,7 +46,7 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByCoAs.title" /]</h3>
           
-          [#if project.clusterActivities?has_content && project.clusterActivities?size gt 1]
+          [#if project.crpActivities?has_content && project.crpActivities?size gt 1]
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. endYear as year]
@@ -92,7 +92,7 @@
                   </div>
                 
                   
-                  [#list project.clusterActivities as coa]
+                  [#list project.crpActivities as coa]
                     [@projectCoAMacro element=coa name="" index=-1 selectedYear=0 /]
                   [/#list]
                   
@@ -121,7 +121,7 @@
     [#-- Partner Title --]
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span class="partnerTitle">${(element.crpClusterOfActivity.description)!''}</span> 
+      <span class="partnerTitle">${(element.description)!''}</span> 
        
       <div class="clearfix"></div>
     </div>
