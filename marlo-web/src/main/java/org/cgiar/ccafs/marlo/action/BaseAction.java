@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -115,8 +117,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private int reportingYear;
 
   private int planningYear;
+  @Inject
+  private ProjectOutcomeManager projectOutcomeManager;
 
-
+  @Inject
+  private ProjectManager projectManager;
   private boolean fullEditable; // If user is able to edit all the form.
 
   // User actions
@@ -618,9 +623,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public void loadLessons(Crp crp, Project project) {
+
+    Project projectDB = projectManager.getProjectById(project.getId());
     if (this.isReportingActive()) {
 
-      List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(
           c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
             && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
@@ -628,7 +635,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = project.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
@@ -637,7 +644,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = project.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
@@ -649,9 +656,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
+
+    ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
     if (this.isReportingActive()) {
 
-      List<ProjectComponentLesson> lessons = projectOutcome.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(
           c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
             && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
@@ -659,7 +668,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         projectOutcome.setProjectComponentLesson(lessons.get(0));
       }
-      List<ProjectComponentLesson> lessonsPreview = projectOutcome.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessonsPreview = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
@@ -668,7 +677,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     } else {
 
-      List<ProjectComponentLesson> lessons = projectOutcome.getProjectComponentLessons().stream()
+      List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
           && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());

@@ -82,7 +82,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
         if (projectMilestone.getExpectedUnit() == null || projectMilestone.getExpectedUnit().getId() == null
           || projectMilestone.getExpectedUnit().getId() == -1) {
-          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
+          // this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedUnit", params));
           projectMilestone.setExpectedUnit(null);
         } else {
           if (projectMilestone.getExpectedValue() == null
@@ -166,7 +166,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     if (projectOutcome.getMilestones() != null || projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
         List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
-          .filter(c -> c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
+          .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
         for (int i = 0; i < milestones.size(); i++) {
           this.validateProjectMilestone(action, milestones.get(i), i);
         }
