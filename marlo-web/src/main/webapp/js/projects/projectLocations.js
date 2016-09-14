@@ -62,9 +62,6 @@ function attachEvents() {
         notify(text);
       } else {
         addLocationLevel(option);
-        $('.selectWrapper').animate({
-          scrollTop: $('.selectWrapper').prop("scrollHeight")
-        }, 500);
       }
     }
 
@@ -183,7 +180,7 @@ function changeLayout2() {
 
 // Change width of selectWrapper
 function calculateWidthSelect() {
-  var widthSelect = ($("form .locationLevel").length) * 430;
+  var widthSelect = ($("form .locationLevel").length) * 440;
   $(".select-horizontal").css("width", widthSelect + "px");
 }
 
@@ -252,6 +249,9 @@ function addLocationLevel(option) {
     $list.prepend($item);
   } else {
     $list.append($item);
+    $('.selectWrapper').animate({
+      scrollTop: $('.selectWrapper').prop("scrollHeight")
+    }, 500);
   }
 
   // LocElements options using ajax

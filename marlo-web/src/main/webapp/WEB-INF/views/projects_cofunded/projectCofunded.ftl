@@ -50,7 +50,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="project.liaisonInstitution" i18nkey="CGIAR lead center"  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+            [@customForm.select name="project.liaisonInstitution.id" i18nkey="CGIAR lead center"  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="project.institution" i18nkey="projectCofunded.donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
+            [@customForm.select name="project.institution.id" i18nkey="projectCofunded.donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
           </div>
         </div>
       </div>

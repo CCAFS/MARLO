@@ -223,7 +223,7 @@
 [#macro confirmJustification action="" namespace="/" nameId="" title="" projectID=""]
   <div id="dialog-justification" title="${title}" style="display:none"> 
     <div class="dialog-content"> 
-      [@s.form action="${action}" namespace="${namespace}" cssClass="pure-form"]
+      [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
         [@textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
         [#if nameId != ""]
           <input name="${nameId}" type="hidden" value="-1" />
