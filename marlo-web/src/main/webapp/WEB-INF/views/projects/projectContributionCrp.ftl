@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Project Outcome Contribution to CRP" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectContributionCrp.js", "${baseUrl}/js/global/autoSave.js"] /] [#--  --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectContributionCrp.css"] /]
@@ -33,7 +33,8 @@
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+        [#include "/WEB-INF/views/projects/messages-projectOutcomes.ftl" /]
+        
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
