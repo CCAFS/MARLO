@@ -1,9 +1,9 @@
 [#ftl]
 [#assign title = "MARLO Projects Bilateral Co-funded" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/css/projects_cofunded/projectCofunded.css"] /]
 [#assign currentSection = "project co-funded" /]
 
 [#assign breadCrumb = [
@@ -13,8 +13,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign startYear = ((project.startDate?string.yyyy)?number)!2014 /]
+[#assign endYear = ((project.endDate?string.yyyy)?number)!2017 /]
     
 <section class="container">
   <article class="fullBlock col-md-12" id="mainInformation">
@@ -24,7 +24,7 @@
   <h4 class="sectionTitle">[@s.text name="Project summary overview" /]</h4>
   <div class="col-md-12">
   <h4 class="headTitle">General information</h4> 
-    <div class="borderBox">
+    <div class="borderBox informationWrapper">
    [#-- Project title --]
       <div class="form-group">
         <div class="row">
@@ -43,14 +43,14 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="project.agreement" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" editable=editable /] </div>
-          <div class="col-md-6">[@customForm.input name="project.budget" i18nkey="projectCofunded.budgetAgreementPeriod" className="" editable=editable /]</div>
+          <div class="col-md-6">[@customForm.input name="project.budget" i18nkey="projectCofunded.budgetAgreementPeriod" className="currencyInput" editable=editable /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="project.liaisonInstitution" i18nkey="CGIAR lead center"  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+            [@customForm.select name="project.liaisonInstitution.id" i18nkey="CGIAR lead center"  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="project.institution" i18nkey="projectCofunded.donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
+            [@customForm.select name="project.institution.id" i18nkey="projectCofunded.donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
           </div>
         </div>
       </div>
@@ -76,26 +76,37 @@
     
     
     <h4 class="headTitle">Annual project contribution</h4> 
-    <div class="">
+    <div class="contributionWrapper">
       [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">
             [#list startYear .. endYear as year]
               <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} </a></li>
             [/#list]
           </ul>
-          
           [#-- Years Content --]
-          <div class="tab-content">
+          <div class="tab-content col-md-12 contributionContent">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-                  
+              [#list project.budgets as project]
+                [#if project.year == year]
+                <div class="grayBox col-md-12 borderBox">
+                  <div class="col-md-12 pContributionTitle form-group">${project.project.composedName}</div>
+                  <div class="col-md-5 form-group">
+                    <span class="col-md-2"><b>Type:</b></span>
+                    <span class="col-md-3">${project.budgetType.name}</span>
+                  </div>
+                  <div class="col-md-7">
+                    <span class="col-md-2"><b>Amount:</b></span>
+                    <span class="col-md-3 currencyInput">${project.amount}</span>
+                  </div>
                 </div>
+                [/#if]
+              [/#list] 
               </div>
-            [/#list]  
+            [/#list] 
           </div>
-      
-      
     </div>
+      
     [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
   </div>

@@ -45,7 +45,6 @@ public class CofundedListAction extends BaseAction {
 
   private List<ProjectBilateralCofinancing> allProjects;
 
-
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
 
 
@@ -53,6 +52,9 @@ public class CofundedListAction extends BaseAction {
 
 
   private long projectID;
+
+
+  private String justification;
 
 
   @Inject
@@ -82,22 +84,24 @@ public class CofundedListAction extends BaseAction {
     return INPUT;
   }
 
+
   @Override
   public String delete() {
     ProjectBilateralCofinancing project =
       projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectID);
 
-    if (project != null) {
-      if (projectBilateralCofinancingManager.deleteProjectBilateralCofinancing(project.getId())) {
-        this.addActionMessage(
-          this.getText("deleting.success", new String[] {this.getText("projectDeliverable").toLowerCase()}));
-      } else {
-        this.addActionError(
-          this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
-      }
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification(justification);
+
+    projectBilateralCofinancingManager.saveProjectBilateralCofinancing(project);
+
+
+    if (projectBilateralCofinancingManager.deleteProjectBilateralCofinancing(project.getId())) {
+      this.addActionMessage(
+        this.getText("deleting.success", new String[] {this.getText("projectCofunded").toLowerCase()}));
     } else {
-      this.addActionError(
-        this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
+      this
+        .addActionError(this.getText("deleting.problem", new String[] {this.getText("projectCofunded").toLowerCase()}));
     }
 
     return SUCCESS;
@@ -105,6 +109,11 @@ public class CofundedListAction extends BaseAction {
 
   public List<ProjectBilateralCofinancing> getAllProjects() {
     return allProjects;
+  }
+
+  @Override
+  public String getJustification() {
+    return justification;
   }
 
   public Crp getLoggedCrp() {
@@ -142,9 +151,14 @@ public class CofundedListAction extends BaseAction {
 
   }
 
-
   public void setAllProjects(List<ProjectBilateralCofinancing> allProjects) {
     this.allProjects = allProjects;
+  }
+
+
+  @Override
+  public void setJustification(String justification) {
+    this.justification = justification;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
