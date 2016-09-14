@@ -55,18 +55,19 @@
           [#assign showExpectedTarget = true /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
+          [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
           
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
             <h5 class="sectionSubTitle">Expected Target</h5>
             <div class="form-group">
-              <div class="row form-group">
+              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
                   [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.expectedUnit.id" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true editable=editable  /]
+                  [@customForm.select name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!-1}" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=true disabled=true editable=editable  /]
                 </div>
               </div>
               <div class="form-group">
@@ -78,7 +79,7 @@
             [#if showAchievedTarget]
             <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
-              <div class="row form-group">
+              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}>
                 <div class="col-md-5">
                   [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
@@ -246,9 +247,9 @@
         <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
-        [#local showValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
+        [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
         
-        <div class="row form-group milestoneTargetValue" style="display:${showValue?string('block', 'none')}">
+        <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
           </div>

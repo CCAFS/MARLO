@@ -70,9 +70,7 @@ function addMilestone() {
   var milestonId = $(this).find('option:selected').val();
 
   // Set the milestone parameters
-  $item.find('.title').text(title);
   $item.find('.crpMilestoneId').val(milestonId);
-  // $item.find('.year').val(year);
 
   // Set Select2 widget
   $item.find('select').select2({
@@ -101,6 +99,7 @@ function addMilestone() {
         $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
         $item.find('.crpMilestoneYearInput').val(data.crpMilestone.year);
         $item.find('.crpMilestoneValue').text(data.crpMilestone.value);
+        $item.find('.title').text(data.crpMilestone.title);
         $item.find('select').val(data.crpMilestone.targetUnit).trigger("change.select2");
 
         if(data.crpMilestone.targetUnit != -1) {
