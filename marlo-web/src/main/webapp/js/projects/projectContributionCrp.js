@@ -99,30 +99,13 @@ function addMilestone() {
       },
       success: function(data) {
         $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
+        $item.find('.crpMilestoneYearInput').val(data.crpMilestone.year);
         $item.find('.crpMilestoneValue').text(data.crpMilestone.value);
         $item.find('select').val(data.crpMilestone.targetUnit).trigger("change.select2");
 
-        // Set year tabs pane indexes
-        $item.find('.year-tab a').each(function(i,e) {
-          var arr = $(e).attr('href').split('-');
-          var year = arr[arr.length - 1];
-          $(e).attr('href', '#milestoneYear' + milestonesCount + '-' + year);
-
-          if(year > data.crpMilestone.year) {
-            $(e).parent().remove();
-          }
-        });
-
-        // Set year tabs indexes
-        $item.find('.tab-pane').each(function(i,e) {
-          var arr = $(e).attr('id').split('-');
-          var year = arr[arr.length - 1];
-          $(e).attr('id', 'milestoneYear' + milestonesCount + '-' + year);
-
-          if(year > data.crpMilestone.year) {
-            $(e).remove();
-          }
-        });
+        if(data.crpMilestone.targetUnit != -1) {
+          $item.find('.milestoneTargetValue').show();
+        }
 
         // Set indexes
         $item.find('.outcomeMilestoneYear').each(function(i,e) {

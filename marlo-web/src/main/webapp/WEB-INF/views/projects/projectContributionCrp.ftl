@@ -220,7 +220,7 @@
     <div class="form-group grayBox">
       <div class="row">
         <div class="col-md-6">
-          <strong>Milestone target value for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
+          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
           [#-- <span class="crpMilestoneValue">${(element.value)!}</span>  --]
         </div>
       </div>
@@ -228,72 +228,59 @@
     </div>
     
     [#-- Milestone content --]
-    <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-      [#list startYear .. endYear as year]
-        [#if element.year?? && (year gt element.year)]
-          [#-- Do nothing, the milestone finalize on element.year --]
-        [#else]
-          <li class="year-tab [#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear${index}-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /]</a></li>
-        [/#if]
-      [/#list]
-    </ul> 
-    
-    <div class="tab-content projectOutcomeYear-content">
-      [#list startYear .. endYear as year]
-        [#if element.year?? && (year gt element.year)]
-          [#-- Do nothing, the milestone finalize on element.year --]
-        [#else]
-        <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear${index}-${year}">
-            [#if isTemplate]
-              [#local projectMilestone = {} /]
-              [#local projectMilestoneIndex = -1 /]
-            [#else]
-              [#local projectMilestone = action.getMilestone(element.id, year) /]
-              [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
-            [/#if]
-            
-            [#local customName = "${name}[${projectMilestoneIndex}]" /]
-              <div class="outcomeMilestoneYear">
-                [#-- Hidden inputs --]
-                <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
-                <input type="hidden" name="${customName}.year" value="${(year)!}" class="year" />
-                <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
-                
-                <div class="row form-group">
-                  <div class="col-md-4">
-                    [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
-                  </div>
-                  <div class="col-md-4">
-                    [@customForm.select name="${customName}.expectedUnit.id" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=isYearRequired(year) editable=editable  /]
-                  </div>
-                  [#-- REPORTING BLOCK --]
-                  [#if reportingActive]
-                  <div class="col-md-4">
-                    [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=isYearRequired(year) editable=editable /]
-                  </div>
-                  [/#if]
-                </div>
-                
-                <div class="form-group">
-                  [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
-                </div>
-                <div class="form-group">
-                  [@customForm.textArea name="${customName}.expectedGender" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
-                </div>
-                [#-- REPORTING BLOCK --]
-                [#if reportingActive]
-                <div class="form-group">
-                  [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
-                </div>
-                <div class="form-group">
-                  [@customForm.textArea name="${customName}.narrativeGender" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
-                </div>
-                [/#if]
-              </div>
+    [#if isTemplate]
+      [#local year = -1 /]
+      [#local projectMilestone = {} /]
+      [#local projectMilestoneIndex = -1 /]
+    [#else]
+      [#local year = element.year /]
+      [#local projectMilestone = action.getMilestone(element.id, year) /]
+      [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
+    [/#if]
+
+    <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear${index}-${year}">
+      [#local customName = "${name}[${projectMilestoneIndex}]" /]
+      <div class="outcomeMilestoneYear">
+        [#-- Hidden inputs --]
+        <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
+        <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
+        <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
+        
+        [#local showValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
+        
+        <div class="row form-group milestoneTargetValue" style="display:${showValue?string('block', 'none')}">
+          <div class="col-md-4">
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
+          </div>
+          <div class="col-md-4">
+            [@customForm.select name="${customName}.expectedUnit.id" value="${(element.srfTargetUnit.id)!}" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name"  required=isYearRequired(year) disabled=true editable=editable  /]
+          </div>
+          [#-- REPORTING BLOCK --]
+          [#if reportingActive]
+          <div class="col-md-4">
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" " required=isYearRequired(year) editable=editable /]
+          </div>
+          [/#if]
+        </div>
+        
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+        </div>
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.expectedGender" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+        </div>
+        [#-- REPORTING BLOCK --]
+        [#if reportingActive]
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+        </div>
+        <div class="form-group">
+          [@customForm.textArea name="${customName}.narrativeGender" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
         </div>
         [/#if]
-      [/#list]
+      </div>
     </div>
+       
   </div>
 [/#macro]
 
