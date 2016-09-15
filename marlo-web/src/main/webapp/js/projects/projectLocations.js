@@ -141,8 +141,8 @@ function attachEvents() {
     }
   });
 
-  $("form .yes-button-label").on("click", changeLayout);
-  $("form .no-button-label").on("click", changeLayout2);
+  $("#view1").on("click", changeLayout);
+  $("#view2").on("click", changeLayout2);
 
 }
 

@@ -8,6 +8,7 @@
 [#assign currentStage = "deliverableList" /]
 
 [#assign breadCrumb = [
+  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
   {"label":"deliverableList", "nameSpace":"/projects", "action":""}
 ]/]
 
@@ -30,10 +31,29 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+        
+         
+         
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
+          <div class="col-md-6">FAIR:</div>
+          <div class="col-md-6">FAIR colors:</div>
+          <div class="form-group col-md-12">
+          
+          <div class="col-md-6">
+            <div class="form-group col-md-6 fair"><span>F</span> Findable </div>
+            <div class="form-group col-md-6 fair"><span>A</span> Accessible</div>
+            <div class="form-group col-md-6 fair"><span>I</span> Interoperable</div>
+            <div class="form-group col-md-6 fair"><span>R</span> Reusable</div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group col-md-6 fair"><span id="achieved"></span> Achieved </div>
+            <div class="form-group col-md-6 fair"><span id="notAchieved"></span> Not achieved</div>
+            <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
+          </div>
+         </div>
            
            <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      

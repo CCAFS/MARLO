@@ -39,8 +39,10 @@
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
           <div id="" class="borderBox">
             [#-- Content--]
-              [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="View 1" noLabel="View 2" cssClass="" /]
               
+              <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
+              <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
+                         
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
               <div id="selectsContent" class="col-md-6">
                 [#-- Content collapsible--]
