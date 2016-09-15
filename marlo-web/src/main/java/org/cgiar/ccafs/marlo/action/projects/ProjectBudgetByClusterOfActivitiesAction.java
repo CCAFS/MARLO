@@ -188,7 +188,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   }
 
 
-  private double getRemaining(Long type, int year) {
+  public double getRemaining(Long type, int year) {
     double remaining = 100;
     if (project.getBudgetsCluserActvities() != null) {
       for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
@@ -204,7 +204,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return remaining;
   }
 
-  private double getRemainingGender(Long type, int year) {
+  public double getRemainingGender(Long type, int year) {
     double remaining = 100;
     if (project.getBudgetsCluserActvities() != null) {
       for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {

@@ -126,10 +126,10 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     if (projectId > 0) {
       projectProp.put("id", projectId);
       projectProp.put("title", project.getTitle());
-      projectProp.put("status", "Ok");
+      projectProp.put("status", "OK");
 
     } else {
-      projectProp.put("status", "Fail");
+      projectProp.put("status", "FAIL");
       projectProp.put("message", this.getText("manageUsers.email.notAdded"));
     }
 

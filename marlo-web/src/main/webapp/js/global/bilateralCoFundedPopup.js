@@ -123,11 +123,12 @@ $(document).ready(function() {
             $dialogContent.find('.loading').show();
           },
           success: function(data) {
-            if(data.message) {
-              $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
+            var data = data[0];
+            if(data.status == "OK") {
+              console.log('create');
+              addProject(data.title, data.id);
             } else {
-              addProject(data.users[0].composedName, data.users[0].id);
-              addUserMessage($('#created-message').val());
+              $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
           },
           complete: function(data) {
