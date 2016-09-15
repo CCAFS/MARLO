@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import com.google.inject.Inject;
@@ -114,9 +115,11 @@ public class DeliverableValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
     if (action.isReportingActive()) {
-      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getPlanningYear(), "deliverables");
+      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
     } else {
-      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(), "deliverables");
+      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
     }
   }
 
