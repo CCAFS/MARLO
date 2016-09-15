@@ -655,6 +655,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public void loadLessons(Crp crp, Project project, String actionName) {
+
+    Project projectDB = projectManager.getProjectById(project.getId());
+    if (this.isReportingActive()) {
+
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+          && c.getCycle().equals(APConstants.REPORTING) && c.getComponentName().equals(actionName))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        project.setProjectComponentLesson(lessons.get(0));
+      }
+      List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
+          && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
+        .collect(Collectors.toList());
+      if (!lessonsPreview.isEmpty()) {
+        project.setProjectComponentLessonPreview(lessonsPreview.get(0));
+      }
+    } else {
+
+      List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
+        .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
+          && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        project.setProjectComponentLesson(lessons.get(0));
+      }
+    }
+  }
+
+
   public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());

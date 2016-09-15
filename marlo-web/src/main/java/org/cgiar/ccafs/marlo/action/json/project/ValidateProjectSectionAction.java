@@ -18,19 +18,23 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +61,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Model
   private boolean existProject;
-
+  private Crp loggedCrp;
   private boolean validSection;
 
   private String sectionName;
@@ -73,6 +77,10 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectLocationValidator locationValidator;
   @Inject
   ProjectDescriptionValidator descriptionValidator;
+  @Inject
+  ProjectPartnersValidator projectPartnerValidator;
+  @Inject
+  private CrpManager crpManager;
 
   @Inject
   public ValidateProjectSectionAction(APConfig config) {
@@ -90,8 +98,10 @@ public class ValidateProjectSectionAction extends BaseAction {
         case DESCRIPTION:
           this.validateProjectDescription();
           break;
-          
-          
+
+        case PARTNERS:
+          this.validateProjectParnters();
+          break;
         default:
           break;
       }
@@ -104,10 +114,12 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
     sectionStatus =
       sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+
+
     section = new HashMap<String, Object>();
     section.put("sectionName", sectionStatus.getSectionName());
     section.put("missingFields", sectionStatus.getMissingFields());
-    Thread.sleep(500);
+    // Thread.sleep(500);
     return SUCCESS;
   }
 
@@ -118,7 +130,8 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
-
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     sectionName = StringUtils.trim(((String[]) parameters.get(APConstants.SECTION_NAME))[0]);
 
     projectID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0]));
@@ -186,6 +199,20 @@ public class ValidateProjectSectionAction extends BaseAction {
       new ArrayList<>(project.getProjectLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList())));
 
     locationValidator.validate(this, project);
+  }
+
+  private void validateProjectParnters() {
+    Project project = projectManager.getProjectById(projectID);
+    project.setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    for (ProjectPartner projectPartner : project.getPartners()) {
+      projectPartner.setPartnerPersons(
+        projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    }
+    if (this.isLessonsActive()) {
+      this.loadLessons(loggedCrp, project, ProjectSectionStatusEnum.PARTNERS.getStatus());
+    }
+    projectPartnerValidator.validate(this, project);
+
   }
 
 }
