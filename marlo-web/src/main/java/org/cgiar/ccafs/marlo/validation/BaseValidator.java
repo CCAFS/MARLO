@@ -4,7 +4,9 @@ package org.cgiar.ccafs.marlo.validation;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -100,8 +102,33 @@ public class BaseValidator {
   /**
    * This method saves the missing fields into the database for a section at deliverable level.
    * 
+   * @param deliverable is a deliverable.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(Deliverable deliverable, String cycle, int year, String sectionName) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setDeliverable(deliverable);
+      status.setSectionName(sectionName);
+
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project level.
+   * 
    * @param project is a project.
-   * @param deliveralbe is a deliverable
    * @param cycle could be 'Planning' or 'Reporting'
    * @param sectionName is the name of the section inside deliverables.
    */
@@ -115,6 +142,59 @@ public class BaseValidator {
       status.setCycle(cycle);
       status.setYear(year);
       status.setProject(project);
+      status.setSectionName(sectionName);
+
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project cofunded level.
+   * 
+   * @param projectBilateralCofinancing is a project cofunded.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(ProjectBilateralCofinancing projectBilateralCofinancing, String cycle, int year,
+    String sectionName) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status = sectionStatusManager.getSectionStatusByProjectCofunded(projectBilateralCofinancing.getId(),
+      cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectBilateralCofinancing(projectBilateralCofinancing);
+      status.setSectionName(sectionName);
+
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project Outcome level.
+   * 
+   * @param projectOutcome is a project Outcome.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(ProjectOutcome projectOutcome, String cycle, int year, String sectionName) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectOutcome(projectOutcome);
       status.setSectionName(sectionName);
 
 

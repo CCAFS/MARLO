@@ -66,6 +66,14 @@ public interface SectionStatusManager {
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
+   * @param deliverableID is the deliverable identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
    * @param sectionStatusID is the sectionStatus identifier.
    * @return a SectionStatus object.
    */
@@ -74,10 +82,26 @@ public interface SectionStatusManager {
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
-   * @param crpProgramID is the crp program identifier.
+   * @param projectID is the project identifier.
    * @return a SectionStatus object.
    */
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @param projectID is the project co - funded identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
+   * @param projectID is the project outcome identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
 
   /**
    * This method saves the information of the given sectionStatus

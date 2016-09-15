@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.utils.LocationLevel;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -67,6 +68,7 @@ public class ProjectLocationAction extends BaseAction {
 
   private Project project;
 
+  private ProjectLocationValidator locationValidator;
 
   private List<LocationLevel> locationsLevels;
 
@@ -561,5 +563,12 @@ public class ProjectLocationAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      locationValidator.validate(this, project);
+    }
   }
 }
