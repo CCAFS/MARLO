@@ -114,9 +114,9 @@ public class DeliverableValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
     if (action.isReportingActive()) {
-      this.saveMissingFields(deliverable.getProject(), APConstants.REPORTING, action.getPlanningYear(), "deliverables");
+      this.saveMissingFields(deliverable, APConstants.REPORTING, action.getPlanningYear(), "deliverables");
     } else {
-      this.saveMissingFields(deliverable.getProject(), APConstants.PLANNING, action.getPlanningYear(), "deliverables");
+      this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(), "deliverables");
     }
   }
 

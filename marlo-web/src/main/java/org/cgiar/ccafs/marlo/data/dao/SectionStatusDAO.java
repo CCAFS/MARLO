@@ -60,7 +60,13 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
 
 
+  public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
+
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
+
+  public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
+
+  public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
 
   /**
    * This method saves the information of the given sectionStatus
