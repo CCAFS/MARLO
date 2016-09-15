@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -73,6 +74,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private long projectID;
 
+  private ProjectActivitiesValidator activitiesValidator;
 
   private String transaction;
 
@@ -526,5 +528,11 @@ public class ProjectActivitiesAction extends BaseAction {
     this.transaction = transaction;
   }
 
+  @Override
+  public void validate() {
+    if (save) {
+      activitiesValidator.validate(this, project);
+    }
+  }
 
 }
