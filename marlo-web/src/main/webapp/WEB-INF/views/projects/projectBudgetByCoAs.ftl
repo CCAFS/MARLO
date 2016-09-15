@@ -66,19 +66,20 @@
                     <div class="row">
                       [#-- W1/W2 --]
                       [#if !project.bilateralProject && action.hasBudgets(1,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>W1/W2</strong> <small><span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>W1/W2</strong> $${(action.getTotalAmount(1,year))!} <small><span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span></small></p></div>
+                     
                       [/#if]
                       [#-- W3 --]
                       [#if action.hasBudgets(2,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>W3</strong> <small> <span class="context-total totalByYear-${type.w3}">${(action.getRemaining(2,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>W3</strong>  $${(action.getTotalAmount(2,year))!}<small> <span class="context-total totalByYear-${type.w3}">${(action.getRemaining(2,year))!}%</span></small></p></div>
                       [/#if]
                       [#-- Bilateral  --]
                       [#if action.hasBudgets(3,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-total totalByYear-${type.bilateral}">${(action.getRemaining(3,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>Bilateral</strong> $${(action.getTotalAmount(3,year))!}<small> <span class="context-total totalByYear-${type.bilateral}">${(action.getRemaining(3,year))!}%</span></small></p></div>
                       [/#if]
                       [#-- Center Funds --]
                       [#if !project.bilateralProject && action.hasBudgets(4,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-total totalByYear-${type.centerFunds}">${(action.getRemaining(4,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>Center Funds</strong> $${(action.getTotalAmount(4,year))!}<small> <span class="context-total totalByYear-${type.centerFunds}">${(action.getRemaining(4,year))!}%</span></small></p></div>
                       [/#if]
                     </div>
                     
@@ -86,19 +87,19 @@
                     <div class="row">
                       [#-- W1/W2 --]
                       [#if !project.bilateralProject && action.hasBudgets(1,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>W1/W2</strong> <small><span class="context-gender totalByYear-${type.w1w2}">${(action.getRemainingGender(1,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>W1/W2</strong>$${(action.getTotalGender(1,year))!} <small><span class="context-gender totalByYear-${type.w1w2}">${(action.getRemainingGender(1,year))!}%</span></small></p></div>
                       [/#if]
                       [#-- W3 --]
                       [#if action.hasBudgets(2,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>W3</strong> <small> <span class="context-gender totalByYear-${type.w3}">${(action.getRemainingGender(2,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>W3</strong>$${(action.getTotalGender(2,year))!}<small> <span class="context-gender totalByYear-${type.w3}">${(action.getRemainingGender(2,year))!}%</span></small></p></div>
                       [/#if]
                       [#-- Bilateral  --]
                       [#if action.hasBudgets(3,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-gender totalByYear-${type.bilateral}">${(action.getRemainingGender(3,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>Bilateral</strong>$${(action.getTotalGender(3,year))!}<small> <span class="context-gender totalByYear-${type.bilateral}">${(action.getRemainingGender(3,year))!}%</span></small></p></div>
                       [/#if]
                       [#-- Center Funds --]
                       [#if !project.bilateralProject && action.hasBudgets(4,year)]
-                      <div class="col-md-3"><p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-gender totalByYear-${type.centerFunds}">${(action.getRemainingGender(4,year))!}%</span></small></p></div>
+                      <div class="col-md-3"><p class="subTitle"><strong>Center Funds</strong>$${(action.getTotalGender(4,year))!}<small> <span class="context-gender totalByYear-${type.centerFunds}">${(action.getRemainingGender(4,year))!}%</span></small></p></div>
                       [/#if]
                     </div>
                   </div>
