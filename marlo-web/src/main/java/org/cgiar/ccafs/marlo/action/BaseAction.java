@@ -399,6 +399,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public String getJustification() {
     return justification;
   }
@@ -441,7 +442,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return parameters;
   }
 
-
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
     if (paramObj == null) {
@@ -450,9 +450,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ((String[]) paramObj)[0];
   }
 
+
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
+  }
+
+  public boolean getProjectSectionStatus(String section, long projectID) {
+    SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+      this.getCurrentCycleYear(), section);
+    if (sectionStatus != null) {
+      if (sectionStatus.getMissingFields().length() == 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public int getReportingYear() {
