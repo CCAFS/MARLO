@@ -23,8 +23,9 @@ public enum ProjectSectionStatusEnum {
 
   DESCRIPTION("description"), PARTNERS("partners"), LOCATIONS("locations"), OUTCOMES("outcomes"),
   CCAFSOUTCOMES("ccafsOutcomes"), OTHERCONTRIBUTIONS("otherContributions"), OUTPUTS("outputs"),
-  DELIVERABLESLIST("deliverablesList"), ACTIVITIES("activities"), BUDGET("budget"), BUDGETBYMOG("budgetByMog"),
-  NEXTUSERS("nextUsers"), CASESTUDIES("caseStudies"), HIGHLIGHTS("highlights"), LEVERAGES("leverages");
+  DELIVERABLESLIST("deliverablesList"), ACTIVITIES("activities"), BUDGET("budgetByPartners"),
+  BUDGETBYCOA("budgetByCoAs"), NEXTUSERS("nextUsers"), CASESTUDIES("caseStudies"), HIGHLIGHTS("highlights"),
+  LEVERAGES("leverages");
 
   private String status;
 

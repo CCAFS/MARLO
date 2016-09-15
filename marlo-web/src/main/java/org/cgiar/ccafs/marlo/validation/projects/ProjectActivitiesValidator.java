@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
@@ -60,9 +61,11 @@ public class ProjectActivitiesValidator extends BaseValidator {
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
     if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(), "partners");
+      this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
     } else {
-      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(), "partners");
+      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
     }
   }
 
