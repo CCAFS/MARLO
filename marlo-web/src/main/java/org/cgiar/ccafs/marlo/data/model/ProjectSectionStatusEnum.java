@@ -27,12 +27,21 @@ public enum ProjectSectionStatusEnum {
   BUDGETBYCOA("budgetByCoAs"), NEXTUSERS("nextUsers"), CASESTUDIES("caseStudies"), HIGHLIGHTS("highlights"),
   LEVERAGES("leverages");
 
+  public static ProjectSectionStatusEnum value(String status) {
+    ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();
+    for (ProjectSectionStatusEnum projectSectionStatusEnum : lst) {
+      if (projectSectionStatusEnum.getStatus().equals(status)) {
+        return projectSectionStatusEnum;
+      }
+    }
+    return null;
+  }
+
   private String status;
 
   private ProjectSectionStatusEnum(String status) {
     this.status = status;
   }
-
 
   public String getStatus() {
     return status;
