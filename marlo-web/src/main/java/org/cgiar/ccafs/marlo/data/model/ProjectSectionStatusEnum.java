@@ -30,7 +30,7 @@ public enum ProjectSectionStatusEnum {
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();
     for (ProjectSectionStatusEnum projectSectionStatusEnum : lst) {
-      if (projectSectionStatusEnum.getStatus().equals(status)) {
+      if (projectSectionStatusEnum.getStatus().equalsIgnoreCase(status)) {
         return projectSectionStatusEnum;
       }
     }
