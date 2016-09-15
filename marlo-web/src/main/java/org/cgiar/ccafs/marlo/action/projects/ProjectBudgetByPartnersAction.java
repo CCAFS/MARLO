@@ -228,13 +228,16 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       int i = 0;
       for (ProjectBudget projectBudget : project.getBudgets()) {
-        if (projectBudget.getInstitution() != null) {
-          if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-            && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-            return i;
-          }
+        if (projectBudget != null) {
+          if (projectBudget.getInstitution() != null) {
+            if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+              && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+              return i;
+            }
 
+          }
         }
+
         i++;
       }
 
@@ -256,13 +259,16 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgetsCofinancing() != null) {
       int i = 0;
       for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        if (projectBudget.getProjectBilateralCofinancing() != null
-          || projectBudget.getProjectBilateralCofinancing().getId() != null) {
-          if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-            && projectBudget.getProjectBilateralCofinancing().getId().longValue() == projectCofinanceId.longValue()
-            && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-            return i;
+        if (projectBudget != null) {
+          if (projectBudget.getProjectBilateralCofinancing() != null
+            || projectBudget.getProjectBilateralCofinancing().getId() != null) {
+            if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
+              && projectBudget.getProjectBilateralCofinancing().getId().longValue() == projectCofinanceId.longValue()
+              && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+              return i;
+            }
           }
+
         }
 
         i++;
@@ -320,12 +326,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
 
       for (ProjectBudget projectBudget : project.getBudgets()) {
-        if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-          if (projectBudget.getAmount() != null) {
-            total = total + projectBudget.getAmount();
-          }
+        if (projectBudget != null) {
+          if (projectBudget.getBudgetType() != null) {
+            if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+              if (projectBudget.getAmount() != null) {
+                total = total + projectBudget.getAmount();
+              }
 
+            }
+          }
         }
+
 
       }
     }
@@ -333,11 +344,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgetsCofinancing() != null) {
 
       for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-          if (projectBudget.getAmount() != null) {
-            total = total + projectBudget.getAmount();
-          }
+        if (projectBudget != null) {
+          if (projectBudget.getBudgetType() != null) {
+            if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+              if (projectBudget.getAmount() != null) {
+                total = total + projectBudget.getAmount();
+              }
 
+            }
+          }
         }
 
       }
