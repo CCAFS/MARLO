@@ -52,6 +52,7 @@
 [#assign submission = (action.submission)! /]
 [#assign canSubmit = (action.hasPersmissionSubmit())!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
+[#assign sectionsForChecking = [] /]
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -63,11 +64,14 @@
         [#list menu.items as item]
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
           [#if (item.show)!true ]
-          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" style="">
-              [@s.text name=item.name/]
-            </a>
-          </li>
+            <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+              <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" style="">
+                [@s.text name=item.name/]
+              </a>
+            </li>
+            [#if item.active]
+              [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+            [/#if]
           [/#if]
         [/#list] 
       </ul>
@@ -77,6 +81,8 @@
 </nav>
 
 <div class="clearfix"></div>
+
+<span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
 [#if action.hasPermission("projectSwitch") ]
