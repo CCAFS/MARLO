@@ -63,3 +63,24 @@ ul.nav li a {
 .addDeliverable a {
     text-decoration: initial;
 }
+
+span#achieved {
+    background-color: green;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notAchieved {
+    background-color: #ca1010;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notDefined {
+    background-color: #a3a3a3;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}

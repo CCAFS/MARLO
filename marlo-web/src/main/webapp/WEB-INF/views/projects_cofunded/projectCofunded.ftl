@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/projects_cofunded/projectCofunded.css"] /]
-[#assign currentSection = "project co-funded" /]
+[#assign currentSection = "cofundedList" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/bilaterals", "action":""}
