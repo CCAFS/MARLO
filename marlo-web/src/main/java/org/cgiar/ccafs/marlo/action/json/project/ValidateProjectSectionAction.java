@@ -36,6 +36,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
@@ -79,6 +81,14 @@ public class ValidateProjectSectionAction extends BaseAction {
   private ProjectManager projectManager;
   @Inject
   ProjectLocationValidator locationValidator;
+
+  @Inject
+  ProjectBudgetsValidator projectBudgetsValidator;
+
+  @Inject
+  ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
+
+
   @Inject
   ProjectDescriptionValidator descriptionValidator;
   @Inject
@@ -97,7 +107,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   public String execute() throws Exception {
     if (existProject && validSection) {
       // getting the current section status.
-      switch (ProjectSectionStatusEnum.valueOf(sectionName.toUpperCase())) {
+      switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
         case LOCATIONS:
           this.validateProjectLocations();
           break;
@@ -109,7 +119,13 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case PARTNERS:
           this.validateProjectParnters();
+        case BUDGET:
+          this.validateProjectBudgets();
           break;
+        case BUDGETBYCOA:
+          this.validateProjectBudgetsCoAs();
+          break;
+
         default:
           break;
       }
@@ -185,6 +201,36 @@ public class ValidateProjectSectionAction extends BaseAction {
       }
     }
     projectActivitiesValidator.validate(this, project);
+  }
+
+  private void validateProjectBudgets() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+    if (!project.isBilateralProject()) {
+      project.setBudgets(project.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
+          && c.getProjectBilateralCofinancing() == null)
+        .collect(Collectors.toList()));
+
+      project.setBudgetsCofinancing(project.getProjectBudgets().stream()
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
+          && c.getProjectBilateralCofinancing() != null)
+        .collect(Collectors.toList()));
+    } else {
+      project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+    }
+    projectBudgetsValidator.validate(this, project);
+  }
+
+  private void validateProjectBudgetsCoAs() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+    project.setBudgetsCluserActvities(
+      project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    projectBudgetsCoAValidator.validate(this, project);
   }
 
   private void validateProjectDescription() {
