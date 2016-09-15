@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.ArrayList;
@@ -64,9 +65,11 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
     if (action.isReportingActive()) {
-      this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getPlanningYear(), "description");
+      this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus());
     } else {
-      this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(), "description");
+      this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus());
     }
   }
 

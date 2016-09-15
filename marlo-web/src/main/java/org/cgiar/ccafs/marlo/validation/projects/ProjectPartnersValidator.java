@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
@@ -93,9 +94,11 @@ public class ProjectPartnersValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
       if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(), "partners");
+        this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
+          ProjectSectionStatusEnum.PARTNERS.getStatus());
       } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(), "partners");
+        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+          ProjectSectionStatusEnum.PARTNERS.getStatus());
       }
       // Saving missing fields.
 
