@@ -38,17 +38,19 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
-          <div class="col-md-6">FAIR:</div>
-          <div class="col-md-6">FAIR colors:</div>
-          <div class="form-group col-md-12">
+
+          <div class="form-group col-md-12 legendContent">
+          
           
           <div class="col-md-6">
-            <div class="form-group col-md-6 fair"><span>F</span> Findable </div>
-            <div class="form-group col-md-6 fair"><span>A</span> Accessible</div>
-            <div class="form-group col-md-6 fair"><span>I</span> Interoperable</div>
-            <div class="form-group col-md-6 fair"><span>R</span> Reusable</div>
+            <div class="col-md-12 form-group"><b>FAIR:</b></div>
+            <div class="form-group col-md-6 "><span>F</span> Findable </div>
+            <div class="form-group col-md-6 "><span>A</span> Accessible</div>
+            <div class="form-group col-md-6 "><span>I</span> Interoperable</div>
+            <div class="form-group col-md-6 "><span>R</span> Reusable</div>
           </div>
           <div class="col-md-6">
+            <div class="col-md-12 form-group"><b>FAIR colors:</b></div>
             <div class="form-group col-md-6 fair"><span id="achieved"></span> Achieved </div>
             <div class="form-group col-md-6 fair"><span id="notAchieved"></span> Not achieved</div>
             <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
