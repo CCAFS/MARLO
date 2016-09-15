@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -72,6 +73,8 @@ public class DeliverableAction extends BaseAction {
 
 
   private Crp loggedCrp;
+
+  private DeliverableValidator deliverableValidator;
 
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
@@ -633,5 +636,12 @@ public class DeliverableAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      deliverableValidator.validate(this, deliverable);
+    }
   }
 }
