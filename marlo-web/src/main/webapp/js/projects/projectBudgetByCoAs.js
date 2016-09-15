@@ -27,7 +27,7 @@ function attachEvents() {
 
   // Calculate currency and percentage
   $('input.percentageInput').on('keyup', calculateRemaining);
-  $('input.percentageInput').trigger('keyup');
+  $('input.percentageInput').trigger('keyup').removeClass('fieldError');
 }
 
 /**

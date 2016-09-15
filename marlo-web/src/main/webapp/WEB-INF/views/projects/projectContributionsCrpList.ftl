@@ -58,12 +58,14 @@
               [#if project.outcomes?has_content]
                 [#list project.outcomes as projectOutcome]
                   [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
-                [/#list]
-              [#else]
-                <p class=" text-center">There is not a project outcome added</p>
+                [/#list] 
               [/#if]
               </tbody> 
             </table>
+            
+            [#if !project.outcomes?has_content]
+              <p class="emptyMessage text-center">There is not a project outcome added</p>
+            [/#if]
             
             [#-- Add a new Outcomes --]
             [#if canEdit]
