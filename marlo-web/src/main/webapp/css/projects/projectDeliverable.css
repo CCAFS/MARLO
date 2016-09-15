@@ -63,3 +63,48 @@ ul.nav li a {
 .addDeliverable a {
     text-decoration: initial;
 }
+
+span#achieved {
+    background-color: green;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notAchieved {
+    background-color: #ca1010;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+span#notDefined {
+    background-color: #a3a3a3;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+.legendContent {
+    position: relative;
+    -webkit-box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 1px 2px 8px rgba(0,0,0,.3);
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    padding: 10px;
+    border: 1px solid #EEE;
+    background: #F8F8F8;
+    margin-bottom: 25px;
+}
+
+.legendContent span {
+    border-radius: 3px;
+    padding: 0px 4px;
+    margin-right: 0px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    opacity: 0.9;
+    color: #444;
+    margin-left: 1px;
+    border: 1px dashed #8e8e91;
+}

@@ -245,6 +245,16 @@ function getCrpFromUrl() {
   }
 }
 
+function isProjectSection() {
+  var url = window.location.href;
+  return url.includes("/projects/");
+}
+
+function isImpactPathwaySection() {
+  var url = window.location.href;
+  return url.includes("/impactPathway/");
+}
+
 /**
  * Search from url that has GET parameters
  */

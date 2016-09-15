@@ -183,11 +183,100 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
 
+
+  public double getRemaining(Long type, int year) {
+    double remaining = 100;
+    if (project.getBudgetsCluserActvities() != null) {
+      for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
+        if (projectBudgetsCluserActvity.getYear() == year
+          && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
+          if (projectBudgetsCluserActvity.getAmount() != null) {
+            remaining = remaining - projectBudgetsCluserActvity.getAmount().doubleValue();
+          }
+        }
+      }
+    }
+
+    return remaining;
+  }
+
+
+  public double getRemainingGender(Long type, int year) {
+    double remaining = 100;
+    if (project.getBudgetsCluserActvities() != null) {
+      for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
+        if (projectBudgetsCluserActvity.getYear() == year
+          && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
+          if (projectBudgetsCluserActvity.getGenderPercentage() != null) {
+            remaining = remaining - projectBudgetsCluserActvity.getGenderPercentage().doubleValue();
+          }
+        }
+      }
+    }
+
+    return remaining;
+  }
+
+  public Long getTotalAmount(Long type, int year) {
+
+    long totalAmount = 0;
+    double porcentage = 100 - this.getRemaining(type, year);
+
+    totalAmount = (long) (this.getTotalYearPartners(year, type) * (porcentage / 100));
+    return totalAmount;
+
+  }
+
+  public Long getTotalGender(Long type, int year) {
+
+    long totalAmount = 0;
+    double porcentage = 100 - this.getRemainingGender(type, year);
+
+    totalAmount = (long) (this.getTotalGenderPartners(year, type) * (porcentage / 100));
+    return totalAmount;
+
+  }
+
+  public long getTotalGenderPartners(int year, long type) {
+    long total = 0;
+    Project projectBD = projectManager.getProjectById(projectID);
+
+
+    for (ProjectBudget projectBudget : projectBD.getProjectBudgets()) {
+      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+        if (projectBudget.getGenderPercentage() != null && projectBudget.getAmount() != null) {
+          total = (long) (total + (projectBudget.getAmount() * (projectBudget.getGenderPercentage() / 100)));
+        }
+
+      }
+
+
+    }
+    return total;
+  }
+
+
+  public long getTotalYearPartners(int year, long type) {
+    long total = 0;
+    Project projectBD = projectManager.getProjectById(projectID);
+
+
+    for (ProjectBudget projectBudget : projectBD.getProjectBudgets()) {
+      if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
+        if (projectBudget.getAmount() != null) {
+          total = total + projectBudget.getAmount();
+        }
+
+      }
+
+
+    }
+    return total;
+  }
 
   public String getTransaction() {
     return transaction;

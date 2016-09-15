@@ -51,14 +51,14 @@
             [/#list]
           </ul>
           
-          
           [#-- Years Content --]
           <div class="tab-content budget-content">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                [#if !isYearEditable(year)]
-                <div class="note">Budgets for ${year} cannot be editable.</div>
-                [/#if]
+              
+                [#-- Budgest cannot be editable message --]
+                [#if !isYearEditable(year)]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                
                 <div class="overallYearBudget fieldset clearfix">
                   <h5 class="title">Overall ${year} budget</h5>
                   <div class="row">
@@ -314,7 +314,7 @@
     [#-- Remove --]
     [#if editable && isYearEditable(selectedYear)]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="title">P${(element.projectBilateralCofinancing.id)!} -  ${(element.projectBilateralCofinancing.title)!}</p>
+    <p class="checked"><small>Bilateral Co-Funded #<span class="titleId">${(element.projectBilateralCofinancing.id)!}</span></small>  - <span class="title">${(element.projectBilateralCofinancing.title)!}</span> </p>
 
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>

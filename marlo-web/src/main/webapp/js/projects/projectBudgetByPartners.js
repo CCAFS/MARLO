@@ -97,6 +97,7 @@ function addBilateralFundProject(composedName,projectId) {
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
   // Setting parameters
   $item.find('.title').text(composedName);
+  $item.find('.titleId').text(projectId);
   $item.find('.institutionId').val(institutionSelected);
   $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
   $item.find('.projectId').val(projectId);

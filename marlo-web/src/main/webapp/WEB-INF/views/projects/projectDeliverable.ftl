@@ -5,13 +5,13 @@
 [#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "deliverable general information" /]
+[#assign currentStage = "deliverableList" /]
 
 [#assign breadCrumb = [
-  {"label":"deliverableList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectDeliverable"},
-  {"label":"general information", "nameSpace":"/projects", "action":""}
-] /]
-
+  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"label":"deliverableList", "nameSpace":"/projects", "action":"${(crpSession)!}/deliverableList" ,"param":"projectID=${projectID}"},
+  {"label":"deliverableInformation", "nameSpace":"/projects", "action":""}
+]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]

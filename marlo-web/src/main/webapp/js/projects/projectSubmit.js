@@ -4,9 +4,7 @@ var currentCycle;
 
 $(document).ready(function() {
 
-  sections = [
-      "description", "partners", "locations", "contributionsCrpList", "deliverableList"
-  ];
+  sections = $('#sectionsForChecking').text().split(',');
 
   // Progress bar
   tasksLength = sections.length;

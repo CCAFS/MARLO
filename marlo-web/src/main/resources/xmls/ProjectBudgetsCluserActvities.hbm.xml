@@ -23,8 +23,8 @@
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" not-null="true" />
         </many-to-one>
-        <property name="amount" type="java.lang.Long">
-            <column name="amount" />
+        <property name="amount" type="java.lang.Double">
+            <column name="amount" precision="22" scale="0" />
         </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />

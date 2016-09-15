@@ -33,7 +33,7 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
   @Expose
   private User createdBy;
   @Expose
-  private Long amount;
+  private Double amount;
   @Expose
   private int year;
   @Expose
@@ -71,7 +71,7 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
     return activeSince;
   }
 
-  public Long getAmount() {
+  public Double getAmount() {
     return amount;
   }
 
@@ -141,7 +141,7 @@ public class ProjectBudgetsCluserActvity implements java.io.Serializable, IAudit
     this.activeSince = activeSince;
   }
 
-  public void setAmount(Long amount) {
+  public void setAmount(Double amount) {
     this.amount = amount;
   }
 

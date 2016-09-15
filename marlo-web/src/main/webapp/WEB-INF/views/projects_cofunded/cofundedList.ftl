@@ -4,7 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/projects_cofunded/cofundedList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
-[#assign currentSection = "projects cofunded" /]
+[#assign currentSection = "cofundedList" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/bilaterals", "action":""}
