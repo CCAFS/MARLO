@@ -82,6 +82,8 @@
             
           </div> 
          
+          [#-- Hidden parameters --]
+          <input type="hidden" name="projectID" value="${projectID}"/>
         [/@s.form] 
       </div>
     </div>  
