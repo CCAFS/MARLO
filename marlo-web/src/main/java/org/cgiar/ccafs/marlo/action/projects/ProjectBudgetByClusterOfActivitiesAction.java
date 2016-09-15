@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
@@ -81,6 +82,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   private Project project;
   private String transaction;
   private AuditLogManager auditLogManager;
+  private ProjectBudgetsCoAValidator validator;
 
   @Inject
   public ProjectBudgetByClusterOfActivitiesAction(APConfig config,
@@ -88,12 +90,12 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     ProjectBudgetManager projectBudgetManager, AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
     ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
-    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager) {
+    ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager, ProjectBudgetsCoAValidator validator) {
     super(config);
     this.crpClusterOfActivityManager = crpClusterOfActivityManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
-
+    this.validator = validator;
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
     this.projectBudgetsCluserActvityManager = projectBudgetsCluserActvityManager;
@@ -224,7 +226,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public Long getTotalAmount(Long type, int year) {
 
     long totalAmount = 0;
-    double porcentage = 100 - this.getRemaining(type, year);
+    double porcentage = Math.abs(this.getRemaining(type, year) - 100);
 
     totalAmount = (long) (this.getTotalYearPartners(year, type) * (porcentage / 100));
     return totalAmount;
@@ -234,7 +236,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public Long getTotalGender(Long type, int year) {
 
     long totalAmount = 0;
-    double porcentage = 100 - this.getRemainingGender(type, year);
+    double porcentage = Math.abs(this.getRemainingGender(type, year) - 100);
 
     totalAmount = (long) (this.getTotalGenderPartners(year, type) * (porcentage / 100));
     return totalAmount;
@@ -481,7 +483,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
@@ -494,6 +495,14 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, project);
+    }
   }
 
 
