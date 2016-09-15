@@ -183,9 +183,41 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public double getRemaining(Long type, int year) {
+    double remaining = 100;
+    if (project.getBudgetsCluserActvities() != null) {
+      for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
+        if (projectBudgetsCluserActvity.getYear() == year
+          && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
+          if (projectBudgetsCluserActvity.getAmount() != null) {
+            remaining = remaining - projectBudgetsCluserActvity.getAmount().doubleValue();
+          }
+        }
+      }
+    }
+
+    return remaining;
+  }
+
+  public double getRemainingGender(Long type, int year) {
+    double remaining = 100;
+    if (project.getBudgetsCluserActvities() != null) {
+      for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
+        if (projectBudgetsCluserActvity.getYear() == year
+          && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
+          if (projectBudgetsCluserActvity.getGenderPercentage() != null) {
+            remaining = remaining - projectBudgetsCluserActvity.getGenderPercentage().doubleValue();
+          }
+        }
+      }
+    }
+
+    return remaining;
   }
 
 

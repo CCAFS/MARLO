@@ -2,7 +2,7 @@
 [#assign title = "MARLO Projects Bilateral Co-funded" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js" ] /]
+[#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/projects_cofunded/projectCofunded.css"] /]
 [#assign currentSection = "cofundedList" /]
 

@@ -1,0 +1,1 @@
+Update projects_bilateral_cofinancing set agreement = 2;

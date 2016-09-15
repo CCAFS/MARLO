@@ -89,13 +89,27 @@ function changeDetected(e) {
 }
 
 function validateThisSection() {
-  var $sectionMenu = $('#menu-' + (actionName.split("/"))[1] + '');
+  var sectionName = (actionName.split("/"))[1];
+  var $sectionMenu = $('#menu-' + sectionName);
+  var validateService = "";
+  var sectionData = {};
+  sectionData.sectionName = sectionName;
+
+  // Validate projects
+  if(isProjectSection()) {
+    sectionData.projectId = $('input[name="projectID"]').val();
+    validateService = "/validateProjectSection.do";
+  }
+
+  // Validate impact pathway
+  if(isImpactPathwaySection()) {
+    sectionData.crpProgramID = $('input[name="crpProgramID"]').val();
+    validateService = "/impactPathway/validateImpactPathway.do";
+  }
+
   $.ajax({
-      url: baseURL + '/impactPathway/validateImpactPathway.do',
-      data: {
-          crpProgramID: 84,
-          sectionName: "outcomes",
-      },
+      url: baseURL + validateService,
+      data: sectionData,
       beforeSend: function() {
         $sectionMenu.removeClass('animated flipInX').addClass('loadingSection');
       },

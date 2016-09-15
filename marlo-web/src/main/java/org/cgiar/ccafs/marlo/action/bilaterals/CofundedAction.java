@@ -29,7 +29,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -40,6 +43,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -186,6 +192,32 @@ public class CofundedAction extends BaseAction {
 
     if (project != null) {
 
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (ProjectBilateralCofinancing) autoSaveReader.readFromJson(jReader);
+        ProjectBilateralCofinancing projectDb =
+          projectBilateralCofinancingManager.getProjectBilateralCofinancingById(project.getId());
+        reader.close();
+
+        this.setDraft(true);
+      } else {
+        this.setDraft(false);
+      }
+
       status = new HashMap<>();
       List<AgreementStatusEnum> list = Arrays.asList(AgreementStatusEnum.values());
       for (AgreementStatusEnum agreementStatusEnum : list) {
@@ -258,6 +290,13 @@ public class CofundedAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       projectBilateralCofinancingManager.saveProjectBilateralCofinancing(projectDB, this.getActionName(),
         relationsName);
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
 
       Collection<String> messages = this.getActionMessages();
       if (!messages.isEmpty()) {

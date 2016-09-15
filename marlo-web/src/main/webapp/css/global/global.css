@@ -6062,6 +6062,7 @@ textarea{
 input.fieldChecked {
     background: url(../../images/global/icon-check-tiny.png) no-repeat;
     background-position: 97% 50%;
+    background-size: 12px;
     border-color: #8ea786 !important;
     color: #8ea786 !important;
 }
