@@ -21,8 +21,10 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
@@ -30,8 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
@@ -80,6 +84,8 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   ProjectPartnersValidator projectPartnerValidator;
   @Inject
+  ProjectActivitiesValidator projectActivitiesValidator;
+  @Inject
   private CrpManager crpManager;
 
   @Inject
@@ -98,7 +104,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         case DESCRIPTION:
           this.validateProjectDescription();
           break;
-
+        case ACTIVITIES:
+          this.validateProjectActivities();
+          break;
         case PARTNERS:
           this.validateProjectParnters();
           break;
@@ -139,18 +147,44 @@ public class ValidateProjectSectionAction extends BaseAction {
     existProject = projectManager.existProject(projectID);
 
     // Validate if the section exists.
-    List<String> sections = new ArrayList<>();
-    sections.add("description");
-    sections.add("partners");
-    sections.add("locations");
-    sections.add("deliverablesList");
-    validSection = sections.contains(sectionName);
+    validSection = ProjectSectionStatusEnum.value(sectionName) != null;
 
 
   }
 
   public void setSection(Map<String, Object> section) {
     this.section = section;
+  }
+
+  private void validateProjectActivities() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setOpenProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+      .filter(a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+      .collect(Collectors.toList())));
+
+
+    if (project.getOpenProjectActivities() != null) {
+      for (Activity openActivity : project.getOpenProjectActivities()) {
+        openActivity.setDeliverables(new ArrayList<DeliverableActivity>(
+          openActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      }
+    }
+
+    project.setClosedProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+      .filter(a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+      .collect(Collectors.toList())));
+
+    if (project.getClosedProjectActivities() != null) {
+      for (Activity closedActivity : project.getClosedProjectActivities()) {
+        closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(
+          closedActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+      }
+    }
+    projectActivitiesValidator.validate(this, project);
   }
 
   private void validateProjectDescription() {
@@ -191,6 +225,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     descriptionValidator.validate(this, project);
   }
+
 
   private void validateProjectLocations() {
     // Getting the project information.

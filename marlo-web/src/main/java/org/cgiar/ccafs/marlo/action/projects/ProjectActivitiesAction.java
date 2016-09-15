@@ -98,7 +98,7 @@ public class ProjectActivitiesAction extends BaseAction {
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableActivityManager deliverableActivityManager, DeliverableManager deliverableManager,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -107,6 +107,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.deliverableActivityManager = deliverableActivityManager;
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
+    this.activitiesValidator = activitiesValidator;
   }
 
 
@@ -395,7 +396,7 @@ public class ProjectActivitiesAction extends BaseAction {
               .filter(a -> a.isActive()
                 && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-              .collect(Collectors.toList())));
+            .collect(Collectors.toList())));
 
         if (project.getOpenProjectActivities() != null) {
           for (Activity openActivity : project.getOpenProjectActivities()) {
@@ -410,7 +411,7 @@ public class ProjectActivitiesAction extends BaseAction {
               .filter(a -> a.isActive()
                 && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-              .collect(Collectors.toList())));
+            .collect(Collectors.toList())));
 
         if (project.getClosedProjectActivities() != null) {
           for (Activity closedActivity : project.getClosedProjectActivities()) {
