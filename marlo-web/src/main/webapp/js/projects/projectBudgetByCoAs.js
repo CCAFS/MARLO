@@ -26,8 +26,8 @@ function attachEvents() {
   });
 
   // Calculate currency and percentage
-  $('input.currencyInput, input.percentageInput').on('keyup', calculateRemaining);
-
+  $('input.percentageInput').on('keyup', calculateRemaining);
+  $('input.percentageInput').trigger('keyup');
 }
 
 /**
