@@ -56,6 +56,9 @@
           <div class="tab-content budget-content">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
+                [#if !isYearEditable(year)]
+                <div class="note">Budgets for ${year} cannot be editable.</div>
+                [/#if]
                 <div class="overallYearBudget fieldset clearfix">
                   <h5 class="title">Overall ${year} budget</h5>
                   <div class="row">

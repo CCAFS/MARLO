@@ -284,17 +284,17 @@ label.readOnly {
 
 p.fieldError{
   color: #F52626 !important;
-  /* font-weight: bold; */
+  font-weight: bold;
   margin-right: 4px;
 }
 
 p.fieldChecked{
-  color: #008000 !important;
-  /* font-weight: 400; */
+  color: #7fb06f !important;
+  /* font-weight: bold; */
   margin-right: 4px;
-  background: url(../../images/global/checked-true.png) no-repeat 0 40%;
+  /* background: url(../../images/global/checked-true.png) no-repeat 0 40%; */
   padding-left: 21px;
-  margin-left: -6px !important;
+  /* margin-left: -6px !important; */
 }
 
 span.fieldError{
@@ -6057,4 +6057,11 @@ span.programTag {
 
 textarea{
 	resize:none;
+}
+
+input.fieldChecked {
+    background: url(../../images/global/icon-check-tiny.png) no-repeat;
+    background-position: 97% 50%;
+    border-color: #8ea786 !important;
+    color: #8ea786 !important;
 }
