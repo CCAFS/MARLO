@@ -80,7 +80,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = projectID;
-    Number yearParam = 2016;
+    Number yearParam = 2017;
     String cycleParam = "Planning";
 
     masterReport.getParameterValues().put("p_id", idParam);
