@@ -93,27 +93,30 @@
 </div>
 <br />
 [/#if]
-[#-- Submition message --]
-[#if !submission?has_content && completed && !canSubmit]
-  <p class="text-center" style="display:block">The Impact Pathway can be submitted now by Flagship leaders.</p>
+
+[#if ((project.projectEditLeader)!false)]
+
+  [#-- Submition message --]
+  [#if !submission?has_content && completed && !canSubmit]
+    <p class="text-center" style="display:block">The Impact Pathway can be submitted now by Flagship leaders.</p>
+  [/#if]
+  
+  [#-- Check button --]
+  [#if canEdit && !completed && !submission?has_content]
+    <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
+    <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
+    <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
+  [/#if]
+  
+  [#-- Submit button --]
+  [#if canEdit]
+    [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+    <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+      [@s.text name="form.buttons.submit" /]
+    </a>
+  [/#if]
+
 [/#if]
-
-[#-- Check button --]
-[#if canEdit && !completed && !submission?has_content]
-  <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
-  <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
-  <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
-[/#if]
-
-[#-- Submit button --]
-[#if canEdit]
-  [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
-  <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
-    [@s.text name="form.buttons.submit" /]
-  </a>
-[/#if]
-
-
 
 [#-- Project Submit JS --]
 [#assign customJS = [ "${baseUrl}/js/projects/projectSubmit.js" ] + customJS  /]
