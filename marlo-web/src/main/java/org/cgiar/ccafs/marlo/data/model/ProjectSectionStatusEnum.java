@@ -21,9 +21,9 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum ProjectSectionStatusEnum {
 
-  DESCRIPTION("description"), PARTNERS("partners"), LOCATIONS("locations"), OUTCOMES("outcomes"),
+  DESCRIPTION("description"), PARTNERS("partners"), LOCATIONS("locations"), OUTCOMES("contributionsCrpList"),
   CCAFSOUTCOMES("ccafsOutcomes"), OTHERCONTRIBUTIONS("otherContributions"), OUTPUTS("outputs"),
-  DELIVERABLESLIST("deliverablesList"), DELIVERABLES("deliverables"), ACTIVITIES("activities"),
+  DELIVERABLESLIST("deliverablesList"), DELIVERABLES("deliverableList"), ACTIVITIES("activities"),
   BUDGET("budgetByPartners"), BUDGETBYCOA("budgetByCoAs"), NEXTUSERS("nextUsers"), CASESTUDIES("caseStudies"),
   HIGHLIGHTS("highlights"), LEVERAGES("leverages");
 

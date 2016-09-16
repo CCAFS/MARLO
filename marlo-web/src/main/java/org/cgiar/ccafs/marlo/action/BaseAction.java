@@ -25,10 +25,12 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -457,14 +459,69 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean getProjectSectionStatus(String section, long projectID) {
-    SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
-      this.getCurrentCycleYear(), section);
-    if (sectionStatus != null) {
-      if (sectionStatus.getMissingFields().length() == 0) {
-        return true;
-      }
+    System.out.println(section);
+    boolean returnValue = false;
+    SectionStatus sectionStatus;
+    Project project;
+
+    if (ProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
+      return false;
     }
-    return false;
+    switch (ProjectSectionStatusEnum.value(section.toUpperCase())) {
+      case OUTCOMES:
+        project = projectManager.getProjectById(projectID);
+        List<ProjectOutcome> projectOutcomes =
+          project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+
+        project.setOutcomes(projectOutcomes);
+        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
+            APConstants.PLANNING, this.getCurrentCycleYear(), section);
+          if (sectionStatus == null) {
+            return false;
+          }
+          if (sectionStatus.getMissingFields().length() != 0) {
+            return false;
+          }
+        }
+
+        returnValue = true;
+        break;
+
+
+      case DELIVERABLES:
+        project = projectManager.getProjectById(projectID);
+        for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+          .collect(Collectors.toList())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), APConstants.PLANNING,
+            this.getCurrentCycleYear(), section);
+          if (sectionStatus == null) {
+            return false;
+          }
+
+          if (sectionStatus.getMissingFields().length() != 0) {
+            return false;
+          }
+
+        }
+
+        returnValue = true;
+        break;
+
+      default:
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+          break;
+
+        }
+    }
+    return returnValue;
+
   }
 
   public int getReportingYear() {

@@ -24,22 +24,28 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
@@ -86,6 +92,11 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectBudgetsValidator projectBudgetsValidator;
 
   @Inject
+  DeliverableValidator deliverableValidator;
+  @Inject
+  ProjectOutcomeValidator projectOutcomeValidator;
+
+  @Inject
   ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
 
 
@@ -126,6 +137,14 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.validateProjectBudgetsCoAs();
           break;
 
+        case DELIVERABLES:
+          this.validateProjectDeliverables();
+          break;
+
+        case CCAFSOUTCOMES:
+          this.validateProjectOutcomes();
+          break;
+
         default:
           break;
       }
@@ -136,19 +155,73 @@ public class ValidateProjectSectionAction extends BaseAction {
     } else {
       cycle = APConstants.REPORTING;
     }
-    sectionStatus =
-      sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+    Project project = projectManager.getProjectById(projectID);
+    switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
+      case OUTCOMES:
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.OUTCOMES);
+        section.put("missingFields", "");
+
+        List<ProjectOutcome> projectOutcomes =
+          project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
 
-    section = new HashMap<String, Object>();
-    section.put("sectionName", sectionStatus.getSectionName());
-    section.put("missingFields", sectionStatus.getMissingFields());
+        project.setOutcomes(projectOutcomes);
+        for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle,
+            this.getCurrentCycleYear(), sectionName);
+          section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+        }
+
+
+        break;
+
+      case DELIVERABLES:
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.DELIVERABLES);
+        section.put("missingFields", "");
+
+
+        for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+          .collect(Collectors.toList())) {
+          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
+            this.getCurrentCycleYear(), sectionName);
+          section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+        }
+
+
+        break;
+
+
+      default:
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+        section = new HashMap<String, Object>();
+        section.put("sectionName", sectionStatus.getSectionName());
+        section.put("missingFields", sectionStatus.getMissingFields());
+        break;
+    }
+
+
     // Thread.sleep(500);
     return SUCCESS;
   }
 
   public Map<String, Object> getSection() {
     return section;
+  }
+
+  public List<DeliverablePartnership> otherPartners(Deliverable deliverable) {
+    try {
+      List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
+        .filter(dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.OTHER.getValue()))
+        .collect(Collectors.toList());
+      return list;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   @Override
@@ -166,6 +239,18 @@ public class ValidateProjectSectionAction extends BaseAction {
     validSection = ProjectSectionStatusEnum.value(sectionName) != null;
 
 
+  }
+
+  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+    try {
+      DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
+        .filter(
+          dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+        .collect(Collectors.toList()).get(0);
+      return partnership;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public void setSection(Map<String, Object> section) {
@@ -203,6 +288,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project);
   }
 
+
   private void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -231,6 +317,19 @@ public class ValidateProjectSectionAction extends BaseAction {
       project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
     projectBudgetsCoAValidator.validate(this, project);
+  }
+
+
+  private void validateProjectDeliverables() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+    for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
+      .collect(Collectors.toList())) {
+      deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
+      deliverable.setOtherPartners(this.otherPartners(deliverable));
+      deliverableValidator.validate(this, deliverable);
+    }
+
   }
 
   private void validateProjectDescription() {
@@ -272,7 +371,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     descriptionValidator.validate(this, project);
   }
 
-
   private void validateProjectLocations() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -280,6 +378,29 @@ public class ValidateProjectSectionAction extends BaseAction {
       new ArrayList<>(project.getProjectLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList())));
 
     locationValidator.validate(this, project);
+  }
+
+
+  private void validateProjectOutcomes() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+    List<ProjectOutcome> projectOutcomes =
+      project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+
+    project.setOutcomes(projectOutcomes);
+    for (ProjectOutcome projectOutcome : project.getOutcomes()) {
+      projectOutcome.setMilestones(
+        projectOutcome.getProjectMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      projectOutcome.setCommunications(
+        projectOutcome.getProjectCommunications().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      projectOutcome.setNextUsers(
+        projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      projectOutcomeValidator.validate(this, projectOutcome);
+    }
+
   }
 
   private void validateProjectParnters() {
