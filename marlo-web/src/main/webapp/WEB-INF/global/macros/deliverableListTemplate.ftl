@@ -20,7 +20,7 @@
       [#list deliverables as deliverable]
         <tr>
         [#-- ID --]
-        <td class="projectId">
+        <td class="deliverableId">
           <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${deliverable.id}</a>
         </td>
           [#-- Deliverable Title --]
@@ -61,7 +61,7 @@
           <td class="text-center">
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
             [#if true]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="#" title="">
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
             [#else]

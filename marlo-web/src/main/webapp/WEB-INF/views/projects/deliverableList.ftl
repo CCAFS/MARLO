@@ -42,15 +42,15 @@
           <div class="form-group col-md-12 legendContent">
           
           
-          <div class="col-md-6">
-            <div class="col-md-12 form-group"><b>FAIR:</b></div>
+          <div class="col-md-6 explanation">
+            <div class="col-md-12 form-group "><b>FAIR:</b></div>
             <div class="form-group col-md-6 "><span>F</span> Findable </div>
             <div class="form-group col-md-6 "><span>A</span> Accessible</div>
             <div class="form-group col-md-6 "><span>I</span> Interoperable</div>
             <div class="form-group col-md-6 "><span>R</span> Reusable</div>
           </div>
-          <div class="col-md-6">
-            <div class="col-md-12 form-group"><b>FAIR colors:</b></div>
+          <div class="col-md-6 colors">
+            <div class="col-md-12 form-group "><b>FAIR colors:</b></div>
             <div class="form-group col-md-6 fair"><span id="achieved"></span> Achieved </div>
             <div class="form-group col-md-6 fair"><span id="notAchieved"></span> Not achieved</div>
             <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>

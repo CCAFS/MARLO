@@ -108,3 +108,13 @@ span#notDefined {
     margin-left: 1px;
     border: 1px dashed #8e8e91;
 }
+
+.explanation {
+    border: 1px dashed #d5d5d5;
+    padding: 5px;
+}
+
+.colors {
+    border: 1px dashed #d5d5d5;
+    padding: 5px;
+}
