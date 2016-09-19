@@ -5602,8 +5602,10 @@ span.select2-selection.select2-selection--multiple {
 }
 
 .select2-results__option {
-    padding: 3px 5px;
-    font-size: 0.95em
+    font-size: 0.95em;
+    border: 1px dashed #e6e6e6;
+    padding: 5px 10px;
+    border-top: none;
 }
 
 .select2-search--dropdown {
