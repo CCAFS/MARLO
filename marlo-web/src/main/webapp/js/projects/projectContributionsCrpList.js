@@ -5,10 +5,14 @@ $(document).ready(function() {
   $addOutcome = $('.addOutcomeBlock a');
   $addOutcomeSelect = $('.outcomesListBlock select');
 
+  $('select').select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
+  });
+
   var outcomesSelectedIds = ($('#outcomesSelectedIds').text()).split(',');
   $addOutcomeSelect.clearOptions(outcomesSelectedIds);
-
-  $('select').select2();
 
   $addOutcomeSelect.on('change', function(e) {
     var url = $addOutcome.attr('href');
@@ -43,3 +47,15 @@ function addNewOutcome() {
   console.log(value)
   console.log(name)
 }
+
+function formatState(state) {
+  if(state.id != "-1") {
+    var text = state.text.split(":");
+    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+    return $state;
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
+
+};

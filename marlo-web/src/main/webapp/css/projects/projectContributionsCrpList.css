@@ -33,3 +33,9 @@ td {
 span.icon-20 {
     margin-top: 7px;
 }
+
+.select2-results__option {
+    border: 1px dashed #e6e6e6;
+    padding: 5px 10px;
+    border-top: none;
+}
