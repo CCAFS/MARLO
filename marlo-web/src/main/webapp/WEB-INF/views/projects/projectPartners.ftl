@@ -321,11 +321,12 @@
     ${(action.getActivitiesLedByUser(element.id))!}
     
     [#-- Responsibilities --]
+    [#if project.projectEditLeader]
     <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=!project.bilateralProject editable=editable /]
       <div class="clearfix"></div>
     </div>
-    
+    [/#if]
     
   </div>
 [/#macro]

@@ -59,10 +59,11 @@
               </div>
             </div>
             <div class="form-group row">
-              [#-- Project Type --]
+              [#-- Project Type 
               <div class="col-md-6"> 
                 [@customForm.select name="project.type" value="${(project.type)!}" i18nkey="project.type" listName="projectTypes" disabled=true editable=false stringKey=true /]
               </div>
+              --]
             </div> 
     
             [#-- Project upload work plan 

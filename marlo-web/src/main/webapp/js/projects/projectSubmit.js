@@ -23,7 +23,7 @@ $(document).ready(function() {
     });
   });
 
-  $('.button-label').on('click', function() {
+  $('.projectEditLeader .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
     var $thisLabel = $(this);
