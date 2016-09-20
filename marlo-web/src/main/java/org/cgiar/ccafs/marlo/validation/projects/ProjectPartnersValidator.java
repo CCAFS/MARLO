@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -36,11 +37,13 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private boolean hasErros;
   private ProjectValidator projectValidator;
+  private UserManager userManager;
 
   @Inject
-  public ProjectPartnersValidator(ProjectValidator projectValidator) {
+  public ProjectPartnersValidator(ProjectValidator projectValidator, UserManager userManager) {
     super();
     this.projectValidator = projectValidator;
+    this.userManager = userManager;
   }
 
   public boolean isHasErros() {
@@ -162,6 +165,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     ProjectPartnerPerson person) {
     if (!projectValidator.isValidPersonResponsibilities(person.getResponsibilities())) {
       if (person.getUser() != null && (person.getUser() != null || person.getUser().getId() != -1)) {
+        person.setUser(userManager.getUser(person.getUser().getId()));
         this.addMessage(action.getText("projectPartners.responsibilities.for",
           new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
       }

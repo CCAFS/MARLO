@@ -127,7 +127,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -138,6 +138,7 @@ public class DeliverableAction extends BaseAction {
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.auditLogManager = auditLogManager;
+    this.deliverableValidator = deliverableValidator;
   }
 
   @Override
