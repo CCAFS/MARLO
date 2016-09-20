@@ -29,10 +29,10 @@
       <div class="buttons">
         <div class="buttons-content">
         [#if action.hasPermission("addCoreProject")]
-          <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
         [/#if]
         [#if action.hasPermission("addBilateralProject")]
-          <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
         [/#if]
         </div>
       </div>
