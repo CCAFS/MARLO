@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -162,9 +163,10 @@ public class ProjectListAction extends BaseAction {
           project.setRegions(regions);
         }
       }
-
-
     }
+
+    String params[] = {loggedCrp.getAcronym() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
 
   }
 

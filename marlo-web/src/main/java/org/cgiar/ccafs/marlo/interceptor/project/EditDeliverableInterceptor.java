@@ -99,7 +99,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(deliverable.getProject()) && baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params))) {
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
       }
