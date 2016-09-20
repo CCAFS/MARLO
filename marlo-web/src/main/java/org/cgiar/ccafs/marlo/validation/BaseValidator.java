@@ -58,6 +58,7 @@ public class BaseValidator {
     missingFields.append(field);
   }
 
+
   protected boolean isValidEmail(String email) {
     if (email != null) {
       try {
@@ -203,6 +204,7 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
   }
 
+
   /**
    * This method saves the missing fields into the database for a section at ImpactPathway.
    * 
@@ -228,7 +230,6 @@ public class BaseValidator {
 
     sectionStatusManager.saveSectionStatus(status);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at Project.

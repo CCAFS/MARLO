@@ -17,11 +17,15 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +40,32 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
 
   @Inject
+  private CrpManager crpManager;
+
+  @Inject
   public ProjectActivitiesValidator() {
     // TODO Auto-generated constructor stub
   }
 
-  public void validate(BaseAction action, Project project) {
+  private Path getAutoSaveFilePath(Project project, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.ACTIVITIES.getStatus().replace("/", "_");
+    String autoSaveFile =
+      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public void validate(BaseAction action, Project project, boolean saving) {
     this.action = action;
+
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID());
+
+      if (path.toFile().exists()) {
+        this.addMissingField("draft");
+      }
+    }
     if (project.getOpenProjectActivities() != null) {
       for (Activity activity : project.getOpenProjectActivities()) {
         this.validateActivity(activity);

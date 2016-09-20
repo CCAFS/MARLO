@@ -883,7 +883,7 @@ public class ProjectDescriptionAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, project);
+      validator.validate(this, project, true);
     }
   }
 

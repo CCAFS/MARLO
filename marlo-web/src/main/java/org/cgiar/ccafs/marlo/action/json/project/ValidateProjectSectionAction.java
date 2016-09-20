@@ -287,7 +287,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           closedActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
       }
     }
-    projectActivitiesValidator.validate(this, project);
+    projectActivitiesValidator.validate(this, project, false);
   }
 
 
@@ -309,7 +309,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
     }
-    projectBudgetsValidator.validate(this, project);
+    projectBudgetsValidator.validate(this, project, false);
   }
 
   private void validateProjectBudgetsCoAs() {
@@ -318,7 +318,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setBudgetsCluserActvities(
       project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-    projectBudgetsCoAValidator.validate(this, project);
+    projectBudgetsCoAValidator.validate(this, project, false);
   }
 
 
@@ -329,7 +329,7 @@ public class ValidateProjectSectionAction extends BaseAction {
       .collect(Collectors.toList())) {
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
-      deliverableValidator.validate(this, deliverable);
+      deliverableValidator.validate(this, deliverable, false);
     }
 
   }
@@ -370,7 +370,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setRegions(regions);
     project.setScopes(projectLocations);
 
-    descriptionValidator.validate(this, project);
+    descriptionValidator.validate(this, project, false);
   }
 
   private void validateProjectLocations() {
@@ -379,7 +379,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setLocations(
       new ArrayList<>(project.getProjectLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList())));
 
-    locationValidator.validate(this, project);
+    locationValidator.validate(this, project, false);
   }
 
 
@@ -400,7 +400,7 @@ public class ValidateProjectSectionAction extends BaseAction {
       projectOutcome.setNextUsers(
         projectOutcome.getProjectNextusers().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-      projectOutcomeValidator.validate(this, projectOutcome);
+      projectOutcomeValidator.validate(this, projectOutcome, false);
     }
 
   }
@@ -415,7 +415,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     if (this.isLessonsActive()) {
       this.loadLessons(loggedCrp, project, ProjectSectionStatusEnum.PARTNERS.getStatus());
     }
-    projectPartnerValidator.validate(this, project);
+    projectPartnerValidator.validate(this, project, false);
 
   }
 

@@ -17,13 +17,18 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.google.inject.Inject;
 
@@ -40,15 +45,29 @@ public class ProjectPartnersValidator extends BaseValidator {
   private UserManager userManager;
 
   @Inject
+  private CrpManager crpManager;
+
+  @Inject
   public ProjectPartnersValidator(ProjectValidator projectValidator, UserManager userManager) {
     super();
     this.projectValidator = projectValidator;
     this.userManager = userManager;
   }
 
+  private Path getAutoSaveFilePath(Project project, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.PARTNERS.getStatus().replace("/", "_");
+    String autoSaveFile =
+      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
   public boolean isHasErros() {
     return hasErros;
   }
+
 
   public void replaceAll(StringBuilder builder, String from, String to) {
     int index = builder.indexOf(from);
@@ -64,11 +83,18 @@ public class ProjectPartnersValidator extends BaseValidator {
     this.hasErros = hasErros;
   }
 
+  public void validate(BaseAction action, Project project, boolean saving) {
 
-  public void validate(BaseAction action, Project project) {
+
     hasErros = false;
     if (project != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
+        if (path.toFile().exists()) {
+          this.addMissingField("draft");
+        }
+      }
       if (!project.getPartners().isEmpty() && (project.isCoreProject() || project.isCoFundedProject())) {
 
         if (action.isReportingActive()) {

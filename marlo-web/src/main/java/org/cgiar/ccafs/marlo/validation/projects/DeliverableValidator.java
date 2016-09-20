@@ -17,9 +17,14 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.google.inject.Inject;
 
@@ -31,11 +36,32 @@ public class DeliverableValidator extends BaseValidator {
   BaseAction action;
 
   @Inject
+  private CrpManager crpManager;
+
+  @Inject
   public DeliverableValidator() {
   }
 
-  public void validate(BaseAction action, Deliverable deliverable) {
+  private Path getAutoSaveFilePath(Deliverable deliverable, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = deliverable.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.DELIVERABLE.getStatus().replace("/", "_");
+    String autoSaveFile =
+      deliverable.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
     this.action = action;
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
+
+      if (path.toFile().exists()) {
+        this.addMissingField("draft");
+      }
+    }
 
     if (!(this.isValidString(deliverable.getTitle()) && this.wordCount(deliverable.getTitle()) <= 15)) {
       this.addMessage(action.getText("project.deliverable.generalInformation.title"));

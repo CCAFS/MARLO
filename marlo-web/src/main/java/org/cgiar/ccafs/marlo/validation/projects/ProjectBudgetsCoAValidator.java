@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
@@ -27,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +49,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   private BudgetTypeManager budgetTypeManager;
   private ProjectManager projectManager;
 
+
+
   @Inject
   public ProjectBudgetsCoAValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
     ProjectManager projectManager) {
@@ -52,6 +58,18 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
     this.projectManager = projectManager;
     this.budgetTypeManager = budgetTypeManager;
+  }
+
+  @Inject
+  private CrpManager crpManager;
+  private Path getAutoSaveFilePath(Project project, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.BUDGETBYCOA.getStatus().replace("/", "_");
+    String autoSaveFile =
+      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public boolean hasBudgets(Long type, int year, long projectID) {
@@ -82,10 +100,16 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, Project project) {
+  public void validate(BaseAction action, Project project, boolean saving) {
     hasErros = false;
     if (project != null) {
+      if (!saving) {
+        Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
+        if (path.toFile().exists()) {
+          this.addMissingField("draft");
+        }
+      }
       Project projectDB = projectManager.getProjectById(project.getId());
       List<ProjectClusterActivity> activities =
         projectDB.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());

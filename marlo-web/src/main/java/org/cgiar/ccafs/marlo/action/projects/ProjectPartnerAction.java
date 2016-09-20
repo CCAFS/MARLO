@@ -926,7 +926,7 @@ public class ProjectPartnerAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      projectPartnersValidator.validate(this, project);
+      projectPartnersValidator.validate(this, project, true);
       if (projectPartnersValidator.isHasErros()) {
         if (project.getPartners() != null) {
           for (ProjectPartner projectPartner : project.getPartners()) {

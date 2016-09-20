@@ -17,9 +17,14 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.google.inject.Inject;
 
@@ -29,10 +34,32 @@ import com.google.inject.Inject;
 public class ProjectLocationValidator extends BaseValidator {
 
   @Inject
+  private CrpManager crpManager;
+
+  @Inject
   public ProjectLocationValidator() {
   }
 
-  public void validate(BaseAction action, Project project) {
+  private Path getAutoSaveFilePath(Project project, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.LOCATIONS.getStatus().replace("/", "_");
+    String autoSaveFile =
+      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public void validate(BaseAction action, Project project, boolean saving) {
+
+
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(project, action.getCrpID());
+
+      if (path.toFile().exists()) {
+        this.addMissingField("draft");
+      }
+    }
 
     this.validateLocation(action, project);
     if (!action.getFieldErrors().isEmpty()) {

@@ -642,7 +642,7 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      deliverableValidator.validate(this, deliverable);
+      deliverableValidator.validate(this, deliverable, true);
     }
   }
 }

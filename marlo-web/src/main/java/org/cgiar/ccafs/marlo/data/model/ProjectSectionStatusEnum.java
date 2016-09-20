@@ -22,10 +22,10 @@ package org.cgiar.ccafs.marlo.data.model;
 public enum ProjectSectionStatusEnum {
 
   DESCRIPTION("description"), PARTNERS("partners"), LOCATIONS("locations"), OUTCOMES("contributionsCrpList"),
-  CCAFSOUTCOMES("ccafsOutcomes"), OTHERCONTRIBUTIONS("otherContributions"), OUTPUTS("outputs"),
+  OUTCOME("contributionCrp"), OTHERCONTRIBUTIONS("otherContributions"), OUTPUTS("outputs"),
   DELIVERABLESLIST("deliverablesList"), DELIVERABLES("deliverableList"), ACTIVITIES("activities"),
   BUDGET("budgetByPartners"), BUDGETBYCOA("budgetByCoAs"), NEXTUSERS("nextUsers"), CASESTUDIES("caseStudies"),
-  HIGHLIGHTS("highlights"), LEVERAGES("leverages");
+  HIGHLIGHTS("highlights"), LEVERAGES("leverages"), DELIVERABLE("deliverable");
 
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();

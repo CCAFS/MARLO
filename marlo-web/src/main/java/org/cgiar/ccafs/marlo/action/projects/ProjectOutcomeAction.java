@@ -725,7 +725,7 @@ public class ProjectOutcomeAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      projectOutcomeValidator.validate(this, projectOutcome);
+      projectOutcomeValidator.validate(this, projectOutcome, true);
     }
   }
 

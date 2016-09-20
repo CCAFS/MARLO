@@ -755,7 +755,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      projectBudgetsValidator.validate(this, project);
+      projectBudgetsValidator.validate(this, project, true);
     }
   }
 

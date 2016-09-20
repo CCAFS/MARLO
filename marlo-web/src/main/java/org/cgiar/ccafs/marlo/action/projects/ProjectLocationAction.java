@@ -568,7 +568,7 @@ public class ProjectLocationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      locationValidator.validate(this, project);
+      locationValidator.validate(this, project, true);
     }
   }
 }

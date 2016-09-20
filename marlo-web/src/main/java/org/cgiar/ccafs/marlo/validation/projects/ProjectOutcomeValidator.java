@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
@@ -27,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -39,6 +43,10 @@ public class ProjectOutcomeValidator extends BaseValidator {
   private ProjectManager projectManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+
+  @Inject
+  private CrpManager crpManager;
+
   @Inject
   public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
 
@@ -46,6 +54,15 @@ public class ProjectOutcomeValidator extends BaseValidator {
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
+  private Path getAutoSaveFilePath(ProjectOutcome project, long crpID) {
+    Crp crp = crpManager.getCrpById(crpID);
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = ProjectSectionStatusEnum.OUTCOME.getStatus().replace("/", "_");
+    String autoSaveFile =
+      project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
 
   public void replaceAll(StringBuilder builder, String from, String to) {
     int index = builder.indexOf(from);
@@ -56,7 +73,15 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
   }
 
-  public void validate(BaseAction action, ProjectOutcome projectOutcome) {
+  public void validate(BaseAction action, ProjectOutcome projectOutcome, boolean saving) {
+
+    if (!saving) {
+      Path path = this.getAutoSaveFilePath(projectOutcome, action.getCrpID());
+
+      if (path.toFile().exists()) {
+        this.addMissingField("draft");
+      }
+    }
 
     this.validateProjectOutcome(action, projectOutcome);
     if (!action.getFieldErrors().isEmpty()) {

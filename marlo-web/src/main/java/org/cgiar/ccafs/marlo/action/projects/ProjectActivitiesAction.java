@@ -232,14 +232,14 @@ public class ProjectActivitiesAction extends BaseAction {
     if (activitiesOpen) {
       activitiesPrew = activityManager.findAll().stream()
         .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-        && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))))
+          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))))
         .collect(Collectors.toList());
     } else {
       activitiesPrew = activityManager.findAll().stream()
         .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-        && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))))
+          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))))
         .collect(Collectors.toList());
     }
 
@@ -391,11 +391,11 @@ public class ProjectActivitiesAction extends BaseAction {
       } else {
         this.setDraft(false);
         project
-        .setOpenProjectActivities(
-          new ArrayList<Activity>(project.getActivities().stream()
-            .filter(a -> a.isActive()
-              && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          .setOpenProjectActivities(
+            new ArrayList<Activity>(project.getActivities().stream()
+              .filter(a -> a.isActive()
+                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
             .collect(Collectors.toList())));
 
         if (project.getOpenProjectActivities() != null) {
@@ -406,11 +406,11 @@ public class ProjectActivitiesAction extends BaseAction {
         }
 
         project
-        .setClosedProjectActivities(
-          new ArrayList<Activity>(project.getActivities().stream()
-            .filter(a -> a.isActive()
-              && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+          .setClosedProjectActivities(
+            new ArrayList<Activity>(project.getActivities().stream()
+              .filter(a -> a.isActive()
+                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
             .collect(Collectors.toList())));
 
         if (project.getClosedProjectActivities() != null) {
@@ -532,7 +532,7 @@ public class ProjectActivitiesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      activitiesValidator.validate(this, project);
+      activitiesValidator.validate(this, project, true);
     }
   }
 
