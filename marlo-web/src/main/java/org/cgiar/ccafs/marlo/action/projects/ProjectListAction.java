@@ -70,41 +70,60 @@ public class ProjectListAction extends BaseAction {
 
   public String addBilateralProject() {
 
-    LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    String params[] = {loggedCrp.getAcronym().toUpperCase()};
+    if (this.canAccessSuperAdmin()) {
 
-    if (liaisonUser != null) {
-      Project project = new Project();
-      project.setCreatedBy(this.getCurrentUser());
-      project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("New expected Project created");
-      project.setActive(true);
-      project.setActiveSince(new Date());
-
-      String params[] = {loggedCrp.getAcronym().toUpperCase()};
-      project.setType(this.getText(APConstants.PROJECT_BILATERAL, params));
-      project.setLiaisonUser(liaisonUser);
-      project.setScale(0);
-      project.setCofinancing(false);
-      project.setCrp(loggedCrp);
-
-      projectID = projectManager.saveProject(project);
-
-      if (projectID > 0) {
+      if (this.createProject(this.getText(APConstants.PROJECT_BILATERAL, params), null)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
       return INPUT;
     } else {
-      return NOT_AUTHORIZED;
-    }
 
+      LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+
+      if (liaisonUser != null) {
+        if (this.createProject(this.getText(APConstants.PROJECT_BILATERAL, params), liaisonUser)) {
+          this.clearPermissionsCache();
+          return SUCCESS;
+        }
+        return INPUT;
+      } else {
+        return NOT_AUTHORIZED;
+      }
+    }
   }
 
   public String addCoreProject() {
 
-    LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    String params[] = {loggedCrp.getAcronym().toUpperCase()};
+    if (this.canAccessSuperAdmin()) {
+
+      if (this.createProject(this.getText(APConstants.PROJECT_CORE, params), null)) {
+        this.clearPermissionsCache();
+        return SUCCESS;
+      }
+      return INPUT;
+    } else {
+
+      LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+
+      if (liaisonUser != null) {
+        if (this.createProject(this.getText(APConstants.PROJECT_CORE, params), liaisonUser)) {
+          this.clearPermissionsCache();
+          return SUCCESS;
+        }
+        return INPUT;
+      } else {
+        return NOT_AUTHORIZED;
+      }
+    }
+  }
+
+  public boolean createProject(String type, LiaisonUser liaisonUser) {
 
     if (liaisonUser != null) {
+
       Project project = new Project();
       project.setCreatedBy(this.getCurrentUser());
       project.setModifiedBy(this.getCurrentUser());
@@ -122,12 +141,27 @@ public class ProjectListAction extends BaseAction {
       projectID = projectManager.saveProject(project);
 
       if (projectID > 0) {
-        this.clearPermissionsCache();
-        return SUCCESS;
+        return true;
       }
-      return INPUT;
+      return false;
+
     } else {
-      return NOT_AUTHORIZED;
+      Project project = new Project();
+      project.setCreatedBy(this.getCurrentUser());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("New expected Project created");
+      project.setActive(true);
+      project.setActiveSince(new Date());
+      project.setType(type);
+      project.setScale(0);
+      project.setCofinancing(false);
+      project.setCrp(loggedCrp);
+
+      projectID = projectManager.saveProject(project);
+      if (projectID > 0) {
+        return true;
+      }
+      return false;
     }
 
   }
