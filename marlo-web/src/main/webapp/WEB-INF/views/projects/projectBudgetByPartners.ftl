@@ -15,16 +15,6 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-[#assign startYear = (project.startDate?string.yyyy)?number /]
-[#assign endYear = (project.endDate?string.yyyy)?number /]
-[#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
-[#assign type = { 
-  'w1w2': 'w1w2',
-  'w3': '2',
-  'bilateral': '3',
-  'centerFunds': 'centerFunds'
-} /]
-
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectBudgetByPartners.help" /] </p></div> 
 </div>
@@ -44,51 +34,73 @@
           
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
-          [#-- Year Tabs --]
-          <ul class="nav nav-tabs budget-tabs" role="tablist">
-            [#list startYear .. endYear as year]
-              <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
-            [/#list]
-          </ul>
           
-          [#-- Years Content --]
-          <div class="tab-content budget-content">
-            [#list startYear .. endYear as year]
-              <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-              
-                [#-- Budgest cannot be editable message --]
-                [#if !isYearEditable(year)]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+          [#if project.startDate?? && project.endDate??]
+          
+            [#assign startYear = (project.startDate?string.yyyy)?number /]
+            [#assign endYear = (project.endDate?string.yyyy)?number /]
+            [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+            [#assign type = { 
+              'w1w2': 'w1w2',
+              'w3': '2',
+              'bilateral': '3',
+              'centerFunds': 'centerFunds'
+            } /]
+            
+            [#-- Year Tabs --]
+            <ul class="nav nav-tabs budget-tabs" role="tablist">
+              [#list startYear .. endYear as year]
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
+              [/#list]
+            </ul>
+            
+            [#-- Years Content --]
+            <div class="tab-content budget-content">
+              [#list startYear .. endYear as year]
+                <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                 
-                <div class="overallYearBudget fieldset clearfix">
-                  <h5 class="title">Overall ${year} budget</h5>
-                  <div class="row">
-                    [#-- W1/W2 --]
-                    [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
-                    [/#if]
-                    [#-- W3 --]
-                    <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
-                    [#-- Bilateral  --]
-                    <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
-                    [#-- Center Funds --]
-                    [#if !project.bilateralProject]
-                    <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
-                    [/#if]
+                  [#-- Budgest cannot be editable message --]
+                  [#if !isYearEditable(year)]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                  
+                  <div class="overallYearBudget fieldset clearfix">
+                    <h5 class="title">Overall ${year} budget</h5>
+                    <div class="row">
+                      [#-- W1/W2 --]
+                      [#if !project.bilateralProject]
+                      <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
+                      [/#if]
+                      [#-- W3 --]
+                      [#if project.projectEditLeader]
+                      <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
+                      [/#if]
+                      [#-- Bilateral  --]
+                      [#if project.projectEditLeader]
+                      <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
+                      [/#if]
+                      [#-- Center Funds --]
+                      [#if !project.bilateralProject && project.projectEditLeader]
+                      <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
+                      [/#if]
+                    </div>
                   </div>
+                
+                  [#if projectPPAPartners?has_content]
+                    [#list projectPPAPartners as projectPartner]
+                      [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                    [/#list]
+                  [#else]
+                    <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
+                  [/#if]
                 </div>
-              
-                [#if projectPPAPartners?has_content]
-                  [#list projectPPAPartners as projectPartner]
-                    [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
-                  [/#list]
-                [/#if]
-              </div>
-            [/#list]  
-          </div>
-          
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
-          
+              [/#list]  
+            </div>
+            
+            [#-- Section Buttons & hidden inputs--]
+            [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+            
+          [#else]
+            <div class="simpleBox emptyMessage text-center">Before entering this section, you need to fill project start date and end date in <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section</a></div>  
+          [/#if]
          
         [/@s.form] 
       </div>
@@ -136,11 +148,15 @@
             <th class="text-center">W1/W2</th>
             [/#if]
             [#-- W3 --]
+            [#if project.projectEditLeader]
             <th class="text-center">W3</td>
+            [/#if]
             [#-- Bilateral  --]
+            [#if project.projectEditLeader]
             <th class="text-center">Bilateral</th>
+            [/#if]
             [#-- Center Funds --]
-            [#if !project.bilateralProject]
+            [#if !project.bilateralProject && project.projectEditLeader]
             <th class="text-center">Center Funds</th>
             [/#if]
           </tr>
@@ -167,6 +183,7 @@
             </td>
             [/#if]
             [#-- W3 --]
+            [#if project.projectEditLeader]
             <td class="budgetColumn">
               [#local indexBudgetW3=action.getIndexBudget(element.institution.id,selectedYear,2) ]
               [#local budgetW3 = action.getBudget(element.institution.id,selectedYear,2) ]
@@ -181,7 +198,9 @@
                 <input type="hidden" name="project.budgets[${indexBudgetW3}].amount" value="${(budgetW3.amount)!0}" />
               [/#if]
             </td>
+            [/#if]
             [#-- Bilateral  --]
+            [#if project.projectEditLeader]
             <td class="budgetColumn">
               [#local indexBudgetBilateral=action.getIndexBudget(element.institution.id,selectedYear,3) ]
               [#local budgetBilateral = action.getBudget(element.institution.id,selectedYear,3) ]
@@ -196,8 +215,9 @@
                 <input type="hidden" name="project.budgets[${indexBudgetBilateral}].amount" value="${(budgetBilateral.amount)!0}" />
               [/#if]
             </td>
+            [/#if]
             [#-- Center Funds --]
-            [#if !project.bilateralProject]
+            [#if !project.bilateralProject && project.projectEditLeader]
             <td class="budgetColumn">
               [#local indexBudgetCenterFunds=action.getIndexBudget(element.institution.id,selectedYear,4) ]
               [#local budgetCenterFunds = action.getBudget(element.institution.id,selectedYear,4) ]
