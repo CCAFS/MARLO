@@ -170,8 +170,10 @@ public class ValidateProjectSectionAction extends BaseAction {
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle,
             this.getCurrentCycleYear(), sectionName);
-          section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
 
+          }
         }
 
 
@@ -188,8 +190,11 @@ public class ValidateProjectSectionAction extends BaseAction {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
             this.getCurrentCycleYear(), sectionName);
 
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
 
-          section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+          }
+
 
         }
 

@@ -625,7 +625,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (sections.size() == 0) {
       return false;
     }
-    if (sections.size() < 2) {
+
+    return true;
+  }
+
+  public boolean isCompleteProject(long projectID) {
+
+    Project project = projectManager.getProjectById(projectID);
+    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+
+    for (SectionStatus sectionStatus : sections) {
+      if (sectionStatus.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (sections.size() < 8) {
       return false;
     }
     return true;

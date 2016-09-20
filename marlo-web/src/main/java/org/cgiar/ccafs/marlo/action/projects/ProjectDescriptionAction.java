@@ -650,15 +650,14 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
-      if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
-        for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
-            projectFocusManager.deleteProjectFocus(projectFocus.getId());
-          }
+      for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .collect(Collectors.toList())) {
+        if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
+          projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
+      }
+      if (project.getRegionsValue() != null && project.getRegionsValue().length() > 0) {
         for (String programID : project.getRegionsValue().trim().split(",")) {
           if (programID.length() > 0) {
             CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));

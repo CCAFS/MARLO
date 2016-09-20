@@ -99,7 +99,7 @@ public class ProjectLocationAction extends BaseAction {
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
     ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, ProjectLocationValidator locationValidator) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -108,6 +108,7 @@ public class ProjectLocationAction extends BaseAction {
     this.projectLocationManager = projectLocationManager;
     this.locGeopositionManager = locGeopositionManager;
     this.auditLogManager = auditLogManager;
+    this.locationValidator = locationValidator;
   }
 
   @Override
