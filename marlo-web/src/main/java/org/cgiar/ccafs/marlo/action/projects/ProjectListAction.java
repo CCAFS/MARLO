@@ -18,9 +18,11 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -28,6 +30,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,33 +41,68 @@ import com.google.inject.Inject;
  */
 public class ProjectListAction extends BaseAction {
 
+
   private static final long serialVersionUID = -793652591843623397L;
 
+
   private Crp loggedCrp;
+
+  private long projectID;
 
   // Managers
   private ProjectManager projectManager;
   private CrpManager crpManager;
 
+  private LiaisonUserManager liaisonUserManager;
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
 
-
   @Inject
-  public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager) {
+  public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
+    LiaisonUserManager liaisonUserManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
   }
 
+  public String addCoreProject() {
+
+    Project project = new Project();
+    project.setCreatedBy(this.getCurrentUser());
+    project.setModifiedBy(this.getCurrentUser());
+    project.setModificationJustification("New expected deliverable created");
+    project.setActive(true);
+    project.setActiveSince(new Date());
+
+    LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+
+    project.setLiaisonUser(liaisonUser);
+    project.setScale(0);
+    project.setCofinancing(false);
+    project.setCrp(loggedCrp);
+
+    projectID = projectManager.saveProject(project);
+
+    if (projectID > 0) {
+      return SUCCESS;
+    }
+
+    return INPUT;
+  }
+
+
   public List<Project> getAllProjects() {
     return allProjects;
   }
 
-
   public List<Project> getMyProjects() {
     return myProjects;
+  }
+
+
+  public long getProjectID() {
+    return projectID;
   }
 
   @Override
@@ -130,19 +168,23 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     return SUCCESS;
   }
 
+
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
   }
 
-
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 
   @Override

@@ -17,6 +17,18 @@
 				<param name="cancel">true</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/addNewCoreProject" method="addCoreProject"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectsList.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/description</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
 
 		<action name="{crp}/description"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
