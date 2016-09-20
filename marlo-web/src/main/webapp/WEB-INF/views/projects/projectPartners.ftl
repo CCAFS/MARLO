@@ -318,6 +318,8 @@
       </div> 
     </div>
     
+    ${(action.getActivitiesLedByUser(element.id))!}
+    
     [#-- Responsibilities --]
     <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=!project.bilateralProject editable=editable /]
