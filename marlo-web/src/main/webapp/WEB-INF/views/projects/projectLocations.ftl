@@ -132,7 +132,7 @@
         <div class="col-md-12 coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
           <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
           <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
-          <div class="nameWrapper"><input placeholder="name(Required)" class="name form-control" type="text" /></div>
+          <div class="nameWrapper"><input placeholder="name (Required)" class="name form-control" type="text" /></div>
           <span class="addLocation glyphicon glyphicon-plus-sign button-green"></span>
         </div>
         [/#if]

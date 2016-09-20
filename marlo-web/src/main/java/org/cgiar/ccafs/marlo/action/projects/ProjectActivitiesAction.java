@@ -64,35 +64,35 @@ public class ProjectActivitiesAction extends BaseAction {
   private static final long serialVersionUID = 2146101620783927003L;
 
 
-  private Crp loggedCrp;
-
-
-  private Project project;
-
-
-  private Map<String, String> status;
-
-  private long projectID;
-
   private ProjectActivitiesValidator activitiesValidator;
 
-  private String transaction;
-
-  private List<ProjectPartnerPerson> partnerPersons;
-
-  private ProjectManager projectManager;
-
-  private CrpManager crpManager;
-
-  private ProjectPartnerPersonManager projectPartnerPersonManager;
 
   private ActivityManager activityManager;
+
+
+  private AuditLogManager auditLogManager;
+
+  private CrpManager crpManager;
 
   private DeliverableActivityManager deliverableActivityManager;
 
   private DeliverableManager deliverableManager;
 
-  private AuditLogManager auditLogManager;
+  private Crp loggedCrp;
+
+  private List<ProjectPartnerPerson> partnerPersons;
+
+  private Project project;
+
+  private long projectID;
+
+  private ProjectManager projectManager;
+
+  private ProjectPartnerPersonManager projectPartnerPersonManager;
+
+  private Map<String, String> status;
+
+  private String transaction;
 
   @Inject
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -232,14 +232,14 @@ public class ProjectActivitiesAction extends BaseAction {
     if (activitiesOpen) {
       activitiesPrew = activityManager.findAll().stream()
         .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))))
+        && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))))
         .collect(Collectors.toList());
     } else {
       activitiesPrew = activityManager.findAll().stream()
         .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))))
+        && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
+        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))))
         .collect(Collectors.toList());
     }
 
@@ -391,11 +391,11 @@ public class ProjectActivitiesAction extends BaseAction {
       } else {
         this.setDraft(false);
         project
-          .setOpenProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+        .setOpenProjectActivities(
+          new ArrayList<Activity>(project.getActivities().stream()
+            .filter(a -> a.isActive()
+              && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
             .collect(Collectors.toList())));
 
         if (project.getOpenProjectActivities() != null) {
@@ -406,11 +406,11 @@ public class ProjectActivitiesAction extends BaseAction {
         }
 
         project
-          .setClosedProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+        .setClosedProjectActivities(
+          new ArrayList<Activity>(project.getActivities().stream()
+            .filter(a -> a.isActive()
+              && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
             .collect(Collectors.toList())));
 
         if (project.getClosedProjectActivities() != null) {

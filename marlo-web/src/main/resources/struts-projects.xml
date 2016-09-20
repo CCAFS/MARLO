@@ -91,9 +91,10 @@
     <action name="{crp}/addNewProjectOuctome" method="addProjectOutcome" class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeListAction">
 	    <result name="input">/WEB-INF/views/projects/projectContributionsCrpList.ftl</result>
 	    <result name="success" type="redirectAction">
-	      <param name="actionName">${crpSession}/contributionsCrpList</param>
+	      <param name="actionName">${crpSession}/contributionCrp</param>
 	      <param name="edit">true</param>
-	      <param name="projectID">${projectID}</param>        
+	      <!--  param name="projectID">${projectID}</param -->
+	      <param name="projectOutcomeID">${projectOutcomeID}</param>
 	    </result>
     </action>
     
