@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -100,7 +101,15 @@ public class DeliverableListAction extends BaseAction {
 
   @Override
   public String delete() {
+
+    Map<String, Object> parameters = this.getParameters();
+    deliverableID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+
+
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    projectID = deliverable.getProject().getId();
 
     if (deliverable != null) {
       if (deliverableManager.deleteDeliverable(deliverable.getId())) {
@@ -110,13 +119,8 @@ public class DeliverableListAction extends BaseAction {
         this.addActionError(
           this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
       }
-    } else {
-      this.addActionError(
-        this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
     }
-
     return SUCCESS;
-
   }
 
   public List<Integer> getAllYears() {
