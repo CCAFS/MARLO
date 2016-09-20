@@ -132,7 +132,7 @@
             [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
           
           [#else]
-            <div class="emptyMessage simpleBox text-center">This section is unavailable for this project</div>
+            <div class="emptyMessage simpleBox text-center">Not Available</div>
           [/#if]
          
         [/@s.form] 

@@ -181,7 +181,7 @@
               </div>
             </div>
             
-            [#-- Scale of the project --]
+            [#-- Scale of the project 
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
               <div id="" class="projectScale">
@@ -198,9 +198,9 @@
                   [#if editable || (project.scale?? && (project.scale == 3))] [@s.text name="project.global"/] [/#if]
                 </label>
               </div>
-            </div>
+            </div>--]
             
-            [#-- Scope of the project --]
+            [#-- Scope of the project 
             [#if locScopeElements?has_content]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:</div>
@@ -225,7 +225,7 @@
                 [/#if] 
               </div>
             </div>
-            [/#if]
+            [/#if]--]
             
           </div> 
            

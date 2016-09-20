@@ -162,6 +162,9 @@ $(document).ready(function() {
 
     // Set dates
     date('#startDate', '#endDate');
+
+    // Search initial projects
+    getData('');
   }
 
   addProject = function(composedName,projectId) {

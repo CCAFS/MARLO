@@ -97,7 +97,7 @@ function validateThisSection() {
 
   // Validate projects
   if(isProjectSection()) {
-    sectionData.projectId = $('input[name="projectID"]').val();
+    sectionData.projectID = $('input[name="projectID"]').val();
     validateService = "/validateProjectSection.do";
   }
 

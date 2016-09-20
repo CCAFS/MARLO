@@ -6,7 +6,8 @@ function init() {
   outcomeID = $('#outcomeId').val();
 
   // Set Select2 widget to already saved data
-  $('form select').select2({
+  $('form select').select2();
+  $('form .milestonesYearSelect select').select2({
       templateResult: formatState,
       templateSelection: formatState,
       width: '100%'
