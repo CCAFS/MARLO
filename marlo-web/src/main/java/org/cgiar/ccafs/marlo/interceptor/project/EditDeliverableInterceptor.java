@@ -89,7 +89,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
 
-    if (deliverable != null) {
+    if (deliverable != null && deliverable.isActive()) {
 
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
       System.out.println(params);

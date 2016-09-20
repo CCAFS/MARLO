@@ -80,7 +80,8 @@ public class ProjectListAction extends BaseAction {
 
       } else {
         allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
-        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+          .filter(p -> p.isActive()).collect(Collectors.toList());
         Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 
         allProjects.removeAll(myProjects);
