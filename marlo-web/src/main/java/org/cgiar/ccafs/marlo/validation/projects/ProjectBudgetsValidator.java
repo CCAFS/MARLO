@@ -71,8 +71,10 @@ public class ProjectBudgetsValidator extends BaseValidator {
     if (project != null) {
 
       if ((project.isCoreProject() || project.isCoFundedProject())) {
-        if (project.getBudgetsCofinancing() != null) {
+        if (project.getBudgetsCofinancing() != null && project.getBudgetsCofinancing().size() > 0) {
           int i = 0;
+
+
           for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
             List<String> params = new ArrayList<String>();
 
@@ -97,6 +99,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
             i++;
           }
+        } else {
+          this.addMessage(action.getText("budget.partners"));
         }
       }
 
