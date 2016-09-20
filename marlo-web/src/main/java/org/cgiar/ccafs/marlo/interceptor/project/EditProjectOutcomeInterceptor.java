@@ -86,7 +86,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
     ProjectOutcome project = projectOutcomeManager.getProjectOutcomeById(projectOutcomeId);
 
-    if (project != null) {
+    if (project != null && project.isActive()) {
 
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
       System.out.println(params);

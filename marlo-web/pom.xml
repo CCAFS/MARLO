@@ -413,7 +413,7 @@
 		</profile>
 		<!-- The configuration of the production profile -->
 		<profile>
-			<id>prod</id>
+			<id>pro</id>
 			<properties>
 				<build.profile.id>pro</build.profile.id>
 			</properties>

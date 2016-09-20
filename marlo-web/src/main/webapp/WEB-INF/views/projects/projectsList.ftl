@@ -16,29 +16,37 @@
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
     
 <section class="container">
-  <article class="fullBlock" id="mainInformation">
-    [#-- Projects List (My Projects) --]
-    <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
-    <div class="loadingBlock"></div>
-    <div style="display:none">[@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]</div>
-
-   
-    [#-- Section Buttons
-    <div class="buttons">
-      <div class="buttons-content">
-        <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
-        <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
+  <article class="row" id="mainInformation">
+    <div class="col-md-12">
+      [#-- Projects List (My Projects) --]
+      <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
+      <div class="loadingBlock"></div>
+      <div style="display:none">[@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]</div>
+  
+     
+      [#-- Section Buttons --]
+      [#if action.hasPermission("addCoreProject") || action.hasPermission("addBilateralProject")]
+      <div class="buttons">
+        <div class="buttons-content">
+        [#if action.hasPermission("addCoreProject")]
+          <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
+        [/#if]
+        [#if action.hasPermission("addBilateralProject")]
+          <a class="addButton" href="[@s.url namespace="/${currentSection}" action='addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
+        [/#if]
+        </div>
       </div>
+      [/#if]
+
+      
+      <div class="clearfix"></div>
+      <hr/>
+      
+      [#-- Projects List (Other Projects) --]
+      <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /]</h3>
+      <div class="loadingBlock"></div>
+      <div style="display:none">[@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div>
     </div>
-    --]
-    
-    <div class="clearfix"></div>
-    <hr/>
-    
-    [#-- Projects List (Other Projects) --]
-    <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /]</h3>
-    <div class="loadingBlock"></div>
-    <div style="display:none">[@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div>
     
   </article>
 </section>
