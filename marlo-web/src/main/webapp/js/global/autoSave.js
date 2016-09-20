@@ -89,8 +89,10 @@ function changeDetected(e) {
 }
 
 function validateThisSection() {
-  var sectionName = (actionName.split("/"))[1];
-  var $sectionMenu = $('#menu-' + sectionName);
+  var $sectionMenu = $('#secondaryMenu .currentSection');
+  var sectionName = ($sectionMenu.attr('id')).split("-")[1];
+  console.log(sectionName);
+
   var validateService = "";
   var sectionData = {};
   sectionData.sectionName = sectionName;
