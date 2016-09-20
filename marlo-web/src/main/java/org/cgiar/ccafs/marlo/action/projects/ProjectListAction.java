@@ -65,31 +65,71 @@ public class ProjectListAction extends BaseAction {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.liaisonUserManager = liaisonUserManager;
+  }
+
+  public String addBilateralProject() {
+
+    LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+
+    if (liaisonUser != null) {
+      Project project = new Project();
+      project.setCreatedBy(this.getCurrentUser());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("New expected Project created");
+      project.setActive(true);
+      project.setActiveSince(new Date());
+
+      String params[] = {loggedCrp.getAcronym().toUpperCase()};
+      project.setType(this.getText(APConstants.PROJECT_BILATERAL, params));
+      project.setLiaisonUser(liaisonUser);
+      project.setScale(0);
+      project.setCofinancing(false);
+      project.setCrp(loggedCrp);
+
+      projectID = projectManager.saveProject(project);
+
+      if (projectID > 0) {
+        this.clearPermissionsCache();
+        return SUCCESS;
+      }
+      return INPUT;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
   }
 
   public String addCoreProject() {
 
-    Project project = new Project();
-    project.setCreatedBy(this.getCurrentUser());
-    project.setModifiedBy(this.getCurrentUser());
-    project.setModificationJustification("New expected deliverable created");
-    project.setActive(true);
-    project.setActiveSince(new Date());
-
     LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
-    project.setLiaisonUser(liaisonUser);
-    project.setScale(0);
-    project.setCofinancing(false);
-    project.setCrp(loggedCrp);
+    if (liaisonUser != null) {
+      Project project = new Project();
+      project.setCreatedBy(this.getCurrentUser());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification("New expected Project created");
+      project.setActive(true);
+      project.setActiveSince(new Date());
 
-    projectID = projectManager.saveProject(project);
+      String params[] = {loggedCrp.getAcronym().toUpperCase()};
+      project.setType(this.getText(APConstants.PROJECT_CORE, params));
+      project.setLiaisonUser(liaisonUser);
+      project.setScale(0);
+      project.setCofinancing(false);
+      project.setCrp(loggedCrp);
 
-    if (projectID > 0) {
-      return SUCCESS;
+      projectID = projectManager.saveProject(project);
+
+      if (projectID > 0) {
+        this.clearPermissionsCache();
+        return SUCCESS;
+      }
+      return INPUT;
+    } else {
+      return NOT_AUTHORIZED;
     }
 
-    return INPUT;
   }
 
 

@@ -56,7 +56,7 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
 
   @Override
   public List<LiaisonUser> findAll() {
-    String query = "from " + LiaisonUser.class.getName() + " where is_active=1";
+    String query = "from " + LiaisonUser.class.getName();
     List<LiaisonUser> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
@@ -67,7 +67,7 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
 
   @Override
   public LiaisonUser findByUser(long id) {
-    String query = "from " + LiaisonUser.class.getName() + " where is_active=1 and user_id=" + id;
+    String query = "from " + LiaisonUser.class.getName() + " where user_id=" + id;
     List<LiaisonUser> list = dao.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
