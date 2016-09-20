@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.config.HibernateListener;
 import org.cgiar.ccafs.marlo.data.AuditLogInterceptor;
+import org.cgiar.ccafs.marlo.data.CloseSession;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 
@@ -80,7 +81,7 @@ public class StandardDAO {
       session.clear();
       session.delete(newEntityRef);
       this.commitTransaction(tx);
-      session.close();
+
       return true;
     } catch (Exception e) {
       if (tx != null) {
@@ -253,7 +254,7 @@ public class StandardDAO {
       session.flush();
       Object object = clazz.cast(query.uniqueResult());
       this.commitTransaction(tx);
-      session.close();
+
       return object;
     } catch (Exception e) {
       if (tx != null) {
@@ -330,8 +331,11 @@ public class StandardDAO {
 
     }
 
-
-    return sessionFactory.openSession();
+    Session session = sessionFactory.openSession();
+    CloseSession closeSession = new CloseSession();
+    closeSession.setSession(session);
+    closeSession.start();
+    return session;
 
   }
 
@@ -347,7 +351,12 @@ public class StandardDAO {
         (SessionFactory) ServletActionContext.getServletContext().getAttribute(HibernateListener.KEY_NAME);
 
     }
-    return sessionFactory.openSession(interceptor);
+
+    Session session = sessionFactory.openSession(interceptor);
+    CloseSession closeSession = new CloseSession();
+    closeSession.setSession(session);
+    closeSession.start();
+    return session;
 
 
   }
@@ -380,7 +389,7 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
-      session.close();
+
 
       return true;
     } catch (Exception e) {
@@ -416,7 +425,7 @@ public class StandardDAO {
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
-      session.close();
+
 
       return true;
     } catch (Exception e) {
@@ -453,7 +462,7 @@ public class StandardDAO {
       obj = session.merge(obj);
       session.saveOrUpdate(obj);
       this.commitTransaction(tx);
-      session.close();
+
 
       return true;
     } catch (Exception e) {
@@ -493,7 +502,7 @@ public class StandardDAO {
       session.saveOrUpdate(obj);
 
       this.commitTransaction(tx);
-      session.close();
+
 
       return true;
     } catch (Exception e) {
