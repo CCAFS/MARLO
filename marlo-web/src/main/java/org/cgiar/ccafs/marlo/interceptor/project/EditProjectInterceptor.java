@@ -85,7 +85,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     Project project = projectManager.getProjectById(projectId);
 
-    if (project != null) {
+    if (project != null && project.isActive()) {
 
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};

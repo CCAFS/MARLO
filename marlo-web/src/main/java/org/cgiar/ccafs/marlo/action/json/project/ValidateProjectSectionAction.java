@@ -141,7 +141,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.validateProjectDeliverables();
           break;
 
-        case CCAFSOUTCOMES:
+        case OUTCOMES:
           this.validateProjectOutcomes();
           break;
 
@@ -187,6 +187,8 @@ public class ValidateProjectSectionAction extends BaseAction {
           .collect(Collectors.toList())) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
             this.getCurrentCycleYear(), sectionName);
+
+
           section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
 
         }

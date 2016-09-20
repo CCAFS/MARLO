@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
@@ -36,11 +37,13 @@ import com.google.inject.Inject;
 public class ProjectOutcomeValidator extends BaseValidator {
 
   private ProjectManager projectManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   @Inject
-  public ProjectOutcomeValidator(ProjectManager projectManager) {
+  public ProjectOutcomeValidator(ProjectManager projectManager, CrpProgramOutcomeManager crpProgramOutcomeManager) {
 
     this.projectManager = projectManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
   }
 
 
@@ -147,14 +150,15 @@ public class ProjectOutcomeValidator extends BaseValidator {
         "Lessons regarding partnerships and possible implications for the coming planning cycle");
     }
     if (action.isPlanningActive()) {
+      projectOutcome.setCrpProgramOutcome(
+        crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
+      if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
+        || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
+        if (projectOutcome.getExpectedValue() == 0) {
+          this.addMessage(action.getText("projectOutcome.expectedValue"));
+        }
+      }
 
-      if (projectOutcome.getExpectedUnit() == null || projectOutcome.getExpectedUnit().getId() == -1) {
-        this.addMessage(action.getText("projectOutcome.expectedUnit"));
-        projectOutcome.setExpectedUnit(null);
-      }
-      if (projectOutcome.getExpectedValue() == 0) {
-        this.addMessage(action.getText("projectOutcome.expectedValue"));
-      }
 
       if (!(this.isValidString(projectOutcome.getNarrativeTarget())
         && this.wordCount(projectOutcome.getNarrativeTarget()) <= 100)) {
