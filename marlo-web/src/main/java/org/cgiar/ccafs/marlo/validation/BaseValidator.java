@@ -118,7 +118,7 @@ public class BaseValidator {
       status.setYear(year);
       status.setDeliverable(deliverable);
       status.setSectionName(sectionName);
-
+      status.setProject(deliverable.getProject());
 
     }
     status.setMissingFields(this.missingFields.toString());
@@ -196,7 +196,7 @@ public class BaseValidator {
       status.setYear(year);
       status.setProjectOutcome(projectOutcome);
       status.setSectionName(sectionName);
-
+      status.setProject(projectOutcome.getProject());
 
     }
     status.setMissingFields(this.missingFields.toString());

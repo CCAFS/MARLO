@@ -14,13 +14,13 @@
          <many-to-one name="project" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
             <column name="project_id" />
         </many-to-one>
-        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
             <column name="deliverable_id" />
         </many-to-one>
-        <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+        <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
             <column name="project_outcome_id" />
         </many-to-one>
-        <many-to-one name="projectBilateralCofinancing" class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
+        <many-to-one name="projectBilateralCofinancing" class="org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing" fetch="select">
             <column name="project_cofunded_id" />
         </many-to-one>
         <property name="sectionName" type="string">

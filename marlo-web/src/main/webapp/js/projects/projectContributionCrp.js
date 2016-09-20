@@ -6,8 +6,11 @@ function init() {
   outcomeID = $('#outcomeId').val();
 
   // Set Select2 widget to already saved data
-  $('form select').select2({
-    width: '100%'
+  $('form select').select2();
+  $('form .milestonesYearSelect select').select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
   });
 
   // Numeric inputs
@@ -174,3 +177,16 @@ function updateNextUsers() {
     $(e).setNameIndexes(1, i);
   });
 }
+
+function formatState(state) {
+  console.log(state.text);
+  if(state.id != "-1") {
+    var text = state.text.split(/-(.+)?/);
+    var $state = $("<span><strong> Milestone for " + text[0] + "-</strong> " + text[1] + "</span>");
+    return $state;
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
+
+};

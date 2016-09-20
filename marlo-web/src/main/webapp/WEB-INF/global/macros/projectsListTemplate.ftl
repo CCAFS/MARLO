@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        <th colspan="3">[@s.text name="projectsList.projectBudget" /] ${(reportingCycle?string(currentReportingYear,currentPlanningYear))!}</th> 
+        <th colspan="3">[@s.text name="projectsList.projectBudget" /] ${currentCycleYear}</th> 
         <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -86,7 +86,32 @@
           </td>
           [#-- Project Action Status --]
           <td>
-            {TODO}
+            [#assign currentCycleYear= currentCycleYear /]
+            [#assign submission = {} /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
+            [#assign completed = (action.isCompleteProject(project.id))!false /]
+            [#assign canSubmit = false /] [#-- action.hasProjectPermission("submitProject", project.id, "manage") --]
+            
+            [#-- Check button --] 
+            [#if !submission?has_content ]
+              [#if canEdit && canSubmit && !completed]
+                <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
+                <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
+              [/#if]
+            [/#if]
+            
+            [#-- Submit button --]
+            [#if submission?has_content]
+              <p title="Submitted on ${(submission.dateTime?date)?string.full} ">Submitted</p>
+            [#else]
+              [#if canSubmit]
+                [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+                <a id="submitProject-${project.id}" class="submitButton" href="[@s.url namespace=namespace action='submit'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" style="display:${showSubmit?string('block','none')}">[@s.text name="form.buttons.submit" /]</a>
+              [/#if]
+            [/#if]
+            
+            [#if !submission?has_content && (!canEdit || !canSubmit) ]
+              <p title="The project can be submitted by Management liaisons and Contact points">Not Submitted</p>
+            [/#if]
           </td>
           [#-- Track completition of entry --]
           [#if isPlanning]

@@ -91,7 +91,7 @@ span#notDefined {
     -moz-box-shadow: 1px 2px 8px rgba(0,0,0,.3);
     -moz-border-radius: 2px;
     border-radius: 2px;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #EEE;
     background: #F8F8F8;
     margin-bottom: 25px;
@@ -99,8 +99,8 @@ span#notDefined {
 
 .legendContent span {
     border-radius: 3px;
-    padding: 0px 4px;
-    margin-right: 0px;
+    padding: 0px 4%;
+    margin-right: 5px;
     margin-bottom: 4px;
     cursor: pointer;
     opacity: 0.9;
@@ -117,4 +117,12 @@ span#notDefined {
 .colors {
     border: 1px dashed #d5d5d5;
     padding: 5px;
+    min-height: 106px;
+}
+
+.explanation span {
+    min-width: 22px; */
+    float: left;
+    float: left;
+    margin-bottom: 0;
 }
