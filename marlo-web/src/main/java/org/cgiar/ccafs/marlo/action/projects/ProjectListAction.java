@@ -130,9 +130,7 @@ public class ProjectListAction extends BaseAction {
       project.setModificationJustification("New expected Project created");
       project.setActive(true);
       project.setActiveSince(new Date());
-
-      String params[] = {loggedCrp.getAcronym().toUpperCase()};
-      project.setType(this.getText(APConstants.PROJECT_CORE, params));
+      project.setType(type);
       project.setLiaisonUser(liaisonUser);
       project.setScale(0);
       project.setCofinancing(false);
