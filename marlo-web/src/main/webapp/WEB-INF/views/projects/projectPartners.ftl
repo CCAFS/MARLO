@@ -54,6 +54,7 @@
             </div> 
             
             [#-- Other fields --]
+             
             <div class="simpleBox">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
@@ -80,7 +81,10 @@
                   [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
                 </div>
               </div>
+              
+              
             </div>
+             
           </div>
           
           
@@ -94,37 +98,37 @@
 </section>
 
 [#-- Hidden Parameters Interface --]
-  <input id="partners-name" type="hidden" value="project.partners" />
-  
-  [#-- Single partner TEMPLATE from partnersTemplate.ftl --]
-  [@projectPartnerMacro element={} name="project.partners[-1]" isTemplate=true /]
-  
-  [#-- Contact person TEMPLATE from partnersTemplate.ftl --]
-  [@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
-  
-  [#-- PPA list Template --]
-  <ul style="display:none">
-    <li id="ppaListTemplate" class="clearfix">
-    <input type="hidden"            name="project.partners[-1].partnerContributors[-1].id" />
-      <input type="hidden"            name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.id" />
-      <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.institution.id" value="" />
-      <span class="name"></span> 
-      [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if] 
-    </li>
-  </ul>
-  
-  [#-- allPPAInstitutions --]
-  <input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
-  
-  [#-- Can update PPA Partners --]
-  <input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || project.bilateralProject)?string}"/>
-  
-  [#-- Project PPA Partners --]
-  <select id="projectPPAPartners" style="display:none">
-  [#if project.PPAPartners??]
-    [#list project.PPAPartners as ppaPartner]<option value="${ppaPartner.institution.id}">${ppaPartner.institution.getComposedName()}</option>[/#list]
-  [/#if]  
-  </select>
+<input id="partners-name" type="hidden" value="project.partners" />
+
+[#-- Single partner TEMPLATE from partnersTemplate.ftl --]
+[@projectPartnerMacro element={} name="project.partners[-1]" isTemplate=true /]
+
+[#-- Contact person TEMPLATE from partnersTemplate.ftl --]
+[@contactPersonMacro element={} name="project.partners[-1].partnerPersons[-1]" isTemplate=true /]
+
+[#-- PPA list Template --]
+<ul style="display:none">
+  <li id="ppaListTemplate" class="clearfix">
+  <input type="hidden"            name="project.partners[-1].partnerContributors[-1].id" />
+    <input type="hidden"            name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.id" />
+    <input class="id" type="hidden" name="project.partners[-1].partnerContributors[-1].projectPartnerContributor.institution.id" value="" />
+    <span class="name"></span> 
+    [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if] 
+  </li>
+</ul>
+
+[#-- allPPAInstitutions --]
+<input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
+
+[#-- Can update PPA Partners --]
+<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || project.bilateralProject)?string}"/>
+
+[#-- Project PPA Partners --]
+<select id="projectPPAPartners" style="display:none">
+[#if project.PPAPartners??]
+  [#list project.PPAPartners as ppaPartner]<option value="${ppaPartner.institution.id}">${ppaPartner.institution.getComposedName()}</option>[/#list]
+[/#if]  
+</select>
   
 [#-- Remove Partner Dialog --]
 <div id="partnerRemove-dialog" title="Remove partner" style="display:none">
@@ -318,7 +322,6 @@
       </div> 
     </div>
     
-    ${(action.getActivitiesLedByUser(element.id))!}
     
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
