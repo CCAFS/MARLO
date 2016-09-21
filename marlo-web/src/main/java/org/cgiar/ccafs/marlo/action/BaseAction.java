@@ -107,6 +107,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Managers
   @Inject
   private CrpManager crpManager;
+
+
   // Variables
   private String crpSession;
   private Crp currentCrp;
@@ -158,10 +160,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   protected BaseSecurityContext securityContext;
 
-
   private Map<String, Object> session;
 
   private Submission submission;
+
   protected boolean submit;
 
   @Inject
@@ -211,10 +213,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
-
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
+  }
+
+
+  public boolean canProjectSubmited(long projectID) {
+    String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
+    return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
   }
 
   /**
@@ -343,13 +350,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
+  public String getCurrentCycle() {
+    if (this.isReportingActive()) {
+      return APConstants.PLANNING;
+    } else {
+      return APConstants.REPORTING;
+    }
+  }
+
   public int getCurrentCycleYear() {
     if (this.isReportingActive()) {
       return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
     } else {
       return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
     }
-
   }
 
   /**
@@ -626,6 +640,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEdit;
   }
 
+
   public boolean isCompleteImpact(long crpProgramID) {
 
     List<SectionStatus> sectionsBD = sectionStatusManager.findAll();
@@ -709,6 +724,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
 
+  }
+
+  public boolean isProjectSubmitted(long projectID) {
+
+    Project project = projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return false;
+    }
+    return true;
   }
 
 

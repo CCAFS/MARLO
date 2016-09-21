@@ -67,7 +67,7 @@
                       [#-- W1/W2 --]
                       [#if !project.bilateralProject && action.hasBudgets(1,year)]
                       <div class="col-md-3">
-                        <p class="subTitle"><strong>W3</strong> <small> <span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span> </small></p>
+                        <p class="subTitle"><strong>W1/W2</strong> <small> <span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span> </small></p>
                       </div>
                       [/#if]
                       [#-- W3 --]

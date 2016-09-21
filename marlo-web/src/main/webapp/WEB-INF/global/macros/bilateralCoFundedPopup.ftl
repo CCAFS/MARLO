@@ -43,6 +43,12 @@
           [#-- Warning Info --]
           <p class="warning-info" style="display:none"></p> 
           
+          [#-- Participating Center, CRP Lead Center --]
+          <div class="pull-right">
+            <label for="cofundedMode-1"><input type="radio" name="cofundedMode" id="cofundedMode-1" value="1" /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
+            <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+          </div>
+          
           [#-- Project title --]
           <div class="form-group">
             <div class="row">

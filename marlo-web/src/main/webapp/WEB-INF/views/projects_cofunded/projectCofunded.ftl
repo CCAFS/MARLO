@@ -25,7 +25,13 @@
   <div class="col-md-12">
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
-   [#-- Project title --]
+      [#-- Participating Center, CRP Lead Center --]
+      <div class="pull-right">
+        <label for="cofundedMode-1"><input type="radio" name="project.cofundedMode" id="cofundedMode-1" value="1" /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
+        <label for="cofundedMode-2"><input type="radio" name="project.cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+      </div>
+    
+      [#-- Project title --]
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">[@customForm.textArea name="project.title" i18nkey="projectCofunded.title" editable=editable /] </div>
