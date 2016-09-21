@@ -20,6 +20,8 @@
   <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.FlywayContextListener</listener-class>
   </listener>
+    
+    
     <!--  Hibernate listener  -->
    <listener>
     <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
