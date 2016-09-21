@@ -125,14 +125,15 @@ public class ProjectDescriptionValidator extends BaseValidator
       this.addMessage(action.getText("projectDescription.flagships"));
     }
 
-    if (project.getRegions() != null) {
-      if (project.getRegions().size() == 0) {
-        this.addMessage(action.getText("projectDescription.regions"));
-      }
-    } else {
-      this.addMessage(action.getText("projectDescription.regions"));
-    }
-
+    /*
+     * if (project.getRegions() != null) {
+     * if (project.getRegions().size() == 0) {
+     * this.addMessage(action.getText("projectDescription.regions"));
+     * }
+     * } else {
+     * this.addMessage(action.getText("projectDescription.regions"));
+     * }
+     */
     if (project.getClusterActivities() != null) {
       if (project.getClusterActivities().size() == 0) {
         this.addMessage(action.getText("projectDescription.clusterActivities"));
