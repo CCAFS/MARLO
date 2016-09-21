@@ -144,6 +144,16 @@ function attachEvents() {
   $("#view1").on("click", changeLayout);
   $("#view2").on("click", changeLayout2);
 
+  $('.projectLocationsWrapper .button-label').on('click', function() {
+    var $t = $(this).parent().find('input.onoffswitch-radio');
+    var value = ($(this).hasClass('yes-button-label'));
+    var $thisLabel = $(this);
+    $thisLabel.siblings().removeClass('radio-checked');
+    $thisLabel.addClass('radio-checked');
+    $t.val(value);
+
+  });
+
 }
 
 // FUNCTIONS

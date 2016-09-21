@@ -37,14 +37,18 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
-          <div id="" class="borderBox">
+          <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
-              
+              <div class="row">
+              <div class="col-md-5">
+                [@customForm.yesNoInput name="isGlobal" label="Is the project global?" editable=editable inverse=false value="" cssClass="text-left " /]              
+              </div>
               <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
               <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
+              </div>
                          
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
-              <div id="selectsContent" class="col-md-6">
+              <div id="selectsContent" class="col-md-6 simpleBox">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
                 [#if project.locationsData?has_content]

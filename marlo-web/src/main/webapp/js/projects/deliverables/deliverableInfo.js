@@ -201,9 +201,9 @@ function subTypes() {
 
 function keyOutputs() {
   var url = baseURL + "/keyOutputList.do";
-  var clusterSelect = $(".cluster");
+  var outcomeSelect = $(".outcome");
   var keyOutputSelect = $(".keyOutput");
-  clusterSelect.on("change", function() {
+  outcomeSelect.on("change", function() {
 
     keyOutputSelect.empty();
     keyOutputSelect.append("<option value='-1' >Select an option... </option>");

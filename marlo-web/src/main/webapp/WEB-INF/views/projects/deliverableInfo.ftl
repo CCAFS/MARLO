@@ -20,14 +20,12 @@
 </div>
 
 [#-- Status and year expected selects --] 
-<div class="col-md-12 form-group">
   <div class="col-md-6">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true  className=" status" disabled=!editable/]
   </div>
-  <div class="col-md-6">
+  <div class="col-md-6 form-group">
     [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" disabled=!editable/]
   </div>
-</div>
 
 [#-- Status justification textArea --] 
 <div class="col-md-12 form-group justificationContent" style="display:none;">
@@ -35,19 +33,14 @@
 </div>
 
 [#-- Outcome select --] 
-<div class="col-md-12 form-group">
-
-  <div class="col-md-12">
+  <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName"  multiple=false required=true  className=" outcome" disabled=!editable/]
   </div>
-</div>
 
 [#-- CoA Outputs select --] 
-<div class="col-md-12 form-group">
-  <div class="col-md-12">
+  <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" disabled=!editable/]
   </div>
-</div>
 
 [#-- Partners --] 
 
