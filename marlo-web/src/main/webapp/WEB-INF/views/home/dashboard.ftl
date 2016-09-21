@@ -23,9 +23,16 @@
       <div class="clearfix"></div>
       <div class="addProjectButtons clearfix" style="display:none">
         <p class="title">[@s.text name="dashboard.decisionTree.typeProjectQuestion" /]</p>
-        <a href="[@s.url namespace="/planning" action='addNewCoreProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.coreProject" /]</p></div></a>
-        <a href="[@s.url namespace="/planning" action='addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
-        [#--<p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>--]
+        [#if action.hasPermission("addCoreProject") || action.hasPermission("addBilateralProject")]
+          [#if action.hasPermission("addCoreProject")]
+            <a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.coreProject" /]</p></div></a>
+          [/#if]
+          [#if action.hasPermission("addBilateralProject")]
+            <a href="[@s.url namespace="/projects" action='${crpSession}/addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
+          [/#if]
+        [#else]
+          <p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>
+        [/#if]
       </div>
     </div>
     
