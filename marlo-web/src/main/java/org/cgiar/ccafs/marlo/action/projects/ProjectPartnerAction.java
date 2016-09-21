@@ -182,6 +182,7 @@ public class ProjectPartnerAction extends BaseAction {
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
+  @Override
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
@@ -920,7 +921,7 @@ public class ProjectPartnerAction extends BaseAction {
         this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
       }
     }
-    this.clearPermissionsCache();
+    // this.clearPermissionsCache();
   }
 
   @Override
