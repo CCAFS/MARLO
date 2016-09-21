@@ -201,6 +201,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(permission);
   }
 
+  public boolean canAddBilateralProject() {
+    String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
+    return securityContext.hasPermission(permission);
+  }
+
+  public boolean canAddCoreProject() {
+    String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
+    return securityContext.hasPermission(permission);
+  }
+
 
   /* Override this method depending of the cancel action. */
   public String cancel() {

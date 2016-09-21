@@ -80,7 +80,7 @@ public class ProjectListAction extends BaseAction {
 
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
-      if (liaisonUser != null) {
+      if (liaisonUser != null && this.canAddBilateralProject()) {
         if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser)) {
           this.clearPermissionsCache();
           return SUCCESS;
@@ -105,7 +105,7 @@ public class ProjectListAction extends BaseAction {
 
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
-      if (liaisonUser != null) {
+      if (liaisonUser != null && this.canAddCoreProject()) {
         if (this.createProject(APConstants.PROJECT_CORE, liaisonUser)) {
           this.clearPermissionsCache();
           return SUCCESS;
