@@ -34,7 +34,7 @@ public class CloseSession extends Thread {
   @Override
   public void run() {
     try {
-      LOG.info("Clossing session " + session);
+
       Thread.sleep(10000);
       session.disconnect();
       if (!session.isOpen()) {
@@ -42,10 +42,8 @@ public class CloseSession extends Thread {
       }
 
       session.connection().close();
-      LOG.info("Closed session " + session);
 
     } catch (Exception e) {
-      LOG.info("Error clossing session" + e.getLocalizedMessage());
     }
 
   }
