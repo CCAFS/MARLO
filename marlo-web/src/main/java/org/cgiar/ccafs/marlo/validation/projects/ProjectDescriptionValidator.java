@@ -64,7 +64,9 @@ public class ProjectDescriptionValidator extends BaseValidator
         this.addMissingField("draft");
       }
     }
+
     this.validateDescription(action, project);
+
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
@@ -90,13 +92,23 @@ public class ProjectDescriptionValidator extends BaseValidator
       this.addMessage(action.getText("project.summary"));
     }
 
-    if (project.getLiaisonUser() == null) {
+    if (project.getLiaisonUser() != null) {
+      if (project.getLiaisonUser().getId() == -1) {
+        this.addMessage(action.getText("project.liaisonUser"));
+      }
+    } else {
       this.addMessage(action.getText("project.liaisonUser"));
     }
 
-    if (project.getLiaisonInstitution() == null) {
+    if (project.getLiaisonInstitution() != null) {
+      if (project.getLiaisonInstitution().getId() == -1) {
+        this.addMessage(action.getText("project.liaisonInstitution"));
+      }
+    } else {
       this.addMessage(action.getText("project.liaisonInstitution"));
     }
+
+
     if (project.getStartDate() == null) {
       this.addMessage(action.getText("project.startDate"));
     }
@@ -104,9 +116,6 @@ public class ProjectDescriptionValidator extends BaseValidator
       this.addMessage(action.getText("project.endDate"));
     }
 
-    if (project.getEndDate() == null) {
-      this.addMessage(action.getText("project.endDate"));
-    }
 
     if (project.getFlagships() != null) {
       if (project.getFlagships().size() == 0) {
