@@ -17,10 +17,12 @@
 package org.cgiar.ccafs.marlo.data;
 
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CloseSession extends Thread {
 
-
+  private static final Logger LOG = LoggerFactory.getLogger(CloseSession.class);
   private Session session;
 
 
@@ -32,10 +34,18 @@ public class CloseSession extends Thread {
   @Override
   public void run() {
     try {
+      LOG.info("Clossing session " + session);
       Thread.sleep(10000);
-      session.close();
-    } catch (Exception e) {
+      session.disconnect();
+      if (!session.isOpen()) {
+        session.close();
+      }
 
+      session.connection().close();
+      LOG.info("Closed session " + session);
+
+    } catch (Exception e) {
+      LOG.info("Error clossing session" + e.getLocalizedMessage());
     }
 
   }
