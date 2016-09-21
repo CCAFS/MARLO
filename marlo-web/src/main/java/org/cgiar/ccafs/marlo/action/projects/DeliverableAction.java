@@ -493,6 +493,10 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setTitle(deliverable.getTitle());
       deliverablePrew.setYear(deliverable.getYear());
 
+      if (deliverable.getStatus() != null) {
+        deliverablePrew.setStatus(deliverable.getStatus());
+      }
+
       DeliverableType deliverableType =
         deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
 

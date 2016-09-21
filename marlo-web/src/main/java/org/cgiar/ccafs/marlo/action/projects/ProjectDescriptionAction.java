@@ -616,6 +616,17 @@ public class ProjectDescriptionAction extends BaseAction {
 
       }
 
+      if (project.getLiaisonInstitution() != null) {
+        if (project.getLiaisonInstitution().getId() == -1) {
+          project.setLiaisonInstitution(null);
+        }
+      }
+
+      if (project.getLiaisonUser() != null) {
+        if (project.getLiaisonUser().getId() == -1) {
+          project.setLiaisonUser(null);
+        }
+      }
 
       if (project.getFlagshipValue() != null && project.getFlagshipValue().length() > 0) {
 

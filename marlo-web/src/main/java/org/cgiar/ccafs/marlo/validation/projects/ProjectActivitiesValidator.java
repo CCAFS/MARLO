@@ -115,7 +115,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
     if (activity.getProjectPartnerPerson() != null) {
       if (activity.getProjectPartnerPerson().getId() == -1) {
-        this.addMessage(action.getText("activity.leader", params));
+        action.addFieldError(action.getText("activity.leader", params), "Select a Activitie Leader");
       }
     } else {
       this.addMessage(action.getText("activity.leader", params));
