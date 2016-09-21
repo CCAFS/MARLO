@@ -69,11 +69,9 @@ public class ProjectListAction extends BaseAction {
   }
 
   public String addBilateralProject() {
-
-    String params[] = {loggedCrp.getAcronym().toUpperCase()};
     if (this.canAccessSuperAdmin()) {
 
-      if (this.createProject(this.getText(APConstants.PROJECT_BILATERAL, params), null)) {
+      if (this.createProject(APConstants.PROJECT_BILATERAL, null)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -83,7 +81,7 @@ public class ProjectListAction extends BaseAction {
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
       if (liaisonUser != null) {
-        if (this.createProject(this.getText(APConstants.PROJECT_BILATERAL, params), liaisonUser)) {
+        if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser)) {
           this.clearPermissionsCache();
           return SUCCESS;
         }
@@ -96,10 +94,9 @@ public class ProjectListAction extends BaseAction {
 
   public String addCoreProject() {
 
-    String params[] = {loggedCrp.getAcronym().toUpperCase()};
     if (this.canAccessSuperAdmin()) {
 
-      if (this.createProject(this.getText(APConstants.PROJECT_CORE, params), null)) {
+      if (this.createProject(APConstants.PROJECT_CORE, null)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -109,7 +106,7 @@ public class ProjectListAction extends BaseAction {
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
       if (liaisonUser != null) {
-        if (this.createProject(this.getText(APConstants.PROJECT_CORE, params), liaisonUser)) {
+        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser)) {
           this.clearPermissionsCache();
           return SUCCESS;
         }
