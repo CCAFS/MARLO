@@ -51,7 +51,7 @@
           </td>
           [#-- Project Type --]
           <td>
-            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
+            [@s.text name="project.type.${(project.type?lower_case)!'none'}" /] ${project.cofinancing?string('Co-Funded','')}
           </td>
           [#-- Flagship / Regions --]
           <td>

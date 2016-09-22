@@ -322,13 +322,42 @@
       </div> 
     </div>
     
-    
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
     <div class="form-group partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=!project.bilateralProject editable=editable /]
       <div class="clearfix"></div>
     </div>
+    [/#if]
+    
+    [#if !isTemplate]
+      [#-- Activities leading and Deliverables with responsibilities --]
+      <div class="contactTags fullPartBlock clearfix">
+        [#if (element.id??)!false ]
+          [#if action.getActivitiesLedByUser(element.id)?has_content]
+            <div class="tag activities">[@s.text name="projectPartners.personActivities"][@s.param]${action.getActivitiesLedByUser(element.id)?size}[/@s.param][/@s.text]</div>
+            <div class="activitiesList"  style="display:none">
+              <h3>Activities</h3>
+              <ul>
+              [#list action.getActivitiesLedByUser(element.id) as activity]
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#activity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+              [/#list]
+              </ul>
+            </div>
+          [/#if]
+          [#if action.getDeliverablesLedByUser(element.id)?has_content]
+            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${action.getDeliverablesLedByUser(contact.id)?size}[/@s.param][/@s.text]</div>
+            <div class="deliverablesList" style="display:none">
+              <h3>Deliverables</h3>
+              <ul>
+              [#list action.getDeliverablesLedByUser(element.id) as deliverable]
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+              [/#list]
+              </ul>
+            </div>
+          [/#if]
+        [/#if]
+      </div>
     [/#if]
     
   </div>
