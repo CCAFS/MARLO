@@ -33,8 +33,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -152,7 +154,6 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
-
   @Override
   public String cancel() {
 
@@ -178,7 +179,6 @@ public class ProjectPartnerAction extends BaseAction {
     return SUCCESS;
   }
 
-
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -188,10 +188,21 @@ public class ProjectPartnerAction extends BaseAction {
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+  public List<Activity> getActivitiesLedByUser(long userID) {
+    Project project = projectManager.getProjectById(projectID);
+    List<Activity> activities = project.getActivities().stream()
+      .filter(c -> c.isActive() && c.getProjectPartnerPerson().getUser().getId().longValue() == userID)
+      .collect(Collectors.toList());
+
+
+    return activities;
+
+  }
 
   public List<Institution> getAllInstitutions() {
     return allInstitutions;
   }
+
 
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
@@ -201,7 +212,6 @@ public class ProjectPartnerAction extends BaseAction {
     return allUsers;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -210,8 +220,26 @@ public class ProjectPartnerAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<LocElement> getCountries() {
     return countries;
+  }
+
+  public List<Deliverable> getDeliverablesLedByUser(long userID) {
+    Project project = projectManager.getProjectById(projectID);
+    List<Deliverable> deliverablesLeads = new ArrayList<>();
+    List<Deliverable> deliverables =
+      project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (Deliverable deliverable : deliverables) {
+      if (!deliverable.getDeliverablePartnerships().stream()
+        .filter(c -> c.isActive() && c.getPartnerType().equals("Resp")
+          && c.getProjectPartnerPerson().getUser().getId().longValue() == userID)
+        .collect(Collectors.toList()).isEmpty()) {
+        deliverablesLeads.add(deliverable);
+      }
+    }
+
+    return deliverablesLeads;
   }
 
 
