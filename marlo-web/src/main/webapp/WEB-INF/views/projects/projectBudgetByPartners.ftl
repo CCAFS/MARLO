@@ -16,7 +16,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectBudgetByPartners.help" /] </p></div> 
+  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectBudgetByPartners.help" /]    ${(project.bilateralProject?string)}</p></div> 
 </div>
     
 <section class="container">
@@ -148,11 +148,11 @@
             <th class="text-center">W1/W2</th>
             [/#if]
             [#-- W3 --]
-            [#if project.projectEditLeader]
+            [#if project.projectEditLeader || project.bilateralProject]
             <th class="text-center">W3</td>
             [/#if]
             [#-- Bilateral  --]
-            [#if project.projectEditLeader]
+            [#if project.projectEditLeader || project.bilateralProject]
             <th class="text-center">Bilateral</th>
             [/#if]
             [#-- Center Funds --]
@@ -183,7 +183,7 @@
             </td>
             [/#if]
             [#-- W3 --]
-            [#if project.projectEditLeader]
+            [#if project.projectEditLeader || project.bilateralProject]
             <td class="budgetColumn">
               [#local indexBudgetW3=action.getIndexBudget(element.institution.id,selectedYear,2) ]
               [#local budgetW3 = action.getBudget(element.institution.id,selectedYear,2) ]
@@ -200,7 +200,7 @@
             </td>
             [/#if]
             [#-- Bilateral  --]
-            [#if project.projectEditLeader]
+            [#if project.projectEditLeader || project.bilateralProject]
             <td class="budgetColumn">
               [#local indexBudgetBilateral=action.getIndexBudget(element.institution.id,selectedYear,3) ]
               [#local budgetBilateral = action.getBudget(element.institution.id,selectedYear,3) ]

@@ -350,13 +350,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.currentCrp;
   }
 
+  public String getCurrentCycle() {
+    if (this.isReportingActive()) {
+      return APConstants.PLANNING;
+    } else {
+      return APConstants.REPORTING;
+    }
+  }
+
   public int getCurrentCycleYear() {
     if (this.isReportingActive()) {
       return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
     } else {
       return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
     }
-
   }
 
   /**

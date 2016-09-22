@@ -130,13 +130,21 @@ public class ProjectActivitiesAction extends BaseAction {
         activityNew.setDescription(activity.getDescription());
         activityNew.setStartDate(activity.getStartDate());
         activityNew.setEndDate(activity.getEndDate());
-        activityNew.setActivityStatus(activity.getActivityStatus());
+
+        if (activity.getActivityStatus() != -1) {
+          activityNew.setActivityStatus(activity.getActivityStatus());
+        }
+
         activityNew.setActivityProgress(activity.getActivityProgress());
 
-        ProjectPartnerPerson partnerPerson =
-          projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+        try {
+          ProjectPartnerPerson partnerPerson =
+            projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+          activityNew.setProjectPartnerPerson(partnerPerson);
+        } catch (Exception e) {
+          activityNew.setProjectPartnerPerson(null);
+        }
 
-        activityNew.setProjectPartnerPerson(partnerPerson);
 
         Long activityID = activityManager.saveActivity(activityNew);
 
@@ -396,7 +404,7 @@ public class ProjectActivitiesAction extends BaseAction {
               .filter(a -> a.isActive()
                 && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-            .collect(Collectors.toList())));
+              .collect(Collectors.toList())));
 
         if (project.getOpenProjectActivities() != null) {
           for (Activity openActivity : project.getOpenProjectActivities()) {
@@ -411,7 +419,7 @@ public class ProjectActivitiesAction extends BaseAction {
               .filter(a -> a.isActive()
                 && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
                   || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-            .collect(Collectors.toList())));
+              .collect(Collectors.toList())));
 
         if (project.getClosedProjectActivities() != null) {
           for (Activity closedActivity : project.getClosedProjectActivities()) {

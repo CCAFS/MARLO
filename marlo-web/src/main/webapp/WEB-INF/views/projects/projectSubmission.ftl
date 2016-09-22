@@ -1,6 +1,7 @@
 [#ftl]
 [#assign title = "Project Submission" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign customJS = [] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "Submission" /]
 
@@ -30,13 +31,9 @@
             <p>${(project.title)!"Title not defined"}</p>
           </div> 
           <div class="fullPartBlock">
-            <h6>Submission date</h6>
-            [#if reportingActive]
-              [#assign submission = (project.isSubmitted(currentReportingYear, 'Reporting'))!/]
-            [#else]
-              [#assign submission = (project.isSubmitted(currentPlanningYear, 'Planning'))!/]
-            [/#if]
-            <p>${(submission.cycle)!} - ${(submission.year)!} - ${(submission.dateTime?date)!} by ${(submission.user.firstName)!} ${(submission.user.lastName)!}</p>
+              <h6>Submission date</h6>
+              [#assign submission = (project.isSubmitted(currentCycleYear, currentCycle))!/]
+              <p>${(submission.cycle)!} - ${(submission.year)!} - ${(submission.dateTime?date)!} by ${(submission.user.firstName)!} ${(submission.user.lastName)!}</p>
           </div> 
           <div class="fullPartBlock">
             <h6>Download Full Project Report</h6>
