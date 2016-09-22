@@ -116,7 +116,7 @@
 </ul>
 
 [#-- Key output Template --]
-[@keyOutputItem element={} index=0 name="${keyOutputsName}"  template=true /]
+[@keyOutputItem element={} index=0 name="${keyOutputsName}"  isTemplate=true /]
 
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
@@ -164,15 +164,13 @@
       
       [#-- Key outputs --]
       <span class="subtitle cold-md-12"><label>Key Outputs: </label></span>
-      <div class="keyOutputsItems-list form-group col-md-12 simpleBox">
-        <ul class="keyOutputs">
-          [#if cluster.keyOutputs?has_content]
+      <div class="keyOutputsItems-list form-group col-md-12">
+        [#if cluster.keyOutputs?has_content]
           [#list cluster.keyOutputs as keyOutputItems]
             [@keyOutputItem element=keyOutputItems name='${keyOutputsName}' index=keyOutputItems_index /]
           [/#list]
         [/#if]
-        </ul>
-        <p class="text-center inf" style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
+        <p class="text-center " style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
       </div>
       [#-- Add Key output --]
       [#if editable]
@@ -202,19 +200,45 @@
   </li>
 [/#macro]
 
-[#macro keyOutputItem element index name  template=false]
+[#macro keyOutputItem element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <li id="keyOutput-${template?string('template',index)}" class="keyOutputItem"  style="list-style-type:none; display:${template?string('none','block')}">
-    [#-- Key output inputs --]
-    <div class="col-md-12 keyOutput">
-    [#if editable]
-    <div class="removeIcon removeKeyOutput" title="Remove key output"></div>
+  <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+      </div>
     [/#if]
-      [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50 keyOutputInput" editable=editable /]
-      <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+    [#-- Partner Title --]
+    <div class="blockTitle closed">
+      <span class="koTitle">${(element.keyOutput)!'New Key Output'}</span>
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">10%</span></span> 
+    <div class="clearfix"></div>
     </div>
-      <div class="clearfix"></div>
-  </li>
+    
+    <div class="blockContent" style="display:none">
+      <hr />
+      [#-- Statement --]
+      <div class="form-group col-md-9">
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50 keyOutputInput" editable=editable /]
+        <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+      </div>
+      [#-- Contribution --]
+      <div class="form-group col-md-3">
+          [@customForm.input name="${customName}.contribution" i18nkey="Contribution" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+            
+      [#-- Outcomes list --]
+      <div class="col-md-12">
+        <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
+        <div class="deliverableWrapper simpleBox form-group">
+        </div>
+      </div>
+      <div class="form-group col-md-12">
+        [@customForm.select name="" label=""  i18nkey="Select to add a outcome" listName="" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
+      </div>
+    </div>
+  
+  </div>
 
 [/#macro]
 
