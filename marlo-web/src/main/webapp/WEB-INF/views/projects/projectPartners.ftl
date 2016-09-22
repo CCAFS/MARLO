@@ -346,7 +346,7 @@
             </div>
           [/#if]
           [#if action.getDeliverablesLedByUser(element.id)?has_content]
-            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${action.getDeliverablesLedByUser(contact.id)?size}[/@s.param][/@s.text]</div>
+            <div class="tag deliverables">[@s.text name="projectPartners.personDeliverables"][@s.param]${action.getDeliverablesLedByUser(element.id)?size}[/@s.param][/@s.text]</div>
             <div class="deliverablesList" style="display:none">
               <h3>Deliverables</h3>
               <ul>
