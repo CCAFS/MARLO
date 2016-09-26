@@ -94,7 +94,14 @@ $(document).ready(function() {
       right: $(document).width() - ($buttons.offset().left + $buttons.width())
     });
 
-    setFixedElement($(window).scrollBottom() >= menuOffset());
+    setTimeout(function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    }, 500);
+
+    $(document).on('updateComponent', function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    });
+
     $(window).scroll(function() {
       setFixedElement($(window).scrollBottom() >= menuOffset());
     });

@@ -445,7 +445,16 @@ function addPartnerEvent(e) {
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
   $(e.target).before($newElement);
   $newElement.find('.blockTitle').trigger('click');
-  $newElement.show("slow");
+  $newElement.show("slow", function() {
+
+    var container = $('body');
+    var scrollTo = $newElement;
+
+    container.animate({
+      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+    });
+
+  });
   applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({

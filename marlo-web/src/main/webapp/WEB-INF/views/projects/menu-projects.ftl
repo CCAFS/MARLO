@@ -98,7 +98,7 @@
 
   [#-- Submition message --]
   [#if !submission?has_content && completed && !canSubmit]
-    <p class="text-center" style="display:block">The Impact Pathway can be submitted now by Flagship leaders.</p>
+    <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
   [/#if]
   
   [#-- Check button --]
