@@ -264,7 +264,9 @@
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
         <span class="outcomeStatement"></span>
-        <input class="outcomeId" type="hidden" name="${customName}.id" value="${(element.outcome.id)!}"/>
+        <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
+        
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">
