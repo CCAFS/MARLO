@@ -119,3 +119,7 @@ ul.keyOutputs {
 .koContribution-title {
     margin-right: 6%;
 }
+
+span.outcomeStatement {
+    cursor: default;
+}

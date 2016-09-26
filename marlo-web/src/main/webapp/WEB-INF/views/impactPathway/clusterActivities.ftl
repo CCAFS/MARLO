@@ -18,6 +18,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
@@ -263,8 +264,8 @@
       [#-- Statement --]
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
-        <span class="outcomeStatement"></span>
-        <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        <span class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
+        <input class="elementId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
       </div>
