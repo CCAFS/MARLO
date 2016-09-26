@@ -41,10 +41,13 @@ function init() {
     if(percentageRemaining < 0) {
       $(list).find(".keyOutputContribution").removeClass('fieldChecked');
       $(list).find(".keyOutputContribution").addClass('fieldError');
+      $(list).find(".koContribution-title").addClass('errorText');
 
     } else {
+      $(list).find(".koContribution-title").removeClass('errorText');
       $(list).find(".keyOutputContribution").removeClass('fieldError');
       $(list).find(".keyOutputContribution").addClass('fieldChecked');
+
     }
   });
 
@@ -64,22 +67,24 @@ function init() {
   });
 
   // Select outcomes
-  $(".outcomeList").on("change", function() {
-    var option = $(this).find("option:selected");
-    var validation = $(this).parents(".outcomesWrapper").find("input[value=" + option.val() + "]");
-    console.log(validation);
-    if(option.val() != "-1") {
-      if(validation.exists()) {
-        option.parent().val(-1);
-        option.parent().trigger("change.select2");
-        // Show message
-        var text = option.html() + ' already exists in this list';
-        notify(text);
-      } else {
-        addOutcome(option);
-      }
-    }
-  });
+  $(".outcomeList").on(
+      "change",
+      function() {
+        var option = $(this).find("option:selected");
+        var validation =
+            $(this).parents(".keyOutputItem").find(".outcomesWrapper").find("input[value=" + option.val() + "]");
+        if(option.val() != "-1") {
+          if(validation.exists()) {
+            option.parent().val(-1);
+            option.parent().trigger("change.select2");
+            // Show message
+            var text = option.html() + ' already exists in this list';
+            notify(text);
+          } else {
+            addOutcome(option);
+          }
+        }
+      });
 
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -175,7 +180,9 @@ function updateUsersIndex(item,clustersName) {
 // change title
 function changeTitle() {
   var $blockTitle = $(this).parents(".keyOutputItem ").find(".koTitle");
-  $blockTitle.html($(this).val());
+  var v = $(this).val().length > 70 ? $(this).val().substr(0, 70) + ' ... ' : $(this).val();
+  $blockTitle.attr("title", $(this).val()).tooltip();
+  $blockTitle.html(v);
   if($blockTitle.html() == "" || $blockTitle.html() == " ") {
     $blockTitle.html("New Key OutPut");
   }

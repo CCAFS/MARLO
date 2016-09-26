@@ -123,3 +123,7 @@ ul.keyOutputs {
 span.outcomeStatement {
     cursor: default;
 }
+
+.errorText {
+    color: #f47171;
+}
