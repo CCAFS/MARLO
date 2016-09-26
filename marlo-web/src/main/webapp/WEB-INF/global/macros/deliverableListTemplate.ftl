@@ -51,7 +51,11 @@
           </td>
           [#-- Deliverable Status --]
           <td>
-            ${(deliverable.statusName)!'none'}
+            [#attempt]
+              ${(deliverable.statusName)!'none'}
+            [#recover]
+              none
+            [/#attempt]
           </td>
           [#-- Deliverable required fields --]
           <td class="text-center">

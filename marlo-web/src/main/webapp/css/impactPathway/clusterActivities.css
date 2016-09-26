@@ -115,3 +115,7 @@ span.glyphicon.glyphicon-user {
 ul.keyOutputs {
     padding-left: 15px;
 }
+
+.koContribution-title {
+    margin-right: 6%;
+}
