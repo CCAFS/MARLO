@@ -35,16 +35,24 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private String keyOutput;
   @Expose
+  private Double contribution;
+
+  @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
+
   @Expose
   private String modificationJustification;
-
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+  private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
+
 
   public CrpClusterKeyOutput() {
   }
+
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
     boolean isActive, Date activeSince, String modificationJustification, Set<Deliverable> deliverables) {
@@ -94,14 +102,22 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+  public Double getContribution() {
+    return contribution;
+  }
 
   public User getCreatedBy() {
     return this.createdBy;
   }
 
+  public Set<CrpClusterKeyOutputOutcome> getCrpClusterKeyOutputOutcomes() {
+    return crpClusterKeyOutputOutcomes;
+  }
+
   public CrpClusterOfActivity getCrpClusterOfActivity() {
     return this.crpClusterOfActivity;
   }
+
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -153,8 +169,16 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+  public void setContribution(Double contribution) {
+    this.contribution = contribution;
+  }
+
   public void setCreatedBy(User usersByCreatedBy) {
     this.createdBy = usersByCreatedBy;
+  }
+
+  public void setCrpClusterKeyOutputOutcomes(Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes) {
+    this.crpClusterKeyOutputOutcomes = crpClusterKeyOutputOutcomes;
   }
 
   public void setCrpClusterOfActivity(CrpClusterOfActivity crpClusterOfActivity) {

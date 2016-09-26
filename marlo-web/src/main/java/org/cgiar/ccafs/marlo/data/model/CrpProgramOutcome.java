@@ -63,8 +63,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
 
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+  private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
+
+
   @Expose
   private boolean active;
+
+
   @Expose
   private User createdBy;
 
@@ -73,10 +78,8 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String modificationJustification;
-
   private List<CrpMilestone> milestones;
 
 
@@ -84,6 +87,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
 
   public CrpProgramOutcome() {
   }
+
 
   public CrpProgramOutcome(CrpProgram crpProgram, SrfTargetUnit srfTargetUnit, String description, Integer year,
     BigDecimal value) {
@@ -141,6 +145,9 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public Set<CrpClusterKeyOutputOutcome> getCrpClusterKeyOutputOutcomes() {
+    return crpClusterKeyOutputOutcomes;
+  }
 
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
@@ -160,6 +167,7 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
   public Set<Deliverable> getDeliverables() {
     return deliverables;
   }
+
 
   public String getDescription() {
     return this.description;
@@ -215,7 +223,6 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -225,8 +232,13 @@ public class CrpProgramOutcome implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrpClusterKeyOutputOutcomes(Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes) {
+    this.crpClusterKeyOutputOutcomes = crpClusterKeyOutputOutcomes;
   }
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {

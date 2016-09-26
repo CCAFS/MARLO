@@ -20,6 +20,9 @@
         <property name="keyOutput" type="string">
             <column name="key_output" length="65535" not-null="true" />
         </property>
+        <property name="contribution" type="java.lang.Double">
+            <column name="contribution" precision="22" scale="0" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
@@ -34,6 +37,12 @@
                 <column name="key_output_id" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+        </set>
+         <set name="crpClusterKeyOutputsOutcomes" table="crp_cluster_key_outputs_outcome" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="key_output_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome" />
         </set>
     </class>
 </hibernate-mapping>

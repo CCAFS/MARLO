@@ -73,5 +73,11 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
 		</set>
+		<set name="crpClusterKeyOutputsOutcomes" order-by="id" table="crp_cluster_key_outputs_outcome" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="outcome_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome" />
+        </set>
 	</class>
 </hibernate-mapping>
