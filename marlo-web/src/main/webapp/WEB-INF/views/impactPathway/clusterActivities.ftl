@@ -14,7 +14,7 @@
 [#assign clustersName = "clusters"/]
 [#assign leadersName = "leaders"/]
 [#assign keyOutputsName = "keyOutputs"/]
-[#assign outcomesName = "KeyOutputOutcomes"/]
+[#assign outcomesName = "keyOutputOutcomes"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -236,6 +236,11 @@
       <div class="col-md-12">
         <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
         <div class="outcomesWrapper simpleBox form-group">
+        [#if element.keyOutputOutcomes?has_content]
+          [#list element.keyOutputOutcomes as keyOutputOutcome]
+            [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]
+          [/#list]
+        [/#if]
         </div>
       </div>
       <div class="form-group col-md-12">
