@@ -256,12 +256,12 @@
       [#-- Statement --]
       <div class="form-group col-md-9">
         <label for="">Outcome statement</label>
-        <span></span>
-        <input class="id" type="hidden" name="${customName}.outcome.id" value="${(element.outcome.id)!}"/>
+        <span class="outcomeStatement"></span>
+        <input class="outcomeId" type="hidden" name="${customName}.KeyOutputOutcomes.id" value="${(element.outcome.id)!}"/>
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">
-          [@customForm.input name="${customName}.outcome.contribution" i18nkey="Contribution" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.KeyOutputOutcomes.contribution" i18nkey="Contribution" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
   
   </div>
