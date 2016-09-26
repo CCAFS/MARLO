@@ -36,24 +36,7 @@ function init() {
   });
 }
 
-// change title
-function changeTitle() {
-  var $blockTitle = $(this).parents(".keyOutputItem ").find(".koTitle");
-  $blockTitle.html($(this).val());
-  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
-    $blockTitle.html("New Key outPut");
-  }
-}
-
-function changeKOcontribution() {
-  var $blockTitle = $(this).parents(".keyOutputItem ").find(".koContribution-percentage");
-  $blockTitle.html($(this).val());
-  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
-    $blockTitle.html("0%");
-  }
-}
-
-// Clusters
+// CLUSTERS
 
 function addCluster() {
   var $list = $('.clusterList');
@@ -86,7 +69,7 @@ function updateClustersIndex() {
   });
 }
 
-// Users-leaders
+// USERS-LEADERS
 function removePerson() {
   var $item = $(this).parents('li');
   var $parent = $item.parent();
@@ -116,28 +99,6 @@ function addUserItem(composedName,userId) {
   updateClustersIndex();
 }
 
-// Key Outputs
-function addKeyOutput() {
-  console.log(this);
-  var $list = $(this).parent().parent().find('.keyOutputsItems-list');
-  var $item = $('#keyOutput-template').clone(true).removeAttr("id");
-  $list.append($item);
-  $item.show('slow');
-  checkItems($list);
-  updateClustersIndex();
-
-}
-
-function removeKeyOutput() {
-  var $item = $(this).parents('.keyOutputItem');
-  var $parent = $item.parent();
-  $item.hide(function() {
-    $item.remove();
-    checkItems($parent);
-    updateClustersIndex();
-  });
-}
-
 function updateUsersIndex(item,clustersName) {
   var name = $("#leaderName").val();
   $(item).find('li').each(function(indexUser,userItem) {
@@ -151,12 +112,52 @@ function updateUsersIndex(item,clustersName) {
   $(document).trigger('updateComponent');
 }
 
+// KEY OUTPUTS
+
+// change title
+function changeTitle() {
+  var $blockTitle = $(this).parents(".keyOutputItem ").find(".koTitle");
+  $blockTitle.html($(this).val());
+  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
+    $blockTitle.html("New Key outPut");
+  }
+}
+
+// change key output contribution on title box
+function changeKOcontribution() {
+  var $blockTitle = $(this).parents(".keyOutputItem ").find(".koContribution-percentage");
+  $blockTitle.html($(this).val());
+  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
+    $blockTitle.html("0%");
+  }
+}
+
+function addKeyOutput() {
+  console.log(this);
+  var $list = $(this).parent().parent().find('.keyOutputsItems-list');
+  var $item = $('#keyOutput-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  updateClustersIndex();
+  verifyKoContribution($list);
+}
+
+function removeKeyOutput() {
+  var $item = $(this).parents('.keyOutputItem');
+  var $parent = $item.parent();
+  $item.hide(function() {
+    $item.remove();
+    updateClustersIndex();
+  });
+}
+
 function updateKeyOtuputsIndex(item,clustersName) {
   var name = $("#keyOutputName").val();
-  $(item).find('.keyOutputs li').each(function(indexKeyOuput,keyOutputItem) {
+  $(item).find('.keyOutputsItems-list .keyOutputItem').each(function(indexKeyOuput,keyOutputItem) {
     var customName = clustersName + '.' + name + '[' + indexKeyOuput + ']';
     $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
     $(keyOutputItem).find('.id').attr('name', customName + '.id');
+    $(keyOutputItem).find('.keyOutputContribution').attr('name', customName + '.contribution');
   });
 
   // Update component event
@@ -171,4 +172,46 @@ function checkItems(block) {
   } else {
     $(block).parent().find('p.inf').fadeOut();
   }
+}
+
+// OUTCOMES BY CoA
+
+function addOutcome() {
+  console.log(this);
+  var $list = $(this).parents('.blockContent').find(".outcomesWrapper");
+  var $item = $('#outcomeByCluster-template').clone(true).removeAttr("id");
+  $list.append($item);
+  $item.show('slow');
+  updateClustersIndex();
+
+}
+
+function removeOutcome() {
+  var $item = $(this).parents('.outcomeByClusterItem');
+  var $parent = $item.parent();
+  $item.hide(function() {
+    $item.remove();
+    updateClustersIndex();
+  });
+}
+
+function updateOutcomesIndex(item,clustersName) {
+  var name = $("#keyOutputName").val();
+  $(item).find('.keyOutputs li').each(function(indexKeyOuput,keyOutputItem) {
+    var customName = clustersName + '.' + name + '[' + indexKeyOuput + ']';
+    $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
+    $(keyOutputItem).find('.id').attr('name', customName + '.id');
+  });
+
+  // Update component event
+  $(document).trigger('updateComponent');
+}
+
+function verifyKoContribution(list) {
+  var contribution = 0;
+  list.find(".keyOutputItem ").each(function(i,e) {
+    contribution = contribution + parseInt($(e).find(".keyOutputContribution ").val());
+    console.log(parseInt($(e).find(".keyOutputContribution ").val()));
+  });
+  console.log(contribution);
 }

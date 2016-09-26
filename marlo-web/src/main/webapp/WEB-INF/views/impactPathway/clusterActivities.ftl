@@ -118,6 +118,9 @@
 [#-- Key output Template --]
 [@keyOutputItem element={} index=0 name="${keyOutputsName}"  isTemplate=true /]
 
+[#-- Outcome by CoA Template --]
+[@outcomeByCluster element={} index=0 name="outcomeByCoA"  isTemplate=true /]
+
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
 <input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
@@ -167,7 +170,7 @@
       <div class="keyOutputsItems-list form-group col-md-12">
         [#if cluster.keyOutputs?has_content]
           [#list cluster.keyOutputs as keyOutputItems]
-            [@keyOutputItem element=keyOutputItems name='${keyOutputsName}' index=keyOutputItems_index /]
+            [@keyOutputItem element=keyOutputItems name='${clusterCustomName}.${keyOutputsName}' index=keyOutputItems_index /]
           [/#list]
         [/#if]
         <p class="text-center " style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
@@ -230,13 +233,36 @@
       [#-- Outcomes list --]
       <div class="col-md-12">
         <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
-        <div class="deliverableWrapper simpleBox form-group">
+        <div class="outcomesWrapper simpleBox form-group">
         </div>
       </div>
       <div class="form-group col-md-12">
         [@customForm.select name="" label=""  i18nkey="Select to add a outcome" listName="" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
       </div>
     </div>
+  
+  </div>
+
+[/#macro]
+
+[#macro outcomeByCluster element index name  isTemplate=false]
+  [#assign customName = "${name}[${index}]" /]
+  <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+      </div>
+    [/#if]    
+      [#-- Statement --]
+      <div class="form-group col-md-9">
+        <label for="">Outcome statement</label>
+        <span></span>
+        <input class="id" type="hidden" name="${customName}.outcome.id" value="${(element.outcome.id)!}"/>
+      </div>
+      [#-- Contribution --]
+      <div class="form-group col-md-3">
+          [@customForm.input name="${customName}.outcome.contribution" i18nkey="Contribution" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
   
   </div>
 
