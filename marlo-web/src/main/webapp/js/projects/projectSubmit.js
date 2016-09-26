@@ -2,50 +2,86 @@ var tasksLength;
 var sections;
 var currentCycle;
 
-$(document).ready(function() {
+$(document)
+    .ready(
+        function() {
 
-  sections = $('#sectionsForChecking').text().split(',');
+          sections = $('#sectionsForChecking').text().split(',');
 
-  // Progress bar
-  tasksLength = sections.length;
-  $(".progressbar").progressbar({
-    max: tasksLength
-  });
+          // Progress bar
+          tasksLength = sections.length;
+          $(".progressbar").progressbar({
+            max: tasksLength
+          });
 
-  // Event for validate button inside each project
-  $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+          // Event for validate button inside each project
+          $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
 
-  // Refresh event when table is reloaded in project list section
-  $('table.projectsList').on('draw.dt', function() {
-    $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
-    $(".progressbar").progressbar({
-      max: tasksLength
-    });
-  });
+          // Refresh event when table is reloaded in project list section
+          $('table.projectsList').on('draw.dt', function() {
+            $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+            $(".progressbar").progressbar({
+              max: tasksLength
+            });
+          });
 
-  $('.projectEditLeader .button-label').on('click', function() {
-    var $t = $(this).parent().find('input.onoffswitch-radio');
-    var value = ($(this).hasClass('yes-button-label'));
-    var $thisLabel = $(this);
-    $.ajax({
-        url: baseURL + "/projectLeaderEdit.do",
-        data: {
-            projectID: $('input[name="projectID"]').val(),
-            projectStatus: value
-        },
-        success: function(data) {
-          if(data.ok) {
-            $thisLabel.siblings().removeClass('radio-checked');
-            $thisLabel.addClass('radio-checked');
-            $t.val(value);
-          }
-        }
-    });
-  });
+          $('.projectEditLeader .button-label').on('click', function() {
+            var $t = $(this).parent().find('input.onoffswitch-radio');
+            var value = ($(this).hasClass('yes-button-label'));
+            var $thisLabel = $(this);
+            $.ajax({
+                url: baseURL + "/projectLeaderEdit.do",
+                data: {
+                    projectID: $('input[name="projectID"]').val(),
+                    projectStatus: value
+                },
+                success: function(data) {
+                  if(data.ok) {
+                    $thisLabel.siblings().removeClass('radio-checked');
+                    $thisLabel.addClass('radio-checked');
+                    $t.val(value);
+                  }
+                }
+            });
+          });
 
-  // Click on submit button
-  $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
-});
+          // Click on submit button
+          $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
+
+          $('a')
+              .on(
+                  'click',
+                  function(e) {
+                    if(editable && draft) {
+                      e.preventDefault();
+                      var url = $(this).attr("href");
+                      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+                      notyOptions.text =
+                          "Please be aware of this section has a draft versión, click <span>save</span> and confirm your changes.";
+                      notyOptions.type = 'confirm';
+                      notyOptions.layout = 'center';
+                      notyOptions.modal = true;
+                      notyOptions.buttons = [
+                          {
+                              addClass: 'btn btn-primary',
+                              text: 'Continue without saving',
+                              onClick: function($noty) {
+                                window.location.replace(url);
+                              }
+                          }, {
+                              addClass: 'btn btn-success',
+                              text: 'Save',
+                              onClick: function($noty) {
+                                $('button[name="save"]').trigger('click');
+                                $noty.close();
+                              }
+                          }
+                      ];
+                      noty(notyOptions);
+                    }
+                  });
+
+        });
 
 function submitButtonEvent(e) {
   e.preventDefault();

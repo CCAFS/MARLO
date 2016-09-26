@@ -41,7 +41,7 @@
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
-                [@customForm.select name="project.liaisonInstitution.id" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
+                [@customForm.select name="project.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6">
@@ -238,6 +238,9 @@
       </div>
     </div>  
 </section>
+
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram)!-1}[#if institution_has_next], [/#if][/#list]}</span>
+
 
 [#-- Cluster of activity list template --]
 <ul style="display:none">

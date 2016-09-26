@@ -313,7 +313,12 @@
       
       [#-- Contact Email --]
       <div class="partnerPerson-email userField halfPartBlock clearfix">
-        [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
+        [#attempt]
+          [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
+        [#recover]
+          [#assign canEditEmail=true /]
+        [/#attempt]
+        
         <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
         [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
         [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName" type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
@@ -340,7 +345,7 @@
               <h3>Activities</h3>
               <ul>
               [#list action.getActivitiesLedByUser(element.id) as activity]
-                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#activity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${activity.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/activities' ][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]#projectActivity-${activity.id}"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>
@@ -351,7 +356,7 @@
               <h3>Deliverables</h3>
               <ul>
               [#list action.getDeliverablesLedByUser(element.id) as deliverable]
-                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
+                <li>${deliverable.title}  <a target="_blank" href="[@s.url namespace=namespace action='${crpSession}/deliverable' ][@s.param name='deliverableID']${deliverable.id}[/@s.param][/@s.url]"><img class="external-link" src="${baseUrl}/images/global/external-link.png" /></a></li>
               [/#list]
               </ul>
             </div>

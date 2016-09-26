@@ -32,6 +32,8 @@ function autoSave() {
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
           $cancelButton.css('display', 'inline-block');
 
+          draft = true;
+
           // Validate section
           validateThisSection();
 
@@ -83,7 +85,7 @@ function changeDetected(e) {
       // Start a timer that will search when finished
       timeoutAutoSave = setTimeout(function() {
         autoSave();
-      }, 15 * 1000);
+      }, 5 * 1000);
     }
   }
 }

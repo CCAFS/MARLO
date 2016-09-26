@@ -25,13 +25,13 @@
   
      
       [#-- Section Buttons --]
-      [#if action.hasPermission("addCoreProject") || action.hasPermission("addBilateralProject")]
+      [#if action.canAddCoreProject() || action.canAddBilateralProject()]
       <div class="buttons">
         <div class="buttons-content">
-        [#if action.hasPermission("addCoreProject")]
+        [#if action.canAddCoreProject()]
           <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
         [/#if]
-        [#if action.hasPermission("addBilateralProject")]
+        [#if action.canAddBilateralProject()]
           <a class="addButton" href="[@s.url action='${crpSession}/addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
         [/#if]
         </div>
