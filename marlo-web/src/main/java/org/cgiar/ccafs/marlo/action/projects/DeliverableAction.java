@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -122,12 +124,15 @@ public class DeliverableAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+  private ProjectPartnerManager projectPartnerManager;
+
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator) {
+    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -139,6 +144,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverablePartnershipManager = deliverablePartnershipManager;
     this.auditLogManager = auditLogManager;
     this.deliverableValidator = deliverableValidator;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
   @Override
@@ -410,11 +416,13 @@ public class DeliverableAction extends BaseAction {
           keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs());
         }
       }
+      partnerPersons = new ArrayList<>();
+      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
 
-      if (projectPartnerPersonManager.findAll() != null) {
-        partnerPersons = new ArrayList<>(projectPartnerPersonManager.findAll().stream()
-          .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
-          .collect(Collectors.toList()));
+        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons()) {
+          partnerPersons.add(partnerPerson);
+        }
       }
 
 
