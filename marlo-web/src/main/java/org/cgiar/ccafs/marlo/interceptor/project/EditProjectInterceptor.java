@@ -75,6 +75,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
+    boolean canSwitchProject = false;
 
     // this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
 
@@ -108,6 +109,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = false;
         }
 
+        if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+          canSwitchProject = true;
+        }
+
       }
 
       // TODO Validate is the project is new
@@ -128,6 +133,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
+      baseAction.setCanSwitchProject(canSwitchProject);
 
     } else {
       throw new NullPointerException();

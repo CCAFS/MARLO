@@ -87,7 +87,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if action.hasPermission("projectSwitch") ]
+[#if canSwitchProject ]
 <div class="grayBox text-center">
   [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]
 </div>
