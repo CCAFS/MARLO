@@ -125,7 +125,7 @@
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
 <input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
-<input type="hidden" id="outcomestName" value="${outcomesName}" />
+<input type="hidden" id="outcomesName" value="${outcomesName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
