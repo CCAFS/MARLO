@@ -59,6 +59,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
   private static String DONOR = "institution";
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
+  private static String COFUNDED_MODE = "cofundedMode";
   private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
@@ -108,6 +109,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     project.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
     project.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
     project.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
+    project.setCofundedMode(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(COFUNDED_MODE))[0])));
     project.setBudget(Long.parseLong(StringUtils.trim(((String[]) parameters.get(BUDGET))[0])));
     project.setAgreement(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
 
