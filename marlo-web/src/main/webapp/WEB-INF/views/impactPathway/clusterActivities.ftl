@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
-[#assign pageLibs = ["cytoscape","cytoscape-panzoom"] /]
+[#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js"] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css","${baseUrl}/css/global/impactGraphic.css" ] /]
 [#assign currentSection = "impactPathway" /]
@@ -14,6 +14,7 @@
 [#assign clustersName = "clusters"/]
 [#assign leadersName = "leaders"/]
 [#assign keyOutputsName = "keyOutputs"/]
+[#assign outcomesName = "KeyOutputOutcomes"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -119,11 +120,12 @@
 [@keyOutputItem element={} index=0 name="${keyOutputsName}"  isTemplate=true /]
 
 [#-- Outcome by CoA Template --]
-[@outcomeByCluster element={} index=0 name="outcomeByCoA"  isTemplate=true /]
+[@outcomeByCluster element={} index=0 name="${outcomesName}"  isTemplate=true /]
 
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
 <input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
+<input type="hidden" id="outcomestName" value="${outcomesName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -255,13 +257,13 @@
     [/#if]    
       [#-- Statement --]
       <div class="form-group col-md-9">
-        <label for="">Outcome statement</label>
+        <label style="display:block;" for="">Outcome statement</label>
         <span class="outcomeStatement"></span>
-        <input class="outcomeId" type="hidden" name="${customName}.KeyOutputOutcomes.id" value="${(element.outcome.id)!}"/>
+        <input class="outcomeId" type="hidden" name="${customName}.id" value="${(element.outcome.id)!}"/>
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">
-          [@customForm.input name="${customName}.KeyOutputOutcomes.contribution" i18nkey="Contribution" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.contribution" i18nkey="Contribution" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
   
   </div>

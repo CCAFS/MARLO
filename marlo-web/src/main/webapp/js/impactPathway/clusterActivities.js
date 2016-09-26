@@ -8,6 +8,10 @@ function init() {
   $('input.keyOutputContribution').numericInput();
   $('input.outcomeContribution').numericInput();
 
+  $('form select').select2({
+    width: '100%'
+  });
+
 // Add a new cluster
   $('.addCluster').on('click', addCluster);
 // Remove cluster
@@ -18,6 +22,8 @@ function init() {
   $('.addKeyOutput').on('click', addKeyOutput);
 // Remove key output
   $('.removeKeyOutput').on('click', removeKeyOutput);
+// Remove outcome
+  $('.removeOutcome').on('click', removeOutcome);
 
   updateClustersIndex();
 
@@ -152,6 +158,9 @@ function addKeyOutput() {
   $item.find(".keyOutputContribution").val(verifyKoContribution($list));
   $item.find("span .koContribution-percentage").html(verifyKoContribution($list) + '%');
   $list.append($item);
+  $item.find("select").select2({
+    width: "100%"
+  });
   $item.show('slow');
   updateClustersIndex();
 }
@@ -172,6 +181,8 @@ function updateKeyOtuputsIndex(item,clustersName) {
     $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
     $(keyOutputItem).find('.id').attr('name', customName + '.id');
     $(keyOutputItem).find('.keyOutputContribution').attr('name', customName + '.contribution');
+
+    updateOutcomesIndex(keyOutputItem, customName);
   });
 
   // Update component event
@@ -202,8 +213,7 @@ function verifyKoContribution(list) {
 // OUTCOMES BY CoA
 
 function addOutcome(option) {
-  console.log(this);
-  var $list = $(this).parents('.blockContent').find(".outcomesWrapper");
+  var $list = $(option).parents('.blockContent').find(".outcomesWrapper");
   var $item = $('#outcomeByCluster-template').clone(true).removeAttr("id");
   $item.find(".outcomeStatement").html(option.html());
   $item.find(".outcomeId").html(option.val());
@@ -214,6 +224,7 @@ function addOutcome(option) {
 }
 
 function removeOutcome() {
+  console.log("holiClose");
   var $item = $(this).parents('.outcomeByClusterItem');
   var $parent = $item.parent();
   $item.hide(function() {
@@ -222,12 +233,12 @@ function removeOutcome() {
   });
 }
 
-function updateOutcomesIndex(item,clustersName) {
-  var name = $("#keyOutputName").val();
-  $(item).find('.keyOutputs li').each(function(indexKeyOuput,keyOutputItem) {
-    var customName = clustersName + '.' + name + '[' + indexKeyOuput + ']';
-    $(keyOutputItem).find('.keyOutputInput').attr('name', customName + '.keyOutput');
-    $(keyOutputItem).find('.id').attr('name', customName + '.id');
+function updateOutcomesIndex(item,keyOutputName) {
+  var name = $("#outcomesName").val();
+  $(item).find('.outcomesWrapper .outcomeByClusterItem').each(function(indexOutcome,outcomeItem) {
+    var customName = keyOutputName + '.' + name + '[' + indexOutcome + ']';
+    $(outcomeItem).find('.outcomeContribution ').attr('name', customName + '.contribution');
+    $(outcomeItem).find('.outcomeId').attr('name', customName + '.id');
   });
 
   // Update component event
