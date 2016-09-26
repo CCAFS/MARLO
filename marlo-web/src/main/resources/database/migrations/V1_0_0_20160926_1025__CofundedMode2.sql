@@ -1,0 +1,1 @@
+Update projects_bilateral_cofinancing set cofunded_mode =1;

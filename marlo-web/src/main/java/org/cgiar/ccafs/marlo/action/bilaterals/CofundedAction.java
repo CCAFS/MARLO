@@ -267,6 +267,7 @@ public class CofundedAction extends BaseAction {
       projectDB.setModificationJustification("");
       projectDB.setActiveSince(projectDB.getActiveSince());
 
+      projectDB.setCofundedMode(project.getCofundedMode());
       projectDB.setTitle(project.getTitle());
 
       LiaisonInstitution liaisonInstitution =

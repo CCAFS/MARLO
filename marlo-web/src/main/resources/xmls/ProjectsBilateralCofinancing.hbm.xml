@@ -50,6 +50,9 @@
 		<property name="agreement" type="java.lang.Integer">
 			<column name="agreement" />
 		</property>
+		<property name="cofundedMode" type="java.lang.Integer">
+      <column name="cofunded_mode" />
+    </property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

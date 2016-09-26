@@ -37,7 +37,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String title;
 
@@ -64,16 +63,24 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   @Expose
   private String modificationJustification;
+
+
   @Expose
   private Long budget;
+
+
   @Expose
   private String financeCode;
   @Expose
   private String contactPersonName;
   @Expose
   private String contactPersonEmail;
+  @Expose
+  private Integer cofundedMode;
   private Crp crp;
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
   private List<ProjectBudget> budgets;
 
   public Date getActiveSince() {
@@ -90,6 +97,10 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   public List<ProjectBudget> getBudgets() {
     return budgets;
+  }
+
+  public Integer getCofundedMode() {
+    return cofundedMode;
   }
 
   public String getContactPersonEmail() {
@@ -129,7 +140,6 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
     return liaisonInstitution;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -141,6 +151,7 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -191,6 +202,10 @@ public class ProjectBilateralCofinancing implements java.io.Serializable, IAudit
 
   public void setBudgets(List<ProjectBudget> budgets) {
     this.budgets = budgets;
+  }
+
+  public void setCofundedMode(Integer cofundedMode) {
+    this.cofundedMode = cofundedMode;
   }
 
   public void setContactPersonEmail(String contactPersonEmail) {
