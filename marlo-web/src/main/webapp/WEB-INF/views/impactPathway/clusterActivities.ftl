@@ -14,10 +14,11 @@
 [#assign clustersName = "clusters"/]
 [#assign leadersName = "leaders"/]
 [#assign keyOutputsName = "keyOutputs"/]
-[#assign outcomesName = "KeyOutputOutcomes"/]
+[#assign outcomesName = "keyOutputOutcomes"/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
@@ -125,7 +126,7 @@
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
 <input type="hidden" id="keyOutputName" value="${keyOutputsName}" />
-<input type="hidden" id="outcomestName" value="${outcomesName}" />
+<input type="hidden" id="outcomesName" value="${outcomesName}" />
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -236,6 +237,11 @@
       <div class="col-md-12">
         <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
         <div class="outcomesWrapper simpleBox form-group">
+        [#if element.keyOutputOutcomes?has_content]
+          [#list element.keyOutputOutcomes as keyOutputOutcome]
+            [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]
+          [/#list]
+        [/#if]
         </div>
       </div>
       <div class="form-group col-md-12">
@@ -258,8 +264,10 @@
       [#-- Statement --]
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
-        <span class="outcomeStatement"></span>
-        <input class="outcomeId" type="hidden" name="${customName}.id" value="${(element.outcome.id)!}"/>
+        <span class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
+        <input class="elementId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
+        
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">

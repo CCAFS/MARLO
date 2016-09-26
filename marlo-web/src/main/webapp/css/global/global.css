@@ -2157,7 +2157,7 @@ h3.contentSubTitle {
 }
 
 .buttons {
-  margin: 30px 0 10px 0;
+  margin: 30px 0 0px 0;
   height: 33px;
 }
 
@@ -3484,7 +3484,11 @@ span.partnerTag {
   padding: 2px 35px 3px 35px;
 }
 .projectPartner.leader {
-    /* border-color: #9E9E9E; */
+    border-color: #adb9ad;
+}
+
+.projectPartner.leader .partnerTitle{
+ font-weight: 600;
 }
 
 .projectPartner .partnerTags {

@@ -70,11 +70,11 @@
                       <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
                       [/#if]
                       [#-- W3 --]
-                      [#if project.projectEditLeader]
+                      [#if true]
                       <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
                       [/#if]
                       [#-- Bilateral  --]
-                      [#if project.projectEditLeader]
+                      [#if true]
                       <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
                       [/#if]
                       [#-- Center Funds --]
@@ -148,11 +148,11 @@
             <th class="text-center">W1/W2</th>
             [/#if]
             [#-- W3 --]
-            [#if project.projectEditLeader || project.bilateralProject]
+            [#if true]
             <th class="text-center">W3</td>
             [/#if]
             [#-- Bilateral  --]
-            [#if project.projectEditLeader || project.bilateralProject]
+            [#if true]
             <th class="text-center">Bilateral</th>
             [/#if]
             [#-- Center Funds --]
@@ -183,7 +183,7 @@
             </td>
             [/#if]
             [#-- W3 --]
-            [#if project.projectEditLeader || project.bilateralProject]
+            [#if true]
             <td class="budgetColumn">
               [#local indexBudgetW3=action.getIndexBudget(element.institution.id,selectedYear,2) ]
               [#local budgetW3 = action.getBudget(element.institution.id,selectedYear,2) ]
@@ -200,7 +200,7 @@
             </td>
             [/#if]
             [#-- Bilateral  --]
-            [#if project.projectEditLeader || project.bilateralProject]
+            [#if true]
             <td class="budgetColumn">
               [#local indexBudgetBilateral=action.getIndexBudget(element.institution.id,selectedYear,3) ]
               [#local budgetBilateral = action.getBudget(element.institution.id,selectedYear,3) ]
@@ -295,7 +295,7 @@
         </tbody>
       </table>
       
-      [#if project.projectEditLeader && !project.bilateralProject]
+      [#if !project.bilateralProject]
       <h5 class="sectionSubTitle">W3 Funds & Bilateral:</h5>
       <div class="projectW3bilateralFund-block">
         [#-- Bilaterals Co-Funded Projects --]
@@ -362,15 +362,17 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="row col-md-8"><strong>Gender %:</strong>  </div>
-        <div class="row col-md-7">
-        [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-          [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true   /]
-        [#else]  
-          <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
-          <input type="hidden" name="${customName}.genderPercentage" value="${(element.genderPercentage)!0}" />
+        [#if project.projectEditLeader]
+          <div class="row col-md-8"><strong>Gender %:</strong>  </div>
+          <div class="row col-md-7">
+          [#if (editable && isYearEditable(selectedYear)) || isTemplate]
+            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true   /]
+          [#else]  
+            <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+            <input type="hidden" name="${customName}.genderPercentage" value="${(element.genderPercentage)!0}" />
+          [/#if]
+          </div>
         [/#if]
-        </div>
       </div>
     </div>
   </div>
