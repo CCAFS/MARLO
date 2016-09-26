@@ -38,7 +38,7 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
         </set>
-         <set name="crpClusterKeyOutputsOutcomes" table="crp_cluster_key_outputs_outcome" order-by="id" inverse="true" lazy="true" fetch="select">
+         <set name="crpClusterKeyOutputOutcomes" table="crp_cluster_key_outputs_outcome" order-by="id" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="key_output_id" not-null="true" />
             </key>
