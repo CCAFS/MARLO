@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterActivityLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -30,9 +31,11 @@ import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -73,6 +76,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpManager crpManager;
   private CrpProgramManager crpProgramManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
+  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private UserManager userManager;
@@ -83,10 +87,14 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpProgram selectedProgram;
   private long crpProgramID;
   private List<CrpClusterOfActivity> clusterofActivities;
-  private ClusterActivitiesValidator validator;
-  private AuditLogManager auditLogManager;
-  private String transaction;
+  private List<CrpProgramOutcome> outcomes;
 
+  private ClusterActivitiesValidator validator;
+
+
+  private AuditLogManager auditLogManager;
+
+  private String transaction;
   // Util
   private SendMail sendMail;
 
@@ -95,7 +103,8 @@ public class ClusterActivitiesAction extends BaseAction {
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMail sendMail,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager) {
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -108,8 +117,8 @@ public class ClusterActivitiesAction extends BaseAction {
     this.validator = validator;
     this.sendMail = sendMail;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
+    this.crpClusterKeyOutputOutcomeManager = crpClusterKeyOutputOutcomeManager;
   }
-
 
   @Override
   public String cancel() {
@@ -142,6 +151,7 @@ public class ClusterActivitiesAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public long getClRol() {
     return clRol;
   }
@@ -154,9 +164,12 @@ public class ClusterActivitiesAction extends BaseAction {
     return crpProgramID;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+  public List<CrpProgramOutcome> getOutcomes() {
+    return outcomes;
   }
 
 
@@ -164,10 +177,10 @@ public class ClusterActivitiesAction extends BaseAction {
     return programs;
   }
 
+
   public Role getRoleCl() {
     return roleCl;
   }
-
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -250,6 +263,7 @@ public class ClusterActivitiesAction extends BaseAction {
       message.toString(), null, null, null, true);
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -331,6 +345,10 @@ public class ClusterActivitiesAction extends BaseAction {
             .filter(c -> c.isActive()).collect(Collectors.toList()));
           crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
+          for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
+            crpClusterKeyOutput.setKeyOutputOutcomes(crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
+          }
         }
       }
 
@@ -382,6 +400,8 @@ public class ClusterActivitiesAction extends BaseAction {
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
         selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
+        outcomes =
+          selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
         if (!selectedProgram.getSubmissions().isEmpty()) {
           this.setCanEdit(false);
           this.setEditable(false);
@@ -543,8 +563,52 @@ public class ClusterActivitiesAction extends BaseAction {
             crpClusterKeyOutput.setModifiedBy(this.getCurrentUser());
             crpClusterKeyOutput.setModificationJustification("");
             crpClusterKeyOutputManager.saveCrpClusterKeyOutput(crpClusterKeyOutput);
+
+            /*
+             * deleting key ouputs otucomes
+             */
+            CrpClusterKeyOutput crpClusterKeyOutputPrev =
+              crpClusterKeyOutputManager.getCrpClusterKeyOutputById(crpClusterKeyOutput.getId());
+            for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpClusterKeyOutputPrev.getCrpClusterKeyOutputOutcomes()
+              .stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+              if (crpClusterKeyOutput.getKeyOutputOutcomes() == null) {
+                crpClusterKeyOutput.setKeyOutputOutcomes(new ArrayList<>());
+              }
+              if (!crpClusterKeyOutput.getKeyOutputOutcomes().contains(keyOutputOutcome)) {
+                crpClusterKeyOutputOutcomeManager.deleteCrpClusterKeyOutputOutcome(keyOutputOutcome.getId());
+
+              }
+            }
+            /*
+             * Save key outputs otucomes
+             */
+            if (crpClusterKeyOutput.getKeyOutputOutcomes() != null) {
+              for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : crpClusterKeyOutput.getKeyOutputOutcomes()) {
+                if (crpClusterKeyOutputOutcome.getId() == null) {
+                  crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
+
+                  crpClusterKeyOutputOutcome.setActiveSince(new Date());
+
+                } else {
+                  CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
+                    .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
+                  crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
+                  crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
+
+                }
+                crpClusterKeyOutputOutcome.setActive(true);
+                crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutput);
+                crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
+                crpClusterKeyOutputOutcome.setModificationJustification("");
+                crpClusterKeyOutputOutcomeManager.saveCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome);
+              }
+            }
+
           }
         }
+
+
       }
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
@@ -576,7 +640,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
-
   public void setClRol(long clRol) {
     this.clRol = clRol;
   }
@@ -594,6 +657,11 @@ public class ClusterActivitiesAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
+    this.outcomes = outcomes;
   }
 
 
