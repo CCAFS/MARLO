@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -47,12 +48,13 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+  private List<CrpClusterKeyOutputOutcome> keyOutputOutcomes;
+
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
 
 
   public CrpClusterKeyOutput() {
   }
-
 
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, String keyOutput,
     boolean isActive, Date activeSince, String modificationJustification, Set<Deliverable> deliverables) {
@@ -65,6 +67,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
+
   public CrpClusterKeyOutput(CrpClusterOfActivity crpClusterOfActivity, User usersByModifiedBy, User usersByCreatedBy,
     String keyOutput, boolean isActive, Date activeSince, String modificationJustification) {
     this.crpClusterOfActivity = crpClusterOfActivity;
@@ -75,6 +78,7 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -118,7 +122,6 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.crpClusterOfActivity;
   }
 
-
   public Set<Deliverable> getDeliverables() {
     return deliverables;
   }
@@ -128,8 +131,13 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
+
   public String getKeyOutput() {
     return this.keyOutput;
+  }
+
+  public List<CrpClusterKeyOutputOutcome> getKeyOutputOutcomes() {
+    return keyOutputOutcomes;
   }
 
   @Override
@@ -195,6 +203,10 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
   public void setKeyOutput(String keyOutput) {
     this.keyOutput = keyOutput;
+  }
+
+  public void setKeyOutputOutcomes(List<CrpClusterKeyOutputOutcome> keyOutputOutcomes) {
+    this.keyOutputOutcomes = keyOutputOutcomes;
   }
 
   public void setModificationJustification(String modificationJustification) {
