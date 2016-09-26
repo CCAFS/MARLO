@@ -167,14 +167,15 @@
               [#if !(key?has_content)]
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [/#if]
-            [/#if] 
+            [/#if]
+            
           [#else]
             [#if name?contains(".id")]
               [#assign customName]${name?replace('.id','')}[/#assign]
             [#else]
               [#assign customName]${name}[/#assign]
             [/#if]
-            [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]  
+            [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
             [#if value=="-NULL"] 
               [#if !(customValue)?has_content] ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [#else]${customValue}
