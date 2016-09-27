@@ -94,7 +94,14 @@ $(document).ready(function() {
       right: $(document).width() - ($buttons.offset().left + $buttons.width())
     });
 
-    setFixedElement($(window).scrollBottom() >= menuOffset());
+    setTimeout(function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    }, 500);
+
+    $(document).on('updateComponent', function() {
+      setFixedElement($(window).scrollBottom() >= menuOffset());
+    });
+
     $(window).scroll(function() {
       setFixedElement($(window).scrollBottom() >= menuOffset());
     });
@@ -318,4 +325,14 @@ function setWordCounterToInputs(cssName) {
 
 $('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
+});
+
+/* prevent enter key to inputs */
+
+$('input').on("keypress", function(event) {
+
+  if(event.keyCode === 10 || event.keyCode === 13) {
+    event.preventDefault();
+  }
+
 });

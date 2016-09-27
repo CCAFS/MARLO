@@ -420,7 +420,9 @@ public class DeliverableAction extends BaseAction {
       for (ProjectPartner partner : projectPartnerManager.findAll().stream()
         .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
 
-        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons()) {
+        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+          .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+
           partnerPersons.add(partnerPerson);
         }
       }

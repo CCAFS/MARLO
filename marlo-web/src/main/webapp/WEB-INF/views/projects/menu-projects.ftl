@@ -87,7 +87,7 @@
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if action.hasPermission("projectSwitch") ]
+[#if canSwitchProject ]
 <div class="grayBox text-center">
   [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]
 </div>
@@ -98,7 +98,7 @@
 
   [#-- Submition message --]
   [#if !submission?has_content && completed && !canSubmit]
-    <p class="text-center" style="display:block">The Impact Pathway can be submitted now by Flagship leaders.</p>
+    <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
   [/#if]
   
   [#-- Check button --]

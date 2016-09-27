@@ -15,8 +15,6 @@ $(document).ready(function() {
 
   liaisonInstitutionsPrograms = jQuery.parseJSON($('#liaisonInstitutionsPrograms').text());
 
-  console.log(liaisonInstitutionsPrograms);
-
   datePickerConfig({
       "startDate": "#project\\.startDate",
       "endDate": "#project\\.endDate",
@@ -41,13 +39,12 @@ $(document).ready(function() {
 
   $('.liaisonInstitutionSelect').on('change', function() {
     var crpProgramId = liaisonInstitutionsPrograms[$(this).val()];
-
     if(crpProgramId != -1) {
       $('input[value="' + crpProgramId + '"]').prop("checked", true);
+      $('#projectFlagshipsBlock input').trigger('change');
     }
-
-    console.log(crpProgramId);
   });
+  $('.liaisonInstitutionSelect').trigger('change');
 
   /**
    * Upload files functions

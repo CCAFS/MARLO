@@ -18,6 +18,7 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#--  marlo cluster of activities--]
 <section class="marlo-content">
@@ -217,6 +218,9 @@
     <div class="blockTitle closed">
       <span class="koTitle">${(element.keyOutput)!'New Key Output'}</span>
       <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!'0'}%</span></span> 
+      <span title="${(element.keyOutput)!}" class="koTitle col-md-9">[#if element.keyOutput?has_content][@utils.wordCutter string=(element.keyOutput) maxPos=70 substr=" "/][#else]New Key output[/#if]</span>
+      
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span> 
     <div class="clearfix"></div>
     </div>
     
@@ -263,8 +267,8 @@
       [#-- Statement --]
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
-        <span class="outcomeStatement"></span>
-        <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        <span title="${(element.crpProgramOutcome.description)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
+        <input class="elementId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
       </div>

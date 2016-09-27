@@ -70,7 +70,7 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
 
 
     // If user is admin, it should have privileges to edit all projects.
-    if (baseAction.isAdmin()) {
+    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
       canEdit = true;
     } else {
       if (baseAction

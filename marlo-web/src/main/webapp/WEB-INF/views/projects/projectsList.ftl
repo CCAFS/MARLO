@@ -34,6 +34,7 @@
         [#if action.canAddBilateralProject()]
           <a class="addButton" href="[@s.url action='${crpSession}/addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
         [/#if]
+          <div class="clearfix"></div>
         </div>
       </div>
       [/#if]

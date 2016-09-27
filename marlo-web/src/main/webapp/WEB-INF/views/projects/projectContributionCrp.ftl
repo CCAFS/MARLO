@@ -67,7 +67,13 @@
                   [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!-1}" i18nkey="projectOutcome.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name" disabled=true editable=editable  /]
+                  <div class="select">
+                    <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
+                    <div class="selectList">   
+                        <input type="hidden" name="projectOutcome.expectedUnit.id" value="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}" class="">
+                        <p>${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</p>
+                    </div> 
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -84,7 +90,13 @@
                   [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
                 </div>
                 <div class="col-md-7">
-                  [@customForm.select name="projectOutcome.achievedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!-1}" i18nkey="projectOutcome.achievedUnit" placeholder="" className="" listName="targetUnits" keyFieldName="id" displayFieldName="name" disabled=true editable=editable  /]
+                  <div class="select">
+                    <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
+                    <div class="selectList">   
+                        <input type="hidden" name="projectOutcome.achievedUnit.id" value="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}" class="">
+                        <p>${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</p>
+                    </div> 
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -254,7 +266,13 @@
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
           </div>
           <div class="col-md-4">
-            [@customForm.select name="${customName}.expectedUnit.id" value="${(element.srfTargetUnit.id)!}" i18nkey="projectOutcomeMilestone.expectedUnit" placeholder="" className="" listName="targetUnits"  keyFieldName="id" displayFieldName="name" disabled=true editable=editable  /]
+            <div class="select">
+              <label for="">[@s.text name="projectOutcomeMilestone.expectedUnit" /]:</label>
+              <div class="selectList">   
+                  <input type="hidden" class="crpMilestoneTargetUnitInput" name="${customName}.expectedUnit.id" value="${(element.srfTargetUnit.id)!}" class="">
+                  <p class="crpMilestoneTargetUnit">${(element.srfTargetUnit.name)!}</p>
+              </div> 
+            </div>
           </div>
           [#-- REPORTING BLOCK --]
           [#if reportingActive]

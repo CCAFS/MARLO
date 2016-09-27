@@ -5,8 +5,8 @@ function init() {
   addUser = addUserItem;
 
 // Numeric inputs
-  $('input.keyOutputContribution').numericInput();
-  $('input.outcomeContribution').numericInput();
+  $('input.keyOutputContribution , input.outcomeContribution').numericInput();
+  $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
 
   $('form select').select2({
     width: '100%'

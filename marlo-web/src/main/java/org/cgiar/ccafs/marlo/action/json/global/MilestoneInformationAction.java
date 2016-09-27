@@ -58,6 +58,12 @@ public class MilestoneInformationAction extends BaseAction {
       this.crpMilestone.put("targetUnit", crpMilestone.getSrfTargetUnit().getId());
     }
 
+    if (crpMilestone.getSrfTargetUnit() == null) {
+      this.crpMilestone.put("targetUnitName", "Not Applicable");
+    } else {
+      this.crpMilestone.put("targetUnitName", crpMilestone.getSrfTargetUnit().getName());
+    }
+
     return SUCCESS;
   }
 
