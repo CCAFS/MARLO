@@ -332,9 +332,13 @@
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
-    [#if editable && isYearEditable(selectedYear)]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
+    [#if (editable && isYearEditable(selectedYear)) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="checked"><small>Bilateral Co-Funded #<span class="titleId">${(element.projectBilateralCofinancing.id)!}</span></small>  - <span class="title">${(element.projectBilateralCofinancing.title)!}</span> </p>
+    <p class="checked"><small>Bilateral Co-Funded #<span class="titleId">${(element.projectBilateralCofinancing.id)!}</span></small> - 
+
+    <small class="grayLabel"> (US$ <span class="projectAmount">${((element.projectBilateralCofinancing.budget)!0)?number?string(",##0.00")}</span>) </small>
+    </p> 
+    <span class="title">${(element.projectBilateralCofinancing.title)!}</span> </p>
 
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
@@ -351,11 +355,13 @@
         </div>
       </div>
       <div class="col-md-4">
-        <div class="row col-md-6"><strong>Amount:</strong>  </div>
+        <div class="row col-md-6">
+          <strong>Amount:</strong>
+        </div>
         <div class="row col-md-7">
         [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput type-${(element.budgetType.id)!'none'}" required=true /]
-        [#else]    
+          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.budgetType.id)!'none'}" required=true /]
+        [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
           <input type="hidden" name="${customName}.amount" value="${(element.amount)!0}" />
         [/#if]  

@@ -128,6 +128,7 @@ public class ProjectsBilaterCofinancingNewAction extends BaseAction {
     if (projectId > 0) {
       projectProp.put("id", projectId);
       projectProp.put("title", project.getTitle());
+      projectProp.put("budget", project.getBudget());
       projectProp.put("status", "OK");
 
     } else {

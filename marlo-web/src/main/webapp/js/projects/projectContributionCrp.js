@@ -99,7 +99,6 @@ function addMilestone() {
         milestoneID: milestonId
       },
       success: function(data) {
-        console.log(data)
 
         $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
         $item.find('.crpMilestoneYearInput').val(data.crpMilestone.year);

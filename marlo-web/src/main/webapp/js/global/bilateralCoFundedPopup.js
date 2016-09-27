@@ -65,9 +65,11 @@ $(document).ready(function() {
   $dialogContent.find("span.select, span.name").on("click", function() {
     var $parent = $(this).parent().parent();
     var projectId = $parent.find(".contactId").text();
-    var composedName = "P" + projectId + " - " + $parent.find(".name").text();
+    var composedName = $parent.find(".name").text();
+    var budget = $parent.find(".budget").text();
+    console.log(budget);
     // Add user
-    addProject(composedName, projectId);
+    addProject(composedName, projectId, budget);
   });
 
   // Event to find an user according to search field
@@ -88,6 +90,7 @@ $(document).ready(function() {
     $dialogContent.find('.warning-info').empty().hide();
     var invalidFields = [];
     var project = {};
+    project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
     project.title = $dialogContent.find("#title").val().trim();
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
@@ -126,7 +129,7 @@ $(document).ready(function() {
             var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id);
+              addProject(data.title, data.id, data.budget);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
@@ -167,7 +170,7 @@ $(document).ready(function() {
     getData('');
   }
 
-  addProject = function(composedName,projectId) {
+  addProject = function(composedName,projectId,budget) {
     dialog.dialog("close");
   }
 
@@ -210,9 +213,11 @@ $(document).ready(function() {
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.projects, function(i,project) {
+              console.log(project);
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
               $item.find('.name').html(project.title);
               $item.find('.contactId').html(project.id);
+              $item.find('.budget').html(project.budget);
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }

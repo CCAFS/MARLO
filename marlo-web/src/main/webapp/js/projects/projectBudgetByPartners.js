@@ -49,6 +49,8 @@ function attachEvents() {
   // Calculate currency and percentage
   $('input.currencyInput, input.percentageInput').on('keyup', calculateCurrencyPercentage);
 
+  $('input.currencyInput.fundInput').on('keyup', validateBilateralFund);
+
 }
 
 /**
@@ -81,7 +83,6 @@ function removeBilateralFund() {
 
 function calculateCurrencyPercentage() {
   var type = getClassParameter($(this), 'type');
-  console.log(type);
   var $partner = $(this).parents('.projectPartner');
   updateActiveYearCurrency(type, $partner)
 }
@@ -90,14 +91,28 @@ function calculateCurrencyPercentage() {
  * General Functions
  */
 
+function validateBilateralFund() {
+  var value = parseInt($(this).val()) || 0;
+  var limit = removeCurrencyFormat($(this).parents('.projectW3bilateralFund').find('.projectAmount').text());
+
+  console.log(limit);
+  console.log(value);
+  if(value > limit) {
+    $(this).addClass('fieldError');
+  } else {
+    $(this).removeClass('fieldError');
+  }
+}
+
 // Add bilateral project function
-function addBilateralFundProject(composedName,projectId) {
+function addBilateralFundProject(composedName,projectId,budget) {
   dialog.dialog("close");
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
   // Setting parameters
   $item.find('.title').text(composedName);
   $item.find('.titleId').text(projectId);
+  $item.find('.projectAmount').text(setCurrencyFormat(budget));
   $item.find('.institutionId').val(institutionSelected);
   $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
   $item.find('.projectId').val(projectId);

@@ -64,6 +64,7 @@ public class ProjectsBilaterCofinancingListAction extends BaseAction {
       Map<String, Object> projectMap = new HashMap<>();
       projectMap.put("id", projectBilateralCofinancing.getId());
       projectMap.put("title", projectBilateralCofinancing.getTitle());
+      projectMap.put("budget", projectBilateralCofinancing.getBudget());
       projects.add(projectMap);
 
     }
