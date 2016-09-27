@@ -6,7 +6,7 @@ function init() {
 
 // Numeric inputs
   $('input.keyOutputContribution , input.outcomeContribution').numericInput();
-  $('form input.keyOutputContribution , form input.outcomeContributio ').percentageInput();
+  $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
 
   $('form select').select2({
     width: '100%'
@@ -64,24 +64,15 @@ function init() {
   });
 
   // Select outcomes
-  $(".outcomeList").on(
-      "change",
-      function() {
-        var option = $(this).find("option:selected");
-        var validation =
-            $(this).parents(".keyOutputItem").find(".outcomesWrapper").find("input[value=" + option.val() + "]");
-        if(option.val() != "-1") {
-          if(validation.exists()) {
-            option.parent().val(-1);
-            option.parent().trigger("change.select2");
-            // Show message
-            var text = option.html() + ' already exists in this list';
-            notify(text);
-          } else {
-            addOutcome(option);
-          }
-        }
-      });
+  $(".outcomeList").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "-1") {
+      addOutcome(option);
+    }
+    // Remove option from select
+    option.remove();
+    $(this).trigger("change.select2");
+  });
 
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -211,7 +202,7 @@ function addKeyOutput() {
   $item.find("span .koContribution-percentage").html(contribution + '%');
   $list.append($item);
   // Initialize
-  $($item).find('input.keyOutputContribution , input.outcomeContributio ').percentageInput();
+  $($item).find('input.keyOutputContribution').percentageInput();
 
   $item.find("select").select2({
       templateResult: formatState,
@@ -283,6 +274,8 @@ function addOutcome(option) {
   $item.find(".outcomeId").val(option.val());
   $item.find(".outcomeContribution").val(contribution);
   $list.append($item);
+// Initialize
+  $($item).find('input.outcomeContribution').percentageInput();
   $item.show('slow');
   updateClustersIndex();
 }
@@ -290,11 +283,17 @@ function addOutcome(option) {
 function removeOutcome() {
   console.log("holiClose");
   var $item = $(this).parents('.outcomeByClusterItem');
+  var value = $item.find(".outcomeId").val();
+  var name = $item.find(".outcomeStatement").attr("title");
   var $parent = $item.parent();
+  var $select = $parent.parent().parent().parent().find(".outcomeList");
   $item.hide(function() {
     $item.remove();
     updateClustersIndex();
   });
+// Add outcome option again
+  $select.addOption(value, name);
+  $select.trigger("change.select2");
 }
 
 function updateOutcomesIndex(item,keyOutputName) {
@@ -314,18 +313,15 @@ function verifyOutcomeContribution(list) {
   var contribution = 0;
   var val = 0;
   list.find(".outcomeByClusterItem").each(function(i,e) {
-    if($(e).find(".elementId ").val()) {
-      // Existente
+    // nuevo
+    if($(e).find(".outcomeContribution  ").val()) {
+      val = parseInt($(e).find(".outcomeContribution").val());
+      contribution = contribution + val;
     } else {
-      // nuevo
-      if($(e).find(".outcomeContribution  ").val()) {
-        val = parseInt($(e).find(".outcomeContribution").val());
-        contribution = contribution + val;
-      } else {
-        val = 0;
-        contribution = contribution + val;
-      }
+      val = 0;
+      contribution = contribution + val;
     }
+
   });
   var newContribution = 100 - contribution;
   return newContribution;
