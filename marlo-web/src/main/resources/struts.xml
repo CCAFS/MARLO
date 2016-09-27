@@ -18,6 +18,9 @@
 		</result-types>
 
 		<interceptors>
+    <!--  Interceptor to able the acces in Admin Sections  -->
+    <interceptor name="accessibleAdmin"
+        class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
 
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
@@ -90,6 +93,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="accessibleAdmin" />				
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
