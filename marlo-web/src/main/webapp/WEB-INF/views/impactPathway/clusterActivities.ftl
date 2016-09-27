@@ -211,13 +211,14 @@
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <span class="koTitle col-md-9">${(element.keyOutput)!'New Key Output'}</span>
-      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">10%</span></span> 
+      <span title="${(element.keyOutput)!}" class="koTitle col-md-9">[#if element.keyOutput?has_content][@utils.wordCutter string=(element.keyOutput) maxPos=70 substr=" "/][#else]New Key output[/#if]</span>
+      
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span> 
     <div class="clearfix"></div>
     </div>
     
@@ -258,13 +259,13 @@
   <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
       </div>
     [/#if]    
       [#-- Statement --]
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
-        <span class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
+        <span title="${(element.crpProgramOutcome.description)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
         <input class="elementId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         

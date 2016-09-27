@@ -5,11 +5,8 @@ function init() {
   addUser = addUserItem;
 
 // Numeric inputs
-  $('input.keyOutputContribution').numericInput();
-  $('input.outcomeContribution').numericInput();
-
-  $('input.keyOutputContribution').percentageInput();
-  $('input.outcomeContribution').percentageInput();
+  $('input.keyOutputContribution , input.outcomeContribution').numericInput();
+  $('form input.keyOutputContribution , form input.outcomeContributio ').percentageInput();
 
   $('form select').select2({
     width: '100%'
@@ -213,6 +210,9 @@ function addKeyOutput() {
   $item.find(".keyOutputContribution").val(contribution);
   $item.find("span .koContribution-percentage").html(contribution + '%');
   $list.append($item);
+  // Initialize
+  $($item).find('input.keyOutputContribution , input.outcomeContributio ').percentageInput();
+
   $item.find("select").select2({
       templateResult: formatState,
       templateSelection: formatState,
@@ -250,18 +250,16 @@ function verifyKoContribution(list) {
   var contribution = 0;
   var val = 0;
   list.find(".keyOutputItem ").each(function(i,e) {
-    if($(e).find(".id ").val()) {
-      // Existente
+
+    // nuevo
+    if($(e).find(".keyOutputContribution ").val()) {
+      val = parseInt($(e).find(".keyOutputContribution ").val());
+      contribution = contribution + val;
     } else {
-      // nuevo
-      if($(e).find(".keyOutputContribution ").val()) {
-        val = parseInt($(e).find(".keyOutputContribution ").val());
-        contribution = contribution + val;
-      } else {
-        val = 0;
-        contribution = contribution + val;
-      }
+      val = 0;
+      contribution = contribution + val;
     }
+
   });
   var newContribution = 100 - contribution;
 
