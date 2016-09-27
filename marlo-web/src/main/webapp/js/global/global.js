@@ -326,3 +326,13 @@ function setWordCounterToInputs(cssName) {
 $('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
 });
+
+/* prevent enter key to inputs */
+
+$('input').on("keypress", function(event) {
+
+  if(event.keyCode === 10 || event.keyCode === 13) {
+    event.preventDefault();
+  }
+
+});
