@@ -48,11 +48,12 @@ public class Permission {
 
   public static final String PROJECT__SWITCH = "crp:{0}:project:{1}:projectSwitch";
   public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";
-  public static final String PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverablesList:canEdit";
+  public static final String PROJECT_DELIVERABLE_LIST_BASE_PERMISSION = "crp:{0}:project:{1}:deliverableList";
+  public static final String PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverableList:canEdit";
   public static final String PROJECT_DELIVERABLE_LIST_ADD_PERMISSION =
-    "crp:{0}:project:{1}:deliverablesList:addDeliverable";
+    "crp:{0}:project:{1}:deliverableList:addDeliverable";
   public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =
-    "crp:{0}:project:{1}:deliverablesList:removeOldDeliverables";
+    "crp:{0}:project:{1}:deliverableList:removeOldDeliverables";
   public static final String PROJECT_DELIVERABLE_BASE_PERMISSION = "crp:{0}:project:{1}:deliverable";
   public static final String PROJECT_DELIVERABLE_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
