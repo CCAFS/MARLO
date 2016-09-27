@@ -17,8 +17,10 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,11 +28,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
+import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
+import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.RootLevelBand;
+import org.pentaho.reporting.engine.classic.core.Section;
+import org.pentaho.reporting.engine.classic.core.SubReport;
+import org.pentaho.reporting.engine.classic.core.modules.misc.datafactory.sql.DriverConnectionProvider;
+import org.pentaho.reporting.engine.classic.core.modules.misc.datafactory.sql.SQLReportDataFactory;
 import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -71,28 +83,75 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    ResourceManager manager = new ResourceManager();
-    manager.registerDefaults();
+    ResourceManager manager =
+      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
+    try {
+      Resource reportResource =
+        manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
 
-    Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
+      MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-    MasterReport masterReport = (MasterReport) reportResource.getResource();
-
-    Number idParam = projectID;
-    Number yearParam = 2017;
-    String cycleParam = "Planning";
-
-    masterReport.getParameterValues().put("p_id", idParam);
-    masterReport.getParameterValues().put("p_year", yearParam);
-    masterReport.getParameterValues().put("p_cycle", cycleParam);
+      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
 
 
-    PdfReportUtil.createPDF(masterReport, os);
-    bytesPDF = os.toByteArray();
-    os.close();
+      // SQLReportDataFactory sdf = (SQLReportDataFactory) masterReport.getDataFactory();
+      PropertiesManager managerProperties = new PropertiesManager();
+      final DriverConnectionProvider drc = new DriverConnectionProvider();
+
+      String urlMysql = "jdbc:mysql://" + managerProperties.getPropertiesAsString(APConfig.MYSQL_HOST) + ":"
+        + managerProperties.getPropertiesAsString(APConfig.MYSQL_PORT) + "/"
+        + managerProperties.getPropertiesAsString(APConfig.MYSQL_DATABASE);
+      drc.setDriver("com.mysql.jdbc.Driver");
+      drc.setUrl(urlMysql);
+      drc.setProperty("user", managerProperties.getPropertiesAsString(APConfig.MYSQL_USER));
+      drc.setProperty("password", managerProperties.getPropertiesAsString(APConfig.MYSQL_PASSWORD));
+
+
+      Set<CompoundDataFactory> factorys = this.getCompoundDataFactoriesFromMasterAndSubreports(cdf, drc, masterReport);
+      for (CompoundDataFactory compoundDataFactory : factorys) {
+        for (String queryName : compoundDataFactory.getQueryNames()) {
+
+          SQLReportDataFactory sdf = (SQLReportDataFactory) compoundDataFactory.getDataFactoryForQuery(queryName);
+          sdf.setConnectionProvider(drc);
+
+        }
+      }
+
+      Number idParam = projectID;
+      Number yearParam = Long.valueOf(String.valueOf(this.getCurrentCycleYear()));
+      String cycleParam = APConstants.PLANNING;
+
+      masterReport.getParameterValues().put("p_id", idParam);
+      masterReport.getParameterValues().put("p_year", yearParam);
+      masterReport.getParameterValues().put("p_cycle", cycleParam);
+
+
+      PdfReportUtil.createPDF(masterReport, os);
+      bytesPDF = os.toByteArray();
+      os.close();
+    } catch (Exception e) {
+
+      LOG.error("Generating PDF" + e.getMessage());
+      throw e;
+    }
     return SUCCESS;
 
+  }
+
+  private Set<CompoundDataFactory> getCompoundDataFactoriesFromMasterAndSubreports(CompoundDataFactory cdf,
+    DriverConnectionProvider drc, MasterReport masterReport) {
+
+    Set<CompoundDataFactory> CompoundDataFactories = new HashSet<CompoundDataFactory>();
+    CompoundDataFactories.add(cdf); // Master report
+
+    Set<SubReport> subReports = this.getSubReports(masterReport);
+    for (SubReport subReport : subReports) {
+      if (subReport.getDataFactory() instanceof CompoundDataFactory) {
+        CompoundDataFactories.add((CompoundDataFactory) subReport.getDataFactory());
+      }
+    }
+
+    return CompoundDataFactories;
   }
 
   @Override
@@ -117,6 +176,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
+
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -137,10 +197,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return inputStream;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
+  private Set<SubReport> getSubReports(MasterReport masterReport) {
+    Set<SubReport> subReports = new HashSet<SubReport>();
+    this.recurseToFindAllSubReports(masterReport, subReports);
+    return subReports;
+  }
+
 
   @Override
   public void prepare() {
@@ -154,9 +220,24 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
+  private void recurseToFindAllSubReports(Section section, Set<SubReport> subReports) {
+    int elementCount = section.getElementCount();
+    for (int i = 0; i < elementCount; i++) {
+      Element e = section.getElement(i);
+      if (e instanceof RootLevelBand) {
+        SubReport[] subs = ((RootLevelBand) e).getSubReports();
+        for (SubReport s : subs) {
+          subReports.add(s);
+        }
+      }
+      if (e instanceof Section) {
+        this.recurseToFindAllSubReports((Section) e, subReports);
+      }
+    }
+  }
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
 
 }

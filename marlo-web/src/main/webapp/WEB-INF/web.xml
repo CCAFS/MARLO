@@ -27,6 +27,11 @@
     <listener-class>org.cgiar.ccafs.marlo.config.HibernateListener</listener-class>
   </listener>
   
+  
+    <listener>
+    <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
+  </listener>
+  
   <!-- Google Guice integration with our web application -->
   <filter>
     <filter-name>guice</filter-name>

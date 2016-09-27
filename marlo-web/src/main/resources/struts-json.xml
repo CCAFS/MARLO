@@ -26,7 +26,7 @@
 				     
 				<param name="contentType">text/pdf</param>
 				       
-				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
 
