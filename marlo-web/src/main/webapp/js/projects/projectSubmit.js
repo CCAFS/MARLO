@@ -57,7 +57,7 @@ $(document)
                       var url = $(this).attr("href");
                       var notyOptions = jQuery.extend({}, notyDefaultOptions);
                       notyOptions.text =
-                          "Please be aware of this section has a draft versión, click <span>save</span> and confirm your changes.";
+                          "Please be aware that this section has information saved in a draft version, we suggest you to click on the Save button";
                       notyOptions.type = 'confirm';
                       notyOptions.layout = 'center';
                       notyOptions.modal = true;
