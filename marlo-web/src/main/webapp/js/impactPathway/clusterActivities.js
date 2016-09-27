@@ -216,7 +216,7 @@ function addOutcome(option) {
   var $list = $(option).parents('.blockContent').find(".outcomesWrapper");
   var $item = $('#outcomeByCluster-template').clone(true).removeAttr("id");
   $item.find(".outcomeStatement").html(option.html());
-  $item.find(".outcomeId").html(option.val());
+  $item.find(".outcomeId").val(option.val());
   $list.append($item);
   $item.show('slow');
   updateClustersIndex();
@@ -238,7 +238,7 @@ function updateOutcomesIndex(item,keyOutputName) {
   $(item).find('.outcomesWrapper .outcomeByClusterItem').each(function(indexOutcome,outcomeItem) {
     var customName = keyOutputName + '.' + name + '[' + indexOutcome + ']';
     $(outcomeItem).find('.outcomeContribution ').attr('name', customName + '.contribution');
-    $(outcomeItem).find('.outcomeId').attr('name', customName + '.id');
+    $(outcomeItem).find('.outcomeId').attr('name', customName + '.crpProgramOutcome.id');
   });
 
   // Update component event

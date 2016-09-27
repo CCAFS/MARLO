@@ -216,7 +216,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
       <span class="koTitle">${(element.keyOutput)!'New Key Output'}</span>
-      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">10%</span></span> 
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!'0'}%</span></span> 
     <div class="clearfix"></div>
     </div>
     
