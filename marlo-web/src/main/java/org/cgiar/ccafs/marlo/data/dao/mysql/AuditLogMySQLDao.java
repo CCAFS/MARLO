@@ -131,7 +131,8 @@ public class AuditLogMySQLDao implements AuditLogDao {
 
           String classNameRelation = propertyType.getName();
           String sql = "from " + Auditlog.class.getName() + " where transaction_id='" + transactionID
-            + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId() + "'";
+            + "' and main=3 and relation_name='" + classNameRelation + ":" + iAuditLog.getId()
+            + "'order by ABS(ENTITY_ID) asc";
           List<Auditlog> auditLogsRelations = dao.findAll(sql);
 
           Set<IAuditLog> relation = new HashSet<IAuditLog>();
@@ -140,7 +141,6 @@ public class AuditLogMySQLDao implements AuditLogDao {
             this.loadRelationsForIAuditLog(relationObject, transactionID);
             relation.add(relationObject);
           }
-
           classMetadata.setPropertyValue(iAuditLog, name, relation, EntityMode.POJO);
         }
       }

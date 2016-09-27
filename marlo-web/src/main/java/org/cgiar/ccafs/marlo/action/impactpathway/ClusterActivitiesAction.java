@@ -294,6 +294,12 @@ public class ClusterActivitiesAction extends BaseAction {
 
           crpClusterOfActivity.setKeyOutputs(crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+          for (CrpClusterKeyOutput crpClusterKeyOutput : crpClusterOfActivity.getKeyOutputs()) {
+            crpClusterKeyOutput.setKeyOutputOutcomes(crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList()));
+          }
         }
       } else {
         programs = new ArrayList<>();
