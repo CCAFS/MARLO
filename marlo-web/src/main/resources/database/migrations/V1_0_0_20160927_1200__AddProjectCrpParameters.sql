@@ -1,0 +1,18 @@
+START TRANSACTION;
+INSERT INTO `crp_parameters` VALUES ('58', '3', 'crp_planning_active', '1', '1', '3', '2016-09-27 11:57:36', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('59', '3', 'crp_reporting_active', '0', '1', '3', '2016-09-27 11:57:36', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('60', '3', 'crp_reporting_year', '2015', '1', '3', '2016-09-27 11:57:36', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('61', '3', 'crp_planning_year', '2017', '1', '3', '2016-09-27 11:57:36', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('62', '4', 'crp_planning_active', '1', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('63', '4', 'crp_reporting_active', '0', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('64', '4', 'crp_reporting_year', '2015', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('65', '4', 'crp_planning_year', '2017', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('66', '5', 'crp_planning_active', '1', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('67', '5', 'crp_reporting_active', '0', '1', '3', '2016-09-27 11:59:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('68', '5', 'crp_reporting_year', '2015', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('69', '5', 'crp_planning_year', '2017', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('70', '7', 'crp_planning_active', '1', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('71', '7', 'crp_reporting_active', '0', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('72', '7', 'crp_reporting_year', '2015', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('73', '7', 'crp_planning_year', '2017', '1', '3', '2016-09-27 11:59:47', '3', ' ');
+COMMIT;
