@@ -94,6 +94,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;
+        canSwitchProject = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project)
