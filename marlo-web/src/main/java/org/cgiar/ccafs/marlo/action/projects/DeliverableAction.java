@@ -529,10 +529,17 @@ public class DeliverableAction extends BaseAction {
 
       if (deliverablePrew.getDeliverablePartnerships() != null
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
-        partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-          .filter(
-            dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-          .collect(Collectors.toList()).get(0);
+
+        try {
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+              .collect(Collectors.toList()).get(0);
+        } catch (Exception e) {
+          partnershipResponsible = null;
+        }
+
       }
 
       if (deliverable.getResponsiblePartner() != null
