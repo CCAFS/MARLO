@@ -29,20 +29,43 @@ $(document)
             var $t = $(this).parent().find('input.onoffswitch-radio');
             var value = ($(this).hasClass('yes-button-label'));
             var $thisLabel = $(this);
-            $.ajax({
-                url: baseURL + "/projectLeaderEdit.do",
-                data: {
-                    projectID: $('input[name="projectID"]').val(),
-                    projectStatus: value
-                },
-                success: function(data) {
-                  if(data.ok) {
-                    $thisLabel.siblings().removeClass('radio-checked');
-                    $thisLabel.addClass('radio-checked');
-                    $t.val(value);
-                  }
+
+            var notyOptions = jQuery.extend({}, notyDefaultOptions);
+            notyOptions.text = "Are you sure you want ?";
+            notyOptions.type = 'confirm';
+            notyOptions.layout = 'center';
+            notyOptions.modal = true;
+            notyOptions.buttons = [
+                {
+                    addClass: 'btn btn-primary',
+                    text: 'Yes',
+                    onClick: function($noty) {
+                      location.reload();
+                      $.ajax({
+                          url: baseURL + "/projectLeaderEdit.do",
+                          data: {
+                              projectID: $('input[name="projectID"]').val(),
+                              projectStatus: value
+                          },
+                          success: function(data) {
+                            if(data.ok) {
+                              $thisLabel.siblings().removeClass('radio-checked');
+                              $thisLabel.addClass('radio-checked');
+                              $t.val(value);
+                            }
+                          }
+                      });
+                    }
+                }, {
+                    addClass: 'btn btn-primary',
+                    text: 'No',
+                    onClick: function($noty) {
+                      $noty.close();
+                    }
                 }
-            });
+            ];
+            noty(notyOptions);
+
           });
 
           // Click on submit button
