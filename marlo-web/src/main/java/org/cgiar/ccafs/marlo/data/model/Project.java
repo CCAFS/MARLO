@@ -368,9 +368,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   public long getCoreBudget() {
-    if (id.longValue() == 249) {
-      System.out.println("STOP");
-    }
     long total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 1).collect(Collectors.toList())) {

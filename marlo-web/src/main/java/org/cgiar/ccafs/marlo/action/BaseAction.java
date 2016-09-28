@@ -511,7 +511,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean getProjectSectionStatus(String section, long projectID) {
-    System.out.println(section);
     boolean returnValue = false;
     SectionStatus sectionStatus;
     Project project;

@@ -207,8 +207,6 @@ public class AuditLogInterceptor extends EmptyInterceptor {
   @Override
   public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 
-    System.out.println("onDelete");
-
     HashMap<String, Object> objects = new HashMap<>();
 
     if (entity instanceof IAuditLog) {

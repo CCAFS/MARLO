@@ -89,8 +89,6 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     if (project != null && project.isActive()) {
 
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
-      System.out.println(params);
-
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;
       } else {

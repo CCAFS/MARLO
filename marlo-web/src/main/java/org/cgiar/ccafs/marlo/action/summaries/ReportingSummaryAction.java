@@ -79,7 +79,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   @Override
   public String execute() throws Exception {
-    System.out.println("This is the " + projectID);
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 

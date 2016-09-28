@@ -234,7 +234,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
-    System.out.println("notifica correcto");
     String ClusterRole = this.getText("cluster.role");
     String ClusterRoleAcronym = this.getText("cluster.role.acronym");
 
@@ -438,7 +437,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
   @Override
   public String save() {
-    System.out.println("============");
 
     if (this.hasPermission("*")) {
 
