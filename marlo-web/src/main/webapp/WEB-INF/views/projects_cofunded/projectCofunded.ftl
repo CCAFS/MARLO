@@ -27,8 +27,8 @@
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
       <div class="pull-right">
-        <label for="cofundedMode-1"><input type="radio" name="project.cofundedMode" id="cofundedMode-1" value="1" /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
-        <label for="cofundedMode-2"><input type="radio" name="project.cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+        <label for="cofundedMode-1"><input type="radio" name="project.cofundedMode" id="cofundedMode-1" value="1" [#if project.cofundedMode == 1]checked="checked"[/#if] /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
+        <label for="cofundedMode-2"><input type="radio" name="project.cofundedMode" id="cofundedMode-2" value="2" [#if project.cofundedMode == 2]checked="checked"[/#if] /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
       </div>
     
       [#-- Project title --]
@@ -103,7 +103,7 @@
                   </div>
                   <div class="col-md-7">
                     <span class="col-md-2"><b>Amount:</b></span>
-                    <span class="col-md-3 currencyInput">${project.amount}</span>
+                    <span class="col-md-5 currencyInput">US$ <span>${((project.amount)!0)?number?string(",##0.00")} </span>
                   </div>
                 </div>
                 [/#if]
@@ -113,7 +113,7 @@
           </div>
     </div>
       
-    [#-- Section Buttons & hidden inputs--]
+          [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
   </div>
   
