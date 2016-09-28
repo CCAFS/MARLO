@@ -352,6 +352,11 @@ function verifyContributions() {
       $(keyOutputList).find(".keyOutputContribution").removeClass('fieldError');
       $(keyOutputList).find(".keyOutputContribution").addClass('fieldChecked');
     }
+    if(percentageRemaining > 0) {
+      $(keyOutputList).find(".keyOutputContribution").removeClass('fieldChecked');
+      $(keyOutputList).find(".keyOutputContribution").addClass('fieldError');
+      $(keyOutputList).find(".koContribution-title").addClass('errorText');
+    }
 
     // verify Outcome contributions
     keyOutputList.find(".keyOutputItem ").each(function(i1,e1) {

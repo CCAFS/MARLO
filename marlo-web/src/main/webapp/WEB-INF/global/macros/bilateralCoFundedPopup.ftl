@@ -1,13 +1,13 @@
 [#ftl] 
 [#assign isActive=false /]
 <!-- Search Users Dialog -->
-<div id="dialog-searchProjects" title="Search Bilateral Co-Funded Project" style="display:none"> 
+<div id="dialog-searchProjects" title="Search Bilateral Project" style="display:none"> 
   <div class="dialog-content"> 
     <form class="pure-form">
       [#--  Search a Bilateral Co-funded Project  --]
       <div id="search-users">
         <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
-        <h4 class="text-center"> Search a Bilateral Co-funded Project
+        <h4 class="text-center"> Search a Bilateral Project
         <br />
         <small class="cgiarCenter"> {CGIAR Center}  </small>
         </h4>
@@ -26,7 +26,7 @@
           <div class="panel-head"> Projects list </div>
           <div class="panel-body"> 
             <p class="userMessage">
-              If you do not find the bilateral co-funded project, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
+              If you do not find the bilateral project, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
             </p>
             <ul></ul>
           </div>
@@ -35,7 +35,7 @@
       
       [#-- Create Bilateral Projects Form --]
       <div id="create-user" class="accordion  text-center">
-        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Search bilateral project </span> 
+        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create bilateral project </span> 
       </div>
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">

@@ -254,7 +254,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -262,6 +261,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<Activity> getActivities() {
     return activities;
   }
+
 
   /**
    * This method calculates all the years between the start date and the end date.
@@ -286,7 +286,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     return allYears;
   }
-
 
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;

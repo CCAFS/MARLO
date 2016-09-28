@@ -116,6 +116,8 @@ function addBilateralFundProject(composedName,projectId,budget) {
   $item.find('.institutionId').val(institutionSelected);
   $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
   $item.find('.projectId').val(projectId);
+  // Set type as default
+  $item.find('.budgetTypeSelect').val(2);
   // Setting Currency Inputs
   $item.find('input.currencyInput').currencyInput();
   // Setting Percentage Inputs

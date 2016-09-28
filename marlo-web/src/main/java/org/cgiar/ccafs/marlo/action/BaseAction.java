@@ -219,6 +219,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
+  /**
+   * Verify if the project have Cluster of Activity to activate Budget by CoA
+   * 
+   * @return true if the project have CoA or false otherwise.
+   */
+  public Boolean canEditBudgetByCoAs(long projectID) {
+    Project project = projectManager.getProjectById(projectID);
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive())
+      .collect(Collectors.toList()) == null) {
+      return false;
+    }
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())
+      .size() > 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean canProjectSubmited(long projectID) {
     String params[] = {crpManager.getCrpById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
@@ -768,6 +787,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
 
+  }
+
+  public Boolean isProjectNew(long projectID) {
+
+
+    return true;
   }
 
   public boolean isProjectSubmitted(long projectID) {

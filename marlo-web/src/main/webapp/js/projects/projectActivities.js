@@ -54,7 +54,8 @@ function addActivity() {
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
   $item.find("input.startDate").attr("id", "startDate-" + countID);
   $item.find("input.endDate").attr("id", "endDate-" + countID);
-
+  $item.find(".blockTitle").removeClass("closed").addClass("opened");
+  $item.find(".blockContent").css("display", "block");
   $list.append($item);
   $item.show('slow', function() {
     $item.find("textarea").autoGrow();

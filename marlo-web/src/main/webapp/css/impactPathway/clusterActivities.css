@@ -127,3 +127,7 @@ span.outcomeStatement {
 .errorText {
     color: #f47171;
 }
+
+span.koTitle {
+    padding-left: 0;
+}
