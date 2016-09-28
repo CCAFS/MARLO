@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -790,8 +792,40 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Boolean isProjectNew(long projectID) {
 
+    Project project = projectManager.getProjectById(projectID);
 
-    return true;
+    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
+
+    if (this.isReportingActive()) {
+
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        if (project.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    } else {
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        if (project.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    }
   }
 
   public boolean isProjectSubmitted(long projectID) {

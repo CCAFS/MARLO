@@ -1,0 +1,12 @@
+START TRANSACTION;
+INSERT INTO `crp_parameters` VALUES ('74', '1', 'crp_open_planing_date', '2016-09-25', '1', '3', '2016-09-28 09:30:16', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('75', '1', 'crp_open_reporting_date', '2017-10-01', '1', '3', '2016-09-28 15:22:03', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('76', '3', 'crp_open_planing_date', '2016-09-25', '1', '3', '2016-09-28 15:22:45', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('77', '3', 'crp_open_reporting_date', '2017-10-01', '1', '3', '2016-09-28 15:22:46', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('78', '4', 'crp_open_planing_date', '2016-09-25', '1', '3', '2016-09-28 15:23:25', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('79', '4', 'crp_open_reporting_date', '2017-10-01', '1', '3', '2016-09-28 15:23:25', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('80', '5', 'crp_open_planing_date', '2016-09-25', '1', '3', '2016-09-28 15:23:58', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('81', '5', 'crp_open_reporting_date', '2017-09-25', '1', '3', '2016-09-28 15:23:58', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('82', '7', 'crp_open_planing_date', '2015-09-25', '1', '3', '2016-09-28 15:24:28', '3', ' ');
+INSERT INTO `crp_parameters` VALUES ('83', '7', 'crp_open_reporting_date', '2017-10-01', '1', '3', '2016-09-28 15:24:28', '3', ' ');
+COMMIT;
