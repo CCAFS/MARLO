@@ -226,10 +226,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Boolean canEditBudgetByCoAs(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    if (project.getProjectClusterActivities() == null) {
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive())
+      .collect(Collectors.toList()) == null) {
       return false;
     }
-    if (project.getProjectClusterActivities().size() > 1) {
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())
+      .size() > 1) {
       return true;
     } else {
       return false;
@@ -249,11 +251,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -278,10 +280,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
+
 
   public String getBasePermission() {
     return basePermission;
@@ -456,7 +458,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
@@ -465,6 +466,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
+
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -507,7 +509,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
-
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     System.out.println(section);
@@ -575,6 +576,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -582,7 +584,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -623,6 +624,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
+
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -631,12 +633,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPersmissionSubmit() {
 
     boolean permissions = this.hasPermission("submit");
     return permissions;
   }
+
 
   public boolean hasProgramnsRegions() {
     try {
@@ -684,7 +686,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -703,6 +704,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -746,6 +748,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
 
+  }
+
+  public Boolean isProjectNew(long projectID) {
+
+
+    return true;
   }
 
   public boolean isProjectSubmitted(long projectID) {
