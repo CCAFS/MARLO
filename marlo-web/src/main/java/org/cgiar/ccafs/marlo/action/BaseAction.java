@@ -936,26 +936,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void saveLessons(Crp crp, Project project) {
-    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-    project.getProjectComponentLesson().setActive(true);
-    project.getProjectComponentLesson().setActiveSince(new Date());
-    project.getProjectComponentLesson().setComponentName(actionName);
-    project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModificationJustification("");
-    project.getProjectComponentLesson().setProject(project);
+    if (project.isProjectEditLeader()) {
+      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
+      project.getProjectComponentLesson().setActive(true);
+      project.getProjectComponentLesson().setActiveSince(new Date());
+      project.getProjectComponentLesson().setComponentName(actionName);
+      project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModificationJustification("");
+      project.getProjectComponentLesson().setProject(project);
+      if (this.isReportingActive()) {
+        project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+        project.getProjectComponentLesson().setYear(this.getReportingYear());
 
-    if (this.isReportingActive()) {
-      project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-      project.getProjectComponentLesson().setYear(this.getReportingYear());
-
-    } else {
-      project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-      project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      } else {
+        project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+        project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      }
+      projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
     }
-    projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
+
 
   }
 
