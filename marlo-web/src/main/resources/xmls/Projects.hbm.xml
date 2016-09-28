@@ -68,6 +68,11 @@
 		</property>
 
 
+    <property name="noRegional" type="java.lang.Boolean">
+      <column name="no_regional"/>
+    </property>
+
+
 
 		<property name="projectEditLeader" type="boolean">
 			<column name="is_project_leader_edit" />
