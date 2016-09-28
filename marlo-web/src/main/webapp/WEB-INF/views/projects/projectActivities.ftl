@@ -34,8 +34,6 @@
           
           <h3 class="headTitle">Project Activities</h3>
           
-          
-          
           <div class="activitiesOG-content simpleBox">
           <h4 class="subTitle headTitle">On going activities</h4>
           <hr />
@@ -50,20 +48,17 @@
               <div class="button-blue  addActivity"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="form.buttons.addActivity" /]</div>
             </div>
           [/#if]
-    
           
-          <div class="activitiesC-content simpleBox">
-          <h4 class="subTitle headTitle">Completed Activities</h4>
-          <hr />
           [#if project.closedProjectActivities?has_content]
+          <div class="activitiesC-content simpleBox">
+            <h4 class="subTitle headTitle">Completed Activities</h4>
+            <hr />
             [#list project.closedProjectActivities as activity]
                 [@projectActivityMacro element=activity name="project.closedProjectActivities"  index=activity_index isActive=false /]
             [/#list]
-          [/#if]
           </div>
+          [/#if]
           
-            
-           
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
