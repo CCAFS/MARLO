@@ -232,18 +232,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-  public Boolean canEditBudgetByCoAs() {
-    if (projectClusterActivities == null) {
-      return false;
-    }
-    if (projectClusterActivities.size() > 1) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
