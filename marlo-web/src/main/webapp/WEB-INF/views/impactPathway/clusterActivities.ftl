@@ -211,12 +211,12 @@
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      <span class="koTitle">${(element.keyOutput)!'New Key Output'}</span>
+       <span title="${(element.keyOutput)!}" class="koTitle col-md-9">[#if element.keyOutput?has_content][@utils.wordCutter string=(element.keyOutput) maxPos=70 substr=" "/][#else]New Key output[/#if]</span>
     
       
       <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span> 
@@ -260,7 +260,7 @@
   <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
-        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
+        <div id="removeActivity" class="removeOutcome removeElement removeLink" title="[@s.text name='cluster.removeOutcome' /]"></div>
       </div>
     [/#if]    
       [#-- Statement --]
