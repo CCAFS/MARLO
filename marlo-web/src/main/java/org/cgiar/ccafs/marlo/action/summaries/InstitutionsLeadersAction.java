@@ -65,7 +65,6 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
 
   @Override
   public String execute() throws Exception {
-    System.out.println("This is the crp #: " + loggedCrp.getId());
     ClassicEngineBoot.getInstance().start();
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 

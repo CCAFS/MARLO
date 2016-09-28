@@ -92,7 +92,6 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     if (deliverable != null && deliverable.isActive()) {
 
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
-      System.out.println(params);
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;

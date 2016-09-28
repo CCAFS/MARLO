@@ -293,8 +293,6 @@ public class OutcomesAction extends BaseAction {
 
       // TODO
       targetUnitList = this.sortByComparator(targetUnitList);
-
-      System.out.println("");
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {

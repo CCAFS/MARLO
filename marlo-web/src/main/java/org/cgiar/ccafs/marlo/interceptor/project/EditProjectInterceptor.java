@@ -90,7 +90,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
-      System.out.println(params);
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;

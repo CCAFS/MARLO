@@ -160,7 +160,6 @@ public class ProjectDescriptionAction extends BaseAction {
     if (path.toFile().exists()) {
 
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);
@@ -472,10 +471,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
 
         List<CrpProgram> regions = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses()) {
-          System.out.println(projectFocuses.getId() + " " + projectFocuses.isActive() + " "
-            + projectFocuses.getCrpProgram().getAcronym());
-        }
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())

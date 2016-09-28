@@ -274,7 +274,6 @@ public class ProjectActivitiesAction extends BaseAction {
     if (path.toFile().exists()) {
 
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);

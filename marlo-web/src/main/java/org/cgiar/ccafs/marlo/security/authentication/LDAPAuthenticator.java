@@ -68,7 +68,6 @@ public class LDAPAuthenticator implements Authenticator {
         if (con.getLogin() != null) {
           looged.replace(APConstants.LOGIN_STATUS, true);
           looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
-          System.out.println(con.getAuthenticationMessage());
         } else {
           looged.put(APConstants.LOGIN_MESSAGE, con.getAuthenticationMessage());
           LOG.error("Authentication error  {}", con.getAuthenticationMessage());

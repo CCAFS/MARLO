@@ -57,72 +57,82 @@
             <div class="tab-content budget-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
+                  [#assign hasW1w2Budgets = action.hasBudgets(1,year) /]
+                  [#assign hasW3Budgets = action.hasBudgets(2,year) /]
+                  [#assign hasBilateralBudgets = action.hasBudgets(3,year) /]
+                  [#assign hasCenterBudgets = action.hasBudgets(4,year) /]
                   
                   [#-- Budgest cannot be editable message --]
                   [#if !isYearEditable(year)]<div class="note">Percentages for ${year} cannot be editable.</div>[/#if]
                   
-                  <div class="overallYearBudget fieldset clearfix">
-                    <h5 class="title">Remaining ${year} total budget amount</h5>
-                    <div class="row">
-                      [#-- W1/W2 --]
-                      [#if !project.bilateralProject && action.hasBudgets(1,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>W1/W2</strong> <small> <span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span> </small></p>
-                      </div>
-                      [/#if]
-                      [#-- W3 --]
-                      [#if action.hasBudgets(2,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>W3</strong> <small> <span class="context-total totalByYear-${type.w3}">${(action.getRemaining(2,year))!}%</span> </small></p>
-                      </div>
-                      [/#if]
-                      [#-- Bilateral  --]
-                      [#if action.hasBudgets(3,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-total totalByYear-${type.bilateral}">${(action.getRemaining(3,year))!}%</span> </small></p>
-                      </div>
-                      [/#if]
-                      [#-- Center Funds --]
-                      [#if !project.bilateralProject && action.hasBudgets(4,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-total totalByYear-${type.centerFunds}">${(action.getRemaining(4,year))!}%</span> </small></p>
-                      </div>
-                      [/#if]
-                    </div>
-                    
-                    <h5 class="title">Remaining ${year} gender amount</h5>
-                    <div class="row">
-                      [#-- W1/W2 --]
-                      [#if !project.bilateralProject && action.hasBudgets(1,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>W1/W2</strong>  <small><span class="context-gender totalByYear-${type.w1w2}">${(action.getRemainingGender(1,year))!}%</span></small></p>
-                      </div>
-                      [/#if]
-                      [#-- W3 --]
-                      [#if action.hasBudgets(2,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>W3</strong> <small> <span class="context-gender totalByYear-${type.w3}">${(action.getRemainingGender(2,year))!}%</span></small></p>
-                      </div>
-                      [/#if]
-                      [#-- Bilateral  --]
-                      [#if action.hasBudgets(3,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-gender totalByYear-${type.bilateral}">${(action.getRemainingGender(3,year))!}%</span></small></p>
+                  [#if hasW1w2Budgets || hasW3Budgets || hasBilateralBudgets || hasCenterBudgets]
+                  
+                    <div class="overallYearBudget fieldset clearfix">
+                      <h5 class="title">Remaining ${year} total budget amount</h5>
+                      <div class="row">
+                        [#-- W1/W2 --]
+                        [#if !project.bilateralProject && hasW1w2Budgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>W1/W2</strong> <small> <span class="context-total totalByYear-${type.w1w2}">${(action.getRemaining(1,year))!}%</span> </small></p>
                         </div>
-                      [/#if]
-                      [#-- Center Funds --]
-                      [#if !project.bilateralProject && action.hasBudgets(4,year)]
-                      <div class="col-md-3">
-                        <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-gender totalByYear-${type.centerFunds}">${(action.getRemainingGender(4,year))!}%</span></small></p>
+                        [/#if]
+                        [#-- W3 --]
+                        [#if hasW3Budgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>W3</strong> <small> <span class="context-total totalByYear-${type.w3}">${(action.getRemaining(2,year))!}%</span> </small></p>
+                        </div>
+                        [/#if]
+                        [#-- Bilateral  --]
+                        [#if hasBilateralBudgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-total totalByYear-${type.bilateral}">${(action.getRemaining(3,year))!}%</span> </small></p>
+                        </div>
+                        [/#if]
+                        [#-- Center Funds --]
+                        [#if !project.bilateralProject && hasCenterBudgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-total totalByYear-${type.centerFunds}">${(action.getRemaining(4,year))!}%</span> </small></p>
+                        </div>
+                        [/#if]
                       </div>
-                      [/#if]
+                      
+                      <h5 class="title">Remaining ${year} gender amount</h5>
+                      <div class="row">
+                        [#-- W1/W2 --]
+                        [#if !project.bilateralProject && hasW1w2Budgets]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>W1/W2</strong>  <small><span class="context-gender totalByYear-${type.w1w2}">${(action.getRemainingGender(1,year))!}%</span></small></p>
+                        </div>
+                        [/#if]
+                        [#-- W3 --]
+                        [#if hasW3Budgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>W3</strong> <small> <span class="context-gender totalByYear-${type.w3}">${(action.getRemainingGender(2,year))!}%</span></small></p>
+                        </div>
+                        [/#if]
+                        [#-- Bilateral  --]
+                        [#if hasBilateralBudgets ]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>Bilateral</strong> <small> <span class="context-gender totalByYear-${type.bilateral}">${(action.getRemainingGender(3,year))!}%</span></small></p>
+                          </div>
+                        [/#if]
+                        [#-- Center Funds --]
+                        [#if !project.bilateralProject && hasCenterBudgets]
+                        <div class="col-md-3">
+                          <p class="subTitle"><strong>Center Funds</strong> <small> <span class="context-gender totalByYear-${type.centerFunds}">${(action.getRemainingGender(4,year))!}%</span></small></p>
+                        </div>
+                        [/#if]
+                      </div>
                     </div>
-                  </div>
-                
-                  [#-- Project Cluster of activities --]
-                  [#list project.crpActivities as coa]
-                    [@projectCoAMacro element=coa name="" index=-1 selectedYear=year /]
-                  [/#list]
+                  
+                    [#-- Project Cluster of activities --]
+                    [#list project.crpActivities as coa]
+                      [@projectCoAMacro element=coa name="" index=-1 selectedYear=year /]
+                    [/#list]
+                  
+                  [#else]
+                    <p class="emptyMessage text-center">Before distribute the contribution to each Cluster of Activity, please fill the budget amount and gender percentage in <a href="[@s.url action="${crpSession}/budgetByPartners"][@s.param name="projectID" value=project.id /][@s.param name="edit" value=true /][/@s.url]">project Budget by partners</a></p>
+                  [/#if]
                   
                 </div>
               [/#list]  

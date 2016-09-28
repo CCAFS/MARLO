@@ -115,8 +115,6 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Date activeSince;
-
-
   @Expose
   private String modificationJustification;
 
@@ -199,7 +197,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     boolean isCofinancing, String leaderResponsabilities, Boolean requiresWorkplanUpload, FileDB workplanName,
     FileDB bilateralContractName, boolean isActive, Date activeSince, String modificationJustification,
     FileDB annualReportToDornor, Set<ProjectFocus> projectFocuseses, Set<Submission> submissions,
-    Set<ProjectLocation> projectLocations, Set<ProjectScope> projectScopes, Set<Deliverable> deliverables) {
+    Set<ProjectLocation> projectLocations, Set<ProjectScope> projectScopes, Set<Deliverable> deliverables,
+    Date createDate) {
     this.crp = crp;
     this.liaisonInstitution = liaisonInstitution;
     this.liaisonUser = liaisonUser;
@@ -225,6 +224,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectLocations = projectLocations;
     this.projectScopes = projectScopes;
     this.deliverables = deliverables;
+    this.createDate = createDate;
   }
 
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
@@ -386,6 +386,11 @@ public class Project implements java.io.Serializable, IAuditLog {
 
     return total;
   }
+
+  public Date getCreateDate() {
+    return createDate;
+  }
+
 
   public User getCreatedBy() {
     return this.createdBy;
@@ -747,6 +752,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
+
   public boolean isProjectEditLeader() {
     return projectEditLeader;
   }
@@ -796,6 +802,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public void setCofinancing(boolean cofinancing) {
     this.cofinancing = cofinancing;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void setCreatedBy(User usersByCreatedBy) {

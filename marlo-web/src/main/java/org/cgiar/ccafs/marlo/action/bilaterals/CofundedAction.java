@@ -109,9 +109,7 @@ public class CofundedAction extends BaseAction {
     Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
-
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);
