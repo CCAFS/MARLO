@@ -668,6 +668,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public boolean isCompletePreProject(long projectID) {
+
+    Project project = projectManager.getProjectById(projectID);
+    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    int i = 0;
+    for (SectionStatus sectionStatus : sections) {
+      switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+        case DESCRIPTION:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case PARTNERS:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case BUDGET:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+      }
+
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (i != 3) {
+      return false;
+    }
+    return true;
+  }
+
+
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -686,6 +724,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
