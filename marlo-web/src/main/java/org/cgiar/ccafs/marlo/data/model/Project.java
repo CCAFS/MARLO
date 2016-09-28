@@ -62,7 +62,8 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean projectEditLeader;
-
+  @Expose
+  private Date createDate;
 
   @Expose
   private LiaisonUser liaisonUser;
@@ -750,7 +751,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Boolean isNoRegional() {
     return noRegional;
   }
-
 
 
   public boolean isProjectEditLeader() {
