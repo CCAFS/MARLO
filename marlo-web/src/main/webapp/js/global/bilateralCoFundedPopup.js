@@ -41,7 +41,7 @@ $(document).ready(function() {
     if($(this).next().is(':visible')) {
       $('#search-users').next().slideDown();
       $(this).removeClass('active');
-      $(this).find('span.title').text('Create a bilateral co-funded project');
+      $(this).find('span.title').text('Create bilateral project');
       $(this).find('span.glyphicon').removeClass('glyphicon-search').addClass('glyphicon-plus');
     } else {
       $(this).next().slideDown();

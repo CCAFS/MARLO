@@ -99,7 +99,7 @@
             [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
             
           [#else]
-            <div class="simpleBox emptyMessage text-center">Before entering this section, you need to fill project start date and end date in <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section</a></div>  
+            <div class="simpleBox emptyMessage text-center">Before entering this section, please fill project start & end date <a href="[@s.url action="${crpSession}/description"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">description section </a>and click <span class="label label-success">save</span></div>  
           [/#if]
          
         [/@s.form] 
@@ -310,9 +310,9 @@
           [/#list]
           [#if coFundedProjects == 0]
             [#if editable && isYearEditable(selectedYear)]
-              <p class="emptyMessage text-center">Add a bilateral co-funded project clicking in the "[@s.text name="form.buttons.selectProject" /]" button below.</p>
+              <p class="emptyMessage text-center">Add a bilateral project clicking on "[@s.text name="form.buttons.selectProject" /]" button below.</p>
             [#else]
-              <p class="emptyMessage text-center">Theres is not a bilateral co-funded project added.</p>
+              <p class="emptyMessage text-center">Theres is not a bilateral project added.</p>
             [/#if]
           [/#if]
         </div>

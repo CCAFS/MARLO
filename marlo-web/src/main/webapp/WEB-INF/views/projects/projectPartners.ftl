@@ -55,6 +55,7 @@
             
             [#-- Other fields --]
              
+            [#if project.projectEditLeader]
             <div class="simpleBox">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
@@ -81,6 +82,7 @@
                   [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
                 </div>
               </div>
+              [/#if]
               
               
             </div>
