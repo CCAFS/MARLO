@@ -251,11 +251,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
+
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -280,10 +280,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
-
 
   public String getBasePermission() {
     return basePermission;
@@ -458,6 +458,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
+
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
@@ -466,7 +467,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
-
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -509,6 +509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
+
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
@@ -575,7 +576,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -583,6 +583,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -623,7 +624,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
-
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -632,12 +632,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean hasPersmissionSubmit() {
 
     boolean permissions = this.hasPermission("submit");
     return permissions;
   }
-
 
   public boolean hasProgramnsRegions() {
     try {
@@ -684,6 +684,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
+
+  public boolean isCompletePreProject(long projectID) {
+
+    Project project = projectManager.getProjectById(projectID);
+    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    int i = 0;
+    for (SectionStatus sectionStatus : sections) {
+      switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+        case DESCRIPTION:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case PARTNERS:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case BUDGET:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+      }
+
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (i != 3) {
+      return false;
+    }
+    return true;
+  }
+
 
   public boolean isCompleteProject(long projectID) {
 
@@ -896,26 +935,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void saveLessons(Crp crp, Project project) {
-    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-    project.getProjectComponentLesson().setActive(true);
-    project.getProjectComponentLesson().setActiveSince(new Date());
-    project.getProjectComponentLesson().setComponentName(actionName);
-    project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModificationJustification("");
-    project.getProjectComponentLesson().setProject(project);
+    if (project.isProjectEditLeader()) {
+      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
+      project.getProjectComponentLesson().setActive(true);
+      project.getProjectComponentLesson().setActiveSince(new Date());
+      project.getProjectComponentLesson().setComponentName(actionName);
+      project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModificationJustification("");
+      project.getProjectComponentLesson().setProject(project);
+      if (this.isReportingActive()) {
+        project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+        project.getProjectComponentLesson().setYear(this.getReportingYear());
 
-    if (this.isReportingActive()) {
-      project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-      project.getProjectComponentLesson().setYear(this.getReportingYear());
-
-    } else {
-      project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-      project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      } else {
+        project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+        project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      }
+      projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
     }
-    projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
+
 
   }
 

@@ -107,11 +107,12 @@ public class ProjectPartnersValidator extends BaseValidator {
 
       }
 
-
-      this.validateLessonsLearn(action, project);
-      if (this.validationMessage.toString().contains("Lessons")) {
-        this.replaceAll(validationMessage, "Lessons",
-          "Lessons regarding partnerships and possible implications for the coming planning cycle");
+      if (project.isProjectEditLeader()) {
+        this.validateLessonsLearn(action, project);
+        if (this.validationMessage.toString().contains("Lessons")) {
+          this.replaceAll(validationMessage, "Lessons",
+            "Lessons regarding partnerships and possible implications for the coming planning cycle");
+        }
       }
       this.validateCCAFSProject(action, project);
 
@@ -162,7 +163,10 @@ public class ProjectPartnersValidator extends BaseValidator {
           for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
             this.validatePersonType(action, c, j, person);
             this.validateUser(action, c, j, person);
-            this.validatePersonResponsibilities(action, c, j, person);
+            if (project.isProjectEditLeader()) {
+              this.validatePersonResponsibilities(action, c, j, person);
+            }
+
             j++;
           }
         }

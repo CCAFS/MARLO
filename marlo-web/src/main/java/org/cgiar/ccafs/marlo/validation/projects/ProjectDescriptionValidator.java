@@ -119,10 +119,16 @@ public class ProjectDescriptionValidator extends BaseValidator
 
     if (project.getFlagships() != null) {
       if (project.getFlagships().size() == 0) {
-        this.addMessage(action.getText("projectDescription.flagships"));
+        if (project.getFlagshipValue().length() == 0) {
+          this.addMessage(action.getText("projectDescription.flagships"));
+        }
+
       }
     } else {
-      this.addMessage(action.getText("projectDescription.flagships"));
+      if (project.getFlagshipValue().length() == 0) {
+        this.addMessage(action.getText("projectDescription.flagships"));
+      }
+
     }
 
     /*
