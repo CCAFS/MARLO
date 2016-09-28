@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -75,6 +76,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private UserRoleManager userRoleManager;
   private CrpManager crpManager;
   private CrpProgramManager crpProgramManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
@@ -103,7 +105,7 @@ public class ClusterActivitiesAction extends BaseAction {
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMail sendMail,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager) {
     super(config);
     this.roleManager = roleManager;
@@ -117,6 +119,7 @@ public class ClusterActivitiesAction extends BaseAction {
     this.validator = validator;
     this.sendMail = sendMail;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
+    this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputOutcomeManager = crpClusterKeyOutputOutcomeManager;
   }
 
@@ -393,6 +396,17 @@ public class ClusterActivitiesAction extends BaseAction {
               for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
                 if (leaders.getUser() != null && leaders.getUser().getId() != null) {
                   leaders.setUser(userManager.getUser(leaders.getUser().getId()));
+                }
+              }
+            }
+
+            if (clusterOfActivity.getKeyOutputs() != null) {
+              for (CrpClusterKeyOutput keyOuput : clusterOfActivity.getKeyOutputs()) {
+                if (keyOuput.getKeyOutputOutcomes() != null) {
+                  for (CrpClusterKeyOutputOutcome keyOuputOutcome : keyOuput.getKeyOutputOutcomes()) {
+                    keyOuputOutcome.setCrpProgramOutcome(crpProgramOutcomeManager
+                      .getCrpProgramOutcomeById(keyOuputOutcome.getCrpProgramOutcome().getId()));
+                  }
                 }
               }
             }
