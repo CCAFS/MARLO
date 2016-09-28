@@ -67,6 +67,7 @@ $(document)
                               text: 'Continue without saving',
                               onClick: function($noty) {
                                 window.location.replace(url);
+                                $noty.close();
                               }
                           }, {
                               addClass: 'btn btn-success',

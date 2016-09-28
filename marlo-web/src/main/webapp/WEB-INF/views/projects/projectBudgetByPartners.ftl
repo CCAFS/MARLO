@@ -351,7 +351,7 @@
       <div class="col-md-5">
         <div class="row col-md-4"><strong>Type:</strong>  </div>
         <div class="row col-md-9">
-          [@customForm.select name="${customName}.budgetType.id" i18nkey="budget.budgetType"  showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=(editable && isYearEditable(selectedYear)) || isTemplate/]
+          [@customForm.select name="${customName}.budgetType.id" i18nkey="budget.budgetType" className="budgetTypeSelect" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=(editable && isYearEditable(selectedYear)) || isTemplate/]
         </div>
       </div>
       <div class="col-md-4">
@@ -364,7 +364,7 @@
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
           <input type="hidden" name="${customName}.amount" value="${(element.amount)!0}" />
-        [/#if]  
+        [/#if]
         </div>
       </div>
       <div class="col-md-3">
