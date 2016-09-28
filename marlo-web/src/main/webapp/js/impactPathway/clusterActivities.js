@@ -28,11 +28,9 @@ function init() {
 
   updateClustersIndex();
 
-  $(".keyOutputInput").on("change", changeTitle);
-  $(".keyOutputInput").on("keyup", changeTitle);
+  $(".keyOutputInput").on("change keyup", changeTitle);
 
-  $(".keyOutputContribution").on("change", changeKOcontribution);
-  $(".keyOutputContribution").on("keyup", changeKOcontribution);
+  $(".keyOutputContribution").on("change keyup", changeKOcontribution);
 
   // Select outcomes
   $(".outcomeList").on("change", function() {
@@ -156,6 +154,8 @@ function changeKOcontribution() {
   var $blockTitle = $(this).parents(".keyOutputItem ").find(".koContribution-percentage");
   if($(this).val() < 0) {
     $blockTitle.html("0%");
+  } else if($(this).val() > 100) {
+    $blockTitle.html("100%");
   } else {
     $blockTitle.html($(this).val() + "%");
   }
@@ -168,6 +168,8 @@ function addKeyOutput() {
   var contribution;
   var $list = $(this).parent().parent().find('.keyOutputsItems-list');
   var $item = $('#keyOutput-template').clone(true).removeAttr("id");
+  $item.find(".blockTitle").removeClass("closed").addClass("opened");
+  $item.find(".blockContent").css("display", "block");
   if(verifyKoContribution($list) <= 0) {
     contribution = 0;
   } else {
