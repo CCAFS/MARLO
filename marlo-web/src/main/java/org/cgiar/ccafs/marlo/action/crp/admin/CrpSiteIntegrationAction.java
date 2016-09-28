@@ -159,7 +159,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    System.out.println("bbcEmails");
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.siteIntegration.assigned.subject",
         new String[] {loggedCrp.getName(), siteRoleAcronym, crpsSiteIntegration.getLocElement().getName()}),
@@ -194,7 +193,6 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
   @Override
   public String save() {
-    System.out.println("Entra a save");
 
     if (this.hasPermission("*")) {
 

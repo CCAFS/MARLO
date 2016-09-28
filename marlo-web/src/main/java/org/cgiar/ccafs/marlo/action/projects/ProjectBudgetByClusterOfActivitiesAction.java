@@ -109,7 +109,6 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
     if (path.toFile().exists()) {
 
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);
@@ -129,6 +128,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
+  @Override
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());

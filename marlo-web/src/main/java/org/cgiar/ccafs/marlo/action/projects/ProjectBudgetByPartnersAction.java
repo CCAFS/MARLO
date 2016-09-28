@@ -126,7 +126,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (path.toFile().exists()) {
 
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);
@@ -146,6 +145,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
+  @Override
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
@@ -199,7 +199,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
           }
 
           if (projectBudget.getAmount() > 0) {
-            System.out.println(projectBudget.getGenderValue());
             projectBudget.setGenderPercentage(
               new BigDecimal(String.valueOf((projectBudget.getGenderValue() / projectBudget.getAmount()) * 100))
                 .setScale(2, BigDecimal.ROUND_FLOOR).doubleValue()

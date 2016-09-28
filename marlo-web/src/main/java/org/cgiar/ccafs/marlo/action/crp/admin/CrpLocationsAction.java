@@ -128,7 +128,6 @@ public class CrpLocationsAction extends BaseAction {
       } else {
         if (!locElementType.getHasCoordinates()) {
           LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
-          System.out.println();
           if (elementType.getLocElements() != null) {
             for (LocElement locElement : elementType.getLocElements()) {
               locGeopositionManager.deleteLocGeoposition(locElement.getLocGeoposition().getId());

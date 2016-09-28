@@ -85,7 +85,6 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     this.validateProjectOutcome(action, projectOutcome);
     if (!action.getFieldErrors().isEmpty()) {
-      System.out.println(action.getFieldErrors());
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action

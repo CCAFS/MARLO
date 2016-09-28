@@ -133,7 +133,6 @@ public class ProjectOutcomeAction extends BaseAction {
     if (path.toFile().exists()) {
 
       boolean fileDeleted = path.toFile().delete();
-      System.out.println(fileDeleted);
     }
 
     this.setDraft(false);

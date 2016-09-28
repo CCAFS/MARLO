@@ -226,10 +226,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Boolean canEditBudgetByCoAs(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-    if (project.getProjectClusterActivities() == null) {
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive())
+      .collect(Collectors.toList()) == null) {
       return false;
     }
-    if (project.getProjectClusterActivities().size() > 1) {
+    if (project.getProjectClusterActivities().stream().filter(pc -> pc.isActive()).collect(Collectors.toList())
+      .size() > 1) {
       return true;
     } else {
       return false;
@@ -510,7 +512,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean getProjectSectionStatus(String section, long projectID) {
-    System.out.println(section);
     boolean returnValue = false;
     SectionStatus sectionStatus;
     Project project;
@@ -685,6 +686,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public boolean isCompletePreProject(long projectID) {
+
+    Project project = projectManager.getProjectById(projectID);
+    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    int i = 0;
+    for (SectionStatus sectionStatus : sections) {
+      switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+        case DESCRIPTION:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case PARTNERS:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+        case BUDGET:
+          i++;
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
+          break;
+      }
+
+    }
+    if (sections.size() == 0) {
+      return false;
+    }
+    if (i != 3) {
+      return false;
+    }
+    return true;
+  }
+
+
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -703,6 +742,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
+
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -746,6 +786,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isPlanningActive() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
 
+  }
+
+  public Boolean isProjectNew(long projectID) {
+
+
+    return true;
   }
 
   public boolean isProjectSubmitted(long projectID) {
@@ -889,26 +935,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public void saveLessons(Crp crp, Project project) {
-    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
-    project.getProjectComponentLesson().setActive(true);
-    project.getProjectComponentLesson().setActiveSince(new Date());
-    project.getProjectComponentLesson().setComponentName(actionName);
-    project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
-    project.getProjectComponentLesson().setModificationJustification("");
-    project.getProjectComponentLesson().setProject(project);
+    if (project.isProjectEditLeader()) {
+      String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
 
+      project.getProjectComponentLesson().setActive(true);
+      project.getProjectComponentLesson().setActiveSince(new Date());
+      project.getProjectComponentLesson().setComponentName(actionName);
+      project.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+      project.getProjectComponentLesson().setModificationJustification("");
+      project.getProjectComponentLesson().setProject(project);
+      if (this.isReportingActive()) {
+        project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+        project.getProjectComponentLesson().setYear(this.getReportingYear());
 
-    if (this.isReportingActive()) {
-      project.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-      project.getProjectComponentLesson().setYear(this.getReportingYear());
-
-    } else {
-      project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-      project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      } else {
+        project.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+        project.getProjectComponentLesson().setYear(this.getPlanningYear());
+      }
+      projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
     }
-    projectComponentLessonManager.saveProjectComponentLesson(project.getProjectComponentLesson());
+
 
   }
 

@@ -40,7 +40,7 @@
     { 'title': 'Budget',
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true  },
-      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs',  'active': true  },
+      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id), 'active': true  },
       { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false, 'show': reportingActive }
       ]
     }
@@ -82,16 +82,12 @@
 
 <div class="clearfix"></div>
 
-
-[#-- ${project.canEditBudgetByCoAs()?string} --]
-[#-- ${project.projectClusterActivities?size} --]
-
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if canSwitchProject ]
+[#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) ]
 <div class="grayBox text-center">
-  [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]
+  [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]  
 </div>
 <br />
 [/#if]

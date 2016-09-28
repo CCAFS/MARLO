@@ -132,6 +132,7 @@ public class ProjectListAction extends BaseAction {
       project.setScale(0);
       project.setCofinancing(false);
       project.setCrp(loggedCrp);
+      project.setCreateDate(new Date());
 
       projectID = projectManager.saveProject(project);
 
@@ -151,6 +152,7 @@ public class ProjectListAction extends BaseAction {
       project.setScale(0);
       project.setCofinancing(false);
       project.setCrp(loggedCrp);
+      project.setCreateDate(new Date());
 
       projectID = projectManager.saveProject(project);
       if (projectID > 0) {

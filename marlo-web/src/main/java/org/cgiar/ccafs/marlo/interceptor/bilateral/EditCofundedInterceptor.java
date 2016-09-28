@@ -86,10 +86,7 @@ public class EditCofundedInterceptor extends AbstractInterceptor implements Seri
       projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectId);
 
     if (project != null) {
-
       String params[] = {crp.getAcronym(), project.getId() + ""};
-      System.out.println(params);
-
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         canEdit = true;
       } else {

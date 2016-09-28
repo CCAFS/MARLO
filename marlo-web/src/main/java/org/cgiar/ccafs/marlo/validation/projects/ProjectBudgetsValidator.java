@@ -93,6 +93,25 @@ public class ProjectBudgetsValidator extends BaseValidator {
         }
       }
       if ((project.isCoreProject() || project.isCoFundedProject())) {
+        if (project.getBudgets() != null && project.getBudgets().size() > 0) {
+          long total = 0;
+          for (ProjectBudget projectBudget : project.getBudgets()) {
+            if (projectBudget != null) {
+              if (projectBudget.getAmount() != null) {
+                total = total + projectBudget.getAmount().longValue();
+              }
+
+            }
+
+          }
+          if (total == 0) {
+            this.addMessage(action.getText("projectBudgets.amount"));
+          }
+        } else {
+          this.addMessage(action.getText("projectBudgets"));
+        }
+
+
         if (project.getBudgetsCofinancing() != null && project.getBudgetsCofinancing().size() > 0) {
           int i = 0;
 

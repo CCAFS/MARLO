@@ -53,6 +53,8 @@ public final class APConstants {
   public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
   public static final String CRP_REPORTING_ACTIVE = "crp_reporting_active";
   public static final String CRP_LESSONS_ACTIVE = "crp_lessons_active";
+  public static final String CRP_OPEN_PLANNING_DATE = "crp_open_planing_date";
+  public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
 
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String CRP_ID = "crpID";
