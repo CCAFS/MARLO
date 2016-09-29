@@ -91,13 +91,13 @@ $(document).ready(function() {
   });
 
   // No regional programmatic focus
-  $('#projectNoRegional').on('click', function() {
+  $('#projectNoRegional').on('change', function() {
     if(this.checked) {
       $('input.rpInput').attr("onclick", "return false").addClass('disabled').prop("checked", false);
     } else {
       $('input.rpInput').attr("onclick", "").removeClass('disabled');
     }
-  });
+  }).trigger('change');
 
   /**
    * Cluster of Activities

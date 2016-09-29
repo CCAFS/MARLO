@@ -71,6 +71,14 @@ public interface LiaisonUserManager {
   public LiaisonUser getLiaisonUserByUserId(long userID);
 
   /**
+   * This method gets a list of liaisonUser by a given Institution identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @return a List of LiaisonUser.
+   */
+  public List<LiaisonUser> getLiasonUsersByInstitutionId(Long institutionId);
+
+  /**
    * This method saves the information of the given liaisonUser
    * 
    * @param liaisonUser - is the liaisonUser object with the new information to be added/updated.
