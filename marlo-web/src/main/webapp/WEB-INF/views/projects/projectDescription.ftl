@@ -135,9 +135,9 @@
                   <h5>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</h5>
                   [#if editable && action.hasPermission("regions")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                    <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput">
+                    <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />
                     <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
-                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput"  value="regionsIds" /]
+                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
                   [#else]
                     <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                     [#if project.regions?has_content]
