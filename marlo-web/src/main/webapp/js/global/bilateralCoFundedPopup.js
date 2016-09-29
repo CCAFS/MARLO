@@ -11,7 +11,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 600,
+      height: 620,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',
@@ -102,10 +102,22 @@ $(document).ready(function() {
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
 
+    var projectValidate = {};
+    projectValidate.title = project.title;
+    projectValidate.startDate = project.startDate;
+    projectValidate.endDate = project.endDate;
+    projectValidate.status = project.status;
+    projectValidate.budget = project.budget;
+    projectValidate.contactName = project.contactName;
+    projectValidate.contactEmail = project.contactEmail;
+    projectValidate.institution = project.institution;
+
     // Validate if fields are filled
-    $.each(project, function(key,value) {
+    $.each(projectValidate, function(key,value) {
       if(value.length < 1) {
         invalidFields.push($('label[for="' + key + '"]').text().trim().replace(':', ''));
+      } else if(value == -1) {
+        invalidFields.push('Select an option');
       }
     });
     // Validate Email
