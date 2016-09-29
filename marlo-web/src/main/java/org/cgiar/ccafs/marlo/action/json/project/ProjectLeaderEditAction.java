@@ -18,7 +18,10 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
@@ -34,7 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 public class ProjectLeaderEditAction extends BaseAction {
 
   private static final long serialVersionUID = -7458726524471438475L;
-
+  @Inject
+  private SectionStatusManager sectionStatusManager;
   private ProjectManager projectManager;
   private long projectId;
   private boolean projectStatus;
@@ -54,6 +58,20 @@ public class ProjectLeaderEditAction extends BaseAction {
     if (project != null) {
       project.setProjectEditLeader(projectStatus);
       projectManager.saveProject(project);
+
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.PARTNERS.getStatus());
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.DESCRIPTION.getStatus());
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.BUDGET.getStatus());
+
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
+      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
+        ProjectSectionStatusEnum.OUTCOMES.getStatus());
       status.put("status", project.isProjectEditLeader());
       status.put("ok", true);
     } else {
@@ -76,7 +94,26 @@ public class ProjectLeaderEditAction extends BaseAction {
     projectStatus = Boolean.parseBoolean(StringUtils.trim(((String[]) parameters.get("projectStatus"))[0]));
   }
 
+  private void saveMissingFields(Project project, String cycle, int year, String sectionName) {
+    // Reporting missing fields into the database.
+
+    SectionStatus status = sectionStatusManager.getSectionStatusByProject(project.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProject(project);
+      status.setSectionName(sectionName);
+
+
+    }
+    status.setMissingFields("editLeader");
+    sectionStatusManager.saveSectionStatus(status);
+  }
+
   public void setStatus(Map<String, Object> status) {
     this.status = status;
   }
+
 }
