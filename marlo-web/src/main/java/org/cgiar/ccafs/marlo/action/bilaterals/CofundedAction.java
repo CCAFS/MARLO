@@ -222,8 +222,7 @@ public class CofundedAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll().stream()
-        .filter(i -> i.getInstitutionType().getId() == APConstants.INSTITUTION_DONOR_TYPE).collect(Collectors.toList());
+      institutions = institutionManager.findAll();
 
       liaisonInstitutions = liaisonInstitutionManager.findAll().stream()
         .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
