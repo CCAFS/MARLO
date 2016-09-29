@@ -129,6 +129,7 @@ public class ProjectListAction extends BaseAction {
       project.setActiveSince(new Date());
       project.setType(type);
       project.setLiaisonUser(liaisonUser);
+      project.setLiaisonInstitution(liaisonUser.getLiaisonInstitution());
       project.setScale(0);
       project.setCofinancing(false);
       project.setCrp(loggedCrp);
