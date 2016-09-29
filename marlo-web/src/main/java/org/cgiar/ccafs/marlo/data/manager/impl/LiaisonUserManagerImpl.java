@@ -71,6 +71,11 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   }
 
   @Override
+  public List<LiaisonUser> getLiasonUsersByInstitutionId(Long institutionId) {
+    return liaisonUserDAO.findByInstitutionId(institutionId);
+  }
+
+  @Override
   public long saveLiaisonUser(LiaisonUser liaisonUser) {
 
     return liaisonUserDAO.save(liaisonUser);

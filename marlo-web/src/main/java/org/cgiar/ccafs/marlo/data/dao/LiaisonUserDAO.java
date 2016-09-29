@@ -58,13 +58,21 @@ public interface LiaisonUserDAO {
   public List<LiaisonUser> findAll();
 
   /**
+   * This method gets a list of liaisonUser by a given Institution identifier.
+   * 
+   * @param institutionId is the institution identifier.
+   * @return a List of LiaisonUser.
+   */
+  public List<LiaisonUser> findByInstitutionId(Long institutionId);
+
+
+  /**
    * This method gets a liaisonUser object by a given user identifier.
    * 
    * @param id is the user identifier.
    * @return a LiaisonUser object.
    */
   public LiaisonUser findByUser(long id);
-
 
   /**
    * This method saves the information of the given liaisonUser

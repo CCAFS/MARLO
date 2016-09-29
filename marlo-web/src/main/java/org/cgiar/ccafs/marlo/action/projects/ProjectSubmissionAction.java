@@ -18,19 +18,27 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
-import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.URLFileDownloader;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -54,20 +62,21 @@ public class ProjectSubmissionAction extends BaseAction {
   private ProjectManager projectManager;
   private CrpManager crpManager;
   private SendMail sendMail;
-  private UserManager userManager;
+  private LiaisonUserManager liasonUserManager;
+  private Crp loggedCrp;
 
   private long projectID;
   private Project project;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMail sendMail, UserManager userManager) {
+    CrpManager crpManager, SendMail sendMail, LiaisonUserManager liasonUserManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
-    this.userManager = userManager;
+    this.liasonUserManager = liasonUserManager;
   }
 
   @Override
@@ -91,6 +100,11 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
   public Project getProject() {
     return project;
   }
@@ -99,7 +113,6 @@ public class ProjectSubmissionAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
-
 
   @Override
   public boolean isCompleteProject(long projectID) {
@@ -121,8 +134,11 @@ public class ProjectSubmissionAction extends BaseAction {
     return true;
   }
 
+
   @Override
   public void prepare() throws Exception {
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     try {
       projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
@@ -145,21 +161,21 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
-
-  private void sendNotficationEmail2() {
+  private void sendNotficationEmail() {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[3];
+    String[] values = new String[4];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = project.getTitle();
+    values[1] = loggedCrp.getName();
+    values[2] = project.getTitle();
 
     String subject = null;
-    values[2] = String.valueOf(this.getCurrentCycleYear());
+    values[3] = String.valueOf(this.getCurrentCycleYear());
     message.append(this.getText("submit.email.message", values));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
-    subject = this.getText("submit.email.subject",
-      new String[] {String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
+    subject = this.getText("submit.email.subject", new String[] {loggedCrp.getName(),
+      String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER))});
 
 
     String toEmail = null;
@@ -169,11 +185,82 @@ public class ProjectSubmissionAction extends BaseAction {
       // Send email to the user that is submitting the project.
       // TO
       toEmail = this.getCurrentUser().getEmail();
-      LiaisonInstitution li = project.getLiaisonInstitution();
 
-      // Getting all the MLs associated to the Project Liaison institution
-      // List<User> owners = userManager.getAllOwners(project.getLiaisonInstitution());
+      // Get MLs associated to the Project Liaison institution
+      List<LiaisonUser> liasonUsers =
+        liasonUserManager.getLiasonUsersByInstitutionId(project.getLiaisonInstitution().getId());
+
+      StringBuilder ccEmails = new StringBuilder();
+
+      for (LiaisonUser liasonUser : liasonUsers) {
+        // Verify currentUser for avoid duplicate addition
+        if (liasonUser.getUser().getId() != this.getCurrentUser().getId()) {
+          ccEmails.append(liasonUser.getUser().getEmail());
+          ccEmails.append(" ");
+        }
+      }
+
+      // Add project leader
+      if (project.getLeaderPerson() != null
+        && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
+        ccEmails.append(project.getLeaderPerson().getUser().getEmail());
+        ccEmails.append(" ");
+      }
+      // Add project coordinator(s)
+      for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+        if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
+          ccEmails.append(projectPartnerPerson.getUser().getEmail());
+          ccEmails.append(" ");
+        }
+      }
+
+      // CC will be the other MLs.
+      ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     }
+
+    // BBC will be our gmail notification email.
+    String bbcEmails = this.config.getEmailNotification();
+
+    // Send pdf
+    // Get the PDF from the Project report url.
+    ByteBuffer buffer = null;
+    String fileName = null;
+    String contentType = null;
+
+    try {
+      // Making the URL to get the report.
+      System.out.println(config.getBaseUrl());
+      // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
+      URL pdfURL =
+        new URL(config.getBaseUrl() + "/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "=" + projectID);
+      System.out.println(pdfURL.getPath());
+      // Getting the file data.
+      Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
+      buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
+      fileName = fileProperties.get("filename") != null ? (String) fileProperties.get("filename") : null;
+      contentType = fileProperties.get("mime_type") != null ? (String) fileProperties.get("mime_type") : null;
+    } catch (MalformedURLException e) {
+      // Do nothing.
+      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+    } catch (IOException e) {
+      // Do nothing
+      LOG.error(
+        "There was a problem trying to download the PDF file for the projectID=" + projectID + " : " + e.getMessage());
+    }
+
+
+    if (buffer != null && fileName != null && contentType != null) {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+        true);
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    }
+
+
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
   public void setProject(Project project) {
@@ -199,7 +286,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
     if (result > 0) {
       submission.setId(result);
-      this.sendNotficationEmail2();
+      this.sendNotficationEmail();
 
     }
   }
