@@ -78,7 +78,7 @@
                       <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
                       [/#if]
                       [#-- Center Funds --]
-                      [#if !project.bilateralProject && project.projectEditLeader]
+                      [#if !project.bilateralProject]
                       <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
                       [/#if]
                     </div>
@@ -156,7 +156,7 @@
             <th class="text-center">Bilateral</th>
             [/#if]
             [#-- Center Funds --]
-            [#if !project.bilateralProject && project.projectEditLeader]
+            [#if !project.bilateralProject ]
             <th class="text-center">Center Funds</th>
             [/#if]
           </tr>
@@ -175,7 +175,7 @@
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].budgetType.id" value="1"/>
               <input type="hidden" name="project.budgets[${indexBudgetW1W2}].year" value="${(selectedYear)!}"/>
               [#if editable && isYearEditable(selectedYear)]
-                [@customForm.input name="project.budgets[${indexBudgetW1W2}].amount" i18nkey="budget.amount" showTitle=false className="currencyInput type-${type.w1w2}" required=true  /]
+                [@customForm.input name="project.budgets[${indexBudgetW1W2}].amount" i18nkey="budget.amount" showTitle=false className="currencyInput type-${type.w1w2}" required=true readOnly=!action.hasPermission("annualW1w2") /]
               [#else]
                 <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w1w2}">${((budgetW1W2.amount)!0)?number?string(",##0.00")}</span></p></div>
                 <input type="hidden" name="project.budgets[${indexBudgetW1W2}].amount" value="${(budgetW1W2.amount)!0}" />
@@ -217,7 +217,7 @@
             </td>
             [/#if]
             [#-- Center Funds --]
-            [#if !project.bilateralProject && project.projectEditLeader]
+            [#if !project.bilateralProject]
             <td class="budgetColumn">
               [#local indexBudgetCenterFunds=action.getIndexBudget(element.institution.id,selectedYear,4) ]
               [#local budgetCenterFunds = action.getBudget(element.institution.id,selectedYear,4) ]
