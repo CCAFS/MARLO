@@ -168,10 +168,12 @@ public class ProjectOutcomeValidator extends BaseValidator {
     endDate.setTime(project.getEndDate());
     endYear = endDate.get(Calendar.YEAR);
 
-    this.validateLessonsLearnOutcome(action, projectOutcome);
-    if (this.validationMessage.toString().contains("Lessons")) {
-      this.replaceAll(validationMessage, "Lessons",
-        "Lessons regarding partnerships and possible implications for the coming planning cycle");
+    if (!action.isProjectNew(project.getId())) {
+      this.validateLessonsLearnOutcome(action, projectOutcome);
+      if (this.validationMessage.toString().contains("Lessons")) {
+        this.replaceAll(validationMessage, "Lessons",
+          "Lessons regarding partnerships and possible implications for the coming planning cycle");
+      }
     }
     if (action.isPlanningActive()) {
       projectOutcome.setCrpProgramOutcome(

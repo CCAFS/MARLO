@@ -108,11 +108,14 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
 
       if (project.isProjectEditLeader()) {
-        this.validateLessonsLearn(action, project);
-        if (this.validationMessage.toString().contains("Lessons")) {
-          this.replaceAll(validationMessage, "Lessons",
-            "Lessons regarding partnerships and possible implications for the coming planning cycle");
+        if (!action.isProjectNew(project.getId())) {
+          this.validateLessonsLearn(action, project);
+          if (this.validationMessage.toString().contains("Lessons")) {
+            this.replaceAll(validationMessage, "Lessons",
+              "Lessons regarding partnerships and possible implications for the coming planning cycle");
+          }
         }
+
       }
       this.validateCCAFSProject(action, project);
 
