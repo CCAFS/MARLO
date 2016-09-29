@@ -32,15 +32,19 @@
   <div class="col-md-12">[@customForm.textArea  name="project.deliverable.generalInformation.justification" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
 
-[#-- Outcome select --] 
-  <div class="col-md-12 form-group">
-    [@customForm.select name="deliverable.crpProgramOutcome.id" label=""  i18nkey="project.deliverable.generalInformation.outcome" listName="projectOutcome" keyFieldName="crpProgramOutcome.id"  displayFieldName="crpProgramOutcome.composedName"  multiple=false required=true  className=" outcome" disabled=!editable/]
-  </div>
-
 [#-- CoA Outputs select --] 
-  <div class="col-md-12 form-group">
+  <div class="col-md-12 ">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" disabled=!editable/]
   </div>
+  [#if editable && keyOutputs?has_content]
+    <div class="partnerListMsj note col-md-12">
+      [@s.text name="project.deliverable.generalInformation.keyOutputNotList1" /]
+      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/description'] [@s.param name="projectID"]${projectID}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]#projectsList"> 
+        [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
+      </a>
+      [@s.text name="project.deliverable.generalInformation.keyOutputNotList2" /]
+    </div>
+  [/#if]
 
 [#-- Partners --] 
 

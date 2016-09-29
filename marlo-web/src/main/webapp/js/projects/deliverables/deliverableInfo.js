@@ -5,14 +5,13 @@ function init() {
   $('form select').select2({
     width: '100%'
   });
-  $('.outcome').select2({
+  $('.keyOutput').select2({
       templateResult: formatState,
       templateSelection: formatState,
       width: '100%'
   });
 
   // select name
-  $(".outcome").attr("name", "deliverable.crpProgramOutcome.id");
   $(".keyOutput").attr("name", "deliverable.crpClusterKeyOutput.id");
   /* Events select */
   subTypes();
@@ -200,32 +199,14 @@ function subTypes() {
 }
 
 function keyOutputs() {
-  var url = baseURL + "/keyOutputList.do";
-  var outcomeSelect = $(".outcome");
-  var keyOutputSelect = $(".keyOutput");
-  outcomeSelect.on("change", function() {
-
-    keyOutputSelect.empty();
-    keyOutputSelect.append("<option value='-1' >Select an option... </option>");
-    keyOutputSelect.trigger("change.select2");
-    var option = $(this).find("option:selected");
-    var data = {
-      clusterActivityID: option.val()
-    }
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: "json",
-        data: data
-    }).success(
-        function(m) {
-          console.log(m);
-          for(var i = 0; i < m.keyOutputs.length; i++) {
-            keyOutputSelect.append("<option value='" + m.keyOutputs[i].id + "' >" + m.keyOutputs[i].description
-                + "</option>");
-          }
-        });
-  });
+  /*
+   * var url = baseURL + "/keyOutputList.do"; var keyOutputSelect = $(".keyOutput"); keyOutputSelect.empty();
+   * keyOutputSelect.append("<option value='-1' >Select an option... </option>");
+   * keyOutputSelect.trigger("change.select2"); var option = $(this).find("option:selected"); var data = {
+   * clusterActivityID: option.val() } $.ajax({ url: url, type: 'GET', dataType: "json", data: data }).success(
+   * function(m) { console.log(m); for(var i = 0; i < m.keyOutputs.length; i++) { keyOutputSelect.append("<option
+   * value='" + m.keyOutputs[i].id + "' >" + m.keyOutputs[i].description + "</option>"); } });
+   */
 }
 
 function checkItems(block) {
