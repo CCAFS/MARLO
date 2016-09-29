@@ -131,7 +131,8 @@
                     [/#list]
                   
                   [#else]
-                    <p class="emptyMessage text-center">Before distribute the contribution to each Cluster of Activity, please fill the budget amount and gender percentage in <a href="[@s.url action="${crpSession}/budgetByPartners"][@s.param name="projectID" value=project.id /][@s.param name="edit" value=true /][/@s.url]">project Budget by partners</a></p>
+                    <p class="emptyMessage text-center">[@s.text name="projectBudgetByCoAs.notBudgetSaved" /]</p>
+                    
                   [/#if]
                   
                 </div>
