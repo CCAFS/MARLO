@@ -11,6 +11,11 @@ $(document).ready(function() {
   $(document).on('updateComponent', changeDetected);
   $(':input').on('keyup change', changeDetected);
 
+  if($('#generalMessages ul.messages li').exists()) {
+    // Validate section
+    validateThisSection();
+  }
+
 });
 
 function autoSave() {

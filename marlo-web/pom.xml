@@ -398,6 +398,25 @@
 		</dependency>
 
 
+<!-- https://mvnrepository.com/artifact/jfreechart/jfreechart -->
+<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+<dependency>
+    <groupId>org.jfree</groupId>
+    <artifactId>jfreechart</artifactId>
+    <version>1.0.19</version>
+</dependency>
+
+
+
+<!-- https://mvnrepository.com/artifact/jfree/jcommon -->
+<!-- https://mvnrepository.com/artifact/jfree/jcommon -->
+<dependency>
+    <groupId>jfree</groupId>
+    <artifactId>jcommon</artifactId>
+    <version>1.0.12</version>
+</dependency>
+
+
 	</dependencies>
 
 

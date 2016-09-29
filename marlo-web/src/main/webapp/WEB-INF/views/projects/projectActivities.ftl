@@ -82,7 +82,7 @@
 [#macro projectActivityMacro element name index=0 isTemplate=false isActive=false]
   [#assign customName = "${name}[${index}]" /]
     <div id="projectActivity-${isTemplate?string('template',(element.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    <div class="activityIndex"><span>Activity ${(element.id)!}</span></div>
+    <div class="activityIndex"><span>Activity [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span></div>
     [#if isActive && editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>

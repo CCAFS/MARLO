@@ -185,6 +185,7 @@
           </div>
           
           [#-- Lessons and progress --]
+          [#if !action.isProjectNew(project.id)]
           <div id="lessons" class="borderBox">
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
@@ -201,7 +202,7 @@
               [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
             </div>
           </div>
-        
+          [/#if]
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projectOutcomes.ftl" /]

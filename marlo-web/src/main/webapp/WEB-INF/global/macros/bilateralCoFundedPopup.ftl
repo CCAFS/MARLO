@@ -45,33 +45,33 @@
           
           [#-- Participating Center, CRP Lead Center --]
           <div class="pull-right">
-            <label for="cofundedMode-1"><input type="radio" name="cofundedMode" id="cofundedMode-1" value="1" /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
+            <label for="cofundedMode-1"><input type="radio" name="cofundedMode" id="cofundedMode-1" value="1" checked="checked"/> [@s.text name="projectCofunded.participatingCenter" /] </label>  
             <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
           </div>
           
           [#-- Project title --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">[@customForm.textArea name="title" i18nkey="projectCofunded.title"/] </div>
+              <div class="col-md-12">[@customForm.textArea name="title" i18nkey="projectCofunded.title" required=true/] </div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-4">[@customForm.input name="startDate" i18nkey="projectCofunded.startDate"/] </div>
-              <div class="col-md-4">[@customForm.input name="endDate" i18nkey="projectCofunded.endDate"/] </div>
-              <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode"/] </div>
+              <div class="col-md-4">[@customForm.input name="startDate" i18nkey="projectCofunded.startDate" required=true/] </div>
+              <div class="col-md-4">[@customForm.input name="endDate" i18nkey="projectCofunded.endDate" required=true/] </div>
+              <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" /] </div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" /] </div>
-              <div class="col-md-6">[@customForm.input name="budget" i18nkey="projectCofunded.budgetAgreementPeriod" className=""/]</div>
+              <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" required=true /] </div>
+              <div class="col-md-6">[@customForm.input name="budget" i18nkey="projectCofunded.budgetAgreementPeriod" className="budgetAgreementPeriod" required=true/]</div>
             </div>
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName"/]</div>
-              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail"/]</div>
+              <div class="col-md-6">[@customForm.input name="contactName" i18nkey="projectCofunded.contactName" required=true/]</div>
+              <div class="col-md-6">[@customForm.input name="contactEmail" i18nkey="projectCofunded.contactEmail" required=true/]</div>
             </div>
           </div>
           <div class="form-group">
