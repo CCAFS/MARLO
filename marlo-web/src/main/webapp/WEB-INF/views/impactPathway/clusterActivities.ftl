@@ -169,14 +169,15 @@
       [/#if]
       
       [#-- Key outputs --]
-      <span class="subtitle cold-md-12"><label>Key Outputs: </label></span>
+      <br>
+      <h5 class="sectionSubTitle">Key Outputs: </h5>
       <div class="keyOutputsItems-list form-group col-md-12">
         [#if cluster.keyOutputs?has_content]
           [#list cluster.keyOutputs as keyOutputItems]
             [@keyOutputItem element=keyOutputItems name='${clusterCustomName}.${keyOutputsName}' index=keyOutputItems_index /]
           [/#list]
         [/#if]
-        <p class="text-center " style="display:${(cluster.leaders?has_content)?string('none','block')}">There are not key outputs added yet.</p>
+        <p class="text-center alertKeyoutput" style="display:${(cluster.keyOutputs?has_content)?string('none','block')}">There are not key outputs added yet.</p>
       </div>
       [#-- Add Key output --]
       [#if editable]
@@ -244,6 +245,7 @@
             [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]
           [/#list]
         [/#if]
+        <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">There are not Outcomes added yet.</p>
         </div>
       </div>
       <div class="form-group col-md-12">
