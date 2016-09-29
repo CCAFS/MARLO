@@ -50,6 +50,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -235,6 +237,43 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
+  @Override
+  public Boolean isProjectNew(long deliverableID) {
+
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
+    if (this.isReportingActive()) {
+
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    } else {
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    }
+  }
+
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -394,9 +433,10 @@ public class DeliverableAction extends BaseAction {
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-      if (project.getProjectOutcomes() != null) {
-        projectOutcome = new ArrayList<>(project.getProjectOutcomes());
-      }
+      // if (project.getProjectOutcomes() != null) {
+      // projectOutcome = new ArrayList<>(project.getProjectOutcomes());
+      // }
+
 
       if (deliverable.getDeliverableType() != null) {
         Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
@@ -605,10 +645,10 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -626,10 +666,10 @@ public class DeliverableAction extends BaseAction {
     this.keyOutputs = keyOutputs;
   }
 
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
     this.partnerPersons = partnerPersons;

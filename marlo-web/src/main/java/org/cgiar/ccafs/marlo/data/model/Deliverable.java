@@ -68,6 +68,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private boolean active;
 
+
   @Expose
   private Date activeSince;
 
@@ -89,14 +90,17 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
+  @Expose
+  private Date createDate;
+
 
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
-
 
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
 
 
   private DeliverablePartnership responsiblePartner;
+
 
   private List<DeliverablePartnership> otherPartners;
 
@@ -104,11 +108,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Deliverable() {
   }
 
-
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification, CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome,
-    Set<DeliverablePartnership> deliverablePartnerships, Set<DeliverableActivity> deliverableActivities) {
+    Set<DeliverablePartnership> deliverablePartnerships, Set<DeliverableActivity> deliverableActivities,
+    Date createDate) {
     this.project = project;
     this.deliverableType = deliverableType;
     this.title = title;
@@ -125,6 +129,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
     this.deliverablePartnerships = deliverablePartnerships;
     this.deliverableActivities = deliverableActivities;
+    this.createDate = createDate;
   }
 
 
@@ -139,8 +144,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
+  }
+
+
+  public Date getCreateDate() {
+    return createDate;
   }
 
   public User getCreatedBy() {
@@ -172,13 +183,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public String getModificationJustification() {
     return this.modificationJustification;
@@ -209,7 +220,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.statusDescription;
   }
 
-
   public String getStatusName() {
     if (this.status != null) {
       return ProjectStatusEnum.getValue(this.status).getStatus() != null
@@ -218,6 +228,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
       return "";
     }
   }
+
 
   public String getTitle() {
     return this.title;
@@ -242,6 +253,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setCreateDate(Date createDate) {
+    this.createDate = createDate;
   }
 
   public void setCreatedBy(User createdBy) {
