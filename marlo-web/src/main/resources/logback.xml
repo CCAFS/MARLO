@@ -85,23 +85,6 @@
    <logger name="org.hibernate" level="ERROR" />
   <logger name="org.hibernate.type" level="ERROR" />
  
- <logger name="org.jfree.base" level="ERROR"></logger>
- <logger name="org.jfree.report" level="ERROR"></logger>
- <logger name="org.apache.http" level="ERROR"/>
- 
-   <logger name="org.pentaho" level="ERROR" />
-  <logger name="org.apache.commons.httpclient">
-    <level value="ERROR"/>
-</logger>
-
-<logger name="httpclient.wire.header">
-    <level value="ERROR"/>
-</logger>
-
-<logger name="httpclient.wire.content">
-    <level value="ERROR"/>
-</logger>
-
 
   
  
