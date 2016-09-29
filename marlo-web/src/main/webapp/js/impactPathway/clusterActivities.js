@@ -10,7 +10,9 @@ function init() {
   $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
 
   $('form select').select2({
-    width: '100%'
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
   });
 
 // Add a new cluster
@@ -189,6 +191,7 @@ function addKeyOutput() {
   $item.show('slow');
   updateClustersIndex();
   verifyContributions();
+  checkKeyoutputs($list);
 }
 
 function removeKeyOutput() {
@@ -198,6 +201,7 @@ function removeKeyOutput() {
     $item.remove();
     updateClustersIndex();
     verifyContributions();
+    checkKeyoutputs($parent);
   });
 }
 
@@ -258,11 +262,13 @@ function addOutcome(option) {
   $item.show('slow');
   updateClustersIndex();
   verifyContributions();
+  checkOutcomes($list);
 }
 
 function removeOutcome() {
   console.log("holiClose");
   var $item = $(this).parents('.outcomeByClusterItem');
+  var $list = $item.parent();
   var value = $item.find(".outcomeId").val();
   var name = $item.find(".outcomeStatement").attr("title");
   var $parent = $item.parent();
@@ -270,11 +276,13 @@ function removeOutcome() {
   $item.hide(function() {
     $item.remove();
     updateClustersIndex();
+    checkOutcomes($list);
   });
 // Add outcome option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
   verifyContributions();
+
 }
 
 function updateOutcomesIndex(item,keyOutputName) {
@@ -308,12 +316,29 @@ function verifyOutcomeContribution(list) {
 }
 
 function checkItems(block) {
-  console.log(block);
   var items = $(block).find('li').length;
   if(items == 0) {
     $(block).parent().find('p.inf').fadeIn();
   } else {
     $(block).parent().find('p.inf').fadeOut();
+  }
+}
+
+function checkKeyoutputs(block) {
+  var items = $(block).find('.keyOutputItem').length;
+  if(items == 0) {
+    $(block).find('p.alertKeyoutput').fadeIn();
+  } else {
+    $(block).find('p.alertKeyoutput').fadeOut();
+  }
+}
+
+function checkOutcomes(block) {
+  var items = $(block).find('.outcomeByClusterItem').length;
+  if(items == 0) {
+    $(block).find('p.alertOutcome').fadeIn();
+  } else {
+    $(block).find('p.alertOutcome').fadeOut();
   }
 }
 
@@ -369,6 +394,10 @@ function verifyContributions() {
       } else {
         $(outcomeList).find(".outcomeContribution ").removeClass('fieldError');
         $(outcomeList).find(".outcomeContribution ").addClass('fieldChecked');
+      }
+      if(outcomeRemaining > 0) {
+        $(outcomeList).find(".outcomeContribution").removeClass('fieldChecked');
+        $(outcomeList).find(".outcomeContribution").addClass('fieldError');
       }
     });
   });
