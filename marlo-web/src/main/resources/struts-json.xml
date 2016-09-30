@@ -21,12 +21,9 @@
 		<action name="reportingSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
 			<result name="success" type="stream">
-				<param name="projectID">${projectID}</param>
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">text/pdf</param>
-				       
-				<param name="contentDisposition">filename="${fileName}"</param>
+				 <param name="inputName">inputStream</param>
+          <param name="contentType">${contentType}</param>
+          <param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
 
