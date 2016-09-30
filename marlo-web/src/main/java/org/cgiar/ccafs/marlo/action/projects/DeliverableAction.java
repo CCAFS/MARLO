@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
@@ -549,11 +548,6 @@ public class DeliverableAction extends BaseAction {
         deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
 
       deliverablePrew.setDeliverableType(deliverableType);
-
-      CrpProgramOutcome crpProgram =
-        crpProgramOutcomeManager.getCrpProgramOutcomeById(deliverable.getCrpProgramOutcome().getId());
-
-      deliverablePrew.setCrpProgramOutcome(crpProgram);
 
       CrpClusterKeyOutput keyOutput =
         crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
