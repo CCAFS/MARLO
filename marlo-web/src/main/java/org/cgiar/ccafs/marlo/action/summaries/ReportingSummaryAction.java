@@ -18,6 +18,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
@@ -61,7 +62,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private static Logger LOG = LoggerFactory.getLogger(ManageUsersAction.class);
 
 
-  private CrpManager crpManager;
   // Front-end
   private long projectID;
 
@@ -69,6 +69,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private byte[] bytesPDF;
   // Streams
   InputStream inputStream;
+
+  // projectManager
+  private Crp loggedCrp;
+  private CrpManager crpManager;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager) {
@@ -199,10 +203,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ProjectReport-");
+    fileName.append("Full_Project_Report-");
+    fileName.append(loggedCrp.getName() + "-");
+    fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
-
     return fileName.toString();
 
   }
@@ -214,6 +219,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       inputStream = new ByteArrayInputStream(bytesPDF);
     }
     return inputStream;
+  }
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
   }
 
   public long getProjectID() {
@@ -235,6 +244,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public void prepare() {
     try {
+      loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getCrpById(loggedCrp.getId());
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
     } catch (Exception e) {
@@ -258,6 +269,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         this.recurseToFindAllSubReports((Section) e, subReports);
       }
     }
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
   }
 
   public void setProjectID(long projectID) {
