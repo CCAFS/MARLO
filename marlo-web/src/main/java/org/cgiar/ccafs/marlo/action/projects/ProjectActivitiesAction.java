@@ -442,6 +442,11 @@ public class ProjectActivitiesAction extends BaseAction {
         .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
         .collect(Collectors.toList());
 
+      System.out.println("LIDERES ACTIVIDAD PROYECTO NO : " + projectID);
+      for (ProjectPartnerPerson partnerPerson : partnerPersons) {
+        System.out.println(partnerPerson.getComposedName());
+      }
+
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
