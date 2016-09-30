@@ -5,17 +5,15 @@
 </div>
 
 [#-- Type and subtype inputs --] 
-<div class=" form-group">
-  <div class="col-md-6">
+  <div class="col-md-6 form-group">
     [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" disabled=!editable/]
   </div>
-  <div class="col-md-6">
+  <div class="col-md-6 form-group">
     [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
   </div>
-</div>
 
 [#-- Description textArea --] 
-<div class="form-group">
+<div class="form-group" style="display:none;">
   <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
 </div>
 

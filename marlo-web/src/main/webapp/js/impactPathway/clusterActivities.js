@@ -227,16 +227,17 @@ function verifyKoContribution(list) {
 
     // nuevo
     if($(e).find(".keyOutputContribution ").val()) {
-      val = parseInt($(e).find(".keyOutputContribution ").val());
+      val = parseFloat($(e).find(".keyOutputContribution ").val());
+      console.log(val);
       contribution = contribution + val;
     } else {
       val = 0;
       contribution = contribution + val;
     }
-
+    console.log(contribution);
   });
   var newContribution = 100 - contribution;
-  return newContribution;
+  return newContribution.toFixed(2);
 }
 
 // OUTCOMES BY CoA
@@ -303,7 +304,7 @@ function verifyOutcomeContribution(list) {
   list.find(".outcomeByClusterItem").each(function(i,e) {
     // nuevo
     if($(e).find(".outcomeContribution  ").val()) {
-      val = parseInt($(e).find(".outcomeContribution").val());
+      val = parseFloat($(e).find(".outcomeContribution").val());
       contribution = contribution + val;
     } else {
       val = 0;
@@ -312,7 +313,7 @@ function verifyOutcomeContribution(list) {
 
   });
   var newContribution = 100 - contribution;
-  return newContribution;
+  return newContribution.toFixed(2);
 }
 
 function checkItems(block) {
