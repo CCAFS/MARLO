@@ -5,11 +5,6 @@ function init() {
   $('form select').select2({
     width: '100%'
   });
-  $('.keyOutput').select2({
-      templateResult: formatState,
-      templateSelection: formatState,
-      width: '100%'
-  });
 
   // select name
   $(".keyOutput").attr("name", "deliverable.crpClusterKeyOutput.id");
@@ -18,7 +13,7 @@ function init() {
   keyOutputs();
 
   justificationByStatus($(".status").find("option:selected").val());
-  validateCurrentDate();
+  // validateCurrentDate();
 
   $(".addPartner").on("click", addPartnerEvent);
   $(".removeElement").on("click", removePartnerEvent);
@@ -77,13 +72,11 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
-  if(!reportingActive) {
-    var statusSelect = $("form .status");
-    statusSelect.find("option").each(function(i,e) {
-      e.remove();
-    });
-    $(statusSelect).append("<option value='-1'>Select an option...</option><option value='2'>On-going</option>");
-  }
+  /*
+   * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
+   * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option
+   * value='2'>On-going</option>"); }
+   */
 }
 
 function validateCurrentDate() {
