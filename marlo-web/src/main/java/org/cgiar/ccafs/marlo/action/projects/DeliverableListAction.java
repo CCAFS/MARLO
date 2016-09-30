@@ -90,7 +90,7 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setActive(true);
     deliverable.setActiveSince(new Date());
     deliverable.setProject(project);
-
+    deliverable.setCreateDate(new Date());
     deliverableID = deliverableManager.saveDeliverable(deliverable);
 
     if (deliverableID > 0) {

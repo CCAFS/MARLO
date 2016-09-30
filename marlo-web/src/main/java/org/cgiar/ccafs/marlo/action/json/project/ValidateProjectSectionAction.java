@@ -165,7 +165,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         List<ProjectOutcome> projectOutcomes =
           project.getProjectOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-
+        if (projectOutcomes.isEmpty()) {
+          section.put("missingFields", section.get("missingFields") + "-" + "outcomes");
+        }
         project.setOutcomes(projectOutcomes);
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(), cycle,
@@ -184,7 +186,9 @@ public class ValidateProjectSectionAction extends BaseAction {
         section.put("sectionName", ProjectSectionStatusEnum.DELIVERABLES);
         section.put("missingFields", "");
 
-
+        if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
+        }
         for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
           .collect(Collectors.toList())) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
@@ -198,6 +202,19 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         }
 
+
+        break;
+
+
+      case ACTIVITIES:
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+        section = new HashMap<String, Object>();
+        section.put("sectionName", sectionStatus.getSectionName());
+        section.put("missingFields", sectionStatus.getMissingFields());
+        if (project.getActivities().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          section.put("missingFields", section.get("missingFields") + "-" + "activities");
+        }
 
         break;
 
