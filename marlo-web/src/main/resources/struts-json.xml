@@ -18,17 +18,7 @@
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
 
-		<action name="reportingSummary"
-			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
-			<result name="success" type="stream">
-				<param name="projectID">${projectID}</param>
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">text/pdf</param>
-				       
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
+	
 
 		<action name="institutionsLeader"
 			class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersAction">

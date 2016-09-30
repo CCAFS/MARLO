@@ -130,7 +130,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
       masterReport.setDataFactory(cdf);
       Number idParam = projectID;
-      Number yearParam = Long.valueOf(String.valueOf(this.getCurrentCycleYear()));
+      Number yearParam = 2017;
       String cycleParam = APConstants.PLANNING;
 
       masterReport.getParameterValues().put("p_id", idParam);

@@ -18,6 +18,18 @@
 			</result>
 		</action>
 		
+		
+		  <action name="reportingSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
+      <result name="success" type="stream">
+         <param name="inputName">inputStream</param>
+          <param name="contentType">${contentType}</param>
+          <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+		
+		
+		
 		<action name="{crp}/addNewCoreProject" method="addCoreProject"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
       <interceptor-ref name="projectListStack" />

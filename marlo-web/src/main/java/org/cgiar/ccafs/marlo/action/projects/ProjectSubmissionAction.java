@@ -64,9 +64,16 @@ public class ProjectSubmissionAction extends BaseAction {
   private SendMail sendMail;
   private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
+  private String cycleName;
+
+
+  private boolean complete;
+
 
   private long projectID;
+
   private Project project;
+
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
@@ -81,6 +88,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
         List<Submission> submissions = project.getSubmissions().stream()
@@ -90,6 +98,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
         if (submissions.isEmpty()) {
           this.submitProject();
+          complete = true;
+        } else {
+          this.setSubmission(submissions.get(0));
+          complete = true;
         }
       }
 
@@ -100,18 +112,26 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+  public String getCycleName() {
+    return cycleName;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
+  }
+
+
+  public boolean isComplete() {
+    return complete;
   }
 
   @Override
@@ -158,8 +178,10 @@ public class ProjectSubmissionAction extends BaseAction {
       // Initializing Section Statuses:
       // this.initializeProjectSectionStatuses(project, String.valueOf(this.getCurrentCycleYear()));
     }
+    cycleName = APConstants.PLANNING;
 
   }
+
 
   private void sendNotficationEmail() {
     // Building the email message
@@ -229,11 +251,11 @@ public class ProjectSubmissionAction extends BaseAction {
 
     try {
       // Making the URL to get the report.
-      System.out.println(config.getBaseUrl());
+
       // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      URL pdfURL =
-        new URL(config.getBaseUrl() + "/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "=" + projectID);
-      System.out.println(pdfURL.getPath());
+      URL pdfURL = new URL(
+        config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "=" + projectID);
+
       // Getting the file data.
       Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
       buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
@@ -259,6 +281,15 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
+  public void setComplete(boolean complete) {
+    this.complete = complete;
+  }
+
+
+  public void setCycleName(String cycleName) {
+    this.cycleName = cycleName;
+  }
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
@@ -270,6 +301,7 @@ public class ProjectSubmissionAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
 
   private void submitProject() {
     Submission submission = new Submission();
@@ -283,7 +315,7 @@ public class ProjectSubmissionAction extends BaseAction {
     submission.setProject(project);
 
     long result = submissionManager.saveSubmission(submission);
-
+    this.setSubmission(submission);
     if (result > 0) {
       submission.setId(result);
       this.sendNotficationEmail();
