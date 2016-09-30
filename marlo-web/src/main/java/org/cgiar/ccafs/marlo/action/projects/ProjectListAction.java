@@ -134,6 +134,8 @@ public class ProjectListAction extends BaseAction {
       project.setCofinancing(false);
       project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
+      project.setProjectEditLeader(false);
+      project.setPresetDate(new Date());
 
       projectID = projectManager.saveProject(project);
 
@@ -154,6 +156,8 @@ public class ProjectListAction extends BaseAction {
       project.setCofinancing(false);
       project.setCrp(loggedCrp);
       project.setCreateDate(new Date());
+      project.setProjectEditLeader(false);
+      project.setPresetDate(new Date());
 
       projectID = projectManager.saveProject(project);
       if (projectID > 0) {

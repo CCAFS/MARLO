@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +58,7 @@ public class ProjectLeaderEditAction extends BaseAction {
     status.put("ProjectId", projectId);
     if (project != null) {
       project.setProjectEditLeader(projectStatus);
+      project.setPresetDate(new Date());
       projectManager.saveProject(project);
 
       this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
