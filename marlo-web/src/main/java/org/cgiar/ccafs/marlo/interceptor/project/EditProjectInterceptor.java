@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.interceptor.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -43,11 +44,13 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private Map<String, Object> session;
   private Crp crp;
   private long projectId = 0;
+  private Crp loggedCrp;
 
   private ProjectManager projectManager;
+  private CrpManager crpManager;
 
   @Inject
-  public EditProjectInterceptor(ProjectManager projectManager) {
+  public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager) {
     this.projectManager = projectManager;
   }
 
@@ -69,6 +72,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
+
+    Map<String, Object> session = invocation.getInvocationContext().getSession();
+
+    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     User user = (User) session.get(APConstants.SESSION_USER);
 
@@ -92,15 +100,18 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        canEdit = true;
-        canSwitchProject = true;
+        if (!baseAction.isSubmit(projectId)) {
+          canEdit = true;
+          canSwitchProject = true;
+        }
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project)
           && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
 
-
-          canEdit = true;
+          if (!baseAction.isSubmit(projectId)) {
+            canEdit = true;
+          }
 
         }
 
