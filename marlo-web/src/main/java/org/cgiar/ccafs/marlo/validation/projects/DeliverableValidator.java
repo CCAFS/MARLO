@@ -72,17 +72,17 @@ public class DeliverableValidator extends BaseValidator {
       this.addMessage(action.getText("project.deliverable.generalInformation.description"));
     }
 
-    if (deliverable.getDeliverableType().getDeliverableType() != null) {
-      if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
-        this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-      }
-    } else {
-      this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-    }
-
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
+      } else {
+        if (deliverable.getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
+            this.addMessage(action.getText("project.deliverable.generalInformation.type"));
+          }
+        } else {
+          this.addMessage(action.getText("project.deliverable.generalInformation.type"));
+        }
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
@@ -99,14 +99,6 @@ public class DeliverableValidator extends BaseValidator {
 
     if (deliverable.getYear() == -1) {
       this.addMessage(action.getText("project.deliverable.generalInformation.year"));
-    }
-
-    if (deliverable.getCrpProgramOutcome() != null) {
-      if (deliverable.getCrpProgramOutcome().getId() == -1) {
-        this.addMessage(action.getText("project.deliverable.generalInformation.outcome"));
-      }
-    } else {
-      this.addMessage(action.getText("project.deliverable.generalInformation.outcome"));
     }
 
     if (deliverable.getCrpClusterKeyOutput() != null) {
