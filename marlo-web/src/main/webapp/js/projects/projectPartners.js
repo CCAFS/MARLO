@@ -198,7 +198,7 @@ function changePartnerPersonType(e) {
   var $contactPerson = $(e.target).parents('.contactPerson');
   var contact = new PartnerPersonObject($contactPerson);
   // Set as unique contact type in the project
-  if((contact.type == leaderType) || (contact.type == coordinatorType)) {
+  if((contact.type == leaderType)) {
     setPartnerTypeToDefault(contact.type);
   }
   // Change partner person type
