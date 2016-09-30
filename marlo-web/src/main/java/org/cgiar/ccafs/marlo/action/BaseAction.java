@@ -529,6 +529,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         project.setOutcomes(projectOutcomes);
+        if (project.getOutcomes().isEmpty()) {
+          return false;
+        }
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
             APConstants.PLANNING, this.getCurrentCycleYear(), section);
@@ -546,6 +549,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
+        if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          return false;
+        }
         for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
           .collect(Collectors.toList())) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), APConstants.PLANNING,
@@ -562,6 +568,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         returnValue = true;
         break;
+
+      case ACTIVITIES:
+        project = projectManager.getProjectById(projectID);
+        if (project.getActivities().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          return false;
+        }
+
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        }
+        break;
+
+
+      case BUDGET:
+        project = projectManager.getProjectById(projectID);
+        if (project.getProjectBudgets().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+          return false;
+        }
+
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        }
+        break;
+
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
