@@ -37,7 +37,7 @@
           </div> 
           <div class="fullPartBlock">
             <h6>Download Full Project Report</h6>
-            <a href="[@s.url namespace="/" action='reportingSummary'][@s.param name='cycle']${cycleName}[/@s.param][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" class="button-pdf-format" target="__BLANK">PDF Format</a> 
+            <a href="[@s.url namespace="/projects" action='reportingSummary'][@s.param name='cycle']${cycleName}[/@s.param][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" class="button-pdf-format" target="__BLANK">PDF Format</a> 
           
           </div> 
         [#else]
