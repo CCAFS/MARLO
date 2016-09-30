@@ -536,6 +536,7 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setTitle(deliverable.getTitle());
       deliverablePrew.setYear(deliverable.getYear());
+      deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
 
       if (deliverable.getStatus() != null) {
         deliverablePrew.setStatus(deliverable.getStatus());
@@ -602,6 +603,19 @@ public class DeliverableAction extends BaseAction {
 
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
         }
+      } else if (partnershipResponsible == null && partnerPerson != null) {
+
+        DeliverablePartnership partnership = new DeliverablePartnership();
+        partnership.setProjectPartnerPerson(partnerPerson);
+        partnership.setPartnerType(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue());
+        partnership.setDeliverable(deliverableSave);
+        partnership.setActive(true);
+        partnership.setCreatedBy(this.getCurrentUser());
+        partnership.setModifiedBy(this.getCurrentUser());
+        partnership.setModificationJustification("");
+        partnership.setActiveSince(new Date());
+
+        deliverablePartnershipManager.saveDeliverablePartnership(partnership);
       }
 
       this.partnershipPreviousData(deliverableSave);
