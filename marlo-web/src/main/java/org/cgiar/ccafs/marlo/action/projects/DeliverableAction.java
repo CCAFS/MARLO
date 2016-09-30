@@ -237,8 +237,7 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
-  @Override
-  public Boolean isProjectNew(long deliverableID) {
+  public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
