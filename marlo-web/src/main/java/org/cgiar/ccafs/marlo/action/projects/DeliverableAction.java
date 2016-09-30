@@ -431,10 +431,6 @@ public class DeliverableAction extends BaseAction {
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
 
-      // if (project.getProjectOutcomes() != null) {
-      // projectOutcome = new ArrayList<>(project.getProjectOutcomes());
-      // }
-
 
       if (deliverable.getDeliverableType() != null) {
         Long deliverableTypeParentId = deliverable.getDeliverableType().getDeliverableType().getId();
@@ -450,7 +446,8 @@ public class DeliverableAction extends BaseAction {
 
         for (ProjectClusterActivity clusterActivity : project.getProjectClusterActivities().stream()
           .filter(ca -> ca.isActive()).collect(Collectors.toList())) {
-          keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs());
+          keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs().stream()
+            .filter(ko -> ko.isActive()).collect(Collectors.toList()));
         }
       }
       partnerPersons = new ArrayList<>();
