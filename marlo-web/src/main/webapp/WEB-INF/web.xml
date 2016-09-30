@@ -5,6 +5,12 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>Struts Blank</display-name>
   
+ <resource-ref>
+      <description>MARLO Connection</description>
+      <res-ref-name>MARLO</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+  </resource-ref>
   <listener>
     <listener-class>
       org.cgiar.ccafs.marlo.security.SessionCounter
