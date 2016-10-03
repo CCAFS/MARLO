@@ -31,9 +31,9 @@
 ] /]
 
 
-<section class="content">
-  [@s.form action="glossary" cssClass="pure-form col-md-12"]
-  <div class="col-md-12">
+<section class="container">
+  [@s.form action="glossary" cssClass="pure-form"]
+  
     <article class="fullContent" id="glossary-content">
     <h1 class="contentTitle">[@s.text name="home.glossary.title"/]</h1>
     [@s.text name="home.glossary.contact"/] [@s.text name="home.glossary.mailto"/]
@@ -42,7 +42,6 @@
       <input type="text" class="form-control" name="search" id="search" placeholder="search" autocomplete="off">
       <span class="glyphicon glyphicon-search form-control-feedback"></span>
     </div>
-    
       <div id="content">  
         [#-- List the terms with his definition --]
         [#list glossaryContent as letter]
@@ -61,8 +60,6 @@
           <p>[@s.text name="home.glossary.lastUpdate"/]</p>
         </div>
       </div>
-   
-   </div>
   [/@s.form]
 </section>
 

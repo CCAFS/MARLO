@@ -21,5 +21,6 @@ function searchWord(input) {
     console.log(divs.length);
     divs.show();
     message.hide();
+
   }
 }
