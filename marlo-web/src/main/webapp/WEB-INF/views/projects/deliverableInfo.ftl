@@ -27,7 +27,7 @@
 
 [#-- Status justification textArea --] 
 <div class="col-md-12 form-group justificationContent" style="display:none;">
-  <div class="col-md-12">[@customForm.textArea  name="project.deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
+  <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
 
 [#-- CoA Outputs select --] 
