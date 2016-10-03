@@ -51,8 +51,6 @@
 		<property name="scale" type="integer">
 			<column name="scale" not-null="true" />
 		</property>
-
-		
 		<property name="cofinancing" type="boolean">
 			<column name="is_cofinancing" not-null="true" />
 		</property>
@@ -62,18 +60,15 @@
 		<property name="requiresWorkplanUpload" type="java.lang.Boolean">
 			<column name="requires_workplan_upload" />
 		</property>
-
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-
-
-    <property name="noRegional" type="java.lang.Boolean">
-      <column name="no_regional"/>
-    </property>
-
-
-
+		<property name="locationGlobal" type="boolean">
+			<column name="is_location_global" />
+		</property>
+		<property name="noRegional" type="java.lang.Boolean">
+			<column name="no_regional" />
+		</property>
 		<property name="projectEditLeader" type="boolean">
 			<column name="is_project_leader_edit" />
 		</property>
@@ -81,8 +76,8 @@
 			<column name="create_date" length="19" not-null="true" />
 		</property>
 		<property name="presetDate" type="timestamp">
-      <column name="preset_date" length="19" not-null="true" />
-    </property>
+			<column name="preset_date" length="19" not-null="true" />
+		</property>
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
@@ -90,8 +85,6 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
-
-
 		<many-to-one name="annualReportToDonnor"
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
 			<column name="file_annual_report_to_donnor" not-null="false" />
@@ -104,8 +97,6 @@
 			class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
 			<column name="file_workplan" not-null="false" />
 		</many-to-one>
-
-
 		<set name="projectFocuses" table="project_focuses" order-by="id"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -120,7 +111,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Submission" />
 		</set>
-
 		<set name="sectionStatuses" table="section_statuses" inverse="true"
 			lazy="true" fetch="select">
 			<key>
@@ -128,7 +118,6 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
 		</set>
-
 		<set name="projectLocations" order-by="id" table="project_locations"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -158,9 +147,7 @@
 				</column>
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" />
-
 		</set>
-
 		<set name="projectComponentLessons" order-by="id"
 			table="project_component_lessons" inverse="true" lazy="true" fetch="select">
 			<key>
@@ -169,8 +156,6 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
 		</set>
-
-
 		<set name="projectClusterActivities" order-by="id"
 			table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
 			<key>
@@ -179,8 +164,6 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity" />
 		</set>
-
-
 		<set name="projectOutcomes" order-by="id" table="project_outcomes"
 			inverse="true" lazy="true" fetch="select">
 			<key>
@@ -188,42 +171,43 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" />
 		</set>
-		
-		
-		
-		 <set name="projectCrpContributions" order-by="id" table="project_crp_contributions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution" />
-        </set>
-        <set name="activities"  order-by="id" table="activities" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Activity" />
-        </set>
-        <set name="projectBudgetCofinances" order-by="id" table="project_budgets" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="cofinance_project_id" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
-        </set>
-       
-        <set name="projectBudgets" order-by="id" table="project_budgets" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
-        </set>
-        
-        <set name="projectBudgetsCluserActvities" order-by="id" table="project_budgets_cluser_actvities" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
-        </set>
-		
-		
+		<set name="projectCrpContributions" order-by="id"
+			table="project_crp_contributions" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution" />
+		</set>
+		<set name="activities" order-by="id" table="activities" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Activity" />
+		</set>
+		<set name="projectBudgetCofinances" order-by="id" table="project_budgets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="cofinance_project_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+		</set>
+		<set name="projectBudgets" order-by="id" table="project_budgets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+		</set>
+		<set name="projectBudgetsCluserActvities" order-by="id"
+			table="project_budgets_cluser_actvities" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
+		</set>
 	</class>
 </hibernate-mapping>
