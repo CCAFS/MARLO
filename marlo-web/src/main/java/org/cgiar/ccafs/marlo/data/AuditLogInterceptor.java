@@ -213,8 +213,8 @@ public class AuditLogInterceptor extends EmptyInterceptor {
       objects.put(ENTITY, entity);
       objects.put("PRINCIPAL", new Long(1));
 
-      deletes.add(objects);
-      deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
+      // deletes.add(objects);
+      // deletes.addAll(this.relations(state, types, propertyNames, ((IAuditLog) entity).getId(), true));
     }
   }
 
@@ -277,7 +277,7 @@ public class AuditLogInterceptor extends EmptyInterceptor {
 
       this.logSaveAndUpdate("Saved", inserts);
       this.logSaveAndUpdate("Updated", updates);
-      this.logSaveAndUpdate("Deleted", deletes);
+      // this.logSaveAndUpdate("Deleted", deletes);
     } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getLocalizedMessage());

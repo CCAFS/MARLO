@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -37,6 +39,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -51,6 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -83,6 +88,8 @@ public class CrpProgamRegionsAction extends BaseAction {
   private CrpSitesLeaderManager crpSitesLeaderManager;
   private CrpsSiteIntegrationManager crpsSiteIntegrationManager;
   private UserManager userManager;
+  private LiaisonUserManager liaisonUserManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
   private Role rplRole;
 
   private Long slRoleid;
@@ -97,7 +104,8 @@ public class CrpProgamRegionsAction extends BaseAction {
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
     CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMail sendMail) {
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMail sendMail, LiaisonUserManager liaisonUserManager,
+    LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -111,6 +119,8 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.crpSitesLeaderManager = crpSitesLeaderManager;
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
     this.sendMail = sendMail;
+    this.liaisonUserManager = liaisonUserManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
   private void deleteSiteIntegration(CrpProgramCountry crpProgramCountry) {
@@ -384,6 +394,11 @@ public class CrpProgamRegionsAction extends BaseAction {
               .isEmpty()
               && crpProgramBD.getCrpProgramCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList())
                 .isEmpty()) {
+              for (LiaisonInstitution institution : crpProgram.getLiaisonInstitutions().stream()
+                .filter(c -> c.isActive()).collect(Collectors.toList())) {
+                liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
+              }
+
               crpProgramManager.deleteCrpProgram(crpProgram.getId());
             }
           }
@@ -400,6 +415,14 @@ public class CrpProgamRegionsAction extends BaseAction {
           crpProgram.setActiveSince(new Date());
           crpProgram.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
           crpProgramManager.saveCrpProgram(crpProgram);
+          LiaisonInstitution liasonInstitution = new LiaisonInstitution();
+          liasonInstitution.setAcronym(crpProgram.getAcronym());
+          liasonInstitution.setCrp(loggedCrp);
+          liasonInstitution.setCrpProgram(crpProgram);
+          liasonInstitution.setName(crpProgram.getName());
+
+
+          liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
         } else {
           CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
           crpProgram.setCrp(loggedCrp);
@@ -410,6 +433,12 @@ public class CrpProgamRegionsAction extends BaseAction {
           crpProgram.setActiveSince(crpProgramDb.getActiveSince());
           crpProgram.setProgramType(ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
           crpProgramManager.saveCrpProgram(crpProgram);
+          for (LiaisonInstitution liasonInstitution : crpProgram.getLiaisonInstitutions()) {
+            liasonInstitution.setAcronym(crpProgram.getAcronym());
+            liasonInstitution.setName(crpProgram.getName());
+            liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
+
+          }
         }
       }
 
@@ -423,6 +452,14 @@ public class CrpProgamRegionsAction extends BaseAction {
           }
 
           if (!crpProgram.getLeaders().contains(leaderPreview)) {
+            Set<LiaisonInstitution> liaisonInstitutions = crpProgramPrev.getLiaisonInstitutions();
+            for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+              List<LiaisonUser> liaisonUsers = liaisonInstitution.getLiaisonUsers().stream()
+                .filter(c -> c.getUser().getId().equals(leaderPreview.getUser().getId())).collect(Collectors.toList());
+              for (LiaisonUser liaisonUser : liaisonUsers) {
+                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+              }
+            }
             crpProgramLeaderManager.deleteCrpProgramLeader(leaderPreview.getId());
             User user = userManager.getUser(leaderPreview.getUser().getId());
 
@@ -502,6 +539,15 @@ public class CrpProgamRegionsAction extends BaseAction {
                   && c.getUser().equals(crpProgramLeader.getUser()))
                 .collect(Collectors.toList()).isEmpty()) {
                 crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
+
+                for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
+
+                  LiaisonUser liaisonUser = new LiaisonUser();
+                  liaisonUser.setCrp(loggedCrp);
+                  liaisonUser.setLiaisonInstitution(liasonInstitution);
+                  liaisonUser.setUser(crpProgramLeader.getUser());
+                  liaisonUserManager.saveLiaisonUser(liaisonUser);
+                }
 
                 for (CrpProgramCountry crpProgramCountry : crpProgramPrevLeaders.getCrpProgramCountries().stream()
                   .filter(pc -> pc.isActive()).collect(Collectors.toList())) {
