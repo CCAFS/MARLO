@@ -79,6 +79,11 @@ jQuery.fn.currencyInput = function() {
   });
 };
 
+// contains in div or content
+jQuery.expr[':'].icontains = function(a,i,m) {
+  return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+};
+
 $.fn.scrollBottom = function() {
   return $(document).height() - this.scrollTop() - this.height();
 };

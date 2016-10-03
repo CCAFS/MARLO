@@ -4727,30 +4727,7 @@ span.ipElementId {
   font-size: 0.75em;
   color: #9EC3D0;
 }
-/*** Glossary ***/
 
-#glossary-content {
-  width: 90%;
-  margin: 0 auto;
-}
-
-.wordTitle{
-  font-size: 14px;
-  font-weight: bold;
-  padding: 5px 0px 5px 0px;
-}
-
-.wordDefinition{
-  padding: 0px 0px 5px 0px;
-  text-align: justify;
-  font-size: 1.1em;
-}
-
-.lastUpdate{
-  font-size: 16px;
-  font-weight: bold;
-  float:right;
-}
 
 /************ ACTIVITIES ***************/
 
@@ -5268,7 +5245,7 @@ footer {
 }
 
 #glossary{
-  float:right;
+  /* float:right; */
   margin-top: 15px;
 }
 
@@ -6074,4 +6051,9 @@ input.fieldChecked {
     background-size: 12px;
     border-color: #8ea786 !important;
     color: #8ea786 !important;
+}
+
+#glossary hr {
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
