@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS `liason_institutions_all`;
 CREATE TABLE `liason_institutions_all` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `liason_institution`  bigint(20) NOT NULL ,
