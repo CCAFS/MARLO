@@ -47,11 +47,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private Crp loggedCrp;
 
   private ProjectManager projectManager;
-  private CrpManager crpManager;
+
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager) {
     this.projectManager = projectManager;
+
   }
 
   @Override
@@ -65,6 +66,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;
 
@@ -73,12 +75,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   void setPermissionParameters(ActionInvocation invocation) {
 
-    Map<String, Object> session = invocation.getInvocationContext().getSession();
-
-    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
-    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     User user = (User) session.get(APConstants.SESSION_USER);
+    baseAction.setSession(session);
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
@@ -100,18 +99,17 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+        if (!baseAction.isSubmit(projectId)) {
+          canEdit = true;
+          canSwitchProject = true;
+        }
 
-        canEdit = true;
-        canSwitchProject = true;
 
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project)
           && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
-
-
           canEdit = true;
-
 
         }
 
@@ -141,6 +139,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 
+      if (baseAction.isSubmit(projectId)) {
+        canEdit = false;
+
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

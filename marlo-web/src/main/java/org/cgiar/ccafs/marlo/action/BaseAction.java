@@ -1,4 +1,3 @@
-
 /*****************************************************************
  * isCompleteImpact * This file is part of Managing Agricultural Research for Learning &
  * Outcomes Platform (MARLO).
@@ -374,18 +373,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String getCurrentCycle() {
-    if (this.isReportingActive()) {
-      return APConstants.PLANNING;
-    } else {
-      return APConstants.REPORTING;
+    try {
+      if (this.isReportingActive()) {
+        return APConstants.PLANNING;
+      } else {
+        return APConstants.REPORTING;
+      }
+    } catch (Exception e) {
+      return null;
     }
   }
 
   public int getCurrentCycleYear() {
-    if (this.isReportingActive()) {
-      return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
-    } else {
-      return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+    try {
+      if (this.isReportingActive()) {
+        return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+      } else {
+        return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+      }
+    } catch (Exception e) {
+      return 0;
     }
   }
 
@@ -888,6 +895,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isSaveable() {
     return saveable;
+  }
+
+  public boolean isSubmit(long projectID) {
+    Project project = projectManager.getProjectById(projectID);
+
+    List<Submission> submissions = project.getSubmissions().stream()
+      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+
+    if (submissions.isEmpty()) {
+      return false;
+    }
+    return true;
   }
 
   public void loadLessons(Crp crp, Project project) {
