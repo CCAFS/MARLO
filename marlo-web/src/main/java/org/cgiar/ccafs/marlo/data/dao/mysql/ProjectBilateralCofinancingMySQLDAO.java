@@ -107,8 +107,10 @@ public class ProjectBilateralCofinancingMySQLDAO implements ProjectBilateralCofi
     List<ProjectBilateralCofinancing> listProjects = dao.findAll(query.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
     return listProjects.stream()
-      .filter(c -> c.isActive() && c.getLiaisonInstitution().getInstitution().getId().longValue() == institutionID
-        && year <= Integer.parseInt(df.format(c.getEndDate())))
+      .filter(
+        c -> c.isActive() && c.getLiaisonInstitution() != null && c.getLiaisonInstitution().getInstitution() != null
+          && c.getLiaisonInstitution().getInstitution().getId().longValue() == institutionID
+          && year <= Integer.parseInt(df.format(c.getEndDate())))
       .collect(Collectors.toList());
   }
 }
