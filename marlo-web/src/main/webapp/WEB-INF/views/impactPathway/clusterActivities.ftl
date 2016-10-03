@@ -249,7 +249,7 @@
         </div>
       </div>
       <div class="form-group col-md-12">
-        [@customForm.select name="" label=""  i18nkey="Select to add a outcome" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
+        [@customForm.select name="" label=""  i18nkey="Add a outcome" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
       </div>
     </div>
   

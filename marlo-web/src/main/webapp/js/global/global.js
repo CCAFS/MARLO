@@ -327,6 +327,13 @@ $('.selectedProgram, selectedProject').on('click', function() {
   $(this).parent().next().slideToggle('slow');
 });
 
+// event to inputs in login form
+$('input[name="user.email"] , input[name="user.password"]').on("keypress", function(event) {
+  if(event.keyCode === 10 || event.keyCode === 13) {
+    event.submit();
+  }
+});
+
 /* prevent enter key to inputs */
 
 $('input').on("keypress", function(event) {
