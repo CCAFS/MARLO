@@ -374,32 +374,30 @@ public class ProjectActivitiesAction extends BaseAction {
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setProjectLocations(projectDb.getProjectLocations());
 
-        // List<Activity> activities = new ArrayList<>();
-        // for (Activity activity : project.getOpenProjectActivities()) {
-        // List<DeliverableActivity> deliverableActivities = new ArrayList<>();
-        // if (activity.getDeliverables() != null) {
-        // for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-        // deliverableActivity =
-        // deliverableActivityManager.getDeliverableActivityById(deliverableActivity.getId());
-        // }
-        // activity.setDeliverables(deliverableActivities);
-        // activities.add(activity);
-        // }
-        // }
-        //
-        // project.setOpenProjectActivities(activities);
 
-        // for (Activity activity : project.getClosedProjectActivities()) {
-        // List<DeliverableActivity> deliverableActivities = new ArrayList<>();
-        // if (activity.getDeliverables() != null) {
-        // for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-        // deliverableActivities
-        // .add(deliverableActivityManager.getDeliverableActivityById(deliverableActivity.getId()));
-        // }
-        // activity.setDeliverables(deliverableActivities);
-        // }
-        // }
+        for (Activity activity : project.getOpenProjectActivities()) {
+          if (activity.getDeliverables() != null) {
+            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+              if (deliverableActivity.getId() == -1) {
+                Deliverable deliverable =
+                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                deliverableActivity.setDeliverable(deliverable);
+              }
+            }
+          }
+        }
 
+        for (Activity activity : project.getClosedProjectActivities()) {
+          if (activity.getDeliverables() != null) {
+            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+              if (deliverableActivity.getId() == -1) {
+                Deliverable deliverable =
+                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+                deliverableActivity.setDeliverable(deliverable);
+              }
+            }
+          }
+        }
         reader.close();
         this.setDraft(true);
       } else {
@@ -442,8 +440,15 @@ public class ProjectActivitiesAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
 
-      project.setProjectDeliverables(new ArrayList<Deliverable>(
-        project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+      if (project.getDeliverables() != null) {
+        if (project.getDeliverables().isEmpty()) {
+          project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
+            .getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+        } else {
+          project.setProjectDeliverables(new ArrayList<Deliverable>(
+            project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList())));
+        }
+      }
 
       partnerPersons = projectPartnerPersonManager.findAll().stream()
         .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
