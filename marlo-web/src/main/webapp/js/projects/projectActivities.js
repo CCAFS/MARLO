@@ -114,16 +114,25 @@ function checkItems(block) {
 // Add a new deliverable element
 function addDeliverable() {
   var option = $(this).find("option:selected");
-  console.log(option);
   var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  var isOpenActivity = $(this).parents('.activitiesOG-content').exists()
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');
-  updateActivities();
+
+  if(isOpenActivity) {
+    updateActivities();
+  } else {
+    $('.activitiesC-content').find('.projectActivity ').each(function(i,activity) {
+      updateDeliverable(activity, 'project.closedProjectActivities' + '[' + i + ']');
+    });
+
+  }
 }
 
 // Remove a new deliverable element
