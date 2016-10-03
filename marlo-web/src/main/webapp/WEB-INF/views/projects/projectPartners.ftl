@@ -53,6 +53,13 @@
               [/#if]
             </div> 
             
+            <p id="addPartnerText" class="helpMessage">
+              [@s.text name="projectPartners.addPartnerMessage.first" /]
+              <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
+                [@s.text name="projectPartners.addPartnerMessage.second" /]
+              </a>
+            </p>
+            
             [#-- Other fields --]
              
             [#if project.projectEditLeader]
@@ -334,7 +341,7 @@
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
     <div class="form-group partnerResponsabilities chosen"> 
-      [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=!project.bilateralProject editable=editable /]
+      [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
       <div class="clearfix"></div>
     </div>
     [/#if]

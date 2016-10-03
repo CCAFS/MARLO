@@ -3441,7 +3441,7 @@ li.leader{
   cursor: pointer;
   color: #848484;
   padding-left: 16px;
-  /* margin-bottom: 7px; */
+  margin-bottom: -9px;
   /* background: url(../../images/global/filter.png) no-repeat 0px 3px; */
   background-size: 12px;
   /* float: right; */
