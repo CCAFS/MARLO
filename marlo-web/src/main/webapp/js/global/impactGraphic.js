@@ -36,11 +36,12 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       userPanningEnabled: panningEnable,
 
       style: cytoscape.stylesheet().selector('node').css({
-          'height': 100,
+          'shape': 'rectangle',
+          'height': 60,
           'width': 100,
           'background-fit': 'cover',
-          'border-width': 1,
-          'border-opacity': 0.5,
+          'border-width': 2,
+          'border-opacity': 0.7,
           'label': 'data(label)',
           'background-color': '#2388ae',
           'color': 'white',
@@ -317,6 +318,6 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
-    createGraphic(m.elements, contentGraph, panningEnable, inPopUp, nameLayout, tooltip);
+    createGraphic(m.elements, contentGraph, panningEnable, inPopUp, 'breadthfirst', tooltip);
   });
 }
