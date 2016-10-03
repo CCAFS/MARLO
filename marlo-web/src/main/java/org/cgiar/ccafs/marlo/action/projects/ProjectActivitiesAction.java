@@ -133,6 +133,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
         if (activity.getActivityStatus() != -1) {
           activityNew.setActivityStatus(activity.getActivityStatus());
+        } else {
+          activityNew.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
         }
 
         activityNew.setActivityProgress(activity.getActivityProgress());
@@ -183,7 +185,11 @@ public class ProjectActivitiesAction extends BaseAction {
         activityUpdate.setDescription(activity.getDescription());
         activityUpdate.setStartDate(activity.getStartDate());
         activityUpdate.setEndDate(activity.getEndDate());
-        activityUpdate.setActivityStatus(activity.getActivityStatus());
+        if (activity.getActivityStatus() != -1) {
+          activityUpdate.setActivityStatus(activity.getActivityStatus());
+        } else {
+          activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+        }
         activityUpdate.setActivityProgress(activity.getActivityProgress());
 
         ProjectPartnerPerson partnerPerson =
@@ -230,6 +236,7 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
     }
+
   }
 
   public void activitiesPreviousData(List<Activity> activities, boolean activitiesOpen) {

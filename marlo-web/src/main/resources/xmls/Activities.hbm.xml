@@ -11,7 +11,7 @@
 		</id>
 		<many-to-one name="projectPartnerPerson"
 			class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" fetch="select">
-			<column name="leader_id" not-null="true" />
+			<column name="leader_id"/>
 		</many-to-one>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">

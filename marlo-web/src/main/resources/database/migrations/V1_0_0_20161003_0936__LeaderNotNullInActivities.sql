@@ -1,0 +1,4 @@
+START TRANSACTION;
+ALTER TABLE `activities`
+MODIFY COLUMN `leader_id`  bigint(20) NULL AFTER `endDate`;
+COMMIT;
