@@ -889,18 +889,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return saveable;
   }
 
-  public boolean isSubmit(long projectID) {
-    Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
-      .collect(Collectors.toList());
-
-    if (submissions.isEmpty()) {
-      return false;
-    }
-    return true;
-  }
-
   public void loadLessons(Crp crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());

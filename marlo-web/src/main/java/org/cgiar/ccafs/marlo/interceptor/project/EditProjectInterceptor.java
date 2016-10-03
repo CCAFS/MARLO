@@ -100,18 +100,18 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        if (!baseAction.isSubmit(projectId)) {
-          canEdit = true;
-          canSwitchProject = true;
-        }
+
+        canEdit = true;
+        canSwitchProject = true;
+
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project)
           && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
 
-          if (!baseAction.isSubmit(projectId)) {
-            canEdit = true;
-          }
+
+          canEdit = true;
+
 
         }
 
