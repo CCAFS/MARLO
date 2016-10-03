@@ -15,7 +15,7 @@
             <column name="crp_program" />
         </many-to-one>
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-            <column name="institution_id" not-null="true" />
+            <column name="institution_id"  />
         </many-to-one>
         <property name="name" type="string">
             <column name="name" not-null="true" />
