@@ -332,6 +332,32 @@ public class DeliverableAction extends BaseAction {
           deliverablePartnershipManager.saveDeliverablePartnership(partnership);
 
 
+        } else {
+
+          long partnerShipPrewId = deliverablePartnershipManager
+            .getDeliverablePartnershipById(deliverablePartnership.getId()).getProjectPartnerPerson().getId();
+
+          long partnerShipId = deliverablePartnership.getProjectPartnerPerson().getId();
+          if (partnerShipPrewId != partnerShipId) {
+
+            ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
+              .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
+
+            deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+
+            DeliverablePartnership partnershipNew = new DeliverablePartnership();
+            partnershipNew.setProjectPartnerPerson(partnerPerson);
+            partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+            partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            partnershipNew.setActive(true);
+            partnershipNew.setCreatedBy(this.getCurrentUser());
+            partnershipNew.setModifiedBy(this.getCurrentUser());
+            partnershipNew.setModificationJustification("");
+            partnershipNew.setActiveSince(new Date());
+
+            deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+
+          }
         }
       }
     }

@@ -86,6 +86,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private ProjectScopeManager projectScopeManager;
   private LocElementTypeManager locationTypeManager;
   private String transaction;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
    * private LiaisonUserManager liaisonUserManager;
@@ -139,7 +140,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.programManager = programManager;
     this.crpManager = crpManager;
     // this.userManager = userManager;
-    // this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectManager = projectManager;
     this.projectFocusManager = projectFocusManager;
     this.validator = validator;
@@ -503,7 +504,10 @@ public class ProjectDescriptionAction extends BaseAction {
     allOwners = new ArrayList<LiaisonUser>();
     allOwners.addAll(loggedCrp.getLiasonUsers());
     liaisonInstitutions = new ArrayList<LiaisonInstitution>();
+
     liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
+    liaisonInstitutions.addAll(
+      liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     programFlagships = new ArrayList<>();
     regionFlagships = new ArrayList<>();
     programFlagships.addAll(loggedCrp.getCrpPrograms().stream()

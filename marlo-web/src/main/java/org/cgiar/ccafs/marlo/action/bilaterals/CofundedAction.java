@@ -224,8 +224,12 @@ public class CofundedAction extends BaseAction {
 
       institutions = institutionManager.findAll();
 
-      liaisonInstitutions = liaisonInstitutionManager.findAll().stream()
-        .filter(li -> li.getCrp().getId() == loggedCrp.getId()).collect(Collectors.toList());
+      liaisonInstitutions = new ArrayList<>();
+
+      liaisonInstitutions.addAll(loggedCrp.getLiaisonInstitutions());
+      liaisonInstitutions.addAll(
+        liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+
 
       project.setBudgets(
         new ArrayList<>(projectBilateralCofinancingManager.getProjectBilateralCofinancingById(project.getId())
