@@ -73,7 +73,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
     }
 
     if (project.getClosedProjectActivities() != null) {
-      for (Activity activity : project.getOpenProjectActivities()) {
+      for (Activity activity : project.getClosedProjectActivities()) {
         this.validateActivity(activity);
       }
     }
@@ -115,7 +115,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
     if (activity.getProjectPartnerPerson() != null) {
       if (activity.getProjectPartnerPerson().getId() == -1) {
-        action.addFieldError(action.getText("activity.leader", params), "Select a Activitie Leader");
+        this.addMessage(action.getText("activity.leader", params));
       }
     } else {
       this.addMessage(action.getText("activity.leader", params));
