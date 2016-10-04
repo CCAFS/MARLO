@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -64,14 +65,14 @@ public class ImpactPathwayFullGraph extends BaseAction {
 
     List<HashMap<String, Object>> dataNodes = new ArrayList<HashMap<String, Object>>();
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
-    HashMap<String, Object> dataCrpAdd = new HashMap<>();
-    HashMap<String, Object> dataCrp = new HashMap<>();
-    dataCrp.put("id", crp.getAcronym());
-    dataCrp.put("label", crp.getAcronym());
-    dataCrp.put("description", crp.getName());
-    dataCrp.put("type", "C");
-    dataCrpAdd.put("data", dataCrp);
-    dataNodes.add(dataCrpAdd);
+    // HashMap<String, Object> dataCrpAdd = new HashMap<>();
+    // HashMap<String, Object> dataCrp = new HashMap<>();
+    // dataCrp.put("id", crp.getAcronym());
+    // dataCrp.put("label", crp.getAcronym());
+    // dataCrp.put("description", crp.getName());
+    // dataCrp.put("type", "C");
+    // dataCrpAdd.put("data", dataCrp);
+    // dataNodes.add(dataCrpAdd);
 
     for (CrpProgram crpProgram : crp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
@@ -85,12 +86,12 @@ public class ImpactPathwayFullGraph extends BaseAction {
       dataProgram.put("type", "F");
       data.put("data", dataProgram);
       dataNodes.add(data);
-      HashMap<String, Object> dataCRP = new HashMap<>();
-      HashMap<String, Object> dataCRPDetail = new HashMap<>();
-      dataCRPDetail.put("source", crpProgram.getCrp().getAcronym());
-      dataCRPDetail.put("target", crpProgram.getAcronym());
-      dataCRP.put("data", dataCRPDetail);
-      dataEdges.add(dataCRP);
+      // HashMap<String, Object> dataCRP = new HashMap<>();
+      // HashMap<String, Object> dataCRPDetail = new HashMap<>();
+      // dataCRPDetail.put("source", crpProgram.getCrp().getAcronym());
+      // dataCRPDetail.put("target", crpProgram.getAcronym());
+      // dataCRP.put("data", dataCRPDetail);
+      // dataEdges.add(dataCRP);
       int i = 1;
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
@@ -111,7 +112,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataEdges.add(dataEdgeOutcome);
         i++;
       }
-      int j=1;
+      int j = 1;
       for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
         .filter(c -> c.isActive()).collect(Collectors.toList())) {
         HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -119,11 +120,24 @@ public class ImpactPathwayFullGraph extends BaseAction {
         HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
         HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
-        dataDetailOutcome.put("label","CoA #" + j);
+        dataDetailOutcome.put("label", "CoA #" + j);
         dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
         dataDetailOutcome.put("color", crpClusterOfActivity.getCrpProgram().getColor());
         dataDetailOutcome.put("type", "CoA");
         dataOutcome.put("data", dataDetailOutcome);
+        int k = 1;
+        for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
+          .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+          HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
+          dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
+          dataDetailKeyOutput.put("parent", "CoA" + crpClusterOfActivity.getId());
+          dataDetailKeyOutput.put("label", "KeyOutput #" + k);
+          dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
+          dataDetailKeyOutput.put("color", "#c0c0c0");
+          dataDetailKeyOutput.put("type", "KO");
+          k++;
+          dataOutcome.put("data", dataDetailKeyOutput);
+        }
         dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
         dataEdgeDetailOutcome.put("target", "C" + crpClusterOfActivity.getId());
         dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
