@@ -55,7 +55,7 @@ public class APConfig {
   private static final String ADMIN_ACTIVE = "marlo.admin.active";
   private static final String IMPACT_PATHWAY_ACTIVE = "marlo.impactPathway.active";
 
-  private static final String AUTOSAVE_FILE = "autosave.file";
+  private static final String AUTOSAVE_FOLDER = "autosave.folder";
 
   private static final String BASE_URL = "marlo.baseUrl";
   // Logging.
@@ -89,7 +89,7 @@ public class APConfig {
    */
   public String getAutoSaveFolder() {
     try {
-      return properties.getPropertiesAsString(AUTOSAVE_FILE);
+      return properties.getPropertiesAsString(AUTOSAVE_FOLDER);
     } catch (Exception e) {
       LOG.error("there is not a base folder to save the uploaded files configured.");
     }
@@ -218,10 +218,7 @@ public class APConfig {
    */
   public String getProjectsBaseFolder(String crp) {
     try {
-
-      return properties.getPropertiesAsString(PROJECTS_BASE_FOLDER).replace("{0}", crp);
-
-
+      return crp.concat(File.separator).concat(properties.getPropertiesAsString(PROJECTS_BASE_FOLDER));
     } catch (Exception e) {
       LOG.error("there is not a base folder to upload the project files configured.");
     }
@@ -268,15 +265,6 @@ public class APConfig {
       LOG.error("there is not an push api key configured.");
     }
     return "";
-  }
-
-  /**
-   * TODO HT
-   * 
-   * @return
-   */
-  public File getResourcePath() {
-    return new File(properties.getPropertiesAsString(RESOURCE_PATH));
   }
 
   public String getTawktoApiKey() {
