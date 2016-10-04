@@ -6,10 +6,8 @@ mysql.password=password
 mysql.database=database_name
 mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
-
 # -----------------------------
 marlo.baseUrl=https://localhost:8443/marlo-web/
-
 #---------------------------------------------------
 #                   Google API Key
 #---------------------------------------------------
@@ -31,14 +29,14 @@ tawkto.api.key=
 #                   File properties
 # ----------------------------------------------------
 autosave.active=true
-autosave.file=D:/marlo/tempFiles/
+autosave.file=
 
 # ------------------------------------------------
 # Email account
 # ------------------------------------------------
 
 # Mail configuration
-email.notification=ccafsap@gmail.com
+email.notification=
 #gmail.password=emailpassword
 email.user=user
 email.password=password

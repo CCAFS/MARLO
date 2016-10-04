@@ -6,45 +6,31 @@ mysql.password=password
 mysql.database=database_name
 mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
-
 # -----------------------------
-marlo.baseUrl=https://localhost:8443/marlo-web/
-
-#---------------------------------------------------
-#                   Google API Key
-#---------------------------------------------------
-google.api.key=
-
-#---------------------------------------------------
-#                   Pusher API Key
-#---------------------------------------------------
+marlo.baseUrl=localhost:8080/marlo-web
+#------------------
+# MARLO MODULES
+marlo.admin.active=true
+marlo.impactPathway.active=true
+#------------------
+#Pusher API KEY-----------
 pusher.api.key=
 pusher.api.appid=
 pusher.api.privatekey=
-
 #---------------------------------------------------
 #                   Tawk.to API Key
 #---------------------------------------------------
 tawkto.api.key=
 
-# ----------------------------------------------------
+#---------------------------------------------------
+#                   Google api key
+#---------------------------------------------------
+google.api.key=
+
 #                   File properties
 # ----------------------------------------------------
+autosave.file=
 autosave.active=true
-autosave.file=D:/marlo/tempFiles/
-
-# ------------------------------------------------
-# Email account
-# ------------------------------------------------
-
-# Mail configuration
-email.notification=ccafsap@gmail.com
-#gmail.password=emailpassword
-email.user=user
-email.password=password
-email.host=host
-email.port=port
-
 # -----------------------------------------------
 # TEST MODE
 # ------------------------------------------------
@@ -52,10 +38,27 @@ marlo.production=false
 marlo.debug=false
 
 # ------------------------------------------------
+# Email account
+# ------------------------------------------------
+
+# Mail configuration
+email.notification=
+#gmail.password=
+email.user=
+email.password=
+email.host=
+email.port=
+
+# -----------------------------------------------
+# TEST MODE
+# ------------------------------------------------
+ccafsap.production=false
+
+# ------------------------------------------------
 # Logger properties
 # ------------------------------------------------
 
-log.folder=C:/logs
+log.folder=
 log.console=true
 log.file=false
 !Production log only shows logs of type info, warn and error 
@@ -63,9 +66,10 @@ log.production=false
 !Test log shows logs of all types trace, debug, info, warn and error 
 log.test=true
 
+
 ## file Downloads
 # URL where the files uploaded can be downloaded
-file.downloads=urlData
+file.downloads=localhost/data
 file.uploads.projectsFolder={0}/projects
 # folder to upload project work plans
 file.uploads.project.WorkplanFolder=workplan/
@@ -74,10 +78,10 @@ file.uploads.project.bilateralProposalFolder=bilateralProposal/
 
 file.uploads.project.bilateralPAnualReport=anualReport/
 # Resource path
-resource.path=path
+resource.path=
 
 # Maximum size allowed
 file.maxSizeAllowed.bytes=3145728
 
 # Base folder where files will be moved
-file.uploads.baseFolder=path
+file.uploads.baseFolder=
