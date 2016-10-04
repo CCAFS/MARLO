@@ -36,6 +36,7 @@
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<log-properties>0.9.28</log-properties>
+		<pentaho-report.version>5.0.1-stable</pentaho-report.version>
 	</properties>
 
 	<developers>
@@ -296,64 +297,64 @@
 		<dependency>
 			<groupId>pentaho-reporting-engine</groupId>
 			<artifactId>pentaho-reporting-engine-classic-core</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-reporting-engine</groupId>
 			<artifactId>pentaho-reporting-engine-classic-extensions</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libbase</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libdocbundle</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libfonts</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libformat</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libformula</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libloader</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>librepository</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libserializer</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libxml</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libswing</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -380,7 +381,7 @@
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libsparkline</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.barbecue</groupId>
@@ -390,7 +391,7 @@
 		<dependency>
 			<groupId>pentaho-reporting-engine</groupId>
 			<artifactId>pentaho-reporting-engine-legacy-charts</artifactId>
-			<version>5.0.1-stable</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>pentaho-report-designer</groupId>
