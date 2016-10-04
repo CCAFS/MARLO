@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,31 +59,26 @@ public class FlywayContextListener implements ServletContextListener {
 
 
     flyway.setDataSource(this.getDataSource());
-    flyway.setLocations(SQL_MIGRATIONS_PATH, JAVA_MIGRATIONS_PATH);
+    flyway.setLocations(SQL_MIGRATIONS_PATH);
 
     this.configurePlaceholders(flyway);
     // DELETE ALL DB
-    // flyway.clean();
+    //
+
     if (flyway.info().current() == null) {
-      LOG.info("Setting baseline version 1.0");
-      flyway.setBaselineVersion(MigrationVersion.fromVersion("1.0"));
+      LOG.info("Setting baseline version 2.0");
+
+      flyway.setBaselineVersion(MigrationVersion.fromVersion("2.0"));
       flyway.baseline();
+      flyway.migrate();
 
+    } else {
+      // Show the changes to be applied
+
+      flyway.repair();
+      flyway.setOutOfOrder(true);
+      flyway.migrate();
     }
-
-
-    // Show the changes to be applied
-    LOG.info("-------------------------------------------------------------");
-    for (MigrationInfo i : flyway.info().all()) {
-      LOG.info("migrate task: " + i.getVersion() + " : " + i.getDescription() + " from file: " + i.getScript()
-        + " with state: " + i.getState());
-    }
-    LOG.info("-------------------------------------------------------------");
-
-
-    flyway.repair();
-    flyway.setOutOfOrder(true);
-    flyway.migrate();
 
 
   }
