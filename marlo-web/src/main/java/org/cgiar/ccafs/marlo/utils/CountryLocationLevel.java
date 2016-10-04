@@ -33,14 +33,15 @@ public class CountryLocationLevel implements Serializable {
 
   private List<LocElement> locElements;
 
+
   private List<LocElement> allElements;
 
   private Long id;
 
-
   private boolean isList;
 
-  private boolean global;
+  private boolean allCountries;
+
 
   public CountryLocationLevel() {
 
@@ -86,22 +87,21 @@ public class CountryLocationLevel implements Serializable {
     return name;
   }
 
-  public boolean isGlobal() {
-    return global;
+  public boolean isAllCountries() {
+    return allCountries;
   }
 
   public boolean isList() {
     return isList;
   }
 
+  public void setAllCountries(boolean allCountries) {
+    this.allCountries = allCountries;
+  }
+
   public void setAllElements(List<LocElement> allElements) {
     this.allElements = allElements;
   }
-
-  public void setGlobal(boolean global) {
-    this.global = global;
-  }
-
 
   public void setId(Long id) {
     this.id = id;

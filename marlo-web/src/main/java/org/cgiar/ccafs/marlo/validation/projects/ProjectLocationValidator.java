@@ -80,7 +80,7 @@ public class ProjectLocationValidator extends BaseValidator {
 
   public void validateLocation(BaseAction action, Project project) {
 
-    if (project.getLocations() == null) {
+    if (project.getLocationsData() == null) {
       this.addMessage(action.getText("project.locations"));
     }
 
