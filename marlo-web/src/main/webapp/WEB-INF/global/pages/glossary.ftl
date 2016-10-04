@@ -12,6 +12,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 
+
 [#assign glossaryContent= [ 
   [ "accountability", "mutualAccountability", "activities", "adoption", "appraisal", "attribution", "audit"],
   [ "baseline", "behavioralIndependence", "beneficiaries", "budget"],
@@ -30,8 +31,9 @@
   [ "update" , "use"]
 ] /]
 
+[#assign words= [ "A", "B", "C", "D", "E", "F", "G", "I", "L", "M", "N", "O", "P", "R", "S", "T", "U"]/]
 
-<section class="container">
+<section class="container contentForm">
   [@s.form action="glossary" cssClass="pure-form"]
   
     <article class="fullContent" id="glossary-content">
@@ -42,15 +44,18 @@
       <input type="text" class="form-control" name="search" id="search" placeholder="search" autocomplete="off">
       <span class="glyphicon glyphicon-search form-control-feedback"></span>
     </div>
+    <hr />
+    [#list words as word] 
+      <span id="" class="tag">${word}</span>
+    [/#list]
+    
       <div id="content">  
         [#-- List the terms with his definition --]
-        [#list glossaryContent as letter]
-          
+        [#list glossaryContent as letter]          
           [#list letter as word] 
             [@wordDefinition word=word /]
           [/#list]
         [/#list]
-        
         <div id="message" class="col-md-12 text-center" style="display:none;">
         <hr />
           <span >Sorry, this word was not found in the glossary</span>
