@@ -8,7 +8,7 @@ mysql.url=jdbc:mysql://localhost:3306/database_name
 mysql.port=3306
 
 # -----------------------------
-marlo.baseUrl=https://localhost:8443/marlo-web/
+marlo.baseUrl=http://localhost:8080/marlo-web/
 
 # ----------------------------------------------------
 #                   Sections Variables
