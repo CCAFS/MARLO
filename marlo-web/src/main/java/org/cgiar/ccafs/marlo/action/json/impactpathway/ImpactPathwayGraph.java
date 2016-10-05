@@ -108,6 +108,7 @@ public class ImpactPathwayGraph extends BaseAction {
     }
 
     int i1 = 1;
+    int j = 1;
     for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
@@ -118,7 +119,7 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("color", crpClusterOfActivity.getCrpProgram().getColor());
       dataDetailOutcome.put("type", "CoA");
       dataOutcome.put("data", dataDetailOutcome);
-      int j = 1;
+
       for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
         .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
         HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
