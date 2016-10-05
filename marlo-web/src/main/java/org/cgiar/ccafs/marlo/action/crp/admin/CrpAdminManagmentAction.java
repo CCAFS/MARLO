@@ -43,8 +43,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -278,15 +280,26 @@ public class CrpAdminManagmentAction extends BaseAction {
   private void pmuRoleData() {
     Role rolePreview = roleManager.getRoleById(pmuRol);
     // Removing users roles
+    int i = 0;
     for (UserRole userRole : rolePreview.getUserRoles()) {
       if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
-        userRoleManager.deleteUserRole(userRole.getId());
+
         userRole.setUser(userManager.getUser(userRole.getUser().getId()));
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream().filter(c -> c.isActive()
           && c.getUser().getId().equals(userRole.getUser()) && c.getLiaisonInstitution().getId().longValue() == cuId)
           .collect(Collectors.toList());
         for (LiaisonUser liaisonUser : liaisonUsers) {
-          liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+          if (liaisonUser.getProjects().isEmpty()) {
+            liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+            userRoleManager.deleteUserRole(userRole.getId());
+          } else {
+
+            HashMap<String, String> error = new HashMap<>();
+            error.put("flagshipsPrograms", "PMU, can not be deleted");
+            this.getInvalidFields().add(error);
+          }
+          i++;
+
         }
 
         // Notifiy user been unassigned to Program Management
@@ -565,10 +578,10 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
+      if (!this.getInvalidFields().isEmpty()) {
         String validationMessage = messages.iterator().next();
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+        this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
@@ -603,4 +616,17 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  @Override
+  public void validate() {
+
+    if (save) {
+      List<HashMap<String, String>> invalidFields = new ArrayList<>();
+      if (flagshipsPrograms.isEmpty()) {
+        HashMap<String, String> error = new HashMap<>();
+        error.put("flagshipsPrograms", "Please add a Flagship");
+        invalidFields.add(error);
+      }
+      this.setInvalidFields(invalidFields);
+    }
+  }
 }

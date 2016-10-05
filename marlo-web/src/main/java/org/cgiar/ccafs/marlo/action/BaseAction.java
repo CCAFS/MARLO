@@ -51,6 +51,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,17 +89,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
+
   public static final String NEXT = "next";
 
 
   public static final String NOT_AUTHORIZED = "403";
 
   public static final String NOT_FOUND = "404";
+
+
   public static final String NOT_LOGGED = "401";
 
   public static final String SAVED_STATUS = "savedStatus";
-
   private static final long serialVersionUID = -740360140511380630L;
+
+  private List<HashMap<String, String>> invalidFields;
   protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
@@ -106,7 +111,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean cancel;
   private boolean canEdit; // If user is able to edit the form.
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
-
   protected APConfig config;
   private Long crpID;
 
@@ -115,24 +119,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpManager crpManager;
   // Variables
   private String crpSession;
+
   private Crp currentCrp;
-
-
   protected boolean dataSaved;
   protected boolean delete;
+
+
   private boolean draft;
   private boolean reportingActive;
   private boolean planningActive;
   private boolean lessonsActive;
-
   private int reportingYear;
   private int planningYear;
+
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
   @Inject
   private ProjectManager projectManager;
   private boolean fullEditable; // If user is able to edit all the form.
-
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   // Justification of the changes
@@ -142,21 +146,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Inject
   private FileDBManager fileDBManager;
 
-
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
   private Map<String, Object> parameters;
 
+
   private HttpServletRequest request;
   // button actions
   protected boolean save;
+
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
-
-
   @Inject
   private SectionStatusManager sectionStatusManager;
-
-
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
@@ -167,7 +168,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private Submission submission;
 
+
   protected boolean submit;
+
 
   @Inject
   public BaseAction(APConfig config) {
@@ -253,7 +256,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
-
   /* Override this method depending of the delete action. */
   public String delete() {
     return SUCCESS;
@@ -277,11 +279,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return INPUT;
   }
 
+
   public String generatePermission(String permission, String... params) {
     return this.getText(permission, params);
 
   }
-
 
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
@@ -290,6 +292,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBasePermission() {
     return basePermission;
   }
+
 
   public String getBaseUrl() {
     return config.getBaseUrl();
@@ -464,10 +467,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  public List<HashMap<String, String>> getInvalidFields() {
+    return invalidFields;
+  }
+
   public String getJustification() {
     return justification;
   }
-
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
@@ -477,6 +483,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
+
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -519,7 +526,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
-
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
@@ -624,6 +630,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -631,7 +638,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -672,6 +678,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
+
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -680,12 +687,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPersmissionSubmit() {
 
     boolean permissions = this.hasPermission("submit");
     return permissions;
   }
+
 
   public boolean hasProgramnsRegions() {
     try {
@@ -732,7 +739,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
-
 
   public boolean isCompletePreProject(long projectID) {
 
@@ -795,6 +801,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isDataSaved() {
     return dataSaved;
   }
+
 
   public boolean isDraft() {
     return draft;
@@ -892,10 +899,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isSaveable() {
     return saveable;
   }
+
 
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
@@ -941,7 +948,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
-
 
   public void loadLessons(Crp crp, Project project, String actionName) {
 
@@ -1012,16 +1018,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
+
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
 
-
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
+
 
   public void saveLessons(Crp crp, Project project) {
 
@@ -1082,7 +1089,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.add = true;
   }
 
-
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
   }
@@ -1092,28 +1098,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
+
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
-
 
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
-
 
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
 
+
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
-
 
   public void setDraft(boolean draft) {
     this.draft = draft;
@@ -1124,13 +1130,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
+
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
 
-
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
+  }
+
+
+  public void setInvalidFields(List<HashMap<String, String>> invalidFields) {
+    this.invalidFields = invalidFields;
   }
 
   public void setJustification(String justification) {
