@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -65,7 +66,6 @@ public class ImpactPathwayGraph extends BaseAction {
     List<HashMap<String, Object>> dataEdges = new ArrayList<HashMap<String, Object>>();
     HashMap<String, Object> data = new HashMap<>();
     HashMap<String, Object> dataProgram = new HashMap<>();
-    // HashMap<String, Object> dataCrpAdd = new HashMap<>();
     dataProgram.put("id", crpProgram.getAcronym());
     dataProgram.put("label", crpProgram.getAcronym());
     dataProgram.put("description", crpProgram.getName());
@@ -73,21 +73,6 @@ public class ImpactPathwayGraph extends BaseAction {
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
-
-    // HashMap<String, Object> dataCrp = new HashMap<>();
-    // dataCrp.put("id", crpProgram.getCrp().getAcronym());
-    // dataCrp.put("label", crpProgram.getCrp().getAcronym());
-    // dataCrp.put("description", crpProgram.getCrp().getName());
-    // dataCrp.put("type", "C");
-    // dataCrpAdd.put("data", dataCrp);
-    // dataNodes.add(dataCrpAdd);
-    // HashMap<String, Object> dataCRP = new HashMap<>();
-    // HashMap<String, Object> dataCRPDetail = new HashMap<>();
-    // dataCRPDetail.put("source", crpProgram.getCrp().getAcronym());
-    // dataCRPDetail.put("target", crpProgram.getAcronym());
-    // dataCRP.put("data", dataCRPDetail);
-    // dataEdges.add(dataCRP);
-
 
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
@@ -105,8 +90,19 @@ public class ImpactPathwayGraph extends BaseAction {
       dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
       dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
       dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
+
+
+      for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpProgramOutcome.getCrpClusterKeyOutputOutcomes().stream()
+        .filter(koo -> koo.isActive()).collect(Collectors.toList())) {
+        dataEdgeDetailOutcome = new HashMap<>();
+        dataEdgeDetailOutcome.put("source", "O" + crpProgramOutcome.getId());
+        dataEdgeDetailOutcome.put("target", "KO" + keyOutputOutcome.getCrpClusterKeyOutput().getId());
+        dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
+      }
+
       dataNodes.add(dataOutcome);
       dataEdges.add(dataEdgeOutcome);
+
       i++;
     }
 
@@ -115,9 +111,7 @@ public class ImpactPathwayGraph extends BaseAction {
       .filter(c -> c.isActive()).collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
       HashMap<String, Object> dataDetailOutcome = new HashMap<>();
-      HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
-      HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
-      dataDetailOutcome.put("id", "CoA" + crpClusterOfActivity.getId());
+      dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
       dataDetailOutcome.put("label", "CoA #" + i1);
       dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
       dataDetailOutcome.put("color", crpClusterOfActivity.getCrpProgram().getColor());
@@ -128,7 +122,7 @@ public class ImpactPathwayGraph extends BaseAction {
         .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
         HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
         dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
-        dataDetailKeyOutput.put("parent", "CoA" + crpClusterOfActivity.getId());
+        dataDetailKeyOutput.put("parent", "C" + crpClusterOfActivity.getId());
         dataDetailKeyOutput.put("label", "KeyOutput #" + j);
         dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
         dataDetailKeyOutput.put("color", "#c0c0c0");
@@ -136,11 +130,8 @@ public class ImpactPathwayGraph extends BaseAction {
         j++;
         dataOutcome.put("data", dataDetailKeyOutput);
       }
-      dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
-      dataEdgeDetailOutcome.put("target", "C" + crpClusterOfActivity.getId());
-      dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
+
       dataNodes.add(dataOutcome);
-      dataEdges.add(dataEdgeOutcome);
       i1++;
     }
     elements.put("nodes", dataNodes);
