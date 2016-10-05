@@ -37,7 +37,6 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
-
   @Expose
   private Date activeSince;
 
@@ -57,6 +56,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean hasCoordinates;
 
+
   private LocElementType locElementType;
 
 
@@ -64,18 +64,21 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   private Set<LocElementType> locElementTypes = new HashSet<LocElementType>(0);
 
+
+  private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
+
   private List<LocElement> locationElements;
 
   public LocElementType() {
   }
 
-
   public LocElementType(LocElementType locElementType, String name, Set<LocElement> locElements,
-    Set<LocElementType> locElementTypes) {
+    Set<LocElementType> locElementTypes, Set<ProjectLocationElementType> projectLocationElementTypes) {
     this.locElementType = locElementType;
     this.name = name;
     this.locElements = locElements;
     this.locElementTypes = locElementTypes;
+    this.projectLocationElementTypes = projectLocationElementTypes;
   }
 
   @Override
@@ -99,6 +102,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
+
 
   public Date getActiveSince() {
     return activeSince;
@@ -125,7 +129,6 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
     return locationElements;
   }
 
-
   public Set<LocElement> getLocElements() {
     return this.locElements;
   }
@@ -133,6 +136,7 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
   public LocElementType getLocElementType() {
     return this.locElementType;
   }
+
 
   public Set<LocElementType> getLocElementTypes() {
     return this.locElementTypes;
@@ -156,6 +160,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   public String getName() {
     return this.name;
+  }
+
+  public Set<ProjectLocationElementType> getProjectLocationElementTypes() {
+    return projectLocationElementTypes;
   }
 
   @Override
@@ -217,6 +225,10 @@ public class LocElementType implements java.io.Serializable, IAuditLog {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setProjectLocationElementTypes(Set<ProjectLocationElementType> projectLocationElementTypes) {
+    this.projectLocationElementTypes = projectLocationElementTypes;
   }
 
   public void setScope(boolean scope) {

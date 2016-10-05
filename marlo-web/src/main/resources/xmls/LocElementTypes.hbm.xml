@@ -30,6 +30,13 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LocElement" />
 		</set>
+		<set lazy="true" name="projectLocationElementTypes" table="project_location_element_types" inverse="true"
+      order-by="name" fetch="select">
+      <key>
+        <column name="loc_element_type_id" not-null="true" />
+      </key>
+      <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType" />
+    </set>
 		<set lazy="true" name="locElementTypes" table="loc_element_types"
 			inverse="true" fetch="select">
 			<key>

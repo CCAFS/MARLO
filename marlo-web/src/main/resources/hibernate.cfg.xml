@@ -97,6 +97,7 @@
     <mapping resource="xmls/ProjectsBilateralCofinancing.hbm.xml"/>
     <mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml"/>
     <mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml"/>
+    <mapping resource="xmls/ProjectLocationElementTypes.hbm.xml"/>    
   </session-factory>
 </hibernate-configuration>
 
