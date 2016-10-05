@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 /**
@@ -278,6 +280,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
   private void pmuRoleData() {
+    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     Role rolePreview = roleManager.getRoleById(pmuRol);
     // Removing users roles
     int i = 0;
@@ -301,7 +304,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
             HashMap<String, String> error = new HashMap<>();
             error.put("loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
-            this.getInvalidFields().add(error);
+            this.getInvalidFields().add(gson.toJson(error));
           }
           i++;
 
@@ -623,13 +626,13 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   @Override
   public void validate() {
-
+    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     if (save) {
-      List<HashMap<String, String>> invalidFields = new ArrayList<>();
+      List<String> invalidFields = new ArrayList<>();
       if (flagshipsPrograms.isEmpty()) {
         HashMap<String, String> error = new HashMap<>();
         error.put("flagshipsPrograms", "Please add a Flagship");
-        invalidFields.add(error);
+        invalidFields.add(gson.toJson(gson));
       }
       this.setInvalidFields(invalidFields);
     }
