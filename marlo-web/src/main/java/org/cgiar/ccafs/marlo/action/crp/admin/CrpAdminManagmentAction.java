@@ -285,9 +285,14 @@ public class CrpAdminManagmentAction extends BaseAction {
       if (!loggedCrp.getProgramManagmenTeam().contains(userRole)) {
 
         userRole.setUser(userManager.getUser(userRole.getUser().getId()));
-        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream().filter(c -> c.isActive()
-          && c.getUser().getId().equals(userRole.getUser()) && c.getLiaisonInstitution().getId().longValue() == cuId)
+        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
+          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+            && c.getLiaisonInstitution().getId().longValue() == cuId)
           .collect(Collectors.toList());
+        if (liaisonUsers.isEmpty()) {
+
+          userRoleManager.deleteUserRole(userRole.getId());
+        }
         for (LiaisonUser liaisonUser : liaisonUsers) {
           if (liaisonUser.getProjects().isEmpty()) {
             liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
@@ -295,7 +300,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           } else {
 
             HashMap<String, String> error = new HashMap<>();
-            error.put("flagshipsPrograms", "PMU, can not be deleted");
+            error.put("loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
             this.getInvalidFields().add(error);
           }
           i++;
@@ -579,7 +584,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
-        String validationMessage = messages.iterator().next();
+
         this.setActionMessages(null);
         this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
