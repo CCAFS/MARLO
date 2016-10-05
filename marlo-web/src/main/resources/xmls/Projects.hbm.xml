@@ -156,6 +156,14 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
 		</set>
+		<set name="projectLocationElementTypes" order-by="id"
+      table="project_location_element_types" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType" />
+    </set>
 		<set name="projectClusterActivities" order-by="id"
 			table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
 			<key>

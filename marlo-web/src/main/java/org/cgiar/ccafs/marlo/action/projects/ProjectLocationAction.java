@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -84,6 +85,8 @@ public class ProjectLocationAction extends BaseAction {
 
   private ProjectLocationManager projectLocationManager;
 
+  private ProjectLocationElementTypeManager projectLocationElementTypeManager;
+
 
   private LocElementManager locElementManager;
 
@@ -99,7 +102,8 @@ public class ProjectLocationAction extends BaseAction {
   public ProjectLocationAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     LocElementTypeManager locElementTypeManager, LocElementManager locElementManager,
     ProjectLocationManager projectLocationManager, LocGeopositionManager locGeopositionManager,
-    AuditLogManager auditLogManager, ProjectLocationValidator locationValidator) {
+    AuditLogManager auditLogManager, ProjectLocationValidator locationValidator,
+    ProjectLocationElementTypeManager projectLocationElementTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -109,6 +113,7 @@ public class ProjectLocationAction extends BaseAction {
     this.locGeopositionManager = locGeopositionManager;
     this.auditLogManager = auditLogManager;
     this.locationValidator = locationValidator;
+    this.projectLocationElementTypeManager = projectLocationElementTypeManager;
   }
 
   @Override
