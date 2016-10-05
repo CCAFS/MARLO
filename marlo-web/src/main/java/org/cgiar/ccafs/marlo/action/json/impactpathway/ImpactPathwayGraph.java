@@ -116,24 +116,27 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
       dataDetailOutcome.put("label", "CoA #" + i1);
       dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
-      dataDetailOutcome.put("color", crpClusterOfActivity.getCrpProgram().getColor());
+      dataDetailOutcome.put("color", "#c0c0c0");
       dataDetailOutcome.put("type", "CoA");
       dataOutcome.put("data", dataDetailOutcome);
+      dataNodes.add(dataOutcome);
 
       for (CrpClusterKeyOutput keyOutput : crpClusterOfActivity.getCrpClusterKeyOutputs().stream()
         .filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+        HashMap<String, Object> dataKeyOutput = new HashMap<>();
         HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
         dataDetailKeyOutput.put("id", "KO" + keyOutput.getId());
         dataDetailKeyOutput.put("parent", "C" + crpClusterOfActivity.getId());
         dataDetailKeyOutput.put("label", "KeyOutput #" + j);
         dataDetailKeyOutput.put("description", keyOutput.getKeyOutput());
-        dataDetailKeyOutput.put("color", "#c0c0c0");
+        dataDetailKeyOutput.put("color", crpClusterOfActivity.getCrpProgram().getColor());
         dataDetailKeyOutput.put("type", "KO");
         j++;
-        dataOutcome.put("data", dataDetailKeyOutput);
+        dataKeyOutput.put("data", dataDetailKeyOutput);
+        dataNodes.add(dataKeyOutput);
       }
 
-      dataNodes.add(dataOutcome);
+
       i1++;
     }
     elements.put("nodes", dataNodes);
