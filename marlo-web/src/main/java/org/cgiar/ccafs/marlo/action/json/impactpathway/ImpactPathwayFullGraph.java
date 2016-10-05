@@ -97,18 +97,21 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
         dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
         dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
+        dataEdges.add(dataEdgeOutcome);
 
 
         for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpProgramOutcome.getCrpClusterKeyOutputOutcomes().stream()
           .filter(koo -> koo.isActive()).collect(Collectors.toList())) {
-          dataEdgeDetailOutcome = new HashMap<>();
-          dataEdgeDetailOutcome.put("source", "O" + crpProgramOutcome.getId());
-          dataEdgeDetailOutcome.put("target", "KO" + keyOutputOutcome.getCrpClusterKeyOutput().getId());
-          dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
+          HashMap<String, Object> dataEdgeKeyOoutput = new HashMap<>();
+          HashMap<String, Object> dataDetailKeyOutput = new HashMap<>();
+          dataDetailKeyOutput.put("source", "O" + crpProgramOutcome.getId());
+          dataDetailKeyOutput.put("target", "KO" + keyOutputOutcome.getCrpClusterKeyOutput().getId());
+          dataEdgeKeyOoutput.put("data", dataDetailKeyOutput);
+          dataEdges.add(dataEdgeKeyOoutput);
         }
 
         dataNodes.add(dataOutcome);
-        dataEdges.add(dataEdgeOutcome);
+
 
         i++;
       }
