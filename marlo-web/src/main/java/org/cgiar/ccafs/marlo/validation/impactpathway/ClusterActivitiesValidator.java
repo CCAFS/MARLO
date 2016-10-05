@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
@@ -83,6 +84,19 @@ public class ClusterActivitiesValidator extends BaseValidator {
     }
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.key.required", params));
+    } else {
+      int j = 0;
+      for (CrpClusterKeyOutput crpClusterKeyOutput : activity.getKeyOutputs()) {
+        List<String> paramsOutcomes = new ArrayList<String>();
+        paramsOutcomes.add(String.valueOf(i + 1));
+        paramsOutcomes.add(String.valueOf(j));
+        if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
+          || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
+          this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
+        }
+
+        j++;
+      }
     }
   }
 
