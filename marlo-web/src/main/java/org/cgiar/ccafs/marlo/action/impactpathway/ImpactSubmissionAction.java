@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -134,8 +134,8 @@ public class ImpactSubmissionAction extends BaseAction {
     String params[] = {crpProgram.getCrp().getAcronym(), crpProgram.getId().toString()};
     this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
     // Initializing Section Statuses:
-    sectionStatus = sectionStatusManager.findAll().stream().filter(c -> c.getCrpProgram().equals(crpProgram))
-      .collect(Collectors.toList());
+    sectionStatus = sectionStatusManager.findAll().stream()
+      .filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)).collect(Collectors.toList());
     if (!crpProgram.getSubmissions().isEmpty()) {
       submission = crpProgram.getSubmissions().stream().collect(Collectors.toList()).get(0);
     }
