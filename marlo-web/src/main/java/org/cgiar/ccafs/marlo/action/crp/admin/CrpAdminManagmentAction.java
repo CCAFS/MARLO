@@ -296,24 +296,30 @@ public class CrpAdminManagmentAction extends BaseAction {
 
           userRoleManager.deleteUserRole(userRole.getId());
         }
+        boolean deletePmu = true;
         for (LiaisonUser liaisonUser : liaisonUsers) {
           if (liaisonUser.getProjects().isEmpty()) {
             liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-            userRoleManager.deleteUserRole(userRole.getId());
-          } else {
 
+          } else {
+            deletePmu = false;
             HashMap<String, String> error = new HashMap<>();
             error.put("loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
             this.getInvalidFields().add(gson.toJson(error));
           }
-          i++;
 
+
+        }
+        if (deletePmu) {
+          userRoleManager.deleteUserRole(userRole.getId());
+          this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
         }
 
         // Notifiy user been unassigned to Program Management
-        this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+
 
       }
+      i++;
     }
     // Add new Users roles
     for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
