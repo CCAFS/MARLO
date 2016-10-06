@@ -124,12 +124,11 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
     [#if editable]
-      [#if !template]
-      ${element.user.role.class.name}
-      <br />
-      ${(canBeDeleted(element.user.id, element.user.role.class.name)!false)?string}
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
+        <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#else]
+        <span class="glyphicon glyphicon-remove pull-right" style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
       [/#if]
-      <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
     [/#if]
   </li>
 [/#macro]
@@ -139,7 +138,9 @@
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
       <div class="remove-programItem removeElement" title="Remove program"></div>
+      [/#if]
     [/#if]
     <div class="leftHead">
       <span class="index">${index+1}</span>
