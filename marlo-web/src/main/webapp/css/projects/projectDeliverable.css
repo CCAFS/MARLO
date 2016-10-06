@@ -126,3 +126,11 @@ span#notDefined {
     float: left;
     margin-bottom: 0;
 }
+
+.personRead-content {
+    padding: 0 2%;
+}
+
+.personRead-content .glyphicon {
+    margin-right: 1%;
+}
