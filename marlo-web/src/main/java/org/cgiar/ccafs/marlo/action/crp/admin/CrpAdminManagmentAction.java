@@ -637,7 +637,8 @@ public class CrpAdminManagmentAction extends BaseAction {
       if (!this.getInvalidFields().isEmpty()) {
 
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
+        this.addActionMessage(Arrays.toString(this.getInvalidFields().toArray()));
+        // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
