@@ -689,6 +689,12 @@ public class CrpAdminManagmentAction extends BaseAction {
         error.put("list-flagshipsPrograms", "Please add a Flagship");
         // invalidFields.add(gson.toJson(gson));
       }
+
+      if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
+
+        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment Team");
+        // invalidFields.add(gson.toJson(gson));
+      }
       this.setInvalidFields(error);
     }
   }
