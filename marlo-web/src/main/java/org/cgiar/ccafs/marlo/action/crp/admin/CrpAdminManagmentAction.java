@@ -340,7 +340,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           } else {
             deletePmu = false;
             HashMap<String, String> error = new HashMap<>();
-            this.getInvalidFields().put("loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
+            this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
 
           }
 
@@ -686,7 +686,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       HashMap<String, String> error = new HashMap<>();
       if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
 
-        error.put("flagshipsPrograms", "Please add a Flagship");
+        error.put("list-flagshipsPrograms", "Please add a Flagship");
         // invalidFields.add(gson.toJson(gson));
       }
       this.setInvalidFields(error);
