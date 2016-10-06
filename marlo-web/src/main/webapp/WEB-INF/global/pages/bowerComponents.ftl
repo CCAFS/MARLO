@@ -19,7 +19,9 @@
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/cytoscape.js-panzoom.css" />[/#if]
   [#if libraryName="cytoscape-panzoom" ]<link rel="stylesheet" href="${baseUrl}/bower_components/cytoscape-panzoom/font-awesome-4.0.3/css/font-awesome.css" />[/#if]
   [#if libraryName="datatables.net-bs" ]<link rel="stylesheet" href="${baseUrl}/bower_components/datatables.net-bs/css/dataTables.bootstrap.css" />[/#if]
+  [#if libraryName="jQuery-Timelinr" ]<link rel="stylesheet" href="${baseUrl}/bower_components/jQuery-Timelinr/css/style.css" />[/#if]
   [#if libraryName="qtip2" ]<link rel="stylesheet" href="${baseUrl}/bower_components/qtip2/dist/jquery.qtip.css" />[/#if]
+  [#if libraryName="intro.js" ]<link rel="stylesheet" href="${baseUrl}/bower_components/intro.js/introjs.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
@@ -49,5 +51,6 @@
   [#if libraryName="imagesloaded"]<script src="${baseUrl}/bower_components/imagesloaded/imagesloaded.js"></script>[/#if]
   [#if libraryName="qtip2"]<script src="${baseUrl}/bower_components/qtip2/dist/jquery.qtip.js"></script>[/#if]
   [#if libraryName="cytoscape-qtip"]<script src="${baseUrl}/bower_components/cytoscape-qtip/cytoscape-qtip.js"></script>[/#if]
+  [#if libraryName="intro.js"]<script src="${baseUrl}/bower_components/intro.js/intro.js"></script>[/#if]
   [#-- endbower --]
 [/#macro]

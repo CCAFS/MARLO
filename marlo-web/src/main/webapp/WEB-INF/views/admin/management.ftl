@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["vanilla-color-picker"] /]
+[#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
@@ -24,7 +24,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">[@s.text name="programManagement.title" /]</h4>
-        <div class="usersBlock borderBox clearfix">
+        <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
           [#-- PMU Users List --]
           <div class="users items-list simpleBox">
             <ul>
@@ -48,7 +48,7 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
-        <div class="program-block">
+        <div class="program-block" listname="flagshipsPrograms">
           [#-- Flagships List --]
           <div class="flagships items-list">
             <ul class="flagships-list">
@@ -119,12 +119,16 @@
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
-    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.getUser().id)!}"/>
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
     [#if editable]
-      <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
+        <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#else]
+        <span class="glyphicon glyphicon-remove pull-right" style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
+      [/#if]
     [/#if]
   </li>
 [/#macro]
@@ -134,7 +138,9 @@
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
       <div class="remove-programItem removeElement" title="Remove program"></div>
+      [/#if]
     [/#if]
     <div class="leftHead">
       <span class="index">${index+1}</span>

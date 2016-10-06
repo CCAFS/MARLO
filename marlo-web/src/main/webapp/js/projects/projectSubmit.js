@@ -76,7 +76,7 @@ $(document)
 
           $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
             var url = $.trim($(this).attr("href"));
-            if(editable && draft && url) {
+            if((isChanged() || forceChange) && editable && draft && url) {
               e.preventDefault();
               var notyOptions = jQuery.extend({}, notyDefaultOptions);
               notyOptions.text = saveMessage;

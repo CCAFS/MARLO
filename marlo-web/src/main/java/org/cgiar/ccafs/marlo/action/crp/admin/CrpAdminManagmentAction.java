@@ -45,7 +45,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -341,8 +340,8 @@ public class CrpAdminManagmentAction extends BaseAction {
           } else {
             deletePmu = false;
             HashMap<String, String> error = new HashMap<>();
-            error.put("loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
-            this.getInvalidFields().add(gson.toJson(error));
+            this.getInvalidFields().put("input-loggedCrp.programManagmenTeam[" + i + "].id", "PMU, can not be deleted");
+
           }
 
 
@@ -637,7 +636,15 @@ public class CrpAdminManagmentAction extends BaseAction {
       if (!this.getInvalidFields().isEmpty()) {
 
         this.setActionMessages(null);
-        this.addActionMessage(Arrays.toString(this.getInvalidFields().toArray()));
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+
+        for (String key : keys) {
+
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+
         // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage(this.getText("saving.saved"));
@@ -676,13 +683,20 @@ public class CrpAdminManagmentAction extends BaseAction {
   public void validate() {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     if (save) {
-      List<String> invalidFields = new ArrayList<>();
-      if (flagshipsPrograms.isEmpty()) {
-        HashMap<String, String> error = new HashMap<>();
-        error.put("flagshipsPrograms", "Please add a Flagship");
-        invalidFields.add(gson.toJson(gson));
+      HashMap<String, String> error = new HashMap<>();
+      if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
+
+        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment");
+        // invalidFields.add(gson.toJson(gson));
       }
-      this.setInvalidFields(invalidFields);
+      if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
+
+        error.put("list-flagshipsPrograms", "Please add a Flagship");
+        // invalidFields.add(gson.toJson(gson));
+      }
+
+
+      this.setInvalidFields(error);
     }
   }
 }

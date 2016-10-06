@@ -130,23 +130,25 @@
                 </div>
               </div>
               [#-- Regions --] 
-              <div class="col-md-6">  
-                <div id="projectRegionsBlock" class="">
-                  <h5>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</h5>
-                  [#if editable && action.hasPermission("regions")]
-                    [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
-                    <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />
-                    <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
-                    [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
-                  [#else]
-                    <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
-                    [#if project.regions?has_content]
-                      [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
+              <div class="col-md-6"> 
+                [#if regionFlagships?has_content] 
+                  <div id="projectRegionsBlock" class="">
+                    <h5>[@s.text name="projectDescription.regions" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</h5>
+                    [#if editable && action.hasPermission("regions")]
+                      [@s.fielderror cssClass="fieldError" fieldName="project.regionsValue"/]
+                      <input type="checkbox" name="project.noRegional" value="true" id="projectNoRegional" class="checkboxInput" [#if (project.isNoRegional())!false ]checked="checked"[/#if] />
+                      <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
+                      [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
                     [#else]
-                      [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
+                      <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
+                      [#if project.regions?has_content]
+                        [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
+                      [#else]
+                        [#--  --if !((project.bilateralProject)!false)]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if--]
+                      [/#if]
                     [/#if]
-                  [/#if]
-                </div>
+                  </div>
+                [/#if]
               </div>
               <div class="clearfix"></div>
             </div> 

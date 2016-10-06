@@ -2,6 +2,8 @@ $(document).ready(init);
 
 function init() {
 
+  startIntro();
+
   /* Declaring Events */
   attachEvents();
 
@@ -209,5 +211,46 @@ function yesnoEventLocations(value,item) {
             }
         }
     });
+  }
+}
+
+// PRUEBA HIGHLIGHTS FIELDS
+function startIntro() {
+  var intro = introJs();
+  var missing;
+  var missingList = [];
+
+  var errorList = $("li.message");
+  console.log(errorList);
+  if(errorList.length != 0) {
+    errorList.each(function(i,e) {
+      var list = $(e).html();
+      var fieldName = list.split(":")[0].split("-")[1];
+      var type = list.split(":")[0].split("-")[0];
+      var message = list.split(":")[1];
+      if(type === "list") {
+        var elementQuery = $("div[listname='" + fieldName + "']")[0];
+      } else {
+        var elementQuery = $("input[name='" + fieldName + "']");
+      }
+
+      missing = {
+          element: elementQuery,
+          intro: message
+      };
+      missingList.push(missing);
+
+      // console
+      console.log(fieldName);
+      console.log(type);
+      console.log(message);
+      console.log(elementQuery);
+    });
+
+    intro.setOptions({
+      steps: missingList
+    });
+
+    intro.start();
   }
 }
