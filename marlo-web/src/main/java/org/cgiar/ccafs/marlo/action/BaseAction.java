@@ -51,7 +51,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -103,7 +102,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
 
-  private List<HashMap<String, String>> invalidFields;
+  private List<String> invalidFields;
   protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
@@ -467,7 +466,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-  public List<HashMap<String, String>> getInvalidFields() {
+  public List<String> getInvalidFields() {
     return invalidFields;
   }
 
@@ -1140,7 +1139,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void setInvalidFields(List<HashMap<String, String>> invalidFields) {
+  public void setInvalidFields(List<String> invalidFields) {
     this.invalidFields = invalidFields;
   }
 
