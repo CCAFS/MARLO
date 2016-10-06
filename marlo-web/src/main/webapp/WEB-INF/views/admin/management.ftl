@@ -119,11 +119,16 @@
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
     [#-- Hidden inputs --]
-    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.getUser().id)!}"/>
+    <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
     [#if editable]
+      [#if !template]
+      ${element.user.role.class.name}
+      <br />
+      ${(canBeDeleted(element.user.id, element.user.role.class.name)!false)?string}
+      [/#if]
       <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
     [/#if]
   </li>
