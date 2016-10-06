@@ -684,17 +684,18 @@ public class CrpAdminManagmentAction extends BaseAction {
     Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     if (save) {
       HashMap<String, String> error = new HashMap<>();
+      if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
+
+        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment");
+        // invalidFields.add(gson.toJson(gson));
+      }
       if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
 
         error.put("list-flagshipsPrograms", "Please add a Flagship");
         // invalidFields.add(gson.toJson(gson));
       }
 
-      if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment");
-        // invalidFields.add(gson.toJson(gson));
-      }
       this.setInvalidFields(error);
     }
   }
