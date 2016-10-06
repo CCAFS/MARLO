@@ -350,11 +350,9 @@ public class CrpAdminManagmentAction extends BaseAction {
         if (deletePmu) {
           userRoleManager.deleteUserRole(userRole.getId());
           this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+
         }
-
-        // Notifiy user been unassigned to Program Management
-
-
+        this.checkCrpUserByRole(userRole.getUser());
       }
       i++;
     }
@@ -365,6 +363,8 @@ public class CrpAdminManagmentAction extends BaseAction {
           .collect(Collectors.toList()).isEmpty()) {
           userRoleManager.saveUserRole(userRole);
           userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+
+          this.addCrpUser(userRole.getUser());
 
           // Notifiy user been assigned to Program Management
           this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
