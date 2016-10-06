@@ -692,7 +692,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment Team");
+        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment");
         // invalidFields.add(gson.toJson(gson));
       }
       this.setInvalidFields(error);
