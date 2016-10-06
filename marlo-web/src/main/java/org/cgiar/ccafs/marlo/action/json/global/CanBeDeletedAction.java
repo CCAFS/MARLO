@@ -82,7 +82,7 @@ public class CanBeDeletedAction extends BaseAction {
   public void prepare() throws Exception {
 
     id = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.ID)));
-    className = StringUtils.trim(this.getRequest().getParameter(APConstants.ID));
+    className = StringUtils.trim(this.getRequest().getParameter(APConstants.CLASS_NAME));
 
   }
 
