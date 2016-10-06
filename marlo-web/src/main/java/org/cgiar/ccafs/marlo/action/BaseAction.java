@@ -18,15 +18,22 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -34,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -51,6 +59,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -102,7 +111,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
 
-  private List<String> invalidFields;
+  private HashMap<String, String> invalidFields;
   protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
@@ -149,7 +158,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private ProjectComponentLessonManager projectComponentLessonManager;
   private Map<String, Object> parameters;
 
+  @Inject
+  private LiaisonUserManager liaisonUserManager;
+  @Inject
+  private UserRoleManager userRoleManager;
 
+  @Inject
+  private CrpProgramManager crpProgramManager;
+
+
+  @Inject
+  private CrpProgramLeaderManager crpProgramLeaderManager;
   private HttpServletRequest request;
   // button actions
   protected boolean save;
@@ -216,6 +235,49 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
     return securityContext.hasPermission(permission);
+  }
+
+  public boolean canBeDeleted(long id, String className) {
+    Class clazz;
+    try {
+      clazz = Class.forName(className);
+      if (clazz == UserRole.class) {
+        UserRole userRole = userRoleManager.getUserRoleById(id);
+        long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+        List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
+          .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
+            && c.getLiaisonInstitution().getId().longValue() == cuId)
+          .collect(Collectors.toList());
+
+        for (LiaisonUser liaisonUser : liaisonUsers) {
+          if (!liaisonUser.getProjects().isEmpty()) {
+            return false;
+          }
+        }
+      }
+
+      if (clazz == CrpProgram.class) {
+        CrpProgram crpProgram = crpProgramManager.getCrpProgramById(id);
+        if (crpProgram.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
+      }
+      if (clazz == CrpProgramLeader.class) {
+        CrpProgramLeader crpProgramLeader = crpProgramLeaderManager.getCrpProgramLeaderById(id);
+        for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers()) {
+          if (liaisonUser.getProjects().size() > 0) {
+            return false;
+          }
+        }
+
+
+      }
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+
+
   }
 
   /* Override this method depending of the cancel action. */
@@ -466,7 +528,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-  public List<String> getInvalidFields() {
+  public HashMap<String, String> getInvalidFields() {
     return invalidFields;
   }
 
@@ -1139,7 +1201,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
-  public void setInvalidFields(List<String> invalidFields) {
+  public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
 

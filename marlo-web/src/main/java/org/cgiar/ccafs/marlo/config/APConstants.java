@@ -99,6 +99,10 @@ public final class APConstants {
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
   public static final String CYCLE = "cycle";
+
+  public static final String ID = "id";
+  public static final String CLASS_NAME = "className";
+
   // Types of Project Partners
   public static final String PROJECT_PARTNER_PL = "PL";
   public static final String PROJECT_PARTNER_PC = "PC";

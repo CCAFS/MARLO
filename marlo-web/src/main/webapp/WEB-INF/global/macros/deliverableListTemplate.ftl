@@ -96,14 +96,20 @@
     <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
     [/#if]
     [#if template]
+      
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable /]
+        [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')} form-control input-sm " editable=editable required=isResponsable /]
       </div>
     [#else]
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
-        [@customForm.select name="" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false   className="${isResponsable?string('responsible','partner')} form-control input-sm " disabled=!editable required=isResponsable/]
+      [#if editable]
+        [@customForm.select name="" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} form-control input-sm " editable=editable required=isResponsable/]
+      [#else]
+      <label class="form-group" for="">[@customForm.text name="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" readText=!editable/] :</label>
+      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span><span>${(dp.projectPartnerPerson.composedName)?html}</span></div>
+      [/#if]
       </div>
     [/#if] 
   </div> 

@@ -87,6 +87,7 @@ div#message {font-size: 1.2em;margin-bottom: 25px;}
 
 div#content {
     float: left;
+    width: 100%;
 }
 
 .contentForm {

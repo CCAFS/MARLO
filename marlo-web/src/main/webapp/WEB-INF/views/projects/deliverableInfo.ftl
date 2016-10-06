@@ -6,10 +6,10 @@
 
 [#-- Type and subtype inputs --] 
   <div class="col-md-6 form-group">
-    [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
   </div>
   <div class="col-md-6 form-group">
-    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" disabled=!editable/]
+    [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
   </div>
 
 [#-- Description textArea --] 
@@ -19,10 +19,10 @@
 
 [#-- Status and year expected selects --] 
   <div class="col-md-6">
-    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true  className=" status" disabled=!editable/]
+    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true  className=" status" editable=editable/]
   </div>
   <div class="col-md-6 form-group">
-    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" disabled=!editable/]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" editable=editable/]
   </div>
 
 [#-- Status justification textArea --] 
@@ -32,7 +32,7 @@
 
 [#-- CoA Outputs select --] 
   <div class="col-md-12 ">
-    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" disabled=!editable/]
+    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
   [#if editable && !(keyOutputs?has_content)]
     <div class="partnerListMsj note col-md-12">

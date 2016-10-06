@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
-[#assign pageLibs = ["vanilla-color-picker"] /]
+[#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
@@ -24,7 +24,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">[@s.text name="programManagement.title" /]</h4>
-        <div class="usersBlock borderBox clearfix">
+        <div class="usersBlock borderBox clearfix" listname="loggedCrp.programManagmenTeam">
           [#-- PMU Users List --]
           <div class="users items-list simpleBox">
             <ul>
@@ -48,7 +48,7 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
-        <div class="program-block">
+        <div class="program-block" listname="flagshipsPrograms">
           [#-- Flagships List --]
           <div class="flagships items-list">
             <ul class="flagships-list">
