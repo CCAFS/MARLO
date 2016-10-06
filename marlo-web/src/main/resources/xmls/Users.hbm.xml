@@ -91,6 +91,17 @@
 		</set>
 		
 		
+		    <set name="liasonsUsers" order-by="id"
+      table="liaison_users" inverse="true" lazy="true"
+      fetch="select">
+      <key>
+        <column name="user_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.LiaisonUser" />
+    </set>
+		
+		
 		 <set name="submissions" table="submissions" inverse="true" 
 		 order-by="id" lazy="true" fetch="select">
             <key>
