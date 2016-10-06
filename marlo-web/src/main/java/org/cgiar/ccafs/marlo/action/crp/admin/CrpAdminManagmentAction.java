@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
@@ -32,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -68,6 +70,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
   private CrpParameterManager crpParameterManager;
+  private CrpUserManager crpUserManager;
   // Variables
   private Crp loggedCrp;
   private Role rolePmu;
@@ -89,7 +92,8 @@ public class CrpAdminManagmentAction extends BaseAction {
   public CrpAdminManagmentAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, SendMail sendMail,
-    LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
+    CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -101,6 +105,40 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.sendMail = sendMail;
     this.liaisonUserManager = liaisonUserManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.crpUserManager = crpUserManager;
+  }
+
+
+  public void addCrpUser(User user) {
+    user = userManager.getUser(user.getId());
+    CrpUser crpUser = new CrpUser();
+    crpUser.setUser(user);
+    crpUser.setCrp(loggedCrp);
+
+    List<CrpUser> userCrp = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+      .collect(Collectors.toList());
+
+    if (userCrp == null || userCrp.isEmpty()) {
+      crpUser.setActive(true);
+      crpUser.setActiveSince(new Date());
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
+  }
+
+  public void checkCrpUserByRole(User user) {
+    user = userManager.getUser(user.getId());
+    List<UserRole> crpUserRoles =
+      user.getUserRoles().stream().filter(ur -> ur.getRole().getCrp().equals(loggedCrp)).collect(Collectors.toList());
+    if (crpUserRoles == null || crpUserRoles.isEmpty()) {
+      List<CrpUser> crpUsers = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+      for (CrpUser crpUser : crpUsers) {
+        crpUserManager.deleteCrpUser(crpUser.getId());
+      }
+    }
   }
 
 
@@ -127,7 +165,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   public Role getRolePmu() {
     return rolePmu;
   }
-
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Flagship
@@ -200,6 +237,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -237,7 +275,6 @@ public class CrpAdminManagmentAction extends BaseAction {
       new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
-
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
@@ -331,6 +368,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   @Override
   public void prepare() throws Exception {
 
@@ -400,6 +438,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
           User user = userManager.getUser(leaderPreview.getUser().getId());
 
+
           List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
             .filter(u -> u.isActive() && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
             .collect(Collectors.toList());
@@ -421,6 +460,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             }
           }
 
+          this.checkCrpUserByRole(user);
         }
       }
 
@@ -453,6 +493,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
             }
 
+
             User user = userManager.getUser(crpProgramLeader.getUser().getId());
             UserRole userRole = new UserRole();
             userRole.setUser(user);
@@ -467,12 +508,13 @@ public class CrpAdminManagmentAction extends BaseAction {
               // Notifiy user been asigned Program Leader to Flagship
               this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }
+
+            this.addCrpUser(user);
           }
         }
       }
     }
   }
-
 
   private void programsData() {
     List<CrpProgram> fgProgramsRewiev =
@@ -593,10 +635,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
+
   public void setFlagshipsPrograms(List<CrpProgram> flagshipsPrograms) {
     this.flagshipsPrograms = flagshipsPrograms;
   }
-
 
   public void setFplRole(Role fplRole) {
     this.fplRole = fplRole;
@@ -606,15 +648,14 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setPmuRol(long pmuRol) {
     this.pmuRol = pmuRol;
   }
 
-
   public void setRolePmu(Role rolePmu) {
     this.rolePmu = rolePmu;
   }
-
 
   @Override
   public void validate() {
