@@ -360,7 +360,7 @@ public class ProjectLocationAction extends BaseAction {
       if (!locationsDataPrew.contains(locationData)) {
         if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
           for (LocElement locElement : locationData.getLocElements()) {
-            if (locElement.getId() != null) {
+            if (locElement.getId() != null && locElement.getId() != -1) {
               LocElement element = locElementManager.getLocElementById(locElement.getId());
 
               ProjectLocation existProjectLocation =
@@ -427,7 +427,7 @@ public class ProjectLocationAction extends BaseAction {
         projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
 
         for (LocElement locElement : locationData.getLocElements()) {
-          if (locElement.getId() != null) {
+          if (locElement.getId() != null && locElement.getId() != -1) {
             LocElement element = locElementManager.getLocElementById(locElement.getId());
             if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {
               if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())

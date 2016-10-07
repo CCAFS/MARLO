@@ -336,6 +336,7 @@ function addLocationForm(parent,latitude,longitude,name) {
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
         $item.find('.locElementName').val(name);
+        $item.find('.locElementId').val(-1);
         $list.append($item);
         // updateAllIndexes();
         $item.show('slow');
