@@ -23,6 +23,10 @@
         <property name="acronym" type="string">
             <column name="acronym" />
         </property>
+        <property name="active" type="boolean">
+      <column name="is_active" not-null="true" />
+    </property>
+  
         <set name="liaisonUsers" table="liaison_users" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="institution_id" not-null="true">
