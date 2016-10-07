@@ -56,6 +56,7 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
       liasonsUser = new HashMap<String, Object>();
       liasonsUser.put("id", liaisonUser.getId());
       liasonsUser.put("description", liaisonUser.getComposedName());
+      liasonsUser.put("active", liaisonUser.isActive());
       this.liasonsUsers.add(liasonsUser);
     }
     return SUCCESS;
