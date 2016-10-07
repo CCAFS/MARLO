@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -202,6 +203,27 @@ public class ProjectListAction extends BaseAction {
         // Sort the projects.
         // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
         allProjects.removeAll(myProjects);
+      }
+
+
+      if (this.getRequest().getParameter(APConstants.FILTER_BY) != null) {
+
+
+        String type = StringUtils.trim(this.getRequest().getParameter(APConstants.FILTER_BY));
+
+        if (type.equals("W1")) {
+          myProjects =
+            myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE)).collect(Collectors.toList());
+          allProjects =
+            allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE)).collect(Collectors.toList());
+        }
+        if (type.equals("W3")) {
+          myProjects = myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
+            .collect(Collectors.toList());
+          allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_BILATERAL))
+            .collect(Collectors.toList());
+        }
+
       }
       for (Project project : myProjects) {
         List<CrpProgram> programs = new ArrayList<>();
