@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -135,6 +136,7 @@ public class ProjectListAction extends BaseAction {
       project.setCreateDate(new Date());
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
+      project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
 
       projectID = projectManager.saveProject(project);
 
@@ -157,6 +159,7 @@ public class ProjectListAction extends BaseAction {
       project.setCreateDate(new Date());
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
+      project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
 
       projectID = projectManager.saveProject(project);
       if (projectID > 0) {
