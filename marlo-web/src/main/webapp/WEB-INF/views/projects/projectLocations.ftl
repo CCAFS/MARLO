@@ -113,21 +113,21 @@
       [#if editable]
       <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
         <span class="col-md-10">Select all sites</span>
-        <input name="${locationLevelName}[${index}].allCountries" class="col-md-1 allCountries" type="checkbox" value="${(element.allCountries?has_content)?string("true","false")}" />
+        <input  name="${customName}.allCountries" class="col-md-1 allCountries" type="checkbox" [#if (element.allCountries?has_content)?string == "false"]value="false" [#else]value="true" checked[/#if]   />
       </div>
       [/#if]
       [#-- Content of locations--]
       <div class="optionSelect-content row">
         [#if element.locElements?has_content]
           [#list element.locElements as location]
-            [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list/]
+            [@locationMacro element=location name="${customName}.${locationName}" index=location_index isList=list template=element.allCountries /]
           [/#list]
         [/#if]
       </div>
       [#if editable]
-      <select style="display:${(element.list?? && element.list)?string('block','none')}"  class="form-control selectLocation col-md-12" placeholder="select an option...">
+      <select style="display:${(element.list?? && element.list)?string('block','none')}" disabled="${(element.allCountries?has_content)?string('true','false')}"  class="form-control selectLocation col-md-12" placeholder="select an option...">
         <option selected="selected" value="-1" >Select a location</option>
-        [#if element.allElements?has_content]
+        [#if element.allElements?has_content ]
         [#list element.allElements as locElements]
             <option value="${locElements.id}" >${locElements.name}</option>
         [/#list]
