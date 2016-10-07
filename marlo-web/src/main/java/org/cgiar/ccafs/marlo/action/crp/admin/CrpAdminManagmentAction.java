@@ -695,6 +695,8 @@ public class CrpAdminManagmentAction extends BaseAction {
         // invalidFields.add(gson.toJson(gson));
       }
 
+      error.put("input-flagshipsPrograms[3].acronym", "Acronym incomplete");
+
 
       this.setInvalidFields(error);
     }
