@@ -30,7 +30,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -197,8 +196,8 @@ public class ProjectListAction extends BaseAction {
         allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
           .filter(p -> p.isActive()).collect(Collectors.toList());
-        Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-
+        // Sort the projects.
+        // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
         allProjects.removeAll(myProjects);
       }
       for (Project project : myProjects) {

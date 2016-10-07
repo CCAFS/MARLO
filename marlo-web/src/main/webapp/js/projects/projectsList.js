@@ -17,9 +17,6 @@ $(document).ready(function() {
           $("#currentActivities_filter").prepend($("#addActivity"));
         }
       },
-      order: [
-          0, "desc"
-      ],
       aoColumnDefs: [
           {
               bSortable: false,

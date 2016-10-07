@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -218,9 +219,15 @@ public class ProjectLocationAction extends BaseAction {
         }
 
         if (elementType.getId() == 2 || elementType.getCrp() != null) {
+
+          ProjectLocationElementType locationElementType =
+            projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
+
           countryLocationLevel.setList(true);
+          countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
         } else {
           countryLocationLevel.setList(false);
+          countryLocationLevel.setAllCountries(false);
         }
 
         locationLevels.add(countryLocationLevel);
@@ -253,7 +260,6 @@ public class ProjectLocationAction extends BaseAction {
       countryLocationLevel.setName(locElementType.getName());
       countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementType.getLocElements()));
       countryLocationLevel.setList(true);
-      countryLocationLevels.add(countryLocationLevel);
     }
 
     locationsLevels
@@ -387,8 +393,38 @@ public class ProjectLocationAction extends BaseAction {
               this.saveGeoProjectLocation(locElement, locationData.getId());
             }
           }
+
+          ProjectLocationElementType projectLocationElementType =
+            projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
+
+          if (projectLocationElementType == null) {
+            ProjectLocationElementType newProjectLocationElementType = new ProjectLocationElementType();
+
+            LocElementType locElementType = locElementTypeManager.getLocElementTypeById(locationData.getId());
+
+            newProjectLocationElementType.setLocElementType(locElementType);
+
+            Project project = projectManager.getProjectById(this.project.getId());
+
+            newProjectLocationElementType.setProject(project);
+
+            newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
+
+            projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
+
+          } else {
+            projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+
+            projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
+          }
+
         }
       } else {
+
+        ProjectLocationElementType projectLocationElementType =
+          projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
+        projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+        projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
 
         for (LocElement locElement : locationData.getLocElements()) {
           if (locElement.getId() != null) {
@@ -447,6 +483,15 @@ public class ProjectLocationAction extends BaseAction {
             .filter(pl -> pl.isActive() && pl.getLocElement().getId() == locElement.getId())
             .collect(Collectors.toList()).get(0);
           projectLocationManager.deleteProjectLocation(projectLocation.getId());
+
+
+        }
+
+        ProjectLocationElementType projectLocationElementType =
+          projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), countryLocationLevel.getId());
+
+        if (projectLocationElementType != null) {
+          projectLocationElementTypeManager.deleteProjectLocationElementType(projectLocationElementType.getId());
         }
       } else {
         for (CountryLocationLevel locationData : project.getLocationsData()) {
@@ -464,6 +509,7 @@ public class ProjectLocationAction extends BaseAction {
         }
       }
     }
+
   }
 
   @Override
@@ -477,6 +523,8 @@ public class ProjectLocationAction extends BaseAction {
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
 
+      boolean isProjectGlobal = project.isLocationGlobal();
+
       this.projectLocationPreviousData();
 
       this.projectLocationNewData();
@@ -486,6 +534,7 @@ public class ProjectLocationAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
+      project.setLocationGlobal(isProjectGlobal);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

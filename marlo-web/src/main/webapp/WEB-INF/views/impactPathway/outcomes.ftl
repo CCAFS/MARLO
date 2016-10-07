@@ -254,7 +254,7 @@
     <div class="row form-group target-block">
       [#-- Target Year --]
       ${(outcome.milestone.targetYears)!}
-      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.year"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  multiple=false required=true  className=" targetYear milestoneYear" disabled=!editable/]</div>
+      <div class="col-md-4">[@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear"  disabled=!editable/]</div>
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]

@@ -195,6 +195,7 @@ public class ProjectPartnerAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProjectPartnerPerson().getId().longValue() == userID)
       .collect(Collectors.toList());
 
+    System.out.println(activities);
 
     return activities;
 
