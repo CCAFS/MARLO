@@ -106,7 +106,9 @@
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
       <div class="remove-programItem removeElement" title="Remove program"></div>
+      [/#if]
     [/#if]
     <div class="leftHead">
       <span class="index">${index+1}</span>
