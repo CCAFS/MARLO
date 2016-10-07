@@ -125,7 +125,7 @@
         [/#if]
       </div>
       [#if editable]
-      <select style="display:${(element.list?? && element.list)?string('block','none')}" disabled="${(element.allCountries?has_content)?string('true','false')}"  class="form-control selectLocation col-md-12" placeholder="select an option...">
+      <select style="display:${(element.list?? && element.list)?string('block','none')}" [#if (element.allCountries?has_content)?string == "true"]disabled[/#if]  class="form-control selectLocation col-md-12" placeholder="select an option...">
         <option selected="selected" value="-1" >Select a location</option>
         [#if element.allElements?has_content ]
         [#list element.allElements as locElements]
