@@ -36,6 +36,9 @@
 		<property name="title" type="string">
 			<column name="title" length="65535" />
 		</property>
+		  <property name="status" type="java.lang.Long">
+      <column name="status" length="65535" />
+    </property>
 		<property name="summary" type="string">
 			<column name="summary" length="65535" />
 		</property>
