@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpSitesLeaderManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpsSiteIntegrationManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CrpsSiteIntegration;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -75,6 +77,7 @@ public class CrpProgamRegionsAction extends BaseAction {
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
   private CrpParameterManager crpParameterManager;
+  private CrpUserManager crpUserManager;
   // Variables
   private Crp loggedCrp;
   private Role rolePmu;
@@ -105,7 +108,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
     CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMail sendMail, LiaisonUserManager liaisonUserManager,
-    LiaisonInstitutionManager liaisonInstitutionManager) {
+    LiaisonInstitutionManager liaisonInstitutionManager, CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -121,6 +124,39 @@ public class CrpProgamRegionsAction extends BaseAction {
     this.sendMail = sendMail;
     this.liaisonUserManager = liaisonUserManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
+    this.crpUserManager = crpUserManager;
+  }
+
+  public void addCrpUser(User user) {
+    user = userManager.getUser(user.getId());
+    CrpUser crpUser = new CrpUser();
+    crpUser.setUser(user);
+    crpUser.setCrp(loggedCrp);
+
+    List<CrpUser> userCrp = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+      .collect(Collectors.toList());
+
+    if (userCrp == null || userCrp.isEmpty()) {
+      crpUser.setActive(true);
+      crpUser.setActiveSince(new Date());
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
+  }
+
+  public void checkCrpUserByRole(User user) {
+    user = userManager.getUser(user.getId());
+    List<UserRole> crpUserRoles =
+      user.getUserRoles().stream().filter(ur -> ur.getRole().getCrp().equals(loggedCrp)).collect(Collectors.toList());
+    if (crpUserRoles == null || crpUserRoles.isEmpty()) {
+      List<CrpUser> crpUsers = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+      for (CrpUser crpUser : crpUsers) {
+        crpUserManager.deleteCrpUser(crpUser.getId());
+      }
+    }
   }
 
   private void deleteSiteIntegration(CrpProgramCountry crpProgramCountry) {
@@ -166,10 +202,8 @@ public class CrpProgamRegionsAction extends BaseAction {
                 for (UserRole userRole : slUserRoles) {
                   // site leader aqui notificar
                   userRoleManager.deleteUserRole(userRole.getId());
-                  userRole = userRoleManager.getUserRoleById(userRole.getId());
-
-
                 }
+                this.checkCrpUserByRole(user);
               }
             }
           }
@@ -181,6 +215,7 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
     }
   }
+
 
   private void deleteSiteIntegrationLeader(CrpProgramCountry crpProgramCountry, User user) {
 
@@ -225,6 +260,7 @@ public class CrpProgamRegionsAction extends BaseAction {
             for (UserRole userRole : slUserRoles) {
               userRoleManager.deleteUserRole(userRole.getId());
             }
+            this.checkCrpUserByRole(user);
           }
         }
       }
@@ -482,6 +518,7 @@ public class CrpProgamRegionsAction extends BaseAction {
                     userRoleManager.deleteUserRole(userRole.getId());
                     this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpProgram);
                   }
+                  this.checkCrpUserByRole(user);
                 }
               }
             }
@@ -574,7 +611,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
-
+                this.addCrpUser(user);
               }
             }
           }
@@ -662,6 +699,7 @@ public class CrpProgamRegionsAction extends BaseAction {
           UserRole userRole = new UserRole(slRole, user);
           if (!user.getUserRoles().contains(userRole)) {
             userRoleManager.saveUserRole(userRole);
+            this.addCrpUser(user);
           }
         }
       }
@@ -696,6 +734,7 @@ public class CrpProgamRegionsAction extends BaseAction {
           UserRole userRole = new UserRole(slRole, userSiteLeader);
           if (!userSiteLeader.getUserRoles().contains(userRole)) {
             userRoleManager.saveUserRole(userRole);
+            this.addCrpUser(userRole.getUser());
           }
         }
       }
