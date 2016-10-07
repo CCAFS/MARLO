@@ -36,8 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -258,16 +260,56 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (clazz == CrpProgram.class) {
         CrpProgram crpProgram = crpProgramManager.getCrpProgramById(id);
-        if (crpProgram.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList()).size() > 0) {
-          return false;
+
+        List<ProjectFocus> programs =
+          crpProgram.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+        boolean deleted = true;
+        if (programs.size() > 0) {
+
+          for (ProjectFocus projectFocus : programs) {
+            if (projectFocus.getProject().getStatus() != null) {
+              switch (ProjectStatusEnum.getValue(projectFocus.getProject().getStatus().intValue())) {
+                case Ongoing:
+                case Extended:
+                  deleted = false;
+                  break;
+
+
+              }
+            }
+          }
+          return deleted;
         }
       }
       if (clazz == CrpProgramLeader.class) {
         CrpProgramLeader crpProgramLeader = crpProgramLeaderManager.getCrpProgramLeaderById(id);
         for (LiaisonUser liaisonUser : crpProgramLeader.getUser().getLiasonsUsers()) {
-          if (liaisonUser.getProjects().size() > 0) {
-            return false;
+
+
+          List<Project> projects =
+            liaisonUser.getProjects().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+          boolean deleted = true;
+          if (projects.size() > 0) {
+
+            for (Project project : projects) {
+              if (project.getLiaisonInstitution().getCrpProgram().equals(crpProgramLeader.getCrpProgram())) {
+                if (project.getStatus() != null) {
+                  switch (ProjectStatusEnum.getValue(project.getStatus().intValue())) {
+                    case Ongoing:
+                    case Extended:
+                      deleted = false;
+                      break;
+
+
+                  }
+                }
+              }
+
+            }
+            return deleted;
           }
+
+
         }
 
 

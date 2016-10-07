@@ -36,7 +36,9 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   public boolean deleteLiaisonInstitution(long liaisonInstitutionId) {
     LiaisonInstitution liaisonInstitution = this.find(liaisonInstitutionId);
 
-    return dao.delete(liaisonInstitution);
+    liaisonInstitution.setActive(false);
+    return this.save(liaisonInstitution) > 0;
+
   }
 
   @Override

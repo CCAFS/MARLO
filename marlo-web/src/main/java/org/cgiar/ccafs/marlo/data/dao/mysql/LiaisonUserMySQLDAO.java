@@ -35,7 +35,10 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
   @Override
   public boolean deleteLiaisonUser(long liaisonUserId) {
     LiaisonUser liaisonUser = this.find(liaisonUserId);
-    return dao.delete(liaisonUser);
+
+    liaisonUser.setActive(false);
+    return this.save(liaisonUser) > 0;
+
   }
 
   @Override
