@@ -567,6 +567,7 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
+      project.setStatus(projectDB.getStatus());
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
       /*
