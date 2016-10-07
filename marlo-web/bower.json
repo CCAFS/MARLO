@@ -84,8 +84,7 @@
     },
     "jQuery-Timelinr": {
       "main": [
-        "js/jquery.timelinr-0.9.6.js",
-        "css/style.css"
+        "js/jquery.timelinr-0.9.6.js"
       ]
     }
   }

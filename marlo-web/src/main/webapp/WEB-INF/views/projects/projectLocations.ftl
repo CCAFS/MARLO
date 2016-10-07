@@ -41,7 +41,7 @@
             [#-- Content--]
               <div class="row">
               <div class="col-md-5">
-                [@customForm.yesNoInput name="isGlobal" label="Is the project global?" editable=editable inverse=false value="" cssClass="text-left " /]              
+                [@customForm.yesNoInput name="isGlobal" label="Is the project global?" editable=editable inverse=false value="true" cssClass="text-left " /]              
               </div>
               <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
               <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
