@@ -523,6 +523,8 @@ public class ProjectLocationAction extends BaseAction {
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
 
+      boolean isProjectGlobal = project.isLocationGlobal();
+
       this.projectLocationPreviousData();
 
       this.projectLocationNewData();
@@ -532,6 +534,7 @@ public class ProjectLocationAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
+      project.setLocationGlobal(isProjectGlobal);
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
