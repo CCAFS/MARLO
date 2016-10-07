@@ -260,6 +260,7 @@ public class ProjectLocationAction extends BaseAction {
       countryLocationLevel.setName(locElementType.getName());
       countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementType.getLocElements()));
       countryLocationLevel.setList(true);
+
     }
 
     locationsLevels
