@@ -215,12 +215,99 @@ function yesnoEventLocations(value,item) {
 }
 
 // PRUEBA HIGHLIGHTS FIELDS
+var intro = introJs();
 function startIntro() {
-  var intro = introJs();
-  var missing;
-  var missingList = [];
 
   var errorList = $("li.message");
+  test3(errorList);
+
+  // intro.addHints();
+
+}
+
+// test3
+function test3(errorList) {
+  // console.log(errorList);
+  if(errorList.length != 0) {
+    errorList.each(function(i,e) {
+      var list = $(e).html();
+      var fieldName = list.split(":")[0].split("-")[1];
+      var type = list.split(":")[0].split("-")[0];
+      var message = list.split(":")[1];
+
+      // select element by input name or list name
+      if(type === "list") {
+        getListElement(fieldName, message);
+      } else {
+        // INPUTS
+        getInputElement(fieldName, message);
+      }
+    });
+  }
+}
+
+function getListElement(fieldName,message) {
+// LISTAS
+  var elementQuery = $("div[listname='" + fieldName + "']")[0];
+  var offset = $(elementQuery).offset();
+
+  // Tag with message
+  var tagElement = $("#test").clone(true);
+  tagElement.attr("title", message);
+  $("body").append(tagElement);
+  var left = $(elementQuery).outerWidth() + offset.left;
+  tagElement.offset({
+      top: offset.top,
+      left: left
+  });
+  tagElement.fadeIn(2000);
+}
+
+function getInputElement(fieldName,message) {
+  var elementQuery = $("input[name='" + fieldName + "']");
+  $(elementQuery).addClass("fieldError");
+  $(elementQuery).attr("title", message);
+
+}
+
+// test2
+function test2(errorList) {
+  console.log(errorList);
+  if(errorList.length != 0) {
+    errorList.each(function(i,e) {
+      var list = $(e).html();
+      var fieldName = list.split(":")[0].split("-")[1];
+      var type = list.split(":")[0].split("-")[0];
+      var message = list.split(":")[1];
+      if(type === "list") {
+        var elementQuery = $("div[listname='" + fieldName + "']")[0];
+        $(elementQuery).attr("data-hint", message);
+        $(elementQuery).attr("data-hintPosition", "top-right")
+        $(elementQuery).attr("data-position", "bottom-right-aligned");
+      } else {
+        var elementQuery = $("input[name='" + fieldName + "']");
+        $(elementQuery).attr("data-hint", message);
+        $(elementQuery).attr("data-hintPosition", "top-right")
+        $(elementQuery).attr("data-position", "bottom-right-aligned");
+      }
+
+      // console
+      console.log(fieldName);
+      console.log(type);
+      console.log(message);
+      console.log(elementQuery);
+    });
+
+    /*
+     * intro.setOptions({ steps: missingList }); intro.start();
+     */
+  }
+}
+
+// test1
+function test1(errorList) {
+  var missing;
+  var missingList = [];
   console.log(errorList);
   if(errorList.length != 0) {
     errorList.each(function(i,e) {
@@ -231,7 +318,7 @@ function startIntro() {
       if(type === "list") {
         var elementQuery = $("div[listname='" + fieldName + "']")[0];
       } else {
-        var elementQuery = $("input[name='" + fieldName + "']");
+        var elementQuery = $("input[name='" + fieldName + "']")[0];
       }
 
       missing = {
@@ -250,7 +337,7 @@ function startIntro() {
     intro.setOptions({
       steps: missingList
     });
-
     intro.start();
+
   }
 }

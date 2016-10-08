@@ -48,10 +48,10 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
-        <div class="program-block" listname="flagshipsPrograms">
+        <div class="program-block"  listname="flagshipsPrograms">
           [#-- Flagships List --]
           <div class="flagships items-list">
-            <ul class="flagships-list">
+            <ul class="flagships-list" >
             [#if flagshipsPrograms?has_content]
               [#list flagshipsPrograms as item]
                 [@programItem element=item index=item_index name="flagshipsPrograms"/]
@@ -110,6 +110,8 @@
   [#-- User template --]
   [@userItem element={} index=0 name="" userRole="-1" template=true /]
 </ul>
+
+<span id="test" class="errorTag" style="display:none;"> Error list!</span>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
