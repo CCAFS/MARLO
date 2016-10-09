@@ -167,7 +167,7 @@
     <label for="">[@s.text name="CrpProgram.leaders"/]</label>
     <div class="usersBlock simpleBox">
       [#-- Leaders List --]
-      <div class="items-list">
+      <div class="items-list" listname="flagshipsPrograms[${index}].leaders">
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]

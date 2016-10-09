@@ -42,6 +42,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
@@ -686,16 +687,22 @@ public class CrpAdminManagmentAction extends BaseAction {
       HashMap<String, String> error = new HashMap<>();
       if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam", "Please add a Program Managment");
+        error.put("list-loggedCrp.programManagmenTeam", InvalidFieldsMessages.EMPTYLIST);
         // invalidFields.add(gson.toJson(gson));
       }
       if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
 
-        error.put("list-flagshipsPrograms", "Please add a Flagship");
+        error.put("list-flagshipsPrograms", InvalidFieldsMessages.EMPTYLIST);
         // invalidFields.add(gson.toJson(gson));
+      } else {
+        int index = 0;
+        for (CrpProgram crpProgram : flagshipsPrograms) {
+          if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
+            error.put("list-flagshipsPrograms[" + index + "].leaders", InvalidFieldsMessages.EMPTYLIST);
+          }
+          index++;
+        }
       }
-
-      error.put("input-flagshipsPrograms[3].acronym", "Acronym incomplete");
 
 
       this.setInvalidFields(error);
