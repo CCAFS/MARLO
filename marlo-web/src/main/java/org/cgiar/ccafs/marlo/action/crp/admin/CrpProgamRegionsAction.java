@@ -62,8 +62,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 
 /**
@@ -625,10 +623,19 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
+      if (!this.getInvalidFields().isEmpty()) {
+
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+
+        for (String key : keys) {
+
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+
+        // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
@@ -773,7 +780,6 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   @Override
   public void validate() {
-    Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     if (save) {
       HashMap<String, String> error = new HashMap<>();
 
