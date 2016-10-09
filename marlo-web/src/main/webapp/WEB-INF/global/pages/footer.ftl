@@ -1,4 +1,5 @@
 [#ftl]
+<span id="test" class="errorTag" style="display:none;"> Error list!</span>
     <!-- ${actionName} Content end-->
     <footer class="footer">  
       <div class="before">

@@ -111,7 +111,7 @@
   [@userItem element={} index=0 name="" userRole="-1" template=true /]
 </ul>
 
-<span id="test" class="errorTag" style="display:none;"> Error list!</span>
+
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 

@@ -373,9 +373,11 @@ function startIntro() {
 
 // test3
 function test3(errorList) {
+  console.log(errorList);
   // console.log(errorList);
   if(errorList.length != 0) {
     errorList.each(function(i,e) {
+      console.log($(e).html());
       var list = $(e).html();
       var fieldName = list.split(":")[0].split("-")[1];
       var type = list.split(":")[0].split("-")[0];
@@ -411,6 +413,12 @@ function getListElement(fieldName,message) {
 
 function getInputElement(fieldName,message) {
   var elementQuery = $("input[name='" + fieldName + "']");
+  if(elementQuery.length == 0) {
+    elementQuery = $("textarea[name='" + fieldName + "']");
+    if(elementQuery.length == 0) {
+      elementQuery = $("select[name='" + fieldName + "']");
+    }
+  }
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 
