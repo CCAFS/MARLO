@@ -150,11 +150,14 @@ public class OutcomeValidator extends BaseValidator
       this.addMessage(action.getText("outcome.action.year.required", params));
       action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
-      outcome.setSrfTargetUnit(null);
-      this.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
-    }
+
+    /*
+     * if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
+     * outcome.setSrfTargetUnit(null);
+     * this.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
+     * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
     if (outcome.getMilestones() != null) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
@@ -177,7 +180,8 @@ public class OutcomeValidator extends BaseValidator
       }
       if (contributions != 100) {
         this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
-
+        action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[0].contribution",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("outcome.action.subido.requeried", params));
@@ -196,10 +200,14 @@ public class OutcomeValidator extends BaseValidator
     if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1) {
       subIdo.setSrfSubIdo(null);
       this.addMessage(action.getText("outcome.action.subido.subido.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].srfSubIdo.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     if (subIdo.getContribution() == null || !this.isValidNumber(subIdo.getContribution().toString())
       || subIdo.getContribution().doubleValue() > 100) {
       this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     int k = 0;
     if (subIdo.getAssumptions() != null) {
