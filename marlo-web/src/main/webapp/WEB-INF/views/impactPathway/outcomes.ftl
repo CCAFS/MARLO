@@ -42,7 +42,7 @@
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
         
-          <div class="outcomes-list">
+          <div class="outcomes-list" listname="outcomes">
           [#if outcomes?has_content]
             [#list outcomes as outcome]
               [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
@@ -195,7 +195,7 @@
     <br />
     [#-- Outcome Milestones List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>
-    <div class="milestones-list">
+    <div class="milestones-list" listname="${outcomeCustomName}.milestones">
     [#if outcome.milestones?has_content]
       [#list outcome.milestones as milestone]
         [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
@@ -213,7 +213,7 @@
     
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
-    <div class="subIdos-list">
+    <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
     [#if outcome.subIdos?has_content]
       [#list outcome.subIdos as subIdo]
         [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
@@ -311,7 +311,7 @@
     
     [#-- Assumptions List --]
     <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]:</label>
-    <div class="assumptions-list">
+    <div class="assumptions-list" listname="${subIDOCustomName}.assumptions">
     [#if subIdo.assumptions?has_content]
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]

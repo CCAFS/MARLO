@@ -24,7 +24,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         <h4 class="text-center">[@s.text name="ppaPartners.title" /]</h4>
-        <div class=" borderBox formWrapper ">
+        <div class=" borderBox formWrapper " listname="loggedCrp.crpInstitutionsPartners">
             [#-- PPA Partners --]
   	      	<div  id="partnerContent" class="" >
   	      		[#list loggedCrp.crpInstitutionsPartners as ppaPartners]

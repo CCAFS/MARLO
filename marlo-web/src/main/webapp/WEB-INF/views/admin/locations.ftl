@@ -37,7 +37,7 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.customize"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text]</h4>
-        <div class="locationsBlock">
+        <div class="locationsBlock" listname="loggedCrp.locationElementTypes">
           [#-- Locations Levels List --]
           <div class="locations-list">            
             [#list loggedCrp.locationElementTypes as level]
@@ -112,7 +112,7 @@
       </div>
       [#-- Locations List --]
       <div class="aditional-hasCoordinates" style="display:${((locLevel.hasCoordinates)!false)?string('block','none')}">
-        <div class="items-list simpleBox">
+        <div class="items-list simpleBox" listname="${customName}.locationElements">
           <ul class="">
             [#if locLevel.locationElements?has_content]
               [#list locLevel.locationElements as locElement]
