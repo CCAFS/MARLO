@@ -70,7 +70,7 @@ public class OutcomeValidator extends BaseValidator
 
     if (outcomes.size() == 0) {
       this.addMissingField("program.outcomes");
-      action.getInvalidFields().put("list-outcomes", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities", InvalidFieldsMessages.EMPTYLIST);
 
     }
     for (int i = 0; i < outcomes.size(); i++) {
@@ -138,9 +138,13 @@ public class OutcomeValidator extends BaseValidator
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
+
+
     if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.statement.required", params));
       action.getInvalidFields().put("input-outcomes[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
+
+
     }
     if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
       this.addMessage(action.getText("outcome.action.value.required", params));

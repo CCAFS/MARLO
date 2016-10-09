@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -46,7 +48,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, List<CrpClusterOfActivity> activities, CrpProgram program, boolean saving) {
-
+    action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(program);
 
@@ -58,10 +60,12 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
     if (activities.size() == 0) {
       this.addMissingField("program.activites");
+      action.getInvalidFields().put("list-outcomes", InvalidFieldsMessages.EMPTYLIST);
     }
 
     for (int i = 0; i < activities.size(); i++) {
       CrpClusterOfActivity outcome = activities.get(i);
+
       this.validateClusterOfActivity(action, outcome, i);
     }
     if (!action.getFieldErrors().isEmpty()) {
@@ -78,12 +82,18 @@ public class ClusterActivitiesValidator extends BaseValidator {
     params.add(String.valueOf(i + 1));
     if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.cluster.descritpion.required", params));
+      action.getInvalidFields().put("input-clusterofActivities[" + i + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
+
     }
     if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
+      action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders", InvalidFieldsMessages.EMPTYLIST);
     }
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.key.required", params));
+
+      action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOuputs", InvalidFieldsMessages.EMPTYLIST);
     } else {
       int j = 0;
       for (CrpClusterKeyOutput crpClusterKeyOutput : activity.getKeyOutputs()) {
@@ -93,6 +103,9 @@ public class ClusterActivitiesValidator extends BaseValidator {
         if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
           this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
+          action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOuputs[" + j + "].outcomes",
+            InvalidFieldsMessages.EMPTYLIST);
+
         }
 
         j++;
