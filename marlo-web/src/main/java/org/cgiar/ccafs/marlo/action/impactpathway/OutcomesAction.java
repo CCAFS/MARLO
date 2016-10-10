@@ -446,7 +446,7 @@ public class OutcomesAction extends BaseAction {
         }
 
       } else {
-        this.addActionMessage(this.getText("saving.saved"));
+        this.addActionMessage("");
       }
       messages = this.getActionMessages();
 
