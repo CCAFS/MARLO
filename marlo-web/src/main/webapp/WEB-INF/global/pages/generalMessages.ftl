@@ -2,10 +2,11 @@
 <section id="generalMessages" class="container">
   [#-- Messages are going to show using notify plugin (see global.js) --]
   <ul class="" style="display: none;">
-    [#if actionMessages?has_content]
-      [#list actionMessages as message]
-        <li class="message">${message}</li>
-      [/#list]
-    [/#if]
+      [@s.iterator value="actionMessages"]    
+   -    <li id="message" class="success">[@s.property escape="false" /]</li>
+   -  [/@s.iterator]
+   -  [@s.iterator value="errorMessages"]    
+   -    <li id="message" class="error">[@s.property escape="false" /]</li>
+   -  [/@s.iterator]
   </ul>
 </section>

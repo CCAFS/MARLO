@@ -364,16 +364,14 @@ $('input').on("keypress", function(event) {
 // var intro = introJs();
 function startIntro() {
 
-  var errorList = $("li.message");
+  var errorList = $("li#message");
   test3(errorList);
-
   // intro.addHints();
 
 }
 
 // test3
 function test3(errorList) {
-  console.log(errorList);
   // console.log(errorList);
   if(errorList.length != 0) {
     errorList.each(function(i,e) {
@@ -385,7 +383,7 @@ function test3(errorList) {
 
       // select element by input name or list name
       if(type === "list") {
-        getListElement(fieldName, message);
+        getListElement1(fieldName, message);
       } else {
         // INPUTS
         getInputElement(fieldName, message);
@@ -394,21 +392,44 @@ function test3(errorList) {
   }
 }
 
+function getListElement1(fieldName,message) {
+// LISTAS
+  var elementQuery = $("div[listname='" + fieldName + "']")[0];
+  if($(elementQuery).exists()) {
+    var offset = $(elementQuery).offset();
+
+    // Tag with message
+    var tagElement = $(".errorTag").clone(true);
+    tagElement.attr("title", message);
+    $(elementQuery).append(tagElement);
+    console.log("here");
+    var left = $(elementQuery).outerWidth();
+    tagElement.offset({
+        top: 0,
+        left: left
+    });
+    tagElement.fadeIn(2000);
+  }
+
+}
+
 function getListElement(fieldName,message) {
 // LISTAS
   var elementQuery = $("div[listname='" + fieldName + "']")[0];
-  var offset = $(elementQuery).offset();
+  if($(elementQuery).exists()) {
+    var offset = $(elementQuery).offset();
+    // Tag with message
+    var tagElement = $("#test").clone(true);
+    tagElement.attr("title", message);
+    $("body").append(tagElement);
+    var left = $(elementQuery).outerWidth() + offset.left;
+    tagElement.offset({
+        top: offset.top,
+        left: left
+    });
+    tagElement.fadeIn(2000);
+  }
 
-  // Tag with message
-  var tagElement = $("#test").clone(true);
-  tagElement.attr("title", message);
-  $("body").append(tagElement);
-  var left = $(elementQuery).outerWidth() + offset.left;
-  tagElement.offset({
-      top: offset.top,
-      left: left
-  });
-  tagElement.fadeIn(2000);
 }
 
 function getInputElement(fieldName,message) {
@@ -419,6 +440,7 @@ function getInputElement(fieldName,message) {
       elementQuery = $("select[name='" + fieldName + "']");
     }
   }
+  console.log(elementQuery);
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 

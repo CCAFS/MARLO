@@ -70,7 +70,7 @@ public class OutcomeValidator extends BaseValidator
 
     if (outcomes.size() == 0) {
       this.addMissingField("program.outcomes");
-      action.getInvalidFields().put("list-clusterofActivities", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-outcomes", InvalidFieldsMessages.EMPTYLIST);
 
     }
     for (int i = 0; i < outcomes.size(); i++) {
@@ -146,10 +146,13 @@ public class OutcomeValidator extends BaseValidator
 
 
     }
-    if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
-      this.addMessage(action.getText("outcome.action.value.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
+    if (outcome.getSrfTargetUnit() != null || outcome.getSrfTargetUnit().getId().longValue() != -1) {
+      if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
+        this.addMessage(action.getText("outcome.action.value.required", params));
+        action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
+
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       this.addMessage(action.getText("outcome.action.year.required", params));
       action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
@@ -167,6 +170,9 @@ public class OutcomeValidator extends BaseValidator
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
+    } else {
+      this.addMessage("outcome.action.milestones.requeried");
+      action.getInvalidFields().put("list-outcomes[" + i + "].milestones", InvalidFieldsMessages.EMPTYLIST);
     }
     if (outcome.getSubIdos() != null) {
       if (outcome.getSubIdos().isEmpty()) {
@@ -184,8 +190,13 @@ public class OutcomeValidator extends BaseValidator
       }
       if (contributions != 100) {
         this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[0].contribution",
-          InvalidFieldsMessages.EMPTYFIELD);
+
+        for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+          action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+
       }
     } else {
       this.addMessage(action.getText("outcome.action.subido.requeried", params));

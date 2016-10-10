@@ -1,0 +1,1 @@
+update projects set type='W1W2' where type='CORE';
