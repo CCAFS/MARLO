@@ -48,10 +48,10 @@
         </div>
         
         <h4 class="sectionTitle">[@s.text name="programManagement.flagship.title" /]</h4>
-        <div class="program-block" listname="flagshipsPrograms">
+        <div class="program-block"  listname="flagshipsPrograms">
           [#-- Flagships List --]
           <div class="flagships items-list">
-            <ul class="flagships-list">
+            <ul class="flagships-list" >
             [#if flagshipsPrograms?has_content]
               [#list flagshipsPrograms as item]
                 [@programItem element=item index=item_index name="flagshipsPrograms"/]
@@ -111,6 +111,8 @@
   [@userItem element={} index=0 name="" userRole="-1" template=true /]
 </ul>
 
+
+
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro userItem element index name userRole template=false]
@@ -165,7 +167,7 @@
     <label for="">[@s.text name="CrpProgram.leaders"/]</label>
     <div class="usersBlock simpleBox">
       [#-- Leaders List --]
-      <div class="items-list">
+      <div class="items-list" listname="flagshipsPrograms[${index}].leaders">
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]

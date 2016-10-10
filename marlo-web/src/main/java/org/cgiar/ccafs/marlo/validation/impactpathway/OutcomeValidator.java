@@ -23,11 +23,13 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -55,6 +57,8 @@ public class OutcomeValidator extends BaseValidator
   }
 
   public void validate(BaseAction action, List<CrpProgramOutcome> outcomes, CrpProgram program, boolean saving) {
+
+    action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(program);
 
@@ -66,6 +70,8 @@ public class OutcomeValidator extends BaseValidator
 
     if (outcomes.size() == 0) {
       this.addMissingField("program.outcomes");
+      action.getInvalidFields().put("list-clusterofActivities", InvalidFieldsMessages.EMPTYLIST);
+
     }
     for (int i = 0; i < outcomes.size(); i++) {
       CrpProgramOutcome outcome = outcomes.get(i);
@@ -97,6 +103,8 @@ public class OutcomeValidator extends BaseValidator
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
     if (!(this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 100)) {
+      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].title",
+        InvalidFieldsMessages.EMPTYFIELD);
       this.addMessage(action.getText("outcome.action.title.required", params));
     }
 
@@ -114,6 +122,8 @@ public class OutcomeValidator extends BaseValidator
     if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null) {
       if (milestone.getYear() == null
         || (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue())) {
+        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].year",
+          InvalidFieldsMessages.EMPTYFIELD);
         this.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
     }
@@ -128,19 +138,30 @@ public class OutcomeValidator extends BaseValidator
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
+
+
     if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.statement.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
+
+
     }
     if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
       this.addMessage(action.getText("outcome.action.value.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       this.addMessage(action.getText("outcome.action.year.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
-      outcome.setSrfTargetUnit(null);
-      this.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
-    }
+
+    /*
+     * if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
+     * outcome.setSrfTargetUnit(null);
+     * this.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
+     * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
     if (outcome.getMilestones() != null) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
@@ -150,7 +171,7 @@ public class OutcomeValidator extends BaseValidator
     if (outcome.getSubIdos() != null) {
       if (outcome.getSubIdos().isEmpty()) {
         this.addMessage(action.getText("outcome.action.subido.requeried", params));
-
+        action.getInvalidFields().put("list-outcomes[" + i + "].subIdos", InvalidFieldsMessages.EMPTYLIST);
       }
       double contributions = 0;
       for (int j = 0; j < outcome.getSubIdos().size(); j++) {
@@ -163,10 +184,13 @@ public class OutcomeValidator extends BaseValidator
       }
       if (contributions != 100) {
         this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+        action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[0].contribution",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("outcome.action.subido.requeried", params));
 
+      action.getInvalidFields().put("list-outcomes[" + i + "].subIdos", InvalidFieldsMessages.EMPTYLIST);
     }
 
 
@@ -180,10 +204,14 @@ public class OutcomeValidator extends BaseValidator
     if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1) {
       subIdo.setSrfSubIdo(null);
       this.addMessage(action.getText("outcome.action.subido.subido.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].srfSubIdo.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     if (subIdo.getContribution() == null || !this.isValidNumber(subIdo.getContribution().toString())
       || subIdo.getContribution().doubleValue() > 100) {
       this.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     int k = 0;
     if (subIdo.getAssumptions() != null) {

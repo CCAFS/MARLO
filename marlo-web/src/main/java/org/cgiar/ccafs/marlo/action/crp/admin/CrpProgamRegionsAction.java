@@ -50,12 +50,14 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -621,10 +623,19 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
+      if (!this.getInvalidFields().isEmpty()) {
+
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+
+        for (String key : keys) {
+
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+
+        // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage(this.getText("saving.saved"));
       }
@@ -742,6 +753,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   }
 
+
   public void setCountriesList(List<LocElement> countriesList) {
     this.countriesList = countriesList;
   }
@@ -764,5 +776,29 @@ public class CrpProgamRegionsAction extends BaseAction {
 
   public void setRplRole(Role fplRole) {
     this.rplRole = fplRole;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      HashMap<String, String> error = new HashMap<>();
+
+      if (regionsPrograms == null || regionsPrograms.isEmpty()) {
+
+        error.put("list-regionsPrograms", InvalidFieldsMessages.EMPTYLIST);
+        // invalidFields.add(gson.toJson(gson));
+      } else {
+        int index = 0;
+        for (CrpProgram crpProgram : regionsPrograms) {
+          if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
+            error.put("list-regionsPrograms[" + index + "].leaders", InvalidFieldsMessages.EMPTYLIST);
+          }
+          index++;
+        }
+      }
+
+
+      this.setInvalidFields(error);
+    }
   }
 }

@@ -29,7 +29,7 @@
         [@s.form action=actionName enctype="multipart/form-data" ]  
         
         <h4 class="sectionTitle">[@s.text name="siteIntegration.title" /]</h4>
-        <div class="countriesContent"> 
+        <div class="countriesContent" listname="loggedCrp.siteIntegrations"> 
         
         [#if loggedCrp.siteIntegrations?has_content]
           [#list loggedCrp.siteIntegrations as crpCountry]
@@ -106,7 +106,7 @@
     [/#if]
     <h5 class="country-title"><i class="flag-sm flag-sm-${(element.locElement.isoAlpha2?upper_case)!}"></i>  ${(element.locElement.name)!}   [#if hasRegions][#list element.programName as regName]- ${regName!} [/#list][/#if] </h5>
     <div class="crpCountry-block">
-      <div class="items-list simpleBox">
+      <div class="items-list simpleBox" listname="${customNameCountry}.siteLeaders">
         <ul>
         [#if element.siteLeaders?has_content]
           [#list element.siteLeaders as item]

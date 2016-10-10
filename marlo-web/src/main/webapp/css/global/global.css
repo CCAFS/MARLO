@@ -6057,3 +6057,23 @@ input.fieldChecked {
     margin-top: 25px;
     margin-bottom: 20px;
 }
+
+.introjs-hint-pulse {
+    background: rgba(255, 0, 0, 0.89);
+}
+
+.introjs-hint-dot {
+    background: rgb(148, 19, 19);
+}
+
+span.errorTag {
+    position: absolute;
+    background: red;
+    text-align: center;
+    color: white;
+    background: url(./../../images/global/errorTag.png);
+    background-size: 100% 100%;
+    width: 82px;
+    cursor: help;
+    height: 22px;
+}

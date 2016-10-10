@@ -7,6 +7,8 @@ function init() {
     }, 600);
     return false;
   });
+
+  startIntro();
 }
 var yesnoEvent;
 var notyDefaultOptions = {
@@ -355,3 +357,69 @@ $('input').on("keypress", function(event) {
   }
 
 });
+
+// highlights missing fields
+
+// PRUEBA HIGHLIGHTS FIELDS
+// var intro = introJs();
+function startIntro() {
+
+  var errorList = $("li.message");
+  test3(errorList);
+
+  // intro.addHints();
+
+}
+
+// test3
+function test3(errorList) {
+  console.log(errorList);
+  // console.log(errorList);
+  if(errorList.length != 0) {
+    errorList.each(function(i,e) {
+      console.log($(e).html());
+      var list = $(e).html();
+      var fieldName = list.split(":")[0].split("-")[1];
+      var type = list.split(":")[0].split("-")[0];
+      var message = list.split(":")[1];
+
+      // select element by input name or list name
+      if(type === "list") {
+        getListElement(fieldName, message);
+      } else {
+        // INPUTS
+        getInputElement(fieldName, message);
+      }
+    });
+  }
+}
+
+function getListElement(fieldName,message) {
+// LISTAS
+  var elementQuery = $("div[listname='" + fieldName + "']")[0];
+  var offset = $(elementQuery).offset();
+
+  // Tag with message
+  var tagElement = $("#test").clone(true);
+  tagElement.attr("title", message);
+  $("body").append(tagElement);
+  var left = $(elementQuery).outerWidth() + offset.left;
+  tagElement.offset({
+      top: offset.top,
+      left: left
+  });
+  tagElement.fadeIn(2000);
+}
+
+function getInputElement(fieldName,message) {
+  var elementQuery = $("input[name='" + fieldName + "']");
+  if(elementQuery.length == 0) {
+    elementQuery = $("textarea[name='" + fieldName + "']");
+    if(elementQuery.length == 0) {
+      elementQuery = $("select[name='" + fieldName + "']");
+    }
+  }
+  $(elementQuery).addClass("fieldError");
+  $(elementQuery).attr("title", message);
+
+}

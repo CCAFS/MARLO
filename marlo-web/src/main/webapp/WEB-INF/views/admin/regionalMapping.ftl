@@ -26,7 +26,7 @@
         <h4 class="sectionTitle">[@s.text name="regionalMapping.title"/]</h4>
         <div class="program-block">
           [#-- Regions List --]
-          <div class="regions items-list">
+          <div class="regions items-list" listname="regionsPrograms">
             <ul class="regions-list">
             [#if regionsPrograms?has_content]
               [#list regionsPrograms as item]
@@ -109,7 +109,7 @@
   [#assign customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
-    [#if editable]
+    [#if editable && element?has_content]
       [#if template || action.canBeDeleted(element.id, element.class.name)!false]
       <div class="remove-programItem removeElement" title="Remove program"></div>
       [/#if]
@@ -144,9 +144,9 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
     <label for="">[@s.text name="regionalMapping.CrpProgram.leaders"/]:[@customForm.req required=true /]</label>
-    <div class="usersBlock form-group simpleBox">
+    <div class="usersBlock form-group simpleBox" listname="${customName}.leaders">
       [#-- Leaders List --]
-      <div class="items-list">
+      <div class="items-list" listname="regionsPrograms[${index}].leaders" >
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]

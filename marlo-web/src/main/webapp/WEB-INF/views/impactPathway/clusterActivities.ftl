@@ -47,7 +47,7 @@
 
         <h4 class="sectionTitle"> [@s.text name="clusterOfActivities.title"] [@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
           [#-- Cluster of Activities List --]
-          <div class="clusterList ">
+          <div class="clusterList " listname="clusterofActivities">
             [#if clusterofActivities?has_content]
               [#list clusterofActivities as cluster]
                 [@clusterMacro cluster=cluster name="clusterofActivities" index=cluster_index /]
@@ -151,7 +151,7 @@
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>
-      <div class="items-list form-group col-md-12 simpleBox">
+      <div class="items-list form-group col-md-12 simpleBox" listname="${clusterCustomName}.leaders">
         <ul class="leaders">
         [#if cluster.leaders?has_content]
           [#list cluster.leaders as leaderItem]
@@ -171,7 +171,7 @@
       [#-- Key outputs --]
       <br>
       <h5 class="sectionSubTitle">Key Outputs: </h5>
-      <div class="keyOutputsItems-list form-group col-md-12">
+      <div class="keyOutputsItems-list form-group col-md-12" listname="${clusterCustomName}.${keyOutputsName}">
         [#if cluster.keyOutputs?has_content]
           [#list cluster.keyOutputs as keyOutputItems]
             [@keyOutputItem element=keyOutputItems name='${clusterCustomName}.${keyOutputsName}' index=keyOutputItems_index /]

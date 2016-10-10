@@ -90,7 +90,12 @@
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      ${(element.title)!'New Activity'}
+    [#if element.title?has_content]
+    ${(element.title)!'New Activity'}
+    [#else]
+    New Activity
+    [/#if]
+      
     <div class="clearfix"></div>
     </div>
     
