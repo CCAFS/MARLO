@@ -6077,3 +6077,7 @@ span.errorTag {
     cursor: help;
     height: 22px;
 }
+
+.program-block {
+    position: relative;
+}
