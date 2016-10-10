@@ -418,7 +418,6 @@ function getListElement(fieldName,message) {
   var elementQuery = $("div[listname='" + fieldName + "']")[0];
   if($(elementQuery).exists()) {
     var offset = $(elementQuery).offset();
-
     // Tag with message
     var tagElement = $("#test").clone(true);
     tagElement.attr("title", message);
