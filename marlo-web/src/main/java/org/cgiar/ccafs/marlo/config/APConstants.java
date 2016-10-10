@@ -77,10 +77,10 @@ public final class APConstants {
   public static final String OUTLOOK_EMAIL = "cgiar.org";
 
   // Types of project
-  public static final String PROJECT_CORE = "W1/W2";
+  public static final String PROJECT_CORE = "W1W2";
   public static final String PROJECT_CCAFS_COFUNDED = "COFUNDED";
   public static final String PROJECT_BILATERAL = "BILATERAL";
-  public static final String PROJECT_CORE_TYPE = "CORE";
+  // public static final String PROJECT_CORE_TYPE = "CORE";
 
 
   public static final String PROJECT_SCAPE_NATIONAL = "1";
