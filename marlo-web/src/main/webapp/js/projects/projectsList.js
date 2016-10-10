@@ -36,7 +36,6 @@ $(document).ready(function() {
 
   $projectList.on('draw.dt', function() {
     $("a.removeProject").on("click", removeProject);
-
     $('.programTag').on('click', filterByProgram);
   });
 
@@ -80,6 +79,11 @@ $(document).ready(function() {
 
   addJustificationPopUp();
 });
+
+function filterTablesBy(query) {
+  console.log(query);
+  $('.dataTables_wrapper').find('.dataTables_filter input').val(query).trigger('keyup');
+}
 
 function filterByProgram() {
   $(this).parents('.dataTables_wrapper').find('.dataTables_filter input').val($(this).text()).trigger('keyup');

@@ -5,6 +5,8 @@
 [#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
+[#assign currentStage = "all" /]
+
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":""}
@@ -18,6 +20,10 @@
 <section class="container">
   <article class="row" id="mainInformation">
     <div class="col-md-12">
+    
+      [#-- Menu projects --]
+      [#include "/WEB-INF/views/projects/menu-projectsList.ftl" /]
+    
       [#-- Projects List (My Projects) --]
       <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
       <div class="loadingBlock"></div>
