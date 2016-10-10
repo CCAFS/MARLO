@@ -96,7 +96,11 @@
     <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
     [#if editable]
-    <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#if template || action.canBeDeleted(element.id, element.class.name)!false]
+        <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
+      [#else]
+        <span class="glyphicon glyphicon-remove pull-right" style="color:#ccc" aria-hidden="true" title="Can not be deleted"></span>
+      [/#if]
     [/#if]
   </li>
 [/#macro]
