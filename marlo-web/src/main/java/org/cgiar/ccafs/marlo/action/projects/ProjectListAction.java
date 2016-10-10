@@ -60,6 +60,9 @@ public class ProjectListAction extends BaseAction {
   private List<Project> myProjects;
   private List<Project> allProjects;
 
+  private String filterBy;
+
+
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     LiaisonUserManager liaisonUserManager) {
@@ -68,6 +71,7 @@ public class ProjectListAction extends BaseAction {
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
   }
+
 
   public String addBilateralProject() {
     if (this.canAccessSuperAdmin()) {
@@ -171,19 +175,23 @@ public class ProjectListAction extends BaseAction {
 
   }
 
-
   public List<Project> getAllProjects() {
     return allProjects;
   }
+
+  public String getFilterBy() {
+    return filterBy;
+  }
+
 
   public List<Project> getMyProjects() {
     return myProjects;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -205,11 +213,11 @@ public class ProjectListAction extends BaseAction {
         allProjects.removeAll(myProjects);
       }
 
+      filterBy = this.getRequest().getParameter(APConstants.FILTER_BY);
 
-      if (this.getRequest().getParameter(APConstants.FILTER_BY) != null) {
+      if (filterBy != null) {
 
-
-        String type = StringUtils.trim(this.getRequest().getParameter(APConstants.FILTER_BY));
+        String type = StringUtils.trim(filterBy);
 
         if (type.equals("W1")) {
           myProjects =
@@ -275,9 +283,13 @@ public class ProjectListAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public void setAllProjects(List<Project> allProjects) {
     this.allProjects = allProjects;
+  }
+
+
+  public void setFilterBy(String filterBy) {
+    this.filterBy = filterBy;
   }
 
   public void setMyProjects(List<Project> myProjects) {
