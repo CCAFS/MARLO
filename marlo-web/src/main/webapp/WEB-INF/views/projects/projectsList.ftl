@@ -5,7 +5,7 @@
 [#assign customJS = ["${baseUrl}/js/projects/projectsList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "all" /]
+[#assign currentStage = (filterBy)!"all" /]
 
 
 [#assign breadCrumb = [

@@ -157,9 +157,9 @@ public final class APConstants {
 
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
+
   public static final String PROJECT_OUTCOMES_MILESTONE_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectMilestones)";
-
   public static final String PROJECT_OUTCOMES_COMMUNICATION_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectCommunications)";
 
@@ -192,6 +192,10 @@ public final class APConstants {
 
   public static final String PROJECT_OUTCOME_LESSONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectComponentLessons)";
+
+  public static String getFilterBy() {
+    return FILTER_BY;
+  }
 
 
 }

@@ -59,7 +59,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -77,13 +76,6 @@ public class OutcomesAction extends BaseAction {
 
 
   private static final long serialVersionUID = -793652591843623397L;
-
-
-  public static void printMap(Map<String, Integer> map) {
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
-      System.out.println("[Key] : " + entry.getKey() + " [Value] : " + entry.getValue());
-    }
-  }
 
 
   private CrpMilestoneManager crpMilestoneManager;
