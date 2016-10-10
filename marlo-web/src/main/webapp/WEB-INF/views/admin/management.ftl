@@ -165,9 +165,9 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Leaders  --]
     <label for="">[@s.text name="CrpProgram.leaders"/]</label>
-    <div class="usersBlock simpleBox">
+    <div class="usersBlock simpleBox" listname="flagshipsPrograms[${index}].leaders">
       [#-- Leaders List --]
-      <div class="items-list" listname="flagshipsPrograms[${index}].leaders">
+      <div class="items-list" >
         <ul>
         [#if element.leaders?has_content]
           [#list element.leaders as leader]
