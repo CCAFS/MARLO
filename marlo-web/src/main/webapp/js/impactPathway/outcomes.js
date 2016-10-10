@@ -75,7 +75,7 @@ function attachEvents() {
     var $contributions = $(this).parents('.subIdos-list').find('input.contribution');
     updateTotalContribution($contributions, $text);
   });
-  $('input.contribution').trigger('keyup');
+  // $('input.contribution').trigger('keyup');
 
   // Add an assumption
   $('.addAssumption').on('click', addAssumption);
