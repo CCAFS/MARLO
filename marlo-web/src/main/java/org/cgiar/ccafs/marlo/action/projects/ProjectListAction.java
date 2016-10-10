@@ -220,11 +220,11 @@ public class ProjectListAction extends BaseAction {
         String type = StringUtils.trim(filterBy);
 
         if (type.equals("w1")) {
-          myProjects = myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE_TYPE))
-            .collect(Collectors.toList());
+          myProjects =
+            myProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE)).collect(Collectors.toList());
 
           if (allProjects != null) {
-            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE_TYPE))
+            allProjects = allProjects.stream().filter(c -> c.getType().equals(APConstants.PROJECT_CORE))
               .collect(Collectors.toList());
 
           }
