@@ -93,7 +93,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.key.required", params));
 
-      action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOuputs", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs", InvalidFieldsMessages.EMPTYLIST);
     } else {
       int j = 0;
       for (CrpClusterKeyOutput crpClusterKeyOutput : activity.getKeyOutputs()) {
@@ -103,7 +103,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
         if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
           this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
-          action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOuputs[" + j + "].outcomes",
+          action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs[" + j + "].outcomes",
             InvalidFieldsMessages.EMPTYLIST);
 
         }
