@@ -4,7 +4,7 @@ var lWordsElemetDesc = 150;
 
 var $statuses, $statusDescription;
 var flagshipsIds;
-var liaisonInstitutionsPrograms;
+var liaisonInstitutionsPrograms, liaisonUserSelected;
 
 $(document).ready(function() {
 
@@ -13,6 +13,7 @@ $(document).ready(function() {
   var implementationStatus = $statuses.find('option[value="2"]').text();
   $endDate = $('#project\\.endDate');
 
+  liaisonUserSelected = $('.liaisonUserSelect').val();
   liaisonInstitutionsPrograms = jQuery.parseJSON($('#liaisonInstitutionsPrograms').text());
 
   datePickerConfig({
@@ -38,11 +39,38 @@ $(document).ready(function() {
    */
 
   $('.liaisonInstitutionSelect').on('change', function() {
-    var crpProgramId = liaisonInstitutionsPrograms[$(this).val()];
+    var liasonInstitutionID = $(this).val();
+    var crpProgramId = liaisonInstitutionsPrograms[liasonInstitutionID];
     if(crpProgramId != -1) {
       $('input[value="' + crpProgramId + '"]').prop("checked", true);
       $('#projectFlagshipsBlock input').trigger('change');
     }
+
+    // Getting users
+    $.ajax({
+        url: baseURL + '/liasonUsersByInstitutionsAction.do',
+        method: 'POST',
+        data: {
+          liasonInstitutionID: liasonInstitutionID
+        },
+        beforeSend: function() {
+          $('.liaisonUserSelect').empty();
+          $('.liaisonUserSelect').addOption(-1, 'Select an option');
+        },
+        success: function(data) {
+          console.log(data);
+          $.each(data.liasonsUsers, function(i,e) {
+            $('.liaisonUserSelect').addOption(e.id, escapeHtml(e.description));
+            if(!e.active) {
+              $('.liaisonUserSelect option[value="' + e.id + '"]').attr('disabled', 'disabled');
+            }
+          });
+
+          // Set current liaison user
+          $('.liaisonUserSelect').val(liaisonUserSelected);
+
+        }
+    });
   });
   $('.liaisonInstitutionSelect').trigger('change');
 
