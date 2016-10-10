@@ -7,6 +7,7 @@
 [#assign currentSection = "projects" /]
 [#assign currentStage = "all" /]
 
+
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":""}
 ]/]
