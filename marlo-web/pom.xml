@@ -469,6 +469,7 @@
 					<httpsPort>8443</httpsPort>
 					<keystoreFile>${project.basedir}/.keystore</keystoreFile>
 					<keystorePass>d5jtY68oBqWj</keystorePass>
+					<contextFile>tomcat/context.xml</contextFile>
 				</configuration>
 			</plugin>
 			<plugin>
