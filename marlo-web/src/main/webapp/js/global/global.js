@@ -398,6 +398,8 @@ function getListElement(fieldName,message) {
 // LISTAS
   var elementQuery = $("div[listname='" + fieldName + "']")[0];
   var offset = $(elementQuery).offset();
+  
+  
 
   // Tag with message
   var tagElement = $("#test").clone(true);
