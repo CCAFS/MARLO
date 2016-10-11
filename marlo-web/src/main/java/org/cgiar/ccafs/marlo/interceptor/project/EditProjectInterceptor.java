@@ -46,13 +46,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   private long projectId = 0;
   private Crp loggedCrp;
 
+  private CrpManager crpManager;
   private ProjectManager projectManager;
 
 
   @Inject
   public EditProjectInterceptor(ProjectManager projectManager, CrpManager crpManager) {
     this.projectManager = projectManager;
-
+    this.crpManager = crpManager;
   }
 
   @Override
@@ -66,15 +67,14 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
-      e.printStackTrace();
-      BaseAction action = (BaseAction) invocation.getAction();
-      return action.NOT_FOUND;
-
+      return BaseAction.NOT_FOUND;
     }
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
 
+    loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     User user = (User) session.get(APConstants.SESSION_USER);
     baseAction.setSession(session);
@@ -93,7 +93,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
     Project project = projectManager.getProjectById(projectId);
 
-    if (project != null && project.isActive()) {
+    if (project != null && project.isActive() && project.getCrp().equals(loggedCrp)) {
 
       String params[] =
         {crp.getAcronym(), project.getId() + "", baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "")};
