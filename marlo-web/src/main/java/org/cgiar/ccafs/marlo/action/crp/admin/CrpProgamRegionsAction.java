@@ -637,7 +637,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
         // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
-        this.addActionMessage("");
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
       return SUCCESS;
