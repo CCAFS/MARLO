@@ -107,7 +107,7 @@ p.contributioRem {
 .subIdoSelected i{color: #999999;}
 
 .buttonSubIdo-block {
-    padding-top: 5px;
+    padding-top: 1px;
 }
 
 
@@ -145,4 +145,8 @@ p.contributioRem {
 .milestone {
     padding-top: 21px;
     padding-bottom: 0px;
+}
+
+.milestones-list {
+    position: relative;
 }

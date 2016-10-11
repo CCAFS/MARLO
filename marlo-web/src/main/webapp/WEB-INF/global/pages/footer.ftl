@@ -1,5 +1,5 @@
 [#ftl]
-<span id="test" class="errorTag" style="display:none;"> Error list!</span>
+<span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>
     <!-- ${actionName} Content end-->
     <footer class="footer">  
       <div class="before">
