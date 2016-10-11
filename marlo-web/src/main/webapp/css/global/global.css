@@ -923,7 +923,8 @@ span.logType.saved {
   background-image: url(../../images/global/project-icon.png);
 }
 #projectID-quote p{
-  line-height: 26px;
+  line-height: 29px;
+  margin: 0;
 }
 #projectType-quote p{
   line-height: 31px;
@@ -932,7 +933,9 @@ span.logType.saved {
   background-image: url(../../images/global/deliverable-icon.png);
 }
 #deliverableID-quote p{
-  line-height: 31px;
+  line-height: 27px;
+  margin: 0;
+  font-size: 0.9em;
 }
 
 /* General Messages */
@@ -3775,9 +3778,12 @@ input.projectBudget, input.projectGenderBudget, input.percentage {
   /* font-weight: lighter; */
   font-size: 1.1em;
   cursor: pointer;
-  position: absolute;
-  right: 0.2em;
-  top: 0.2em;
+  /* position: absolute; */
+  float: right;
+  /* right: 1em; */
+  /* top: 0.2em; */
+  /* margin: 0; */
+  /* padding: 0; */
 }
 
 #top-quote img { 
@@ -3787,28 +3793,29 @@ input.projectBudget, input.projectGenderBudget, input.percentage {
 
 #top-quote a{
     text-decoration: none;
-  
     color: #5F5F5F;
+    font-size: 0.9em;
 }
 
-#top-quote .quote-id { 
+#top-quote .quote-id {
  float:left;
- padding: 0px 11px;
+ padding: 0px 8px;
  margin-left: 0.3em;
  border: 1px dotted #BEBEBE;
  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
  border-radius: 5px;
- padding-left: 30px;
+ padding-left: 24px;
  font-size: 1.1em;
- background-size: 27px;
+ background-size: 22px;
  background-repeat: no-repeat;
  background-position: 4px;
+ background-color: #fff;
  min-height: 29px;
 }
 
-#top-quote .aux-quote { 
+#top-quote .aux-quote {
     float: left;
-    padding: 2px 2px;
+    padding: 0px 1px;
     margin-left: 0.3em;
     border-radius: 5px;
     font-size: 1.0em;
@@ -3816,7 +3823,7 @@ input.projectBudget, input.projectGenderBudget, input.percentage {
     background-repeat: no-repeat;
     background-position: 4px;
     min-height: 33px;
-    line-height: 31px;
+    line-height: 27px;
 }
 
 
