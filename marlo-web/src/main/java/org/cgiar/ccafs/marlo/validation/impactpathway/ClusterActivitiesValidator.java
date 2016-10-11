@@ -60,7 +60,8 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
     if (activities.size() == 0) {
       this.addMissingField("program.activites");
-      action.getInvalidFields().put("list-clusterofActivities", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities"}));
     }
 
     for (int i = 0; i < activities.size(); i++) {
@@ -88,12 +89,14 @@ public class ClusterActivitiesValidator extends BaseValidator {
     }
     if (activity.getLeaders() == null || activity.getLeaders().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.leader.required", params));
-      action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities[" + i + "].leaders",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activities Leaders"}));
     }
     if (activity.getKeyOutputs() == null || activity.getKeyOutputs().isEmpty()) {
       this.addMessage(action.getText("outcome.action.cluster.key.required", params));
 
-      action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Key Outputs"}));
     } else {
       int j = 0;
       for (CrpClusterKeyOutput crpClusterKeyOutput : activity.getKeyOutputs()) {
@@ -104,7 +107,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
           this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
           action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutputOutcomes",
-            InvalidFieldsMessages.EMPTYLIST);
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Key Output Outcomes"}));
 
         }
 

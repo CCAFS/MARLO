@@ -70,7 +70,8 @@ public class OutcomeValidator extends BaseValidator
 
     if (outcomes.size() == 0) {
       this.addMissingField("program.outcomes");
-      action.getInvalidFields().put("list-outcomes", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-outcomes",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outcomes"}));
 
     }
     for (int i = 0; i < outcomes.size(); i++) {
@@ -172,12 +173,14 @@ public class OutcomeValidator extends BaseValidator
       }
     } else {
       this.addMessage("outcome.action.milestones.requeried");
-      action.getInvalidFields().put("list-outcomes[" + i + "].milestones", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-outcomes[" + i + "].milestones",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     }
     if (outcome.getSubIdos() != null) {
       if (outcome.getSubIdos().isEmpty()) {
         this.addMessage(action.getText("outcome.action.subido.requeried", params));
-        action.getInvalidFields().put("list-outcomes[" + i + "].subIdos", InvalidFieldsMessages.EMPTYLIST);
+        action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
       }
       double contributions = 0;
       for (int j = 0; j < outcome.getSubIdos().size(); j++) {
@@ -201,7 +204,8 @@ public class OutcomeValidator extends BaseValidator
     } else {
       this.addMessage(action.getText("outcome.action.subido.requeried", params));
 
-      action.getInvalidFields().put("list-outcomes[" + i + "].subIdos", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
     }
 
 
