@@ -171,6 +171,7 @@ public class ProjectLocationAction extends BaseAction {
     List<Map<String, Object>> parentLocations = new ArrayList<>();
     List<CountryLocationLevel> locationLevels = new ArrayList<>();
 
+
     project.setLocations(new ArrayList<ProjectLocation>(
       project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList())));
 
@@ -224,7 +225,9 @@ public class ProjectLocationAction extends BaseAction {
             projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
 
           countryLocationLevel.setList(true);
-          countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
+          if (locationElementType != null) {
+            countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
+          }
         } else {
           countryLocationLevel.setList(false);
           countryLocationLevel.setAllCountries(false);
@@ -260,6 +263,8 @@ public class ProjectLocationAction extends BaseAction {
       countryLocationLevel.setName(locElementType.getName());
       countryLocationLevel.setAllElements(new ArrayList<LocElement>(locElementType.getLocElements()));
       countryLocationLevel.setList(true);
+
+      countryLocationLevels.add(countryLocationLevel);
 
     }
 
@@ -359,6 +364,8 @@ public class ProjectLocationAction extends BaseAction {
 
     for (CountryLocationLevel locationData : project.getLocationsData()) {
       if (!locationsDataPrew.contains(locationData)) {
+
+
         if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
           for (LocElement locElement : locationData.getLocElements()) {
             if (locElement.getId() != null && locElement.getId() != -1) {
@@ -419,6 +426,63 @@ public class ProjectLocationAction extends BaseAction {
             projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
           }
 
+        } else {
+          if (locationData.isAllCountries()) {
+
+            LocElement element = locElementTypeManager.getLocElementTypeById(locationData.getId()).getLocElements()
+              .stream().filter(le -> le.isActive()).collect(Collectors.toList()).get(0);
+
+            ProjectLocation existProjectLocation =
+              projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), element.getId());
+
+            if (existProjectLocation == null) {
+              ProjectLocation projectLocation = new ProjectLocation();
+              projectLocation.setProject(project);
+              projectLocation.setLocElement(element);
+              projectLocation.setActive(true);
+              projectLocation.setActiveSince(new Date());
+              projectLocation.setCreatedBy(this.getCurrentUser());
+              projectLocation.setModificationJustification("");
+              projectLocation.setModifiedBy(this.getCurrentUser());
+
+              projectLocationManager.saveProjectLocation(projectLocation);
+
+            } else {
+
+              if (!existProjectLocation.isActive()) {
+                existProjectLocation.setActive(true);
+                existProjectLocation.setActiveSince(new Date());
+                existProjectLocation.setCreatedBy(this.getCurrentUser());
+                existProjectLocation.setModificationJustification("");
+                existProjectLocation.setModifiedBy(this.getCurrentUser());
+                projectLocationManager.saveProjectLocation(existProjectLocation);
+              }
+            }
+
+            ProjectLocationElementType projectLocationElementType =
+              projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
+
+            if (projectLocationElementType == null) {
+              ProjectLocationElementType newProjectLocationElementType = new ProjectLocationElementType();
+
+              LocElementType locElementType = locElementTypeManager.getLocElementTypeById(locationData.getId());
+
+              newProjectLocationElementType.setLocElementType(locElementType);
+
+              Project project = projectManager.getProjectById(this.project.getId());
+
+              newProjectLocationElementType.setProject(project);
+
+              newProjectLocationElementType.setIsGlobal(locationData.isAllCountries());
+
+              projectLocationElementTypeManager.saveProjectLocationElementType(newProjectLocationElementType);
+
+            } else {
+              projectLocationElementType.setIsGlobal(locationData.isAllCountries());
+
+              projectLocationElementTypeManager.saveProjectLocationElementType(projectLocationElementType);
+            }
+          }
         }
       } else {
 
