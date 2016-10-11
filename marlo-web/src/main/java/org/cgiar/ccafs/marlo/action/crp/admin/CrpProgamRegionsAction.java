@@ -637,7 +637,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
         // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
-        this.addActionMessage("");
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
       return SUCCESS;
@@ -785,13 +785,15 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       if (regionsPrograms == null || regionsPrograms.isEmpty()) {
 
-        error.put("list-regionsPrograms", InvalidFieldsMessages.EMPTYLIST);
+        error.put("list-regionsPrograms",
+          this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Program Regions"}));
         // invalidFields.add(gson.toJson(gson));
       } else {
         int index = 0;
         for (CrpProgram crpProgram : regionsPrograms) {
           if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
-            error.put("list-regionsPrograms[" + index + "].leaders", InvalidFieldsMessages.EMPTYLIST);
+            error.put("list-regionsPrograms[" + index + "].leaders",
+              this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Program Regions Leaders"}));
           }
           index++;
         }

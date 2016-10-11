@@ -242,7 +242,7 @@ ul.fieldError li {
   min-height: 400px;
 }
 
-textarea.fieldError, input.fieldError,textarea.fieldError:focus, input.fieldError:focus{
+textarea.fieldError, input.fieldError,textarea.fieldError:focus, input.fieldError:focus, div.fieldError{
   border-color: #F44 !important;
   background-color: #FFFAFA;
   color: #EE1D1D !important;
@@ -6075,14 +6075,14 @@ input.fieldChecked {
 
 span.errorTag {
     position: absolute;
-    background: red;
     text-align: center;
     color: white;
     background: url(./../../images/global/errorTag.png);
     background-size: 100% 100%;
-    width: 82px;
+    width: 50px;
     cursor: help;
     height: 22px;
+    padding: 3px;
 }
 
 .program-block {

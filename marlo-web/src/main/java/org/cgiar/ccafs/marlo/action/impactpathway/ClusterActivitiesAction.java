@@ -645,7 +645,7 @@ public class ClusterActivitiesAction extends BaseAction {
         }
 
       } else {
-        this.addActionMessage("");
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
 

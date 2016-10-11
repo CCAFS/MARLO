@@ -648,7 +648,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
         // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
-        this.addActionMessage("");
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
       return SUCCESS;
@@ -687,18 +687,20 @@ public class CrpAdminManagmentAction extends BaseAction {
       HashMap<String, String> error = new HashMap<>();
       if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam", InvalidFieldsMessages.EMPTYLIST);
+        error.put("list-loggedCrp.programManagmenTeam",
+          this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Managment Team Persons"}));
         // invalidFields.add(gson.toJson(gson));
       }
       if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {
 
-        error.put("list-flagshipsPrograms", InvalidFieldsMessages.EMPTYLIST);
+        error.put("list-flagshipsPrograms", this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Flagships"}));
         // invalidFields.add(gson.toJson(gson));
       } else {
         int index = 0;
         for (CrpProgram crpProgram : flagshipsPrograms) {
           if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
-            error.put("list-flagshipsPrograms[" + index + "].leaders", InvalidFieldsMessages.EMPTYLIST);
+            error.put("list-flagshipsPrograms[" + index + "].leaders",
+              this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Flagship Leaders"}));
           }
           index++;
         }

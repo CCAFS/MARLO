@@ -228,7 +228,7 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=false className="limitWords-50 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
@@ -239,7 +239,7 @@
       [#-- Outcomes list --]
       <div class="col-md-12">
         <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
-        <div class="outcomesWrapper simpleBox form-group">
+        <div class="outcomesWrapper simpleBox form-group" listname="${customName}.${outcomesName}">
         [#if element.keyOutputOutcomes?has_content]
           [#list element.keyOutputOutcomes as keyOutputOutcome]
             [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]

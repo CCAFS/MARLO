@@ -191,9 +191,9 @@ public class ProjectPartnerAction extends BaseAction {
 
 
     Project project = projectManager.getProjectById(projectID);
-    List<Activity> activities = project.getActivities().stream()
-      .filter(c -> c.isActive() && c.getProjectPartnerPerson().getId().longValue() == userID)
-      .collect(Collectors.toList());
+    List<Activity> activities =
+      project.getActivities().stream().filter(c -> c.isActive() && c.getProjectPartnerPerson() != null
+        && c.getProjectPartnerPerson().getId().longValue() == userID).collect(Collectors.toList());
 
     System.out.println(activities);
 
@@ -233,8 +233,9 @@ public class ProjectPartnerAction extends BaseAction {
     List<Deliverable> deliverables =
       project.getDeliverables().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (Deliverable deliverable : deliverables) {
-      if (!deliverable.getDeliverablePartnerships().stream().filter(c -> c.isActive()
-        && c.getPartnerType().equals("Resp") && c.getProjectPartnerPerson().getId().longValue() == userID)
+      if (!deliverable
+        .getDeliverablePartnerships().stream().filter(c -> c.isActive() && c.getPartnerType().equals("Resp")
+          && c.getProjectPartnerPerson() != null && c.getProjectPartnerPerson().getId().longValue() == userID)
         .collect(Collectors.toList()).isEmpty()) {
         deliverablesLeads.add(deliverable);
       }
