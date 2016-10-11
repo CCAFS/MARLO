@@ -124,18 +124,18 @@ $(document)
           }
 
           function showNotificationMessages() {
-
-            if($('#generalMessages').find("#message").length == 0) {
+            if($('#generalMessages').find("#message").length == 1
+                && $('#generalMessages').find("#message").html().split(":")[0] === "message") {
               var message = "Information was correctly saved.";
               var messageType = "success";
               notifyErrorMessage(messageType, message);
-            } else {
+            } else if($('#generalMessages').find("#message").length >= 1
+                && $('#generalMessages').find("#message").html().split(":")[0] != "message") {
               var message =
                   "Information was correctly saved. <br>Please keep in mind the following fields are missing or are incorrect.";
               var messageType = "warning";
               notifyErrorMessage(messageType, message);
             }
-
           }
 
           function notifyErrorMessage(messageType,message) {
@@ -423,7 +423,7 @@ function getInputElement(fieldName,message) {
       elementQuery = $("select[name='" + fieldName + "']");
     }
   } else {
-    var asociateDiv = $("#" + fieldName.replace(/\W+/g, ""));
+    var asociateDiv = $("." + fieldName.replace(/\W+/g, ""));
     console.log(asociateDiv);
     if(asociateDiv.exists()) {
       $(asociateDiv).attr("title", message);
@@ -433,5 +433,22 @@ function getInputElement(fieldName,message) {
   console.log(elementQuery);
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
+
+}
+
+// VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
+function verifyMissingFields(element) {
+  if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()) {
+    // Tag with message
+    var tagElement = $("#test").clone(true).removeAttr("id");
+    tagElement.attr("title", "Missing fields inside this block!");
+    $(element).append(tagElement);
+    var left = $(element).outerWidth();
+    tagElement.offset({
+        top: 0,
+        left: left
+    });
+    tagElement.fadeIn(2000);
+  }
 
 }
