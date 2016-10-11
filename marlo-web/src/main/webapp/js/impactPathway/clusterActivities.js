@@ -64,6 +64,10 @@ function init() {
 // verify contributions
   $(".keyOutputContribution , .outcomeContribution").on("change keyup", verifyContributions);
 
+  // Missing fields in KoA
+  $("form .keyOutputItem ").each(function(i,e) {
+    verifyMissingFields(e);
+  });
 }
 
 // CLUSTERS

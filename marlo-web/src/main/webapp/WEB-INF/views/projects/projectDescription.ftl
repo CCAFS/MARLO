@@ -156,7 +156,7 @@
             [#-- Cluster of Activities --]
             <div class="panel tertiary">
               <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</div>
-              <div id="projectsList" class="panel-body"> 
+              <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
                   [#list project.clusterActivities as element]
