@@ -60,7 +60,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
 
     if (activities.size() == 0) {
       this.addMissingField("program.activites");
-      action.getInvalidFields().put("list-outcomes", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-clusterofActivities", InvalidFieldsMessages.EMPTYLIST);
     }
 
     for (int i = 0; i < activities.size(); i++) {
@@ -103,7 +103,7 @@ public class ClusterActivitiesValidator extends BaseValidator {
         if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
           this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
-          action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs[" + j + "].outcomes",
+          action.getInvalidFields().put("list-clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutputOutcomes",
             InvalidFieldsMessages.EMPTYLIST);
 
         }
