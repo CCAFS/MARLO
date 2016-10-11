@@ -550,6 +550,7 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.isHttpPost()) {
       if (project.getClusterActivities() != null) {
         project.getClusterActivities().clear();
+        project.setNoRegional(null);
       }
     }
 
@@ -570,6 +571,10 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setStatus(projectDB.getStatus());
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
+
+      if (project.isNoRegional() == null) {
+        project.setNoRegional(false);
+      }
       /*
        * if (!projectDB.isBilateralProject()) {
        * if (file != null) {
@@ -662,9 +667,10 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
 
-      for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+      List<ProjectFocus> regionsPreview = projectDB.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList())) {
+        .collect(Collectors.toList());
+      for (ProjectFocus projectFocus : regionsPreview) {
         if (!project.getRegionsValue().contains(projectFocus.getCrpProgram().getId().toString())) {
           projectFocusManager.deleteProjectFocus(projectFocus.getId());
         }
