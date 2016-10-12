@@ -24,11 +24,13 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import com.google.inject.Inject;
 
@@ -85,7 +87,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, boolean saving) {
 
-
+    action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
       if (!saving) {
@@ -102,17 +104,25 @@ public class ProjectPartnersValidator extends BaseValidator {
             this.addMessage(
               action.getText("Please provide Partnerships overall performance over the last reporting period"));
             this.addMissingField("project.partners.overall");
+            action.getInvalidFields().put("input-project.overall", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
       }
 
+
+      if (project.getPartners() == null || project.getPartners().isEmpty()) {
+        action.getInvalidFields().put("list-project.partners",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
+      }
       if (project.isProjectEditLeader()) {
         if (!action.isProjectNew(project.getId())) {
           this.validateLessonsLearn(action, project);
           if (this.validationMessage.toString().contains("Lessons")) {
             this.replaceAll(validationMessage, "Lessons",
               "Lessons regarding partnerships and possible implications for the coming planning cycle");
+            action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
@@ -198,12 +208,21 @@ public class ProjectPartnersValidator extends BaseValidator {
     ProjectPartnerPerson person) {
     if (!projectValidator.isValidPersonResponsibilities(person.getResponsibilities())) {
       if (person.getUser() != null && (person.getUser() != null || person.getUser().getId() != -1)) {
+
+
         person.setUser(userManager.getUser(person.getUser().getId()));
-        this.addMessage(action.getText("projectPartners.responsibilities.for",
-          new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
+        if (person.getUser() != null) {
+          this.addMessage(action.getText("projectPartners.responsibilities.for",
+            new String[] {person.getUser().getFirstName() + " " + person.getUser().getLastName()}));
+        }
+
+
       }
       this.addMissingField(
         "project.projectPartners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities");
+      action.getInvalidFields().put(
+        "input-project.partners[" + partnerCounter + "].partnerPersons[" + personCounter + "].responsibilities",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
   }
@@ -222,6 +241,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     // All projects must specify the project leader
     if (!projectValidator.isValidLeader(project.getLeader(), project.isBilateralProject())) {
       this.addMessage(action.getText("projectPartners.types.PL").toLowerCase());
+      action.getInvalidFields().put("list-project.partners", action.getText("projectPartners.types.PL"));
       this.addMissingField("project.leader");
     }
   }
