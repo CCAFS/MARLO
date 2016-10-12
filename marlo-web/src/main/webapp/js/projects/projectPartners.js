@@ -52,7 +52,12 @@ function init() {
     var partner = new PartnerObject($partnersBlock.find('.projectPartner'));
     partner.changeType();
   }
-  $('.loadingBlock').hide().next().fadeIn(500);
+  $('.loadingBlock').hide().next().fadeIn(500, function() {
+    // Missing fields in parter person
+    $("form .projectPartner ").each(function(i,e) {
+      verifyMissingFields(e);
+    });
+  });
 
   $("textarea[id!='justification']").autoGrow();
 }
@@ -119,11 +124,6 @@ function attachEvents() {
   $(".searchUser, input.userName").on("click", changePersonEmail);
   // Event when click in a relation tag of partner person
   $(".tag").on("click", showPersonRelations);
-
-// Missing fields in parter person
-  $("form .contactPerson").each(function(i,e) {
-    verifyMissingFields(e);
-  });
 
 }
 
@@ -303,7 +303,7 @@ function updateProjectPPAPartnersLists(e) {
 
   // Validating if the institution chosen is already selected
   if(e) {
-    var $fieldError = $(e.target).parents('.partnerName').find('p.fieldError');
+    var $fieldError = $(e.target).parents('.partnerName').find('p.fieldErrorInstitutions');
     $fieldError.text('');
     var count = 0;
     // Verify if the partner is already selected

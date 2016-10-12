@@ -42,12 +42,12 @@ import com.google.inject.Inject;
 
 public class ProjectPartnersValidator extends BaseValidator {
 
-  private boolean hasErros;
-  private ProjectValidator projectValidator;
-  private UserManager userManager;
-
   @Inject
   private CrpManager crpManager;
+  private boolean hasErros;
+  private ProjectValidator projectValidator;
+
+  private UserManager userManager;
 
   @Inject
   public ProjectPartnersValidator(ProjectValidator projectValidator, UserManager userManager) {
@@ -134,7 +134,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {
         action
-          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
       if (action.isReportingActive()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
@@ -194,7 +194,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     for (ProjectPartner partner : project.getPartners()) {
       if (partner.getInstitution() == null || partner.getInstitution().getId() == -1) {
 
-        action.addFieldError("project.projectPartners[" + c + "].institution",
+        action.addFieldError("project.partners[" + c + "].institution.id",
           action.getText("validation.required", new String[] {action.getText("projectPartners.partner.name")}));
         // No need to add missing fields because field error doesn't allow to save into the database.
 
@@ -229,8 +229,8 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private void validatePersonType(BaseAction action, int partnerCounter, int personCounter,
     ProjectPartnerPerson person) {
-    if (person.getContactType() == null || person.getContactType().isEmpty()) {
-      action.addFieldError("project.projectPartners[" + partnerCounter + "].partnerPersons[" + personCounter + "].type",
+    if (person.getContactType() == null || person.getContactType().isEmpty()|| person.getContactType().equals("-1")) {
+      action.addFieldError("project.partners[" + partnerCounter + "].partnerPersons[" + personCounter + "].contactType",
         action.getText("validation.required", new String[] {action.getText("projectPartners.personType")}));
       // No need to add missing fields because field error doesn't allow to save into the database.
     }

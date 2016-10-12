@@ -231,7 +231,7 @@
       
       [#-- Institution / Organization --]
       <div class="form-group partnerName">
-        <p class="fieldError"></p>
+        <p class="fieldErrorInstitutions"></p>
         [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
           [@customForm.select name="${name}.institution.id" value="${(element.institution.id)!}" className="institutionsList" required=true  i18nkey="projectPartners.partner.name" listName="allInstitutions" keyFieldName="id"  displayFieldName="composedName"  /]
         [#else]
@@ -242,7 +242,7 @@
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
         [#assign showPPABlock][#if isPPA || isTemplate]none[#else]block[/#if][/#assign]
-        <div class="ppaPartnersList panel tertiary" style="display:${showPPABlock}">
+        <div class="ppaPartnersList panel tertiary" listname="${name}.partnerContributors" style="display:${showPPABlock}">
           <div class="panel-head">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /]</div> 
           <div class="panel-body">
             [#if !(element.partnerContributors?has_content) && !editable]
