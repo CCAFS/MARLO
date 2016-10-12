@@ -120,6 +120,11 @@ function attachEvents() {
   // Event when click in a relation tag of partner person
   $(".tag").on("click", showPersonRelations);
 
+// Missing fields in parter person
+  $("form .contactPerson").each(function(i,e) {
+    verifyMissingFields(e);
+  });
+
 }
 
 function getProjectLeader() {

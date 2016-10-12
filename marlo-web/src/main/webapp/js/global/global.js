@@ -122,13 +122,19 @@ $(document)
           }
 
           function showNotificationMessages() {
-            if($('#generalMessages').find("#message").length == 1
-                && $('#generalMessages').find("#message").html().split(":")[0] === "message") {
+            var messageSelector = $('#generalMessages').find("#message");
+            // SUCCESS MESSAGE
+            if(messageSelector.length == 1 && messageSelector.html().split(":")[0] === "message") {
               var message = "Information was correctly saved.";
               var messageType = "success";
               notifyErrorMessage(messageType, message);
-            } else if($('#generalMessages').find("#message").length >= 1
-                && $('#generalMessages').find("#message").html().split(":")[0] != "message") {
+            } else if(messageSelector.length == 1 && messageSelector.html().split(":")[0] === "draft") {
+              // DRAFT MESSAGE
+              var message = "The draft has been discarded.";
+              var messageType = "success";
+              notifyErrorMessage(messageType, message);
+            } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
+              // WARNING MESSAGE
               var message =
                   "Information was correctly saved. <br>Please keep in mind the following fields are missing or are incorrect.";
               var messageType = "warning";

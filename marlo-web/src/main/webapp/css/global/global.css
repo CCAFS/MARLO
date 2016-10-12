@@ -3370,6 +3370,7 @@ padding: 0 4px 0 6px;width: 100px;}
     /* padding-bottom: 2000px; */
 }
 #projectFlagshipsBlock {
+    position: relative;
     padding: 0px 0px 9px 3px;
     /* margin-bottom: -2000px; */
     /* padding-bottom: 2000px; */

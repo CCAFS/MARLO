@@ -36,7 +36,7 @@
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div style="display:none">
-            <div id="projectPartnersBlock" class="simpleBox" >
+            <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
                   [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
@@ -204,6 +204,7 @@
       [#if (element.partnerPersons)?? ] <br /> 
         <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
       [/#if]
+      <div class="clearfix"></div>
     </div>
     
     <div class="blockContent" style="display:none">
@@ -270,7 +271,7 @@
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
         <div class="panel-head">[@s.text name="projectPartners.projectPartnerContacts" /]</div>
-        <div class="fullPartBlock">
+        <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
