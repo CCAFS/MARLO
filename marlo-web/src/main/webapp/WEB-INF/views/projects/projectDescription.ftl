@@ -45,7 +45,9 @@
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6">
+                
                 [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
+                <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
               </div> 
             </div>  
             <div class="form-group row">  
