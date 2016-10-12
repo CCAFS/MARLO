@@ -165,7 +165,7 @@ public class DeliverableAction extends BaseAction {
       this.setActionMessages(null);
       this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
     } else {
-      this.addActionMessage(this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 
