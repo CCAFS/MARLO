@@ -109,7 +109,7 @@
       <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
       [/#if]
     </div>
-    <div class="col-md-12 locationLevel-optionContent ">
+    <div class="col-md-12 locationLevel-optionContent " listname="${customName}.locElements">
       [#if editable]
       <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
         <span class="col-md-10">Select all sites</span>
