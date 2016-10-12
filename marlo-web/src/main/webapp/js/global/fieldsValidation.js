@@ -41,7 +41,6 @@ function getListElement(fieldName,message) {
 // LISTAS
   var elementQuery = $("div[listname='" + fieldName + "']")[0];
   if($(elementQuery).exists()) {
-    console.log("asssssssss");
     var offset = $(elementQuery).offset();
 
     // Tag with message
@@ -78,8 +77,9 @@ function getInputElement(fieldName,message) {
       tagElement.attr("title", message);
       $(elementQuery).parent().append(tagElement);
       var left = $(elementQuery).parent().outerWidth();
+      var top = $(elementQuery).parent().height();
       tagElement.offset({
-          top: 0,
+          top: (top / 2),
           left: left
       });
       tagElement.fadeIn(2000);

@@ -72,8 +72,12 @@
         
         <h4 class="sectionTitle">[@s.text name="programManagement.regionalProgram.title"/]</h4>
         <div class="program-block borderBox">
+          [#assign canChangeRegionaloption = !(regionsPrograms?has_content && loggedCrp.hasRegions)]
+          [#if !canChangeRegionaloption]
+            <div class="note">This option can no be changed due there are regions already added.</div>
+          [/#if]
           [#-- Does your CRP have regional program managers?  --]
-          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=editable inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
+          [@customForm.yesNoInput name="loggedCrp.hasRegions" label="programManagement.regionalProgram.question" editable=editable && canChangeRegionaloption inverse=false value="${loggedCrp.hasRegions?string}" cssClass="text-left" /]
         </div>
         [#-- confirm popup --]
         <div id="dialog-confirm"  style="display:none;">
