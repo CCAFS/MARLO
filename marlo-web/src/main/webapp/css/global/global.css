@@ -6084,6 +6084,7 @@ span.errorTag {
     cursor: help;
     height: 22px;
     padding: 3px;
+    z-index: 99;
 }
 
 .program-block {
