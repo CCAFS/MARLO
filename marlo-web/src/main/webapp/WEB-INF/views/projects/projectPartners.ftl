@@ -2,7 +2,7 @@
 [#assign title = "Project Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js"] /]  
+[#assign customJS = ["${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]  
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
@@ -36,7 +36,7 @@
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div style="display:none">
-            <div id="projectPartnersBlock" class="simpleBox" >
+            <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
                 [#list project.partners as projectPartner]
                   [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
@@ -204,6 +204,7 @@
       [#if (element.partnerPersons)?? ] <br /> 
         <small>[#list element.partnerPersons as partnerPerson][${(partnerPerson.user.composedCompleteName)!}] [/#list]</small> 
       [/#if]
+      <div class="clearfix"></div>
     </div>
     
     <div class="blockContent" style="display:none">
@@ -270,7 +271,7 @@
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
         <div class="panel-head">[@s.text name="projectPartners.projectPartnerContacts" /]</div>
-        <div class="fullPartBlock">
+        <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
             [@contactPersonMacro element=partnerPerson name="${name}.partnerPersons[${partnerPerson_index}]" index=partnerPerson_index partnerIndex=index /]
@@ -332,7 +333,8 @@
         
         <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
         [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
-        [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className="userName " type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+         [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
+        [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
         <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
         [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
       </div> 

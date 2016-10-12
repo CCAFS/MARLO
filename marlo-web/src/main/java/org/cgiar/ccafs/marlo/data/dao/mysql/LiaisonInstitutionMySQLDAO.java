@@ -81,6 +81,7 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
   @Override
   public long save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {
+      liaisonInstitution.setActive(true);
       dao.save(liaisonInstitution);
     } else {
       dao.update(liaisonInstitution);

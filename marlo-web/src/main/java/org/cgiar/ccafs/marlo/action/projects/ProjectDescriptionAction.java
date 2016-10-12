@@ -168,9 +168,9 @@ public class ProjectDescriptionAction extends BaseAction {
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
-      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
     } else {
-      this.addActionMessage(this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 
@@ -793,12 +793,16 @@ public class ProjectDescriptionAction extends BaseAction {
         path.toFile().delete();
       }
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
+      if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
       } else {
-        this.addActionMessage(this.getText("saving.saved"));
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       return SUCCESS;
     } else

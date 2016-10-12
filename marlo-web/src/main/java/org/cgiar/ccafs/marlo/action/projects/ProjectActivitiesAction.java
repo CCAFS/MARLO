@@ -288,9 +288,9 @@ public class ProjectActivitiesAction extends BaseAction {
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
-      this.addActionWarning(this.getText("cancel.autoSave") + validationMessage);
+      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
     } else {
-      this.addActionMessage(this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 

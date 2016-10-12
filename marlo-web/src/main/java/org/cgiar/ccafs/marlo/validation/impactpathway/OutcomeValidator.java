@@ -128,12 +128,16 @@ public class OutcomeValidator extends BaseValidator
         this.addMessage(action.getText("outcome.action.milestone.year.required", params));
       }
     }
-    /*
-     * if (milestone.getSrfTargetUnit() == null || milestone.getSrfTargetUnit().getId() == -1) {
-     * this.addMessage(action.getText("outcome.action.milestone.srfTargetUnit.required", params));
-     * milestone.setSrfTargetUnit(null);
-     * }
-     */
+
+    if (milestone.getSrfTargetUnit() != null && milestone.getSrfTargetUnit().getId() != -1) {
+
+      if (milestone.getValue() == null || !this.isValidNumber(milestone.getValue().toString())) {
+        this.addMessage(action.getText("outcome.action.milestone.value.required", params));
+        action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].value",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+
   }
 
   public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {

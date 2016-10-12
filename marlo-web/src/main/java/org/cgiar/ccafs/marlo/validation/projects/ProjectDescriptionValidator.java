@@ -22,10 +22,12 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import com.google.inject.Inject;
 
@@ -56,7 +58,7 @@ public class ProjectDescriptionValidator extends BaseValidator
 
   public void validate(BaseAction action, Project project, boolean saving) {
 
-
+    action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
@@ -86,34 +88,42 @@ public class ProjectDescriptionValidator extends BaseValidator
   public void validateDescription(BaseAction action, Project project) {
     if (!(this.isValidString(project.getTitle()) && this.wordCount(project.getTitle()) <= 20)) {
       this.addMessage(action.getText("project.title"));
+      action.getInvalidFields().put("input-project.title", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (!(this.isValidString(project.getSummary()) && this.wordCount(project.getSummary()) <= 150)) {
       this.addMessage(action.getText("project.summary"));
+      action.getInvalidFields().put("input-project.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getLiaisonUser() != null) {
       if (project.getLiaisonUser().getId() == -1) {
         this.addMessage(action.getText("project.liaisonUser"));
+        action.getInvalidFields().put("input-project.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.liaisonUser"));
+      action.getInvalidFields().put("input-project.liaisonUser.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getLiaisonInstitution() != null) {
       if (project.getLiaisonInstitution().getId() == -1) {
         this.addMessage(action.getText("project.liaisonInstitution"));
+        action.getInvalidFields().put("input-project.liaisonInstitution.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.liaisonInstitution"));
+      action.getInvalidFields().put("input-project.liaisonInstitution.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (project.getStartDate() == null) {
       this.addMessage(action.getText("project.startDate"));
+      action.getInvalidFields().put("input-project.startDate", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (project.getEndDate() == null) {
       this.addMessage(action.getText("project.endDate"));
+      action.getInvalidFields().put("input-project.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
@@ -121,12 +131,14 @@ public class ProjectDescriptionValidator extends BaseValidator
       if (project.getFlagships().size() == 0) {
         if (project.getFlagshipValue().length() == 0) {
           this.addMessage(action.getText("projectDescription.flagships"));
+          action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }
 
       }
     } else {
       if (project.getFlagshipValue().length() == 0) {
         this.addMessage(action.getText("projectDescription.flagships"));
+        action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
 
     }
@@ -143,9 +155,13 @@ public class ProjectDescriptionValidator extends BaseValidator
     if (project.getClusterActivities() != null) {
       if (project.getClusterActivities().size() == 0) {
         this.addMessage(action.getText("projectDescription.clusterActivities"));
+        action.getInvalidFields().put("list-project.clusterActivities",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
       }
     } else {
       this.addMessage(action.getText("projectDescription.clusterActivities"));
+      action.getInvalidFields().put("list-project.clusterActivities",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
     }
 
     /*

@@ -7,8 +7,6 @@ function init() {
     }, 600);
     return false;
   });
-
-  startIntro();
 }
 var yesnoEvent;
 var notyDefaultOptions = {
@@ -124,13 +122,19 @@ $(document)
           }
 
           function showNotificationMessages() {
-            if($('#generalMessages').find("#message").length == 1
-                && $('#generalMessages').find("#message").html().split(":")[0] === "message") {
+            var messageSelector = $('#generalMessages').find("#message");
+            // SUCCESS MESSAGE
+            if(messageSelector.length == 1 && messageSelector.html().split(":")[0] === "message") {
               var message = "Information was correctly saved.";
               var messageType = "success";
               notifyErrorMessage(messageType, message);
-            } else if($('#generalMessages').find("#message").length >= 1
-                && $('#generalMessages').find("#message").html().split(":")[0] != "message") {
+            } else if(messageSelector.length == 1 && messageSelector.html().split(":")[0] === "draft") {
+              // DRAFT MESSAGE
+              var message = "The draft has been discarded.";
+              var messageType = "success";
+              notifyErrorMessage(messageType, message);
+            } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
+              // WARNING MESSAGE
               var message =
                   "Information was correctly saved. <br>Please keep in mind the following fields are missing or are incorrect.";
               var messageType = "warning";
@@ -361,94 +365,3 @@ $('input').on("keypress", function(event) {
   }
 
 });
-
-// highlights missing fields
-
-// PRUEBA HIGHLIGHTS FIELDS
-// var intro = introJs();
-function startIntro() {
-
-  var errorList = $("li#message");
-  missingFields(errorList);
-  // intro.addHints();
-
-}
-
-// test3
-function missingFields(errorList) {
-  if(errorList.length != 0) {
-    errorList.each(function(i,e) {
-      console.log($(e).html());
-      var list = $(e).html();
-      var fieldName = list.split(":")[0].split("-")[1];
-      var type = list.split(":")[0].split("-")[0];
-      var message = list.split(":")[1];
-
-      // select element by input name or list name
-      if(type === "list") {
-        getListElement(fieldName, message);
-      } else {
-        // INPUTS
-        getInputElement(fieldName, message);
-      }
-    });
-  }
-}
-
-function getListElement(fieldName,message) {
-// LISTAS
-  var elementQuery = $("div[listname='" + fieldName + "']")[0];
-  if($(elementQuery).exists()) {
-    console.log("asssssssss");
-    var offset = $(elementQuery).offset();
-
-    // Tag with message
-    var tagElement = $("#test").clone(true).removeAttr("id");
-    tagElement.attr("title", message);
-    $(elementQuery).append(tagElement);
-    var left = $(elementQuery).outerWidth();
-    tagElement.offset({
-        top: 0,
-        left: left
-    });
-    tagElement.fadeIn(2000);
-  }
-}
-
-function getInputElement(fieldName,message) {
-  var elementQuery = $("input[name='" + fieldName + "']");
-  if(elementQuery.length == 0) {
-    elementQuery = $("textarea[name='" + fieldName + "']");
-    if(elementQuery.length == 0) {
-      elementQuery = $("select[name='" + fieldName + "']");
-    }
-  } else {
-    var asociateDiv = $("." + fieldName.replace(/\W+/g, ""));
-    console.log(asociateDiv);
-    if(asociateDiv.exists()) {
-      $(asociateDiv).attr("title", message);
-      $(asociateDiv).addClass("fieldError");
-    }
-  }
-  console.log(elementQuery);
-  $(elementQuery).addClass("fieldError");
-  $(elementQuery).attr("title", message);
-
-}
-
-// VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
-function verifyMissingFields(element) {
-  if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()) {
-    // Tag with message
-    var tagElement = $("#test").clone(true).removeAttr("id");
-    tagElement.attr("title", "Missing fields inside this block!");
-    $(element).append(tagElement);
-    var left = $(element).outerWidth();
-    tagElement.offset({
-        top: 0,
-        left: left
-    });
-    tagElement.fadeIn(2000);
-  }
-
-}

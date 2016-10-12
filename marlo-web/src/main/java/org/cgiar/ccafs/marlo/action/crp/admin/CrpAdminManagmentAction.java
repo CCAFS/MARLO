@@ -702,8 +702,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       HashMap<String, String> error = new HashMap<>();
       if (loggedCrp.getProgramManagmenTeam() == null || loggedCrp.getProgramManagmenTeam().isEmpty()) {
 
-        error.put("list-loggedCrp.programManagmenTeam",
-          this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Managment Team Persons"}));
+        error.put("list-loggedCrp.programManagmenTeam", InvalidFieldsMessages.EMPTYUSERLIST);
         // invalidFields.add(gson.toJson(gson));
       }
       if (flagshipsPrograms == null || flagshipsPrograms.isEmpty()) {

@@ -91,6 +91,7 @@ public class LiaisonUserMySQLDAO implements LiaisonUserDAO {
   @Override
   public long save(LiaisonUser liaisonUser) {
     if (liaisonUser.getId() == null) {
+      liaisonUser.setActive(true);
       dao.save(liaisonUser);
     } else {
       dao.update(liaisonUser);

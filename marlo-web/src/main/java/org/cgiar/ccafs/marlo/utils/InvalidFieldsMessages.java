@@ -19,8 +19,9 @@ package org.cgiar.ccafs.marlo.utils;
 
 public class InvalidFieldsMessages {
 
-  public static String EMPTYLIST = "{0} are requeried";
-  public static String EMPTYFIELD = "Requeried Field";
+  public static String EMPTYLIST = "{0} are required";
+  public static String EMPTYFIELD = "Required Field";
+  public static String EMPTYUSERLIST = "There must be at least one person here.";
 
 
 }
