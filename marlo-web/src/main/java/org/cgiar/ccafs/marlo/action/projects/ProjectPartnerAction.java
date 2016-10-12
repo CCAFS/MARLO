@@ -807,14 +807,18 @@ public class ProjectPartnerAction extends BaseAction {
       }
 
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
+      if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
       } else {
-        this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-      messages = this.getActionMessages();
+
 
       return SUCCESS;
     }

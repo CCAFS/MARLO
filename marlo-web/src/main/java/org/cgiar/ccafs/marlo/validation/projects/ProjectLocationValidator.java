@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import com.google.inject.Inject;
 
@@ -51,7 +53,7 @@ public class ProjectLocationValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
-
+    action.setInvalidFields(new HashMap<>());
 
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
@@ -81,6 +83,8 @@ public class ProjectLocationValidator extends BaseValidator {
   public void validateLocation(BaseAction action, Project project) {
 
     if (project.getLocationsData() == null) {
+      action.getInvalidFields().put("list-project.locations",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
       this.addMessage(action.getText("project.locations"));
     }
 
