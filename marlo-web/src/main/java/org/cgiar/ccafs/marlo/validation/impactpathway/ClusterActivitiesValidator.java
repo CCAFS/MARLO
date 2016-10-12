@@ -103,6 +103,13 @@ public class ClusterActivitiesValidator extends BaseValidator {
         List<String> paramsOutcomes = new ArrayList<String>();
         paramsOutcomes.add(String.valueOf(i + 1));
         paramsOutcomes.add(String.valueOf(j));
+
+        if (!this.isValidString(crpClusterKeyOutput.getKeyOutput())) {
+          this.addMessage(action.getText("outcome.action.cluster.key.statment", params));
+          action.getInvalidFields().put("input-clusterofActivities[" + i + "].keyOutputs[" + j + "].keyOutput",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
         if (crpClusterKeyOutput.getKeyOutputOutcomes() == null
           || crpClusterKeyOutput.getKeyOutputOutcomes().isEmpty()) {
           this.addMessage(action.getText("outcome.action.cluster.key.outcomes.required", paramsOutcomes));
