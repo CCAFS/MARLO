@@ -21,6 +21,7 @@ public class InvalidFieldsMessages {
 
   public static String EMPTYLIST = "{0} are required";
   public static String EMPTYFIELD = "Required Field";
+  public static String EMPTYUSERLIST = "There must be at least one person here.";
 
 
 }
