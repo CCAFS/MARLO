@@ -10,10 +10,10 @@ $(document).ready(function() {
 
   $statuses = $('#description_project_status');
   $statusDescription = $('#statusDescription');
-  var implementationStatus = $statuses.find('option[value="2"]').text();
   $endDate = $('#project\\.endDate');
+  var implementationStatus = $statuses.find('option[value="2"]').text();
 
-  liaisonUserSelected = $('.liaisonUserSelect').val();
+  liaisonUserSelected = $('#liaisonUserSelected').text();
   liaisonInstitutionsPrograms = jQuery.parseJSON($('#liaisonInstitutionsPrograms').text());
 
   datePickerConfig({
@@ -54,11 +54,11 @@ $(document).ready(function() {
           liasonInstitutionID: liasonInstitutionID
         },
         beforeSend: function() {
+          console.log(liaisonUserSelected);
           $('.liaisonUserSelect').empty();
           $('.liaisonUserSelect').addOption(-1, 'Select an option');
         },
         success: function(data) {
-          console.log(data);
           $.each(data.liasonsUsers, function(i,e) {
             $('.liaisonUserSelect').addOption(e.id, escapeHtml(e.description));
             if(!e.active) {
@@ -67,7 +67,12 @@ $(document).ready(function() {
           });
 
           // Set current liaison user
-          $('.liaisonUserSelect').val(liaisonUserSelected);
+          if($('.liaisonUserSelect option[value="' + liaisonUserSelected + '"]').exists()) {
+            $('.liaisonUserSelect').val(liaisonUserSelected);
+          } else {
+            $('.liaisonUserSelect').val('-1');
+          }
+          $('.liaisonUserSelect').trigger('change.select2');
 
         }
     });

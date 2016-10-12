@@ -1,0 +1,16 @@
+UPDATE `institutions` SET `name`='Department of Agriculture / Jabatan pertanian', `acronym`='DOA', `city`='Putrajaya', `website_link`='http://www.doa.gov.my/' WHERE `id`='58';
+UPDATE `institutions` SET `name`=' Agriculture & Co-operation Department', `acronym`='A&CD', `website_link`='https://agri.gujarat.gov.in/index.htm' WHERE `id`='376';
+UPDATE `institutions` SET `name`='Department of Agriculture', `website_link`='http://www.da.gov.ph/' WHERE `id`='1083';
+INSERT INTO `institutions` (`id`, `name`, `acronym`, `city`, `website_link`, `institution_type_id`, `country_id`) VALUES ('1272', 'Department of Irrigation', 'DoI', 'Lalitpur', 'http://doi.gov.np/', '7', '163');
+UPDATE `institutions` SET `website_link`='http://doi.gov.np/', `headquarter`='1272' WHERE `id`='333';
+UPDATE `institutions` SET `website_link`='http://www.ira.rnrt.tn/' WHERE `id`='226';
+DELETE FROM `institutions` WHERE `id`='614';
+UPDATE `institutions` SET `website_link`='http://www.inra.fr/', `headquarter`='433' WHERE `id`='215';
+UPDATE `institutions` SET `name`='Institut National de Recherche Agronomique de Tunis' WHERE `id`='784';
+UPDATE `institutions` SET `website_link`='http://www.inra.fr/' WHERE `id`='433';
+INSERT INTO `institutions` (`id`, `name`, `acronym`, `city`, `website_link`, `institution_type_id`, `country_id`) VALUES ('1273', 'International Crops Research Institute for the Semi-Arid Tropics', 'ICRISAT', 'Hyderabad', 'http://www.icrisat.org/', '3', '103');
+UPDATE `institutions` SET `headquarter`='1273' WHERE `id`='103';
+UPDATE `institutions` SET `headquarter`='1273' WHERE `id`='1216';
+UPDATE `institutions` SET `headquarter`='1273' WHERE `id`='1217';
+UPDATE `institutions` SET `headquarter`='89' WHERE `id`='1085';
+UPDATE `institutions` SET `city`='Washington D.C.' WHERE `id`='89';
