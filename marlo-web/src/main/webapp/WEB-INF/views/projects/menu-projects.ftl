@@ -93,8 +93,6 @@
 [/#if]
 
 
-
-
 [#if ((project.projectEditLeader)!false)]
 
   [#-- Submition message --]

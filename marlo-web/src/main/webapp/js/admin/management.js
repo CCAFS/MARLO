@@ -37,6 +37,24 @@ function attachEvents() {
     });
   });
 
+  // Key up Acronym
+  $('input.acronym').on('keyup', function() {
+    var currentValue = this.value;
+    var matches = 0;
+    $(this).removeClass('fieldError');
+    $('form input.acronym').each(function(i,e) {
+      if(currentValue == e.value) {
+        matches++
+      }
+    });
+    if(matches > 1) {
+      $(this).addClass('fieldError');
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'Abbreviations/Acronyms cannot be repeated';
+      noty(notyOptions);
+    }
+  });
+
   // Add program
   $('.addProgram').on('click', function() {
     addProgram($(this));

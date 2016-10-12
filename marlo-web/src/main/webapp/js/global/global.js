@@ -421,6 +421,9 @@ function getInputElement(fieldName,message) {
     elementQuery = $("textarea[name='" + fieldName + "']");
     if(elementQuery.length == 0) {
       elementQuery = $("select[name='" + fieldName + "']");
+      if($(elementQuery).exists()) {
+        $(elementQuery).next().addClass("missingSelect");
+      }
     }
   } else {
     var asociateDiv = $("." + fieldName.replace(/\W+/g, ""));
@@ -436,9 +439,18 @@ function getInputElement(fieldName,message) {
 
 }
 
+// EVENT TO ERROR TAG
+
+$(".errorTag").on("click", function() {
+  $(this).fadeOut("slow", function() {
+    $(this).remove();
+  });
+});
+
 // VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
 function verifyMissingFields(element) {
-  if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()) {
+  if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
+      || $(element).find(".missingSelect").exists()) {
     // Tag with message
     var tagElement = $("#test").clone(true).removeAttr("id");
     tagElement.attr("title", "Missing fields inside this block!");

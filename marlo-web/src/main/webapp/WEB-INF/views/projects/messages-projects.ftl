@@ -1,4 +1,8 @@
 [#ftl]
+
+[#-- Projects data information --]
+[#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /]
+
 [#-- History Message --]
 [#if transaction??]
   <div class="history-mode text-center animated flipInX">
@@ -26,9 +30,6 @@
 [#if !canEdit && !(transaction??) && !(submission?has_content)]
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if]
-
-
-
 
 
 [#-- Program completed Message--]
