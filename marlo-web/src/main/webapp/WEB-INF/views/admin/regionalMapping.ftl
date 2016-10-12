@@ -116,7 +116,7 @@
     [/#if]
     <div class="leftHead">
       <span class="index">${index+1}</span>
-      <span class="elementId">${(element.acronym)!} ${(element.name)!'Regional Program'}</span>
+      <span class="elementId">${(element.composedName)!'Regional Program'}</span>
     </div>
     <br />
     [#-- Program Acronym & Name --]

@@ -79,14 +79,18 @@ public class CrpAdminManagmentAction extends BaseAction {
   private long pmuRol;
   private long cuId;
   private List<CrpProgram> flagshipsPrograms;
+  private List<CrpProgram> regionsPrograms;
+
 
   private List<CrpParameter> parameters;
+
+
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private Role fplRole;
-
   // Util
   private SendMail sendMail;
 
@@ -109,7 +113,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.crpUserManager = crpUserManager;
   }
-
 
   public void addCrpUser(User user) {
     user = userManager.getUser(user.getId());
@@ -148,7 +151,6 @@ public class CrpAdminManagmentAction extends BaseAction {
     return flagshipsPrograms;
   }
 
-
   public Role getFplRole() {
     return fplRole;
   }
@@ -164,9 +166,15 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  public List<CrpProgram> getRegionsPrograms() {
+    return regionsPrograms;
+  }
+
+
   public Role getRolePmu() {
     return rolePmu;
   }
+
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Flagship
@@ -239,7 +247,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
    * 
@@ -277,6 +284,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
+
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Regional Program
@@ -382,7 +390,6 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   @Override
   public void prepare() throws Exception {
 
@@ -396,12 +403,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
     String params[] = {loggedCrp.getAcronym()};
     fplRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_FPL_ROLE)));
-    // Get the Flagship list of this crp
+
+    // Get the Flagship list of this CRP
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
-
-
-      // flagshipsPrograms = crpProgramManager.findAll().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      .collect(Collectors.toList());
+
+    // Get the regions list of this CRP
+    regionsPrograms = loggedCrp.getCrpPrograms().stream()
+      .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
 
 
@@ -529,6 +539,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
     }
   }
+
 
   private void programsData() {
     List<CrpProgram> fgProgramsRewiev =
@@ -658,10 +669,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-
   public void setFlagshipsPrograms(List<CrpProgram> flagshipsPrograms) {
     this.flagshipsPrograms = flagshipsPrograms;
   }
+
 
   public void setFplRole(Role fplRole) {
     this.fplRole = fplRole;
@@ -671,9 +682,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setPmuRol(long pmuRol) {
     this.pmuRol = pmuRol;
+  }
+
+
+  public void setRegionsPrograms(List<CrpProgram> regionsPrograms) {
+    this.regionsPrograms = regionsPrograms;
   }
 
   public void setRolePmu(Role rolePmu) {
