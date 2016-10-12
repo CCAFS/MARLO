@@ -2,7 +2,7 @@
 [#assign title = "Locations" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrl}/js/admin/locations.js" ] /]
+[#assign customJS = [ "${baseUrl}/js/admin/locations.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
 [#assign customCSS = [ "${baseUrl}/css/admin/locations.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "locations" /]

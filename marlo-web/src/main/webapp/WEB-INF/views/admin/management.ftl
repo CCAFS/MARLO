@@ -2,7 +2,7 @@
 [#assign title = "Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/management.js" ,"${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "management" /]
 

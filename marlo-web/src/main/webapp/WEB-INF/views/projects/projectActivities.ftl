@@ -2,7 +2,7 @@
 [#assign title = "Project Activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "activities" /]

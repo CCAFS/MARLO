@@ -2,7 +2,7 @@
 [#assign title = "Project Other contributions" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectOtherContributions.js", "${baseUrl}/js/global/autoSave.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectOtherContributions.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "otherContributions" /]
 

@@ -2,7 +2,7 @@
 [#assign title = "Regional Mapping" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2", "flat-flags", "vanilla-color-picker"] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/regionalMapping.js" ] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/admin/regionalMapping.js","${baseUrl}/js/global/fieldsValidation.js" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "regionalMapping" /]
 
