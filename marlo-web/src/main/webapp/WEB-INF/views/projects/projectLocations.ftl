@@ -48,7 +48,7 @@
               </div>
                          
               <div class="text-center col-md-12  alert alert-info"><span> Select the points where the focus activity is being carried out </span></div>
-              <div id="selectsContent" class="col-md-6 simpleBox">
+              <div id="selectsContent" class="col-md-6 simpleBox" listname="project.locationsData">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
                 [#if project.locationsData?has_content]

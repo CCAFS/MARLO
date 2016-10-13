@@ -110,7 +110,7 @@
           <h4 class="headTitle">Milestones/ progress towards your outcome target contribution </h4>
           
           [#-- List milestones  --]
-          <div class="milestonesYearBlock borderBox">
+          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
             <div class="milestonesYearList">
               [#if milestonesProject?has_content]
                 [#list milestonesProject as milestone]
