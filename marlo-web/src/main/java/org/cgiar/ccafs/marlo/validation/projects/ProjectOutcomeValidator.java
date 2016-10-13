@@ -153,7 +153,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     if (!(this.isValidString(projectNextuser.getNextUser()) && this.wordCount(projectNextuser.getNextUser()) <= 20)) {
       this.addMessage(action.getText("projectOutcomeNextUser.requeried.title", params));
-      action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].title",
+      action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].nextUser",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (!(this.isValidString(projectNextuser.getKnowledge()) && this.wordCount(projectNextuser.getKnowledge()) <= 50)) {

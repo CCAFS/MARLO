@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -81,21 +82,23 @@ public class DeliverableValidator extends BaseValidator {
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-        action.getInvalidFields().put("input-deliverable.subType", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
       } else {
         if (deliverable.getDeliverableType().getDeliverableType() != null) {
           if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-            action.getInvalidFields().put("input-deliverable.type", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+              InvalidFieldsMessages.EMPTYFIELD);
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-          action.getInvalidFields().put("input-deliverable.type", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
-      action.getInvalidFields().put("input-deliverable.subType", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getStatus() != null) {
@@ -117,23 +120,23 @@ public class DeliverableValidator extends BaseValidator {
     if (deliverable.getCrpClusterKeyOutput() != null) {
       if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-        action.getInvalidFields().put("input-deliverable.keyOutput", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.keyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-      action.getInvalidFields().put("input-deliverable.keyOutput", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.keyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getResponsiblePartner() != null) {
       if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
         || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-        action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson",
+        action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-      action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson",
+      action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
@@ -142,6 +145,16 @@ public class DeliverableValidator extends BaseValidator {
         this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
         action.getInvalidFields().put("list-deliverable.otherPartners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
+      } else {
+        int i = 0;
+        for (DeliverablePartnership partner : deliverable.getOtherPartners()) {
+          if (partner.getProjectPartnerPerson() == null || partner.getProjectPartnerPerson().getId() == null
+            || partner.getProjectPartnerPerson().getId().longValue() == -1) {
+            action.addFieldError("deliverable.otherPartners[" + i + "].projectPartnerPerson.id",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+          i++;
+        }
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
