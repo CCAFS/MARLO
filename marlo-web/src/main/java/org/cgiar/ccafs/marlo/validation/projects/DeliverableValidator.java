@@ -99,6 +99,8 @@ public class DeliverableValidator extends BaseValidator {
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
       action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getStatus() != null) {
@@ -120,23 +122,23 @@ public class DeliverableValidator extends BaseValidator {
     if (deliverable.getCrpClusterKeyOutput() != null) {
       if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-        action.getInvalidFields().put("input-deliverable.keyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-      action.getInvalidFields().put("input-deliverable.keyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (deliverable.getResponsiblePartner() != null) {
       if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
         || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-        action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+        action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-      action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+      action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
