@@ -113,13 +113,7 @@ public class DeliverableListAction extends BaseAction {
     projectID = deliverable.getProject().getId();
 
     if (deliverable != null) {
-      if (deliverableManager.deleteDeliverable(deliverable.getId())) {
-        this.addActionMessage(
-          this.getText("deleting.success", new String[] {this.getText("projectDeliverable").toLowerCase()}));
-      } else {
-        this.addActionError(
-          this.getText("deleting.problem", new String[] {this.getText("projectDeliverable").toLowerCase()}));
-      }
+      this.addActionMessage("message:" + this.getText("deleting.success"));
     }
     return SUCCESS;
   }
@@ -153,25 +147,30 @@ public class DeliverableListAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    project = projectManager.getProjectById(projectID);
+    try {
+      projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+      project = projectManager.getProjectById(projectID);
 
-    if (project != null) {
+      if (project != null) {
 
-      allYears = project.getAllYears();
+        allYears = project.getAllYears();
 
-      if (deliverableTypeManager.findAll() != null) {
-        deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
+        if (deliverableTypeManager.findAll() != null) {
+          deliverablesType = new ArrayList<>(deliverableTypeManager.findAll());
+        }
+
+        if (project.getDeliverables() != null) {
+          deliverables =
+            new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
+        }
       }
 
-      if (project.getDeliverables() != null) {
-        deliverables =
-          new ArrayList<>(project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()));
-      }
+      String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+      this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_LIST_BASE_PERMISSION, params));
+
+    } catch (Exception e) {
+      projectID = -1;
     }
-
-    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_LIST_BASE_PERMISSION, params));
 
   }
 
