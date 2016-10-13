@@ -22,11 +22,13 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -58,7 +60,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
   public void validate(BaseAction action, Project project, boolean saving) {
     this.action = action;
-
+    action.setInvalidFields(new HashMap<>());
     if (!saving) {
       Path path = this.getAutoSaveFilePath(project, action.getCrpID());
 
@@ -66,16 +68,30 @@ public class ProjectActivitiesValidator extends BaseValidator {
         this.addMissingField("draft");
       }
     }
+
+    if ((project.getOpenProjectActivities() == null || project.getOpenProjectActivities().isEmpty())
+      && (project.getClosedProjectActivities() == null || project.getClosedProjectActivities().isEmpty())) {
+
+      action.getInvalidFields().put("list-project.openProjectActivities",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activites"}));
+    }
     if (project.getOpenProjectActivities() != null) {
+      int i = 0;
       for (Activity activity : project.getOpenProjectActivities()) {
-        this.validateActivity(activity);
+        this.validateActivity(activity, i, "openProjectActivities");
+        i++;
       }
     }
 
+
     if (project.getClosedProjectActivities() != null) {
+      int i = 0;
       for (Activity activity : project.getClosedProjectActivities()) {
-        this.validateActivity(activity);
+        this.validateActivity(activity, i, "closedProjectActivities");
+        i++;
       }
+
+
     }
 
     if (!action.getFieldErrors().isEmpty()) {
@@ -93,48 +109,69 @@ public class ProjectActivitiesValidator extends BaseValidator {
     }
   }
 
-  public void validateActivity(Activity activity) {
+  public void validateActivity(Activity activity, int index, String listName) {
 
     List<String> params = new ArrayList<>();
     params.add(String.valueOf(activity.getId()));
 
     if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 15)) {
       this.addMessage(action.getText("activity.title", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].title",
+        InvalidFieldsMessages.EMPTYFIELD);
+
     }
 
     if (!(this.isValidString(activity.getDescription()) && this.wordCount(activity.getDescription()) <= 150)) {
       this.addMessage(action.getText("activity.description", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (activity.getStartDate() == null) {
       this.addMessage(action.getText("activity.startDate", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].startDate",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
     if (activity.getEndDate() == null) {
       this.addMessage(action.getText("activity.endDate", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "endDate",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (activity.getProjectPartnerPerson() != null) {
       if (activity.getProjectPartnerPerson().getId() == -1) {
         this.addMessage(action.getText("activity.leader", params));
+        action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("activity.leader", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (activity.getActivityStatus() != null) {
       if (activity.getActivityStatus() == -1) {
         this.addMessage(action.getText("activity.status", params));
+        action.getInvalidFields().put("input-project." + listName + "[" + index + "].status",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     } else {
       this.addMessage(action.getText("activity.status", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].status",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (activity.getDeliverables() != null) {
       if (activity.getDeliverables().size() == 0) {
         this.addMessage(action.getText("activity.deliverable", params));
+        action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
       }
     } else {
       this.addMessage(action.getText("activity.deliverable", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].deliverables",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
     }
   }
 }
