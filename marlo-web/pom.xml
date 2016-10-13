@@ -36,7 +36,7 @@
 		<com.google.code.gson-version>2.6.2</com.google.code.gson-version>
 		<pusher-http-java>1.0.0</pusher-http-java>
 		<log-properties>0.9.28</log-properties>
-		<pentaho-report.version>5.0.1-stable</pentaho-report.version>
+		<pentaho-report.version>6.1.0.1-196</pentaho-report.version>
 	</properties>
 
 	<developers>
@@ -396,7 +396,7 @@
 		<dependency>
 			<groupId>pentaho-report-designer</groupId>
 			<artifactId>report-designer-ext-legacy-charts</artifactId>
-			<version>5.0.5</version>
+			<version>${pentaho-report.version}</version>
 		</dependency>
 
 

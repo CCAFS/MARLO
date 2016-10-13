@@ -34,7 +34,7 @@
           
           <h3 class="headTitle">Project Activities</h3>
           
-          <div class="activitiesOG-content simpleBox">
+          <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
           <h4 class="subTitle headTitle">On going activities</h4>
           <hr />
           [#if project.openProjectActivities?has_content]
@@ -50,7 +50,7 @@
           [/#if]
           
           [#if project.closedProjectActivities?has_content]
-          <div class="activitiesC-content simpleBox">
+          <div class="activitiesC-content simpleBox" listname="project.closedProjectActivities">
             <h4 class="subTitle headTitle">Completed Activities</h4>
             <hr />
             [#list project.closedProjectActivities as activity]
@@ -138,7 +138,7 @@
       
       [#-- Activity deliverables --]
       <label for="" class="${editable?string('editable', 'readOnly')}">Deliverables in this activity:</label>
-      <div class="deliverableWrapper simpleBox form-group">
+      <div class="deliverableWrapper simpleBox form-group" listname="${customName}.deliverables">
         [#if element.deliverables?has_content]
           [#list element.deliverables as deliverable]
               [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index /]
