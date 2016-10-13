@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import com.google.inject.Inject;
 
@@ -55,6 +56,8 @@ public class DeliverableValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
+
+    action.setInvalidFields(new HashMap<>());
     this.action = action;
     if (!saving) {
       Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());

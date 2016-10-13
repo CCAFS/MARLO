@@ -35,15 +35,15 @@ public class CloseSession extends Thread {
   public void run() {
     try {
 
-      Thread.sleep(10000);
+      Thread.sleep(20000);
       session.disconnect();
       if (!session.isOpen()) {
         session.close();
       }
 
-      session.connection().close();
 
     } catch (Exception e) {
+      LOG.error(e.getMessage());
     }
 
   }
