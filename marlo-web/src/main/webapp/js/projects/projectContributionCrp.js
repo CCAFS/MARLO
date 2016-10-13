@@ -103,6 +103,7 @@ function addMilestone() {
         $item.find('.crpMilestoneYear').text(data.crpMilestone.year);
         $item.find('.crpMilestoneYearInput').val(data.crpMilestone.year);
         $item.find('.crpMilestoneValue').text(data.crpMilestone.value);
+        $item.find('.targetValue').attr('placeholder', data.crpMilestone.value);
         $item.find('.crpMilestoneTargetUnit').text(data.crpMilestone.targetUnitName);
         $item.find('.crpMilestoneTargetUnitInput').val(data.crpMilestone.targetUnit);
         $item.find('.title').text(data.crpMilestone.title);

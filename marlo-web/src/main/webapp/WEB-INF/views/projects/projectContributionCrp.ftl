@@ -51,14 +51,18 @@
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
           
-          <div class="row">
+          <div class="grayBox">
             <div class="col-md-12">
               <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
             </div>
+            <div class="clearfix"></div>
             [#if showOutcomeValue]
-              <div class="col-md-6"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+            <div class="form-group">
+              <div class="col-md-4"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
               <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+            </div>
             [/#if]
+            <div class="clearfix"></div>
           </div>
           <br />
           
@@ -133,6 +137,7 @@
             [#-- Select a milestone  --]
             [#if editable]
             <div class="milestonesYearSelect"> 
+              <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
               <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
               [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
             </div>
@@ -274,7 +279,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="${(element.value)!}" className="targetValue" required=isYearRequired(year) editable=editable /]
           </div>
           <div class="col-md-4">
             <div class="select">

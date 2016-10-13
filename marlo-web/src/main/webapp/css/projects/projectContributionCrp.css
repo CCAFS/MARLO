@@ -57,10 +57,10 @@ ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
 }
 
 .milestonesYearSelect {
-    border-top: 1px dashed #E4E4E4;
+    border: 1px dashed #E4E4E4;
     margin-top: 14px;
     margin-bottom: 1em;
-    padding-top: 6px;
+    padding: 13px;
     color: #94988b;
 }
 
