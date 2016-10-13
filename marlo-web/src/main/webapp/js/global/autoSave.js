@@ -90,7 +90,7 @@ function changeDetected(e) {
       // Start a timer that will search when finished
       timeoutAutoSave = setTimeout(function() {
         autoSave();
-      }, 5 * 1000);
+      }, 7 * 1000);
     }
   }
 }
@@ -98,7 +98,6 @@ function changeDetected(e) {
 function validateThisSection() {
   var $sectionMenu = $('#secondaryMenu .currentSection');
   var sectionName = ($sectionMenu.attr('id')).split("-")[1];
-  console.log(sectionName);
 
   var validateService = "";
   var sectionData = {};
