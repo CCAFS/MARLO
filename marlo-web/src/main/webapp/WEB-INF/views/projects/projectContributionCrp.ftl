@@ -49,13 +49,23 @@
           <h3 class="headTitle"> Project Contribution</h3>  
           
           [#-- Outcomen name --]
-          <p><strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}</p>
+          [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
+          
+          <div class="row">
+            <div class="col-md-12">
+              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Outcome ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
+            </div>
+            [#if showOutcomeValue]
+              <div class="col-md-6"><strong>Target Value:</strong> ${projectOutcome.crpProgramOutcome.value} </div>
+              <div class="col-md-6"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
+            [/#if]
+          </div>
+          <br />
           
           [#-- Project Targets --]
           [#assign showExpectedTarget = true /]
           [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
           
-          [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
           
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]

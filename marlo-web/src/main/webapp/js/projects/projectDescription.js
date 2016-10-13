@@ -54,7 +54,6 @@ $(document).ready(function() {
           liasonInstitutionID: liasonInstitutionID
         },
         beforeSend: function() {
-          console.log(liaisonUserSelected);
           $('.liaisonUserSelect').empty();
           $('.liaisonUserSelect').addOption(-1, 'Select an option');
         },
