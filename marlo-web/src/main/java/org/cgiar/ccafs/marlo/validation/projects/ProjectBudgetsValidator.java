@@ -23,12 +23,14 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -83,6 +85,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
+    action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
       if (!saving) {
@@ -106,9 +109,17 @@ public class ProjectBudgetsValidator extends BaseValidator {
           }
           if (total == 0) {
             this.addMessage(action.getText("projectBudgets.amount"));
+            int i = 0;
+            for (ProjectBudget projectBudget : project.getBudgets()) {
+              action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                InvalidFieldsMessages.EMPTYFIELD);
+              i++;
+            }
           }
         } else {
           this.addMessage(action.getText("projectBudgets"));
+          action.getInvalidFields().put("list-project.budgets",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
         }
 
 
@@ -126,6 +137,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
               if (projectBudget.getYear() == action.getCurrentCycleYear()) {
                 if (!this.isValidNumber(String.valueOf(projectBudget.getAmount())) || projectBudget.getAmount() == 0) {
                   this.addMessage(action.getText("projectBudgetCofinaning.requeried.amount", params));
+                  action.getInvalidFields().put("input-project.budgetsCofinancing[" + i + "].amount",
+                    InvalidFieldsMessages.EMPTYFIELD);
                 }
               }
 
