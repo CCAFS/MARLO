@@ -226,7 +226,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
     } else {
       this.addMessage(action.getText("projectOutcome.milestones"));
-      action.getInvalidFields().put("input-projectOutcome.milestones",
+      action.getInvalidFields().put("list-projectOutcome.milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     }
 
