@@ -36,9 +36,9 @@ function init() {
     applyWordCounter($("#lessons textarea"), lWordsResp);
     // Validate on save and next action
     if(!isReportingCycle()) {
-      validateEvent([
-        "#justification"
-      ]);
+      /*
+       * validateEvent([ "#justification" ]);
+       */
     }
 
   }

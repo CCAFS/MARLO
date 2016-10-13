@@ -89,6 +89,7 @@ $(document)
                       text: 'Continue without saving',
                       onClick: function($noty) {
                         window.location.replace(url);
+                        window.location.href = url;
                         $noty.close();
                       }
                   }, {
