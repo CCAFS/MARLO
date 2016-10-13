@@ -82,10 +82,10 @@ public class ProjectLocationValidator extends BaseValidator {
 
   public void validateLocation(BaseAction action, Project project) {
 
-    if (project.getLocationsData() == null) {
-      action.getInvalidFields().put("list-project.locations",
+    if (project.getLocationsData() == null || project.getLocationsData().isEmpty()) {
+      action.getInvalidFields().put("list-project.locationsData",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Locations"}));
-      this.addMessage(action.getText("project.locations"));
+      this.addMessage(action.getText("project.locationsData"));
     }
 
   }
