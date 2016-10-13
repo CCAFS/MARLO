@@ -90,6 +90,10 @@
     [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
   <br />
+[#else]
+  [#if !project.projectEditLeader]
+    <p class="text-justify note"><small>In order to set-up the project for Project Leader completion, you need to complete all the sections above (with a green check mark).</small></p>
+  [/#if]
 [/#if]
 
 
