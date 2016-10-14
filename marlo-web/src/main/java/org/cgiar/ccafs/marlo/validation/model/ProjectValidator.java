@@ -14,6 +14,7 @@
 
 package org.cgiar.ccafs.marlo.validation.model;
 
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -21,7 +22,6 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -32,6 +32,8 @@ import com.google.inject.Inject;
 
 public class ProjectValidator extends BaseValidator {
 
+  @Inject
+  public InstitutionManager institutionManager;
 
   @Inject
   public ProjectValidator() {
@@ -42,13 +44,18 @@ public class ProjectValidator extends BaseValidator {
     if (leader == null) {
       return false;
     }
+    if (leader.getInstitution() != null) {
 
-    // For bilateral projects the leader must be a PPA institution
-    if (isBilateral && leader.getInstitution() != null
-      && leader.getInstitution().getCrpPpaPartners().stream().collect(Collectors.toList()).size() > 0) {
-      return false;
+
+      leader.setInstitution(institutionManager.getInstitutionById(leader.getInstitution().getId()));
+      // For bilateral projects the leader must be a PPA institution
+      if (isBilateral && leader.getInstitution().getInstitutionType().getId().longValue() != 3) {
+        return false;
+      }
+      return true;
     }
-    return true;
+    return false;
+
   }
 
   public boolean isValidLeaderResponsabilities(String leaderResponsabilities) {
