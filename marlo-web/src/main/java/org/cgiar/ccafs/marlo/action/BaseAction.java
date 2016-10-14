@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -171,6 +173,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
+  @Inject
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private HttpServletRequest request;
   // button actions
   protected boolean save;
@@ -314,6 +319,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
 
+      }
+
+      if (clazz == CrpClusterKeyOutput.class) {
+        CrpClusterKeyOutput crpClusterKeyOutput = crpClusterKeyOutputManager.getCrpClusterKeyOutputById(id);
+        if (crpClusterKeyOutput.getCrpClusterKeyOutputOutcomes().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList()).size() > 0) {
+          return false;
+        }
       }
       return true;
     } catch (Exception e) {
