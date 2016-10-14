@@ -74,7 +74,7 @@
           <div class="borderBox">
             [#-- Project Outcome expected target (AT THE BEGINNING) --]
             [#if showExpectedTarget]
-            <h5 class="sectionSubTitle">Expected Target</h5>
+            <h5 class="sectionSubTitle">Expected contribution to this outcome</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
                 <div class="col-md-5">
