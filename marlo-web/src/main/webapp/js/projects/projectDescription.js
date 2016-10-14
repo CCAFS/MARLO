@@ -302,10 +302,10 @@ function datePickerConfig(element) {
       maxDate: '2030-12-31',
       changeMonth: true,
       changeYear: true,
-      defaultDate: null,
+      defaultDate: '2017-01-01',
       onClose: function(selectedDate) {
         if(selectedDate != "") {
-          // $(element.endDate).datepicker("option", "minDate", selectedDate);
+          $(element.endDate).datepicker("option", "minDate", selectedDate);
         }
       }
   });
