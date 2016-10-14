@@ -16,7 +16,11 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
-    
+
+<div class="container">
+  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text]</p></div> 
+</div>
+
 <section class="container">
   <article class="row" id="mainInformation">
     <div class="col-md-12">
@@ -50,7 +54,7 @@
       <hr/>
       
       [#-- Projects List (Other Projects) --]
-      <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /]</h3>
+      <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /] <br /> <small>[@s.text name="projectsList.otherProjects.help" /]</small></h3>
       <div class="loadingBlock"></div>
       <div style="display:none">[@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div>
     </div>

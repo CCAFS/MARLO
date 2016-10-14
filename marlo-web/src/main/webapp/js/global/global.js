@@ -138,7 +138,7 @@ $(document)
               } else if(messageSelector.length >= 1 && messageSelector.html().split(":")[0] != "message") {
                 // WARNING MESSAGE
                 var message =
-                    "Information was correctly saved. <br>Please keep in mind the following fields are missing or are incorrect.";
+                    "Information was correctly saved. <br> Please keep in mind the highlighted fields below are missing or incorrect.";
                 var messageType = "warning";
                 notifyErrorMessage(messageType, message);
               }

@@ -84,8 +84,8 @@
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.expectedUnit" /]:</label>
                     <div class="selectList">   
-                        <input type="hidden" name="projectOutcome.expectedUnit.id" value="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}" class="">
-                        <p>${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</p>
+                        <input type="hidden" name="projectOutcome.expectedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
+                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!}</p>
                     </div> 
                   </div>
                 </div>

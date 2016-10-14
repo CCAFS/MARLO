@@ -60,7 +60,7 @@ function autoSave() {
 function successNotification(msj) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
   notyOptions.text = msj;
-  // notyOptions.type = 'success';
+  notyOptions.type = 'info';
   notyOptions.layout = 'topCenter';
   notyOptions.animation = {
       open: 'animated fadeInDown',
