@@ -40,7 +40,12 @@
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">
-            ${(deliverable.year)!'none'}
+          [#if deliverable.year== -1]
+          none
+          [#else]
+          ${(deliverable.year)!'none'}
+          [/#if]
+            
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">

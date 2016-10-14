@@ -2,7 +2,7 @@
 [#assign title = "Impact Pathway - Cluster Of Activities" /]
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
-[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/impactPathway/clusterActivities.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/impactPathway/programSubmit.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/impactGraphic.js","${baseUrl}/js/global/fieldsValidation.js", "${baseUrl}/js/impactPathway/clusterActivities.js"] /]
 [#assign customCSS = [ "${baseUrl}/css/impactPathway/clusterActivities.css","${baseUrl}/css/global/impactGraphic.css" ] /]
 [#assign currentSection = "impactPathway" /]
 [#assign currentStage = "clusterActivities" /]
@@ -211,9 +211,11 @@
   [#assign customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
+      [#if isTemplate || action.canBeDeleted(element.id, element.class.name)!false]
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
+      [/#if]
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">

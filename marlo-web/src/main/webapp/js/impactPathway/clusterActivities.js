@@ -28,7 +28,7 @@ function init() {
 // Remove outcome
   $('.removeOutcome').on('click', removeOutcome);
 
-  updateClustersIndex();
+  // updateClustersIndex();
 
   $(".keyOutputInput").on("change keyup", changeTitle);
 
@@ -141,7 +141,6 @@ function updateUsersIndex(item,clustersName) {
     $(userItem).find('.role').attr('name', customName + '.role.id');
     $(userItem).find('.id').attr('name', customName + '.id');
   });
-
   // Update component event
   $(document).trigger('updateComponent');
 }
