@@ -2,7 +2,7 @@
 [#assign title = "Project Activities" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectActivities.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "activities" /]
@@ -70,10 +70,10 @@
 </section>
 
 [#-- Activity Template --]
-[@projectActivityMacro element={} name=""  index=0 isTemplate=true isActive=true/]
+[@projectActivityMacro element={} name="project.projectActivities"  index=-1 isTemplate=true isActive=true/]
 
 [#-- Activity Template --]
-[@deliverablesMacro element={} name="" index=0 isTemplate=true /]
+[@deliverablesMacro element={} name="project.projectActivities[-1].deliverable" index=-1 isTemplate=true /]
 
 
   
@@ -104,6 +104,7 @@
       <div class="form-group">
         [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="Title"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+        <span class="index hidden">${index}</span>
       </div>
       [#-- Description --]
       <div class="form-group">

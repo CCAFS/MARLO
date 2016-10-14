@@ -40,6 +40,11 @@ function init() {
       $(this).find('textarea').autoGrow();
     });
   });
+
+// Missing fields in activities
+  $("form .projectActivity").each(function(i,e) {
+    verifyMissingFields(e);
+  });
 }
 
 // FUNCTIONS
@@ -62,6 +67,9 @@ function addActivity() {
   $item.find("input.endDate").attr("id", "endDate-" + countID);
   $item.find(".blockTitle").removeClass("closed").addClass("opened");
   $item.find(".blockContent").css("display", "block");
+  $item.find(".index").html(countID);
+// Set indexes
+  $item.setNameIndexes(1, countID);
   $list.append($item);
   $item.show('slow', function() {
     $item.find("textarea").autoGrow();
@@ -71,7 +79,7 @@ function addActivity() {
     date("#startDate-" + countID, "#endDate-" + countID);
   });
   checkItems($list);
-  // updateActivities();
+
 }
 
 // Remove activity element
@@ -81,29 +89,8 @@ function removeactivity() {
   $item.hide(1000, function() {
     $item.remove();
     checkItems($list);
-    // updateActivities();
   });
 
-}
-
-// Update activities
-function updateActivities() {
-  var name = "project.openProjectActivities";
-  $(".activitiesOG-content").find('.projectActivity').each(function(i,item) {
-
-    var customName = name + '[' + i + ']';
-    $(item).find('.activityIndex span b').html("Activity #" + (i + 1));
-    $(item).find('.activityTitle').attr('name', customName + '.title');
-    $(item).find('.activityId').attr('name', customName + '.id');
-    $(item).find('.activityDescription').attr('name', customName + '.description');
-    $(item).find('.startDate').attr('name', customName + '.startDate');
-    $(item).find('.endDate').attr('name', customName + '.endDate');
-    $(item).find('.activityLeader').attr('name', customName + '.projectPartnerPerson.id');
-    $(item).find('.activityStatus').attr('name', customName + '.activityStatus');
-    $(item).find('.progressDescription').attr('name', customName + '.activityProgress');
-
-    updateDeliverable(item, customName);
-  });
 }
 
 // check items
@@ -124,42 +111,39 @@ function addDeliverable() {
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
-  var isOpenActivity = $(this).parents('.activitiesOG-content').exists()
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".id").val(option.val());
   $list.append($item);
   $item.show('slow');
-
-  if(isOpenActivity) {
-    // updateActivities();
-  } else {
-    $('.activitiesC-content').find('.projectActivity ').each(function(i,activity) {
-      updateDeliverable(activity, 'project.closedProjectActivities' + '[' + i + ']');
-    });
-
-  }
+  var $activity = $list.parents(".projectActivity");
+  var activityIndex = $activity.find(".index").html();
+  updateDeliverable($activity, activityIndex);
 }
 
 // Remove a new deliverable element
 function removeDeliverable() {
   var $list = $(this).parents('.deliverableWrapper');
   var $item = $(this).parents('.deliverableActivity');
+  var $activity = $list.parents(".projectActivity");
+  var activityIndex = $activity.find(".index").html();
   $item.hide(1000, function() {
     $item.remove();
     checkItems($list);
-    // updateActivities();
+    updateDeliverable($activity, activityIndex);
   });
 
 }
 
-function updateDeliverable(item,activityName) {
-  var name = "deliverables";
+function updateDeliverable(item,activityIndex) {
+  console.log(activityIndex);
+  console.log(item);
   $(item).find('.deliverableActivity').each(function(indexDeliverable,deliverableItem) {
-    var customName = activityName + '.' + name + '[' + indexDeliverable + ']';
-    $(deliverableItem).find('.id').attr('name', customName + '.deliverable.id');
-    $(deliverableItem).find('.idTable').attr('name', customName + '.id');
-    $(deliverableItem).find('.title').attr('name', customName + '.deliverable.title');
+    console.log(indexDeliverable);
+    // Set activity indexes
+    $(deliverableItem).setNameIndexes(1, activityIndex);
+    // Set indexes
+    $(deliverableItem).setNameIndexes(2, indexDeliverable);
   });
 }
 
