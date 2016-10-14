@@ -308,7 +308,7 @@
       <div class="contributionBlock">[@customForm.input name="${subIDOCustomName}.contribution" type="text" i18nkey="outcome.subIDOs.inputContribution.label" placeholder="% of contribution" className="contribution" required=true editable=editable /]</div>
       <div class="clearfix"></div>
     </div>
-    
+    <hr />
     [#-- Assumptions List --]
     <label for="">[@s.text name="outcome.subIDOs.assumptions.label" /]:</label>
     <div class="assumptions-list" listname="${subIDOCustomName}.assumptions">
@@ -316,6 +316,8 @@
       [#list subIdo.assumptions as assumption]
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
+    [#else]
+    <p class="message text-center">[@s.text name="outcome.subIDOs.section.notAssumptions.span"/]</p>
     [/#if]
     </div>
     [#-- Add Assumption Button --]
