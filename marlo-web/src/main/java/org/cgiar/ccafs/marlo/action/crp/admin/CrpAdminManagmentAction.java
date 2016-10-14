@@ -281,7 +281,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.assigned.subject",
-      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
+      new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
 
   }
 
@@ -319,8 +319,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.unassigned.subject",
-      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
-
+      new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
 
   }
 
