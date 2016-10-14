@@ -285,14 +285,14 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    project.setOpenProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+    project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
       .filter(a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
         || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
       .collect(Collectors.toList())));
 
 
-    if (project.getOpenProjectActivities() != null) {
-      for (Activity openActivity : project.getOpenProjectActivities()) {
+    if (project.getProjectActivities() != null) {
+      for (Activity openActivity : project.getProjectActivities()) {
         openActivity.setDeliverables(new ArrayList<DeliverableActivity>(
           openActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
       }
