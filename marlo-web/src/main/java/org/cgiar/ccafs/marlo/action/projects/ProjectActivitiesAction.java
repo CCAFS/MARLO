@@ -305,7 +305,7 @@ public class ProjectActivitiesAction extends BaseAction {
 
     if (open) {
 
-      return project.getOpenProjectActivities().stream()
+      return project.getProjectActivities().stream()
         .filter(
           a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
@@ -332,7 +332,7 @@ public class ProjectActivitiesAction extends BaseAction {
   public int getIndexActivities(long id) {
     Activity activity = new Activity();
     activity.setId(id);
-    return project.getOpenProjectActivities().indexOf(activity);
+    return project.getProjectActivities().indexOf(activity);
 
   }
 
@@ -407,7 +407,7 @@ public class ProjectActivitiesAction extends BaseAction {
         project.setProjectLocations(projectDb.getProjectLocations());
 
 
-        for (Activity activity : project.getOpenProjectActivities()) {
+        for (Activity activity : project.getProjectActivities()) {
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
               if (deliverableActivity.getId() == -1) {
@@ -436,11 +436,11 @@ public class ProjectActivitiesAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project.setOpenProjectActivities(new ArrayList<Activity>(
+        project.setProjectActivities(new ArrayList<Activity>(
           project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
 
-        if (project.getOpenProjectActivities() != null) {
-          for (Activity openActivity : project.getOpenProjectActivities()) {
+        if (project.getProjectActivities() != null) {
+          for (Activity openActivity : project.getProjectActivities()) {
             openActivity.setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities()
               .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
           }
@@ -488,8 +488,8 @@ public class ProjectActivitiesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_ACTIVITIES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (project.getOpenProjectActivities() != null) {
-        project.getOpenProjectActivities().clear();
+      if (project.getProjectActivities() != null) {
+        project.getProjectActivities().clear();
       }
 
       /*
@@ -519,8 +519,8 @@ public class ProjectActivitiesAction extends BaseAction {
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
 
-      this.activitiesPreviousData(project.getOpenProjectActivities(), true);
-      this.activitiesNewData(project.getOpenProjectActivities());
+      this.activitiesPreviousData(project.getProjectActivities(), true);
+      this.activitiesNewData(project.getProjectActivities());
       /*
        * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
        * this.activitiesNewData(project.getClosedProjectActivities());

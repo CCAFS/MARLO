@@ -293,14 +293,14 @@
     <div class="form-group">
       <div class="subIdoBlock" >
         <label for="">[@s.text name="outcome.subIDOs.inputSubIDO.label"/]:<span class="red">*</span></label>
-        <div id="" class="${"${subIDOCustomName}.srfSubIdo.id"?replace("\\W+", "", "r")} subIdoSelected ${editable?string(' selectSubIDO',' ')} " title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"${editable?string('<i>Select a subIDO clicking the button...</i>','<i>subIdo not selected yet</i>')}" maxPos=65 substr=" "/]</div>
+        <div id="" class="${"${subIDOCustomName}.srfSubIdo.id"?replace("\\W+", "", "r")} subIdoSelected ${editable?string(' selectSubIDO',' ')} " title="${(subIdo.getSrfSubIdo().getDescription())!}">[@utils.wordCutter string=(subIdo.getSrfSubIdo().getDescription())!"${editable?string('<i>Please select a Sub-IDO by clicking here</i>','<i>subIdo not selected yet</i>')}" maxPos=65 substr=" "/]</div>
         <input type="hidden" class="subIdoId" name="${subIDOCustomName}.srfSubIdo.id" value="${(subIdo.srfSubIdo.id)!}" />
       </div>
       <div class="buttonSubIdo-block" >
        [#if editable]
         <div class="buttonSubIdo-content">
           <br>
-          <div class="button-blue selectSubIDO" ><span class=""></span> Select a sub-IDO</div>
+          <div class="button-blue selectSubIDO" ><span class=""></span> Select a Sub-IDO</div>
         </div>
       [/#if]
       </div>

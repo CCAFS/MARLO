@@ -199,7 +199,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<ProjectScope> scopes;
 
 
-  private List<Activity> openProjectActivities;
+  private List<Activity> projectActivities;
 
   private List<Activity> closedProjectActivities;
 
@@ -555,8 +555,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public List<Activity> getOpenProjectActivities() {
-    return openProjectActivities;
+  public List<Activity> getProjectActivities() {
+    return projectActivities;
   }
 
 
@@ -916,8 +916,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.noRegional = noRegional;
   }
 
-  public void setOpenProjectActivities(List<Activity> openProjectActivities) {
-    this.openProjectActivities = openProjectActivities;
+  public void setProjectActivities(List<Activity> openProjectActivities) {
+    this.projectActivities = openProjectActivities;
   }
 
 
