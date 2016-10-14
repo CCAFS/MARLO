@@ -71,7 +71,7 @@ function addActivity() {
     date("#startDate-" + countID, "#endDate-" + countID);
   });
   checkItems($list);
-  updateActivities();
+  // updateActivities();
 }
 
 // Remove activity element
@@ -81,7 +81,7 @@ function removeactivity() {
   $item.hide(1000, function() {
     $item.remove();
     checkItems($list);
-    updateActivities();
+    // updateActivities();
   });
 
 }
@@ -132,7 +132,7 @@ function addDeliverable() {
   $item.show('slow');
 
   if(isOpenActivity) {
-    updateActivities();
+    // updateActivities();
   } else {
     $('.activitiesC-content').find('.projectActivity ').each(function(i,activity) {
       updateDeliverable(activity, 'project.closedProjectActivities' + '[' + i + ']');
@@ -148,7 +148,7 @@ function removeDeliverable() {
   $item.hide(1000, function() {
     $item.remove();
     checkItems($list);
-    updateActivities();
+    // updateActivities();
   });
 
 }
