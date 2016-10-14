@@ -113,6 +113,7 @@ public class DeliverableListAction extends BaseAction {
     projectID = deliverable.getProject().getId();
 
     if (deliverable != null) {
+      deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }
     return SUCCESS;
