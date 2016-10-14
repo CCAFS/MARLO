@@ -63,7 +63,8 @@ $(document).ready(function() {
 
   // Event to open dialog box and search an contact person
   $(".searchUser, input.userName").on("click", function(e) {
-    openSearchDialog(e);
+    e.preventDefault();
+    openSearchDialog($(this));
   });
 
   // Event when the user select the contact person
@@ -154,9 +155,9 @@ $(document).ready(function() {
 
   /** Functions * */
 
-  openSearchDialog = function(e) {
-    e.preventDefault();
-    $elementSelected = $(e.target);
+  openSearchDialog = function(target) {
+    $elementSelected = $(target);
+    console.log($elementSelected);
     dialog.dialog("open");
     $dialogContent.find(".search-loader").fadeOut("slow");
   }
