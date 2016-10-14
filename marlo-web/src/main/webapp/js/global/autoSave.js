@@ -31,7 +31,7 @@ function autoSave() {
       },
       success: function(data) {
         if(data.status.status) {
-          successNotification('Successfully saved a draft version');
+          successNotification('Draft saved...');
           $draftTag.text('(Draft Version)').addClass('animated flipInX');
           $editedBy.find('.datetime').text(data.status.activeSince);
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
@@ -60,7 +60,7 @@ function autoSave() {
 function successNotification(msj) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);
   notyOptions.text = msj;
-  notyOptions.type = 'success';
+  // notyOptions.type = 'success';
   notyOptions.layout = 'topCenter';
   notyOptions.animation = {
       open: 'animated fadeInDown',
