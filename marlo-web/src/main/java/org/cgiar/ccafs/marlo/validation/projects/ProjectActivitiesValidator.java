@@ -69,8 +69,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
       }
     }
 
-    if ((project.getOpenProjectActivities() == null || project.getOpenProjectActivities().isEmpty())
-      && (project.getClosedProjectActivities() == null || project.getClosedProjectActivities().isEmpty())) {
+    if ((project.getOpenProjectActivities() == null || project.getOpenProjectActivities().isEmpty())) {
 
       action.getInvalidFields().put("list-project.openProjectActivities",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activites"}));
@@ -78,21 +77,23 @@ public class ProjectActivitiesValidator extends BaseValidator {
     if (project.getOpenProjectActivities() != null) {
       int i = 0;
       for (Activity activity : project.getOpenProjectActivities()) {
-        this.validateActivity(activity, i, "openProjectActivities");
+        if (activity != null) {
+          this.validateActivity(activity, i, "openProjectActivities");
+        }
+
         i++;
       }
     }
 
-
-    if (project.getClosedProjectActivities() != null) {
-      int i = 0;
-      for (Activity activity : project.getClosedProjectActivities()) {
-        this.validateActivity(activity, i, "closedProjectActivities");
-        i++;
-      }
-
-
-    }
+    /*
+     * if (project.getClosedProjectActivities() != null) {
+     * int i = 0;
+     * for (Activity activity : project.getClosedProjectActivities()) {
+     * this.validateActivity(activity, i, "closedProjectActivities");
+     * i++;
+     * }
+     * }
+     */
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));

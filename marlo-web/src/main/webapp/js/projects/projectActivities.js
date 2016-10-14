@@ -23,6 +23,12 @@ function init() {
   $(".activityTitle").on("keyup", changeTitle);
   $(".removeDeliverable").on("click", removeDeliverable);
 
+// Missing fields in activities
+  $("form .projectActivity").each(function(i,e) {
+    console.log(e);
+    verifyMissingFields(e);
+  });
+
   $('.blockTitle').on('click', function() {
     if($(this).hasClass('closed')) {
       $(this).parent().find('.blockTitle').removeClass('opened').addClass('closed');

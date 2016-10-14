@@ -114,111 +114,49 @@ public class ProjectActivitiesAction extends BaseAction {
   public void activitiesNewData(List<Activity> activities) {
 
     for (Activity activity : activities) {
-      if (activity.getId() == null || activity.getId() == -1) {
+      if (activity != null) {
+        if (activity.getId() == null || activity.getId() == -1) {
 
-        Activity activityNew = new Activity();
-        activityNew.setActive(true);
-        activityNew.setCreatedBy(this.getCurrentUser());
-        activityNew.setModifiedBy(this.getCurrentUser());
-        activityNew.setModificationJustification("");
-        activityNew.setActiveSince(new Date());
+          Activity activityNew = new Activity();
+          activityNew.setActive(true);
+          activityNew.setCreatedBy(this.getCurrentUser());
+          activityNew.setModifiedBy(this.getCurrentUser());
+          activityNew.setModificationJustification("");
+          activityNew.setActiveSince(new Date());
 
-        Project project = projectManager.getProjectById(this.project.getId());
+          Project project = projectManager.getProjectById(this.project.getId());
 
-        activityNew.setProject(project);
-        activityNew.setTitle(activity.getTitle());
-        activityNew.setDescription(activity.getDescription());
-        activityNew.setStartDate(activity.getStartDate());
-        activityNew.setEndDate(activity.getEndDate());
+          activityNew.setProject(project);
+          activityNew.setTitle(activity.getTitle());
+          activityNew.setDescription(activity.getDescription());
+          activityNew.setStartDate(activity.getStartDate());
+          activityNew.setEndDate(activity.getEndDate());
 
-        if (activity.getActivityStatus() != -1) {
-          activityNew.setActivityStatus(activity.getActivityStatus());
-        } else {
-          activityNew.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-        }
-
-        activityNew.setActivityProgress(activity.getActivityProgress());
-
-        try {
-          ProjectPartnerPerson partnerPerson =
-            projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
-          activityNew.setProjectPartnerPerson(partnerPerson);
-        } catch (Exception e) {
-          activityNew.setProjectPartnerPerson(null);
-        }
-
-
-        Long activityID = activityManager.saveActivity(activityNew);
-
-        if (activity.getDeliverables() != null) {
-          for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-
-            DeliverableActivity deliverableActivityNew = new DeliverableActivity();
-
-            deliverableActivityNew.setActivity(activityManager.getActivityById(activityID));
-            deliverableActivityNew.setActive(true);
-            deliverableActivityNew.setCreatedBy(this.getCurrentUser());
-            deliverableActivityNew.setModifiedBy(this.getCurrentUser());
-            deliverableActivityNew.setModificationJustification("");
-            deliverableActivityNew.setActiveSince(new Date());
-
-            Deliverable deliverable =
-              deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-
-            deliverableActivityNew.setDeliverable(deliverable);
-
-            deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
-
-
-          }
-        }
-      } else {
-
-        Activity activityUpdate = activityManager.getActivityById(activity.getId());
-        activityUpdate.setActive(true);
-        activityUpdate.setCreatedBy(this.getCurrentUser());
-        activityUpdate.setModifiedBy(this.getCurrentUser());
-        activityUpdate.setModificationJustification("");
-        activityUpdate.setActiveSince(new Date());
-
-        activityUpdate.setTitle(activity.getTitle());
-        activityUpdate.setDescription(activity.getDescription());
-        activityUpdate.setStartDate(activity.getStartDate());
-        activityUpdate.setEndDate(activity.getEndDate());
-        if (activity.getActivityStatus() != -1) {
-          activityUpdate.setActivityStatus(activity.getActivityStatus());
-        } else {
-          activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-        }
-        activityUpdate.setActivityProgress(activity.getActivityProgress());
-
-        ProjectPartnerPerson partnerPerson =
-          projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
-
-        activityUpdate.setProjectPartnerPerson(partnerPerson);
-
-        Long activityID = activityManager.saveActivity(activityUpdate);
-
-        activityUpdate = activityManager.getActivityById(activityID);
-
-        if (activity.getDeliverables() != null) {
-
-          List<DeliverableActivity> deliverableActivitiesPrew =
-            activityUpdate.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList());
-
-          for (DeliverableActivity deliverableActivity : deliverableActivitiesPrew) {
-            if (!activity.getDeliverables().contains(deliverableActivity)) {
-
-              deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
-            }
+          if (activity.getActivityStatus() != -1) {
+            activityNew.setActivityStatus(activity.getActivityStatus());
+          } else {
+            activityNew.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
           }
 
-          for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-            if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
+          activityNew.setActivityProgress(activity.getActivityProgress());
+
+          try {
+            ProjectPartnerPerson partnerPerson =
+              projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+            activityNew.setProjectPartnerPerson(partnerPerson);
+          } catch (Exception e) {
+            activityNew.setProjectPartnerPerson(null);
+          }
+
+
+          Long activityID = activityManager.saveActivity(activityNew);
+
+          if (activity.getDeliverables() != null) {
+            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
 
               DeliverableActivity deliverableActivityNew = new DeliverableActivity();
 
-              deliverableActivityNew.setActivity(activityUpdate);
+              deliverableActivityNew.setActivity(activityManager.getActivityById(activityID));
               deliverableActivityNew.setActive(true);
               deliverableActivityNew.setCreatedBy(this.getCurrentUser());
               deliverableActivityNew.setModifiedBy(this.getCurrentUser());
@@ -231,10 +169,75 @@ public class ProjectActivitiesAction extends BaseAction {
               deliverableActivityNew.setDeliverable(deliverable);
 
               deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+
+
+            }
+          }
+        } else {
+
+          Activity activityUpdate = activityManager.getActivityById(activity.getId());
+          activityUpdate.setActive(true);
+          activityUpdate.setCreatedBy(this.getCurrentUser());
+          activityUpdate.setModifiedBy(this.getCurrentUser());
+          activityUpdate.setModificationJustification("");
+          activityUpdate.setActiveSince(new Date());
+
+          activityUpdate.setTitle(activity.getTitle());
+          activityUpdate.setDescription(activity.getDescription());
+          activityUpdate.setStartDate(activity.getStartDate());
+          activityUpdate.setEndDate(activity.getEndDate());
+          if (activity.getActivityStatus() != -1) {
+            activityUpdate.setActivityStatus(activity.getActivityStatus());
+          } else {
+            activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+          }
+          activityUpdate.setActivityProgress(activity.getActivityProgress());
+
+          ProjectPartnerPerson partnerPerson =
+            projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+
+          activityUpdate.setProjectPartnerPerson(partnerPerson);
+
+          Long activityID = activityManager.saveActivity(activityUpdate);
+
+          activityUpdate = activityManager.getActivityById(activityID);
+
+          if (activity.getDeliverables() != null) {
+
+            List<DeliverableActivity> deliverableActivitiesPrew = activityUpdate.getDeliverableActivities().stream()
+              .filter(da -> da.isActive()).collect(Collectors.toList());
+
+            for (DeliverableActivity deliverableActivity : deliverableActivitiesPrew) {
+              if (!activity.getDeliverables().contains(deliverableActivity)) {
+
+                deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+              }
+            }
+
+            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+              if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
+
+                DeliverableActivity deliverableActivityNew = new DeliverableActivity();
+
+                deliverableActivityNew.setActivity(activityUpdate);
+                deliverableActivityNew.setActive(true);
+                deliverableActivityNew.setCreatedBy(this.getCurrentUser());
+                deliverableActivityNew.setModifiedBy(this.getCurrentUser());
+                deliverableActivityNew.setModificationJustification("");
+                deliverableActivityNew.setActiveSince(new Date());
+
+                Deliverable deliverable =
+                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+
+                deliverableActivityNew.setDeliverable(deliverable);
+
+                deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+              }
             }
           }
         }
       }
+
     }
 
   }
@@ -297,12 +300,40 @@ public class ProjectActivitiesAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public List<Activity> getActivities(boolean open) {
+
+    if (open) {
+
+      return project.getOpenProjectActivities().stream()
+        .filter(
+          a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+        .collect(Collectors.toList());
+
+    } else {
+
+      return project.getActivities().stream()
+        .filter(
+          a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+        .collect(Collectors.toList());
+    }
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
     String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public int getIndexActivities(long id) {
+    Activity activity = new Activity();
+    activity.setId(id);
+    return project.getOpenProjectActivities().indexOf(activity);
+
   }
 
   public Crp getLoggedCrp() {
@@ -328,6 +359,7 @@ public class ProjectActivitiesAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -387,28 +419,25 @@ public class ProjectActivitiesAction extends BaseAction {
           }
         }
 
-        for (Activity activity : project.getClosedProjectActivities()) {
-          if (activity.getDeliverables() != null) {
-            for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
-              if (deliverableActivity.getId() == -1) {
-                Deliverable deliverable =
-                  deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
-                deliverableActivity.setDeliverable(deliverable);
-              }
-            }
-          }
-        }
+        /*
+         * for (Activity activity : project.getClosedProjectActivities()) {
+         * if (activity.getDeliverables() != null) {
+         * for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
+         * if (deliverableActivity.getId() == -1) {
+         * Deliverable deliverable =
+         * deliverableManager.getDeliverableById(deliverableActivity.getDeliverable().getId());
+         * deliverableActivity.setDeliverable(deliverable);
+         * }
+         * }
+         * }
+         * }
+         */
         reader.close();
         this.setDraft(true);
       } else {
         this.setDraft(false);
-        project
-          .setOpenProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-            .collect(Collectors.toList())));
+        project.setOpenProjectActivities(new ArrayList<Activity>(
+          project.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList())));
 
         if (project.getOpenProjectActivities() != null) {
           for (Activity openActivity : project.getOpenProjectActivities()) {
@@ -416,23 +445,22 @@ public class ProjectActivitiesAction extends BaseAction {
               .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
           }
         }
-
-        project
-          .setClosedProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-            .collect(Collectors.toList())));
-
-        if (project.getClosedProjectActivities() != null) {
-          for (Activity closedActivity : project.getClosedProjectActivities()) {
-            closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
-              .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
-          }
-        }
+        /*
+         * project
+         * .setClosedProjectActivities(
+         * new ArrayList<Activity>(project.getActivities().stream()
+         * .filter(a -> a.isActive()
+         * && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+         * || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+         * .collect(Collectors.toList())));
+         * if (project.getClosedProjectActivities() != null) {
+         * for (Activity closedActivity : project.getClosedProjectActivities()) {
+         * closedActivity.setDeliverables(new ArrayList<DeliverableActivity>(closedActivity.getDeliverableActivities()
+         * .stream().filter(da -> da.isActive()).collect(Collectors.toList())));
+         * }
+         * }
+         */
       }
-
 
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
@@ -464,9 +492,11 @@ public class ProjectActivitiesAction extends BaseAction {
         project.getOpenProjectActivities().clear();
       }
 
-      if (project.getClosedProjectActivities() != null) {
-        project.getClosedProjectActivities().clear();
-      }
+      /*
+       * if (project.getClosedProjectActivities() != null) {
+       * project.getClosedProjectActivities().clear();
+       * }
+       */
 
       if (partnerPersons != null) {
         partnerPersons.clear();
@@ -491,10 +521,10 @@ public class ProjectActivitiesAction extends BaseAction {
 
       this.activitiesPreviousData(project.getOpenProjectActivities(), true);
       this.activitiesNewData(project.getOpenProjectActivities());
-
-      this.activitiesPreviousData(project.getClosedProjectActivities(), false);
-      this.activitiesNewData(project.getClosedProjectActivities());
-
+      /*
+       * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
+       * this.activitiesNewData(project.getClosedProjectActivities());
+       */
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_ACTIVITIES_RELATION);
       project = projectManager.getProjectById(projectID);

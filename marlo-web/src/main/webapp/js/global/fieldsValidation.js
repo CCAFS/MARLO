@@ -112,6 +112,7 @@ $(".errorTag").on("click", function() {
 function verifyMissingFields(element) {
   if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
       || $(element).find(".missingSelect").exists()) {
+    console.log("holi entre aca");
     // Tag with message
     var tagElement = $("#test").clone(true).removeAttr("id");
     tagElement.attr("title", "Missing fields inside this block!");

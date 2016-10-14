@@ -95,6 +95,8 @@ public class OutcomeValidator extends BaseValidator
     params.add(String.valueOf(k + 1));
     if (!(this.isValidString(assuption.getDescription()) && this.wordCount(assuption.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].assuptions[" + k + "].description",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 
@@ -151,12 +153,15 @@ public class OutcomeValidator extends BaseValidator
 
 
     }
-    if (outcome.getSrfTargetUnit() != null || outcome.getSrfTargetUnit().getId().longValue() != -1) {
+
+
+    if (outcome.getSrfTargetUnit().getId().longValue() != -1) {
       if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
         this.addMessage(action.getText("outcome.action.value.required", params));
         action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
+
 
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       this.addMessage(action.getText("outcome.action.year.required", params));

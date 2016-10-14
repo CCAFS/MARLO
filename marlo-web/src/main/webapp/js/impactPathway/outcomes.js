@@ -299,7 +299,10 @@ function addAssumption() {
   var $item = $('#assumption-template').clone(true).removeAttr("id");
   $assumptionsList.append($item);
   updateAllIndexes();
+// Hide empty message
+  $(this).parents('.subIdo').find('.assumptions-list p.message').hide();
   $item.show('slow');
+
 }
 
 function removeAssumption() {
