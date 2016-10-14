@@ -37,9 +37,9 @@
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
           <h4 class="subTitle headTitle">On going activities</h4>
           <hr />
-          [#if project.openProjectActivities?has_content]
-            [#list project.openProjectActivities as activity]
-                [@projectActivityMacro element=activity name="project.openProjectActivities"  index=activity_index isActive=true /]
+          [#if action.getActivities(true)?has_content]
+            [#list action.getActivities(true) as activity]
+                [@projectActivityMacro element=activity name="project.projectActivities"  index=action.getIndexActivities((activity.id)!-1) isActive=true /]
             [/#list]
           [/#if]
           </div>
@@ -49,12 +49,12 @@
             </div>
           [/#if]
           
-          [#if project.closedProjectActivities?has_content]
+          [#if action.getActivities(false)?has_content]
           <div class="activitiesC-content simpleBox" listname="project.closedProjectActivities">
             <h4 class="subTitle headTitle">Completed Activities</h4>
             <hr />
-            [#list project.closedProjectActivities as activity]
-                [@projectActivityMacro element=activity name="project.closedProjectActivities"  index=activity_index isActive=false /]
+            [#list action.getActivities(false) as activity]
+                [@projectActivityMacro element=activity name="project.projectActivities"  index=action.getIndexActivities((activity.id)!-1) isActive=false /]
             [/#list]
           </div>
           [/#if]
