@@ -132,7 +132,7 @@
 
 
 [#macro clusterMacro cluster name index isTemplate=false]
-  [#assign clusterCustomName= "${name}[${index}]" /]
+  [#local clusterCustomName= "${name}[${index}]" /]
   
   <div id="cluster-${isTemplate?string('template', index)}" class="cluster form-group borderBox" style="display:${isTemplate?string('none','block')}">
       
@@ -155,7 +155,7 @@
         <ul class="leaders">
         [#if cluster.leaders?has_content]
           [#list cluster.leaders as leaderItem]
-            [@userItem element=leaderItem index=leaderItem_index name='leaders'  userRole=roleCl.id  /]
+            [@userItem element=leaderItem index=leaderItem_index name='${clusterCustomName}.leaders'  userRole=roleCl.id  /]
           [/#list]
         [/#if]
         </ul>
@@ -192,7 +192,7 @@
 [/#macro]
 
 [#macro userItem element index name userRole template=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem"  style="list-style-type:none; display:${template?string('none','block')}">
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
@@ -208,7 +208,7 @@
 [/#macro]
 
 [#macro keyOutputItem element index name  isTemplate=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       [#if isTemplate || action.canBeDeleted(element.id, element.class.name)!false]
@@ -260,7 +260,7 @@
 [/#macro]
 
 [#macro outcomeByCluster element index name  isTemplate=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <div id="outcomeByCluster-${isTemplate?string('template',(element.id)!)}" class="outcomeByClusterItem  borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">

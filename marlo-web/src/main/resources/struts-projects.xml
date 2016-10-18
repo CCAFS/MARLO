@@ -283,7 +283,7 @@
 			</result>
 		</action>
 
-<action name="{crp}/submit" class="org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction">
+    <action name="{crp}/submit" class="org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction">
       <result name="input">/WEB-INF/views/projects/projectSubmission.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/submit</param>
