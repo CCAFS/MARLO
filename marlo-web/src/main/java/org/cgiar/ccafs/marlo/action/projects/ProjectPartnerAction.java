@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
@@ -36,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -99,6 +101,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectManager projectManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private CrpManager crpManager;
+  private CrpUserManager crpUserManager;
 
   private ProjectPartnersValidator projectPartnersValidator;
   private long projectID;
@@ -132,7 +135,7 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectPartnerContributionManager projectPartnerContributionManager, UserRoleManager userRoleManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, AuditLogManager auditLogManager,
     ProjectComponentLesson projectComponentLesson, ProjectPartnersValidator projectPartnersValidator,
-    ProjectComponentLessonManager projectComponentLessonManager) {
+    ProjectComponentLessonManager projectComponentLessonManager, CrpUserManager crpUserManager) {
     super(config);
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
@@ -151,7 +154,27 @@ public class ProjectPartnerAction extends BaseAction {
     this.userRoleManager = userRoleManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.projectComponentLesson = projectComponentLesson;
+    this.crpUserManager = crpUserManager;
 
+  }
+
+  public void addCrpUser(User user) {
+    user = userManager.getUser(user.getId());
+    CrpUser crpUser = new CrpUser();
+    crpUser.setUser(user);
+    crpUser.setCrp(loggedCrp);
+
+    List<CrpUser> userCrp = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+      .collect(Collectors.toList());
+
+    if (userCrp == null || userCrp.isEmpty()) {
+      crpUser.setActive(true);
+      crpUser.setActiveSince(new Date());
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
   }
 
   @Override
@@ -178,6 +201,19 @@ public class ProjectPartnerAction extends BaseAction {
     return SUCCESS;
   }
 
+  public void checkCrpUserByRole(User user) {
+    user = userManager.getUser(user.getId());
+    List<UserRole> crpUserRoles =
+      user.getUserRoles().stream().filter(ur -> ur.getRole().getCrp().equals(loggedCrp)).collect(Collectors.toList());
+    if (crpUserRoles == null || crpUserRoles.isEmpty()) {
+      List<CrpUser> crpUsers = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+      for (CrpUser crpUser : crpUsers) {
+        crpUserManager.deleteCrpUser(crpUser.getId());
+      }
+    }
+  }
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -186,6 +222,7 @@ public class ProjectPartnerAction extends BaseAction {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
+
 
   public List<Activity> getActivitiesLedByUser(long userID) {
 
@@ -205,10 +242,10 @@ public class ProjectPartnerAction extends BaseAction {
     return allInstitutions;
   }
 
-
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
+
 
   public List<User> getAllUsers() {
     return allUsers;
@@ -226,6 +263,7 @@ public class ProjectPartnerAction extends BaseAction {
   public List<LocElement> getCountries() {
     return countries;
   }
+
 
   public List<Deliverable> getDeliverablesLedByUser(long userID) {
     Project project = projectManager.getProjectById(projectID);
@@ -269,15 +307,14 @@ public class ProjectPartnerAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -625,6 +662,7 @@ public class ProjectPartnerAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -860,15 +898,14 @@ public class ProjectPartnerAction extends BaseAction {
     this.partnerPersonTypes = partnerPersonTypes;
   }
 
-
   public void setProject(Project project) {
     this.project = project;
   }
 
-
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
 
   public void setProjectPPAPartners(List<ProjectPartner> projectPPAPartners) {
     this.projectPPAPartners = projectPPAPartners;
@@ -877,7 +914,6 @@ public class ProjectPartnerAction extends BaseAction {
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   /**
    * This method updates the role for each user (Leader/Coordinator) into the database, and notifies by email what has
@@ -900,6 +936,7 @@ public class ProjectPartnerAction extends BaseAction {
       role = roleManager.getRoleById(role.getId());
       if (!role.getUserRoles().contains(userRole)) {
         userRoleManager.saveUserRole(userRole);
+        this.addCrpUser(partnerPerson.getUser());
       }
 
 
@@ -917,6 +954,7 @@ public class ProjectPartnerAction extends BaseAction {
               .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
             .collect(Collectors.toList()).size() == 0) {
             userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+            this.checkCrpUserByRole(previousPartnerPerson.getUser());
           }
 
         }
@@ -933,6 +971,7 @@ public class ProjectPartnerAction extends BaseAction {
         role = roleManager.getRoleById(role.getId());
         if (!role.getUserRoles().contains(userRole)) {
           userRoleManager.saveUserRole(userRole);
+          this.addCrpUser(partnerPerson.getUser());
         }
         // Notifying user is assigned as Project Leader/Coordinator.
         this.notifyRoleAssigned(partnerPerson.getUser(), role);
@@ -948,6 +987,7 @@ public class ProjectPartnerAction extends BaseAction {
               .collect(Collectors.toList()).size() == 0) {
 
               userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+              this.checkCrpUserByRole(previousPartnerPerson.getUser());
             }
           }
         }
