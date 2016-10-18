@@ -184,7 +184,7 @@
       [#-- Add person Button --]
       [#if editable]
       <div class="text-center">
-        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addPerson" /]</div>
+        <div class="searchUser button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addFlagshipLeader" /]</div>
       </div>
       [/#if]
       [#-- Hidden Parameters --]
