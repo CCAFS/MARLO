@@ -66,13 +66,15 @@ function addActivity() {
   countID++;
   var $list = $(".activitiesOG-content");
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
+  console.log(countID);
+// Set indexes
+  $item.setNameIndexes(1, countID);
   $item.find("input.startDate").attr("id", "startDate-" + countID);
   $item.find("input.endDate").attr("id", "endDate-" + countID);
   $item.find(".blockTitle").removeClass("closed").addClass("opened");
   $item.find(".blockContent").css("display", "block");
   $item.find(".index").html(countID);
-// Set indexes
-  $item.setNameIndexes(1, countID);
+
   $list.append($item);
   $item.show('slow', function() {
     $item.find("textarea").autoGrow();

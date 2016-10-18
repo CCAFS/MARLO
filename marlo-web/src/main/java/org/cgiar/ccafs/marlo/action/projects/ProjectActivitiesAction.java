@@ -245,21 +245,12 @@ public class ProjectActivitiesAction extends BaseAction {
   public void activitiesPreviousData(List<Activity> activities, boolean activitiesOpen) {
 
     List<Activity> activitiesPrew;
+    Project projectBD=projectManager.getProjectById(projectID);
 
 
-    if (activitiesOpen) {
-      activitiesPrew = activityManager.findAll().stream()
-        .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))))
-        .collect(Collectors.toList());
-    } else {
-      activitiesPrew = activityManager.findAll().stream()
-        .filter(a -> a.isActive() && a.getProject().getId() == project.getId()
-          && (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))))
-        .collect(Collectors.toList());
-    }
+    activitiesPrew = projectBD.getActivities().stream()
+      .filter(a -> a.isActive())
+      .collect(Collectors.toList());
 
 
     for (Activity activity : activitiesPrew) {
@@ -308,7 +299,7 @@ public class ProjectActivitiesAction extends BaseAction {
       return project.getProjectActivities().stream()
         .filter(
           a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
         .collect(Collectors.toList());
 
     } else {
@@ -316,7 +307,7 @@ public class ProjectActivitiesAction extends BaseAction {
       return project.getActivities().stream()
         .filter(
           a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
         .collect(Collectors.toList());
     }
   }
@@ -505,6 +496,17 @@ public class ProjectActivitiesAction extends BaseAction {
       if (project.getProjectDeliverables() != null) {
         project.getProjectDeliverables().clear();
       }
+    }
+
+    activitiesValidator.validate(this, project, true);
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+
     }
   }
 
