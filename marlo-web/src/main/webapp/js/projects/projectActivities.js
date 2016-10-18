@@ -25,7 +25,6 @@ function init() {
 
 // Missing fields in activities
   $("form .projectActivity").each(function(i,e) {
-    console.log(e);
     verifyMissingFields(e);
   });
 
@@ -38,6 +37,10 @@ function init() {
     }
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
+      $(this).find(".errorTag").hide();
+      console.log($(this).find(".errorTag"));
+      $(this).find(".errorTag").css("left", $(this).find(".deliverableWrapper").outerWidth());
+      $(this).find(".errorTag").fadeIn(2000);
     });
   });
 

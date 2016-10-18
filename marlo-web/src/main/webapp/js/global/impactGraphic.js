@@ -54,7 +54,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'border-width': 9,
           'color': 'white'
       }).selector('edge').css({
-          'width': 6,
+          'width': 2,
           'source-arrow-shape': 'triangle',
           'target-arrow-shape': 'circle',
           'line-color': '#eee',
@@ -70,12 +70,13 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       layout: {
           name: nameLayout,
-          directed: true,
+          directed: false,
           padding: false,
           clockwise: false,
           equidistant: false,
-          minNodeSpacing: 5,
-          concentric: function(node) { // returns numeric value for each node, placing higher nodes in levels towards
+          minNodeSpacing: 3,
+          spacingFactor: 3,
+          breadthfirst: function(node) { // returns numeric value for each node, placing higher nodes in levels towards
             // the centre
             var weight = 0;
             if(node.data('type') == 'C') {
@@ -85,7 +86,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
               weight = 5;
             }
             if(node.data('type') == 'O') {
-              weight = 1;
+              weight = 100;
             }
             if(node.data('type') == 'CoA') {
               weight = 1;

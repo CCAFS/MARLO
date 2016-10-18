@@ -20,7 +20,6 @@ function startIntro() {
 function missingFields(errorList) {
   if(errorList.length != 0) {
     errorList.each(function(i,e) {
-      console.log($(e).html());
       var list = $(e).html();
       var fieldName = list.split(":")[0].split("-")[1];
       var type = list.split(":")[0].split("-")[0];
@@ -65,8 +64,10 @@ function getInputElement(fieldName,message) {
     if(elementQuery.length == 0) {
       // validate if it's select
       elementQuery = $("select[name='" + fieldName + "']");
+      console.log("entre al select");
       if($(elementQuery).exists()) {
-        $(elementQuery).next().addClass("missingSelect");
+        console.log(elementQuery);
+        $(elementQuery).parent().addClass("missingSelect");
       }
     }
   } else {
@@ -87,14 +88,12 @@ function getInputElement(fieldName,message) {
     } else {
       // FIND ASSOCIATE DIV WHEN THE INPUT IS HIDDEN
       var asociateDiv = $("." + fieldName.replace(/\W+/g, ""));
-      console.log(asociateDiv);
       if(asociateDiv.exists()) {
         $(asociateDiv).attr("title", message);
         $(asociateDiv).addClass("fieldError");
       }
     }
   }
-  console.log(elementQuery);
   $(elementQuery).addClass("fieldError");
   $(elementQuery).attr("title", message);
 
@@ -112,7 +111,6 @@ $(".errorTag").on("click", function() {
 function verifyMissingFields(element) {
   if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
       || $(element).find(".missingSelect").exists()) {
-    console.log("holi entre aca");
     // Tag with message
     var tagElement = $("#test").clone(true).removeAttr("id");
     tagElement.attr("title", "Missing fields inside this block!");
