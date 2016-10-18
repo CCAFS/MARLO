@@ -164,7 +164,7 @@
       [#-- Add CoA Leader --]
       [#if editable]
       <div class="addPerson text-center">
-        <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addPerson" /]</div>
+        <div class="button-green searchUser"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="form.buttons.addClusterLeader" /]</div>
       </div>
       [/#if]
       
@@ -177,7 +177,7 @@
             [@keyOutputItem element=keyOutputItems name='${clusterCustomName}.${keyOutputsName}' index=keyOutputItems_index /]
           [/#list]
         [/#if]
-        <p class="text-center alertKeyoutput" style="display:${(cluster.keyOutputs?has_content)?string('none','block')}">There are not key outputs added yet.</p>
+        <p class="text-center alertKeyoutput" style="display:${(cluster.keyOutputs?has_content)?string('none','block')}">No key output has been added yet.</p>
       </div>
       [#-- Add Key output --]
       [#if editable]
@@ -230,7 +230,7 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output statement" value="${(element.keyOutput)!}" required=true className="limitWords-50 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output" value="${(element.keyOutput)!}" required=true className="limitWords-100 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
@@ -247,7 +247,7 @@
             [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]
           [/#list]
         [/#if]
-        <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">There are not Outcomes added yet.</p>
+        <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">No outcome has been added yet.</p>
         </div>
       </div>
       <div class="form-group col-md-12">
