@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
@@ -37,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -81,6 +83,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+  private CrpUserManager crpUserManager;
   private UserManager userManager;
   private Crp loggedCrp;
   private Role roleCl;
@@ -106,7 +109,7 @@ public class ClusterActivitiesAction extends BaseAction {
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMail sendMail,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager) {
+    CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
@@ -121,6 +124,26 @@ public class ClusterActivitiesAction extends BaseAction {
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputOutcomeManager = crpClusterKeyOutputOutcomeManager;
+    this.crpUserManager = crpUserManager;
+  }
+
+  public void addCrpUser(User user) {
+    user = userManager.getUser(user.getId());
+    CrpUser crpUser = new CrpUser();
+    crpUser.setUser(user);
+    crpUser.setCrp(loggedCrp);
+
+    List<CrpUser> userCrp = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+      .collect(Collectors.toList());
+
+    if (userCrp == null || userCrp.isEmpty()) {
+      crpUser.setActive(true);
+      crpUser.setActiveSince(new Date());
+      crpUser.setCreatedBy(this.getCurrentUser());
+      crpUser.setModifiedBy(this.getCurrentUser());
+      crpUser.setModificationJustification("");
+      crpUserManager.saveCrpUser(crpUser);
+    }
   }
 
   @Override
@@ -137,13 +160,27 @@ public class ClusterActivitiesAction extends BaseAction {
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     } else {
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 
     return SUCCESS;
+  }
+
+
+  public void checkCrpUserByRole(User user) {
+    user = userManager.getUser(user.getId());
+    List<UserRole> crpUserRoles =
+      user.getUserRoles().stream().filter(ur -> ur.getRole().getCrp().equals(loggedCrp)).collect(Collectors.toList());
+    if (crpUserRoles == null || crpUserRoles.isEmpty()) {
+      List<CrpUser> crpUsers = user.getCrpUsers().stream().filter(cu -> cu.isActive() && cu.getCrp().equals(loggedCrp))
+        .collect(Collectors.toList());
+      for (CrpUser crpUser : crpUsers) {
+        crpUserManager.deleteCrpUser(crpUser.getId());
+      }
+    }
   }
 
   private Path getAutoSaveFilePath() {
@@ -153,7 +190,6 @@ public class ClusterActivitiesAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public long getClRol() {
     return clRol;
@@ -167,14 +203,15 @@ public class ClusterActivitiesAction extends BaseAction {
     return crpProgramID;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public List<CrpProgramOutcome> getOutcomes() {
     return outcomes;
   }
-
 
   public List<CrpProgram> getPrograms() {
     return programs;
@@ -184,6 +221,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public Role getRoleCl() {
     return roleCl;
   }
+
 
   public CrpProgram getSelectedProgram() {
     return selectedProgram;
@@ -232,7 +270,6 @@ public class ClusterActivitiesAction extends BaseAction {
       message.toString(), null, null, null, true);
   }
 
-
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
     String ClusterRole = this.getText("cluster.role");
     String ClusterRoleAcronym = this.getText("cluster.role.acronym");
@@ -264,7 +301,6 @@ public class ClusterActivitiesAction extends BaseAction {
         new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterOfActivity.getCrpProgram().getAcronym()}),
       message.toString(), null, null, null, true);
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -435,6 +471,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
 
@@ -507,6 +544,8 @@ public class ClusterActivitiesAction extends BaseAction {
                   userRoleManager.deleteUserRole(userRole.getId());
                   this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpClusterOfActivity);
                 }
+
+                this.checkCrpUserByRole(user);
               }
             }
           }
@@ -537,8 +576,11 @@ public class ClusterActivitiesAction extends BaseAction {
               userRole.setRole(this.roleCl);
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
+                this.addCrpUser(user);
                 this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
               }
+
+
             }
           }
         }
@@ -662,6 +704,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
   }
 
+
   public void setClRol(long clRol) {
     this.clRol = clRol;
   }
@@ -691,11 +734,9 @@ public class ClusterActivitiesAction extends BaseAction {
     this.programs = programs;
   }
 
-
   public void setRoleCl(Role roleCl) {
     this.roleCl = roleCl;
   }
-
 
   public void setSelectedProgram(CrpProgram selectedProgram) {
     this.selectedProgram = selectedProgram;
