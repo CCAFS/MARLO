@@ -64,9 +64,7 @@ function getInputElement(fieldName,message) {
     if(elementQuery.length == 0) {
       // validate if it's select
       elementQuery = $("select[name='" + fieldName + "']");
-      console.log("entre al select");
       if($(elementQuery).exists()) {
-        console.log(elementQuery);
         $(elementQuery).parent().addClass("missingSelect");
       }
     }
