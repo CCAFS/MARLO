@@ -135,12 +135,12 @@ public class ProjectActivitiesValidator extends BaseValidator {
     }
     if (activity.getEndDate() == null) {
       this.addMessage(action.getText("activity.endDate", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "endDate",
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].endDate",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (activity.getProjectPartnerPerson() != null) {
-      if (activity.getProjectPartnerPerson().getId() == -1) {
+      if (activity.getProjectPartnerPerson().getId().intValue() == -1) {
         this.addMessage(action.getText("activity.leader", params));
         action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
           InvalidFieldsMessages.EMPTYFIELD);
@@ -171,7 +171,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
       }
     } else {
       this.addMessage(action.getText("activity.deliverable", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].deliverables",
+      action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
     }
   }
