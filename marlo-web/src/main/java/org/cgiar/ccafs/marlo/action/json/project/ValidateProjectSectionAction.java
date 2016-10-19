@@ -19,6 +19,8 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -28,10 +30,14 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
@@ -39,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
@@ -99,6 +106,11 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   ProjectBudgetsCoAValidator projectBudgetsCoAValidator;
 
+  @Inject
+  LocElementTypeManager locElementTypeManager;
+
+  @Inject
+  ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   @Inject
   ProjectDescriptionValidator descriptionValidator;
@@ -233,6 +245,81 @@ public class ValidateProjectSectionAction extends BaseAction {
     return SUCCESS;
   }
 
+  public List<CountryLocationLevel> getProjectLocationsData(Project project) {
+
+    List<Map<String, Object>> parentLocations = new ArrayList<>();
+    List<CountryLocationLevel> locationLevels = new ArrayList<>();
+
+
+    project.setLocations(new ArrayList<ProjectLocation>(
+      project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList())));
+
+    if (!project.getLocations().isEmpty()) {
+      Map<String, Object> locationParent;
+
+      for (ProjectLocation location : project.getLocations()) {
+        locationParent = new HashMap<String, Object>();
+        if (!parentLocations.isEmpty()) {
+          locationParent.put(location.getLocElement().getLocElementType().getName(),
+            location.getLocElement().getLocElementType().getId());
+          if (!parentLocations.contains(locationParent)) {
+            parentLocations.add(locationParent);
+          }
+        } else {
+          locationParent.put(location.getLocElement().getLocElementType().getName(),
+            location.getLocElement().getLocElementType().getId());
+          parentLocations.add(locationParent);
+        }
+
+      }
+
+    }
+
+    CountryLocationLevel countryLocationLevel;
+
+    for (Map<String, Object> map : parentLocations) {
+
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        countryLocationLevel = new CountryLocationLevel();
+        countryLocationLevel.setId(Long.parseLong(entry.getValue().toString()));
+        countryLocationLevel.setName(entry.getKey());
+        countryLocationLevel.setLocElements(new ArrayList<LocElement>());
+
+        LocElementType elementType =
+          locElementTypeManager.getLocElementTypeById(Long.parseLong(entry.getValue().toString()));
+
+        countryLocationLevel.setAllElements(new ArrayList<LocElement>(elementType.getLocElements()));
+
+        for (ProjectLocation projectLocation : project.getLocations().stream().filter(l -> l.isActive())
+          .collect(Collectors.toList())) {
+          if (projectLocation.getLocElement().getLocElementType().getId() == Long
+            .parseLong(entry.getValue().toString())) {
+            countryLocationLevel.getLocElements().add(projectLocation.getLocElement());
+          }
+        }
+
+        if (elementType.getId() == 2 || elementType.getCrp() != null) {
+
+          ProjectLocationElementType locationElementType =
+            projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
+
+          countryLocationLevel.setList(true);
+          if (locationElementType != null) {
+            countryLocationLevel.setAllCountries(locationElementType.getIsGlobal());
+          }
+        } else {
+          countryLocationLevel.setList(false);
+          countryLocationLevel.setAllCountries(false);
+        }
+
+        locationLevels.add(countryLocationLevel);
+      }
+
+    }
+
+    return locationLevels;
+  }
+
   public Map<String, Object> getSection() {
     return section;
   }
@@ -281,6 +368,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     this.section = section;
   }
 
+
   private void validateProjectActivities() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -312,7 +400,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project, false);
   }
 
-
   private void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -334,6 +421,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectBudgetsValidator.validate(this, project, false);
   }
 
+
   private void validateProjectBudgetsCoAs() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -342,7 +430,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     projectBudgetsCoAValidator.validate(this, project, false);
   }
-
 
   private void validateProjectDeliverables() {
     // Getting the project information.
@@ -396,15 +483,14 @@ public class ValidateProjectSectionAction extends BaseAction {
     descriptionValidator.validate(this, project, false);
   }
 
+
   private void validateProjectLocations() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-    project.setLocations(
-      new ArrayList<>(project.getProjectLocations().stream().filter(pl -> pl.isActive()).collect(Collectors.toList())));
+    project.setLocationsData(new ArrayList<>(this.getProjectLocationsData(project)));
 
     locationValidator.validate(this, project, false);
   }
-
 
   private void validateProjectOutcomes() {
     // Getting the project information.

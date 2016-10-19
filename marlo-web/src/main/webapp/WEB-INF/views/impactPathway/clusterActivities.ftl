@@ -211,11 +211,11 @@
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
-      [#if isTemplate || action.canBeDeleted(element.id, element.class.name)!false]
+     
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
-      [/#if]
+     
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
@@ -240,18 +240,18 @@
             
       [#-- Outcomes list --]
       <div class="col-md-12">
-        <label for="" class="${editable?string('editable', 'readOnly')}">Outcomes:</label>
+        <label for="" class="${editable?string('editable', 'readOnly')}">This Key Output contribute to the following outcomes:</label>
         <div class="outcomesWrapper simpleBox form-group" listname="${customName}.${outcomesName}">
         [#if element.keyOutputOutcomes?has_content]
           [#list element.keyOutputOutcomes as keyOutputOutcome]
             [@outcomeByCluster element=keyOutputOutcome index=keyOutputOutcome_index name='${customName}.${outcomesName}'  /]
           [/#list]
         [/#if]
-        <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">No outcome has been added yet.</p>
+        <p class="text-center alertOutcome" style="display:${(element.keyOutputOutcomes?has_content)?string('none','block')}">No outcomes contribution has been added yet.</p>
         </div>
       </div>
       <div class="form-group col-md-12">
-        [@customForm.select name="" label=""  i18nkey="Add a outcome" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
+        [@customForm.select name="" label=""  i18nkey="Add an outcome contribution" listName="outcomes" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" outcomeList" disabled=!editable/]
       </div>
     </div>
   
