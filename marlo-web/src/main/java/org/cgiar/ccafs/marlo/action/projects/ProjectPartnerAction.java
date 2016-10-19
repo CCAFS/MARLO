@@ -378,7 +378,7 @@ public class ProjectPartnerAction extends BaseAction {
       String bbcEmails = this.config.getEmailNotification();
       sendMail.send(toEmail, null, bbcEmails,
         this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, false);
+        null, true);
     }
   }
 
@@ -1017,7 +1017,8 @@ public class ProjectPartnerAction extends BaseAction {
       if (projectPartnersValidator.isHasErros()) {
         if (project.getPartners() != null) {
           for (ProjectPartner projectPartner : project.getPartners()) {
-            if (projectPartner.getInstitution().getId() != null) {
+
+            if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
               projectPartner
                 .setInstitution(institutionManager.getInstitutionById(projectPartner.getInstitution().getId()));
 

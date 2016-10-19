@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -76,6 +76,13 @@ public class SendMail {
     properties.put("mail.smtp.host", config.getEmailHost());
     properties.put("mail.smtp.port", config.getEmailPort());
 
+    // Set the Test Header to list the emails that will send in production
+    StringBuilder message = new StringBuilder();
+    message.append("To: " + toEmail + "<br>");
+    message.append("CC: " + ccEmail + "<br>");
+    message.append("BBC: " + bbcEmail + "<br><br>");
+
+
     // Un-comment this line to watch javaMail debug
     // properties.put("mail.debug", "true");
 
@@ -93,20 +100,25 @@ public class SendMail {
 
     // Set the FROM and TO fields
     try {
-      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
-      if (toEmail != null) {
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+      if (!config.isProduction()) {
+        // Adding TEST words.
+        subject = "TEST " + subject;
+        messageContent = message.toString() + messageContent;
+      } else {
+        msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
+        if (toEmail != null) {
+          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+        }
+        if (ccEmail != null) {
+          msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+        }
       }
-      if (ccEmail != null) {
-        msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
-      }
+
       if (bbcEmail != null) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
       }
-      // Adding TEST word at the beginning of the subject.
-      if (!config.isProduction()) {
-        subject = "TEST " + subject;
-      }
+
+
       msg.setSubject(subject);
       msg.setSentDate(new Date());
 

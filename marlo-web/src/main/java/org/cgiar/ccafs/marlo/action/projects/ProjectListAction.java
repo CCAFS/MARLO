@@ -18,10 +18,12 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -56,6 +58,7 @@ public class ProjectListAction extends BaseAction {
   private CrpManager crpManager;
 
   private LiaisonUserManager liaisonUserManager;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
   // Front-end
   private List<Project> myProjects;
   private List<Project> allProjects;
@@ -65,18 +68,19 @@ public class ProjectListAction extends BaseAction {
 
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    LiaisonUserManager liaisonUserManager) {
+    LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.liaisonInstitutionManager = liaisonInstitutionManager;
   }
 
 
   public String addBilateralProject() {
     if (this.canAccessSuperAdmin()) {
 
-      if (this.createProject(APConstants.PROJECT_BILATERAL, null)) {
+      if (this.createProject(APConstants.PROJECT_BILATERAL, null, null)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -86,7 +90,9 @@ public class ProjectListAction extends BaseAction {
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
       if (liaisonUser != null && this.canAddBilateralProject()) {
-        if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser)) {
+        LiaisonInstitution liaisonInstitution =
+          liaisonInstitutionManager.getLiaisonInstitutionById(liaisonUser.getLiaisonInstitution().getId());
+        if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser, liaisonInstitution)) {
           this.clearPermissionsCache();
           return SUCCESS;
         }
@@ -101,7 +107,7 @@ public class ProjectListAction extends BaseAction {
 
     if (this.canAccessSuperAdmin()) {
 
-      if (this.createProject(APConstants.PROJECT_CORE, null)) {
+      if (this.createProject(APConstants.PROJECT_CORE, null, null)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -111,7 +117,9 @@ public class ProjectListAction extends BaseAction {
       LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
 
       if (liaisonUser != null && this.canAddCoreProject()) {
-        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser)) {
+        long liId = liaisonUser.getLiaisonInstitution().getId();
+        LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liId);
+        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution)) {
           this.clearPermissionsCache();
           return SUCCESS;
         }
@@ -122,7 +130,7 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
-  public boolean createProject(String type, LiaisonUser liaisonUser) {
+  public boolean createProject(String type, LiaisonUser liaisonUser, LiaisonInstitution liaisonInstitution) {
 
     if (liaisonUser != null) {
 
@@ -134,7 +142,7 @@ public class ProjectListAction extends BaseAction {
       project.setActiveSince(new Date());
       project.setType(type);
       project.setLiaisonUser(liaisonUser);
-      project.setLiaisonInstitution(liaisonUser.getLiaisonInstitution());
+      project.setLiaisonInstitution(liaisonInstitution);
       project.setScale(0);
       project.setCofinancing(false);
       project.setCrp(loggedCrp);

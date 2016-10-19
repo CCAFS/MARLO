@@ -384,8 +384,6 @@ public class StandardDAO {
     Transaction tx = null;
     try {
       session = this.openSession();
-
-
       tx = this.initTransaction(session);
       session.save(obj);
       this.commitTransaction(tx);
