@@ -211,11 +211,11 @@
   [#local customName = "${name}[${index}]" /]
   <div id="keyOutput-${isTemplate?string('template',(element.id)!)}" class="keyOutputItem expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
-      [#if isTemplate || action.canBeDeleted(element.id, element.class.name)!false]
+     
       <div class="removeLink">
         <div id="removeActivity" class="removeKeyOutput removeElement removeLink" title="[@s.text name='cluster.removeKeyOutput' /]"></div>
       </div>
-      [/#if]
+     
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
