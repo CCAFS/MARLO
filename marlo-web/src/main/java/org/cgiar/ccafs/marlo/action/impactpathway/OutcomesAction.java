@@ -141,9 +141,9 @@ public class OutcomesAction extends BaseAction {
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     } else {
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 
@@ -439,7 +439,7 @@ public class OutcomesAction extends BaseAction {
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+
         List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
         for (String key : keys) {
           this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
@@ -448,7 +448,7 @@ public class OutcomesAction extends BaseAction {
       } else {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-      messages = this.getActionMessages();
+
 
       Path path = this.getAutoSaveFilePath();
 
