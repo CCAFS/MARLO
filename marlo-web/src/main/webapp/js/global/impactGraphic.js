@@ -41,13 +41,14 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'height': 60,
           'width': 100,
           'background-fit': 'cover',
-          'border-width': 2,
+          'border-width': 0.7,
           'border-opacity': 0.7,
           'label': 'data(label)',
           'background-color': '#2388ae',
           'color': 'white',
-          'text-outline-width': 2,
-          'text-outline-color': '#888'
+          'text-outline-width': 1,
+          'text-outline-color': '#888',
+          'z-index': '5'
       }).selector('.eating').css({
           'border-width': 2,
           'background-color': '#163799'
@@ -61,7 +62,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'line-color': '#eee',
           'source-arrow-color': '#eee',
           'target-arrow-color': '#eee',
-          'curve-style': 'bezier'
+          'curve-style': 'bezier',
+          'z-index': '1'
       }).selector('.center-center').css({
           'text-valign': 'center',
           'text-halign': 'center'
@@ -70,30 +72,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       elements: json,
 
       layout: {
-          name: 'preset',
-          directed: false,
-          padding: false,
-          clockwise: false,
-          equidistant: false,
-          minNodeSpacing: 3,
-          spacingFactor: 3,
-          breadthfirst: function(node) { // returns numeric value for each node, placing higher nodes in levels towards
-            // the centre
-            var weight = 0;
-            if(node.data('type') == 'C') {
-              weight = 10;
-            }
-            if(node.data('type') == 'F') {
-              weight = 5;
-            }
-            if(node.data('type') == 'O') {
-              weight = 100;
-            }
-            if(node.data('type') == 'CoA') {
-              weight = 1;
-            }
-            return weight;
-          }
+        name: 'preset',
       }
   });
 
@@ -350,12 +329,6 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
         CoA: 0,
         KO: 0,
     };
-    var move = {
-        F: 0,
-        O: 0,
-        CoA: 0,
-        KO: 0,
-    };
     var nodeWidth = 100;
     var nodeMargin = 20;
 
@@ -375,39 +348,52 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     totalWidth.F = count.F * (nodeWidth + nodeMargin);
     totalWidth.O = count.O * (nodeWidth + nodeMargin);
     totalWidth.CoA = count.CoA * (nodeWidth + nodeMargin);
-    totalWidth.KO = count.KO * (nodeWidth + nodeMargin);
+    totalWidth.KO = (count.KO * (nodeWidth + nodeMargin)) + totalWidth.CoA;
 
-    count.F = 0;
-    count.O = 0;
-    count.CoA = 0;
-    count.KO = 0;
+    var move = {
+        F: -(totalWidth.F / 2),
+        O: -(totalWidth.O / 2),
+        CoA: -(totalWidth.CoA / 2),
+        KO: -(totalWidth.KO / 2),
+    };
 
     for(var i = 0; i < nodes.length; i++) {
       if(nodes[i].data.type == "F") {
-        count.F++;
-        move.F = (count.F * (nodeWidth + nodeMargin)) - (totalWidth.F / 2);
+        move.F = (move.F + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.F,
             y: 0
         };
       } else if(nodes[i].data.type == "O") {
-        count.O++;
-        move.O = (count.O * (nodeWidth + nodeMargin)) - (totalWidth.O / 2);
+        move.O = (move.O + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.O,
             y: 200
         };
       } else if(nodes[i].data.type == "CoA") {
-        count.CoA++;
-        move.CoA = (count.CoA * (nodeWidth + nodeMargin)) - (totalWidth.CoA / 2);
+        if(nodes[i + 1]) {
+          if(nodes[i + 1].data.type == "KO") {
+            move.KO;
+          } else {
+            move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
+          }
+        }
+
+        console.log(move.KO);
         nodes[i].position = {
-            x: move.CoA,
+            x: move.KO,
             y: 400
         };
       } else if(nodes[i].data.type == "KO") {
+        move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
+        console.log(move.KO);
+        nodes[i].position = {
+            x: move.KO,
+            y: 400
+        };
       }
     }
-    console.log(count);
+
     createGraphic(m.elements, contentGraph, panningEnable, inPopUp, 'breadthfirst', tooltip);
   });
 }
