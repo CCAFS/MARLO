@@ -351,7 +351,6 @@ function checkOutcomes(block) {
 }
 
 function formatState(state) {
-  console.log(state.text);
   if(state.id != "-1") {
     var text = state.text.split(/:(.+)?/);
     var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
