@@ -122,6 +122,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private AuditLogManager auditLogManager;
   @Inject
   private DeliverableManager deliverableManager;
+
   private String basePermission;
   protected boolean cancel;
   private boolean canEdit; // If user is able to edit the form.
@@ -557,6 +558,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
+
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -616,7 +618,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
-
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
@@ -625,6 +626,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
+
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -666,6 +668,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public int getPlanningYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
+  }
+
+  public SectionStatus getProjectOutcomeStatus(long projectOutcomeID) {
+    ProjectOutcome projectOutcome = projectOutcomeManager.getProjectOutcomeById(projectOutcomeID);
+
+    List<SectionStatus> sectionStatuses = projectOutcome.getSectionStatuses().stream()
+      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+      .collect(Collectors.toList());
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
   }
 
 

@@ -103,12 +103,20 @@
       <td><a href="${projectOutcomeUrl}">${projectOutcome.crpProgramOutcome.description}</a></td>
       [#-- Contribution Status --]
       <td class="text-center">
-        [#assign contributionStatus = false /]
-        [#if !contributionStatus?has_content] 
-          <span class="icon-20 icon-check" title="Complete"></span> 
-        [#else]
-          <span class="icon-20 icon-uncheck" title=""></span>  
-        [/#if]
+        [#if action.getProjectOutcomeStatus(projectOutcome.id)??]
+         
+              [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
+                <span class="icon-20 icon-check" title="Complete"></span>
+              
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]
+            [#else]
+                <span class="icon-20 icon-uncheck" title=""></span>
+            [/#if]
+          
+        
+        
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
