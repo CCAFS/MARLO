@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * This action is part of the CRP admin backend.
@@ -146,15 +147,14 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
-
   public List<CrpProgram> getFlagshipsPrograms() {
     return flagshipsPrograms;
   }
 
+
   public Role getFplRole() {
     return fplRole;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -173,6 +173,42 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   public Role getRolePmu() {
     return rolePmu;
+  }
+
+
+  /**
+   * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
+   * access.
+   * 
+   * @param user is a User object that could be the leader.
+   */
+  private void notifyNewUserCreated(User user) {
+    user = userManager.getUser(user.getId());
+    if (!user.isActive()) {
+
+      user.setActive(true);
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      String password = this.getText("email.outlookPassword");
+      if (!user.isCgiarUser()) {
+        // Generating a random password.
+        password = RandomStringUtils.randomNumeric(6);
+        // Applying the password to the user.
+        user.setPassword(password);
+      }
+      message
+        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+      message.append(this.getText("email.support"));
+      message.append(this.getText("email.bye"));
+
+      // Saving the new user configuration.
+      userManager.saveUser(user, this.getCurrentUser());
+
+      sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+        null, true);
+    }
   }
 
 
@@ -196,19 +232,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
+    // Email send to the user assigned
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.flagship.assigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
       message.toString(), null, null, null, true);
@@ -228,19 +258,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
+    // Email send to the user assigned
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.flagship.unassigned.subject", new String[] {loggedCrp.getName(), crpProgram.getAcronym()}),
       message.toString(), null, null, null, true);
@@ -267,19 +291,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
+    // Email send to the user assigned
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.assigned.subject",
       new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
 
@@ -305,19 +323,13 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
-    String toEmail = null;
-    String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
-    }
+    // Email send to the user assigned
+    String toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    String ccEmail = this.getCurrentUser().getEmail();
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.unassigned.subject",
       new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
 
@@ -372,9 +384,10 @@ public class CrpAdminManagmentAction extends BaseAction {
           userRole.setUser(userManager.getUser(userRole.getUser().getId()));
 
           this.addCrpUser(userRole.getUser());
-
+          this.notifyNewUserCreated(userRole.getUser());
           // Notifiy user been assigned to Program Management
           this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
+
           LiaisonInstitution cuLiasonInstitution;
 
           cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
@@ -528,6 +541,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             if (!user.getUserRoles().contains(userRole)) {
               userRoleManager.saveUserRole(userRole);
               userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+              this.notifyNewUserCreated(userRole.getUser());
               // Notifiy user been asigned Program Leader to Flagship
               this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
             }

@@ -82,7 +82,8 @@ public class ManageUsersAction extends BaseAction {
     newUser.setModificationJustification("User created in MARLO " + actionName.replace("/", "-"));
     newUser.setActiveSince(new Date());
     newUser.setModifiedBy(this.getCurrentUser());
-    newUser.setActive(true);
+    newUser.setActive(false);
+    newUser.setAutoSave(true);
     newUser.setId(null);
 
     Long id = userManager.saveUser(newUser, this.getCurrentUser());

@@ -63,6 +63,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -232,6 +233,51 @@ public class ClusterActivitiesAction extends BaseAction {
     return transaction;
   }
 
+  /**
+   * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
+   * access.
+   * 
+   * @param user is a User object that could be the leader.
+   */
+  private void notifyNewUserCreated(User user) {
+    user = userManager.getUser(user.getId());
+    if (!user.isActive()) {
+
+      user.setActive(true);
+      // Building the Email message:
+      StringBuilder message = new StringBuilder();
+      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.newUser.part1"));
+      message.append(this.getText("email.newUser.part2"));
+
+      String password = this.getText("email.outlookPassword");
+      if (!user.isCgiarUser()) {
+        // Generating a random password.
+        password = RandomStringUtils.randomNumeric(6);
+        // Applying the password to the user.
+        user.setPassword(password);
+      }
+      message
+        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+      message.append(this.getText("email.support"));
+      message.append(this.getText("email.bye"));
+
+      // Saving the new user configuration.
+      userManager.saveUser(user, this.getCurrentUser());
+
+      String toEmail = null;
+      if (config.isProduction()) {
+        // Send email to the new user and the P&R notification email.
+        // TO
+        toEmail = user.getEmail();
+      }
+      // BBC
+      String bbcEmails = this.config.getEmailNotification();
+      sendMail.send(toEmail, null, bbcEmails,
+        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+        null, true);
+    }
+  }
 
   /**
    * @param userAssigned is the user been assigned
@@ -576,7 +622,8 @@ public class ClusterActivitiesAction extends BaseAction {
               userRole.setRole(this.roleCl);
               if (!user.getUserRoles().contains(userRole)) {
                 userRoleManager.saveUserRole(userRole);
-                this.addCrpUser(user);
+                this.addCrpUser(userRole.getUser());
+                this.notifyNewUserCreated(userRole.getUser());
                 this.notifyRoleAssigned(userRole.getUser(), userRole.getRole(), crpClusterPreview);
               }
 
