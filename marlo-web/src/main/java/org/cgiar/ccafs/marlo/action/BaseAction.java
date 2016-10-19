@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
@@ -119,6 +120,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
+  @Inject
+  private DeliverableManager deliverableManager;
   private String basePermission;
   protected boolean cancel;
   private boolean canEdit; // If user is able to edit the form.
@@ -495,14 +498,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getCurrentCycle() {
     try {
       if (this.isReportingActive()) {
-        return APConstants.PLANNING;
-      } else {
         return APConstants.REPORTING;
+      } else {
+        return APConstants.PLANNING;
       }
     } catch (Exception e) {
       return null;
     }
   }
+
 
   public int getCurrentCycleYear() {
     try {
@@ -531,6 +535,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return u;
+  }
+
+  /**
+   * This method gets the specific section status from the sectionStatuses array for a Deliverable.
+   * 
+   * @param deliverableID is the deliverable ID to be identified.
+   * @param section is the name of some section.
+   * @return a SectionStatus object with the information requested.
+   */
+  public SectionStatus getDeliverableStatus(long deliverableID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    List<SectionStatus> sectionStatuses = deliverable.getSectionStatuses().stream()
+      .filter(c -> c.getYear() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+      .collect(Collectors.toList());
+
+    if (!sectionStatuses.isEmpty()) {
+      return sectionStatuses.get(0);
+    }
+    return null;
   }
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
@@ -592,6 +616,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return justification;
   }
 
+
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
       return auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
@@ -600,7 +625,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return new ArrayList<Auditlog>();
     }
   }
-
 
   /**
    * Define default locale while we decide to support other languages in the future.
@@ -643,6 +667,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
 
   }
+
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
@@ -747,7 +772,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -755,6 +779,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -795,7 +820,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
-
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -804,12 +828,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public boolean hasPersmissionSubmit() {
 
     boolean permissions = this.hasPermission("submit");
     return permissions;
   }
-
 
   public boolean hasProgramnsRegions() {
     try {
@@ -857,6 +881,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -893,7 +918,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public boolean isCompleteProject(long projectID) {
 

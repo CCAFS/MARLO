@@ -64,7 +64,20 @@
           </td>
           [#-- Deliverable required fields --]
           <td class="text-center">
-            <span class="icon-20 icon-uncheck" title=""></span> 
+          
+          [#if action.getDeliverableStatus(deliverable.id)??]
+         
+              [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
+                <span class="icon-20 icon-check" title="Complete"></span>
+              
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]
+            [#else]
+                <span class="icon-20 icon-uncheck" title=""></span>
+            [/#if]
+          
+          
           </td>
           [#-- Delete Deliverable--]
           <td class="text-center">
