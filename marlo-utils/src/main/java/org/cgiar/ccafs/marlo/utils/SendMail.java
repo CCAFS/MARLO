@@ -103,7 +103,7 @@ public class SendMail {
       if (!config.isProduction()) {
         // Adding TEST words.
         subject = "TEST " + subject;
-        messageContent = messageContent;
+        messageContent = message.toString() + messageContent;
       } else {
         msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
         if (toEmail != null) {
