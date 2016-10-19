@@ -67,6 +67,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
   public ProjectOutcome() {
@@ -157,6 +158,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -167,15 +169,14 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public List<ProjectMilestone> getMilestones() {
     return milestones;
   }
 
-
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -202,6 +203,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return project;
   }
 
+
   public Set<ProjectCommunication> getProjectCommunications() {
     return projectCommunications;
   }
@@ -210,7 +212,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
-
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
@@ -229,6 +230,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectNextuser> getProjectNextusers() {
     return projectNextusers;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
 
@@ -350,6 +356,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setProjectNextusers(Set<ProjectNextuser> projectNextusers) {
     this.projectNextusers = projectNextusers;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

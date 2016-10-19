@@ -56,7 +56,7 @@
       [#-- Projects List (Other Projects) --]
       <h3 class="headTitle text-center">[@s.text name="projectsList.otherProjects" /] <br /> <small>[@s.text name="projectsList.otherProjects.help" /]</small></h3>
       <div class="loadingBlock"></div>
-      <div style="display:none">[@projectList.projectsList projects=allProjects canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div>
+      <div style="display:none">[@projectList.projectsList projects=allProjects canValidate=false namespace="/projects" defaultAction="${(crpSession)!}/description"/]</div>
     </div>
     
   </article>

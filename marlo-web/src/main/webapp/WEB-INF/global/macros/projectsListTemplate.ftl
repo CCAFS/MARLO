@@ -120,7 +120,7 @@
           [#-- Summary PDF download --]
           <td>
             [#if true]
-            <a href="[@s.url namespace="/summaries" action='project'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']{TODO}[/@s.param][/@s.url]" target="__BLANK">
+            <a href="[@s.url namespace="/projects" action='reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/images/global/download-summary.png" height="25" title="[@s.text name="summaries.project.download" /]" />
             </a>
             [#else]
@@ -130,7 +130,7 @@
           [#-- Delete Project--]
           <td>
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
-            [#if true]
+            [#if canEdit]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>

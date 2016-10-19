@@ -124,6 +124,9 @@ public class BaseValidator {
     }
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
+
+
   }
 
   /**
@@ -202,6 +205,7 @@ public class BaseValidator {
     }
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
   }
 
 

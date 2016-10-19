@@ -80,9 +80,6 @@ public class OutcomeValidator extends BaseValidator
     }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
     this.saveMissingFieldsImpactPathway(program, "outcomes");
   }
@@ -95,7 +92,7 @@ public class OutcomeValidator extends BaseValidator
     params.add(String.valueOf(k + 1));
     if (!(this.isValidString(assuption.getDescription()) && this.wordCount(assuption.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].assuptions[" + k + "].description",
+      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -119,6 +116,8 @@ public class OutcomeValidator extends BaseValidator
 
     if (!this.isValidNumber(String.valueOf(milestone.getYear())) || milestone.getYear() <= 0) {
       this.addMessage(action.getText("outcome.action.milestone.year.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].milestones[" + j + "].year",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
 
 

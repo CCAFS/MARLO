@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -72,13 +71,13 @@ public class DeliverableValidator extends BaseValidator {
       this.addMessage(action.getText("project.deliverable.generalInformation.title"));
       action.getInvalidFields().put("input-deliverable.title", InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (!(this.isValidString(deliverable.getStatusDescription())
-      && this.wordCount(deliverable.getStatusDescription()) <= 15)) {
-      this.addMessage(action.getText("project.deliverable.generalInformation.description"));
-      action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
+    /*
+     * if (!(this.isValidString(deliverable.getStatusDescription())
+     * && this.wordCount(deliverable.getStatusDescription()) <= 15)) {
+     * this.addMessage(action.getText("project.deliverable.generalInformation.description"));
+     * action.getInvalidFields().put("input-deliverable.description", InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     */
     if (deliverable.getDeliverableType() != null) {
       if (deliverable.getDeliverableType().getId() == -1) {
         this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
@@ -141,29 +140,29 @@ public class DeliverableValidator extends BaseValidator {
       action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (deliverable.getOtherPartners() != null) {
-      if (deliverable.getOtherPartners().size() == 0) {
-        this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
-        action.getInvalidFields().put("list-deliverable.otherPartners",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
-      } else {
-        int i = 0;
-        for (DeliverablePartnership partner : deliverable.getOtherPartners()) {
-          if (partner.getProjectPartnerPerson() == null || partner.getProjectPartnerPerson().getId() == null
-            || partner.getProjectPartnerPerson().getId().longValue() == -1) {
-            action.addFieldError("deliverable.otherPartners[" + i + "].projectPartnerPerson.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          i++;
-        }
-      }
-    } else {
-      this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
-      action.getInvalidFields().put("list-deliverable.otherPartners",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
-    }
-
+    /*
+     * if (deliverable.getOtherPartners() != null) {
+     * if (deliverable.getOtherPartners().size() == 0) {
+     * this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
+     * action.getInvalidFields().put("list-deliverable.otherPartners",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
+     * } else {
+     * int i = 0;
+     * for (DeliverablePartnership partner : deliverable.getOtherPartners()) {
+     * if (partner.getProjectPartnerPerson() == null || partner.getProjectPartnerPerson().getId() == null
+     * || partner.getProjectPartnerPerson().getId().longValue() == -1) {
+     * action.addFieldError("deliverable.otherPartners[" + i + "].projectPartnerPerson.id",
+     * InvalidFieldsMessages.EMPTYFIELD);
+     * }
+     * i++;
+     * }
+     * }
+     * } else {
+     * this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
+     * action.getInvalidFields().put("list-deliverable.otherPartners",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
+     * }
+     */
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));

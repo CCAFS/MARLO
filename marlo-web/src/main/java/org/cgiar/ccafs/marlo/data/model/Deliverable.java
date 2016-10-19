@@ -98,6 +98,8 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
 
   private DeliverablePartnership responsiblePartner;
 
@@ -107,6 +109,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Deliverable() {
   }
+
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -144,7 +147,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -154,9 +156,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return createDate;
   }
 
+
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
@@ -190,7 +194,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -199,6 +202,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     return modifiedBy;
   }
+
 
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
@@ -210,6 +214,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
+  }
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
   public Integer getStatus() {
@@ -229,10 +237,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
   }
 
-
   public String getTitle() {
     return this.title;
   }
+
 
   public String getTypeOther() {
     return this.typeOther;
@@ -271,10 +279,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
-
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
   }
+
 
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
@@ -284,15 +292,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableType = deliverableType;
   }
 
-
   public void setId(Long id) {
     this.id = id;
   }
 
+
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;
   }
-
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
@@ -308,8 +315,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
+
   public void setResponsiblePartner(DeliverablePartnership responsiblePartner) {
     this.responsiblePartner = responsiblePartner;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
   public void setStatus(Integer status) {
