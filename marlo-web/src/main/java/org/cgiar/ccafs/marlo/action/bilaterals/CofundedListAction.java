@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -49,7 +50,7 @@ public class CofundedListAction extends BaseAction {
 
 
   private CrpManager crpManager;
-
+  private ProjectManager projectManager;
 
   private long projectID;
 
@@ -59,10 +60,11 @@ public class CofundedListAction extends BaseAction {
 
   @Inject
   public CofundedListAction(APConfig config, ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
-    CrpManager crpManager) {
+    CrpManager crpManager, ProjectManager projectManager) {
     super(config);
     this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
     this.crpManager = crpManager;
+    this.projectManager = projectManager;
   }
 
   @Override
@@ -144,8 +146,8 @@ public class CofundedListAction extends BaseAction {
           loggedCrp.getProjectBilateralCofinancings().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         // myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
         // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-
-        allProjects.removeAll(myProjects);
+        myProjects = allProjects;
+        // allProjects.removeAll(myProjects);
       }
     }
 
