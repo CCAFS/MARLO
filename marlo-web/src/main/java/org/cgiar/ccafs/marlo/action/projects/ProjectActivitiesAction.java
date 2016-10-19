@@ -245,12 +245,10 @@ public class ProjectActivitiesAction extends BaseAction {
   public void activitiesPreviousData(List<Activity> activities, boolean activitiesOpen) {
 
     List<Activity> activitiesPrew;
-    Project projectBD=projectManager.getProjectById(projectID);
+    Project projectBD = projectManager.getProjectById(projectID);
 
 
-    activitiesPrew = projectBD.getActivities().stream()
-      .filter(a -> a.isActive())
-      .collect(Collectors.toList());
+    activitiesPrew = projectBD.getActivities().stream().filter(a -> a.isActive()).collect(Collectors.toList());
 
 
     for (Activity activity : activitiesPrew) {
@@ -294,21 +292,27 @@ public class ProjectActivitiesAction extends BaseAction {
 
   public List<Activity> getActivities(boolean open) {
 
-    if (open) {
+    try {
+      if (open) {
 
-      return project.getProjectActivities().stream()
-        .filter(
-          a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-        .collect(Collectors.toList());
+        List<Activity> openA = project.getProjectActivities().stream()
+          .filter(
+            a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          .collect(Collectors.toList());
+        return openA;
 
-    } else {
+      } else {
 
-      return project.getActivities().stream()
-        .filter(
-          a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
-        .collect(Collectors.toList());
+        List<Activity> openA = project.getProjectActivities().stream()
+          .filter(
+            a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+          .collect(Collectors.toList());
+        return openA;
+      }
+    } catch (Exception e) {
+      return new ArrayList<>();
     }
   }
 
@@ -399,6 +403,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
         for (Activity activity : project.getProjectActivities()) {
+
+          activity.setActive(true);
           if (activity.getDeliverables() != null) {
             for (DeliverableActivity deliverableActivity : activity.getDeliverables()) {
               if (deliverableActivity.getId() == -1) {
@@ -498,16 +504,20 @@ public class ProjectActivitiesAction extends BaseAction {
       }
     }
 
-    activitiesValidator.validate(this, project, true);
-    if (!this.getInvalidFields().isEmpty()) {
-      this.setActionMessages(null);
-      // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-      for (String key : keys) {
-        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-      }
 
+    if (!this.isDraft()) {
+      activitiesValidator.validate(this, project, true);
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      }
     }
+
   }
 
   @Override
