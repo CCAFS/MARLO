@@ -24,6 +24,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   var flagships;
   var outcomes;
   var clusters;
+  var keyOutputs;
   var cy = cytoscape({
       container: document.getElementById(graphicContent),
 
@@ -69,7 +70,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       elements: json,
 
       layout: {
-          name: nameLayout,
+          name: 'preset',
           directed: false,
           padding: false,
           clockwise: false,
@@ -133,6 +134,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     flagships = [];
     outcomes = [];
     clusters = [];
+    keyOutputs = [];
 
     if(event.cyTarget == cy) {
 
@@ -153,6 +155,17 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       cy.$('node').removeClass('eating');
       var $this = event.cyTarget;
+
+      if($this.isParent()) {
+        var childrens = $this.children();
+        childrens.forEach(function(ele) {
+          nodeSelected(ele);
+          ele.predecessors().forEach(function(ele1) {
+            nodeSelected(ele1);
+          });
+        });
+
+      }
 
       var successors = $this.successors();
       var predecessors = $this.predecessors();
@@ -179,9 +192,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         clusters.forEach(function(ele) {
           $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
         });
-
+        keyOutputs.forEach(function(ele) {
+          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
+        });
       }
-
     }
   });
   function nodeSelected(ele) {
@@ -211,6 +225,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         data.push(ele.data('description'));
         data.push(ele.data('label'));
         clusters.push(data);
+      } else if(ele.data('type') === 'KO') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        keyOutputs.push(data);
       }
     }
   }
@@ -319,6 +337,77 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
+    var nodes = m.elements.nodes;
+    var count = {
+        F: 0,
+        O: 0,
+        CoA: 0,
+        KO: 0,
+    };
+    var totalWidth = {
+        F: 0,
+        O: 0,
+        CoA: 0,
+        KO: 0,
+    };
+    var move = {
+        F: 0,
+        O: 0,
+        CoA: 0,
+        KO: 0,
+    };
+    var nodeWidth = 100;
+    var nodeMargin = 20;
+
+    // For to count and set position
+    for(var i = 0; i < nodes.length; i++) {
+      if(nodes[i].data.type == "F") {
+        count.F++;
+      } else if(nodes[i].data.type == "O") {
+        count.O++;
+      } else if(nodes[i].data.type == "CoA") {
+        count.CoA++;
+      } else if(nodes[i].data.type == "KO") {
+        count.KO++;
+      }
+    }
+
+    totalWidth.F = count.F * (nodeWidth + nodeMargin);
+    totalWidth.O = count.O * (nodeWidth + nodeMargin);
+    totalWidth.CoA = count.CoA * (nodeWidth + nodeMargin);
+    totalWidth.KO = count.KO * (nodeWidth + nodeMargin);
+
+    count.F = 0;
+    count.O = 0;
+    count.CoA = 0;
+    count.KO = 0;
+
+    for(var i = 0; i < nodes.length; i++) {
+      if(nodes[i].data.type == "F") {
+        count.F++;
+        move.F = (count.F * (nodeWidth + nodeMargin)) - (totalWidth.F / 2);
+        nodes[i].position = {
+            x: move.F,
+            y: 0
+        };
+      } else if(nodes[i].data.type == "O") {
+        count.O++;
+        move.O = (count.O * (nodeWidth + nodeMargin)) - (totalWidth.O / 2);
+        nodes[i].position = {
+            x: move.O,
+            y: 200
+        };
+      } else if(nodes[i].data.type == "CoA") {
+        count.CoA++;
+        move.CoA = (count.CoA * (nodeWidth + nodeMargin)) - (totalWidth.CoA / 2);
+        nodes[i].position = {
+            x: move.CoA,
+            y: 400
+        };
+      } else if(nodes[i].data.type == "KO") {
+      }
+    }
+    console.log(count);
     createGraphic(m.elements, contentGraph, panningEnable, inPopUp, 'breadthfirst', tooltip);
   });
 }
