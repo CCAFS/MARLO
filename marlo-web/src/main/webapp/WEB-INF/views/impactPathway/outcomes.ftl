@@ -193,23 +193,6 @@
       </div>
     </div>  
     <br />
-    [#-- Outcome Milestones List --]
-    <h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>
-    <div class="milestones-list" listname="${outcomeCustomName}.milestones">
-    [#if outcome.milestones?has_content]
-      [#list outcome.milestones as milestone]
-        [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
-      [/#list]
-    [#else]
-      <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
-    [/#if]
-    </div>
-    [#-- Add Milestone Button --]
-    [#if editable]
-    <div class="text-right">
-      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
-    </div>
-    [/#if]
     
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
@@ -229,6 +212,25 @@
       <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
     </div>
     [/#if]
+    
+    [#-- Outcome Milestones List --]
+    <h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>
+    <div class="milestones-list" listname="${outcomeCustomName}.milestones">
+    [#if outcome.milestones?has_content]
+      [#list outcome.milestones as milestone]
+        [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index /]
+      [/#list]
+    [#else]
+      <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
+    [/#if]
+    </div>
+    [#-- Add Milestone Button --]
+    [#if editable]
+    <div class="text-right">
+      <div class="addMilestone button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
+    </div>
+    [/#if]
+    
     <br />
   </div>
 [/#macro]
