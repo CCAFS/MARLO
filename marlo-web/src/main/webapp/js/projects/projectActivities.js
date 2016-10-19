@@ -66,13 +66,15 @@ function addActivity() {
   countID++;
   var $list = $(".activitiesOG-content");
   var $item = $("#projectActivity-template").clone(true).removeAttr("id");
+  console.log(countID);
+// Set indexes
+  $item.setNameIndexes(1, countID);
   $item.find("input.startDate").attr("id", "startDate-" + countID);
   $item.find("input.endDate").attr("id", "endDate-" + countID);
   $item.find(".blockTitle").removeClass("closed").addClass("opened");
   $item.find(".blockContent").css("display", "block");
   $item.find(".index").html(countID);
-// Set indexes
-  $item.setNameIndexes(1, countID);
+
   $list.append($item);
   $item.show('slow', function() {
     $item.find("textarea").autoGrow();
@@ -110,10 +112,33 @@ function checkItems(block) {
 // Add a new deliverable element
 function addDeliverable() {
   var option = $(this).find("option:selected");
+  var canAdd = true;
+  if(option.val() == "-1"){
+    canAdd = false;
+  }
+  
   var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
-
+  
+  
+  // Check if is already selected
+  $list.find('.deliverableActivity').each(function(i,e){
+    if ($(e).find('input.id').val() == option.val()){
+      canAdd = false;
+      return
+    }
+  });
+  
+  // Reset select
+  $(this).val("-1");
+  $(this).trigger('change.select2');
+  
+  if(!canAdd){
+    return
+  }
+  
+  // Set deliverable parameters
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".id").val(option.val());
@@ -122,6 +147,8 @@ function addDeliverable() {
   var $activity = $list.parents(".projectActivity");
   var activityIndex = $activity.find(".index").html();
   updateDeliverable($activity, activityIndex);
+  
+  
 }
 
 // Remove a new deliverable element
@@ -139,10 +166,7 @@ function removeDeliverable() {
 }
 
 function updateDeliverable(item,activityIndex) {
-  console.log(activityIndex);
-  console.log(item);
   $(item).find('.deliverableActivity').each(function(indexDeliverable,deliverableItem) {
-    console.log(indexDeliverable);
     // Set activity indexes
     $(deliverableItem).setNameIndexes(1, activityIndex);
     // Set indexes

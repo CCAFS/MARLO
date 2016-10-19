@@ -36,7 +36,7 @@
           </td>
           [#-- Deliverable Type --]
           <td >
-            ${(deliverable.deliverableType.name?lower_case)!'none'}
+            ${(deliverable.deliverableType.name?capitalize)!'none'}
           </td>
           [#-- Deliverable Year --]
           <td class="text-center">

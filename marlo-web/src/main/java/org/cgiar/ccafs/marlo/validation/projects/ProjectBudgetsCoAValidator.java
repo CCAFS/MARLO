@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   private ProjectManager projectManager;
 
 
+  @Inject
+  private CrpManager crpManager;
 
   @Inject
   public ProjectBudgetsCoAValidator(ProjectValidator projectValidator, BudgetTypeManager budgetTypeManager,
@@ -60,8 +63,6 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     this.budgetTypeManager = budgetTypeManager;
   }
 
-  @Inject
-  private CrpManager crpManager;
   private Path getAutoSaveFilePath(Project project, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
@@ -101,6 +102,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
 
   public void validate(BaseAction action, Project project, boolean saving) {
+    action.setInvalidFields(new HashMap<>());
     hasErros = false;
     if (project != null) {
       if (!saving) {
@@ -179,9 +181,12 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     }
 
     if (amount < 100) {
+      action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
       this.addMessage(action.getText("project.budget.coa.amount", params));
     }
     if (gender < 100) {
+
+      action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
       this.addMessage(action.getText("project.budget.coa.gender", params));
     }
   }

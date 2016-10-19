@@ -73,7 +73,7 @@
 [@projectActivityMacro element={} name="project.projectActivities"  index=-1 isTemplate=true isActive=true/]
 
 [#-- Activity Template --]
-[@deliverablesMacro element={} name="project.projectActivities[-1].deliverable" index=-1 isTemplate=true /]
+[@deliverablesMacro element={} name="project.projectActivities[-1].deliverables" index=-1 isTemplate=true /]
 
 
   
