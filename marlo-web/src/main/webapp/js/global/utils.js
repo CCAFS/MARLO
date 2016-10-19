@@ -134,13 +134,11 @@ var colors =
 $.fn.colorPicker = function() {
   $(this).each(function(i,pickerElement) {
     var defaultColor;
-    console.log($(pickerElement).find('input').val());
     if($(pickerElement).find('input').val() == "") {
       defaultColor = getRandomColor();
     } else {
       defaultColor = $(pickerElement).find('input').val();
     }
-    console.log(defaultColor);
     var picker = vanillaColorPicker(pickerElement);
     picker.set('customColors', colors);
     picker.set('defaultColor', defaultColor);
