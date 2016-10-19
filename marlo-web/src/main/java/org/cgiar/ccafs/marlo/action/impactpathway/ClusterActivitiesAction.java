@@ -644,6 +644,9 @@ public class ClusterActivitiesAction extends BaseAction {
             crpClusterOfActivity.setKeyOutputs(new ArrayList<>());
           }
           if (!crpClusterOfActivity.getKeyOutputs().contains(keyPreview)) {
+            for (CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcome : keyPreview.getCrpClusterKeyOutputOutcomes()) {
+              crpClusterKeyOutputOutcomeManager.deleteCrpClusterKeyOutputOutcome(crpClusterKeyOutputOutcome.getId());
+            }
             crpClusterKeyOutputManager.deleteCrpClusterKeyOutput(keyPreview.getId());
 
           }
@@ -696,15 +699,16 @@ public class ClusterActivitiesAction extends BaseAction {
                   crpClusterKeyOutputOutcome.setCreatedBy(this.getCurrentUser());
 
                   crpClusterKeyOutputOutcome.setActiveSince(new Date());
-
+                  crpClusterKeyOutputOutcome.setActive(true);
                 } else {
                   CrpClusterKeyOutputOutcome crpClusterKeyOutputOutcomePrev = crpClusterKeyOutputOutcomeManager
                     .getCrpClusterKeyOutputOutcomeById(crpClusterKeyOutputOutcome.getId());
                   crpClusterKeyOutputOutcome.setCreatedBy(crpClusterKeyOutputOutcomePrev.getCreatedBy());
                   crpClusterKeyOutputOutcome.setActiveSince(crpClusterKeyOutputOutcomePrev.getActiveSince());
+                  crpClusterKeyOutputOutcome.setActive(crpClusterKeyOutputOutcomePrev.isActive());
 
                 }
-                crpClusterKeyOutputOutcome.setActive(true);
+
                 crpClusterKeyOutputOutcome.setCrpClusterKeyOutput(crpClusterKeyOutput);
                 crpClusterKeyOutputOutcome.setModifiedBy(this.getCurrentUser());
                 crpClusterKeyOutputOutcome.setModificationJustification("");
