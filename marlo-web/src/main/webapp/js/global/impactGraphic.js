@@ -37,8 +37,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       userPanningEnabled: panningEnable,
 
       style: cytoscape.stylesheet().selector('node').css({
-          'shape': 'rectangle',
-          'height': 60,
+          'shape': 'roundrectangle',
+          'height': 30,
           'width': 100,
           'background-fit': 'cover',
           'border-width': 0.7,
@@ -48,7 +48,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'color': 'white',
           'text-outline-width': 1,
           'text-outline-color': '#888',
-          'z-index': '5'
+          'z-index': '5',
+          'padding': 2
       }).selector('.eating').css({
           'border-width': 2,
           'background-color': '#163799'
@@ -58,21 +59,22 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }).selector('edge').css({
           'width': 2,
           'source-arrow-shape': 'triangle',
-          'target-arrow-shape': 'circle',
           'line-color': '#eee',
           'source-arrow-color': '#eee',
-          'target-arrow-color': '#eee',
           'curve-style': 'bezier',
           'z-index': '1'
       }).selector('.center-center').css({
           'text-valign': 'center',
+          'text-halign': 'center'
+      }).selector('.bottom-center').css({
+          'text-valign': 'bottom',
           'text-halign': 'center'
       }),
 
       elements: json,
 
       layout: {
-        name: 'preset',
+        name: 'preset'
       }
   });
 
@@ -80,11 +82,27 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
   // Nodes init
   var nodesInit = cy.$('node');
+  var colorFlagship;
   nodesInit.addClass('center-center');
   nodesInit.forEach(function(ele) {
     ele.css('background-color', ele.data('color'));
-    if(ele.data('type') === 'C') {
-      ele.css("text-transform", "uppercase");
+    if(ele.data('type') === 'F') {
+      colorFlagship = ele.data('color');
+    }
+
+    if(ele.data('type') === 'CoA') {
+      ele.css({
+          'shape': 'rectangle',
+          'background-color': '#F5F5F5',
+          'border-color': colorFlagship
+      });
+      if(ele.children().length > 0) {
+        ele.css({
+            'text-outline-width': 0,
+            'color': '#884809'
+        });
+        ele.addClass('bottom-center');
+      }
     }
   });
 
@@ -94,7 +112,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     });
     $(".cy-panzoom").css('position', 'absolute');
     $(".cy-panzoom").css("right", '10%');
-    $(".cy-panzoom").css('top', '15%');
+    $(".cy-panzoom").css('top', '17%');
     $(".cy-panzoom").css('z-index', '99');
   }
 
@@ -135,6 +153,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       cy.$('node').removeClass('eating');
       var $this = event.cyTarget;
 
+      // IF NODE HAS CHILDRENS
       if($this.isParent()) {
         var childrens = $this.children();
         childrens.forEach(function(ele) {
@@ -143,7 +162,11 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
             nodeSelected(ele1);
           });
         });
-
+      }
+      // IF NODE HAS PARENT
+      if($this.isChild()) {
+        var parent = $this.parent();
+        nodeSelected(parent);
       }
 
       var successors = $this.successors();
@@ -178,6 +201,11 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
   });
   function nodeSelected(ele) {
+
+    if(ele.isChild()) {
+      var parent = ele.parent();
+      nodeSelected(parent);
+    }
     // change Styles
     ele.addClass('eating');
     ele.css('background-opacity', '1');
@@ -187,7 +215,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     ele.css('source-arrow-color', '#999999');
     ele.css('target-arrow-color', '#999999');
 
-    // information arrays
+    // arrays information
     if(ele.data('description') != 'undefined' && ele.data('description') != null) {
       var data = [];
       if(ele.data('type') === 'C') {
@@ -218,7 +246,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     var image = new Image();
     image = cy.jpg();
     var name = "impactPathway_Graphic";
-    $('#buttonDownload a').attr({
+    $('a.download').attr({
         href: image,
         download: name
     })
@@ -270,7 +298,7 @@ $("#mini-graphic").on("mouseleave", function() {
 });
 
 // Open PopUp Graph
-$("#overlay a").on("click", function() {
+$("#overlay .btn").on("click", function() {
   $("#impactGraphic-content").dialog({
       resizable: false,
       width: '90%',
@@ -292,17 +320,25 @@ $("#overlay a").on("click", function() {
 
 });
 
-$(".yes-button-label").on("click", function() {
-  var url = baseURL + "/impactPathway/impactPathwayGraph.do";
-  ajaxService(url, data, "impactGraphic", true, true, 'breadthfirst', false);
-});
-
-$(".no-button-label").on("click", function() {
-  var url = baseURL + "/impactPathway/impactPathwayFullGraph.do";
-  var data = {
-    crpID: currentCrpID
+$("#changeGraph .btn").on("click", function() {
+  console.log("holi");
+  if($(this).hasClass("currentGraph")) {
+    var url = baseURL + "/impactPathway/impactPathwayFullGraph.do";
+    var dataFull = {
+      crpID: currentCrpID
+    }
+    ajaxService(url, dataFull, "impactGraphic", true, true, 'concentric', false);
+    $(this).html("Show current graph");
+    $(this).addClass("fullGraph");
+    $(this).removeClass("currentGraph");
+  } else {
+    $(this).html("Show full graph");
+    var url = baseURL + "/impactPathway/impactPathwayGraph.do";
+    ajaxService(url, data, "impactGraphic", true, true, 'breadthfirst', false);
+    $(this).removeClass("fullGraph");
+    $(this).addClass("currentGraph");
   }
-  ajaxService(url, data, "impactGraphic", true, true, 'concentric', false);
+
 });
 
 // Functions
@@ -371,12 +407,10 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
             y: 200
         };
       } else if(nodes[i].data.type == "CoA") {
-        if(nodes[i + 1]) {
-          if(nodes[i + 1].data.type == "KO") {
-            move.KO;
-          } else {
-            move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
-          }
+        if(nodes[i + 1] && nodes[i + 1].data.type == "KO") {
+          move.KO;
+        } else {
+          move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
         }
 
         console.log(move.KO);

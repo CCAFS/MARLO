@@ -54,20 +54,37 @@
 
 #changeGraph {
     position: absolute;
-    right: 1%;
+    right: 7%;
     top: 2%;
     z-index: 100;
 }
 
 #buttonDownload {
     position: absolute;
-    right: 1%;
-    top: 90%;
+    right: 2%;
+    top: 2%;
     z-index: 100;
-    background-color: #efefef;
-    color: #292929;
+    text-align: center;
+    width: 3%;
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    padding: 3px 5px;
+    font-weight: bold;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 6px;
 }
 
 #buttonDownload a {
     text-decoration: none;
+}
+
+span.btn {
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    padding: 3px 7px;
+    font-weight: bold;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 2px;
 }
