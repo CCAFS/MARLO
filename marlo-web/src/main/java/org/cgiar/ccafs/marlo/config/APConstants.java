@@ -123,6 +123,7 @@ public final class APConstants {
   public static final String ERROR_ACCOUNT_DISABLED = "ERROR_ACCOUNT_DISABLED";
   public static final String ERROR_ACCOUNT_EXPIRED = "ERROR_ACCOUNT_EXPIRED";
   public static final String ERROR_ACCOUNT_LOCKED_OUT = "ERROR_ACCOUNT_LOCKED_OUT";
+  public static final String ERROR_LDAP_CONNECTION = "ERROR_LDAP_CONNECTION";
   public static final String USER_DISABLED = "USER_DISABLED";
   public static final String SCOPE_TYPE = "Region";
 

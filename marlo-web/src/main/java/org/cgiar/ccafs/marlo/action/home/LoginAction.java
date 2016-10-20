@@ -110,6 +110,9 @@ public class LoginAction extends BaseAction {
         case APConstants.ERROR_ACCOUNT_LOCKED_OUT:
           this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_ACCOUNT_LOCKED_OUT.getValue());
           break;
+        case APConstants.ERROR_LDAP_CONNECTION:
+          this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.ERROR_LDAP_CONNECTION.getValue());
+          break;
         case APConstants.USER_DISABLED:
           this.getSession().put(APConstants.LOGIN_MESSAGE, ADLoginMessages.USER_DISABLED.getValue());
           break;
