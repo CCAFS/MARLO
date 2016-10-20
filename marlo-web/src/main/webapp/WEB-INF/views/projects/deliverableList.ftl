@@ -52,7 +52,7 @@
           </div>
          </div>
            
-           <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+           <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
             [#if editable]
