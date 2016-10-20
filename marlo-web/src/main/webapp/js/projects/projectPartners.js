@@ -32,8 +32,8 @@ function init() {
     // Activate the chosen to the existing partners
     addSelect2();
     // Applying word counters to form fields
-    applyWordCounter($("form textarea.resp"), lWordsResp);
-    applyWordCounter($("#lessons textarea"), lWordsResp);
+    // applyWordCounter($("form textarea.resp"), lWordsResp);
+    // applyWordCounter($("#lessons textarea"), lWordsResp);
     // Validate on save and next action
     if(!isReportingCycle()) {
       /*
@@ -460,7 +460,7 @@ function addPartnerEvent(e) {
     });
 
   });
-  applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
+  // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
     width: '100%'
@@ -474,7 +474,7 @@ function addContactEvent(e) {
   var $newElement = $("#contactPerson-template").clone(true).removeAttr("id");
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
-  applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
+  // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
   // Activate the select2 plugin for new partners created
   $newElement.find("select").select2({
     width: '100%'
