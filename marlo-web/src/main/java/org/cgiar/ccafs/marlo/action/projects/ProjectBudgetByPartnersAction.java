@@ -631,28 +631,19 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-          if (projectBudget.getId() == null) {
-            projectBudget.setCreatedBy(this.getCurrentUser());
+          if (!projectDB.isBilateralProject()) {
+            switch (projectBudget.getBudgetType().getId().intValue()) {
+              case 1:
+              case 4:
+                this.saveBudget(projectBudget);
+                break;
 
-            projectBudget.setActiveSince(new Date());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
-
+            }
           } else {
-            ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
-            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-
-            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
+            this.saveBudget(projectBudget);
           }
 
 
-          projectBudgetManager.saveProjectBudget(projectBudget);
         }
 
       }
@@ -716,6 +707,31 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       }
     }
+  }
+
+  public void saveBudget(ProjectBudget projectBudget) {
+    if (projectBudget.getId() == null) {
+      projectBudget.setCreatedBy(this.getCurrentUser());
+
+      projectBudget.setActiveSince(new Date());
+      projectBudget.setActive(true);
+      projectBudget.setProject(project);
+      projectBudget.setModifiedBy(this.getCurrentUser());
+      projectBudget.setModificationJustification("");
+
+    } else {
+      ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
+      projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
+
+      projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
+      projectBudget.setActive(true);
+      projectBudget.setProject(project);
+      projectBudget.setModifiedBy(this.getCurrentUser());
+      projectBudget.setModificationJustification("");
+    }
+
+
+    projectBudgetManager.saveProjectBudget(projectBudget);
   }
 
   public void setInstitutions(List<Institution> institutions) {
