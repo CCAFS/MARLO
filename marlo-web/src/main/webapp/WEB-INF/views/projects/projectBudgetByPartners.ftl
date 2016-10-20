@@ -60,7 +60,7 @@
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                 
                   [#-- Budgest cannot be editable message --]
-                  [#if !isYearEditable(year)]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                  [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
                   
                   <div class="overallYearBudget fieldset clearfix">
                     <h5 class="title">Overall ${year} budget</h5>
