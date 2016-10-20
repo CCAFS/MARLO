@@ -2444,7 +2444,7 @@ input.userName {
   margin-top: 10px;
 }
 
-#loginFormContainer .loginForm p {margin: 0;}
+#loginFormContainer .loginForm p {margin: 5px 0;}
 
 #loginFormContainer .loginForm .fieldError {
   font-weight: bold;
