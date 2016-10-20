@@ -10,8 +10,6 @@
       <div class="container">
         <div class="col-md-5 infoLinks">
           <div class="col-md-5 contact">Contact person: <a href="">h.f.tobon@cgiar.org</a></div>
-          <div class="col-md-3"><a href="">About us</a></div>
-          <div class="col-md-2"><a href="">Partners</a></div>
           <div class="col-md-2 scrollup"><a href="#">Top</a></div>
         </div>
         <div class="col-md-2 copyRight">@ Copyright 2016 <br /> Current version ${action.getVersion()}</div>
