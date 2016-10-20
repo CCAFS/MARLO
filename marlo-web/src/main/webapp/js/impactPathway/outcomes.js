@@ -104,44 +104,15 @@ function attachEvents() {
   });
 
   // New Target unit
-  var $targetUnit = $("#dialog-targetUnit");
-  $('.addOtherTargetUnit').on('click', function(e) {
-    e.preventDefault();
-    var $select = $(this).parent().find('select');
-    $targetUnit.dialog({
-        modal: true,
-        buttons: [
-          {
-              text: "Add Target",
-              click: function() {
-                var targetUnitName = $.trim($('#targetUnitName').val());
-                if(targetUnitName != "") {
-                  $.ajax({
-                      'url': baseURL + '/newTargetUnit.do',
-                      data: {
-                        targetUnitName: targetUnitName
-                      },
-                      success: function(data) {
-                        if(data.newTargetUnit.status) {
-                          $('select.targetUnit').each(function(i,select) {
-                            $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name);
-                          });
-                        }
-                        $select.val(data.newTargetUnit.id);
-                      },
-                      complete: function(data) {
-                        $('#targetUnitName').val("");
-                        $targetUnit.dialog("close");
-                      }
-                  });
-                }
-              }
-          }
-        ]
-    });
-
-  });
-
+  /*
+   * var $targetUnit = $("#dialog-targetUnit"); $('.addOtherTargetUnit').on('click', function(e) { e.preventDefault();
+   * var $select = $(this).parent().find('select'); $targetUnit.dialog({ modal: true, buttons: [ { text: "Add Target",
+   * click: function() { var targetUnitName = $.trim($('#targetUnitName').val()); if(targetUnitName != "") { $.ajax({
+   * 'url': baseURL + '/newTargetUnit.do', data: { targetUnitName: targetUnitName }, success: function(data) {
+   * if(data.newTargetUnit.status) { $('select.targetUnit').each(function(i,select) {
+   * $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name); }); } $select.val(data.newTargetUnit.id); },
+   * complete: function(data) { $('#targetUnitName').val(""); $targetUnit.dialog("close"); } }); } } } ] }); });
+   */
   // Filter SubIDOs
   $("#filterForm").on("change", filter);
   // Select a subIdo

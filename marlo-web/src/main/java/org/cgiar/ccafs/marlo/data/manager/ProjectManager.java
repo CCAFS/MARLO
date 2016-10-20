@@ -34,7 +34,7 @@ public interface ProjectManager {
    * @param projectId is the project identifier.
    * @return true if the project was successfully deleted, false otherwise.
    */
-  public boolean deleteProject(long projectId);
+  public boolean deleteProject(Project project);
 
 
   /**

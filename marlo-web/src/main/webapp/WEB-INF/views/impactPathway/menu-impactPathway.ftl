@@ -24,7 +24,7 @@
       
       <ul>
         [#list items as item]
-          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
               [@s.text name=item.name/]
             </a>
@@ -59,9 +59,10 @@
 
 [#-- Mini-graph --]
 <div id="graphicWrapper">
+<p class="text-center"><b>Impact Pathway Graph.</b></p>
   <div id="mini-graphic">
     <div id="overlay" >
-      <a><strong>Show Impact Graphic</strong></a>
+      <button class="btn btn-primary btn-xs"><strong>Show graph</strong></button>
     </div>
   </div>
   <div class="clearfix"></div>
@@ -76,10 +77,10 @@
     </div>
   </div>
   <div id="changeGraph">
-        [@customForm.yesNoInput name="changeGraphic" label="" inverse=false value="" yesLabel="Current Impact Pathway" noLabel="Show full Impact Pathway"cssClass="" /]
+  <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
   </div>
   
-  <button id="buttonDownload"><a href=""><span class="glyphicon glyphicon-download-alt"></span> Download</a></button>
+  <a class="download" href=""><span id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
   
   <div id="impactGraphic"></div>
 </div>
