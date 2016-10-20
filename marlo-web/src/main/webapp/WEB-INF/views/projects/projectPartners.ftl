@@ -343,7 +343,7 @@
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
     <div class="form-group partnerResponsabilities chosen"> 
-      [@customForm.textArea name="${name}.responsibilities" className="resp" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
+      [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
       <div class="clearfix"></div>
     </div>
     [/#if]

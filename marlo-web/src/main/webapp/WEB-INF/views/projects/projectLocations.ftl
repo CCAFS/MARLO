@@ -46,8 +46,9 @@
               <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
               <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
               </div>
-                         
+              [#if editable]
               <div class="text-center col-md-12  alert alert-info"><span> [@s.text name="projectLocations.selectLocations" /] </span></div>
+              [/#if]
               <div id="selectsContent" class="col-md-6 simpleBox" listname="project.locationsData">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
