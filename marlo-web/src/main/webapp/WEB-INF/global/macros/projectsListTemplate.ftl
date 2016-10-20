@@ -131,7 +131,7 @@
           <td>
             [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
              
-            [#if canEdit && action.isProjectNew(project.id)]
+            [#if canEdit && action.isProjectNew(project.id)&& action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>

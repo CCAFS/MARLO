@@ -94,6 +94,33 @@ public class StandardDAO {
     }
   }
 
+  public boolean executeQuery(String sqlQuery) {
+    Session session = null;
+    Transaction tx = null;
+
+    try {
+      session = this.openSession();
+      tx = this.initTransaction(session);
+
+      session.flush();
+      session.clear();
+      Query query = session.createSQLQuery(sqlQuery);
+      System.out.println(sqlQuery);
+      query.executeUpdate();
+
+      return true;
+    } catch (Exception e) {
+      if (tx != null) {
+        this.rollBackTransaction(tx);
+      }
+      e.printStackTrace();
+      return false;
+    } finally {
+
+    }
+  }
+
+
   /**
    * This method finds a specific record from the database and transform it to a database model object.
    * 
@@ -171,7 +198,6 @@ public class StandardDAO {
 
     }
   }
-
 
   /**
    * This method make a query that returns a not mapped object result from the model.

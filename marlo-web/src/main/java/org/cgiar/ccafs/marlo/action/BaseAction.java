@@ -843,6 +843,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public boolean hasPermissionNoBase(String fieldName) {
+
+    return securityContext.hasPermission(fieldName);
+
+  }
 
   public boolean hasPersmissionSubmit() {
 
