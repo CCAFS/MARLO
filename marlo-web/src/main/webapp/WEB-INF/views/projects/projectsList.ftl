@@ -38,10 +38,10 @@
       [#if action.canAddCoreProject() || action.canAddBilateralProject()]
       <div class="buttons">
         <div class="buttons-content">
-        [#if action.canAddCoreProject()]
+        [#if action.canAddCoreProject() && ((currentStage == "w1") || (currentStage == "all")) ]
           <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addCoreProject" /]</a>
         [/#if]
-        [#if action.canAddBilateralProject()]
+        [#if action.canAddBilateralProject() && ((currentStage == "w3") || (currentStage == "all"))]
           <a class="addButton" href="[@s.url action='${crpSession}/addNewBilateralProject'/]">[@s.text name="projectsList.addBilateralProject" /]</a>
         [/#if]
           <div class="clearfix"></div>

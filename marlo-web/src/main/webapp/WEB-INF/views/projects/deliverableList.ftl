@@ -29,12 +29,7 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-        [#-- Section Messages --]
-        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
         
-         
-         
-      
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
@@ -60,9 +55,11 @@
            <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
+            [#if editable]
             <div class="addDeliverable button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewDeliverable'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addDeliverable" /]
             </a></div>
+            [/#if]
           </div>
              
 
