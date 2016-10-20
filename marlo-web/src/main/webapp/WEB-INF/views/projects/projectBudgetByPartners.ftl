@@ -50,7 +50,7 @@
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. endYear as year]
-                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable /] </a></li>
               [/#list]
             </ul>
             
@@ -60,7 +60,7 @@
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
                 
                   [#-- Budgest cannot be editable message --]
-                  [#if !isYearEditable(year)]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                  [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
                   
                   <div class="overallYearBudget fieldset clearfix">
                     <h5 class="title">Overall ${year} budget</h5>
