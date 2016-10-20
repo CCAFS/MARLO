@@ -23,6 +23,7 @@
   </div>
   <div class="col-md-6 form-group">
     [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" editable=editable/]
+    [#if !editable]${(deliverable.year)!}[/#if]
   </div>
 
 [#-- Status justification textArea --] 
