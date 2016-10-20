@@ -124,12 +124,12 @@
       
       [#-- Activity leader --]
       <div class="form-group">
-        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" disabled=!editable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
       
       [#-- Activity status --]
       <div class="form-group">
-        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="Activity status" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" activityStatus" disabled=!editable/]
+        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="Activity status" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" activityStatus" editable=editable/]
       </div>
       
       [#if reportingActive]
@@ -146,9 +146,11 @@
           [/#list]
         [/#if]
       </div>
+      [#if editable]
       <div class="form-group">
         [@customForm.select name="" label=""  i18nkey="Select to add a deliverable" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
       </div>
+      [/#if]
     </div>
   
   </div>
