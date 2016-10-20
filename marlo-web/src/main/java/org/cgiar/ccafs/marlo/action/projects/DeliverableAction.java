@@ -236,6 +236,44 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
+  public Boolean isDeliverableNew(long deliverableID) {
+
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
+
+    if (this.isReportingActive()) {
+
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_REPORTING_DATE).toString());
+        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    } else {
+      try {
+        Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
+        if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
+          return true;
+        } else {
+          return false;
+        }
+
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return false;
+      }
+
+    }
+  }
+
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -547,6 +585,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -592,7 +631,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -680,7 +719,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -697,10 +735,10 @@ public class DeliverableAction extends BaseAction {
     this.deliverableTypeParent = deliverableTypeParent;
   }
 
+
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
   }
-
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
