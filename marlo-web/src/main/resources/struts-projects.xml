@@ -42,6 +42,20 @@
       </result>
     </action>
     
+    
+     <action name="{crp}/deleteProject" method="delete" class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+       <interceptor-ref name="projectListStack" />
+      <result name="input">/WEB-INF/views/projects/projectsList.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/projectsList</param>
+       
+      </result>
+      
+      
+      
+    </action>
+    
     <action name="{crp}/addNewBilateralProject" method="addBilateralProject"
       class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
       <interceptor-ref name="projectListStack" />
@@ -139,6 +153,9 @@
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
 		</action>
+		
+		
+		
 
 		<action name="{crp}/contributionCrp"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeAction">

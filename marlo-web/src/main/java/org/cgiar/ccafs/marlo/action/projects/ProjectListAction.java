@@ -103,6 +103,7 @@ public class ProjectListAction extends BaseAction {
     }
   }
 
+
   public String addCoreProject() {
 
     if (this.canAccessSuperAdmin()) {
@@ -128,6 +129,37 @@ public class ProjectListAction extends BaseAction {
         return NOT_AUTHORIZED;
       }
     }
+  }
+
+
+  /**
+   * This method validates if a project can be deleted or not.
+   * Keep in mind that a project can be deleted if it was created in the current planning cycle.
+   * 
+   * @param projectID is the project identifier.
+   * @return true if the project can be deleted, false otherwise.
+   */
+  public boolean canDelete(long projectID) {
+    // First, loop all projects that the user is able to edit.
+    for (Project project : myProjects) {
+      if (project.getId() == projectID) {
+        if (this.isProjectNew(projectID)) {
+          return true;
+        }
+      }
+    }
+
+    // If nothing returned yet, we need to loop the second list which is the list of projects that the user is not able
+    // to edit.
+    for (Project project : this.getAllProjects()) {
+      if (project.getId() == projectID) {
+        if (this.isProjectNew(projectID)) {
+          return true;
+        }
+      }
+    }
+    // If nothing found, return false.
+    return false;
   }
 
   public boolean createProject(String type, LiaisonUser liaisonUser, LiaisonInstitution liaisonInstitution) {
@@ -181,6 +213,49 @@ public class ProjectListAction extends BaseAction {
       return false;
     }
 
+  }
+
+
+  @Override
+  public String delete() {
+    // Deleting project.
+    if (this.canDelete(projectID)) {
+      String permissionStr =
+        this.generatePermission(Permission.PROJECT_DELETE_BASE_PERMISSION, loggedCrp.getAcronym(), projectID + "");
+      boolean permission = this.hasPermissionNoBase(permissionStr);
+      if (permission) {
+        Project project = projectManager.getProjectById(projectID);
+        project.setActive(false);
+        project
+          .setModificationJustification(this.getJustification() == null ? "Project deleted" : this.getJustification());
+        project.setModifiedBy(this.getCurrentUser());
+
+        boolean deleted = projectManager.deleteProject(project);
+        if (deleted) {
+          this.addActionMessage(
+            "message:" + this.getText("deleting.successProject", new String[] {this.getText("project").toLowerCase()}));
+        } else {
+          this.addActionError(this.getText("deleting.problem", new String[] {this.getText("project").toLowerCase()}));
+        }
+      } else {
+        this.addActionError(this.getText("projects.cannotDelete"));
+      }
+      return SUCCESS;
+    } else {
+      return NOT_AUTHORIZED;
+    }
+
+
+  }
+
+  public boolean deletePermission(long projectID) {
+    if (projectID == 257) {
+      System.out.println("stop");
+    }
+    String permissionStr =
+      this.generatePermission(Permission.PROJECT_DELETE_BASE_PERMISSION, loggedCrp.getAcronym(), projectID + "");
+    boolean permission = this.hasPermissionNoBase(permissionStr);
+    return permission;
   }
 
   public List<Project> getAllProjects() {

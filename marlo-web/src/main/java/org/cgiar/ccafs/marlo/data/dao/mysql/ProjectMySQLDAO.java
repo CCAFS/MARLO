@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +35,83 @@ public class ProjectMySQLDAO implements ProjectDAO {
     this.dao = dao;
   }
 
+
+  public boolean deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
+    String justification) {
+
+    StringBuilder query = new StringBuilder();
+
+    PropertiesManager manager = new PropertiesManager();
+
+    try {
+
+      // Let's find all the tables that are related to the current table.
+      query.append("SELECT * FROM information_schema.KEY_COLUMN_USAGE ");
+      query.append("WHERE TABLE_SCHEMA = '");
+      query.append(manager.getPropertiesAsString(APConfig.MYSQL_DATABASE));
+      query.append("' ");
+      query.append("AND REFERENCED_TABLE_NAME = '");
+      query.append(tableName);
+      query.append("' ");
+      query.append("AND REFERENCED_COLUMN_NAME = '");
+      query.append(columnName);
+      query.append("' ");
+      //
+
+      List<Map<String, Object>> rsReferences = dao.findCustomQuery(query.toString());
+
+
+      String table, column;
+
+      for (Map<String, Object> map : rsReferences) {
+        table = map.get("TABLE_NAME").toString();
+        column = map.get("COLUMN_NAME").toString();
+
+        query.setLength(0);
+        query.append("SELECT COUNT(*) FROM information_schema.COLUMNS ");
+        query.append("WHERE TABLE_SCHEMA = '");
+        query.append(manager.getPropertiesAsString(APConfig.MYSQL_DATABASE));
+        query.append("' ");
+        query.append("AND TABLE_NAME = '");
+        query.append(table);
+        query.append("' ");
+        query.append("AND COLUMN_NAME = 'is_active'");
+        List<Map<String, Object>> rsColumnExist = dao.findCustomQuery(query.toString());
+        if (!rsColumnExist.isEmpty()) {
+          query.setLength(0);
+          query.append("UPDATE ");
+          query.append(table);
+          query.append(
+            " SET is_active = 0, modified_by = " + userID + ", modification_justification = '" + justification + "' ");
+          query.append("WHERE ");
+          query.append(column);
+          query.append(" = '" + columnValue + "'");
+
+          dao.executeQuery(query.toString());
+
+
+        }
+      }
+
+
+    } catch (Exception e)
+
+    {
+
+      e.printStackTrace();
+      return false;
+    }
+
+    return true;
+
+  }
+
   @Override
-  public boolean deleteProject(long projectId) {
-    Project project = this.find(projectId);
-    project.setActive(false);
+  public boolean deleteProject(Project project) {
+
+
+    this.deleteOnCascade("projects", "id", project.getId(), project.getModifiedBy().getId(),
+      project.getModificationJustification());
     return this.save(project) > 0;
   }
 
@@ -49,6 +124,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
     return true;
 
   }
+
 
   @Override
   public Project find(long id) {

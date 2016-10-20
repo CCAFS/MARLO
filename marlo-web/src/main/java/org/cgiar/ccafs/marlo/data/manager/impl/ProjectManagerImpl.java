@@ -43,9 +43,9 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
-  public boolean deleteProject(long projectId) {
+  public boolean deleteProject(Project project) {
 
-    return projectDAO.deleteProject(projectId);
+    return projectDAO.deleteProject(project);
   }
 
   @Override
