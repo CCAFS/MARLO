@@ -566,14 +566,17 @@ function initMap() {
 
   google.maps.event.addListener(infoWindow, 'closeclick', function() {
     $(".locations").removeClass("selected");
-    console.log("holi");
-
   });
 
   google.maps.event.addListener(map, 'click', function(event) {
     infoWindow.close();
     $(".locations").removeClass("selected");
   });
+
+  if(markers.length > 0) {
+    map.setCenter(markers[markers.length - 1].getPosition());
+    console.log(markers[markers.length - 1].getPosition());
+  }
 
 }
 
