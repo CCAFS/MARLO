@@ -59,7 +59,7 @@
 
 [#-- Mini-graph --]
 <div id="graphicWrapper">
-<p class="text-center"><b>Impact Pathway Graph.</b></p>
+<p class="text-center"><b>Impact Pathway Graph</b></p>
   <div id="mini-graphic">
     <div id="overlay" >
       <button class="btn btn-primary btn-xs"><strong>Show graph</strong></button>

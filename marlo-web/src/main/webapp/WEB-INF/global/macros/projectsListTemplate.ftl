@@ -119,12 +119,12 @@
           [/#if]
           [#-- Summary PDF download --]
           <td>
-            [#if true]
+            [#if false]
             <a href="[@s.url namespace="/projects" action='reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/images/global/download-summary.png" height="25" title="[@s.text name="project.downloadPDf" /]" />
             </a>
             [#else]
-              <img src="${baseUrl}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="menu.link.disabled" /]" />
+              <img src="${baseUrl}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
             [/#if]
           </td>
           [#-- Delete Project--]

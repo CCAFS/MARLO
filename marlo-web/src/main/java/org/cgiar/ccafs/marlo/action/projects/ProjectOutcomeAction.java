@@ -684,6 +684,7 @@ public class ProjectOutcomeAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcome);
       projectOutcome.setProject(project);
       projectOutcome.setId(projectOutcomeID);
+      projectOutcome.setModificationJustification("");
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
 
     }
