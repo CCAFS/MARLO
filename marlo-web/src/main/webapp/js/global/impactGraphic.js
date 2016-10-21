@@ -94,12 +94,13 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       ele.css({
           'shape': 'rectangle',
           'background-color': '#F5F5F5',
-          'border-color': colorFlagship
+          'border-color': colorFlagship,
+          'color': '#884809',
+          'text-outline-width': 0
       });
       if(ele.children().length > 0) {
         ele.css({
-            'text-outline-width': 0,
-            'color': '#884809'
+
         });
         ele.addClass('bottom-center');
       }
@@ -201,16 +202,22 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
   });
   function nodeSelected(ele) {
-
     if(ele.isChild()) {
       var parent = ele.parent();
-      nodeSelected(parent);
+      parent.addClass('eating');
+      parent.css('background-opacity', '1');
+      parent.css('text-opacity', '1');
+      parent.css('z-index', '9');
+      parent.css('line-color', '#999999');
+      parent.css('source-arrow-color', '#999999');
+      parent.css('target-arrow-color', '#999999');
     }
+
     // change Styles
     ele.addClass('eating');
     ele.css('background-opacity', '1');
     ele.css('text-opacity', '1');
-    ele.css('z-index', '3');
+    ele.css('z-index', '9');
     ele.css('line-color', '#999999');
     ele.css('source-arrow-color', '#999999');
     ele.css('target-arrow-color', '#999999');
@@ -328,7 +335,7 @@ $("#changeGraph .btn").on("click", function() {
       crpID: currentCrpID
     }
     ajaxService(url, dataFull, "impactGraphic", true, true, 'concentric', false);
-    $(this).html("Show current graph");
+    $(this).html("Show section graph");
     $(this).addClass("fullGraph");
     $(this).removeClass("currentGraph");
   } else {
@@ -413,14 +420,14 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
           move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
         }
 
-        console.log(move.KO);
+        // console.log(move.KO);
         nodes[i].position = {
             x: move.KO,
             y: 400
         };
       } else if(nodes[i].data.type == "KO") {
         move.KO = (move.KO + (nodeWidth + nodeMargin + 20));
-        console.log(move.KO);
+        // console.log(move.KO);
         nodes[i].position = {
             x: move.KO,
             y: 400
