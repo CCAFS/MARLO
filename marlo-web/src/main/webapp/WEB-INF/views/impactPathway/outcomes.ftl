@@ -184,16 +184,19 @@
       <div class="col-md-4">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
         [#-- If you dont find the target unit in the list, please add a new one clicking here --]
-        [#if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if]
+        [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if --]
       </div>
       [#-- Target Value --]
       [#local showTargetValue = (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" type="text" i18nkey="outcome.targetValue" placeholder="outcome.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
+      
+
     </div>  
+    <div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div>
     <br />
-    
+    <br />
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
     <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
@@ -260,9 +263,7 @@
       [#-- Target Unit --]
       <div class="col-md-4">
         [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
-        [#if editable]
-        <div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>
-        [/#if]
+        [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if--]
       </div>
       [#-- Target Value --]
       [#local showTargetValue = (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]

@@ -64,25 +64,19 @@
           </td>
           [#-- Deliverable required fields --]
           <td class="text-center">
-          
-          [#if action.getDeliverableStatus(deliverable.id)??]
-         
+            [#if action.getDeliverableStatus(deliverable.id)??]
               [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
                 <span class="icon-20 icon-check" title="Complete"></span>
-              
               [#else]
                 <span class="icon-20 icon-uncheck" title=""></span> 
               [/#if]
             [#else]
                 <span class="icon-20 icon-uncheck" title=""></span>
             [/#if]
-          
-          
           </td>
           [#-- Delete Deliverable--]
           <td class="text-center">
-            [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
-            [#if canEdit]
+            [#if canEdit && action.isDeliverableNew(deliverable.id)]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>

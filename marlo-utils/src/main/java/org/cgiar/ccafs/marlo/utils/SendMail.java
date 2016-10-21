@@ -76,12 +76,6 @@ public class SendMail {
     properties.put("mail.smtp.host", config.getEmailHost());
     properties.put("mail.smtp.port", config.getEmailPort());
 
-    // Set the Test Header to list the emails that will send in production
-    StringBuilder message = new StringBuilder();
-    message.append("To: " + toEmail + "<br>");
-    message.append("CC: " + ccEmail + "<br>");
-    message.append("BBC: " + bbcEmail + "<br><br>");
-
 
     // Un-comment this line to watch javaMail debug
     // properties.put("mail.debug", "true");
@@ -102,20 +96,28 @@ public class SendMail {
     try {
       if (!config.isProduction()) {
         // Adding TEST words.
+        // Set the Test Header to list the emails that will send in production
+        StringBuilder testingHeader = new StringBuilder();
+        testingHeader.append("To: " + toEmail + "<br>");
+        testingHeader.append("CC: " + ccEmail + "<br>");
+        testingHeader.append("BBC: " + bbcEmail + "<br>");
+        testingHeader.append("----------------------------------------------------<br><br>");
         subject = "TEST " + subject;
-        messageContent = message.toString() + messageContent;
+        messageContent = testingHeader.toString() + messageContent;
       } else {
-        msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+          LOG.info("   - TO: " + toEmail);
         }
         if (ccEmail != null) {
           msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+          LOG.info("   - CC: " + ccEmail);
         }
       }
-
+      msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
       if (bbcEmail != null) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
+        LOG.info("   - BBC: " + bbcEmail);
       }
 
 
@@ -143,10 +145,7 @@ public class SendMail {
 
       msg.setContent(mimeMultipart);
       Transport.send(msg);
-      LOG.info("Message sent: " + subject);
-      LOG.info("   - TO: " + toEmail);
-      LOG.info("   - CC: " + ccEmail);
-      LOG.info("   - BBC: " + bbcEmail);
+      LOG.info("Message sent: \n" + subject);
 
     } catch (MessagingException e) {
       e.printStackTrace();

@@ -24,7 +24,7 @@
       
       <ul>
         [#list items as item]
-          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+          <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] ${action.getImpactSectionStatus(item.action, crpProgramID)?string('submitted','toSubmit')} ${(item.active)?string('enabled','disabled')}">
             <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="crpProgramID" value=crpProgramID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}">
               [@s.text name=item.name/]
             </a>
