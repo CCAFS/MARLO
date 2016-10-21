@@ -75,34 +75,34 @@ public class ClusterActivitiesAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -2049759808815382048L;
-  private RoleManager roleManager;
-  private UserRoleManager userRoleManager;
-  private CrpManager crpManager;
-  private CrpProgramManager crpProgramManager;
-  private CrpProgramOutcomeManager crpProgramOutcomeManager;
-  private CrpClusterOfActivityManager crpClusterOfActivityManager;
-  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
+  private AuditLogManager auditLogManager;
+  private long clRol;
+  private List<CrpClusterOfActivity> clusterofActivities;
   private CrpClusterActivityLeaderManager crpClusterActivityLeaderManager;
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-  private CrpUserManager crpUserManager;
-  private UserManager userManager;
-  private Crp loggedCrp;
-  private Role roleCl;
-  private long clRol;
-  private List<CrpProgram> programs;
-  private CrpProgram selectedProgram;
+  private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
+  private CrpClusterOfActivityManager crpClusterOfActivityManager;
+  private CrpManager crpManager;
   private long crpProgramID;
-  private List<CrpClusterOfActivity> clusterofActivities;
+  private CrpProgramManager crpProgramManager;
+  private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private CrpUserManager crpUserManager;
+  private Crp loggedCrp;
   private List<CrpProgramOutcome> outcomes;
-
-  private ClusterActivitiesValidator validator;
-
-
-  private AuditLogManager auditLogManager;
-
-  private String transaction;
+  private List<CrpProgram> programs;
+  private Role roleCl;
+  private RoleManager roleManager;
+  private CrpProgram selectedProgram;
   // Util
   private SendMail sendMail;
+
+  private String transaction;
+
+
+  private UserManager userManager;
+
+  private UserRoleManager userRoleManager;
+  private ClusterActivitiesValidator validator;
 
   @Inject
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -258,7 +258,7 @@ public class ClusterActivitiesAction extends BaseAction {
         user.setPassword(password);
       }
       message
-        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+      .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
       message.append(this.getText("email.support"));
       message.append(this.getText("email.bye"));
 
@@ -406,8 +406,8 @@ public class ClusterActivitiesAction extends BaseAction {
 
           User user = userManager.getUser(this.getCurrentUser().getId());
           List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-            .filter(c -> c.isActive() && c.getCrpProgram().isActive()
-              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram()!=null&& c.getCrpProgram().getId().longValue()==(crpProgramID)
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList());
           if (!userLeads.isEmpty()) {
             crpProgramID = userLeads.get(0).getCrpProgram().getId();
