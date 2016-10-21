@@ -115,14 +115,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
           }
 
         }
+      } else {
+        try {
+          return this.getName() + "-" + this.getLocElement().getName();
+        } catch (Exception e) {
+          return this.getName();
+        }
       }
-      try {
-        return this.getName() + "-" + this.getLocElement().getName();
-      } catch (Exception e) {
-        return this.getName();
-      }
+      return this.getName();
     } catch (Exception e) {
-      return this.getAcronym() + " - " + this.getName();
+      return this.getName();
     }
 
 
