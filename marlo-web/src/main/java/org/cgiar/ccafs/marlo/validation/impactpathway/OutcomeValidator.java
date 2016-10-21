@@ -174,13 +174,14 @@ public class OutcomeValidator extends BaseValidator
      * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
      * }
      */
-    if (outcome.getMilestones() != null) {
+    if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
       for (int j = 0; j < outcome.getMilestones().size(); j++) {
         outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
         this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
       }
     } else {
       this.addMessage("outcome.action.milestones.requeried");
+
       action.getInvalidFields().put("list-outcomes[" + i + "].milestones",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
     }
