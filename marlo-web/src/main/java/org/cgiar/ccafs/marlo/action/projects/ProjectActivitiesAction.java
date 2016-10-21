@@ -23,12 +23,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -78,6 +80,8 @@ public class ProjectActivitiesAction extends BaseAction {
 
   private DeliverableManager deliverableManager;
 
+  private ProjectPartnerManager projectPartnerManager;
+
   private Crp loggedCrp;
 
   private List<ProjectPartnerPerson> partnerPersons;
@@ -98,7 +102,8 @@ public class ProjectActivitiesAction extends BaseAction {
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableActivityManager deliverableActivityManager, DeliverableManager deliverableManager,
-    AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator) {
+    AuditLogManager auditLogManager, ProjectActivitiesValidator activitiesValidator,
+    ProjectPartnerManager projectPartnerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -108,6 +113,7 @@ public class ProjectActivitiesAction extends BaseAction {
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
     this.activitiesValidator = activitiesValidator;
+    this.projectPartnerManager = projectPartnerManager;
   }
 
 
@@ -475,9 +481,18 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
 
-      partnerPersons = projectPartnerPersonManager.findAll().stream()
-        .filter(pp -> pp.isActive() && pp.getProjectPartner().getProject().getId() == project.getId())
-        .collect(Collectors.toList());
+      partnerPersons = new ArrayList<>();
+      for (ProjectPartner partner : projectPartnerManager.findAll().stream()
+        .filter(pp -> pp.isActive() && pp.getProject().getId() == projectID).collect(Collectors.toList())) {
+
+        for (ProjectPartnerPerson partnerPerson : partner.getProjectPartnerPersons().stream()
+          .filter(ppa -> ppa.isActive()).collect(Collectors.toList())) {
+
+          partnerPersons.add(partnerPerson);
+        }
+      }
+
+      System.out.println("");
 
     }
 
