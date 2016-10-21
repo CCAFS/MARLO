@@ -124,7 +124,7 @@
               <img src="${baseUrl}/images/global/download-summary.png" height="25" title="[@s.text name="project.downloadPDf" /]" />
             </a>
             [#else]
-              <img src="${baseUrl}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.disabled" /]" />
+              <img src="${baseUrl}/images/global/download-summary-disabled.png" height="25" title="[@s.text name="global.comingSoon" /]" />
             [/#if]
           </td>
           [#-- Delete Project--]
