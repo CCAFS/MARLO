@@ -96,6 +96,7 @@ function updateClustersIndex() {
     var customName = name + '[' + i + ']';
     $(item).find('span.index').html(i + 1);
     $(item).find('.outcome-statement').attr('name', customName + '.description');
+    $(item).find('.clusterIdentifier').attr('name', customName + '.identifier');
     $(item).find('.cluterId').attr('name', customName + '.id');
 
     updateUsersIndex(item, customName);
@@ -297,7 +298,9 @@ function updateOutcomesIndex(item,keyOutputName) {
   var name = $("#outcomesName").val();
   $(item).find('.outcomesWrapper .outcomeByClusterItem').each(function(indexOutcome,outcomeItem) {
     var customName = keyOutputName + '.' + name + '[' + indexOutcome + ']';
-    $(outcomeItem).find('.outcomeContribution ').attr('name', customName + '.contribution');
+    console.log(customName);
+    $(outcomeItem).find('.outcomeContributionId').attr('name', customName + '.id');
+    $(outcomeItem).find('.outcomeContribution').attr('name', customName + '.contribution');
     $(outcomeItem).find('.outcomeId').attr('name', customName + '.crpProgramOutcome.id');
   });
 

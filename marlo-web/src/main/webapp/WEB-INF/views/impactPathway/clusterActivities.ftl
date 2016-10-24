@@ -121,7 +121,7 @@
 [@keyOutputItem element={} index=0 name="${keyOutputsName}"  isTemplate=true /]
 
 [#-- Outcome by CoA Template --]
-[@outcomeByCluster element={} index=0 name="${outcomesName}"  isTemplate=true /]
+[@outcomeByCluster element={} index=0 name="clusterofActivities[-1].${keyOutputsName}[-1].${outcomesName}"  isTemplate=true /]
 
 <input type="hidden" id="clusterName" value="clusterofActivities" />
 <input type="hidden" id="leaderName" value="${leadersName}" />
@@ -150,8 +150,8 @@
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-100" editable=editable /]
       </div>
       
-            <div class=" form-group cluster-identifier">
-        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true   className="outcome-statement limitWords-20" editable=editable /]
+      <div class=" form-group cluster-identifier">
+        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true   className="clusterIdentifier limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>
@@ -275,7 +275,7 @@
       <div class="form-group col-md-9">
         <label style="display:block;" for="">Outcome statement</label>
         <span title="${(element.crpProgramOutcome.description)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
-        <input class="elementId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+        <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
       </div>
