@@ -26,10 +26,12 @@
     [#if !editable]${(deliverable.year)!}[/#if]
   </div>
 
-[#-- Status justification textArea --] 
+[#-- Status justification textArea --]
+[#if !action.isDeliverableNew(deliverable.id)]
 <div class="col-md-12 form-group justificationContent" style="display:none;">
   <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
+[/#if]
 
 [#-- CoA Outputs select --] 
   <div class="col-md-12 ">
