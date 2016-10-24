@@ -170,13 +170,39 @@ public class ProjectLocationAction extends BaseAction {
 
     List<Map<String, Object>> parentLocations = new ArrayList<>();
     List<CountryLocationLevel> locationLevels = new ArrayList<>();
-
+    List<ProjectLocationElementType> locationsElementType = new ArrayList<>(project.getProjectLocationElementTypes());
 
     project.setLocations(new ArrayList<ProjectLocation>(
       project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList())));
 
     if (!project.getLocations().isEmpty()) {
       Map<String, Object> locationParent;
+
+      if (locationsElementType != null) {
+        for (ProjectLocationElementType projectLocationElementType : locationsElementType) {
+          boolean existElementType = false;
+          for (ProjectLocation location : project.getLocations()) {
+            if (projectLocationElementType.getLocElementType().getId() == location.getLocElement().getLocElementType()
+              .getId()) {
+              existElementType = true;
+            }
+          }
+          if (!existElementType) {
+            locationParent = new HashMap<String, Object>();
+            if (!parentLocations.isEmpty()) {
+              locationParent.put(projectLocationElementType.getLocElementType().getName(),
+                projectLocationElementType.getLocElementType().getId());
+              if (!parentLocations.contains(locationParent)) {
+                parentLocations.add(locationParent);
+              }
+            } else {
+              locationParent.put(projectLocationElementType.getLocElementType().getName(),
+                projectLocationElementType.getLocElementType().getId());
+              parentLocations.add(locationParent);
+            }
+          }
+        }
+      }
 
       for (ProjectLocation location : project.getLocations()) {
         locationParent = new HashMap<String, Object>();
@@ -429,36 +455,6 @@ public class ProjectLocationAction extends BaseAction {
 
           } else {
             if (locationData.isAllCountries()) {
-
-              LocElement element = locElementTypeManager.getLocElementTypeById(locationData.getId()).getLocElements()
-                .stream().filter(le -> le.isActive()).collect(Collectors.toList()).get(0);
-
-              ProjectLocation existProjectLocation =
-                projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), element.getId());
-
-              if (existProjectLocation == null) {
-                ProjectLocation projectLocation = new ProjectLocation();
-                projectLocation.setProject(project);
-                projectLocation.setLocElement(element);
-                projectLocation.setActive(true);
-                projectLocation.setActiveSince(new Date());
-                projectLocation.setCreatedBy(this.getCurrentUser());
-                projectLocation.setModificationJustification("");
-                projectLocation.setModifiedBy(this.getCurrentUser());
-
-                projectLocationManager.saveProjectLocation(projectLocation);
-
-              } else {
-
-                if (!existProjectLocation.isActive()) {
-                  existProjectLocation.setActive(true);
-                  existProjectLocation.setActiveSince(new Date());
-                  existProjectLocation.setCreatedBy(this.getCurrentUser());
-                  existProjectLocation.setModificationJustification("");
-                  existProjectLocation.setModifiedBy(this.getCurrentUser());
-                  projectLocationManager.saveProjectLocation(existProjectLocation);
-                }
-              }
 
               ProjectLocationElementType projectLocationElementType =
                 projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), locationData.getId());
