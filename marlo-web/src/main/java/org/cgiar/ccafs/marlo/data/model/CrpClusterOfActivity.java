@@ -29,6 +29,7 @@ import com.google.gson.annotations.Expose;
  */
 public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -6392709700346014366L;
 
   @Expose
@@ -52,13 +53,13 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
-
   @Expose
   private String identifier;
 
 
   @Expose
   private String modificationJustification;
+
 
   private List<CrpClusterActivityLeader> leaders;
 
@@ -107,9 +108,17 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
+  }
+
+
+  public String getComposedName() {
+    if (this.getIdentifier() != null && !this.getIdentifier().isEmpty()) {
+      return this.getIdentifier() + " - " + this.description;
+    } else {
+      return description;
+    }
   }
 
 
@@ -132,11 +141,9 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
     return this.crpProgram;
   }
 
-
   public String getDescription() {
-    return this.description;
+    return description;
   }
-
 
   @Override
   public Long getId() {

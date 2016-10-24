@@ -151,7 +151,7 @@
       </div>
       
             <div class=" form-group cluster-identifier">
-        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier"  className="outcome-statement limitWords-20" editable=editable /]
+        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true   className="outcome-statement limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>

@@ -166,7 +166,7 @@
                       [#if editable && action.hasPermission("activities") ]<span class="listButton remove popUpValidation">[@s.text name="form.buttons.remove" /]</span>[/#if] 
                       <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
                       <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
-                      <span class="name">${(element.crpClusterOfActivity.description)!'null'}</span>
+                      <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
                         [#if element.crpClusterOfActivity.leaders??]
