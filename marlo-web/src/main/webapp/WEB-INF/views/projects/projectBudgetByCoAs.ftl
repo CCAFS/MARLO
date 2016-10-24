@@ -160,7 +160,7 @@
     [#-- Partner Title --]
     <div class="blockTitle opened">
       [#-- Title --] 
-      <span class="partnerTitle">${(element.description)!''}</span> 
+      <span class="partnerTitle">${(element.composedName)!''}</span> 
        
       <div class="clearfix"></div>
     </div>

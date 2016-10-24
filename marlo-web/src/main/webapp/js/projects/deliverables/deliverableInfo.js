@@ -102,7 +102,7 @@ function justificationByStatus(optionValue) {
   }
   if(optionValue == "2") {
     justification.find("label").html(
-        "Describe overall deliverable or progress made during this reporting cycle:" + "<span class='red'>*</span>");
+        "Describe overall deliverable or progress made during this cycle:" + "<span class='red'>*</span>");
     justification.show("slow");
   }
   if(optionValue == "4") {

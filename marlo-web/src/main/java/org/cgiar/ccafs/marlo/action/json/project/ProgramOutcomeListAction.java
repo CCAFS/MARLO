@@ -85,7 +85,7 @@ public class ProgramOutcomeListAction extends BaseAction {
           if (activity != null) {
             clusterOfActivity = new HashMap<String, Object>();
             clusterOfActivity.put("id", activity.getId());
-            clusterOfActivity.put("description", activity.getDescription());
+            clusterOfActivity.put("description", activity.getComposedName());
             clusterOfActivities.add(clusterOfActivity);
           }
 

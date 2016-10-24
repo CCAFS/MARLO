@@ -24,33 +24,33 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private Long id;
-
-  @Expose
-  private CrpClusterOfActivity crpClusterOfActivity;
-
-  @Expose
-  private User modifiedBy;
-  @Expose
-  private User createdBy;
-  @Expose
-  private String keyOutput;
-  @Expose
-  private Double contribution;
-
-  @Expose
   private boolean active;
-
 
   @Expose
   private Date activeSince;
 
   @Expose
-  private String modificationJustification;
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
-  private List<CrpClusterKeyOutputOutcome> keyOutputOutcomes;
-
+  private Double contribution;
+  @Expose
+  private User createdBy;
   private Set<CrpClusterKeyOutputOutcome> crpClusterKeyOutputOutcomes = new HashSet<CrpClusterKeyOutputOutcome>(0);
+  @Expose
+  private CrpClusterOfActivity crpClusterOfActivity;
+
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+
+
+  @Expose
+  private Long id;
+
+  @Expose
+  private String keyOutput;
+  private List<CrpClusterKeyOutputOutcome> keyOutputOutcomes;
+  @Expose
+  private String modificationJustification;
+
+  @Expose
+  private User modifiedBy;
 
 
   public CrpClusterKeyOutput() {
@@ -101,9 +101,16 @@ public class CrpClusterKeyOutput implements java.io.Serializable, IAuditLog {
     }
     return true;
   }
-
   public Date getActiveSince() {
     return this.activeSince;
+  }
+  public String getComposedName() {
+    if(this.keyOutput.isEmpty()){
+      return "Key output title not defined";
+    }else{
+      return this.keyOutput;
+    }
+
   }
 
   public Double getContribution() {

@@ -100,6 +100,17 @@ public class DeliverableListAction extends BaseAction {
     return INPUT;
   }
 
+  public boolean canEdit(long deliverableID) {
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+    if (this.isPlanningActive()) {
+      if (deliverable.getYear() >= this.getCurrentCycleYear()) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public String delete() {
 

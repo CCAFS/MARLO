@@ -66,7 +66,7 @@ public class ClusetrActivitiesListAction extends BaseAction {
           .filter(c -> c.isActive()).collect(Collectors.toList())) {
           Map<String, Object> clusterOfActivityMap = new HashMap<String, Object>();
           clusterOfActivityMap.put("id", clusterOfActivity.getId());
-          clusterOfActivityMap.put("description", clusterOfActivity.getDescription());
+          clusterOfActivityMap.put("description", clusterOfActivity.getComposedName());
           clusterOfActivities.add(clusterOfActivityMap);
 
         }

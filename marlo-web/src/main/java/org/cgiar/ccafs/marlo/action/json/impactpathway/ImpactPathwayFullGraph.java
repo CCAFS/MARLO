@@ -124,7 +124,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
         HashMap<String, Object> dataDetailOutcome = new HashMap<>();
         dataDetailOutcome.put("id", "C" + crpClusterOfActivity.getId());
         dataDetailOutcome.put("label", "CoA #" + i1);
-        dataDetailOutcome.put("description", crpClusterOfActivity.getDescription());
+        dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
         dataOutcome.put("data", dataDetailOutcome);
