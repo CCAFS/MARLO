@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -37,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -148,9 +150,21 @@ public class ProjectSubmissionAction extends BaseAction {
     if (sections.size() == 0) {
       return false;
     }
-    if (sections.size() < 8) {
-      return false;
+
+    HashSet<String> sectionsString = new HashSet<>();
+    for (SectionStatus sectionStatus : sections) {
+      sectionsString.add(sectionStatus.getSectionName());
     }
+    if (!sectionsString.contains(ProjectSectionStatusEnum.BUDGETBYCOA)) {
+      if (sectionsString.size() < 7) {
+        return false;
+      }
+    } else {
+      if (sectionsString.size() < 8) {
+        return false;
+      }
+    }
+
     return true;
   }
 
