@@ -35,7 +35,7 @@
 
 [#-- CoA Outputs select --] 
   <div class="col-md-12 ">
-    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="keyOutput"  multiple=false required=true  className="keyOutput" editable=editable/]
+    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
   [#if editable && !(keyOutputs?has_content)]
     <div class="partnerListMsj note col-md-12">

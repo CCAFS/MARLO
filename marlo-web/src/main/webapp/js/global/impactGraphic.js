@@ -39,7 +39,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       style: cytoscape.stylesheet().selector('node').css({
           'shape': 'roundrectangle',
           'height': 30,
-          'width': 100,
+          'width': 110,
           'background-fit': 'cover',
           'border-width': 0.7,
           'border-opacity': 0.7,
@@ -372,7 +372,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
         CoA: 0,
         KO: 0,
     };
-    var nodeWidth = 100;
+    var nodeWidth = 110;
     var nodeMargin = 20;
 
     // For to count and set position
