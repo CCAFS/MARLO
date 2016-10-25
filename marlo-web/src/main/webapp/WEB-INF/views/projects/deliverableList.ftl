@@ -53,7 +53,6 @@
          </div>
            <h3 class="subTitle headTitle">On going deliverables</h3>
            <hr />
-           ${action.getDeliverables(true)}
            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
