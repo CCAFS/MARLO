@@ -457,40 +457,45 @@ public class ClusterActivitiesAction extends BaseAction {
 
           JsonObject jReader = gson.fromJson(reader, JsonObject.class);
 
-          AutoSaveReader autoSaveReader = new AutoSaveReader();
+          try {
+            AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-          selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
-          clusterofActivities = selectedProgram.getClusterofActivities();
-          selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
-          selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
-          selectedProgram.setCrp(loggedCrp);
-          if (clusterofActivities == null) {
-            clusterofActivities = new ArrayList<>();
-          }
-          for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
-
-
-            if (clusterOfActivity.getKeyOutputs() == null) {
-              clusterOfActivity.setKeyOutputs(new ArrayList<>());
+            selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
+            clusterofActivities = selectedProgram.getClusterofActivities();
+            selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
+            selectedProgram.setModifiedBy(userManager.getUser(selectedProgram.getModifiedBy().getId()));
+            selectedProgram.setCrp(loggedCrp);
+            if (clusterofActivities == null) {
+              clusterofActivities = new ArrayList<>();
             }
-            if (clusterOfActivity.getLeaders() != null) {
-              for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
-                if (leaders.getUser() != null && leaders.getUser().getId() != null) {
-                  leaders.setUser(userManager.getUser(leaders.getUser().getId()));
+            for (CrpClusterOfActivity clusterOfActivity : clusterofActivities) {
+
+
+              if (clusterOfActivity.getKeyOutputs() == null) {
+                clusterOfActivity.setKeyOutputs(new ArrayList<>());
+              }
+              if (clusterOfActivity.getLeaders() != null) {
+                for (CrpClusterActivityLeader leaders : clusterOfActivity.getLeaders()) {
+                  if (leaders.getUser() != null && leaders.getUser().getId() != null) {
+                    leaders.setUser(userManager.getUser(leaders.getUser().getId()));
+                  }
                 }
               }
-            }
 
-            if (clusterOfActivity.getKeyOutputs() != null) {
-              for (CrpClusterKeyOutput keyOuput : clusterOfActivity.getKeyOutputs()) {
-                if (keyOuput.getKeyOutputOutcomes() != null) {
-                  for (CrpClusterKeyOutputOutcome keyOuputOutcome : keyOuput.getKeyOutputOutcomes()) {
-                    keyOuputOutcome.setCrpProgramOutcome(crpProgramOutcomeManager
-                      .getCrpProgramOutcomeById(keyOuputOutcome.getCrpProgramOutcome().getId()));
+              if (clusterOfActivity.getKeyOutputs() != null) {
+                for (CrpClusterKeyOutput keyOuput : clusterOfActivity.getKeyOutputs()) {
+                  if (keyOuput.getKeyOutputOutcomes() != null) {
+                    for (CrpClusterKeyOutputOutcome keyOuputOutcome : keyOuput.getKeyOutputOutcomes()) {
+                      keyOuputOutcome.setCrpProgramOutcome(crpProgramOutcomeManager
+                        .getCrpProgramOutcomeById(keyOuputOutcome.getCrpProgramOutcome().getId()));
+                    }
                   }
                 }
               }
             }
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
           }
 
           reader.close();
