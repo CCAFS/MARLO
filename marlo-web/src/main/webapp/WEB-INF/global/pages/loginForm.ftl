@@ -4,8 +4,6 @@
   <div class="loginForm instructions">
     [#-- @s.text name="home.login.message.nonCgiar" / --]
     <p>[@s.text name="login.testersMessage"/]</p>
-    <p>[@s.text name="login.testersMessage2"/]</p>
-    <p>[@s.text name="login.testersMessage3"/]</p>
   </div>
   [/#if]
   [@s.form method="POST" namespace="/" action="login" cssClass="loginForm"]
