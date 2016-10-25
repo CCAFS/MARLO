@@ -150,16 +150,17 @@ public class DeliverableListAction extends BaseAction {
       if (open) {
 
         List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive() && a.getYear() >= this.getCurrentCycleYear()
+          .filter(a -> a.isActive()
             && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0))))
           .collect(Collectors.toList());
         return openA;
 
       } else {
 
         List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive() && a.getYear() < this.getCurrentCycleYear()
+          .filter(a -> a.isActive()
             && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
               || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
           .collect(Collectors.toList());
