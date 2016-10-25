@@ -51,8 +51,10 @@
             <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
           </div>
          </div>
-           
-           <div style="">[@deliverableList.deliverablesList deliverables=deliverables canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+           <h3 class="subTitle headTitle">On going deliverables</h3>
+           <hr />
+           ${action.getDeliverables(true)}
+           <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
           <div class="text-right">
             [#if editable && action.hasPermission("addDeliverable")]
@@ -61,6 +63,10 @@
             </a></div>
             [/#if]
           </div>
+          
+          <h3 class="subTitle headTitle">Completed deliverables</h3>
+           <hr />
+           <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
              
 
          
