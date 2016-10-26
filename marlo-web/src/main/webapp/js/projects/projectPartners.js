@@ -455,17 +455,11 @@ function removePartnerEvent(e) {
 
 function addPartnerEvent(e) {
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
-  $(e.target).before($newElement);
+  $(this).before($newElement);
   $newElement.find('.blockTitle').trigger('click');
   $newElement.show("slow", function() {
-
-    var container = $('body');
-    var scrollTo = $newElement;
-
-    container.animate({
-      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
-    });
-
+    // Update component
+    $(document).trigger('updateComponent');
   });
   
   // Activate the select2 plugin for new partners created
