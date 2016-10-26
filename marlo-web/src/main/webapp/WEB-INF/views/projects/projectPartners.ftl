@@ -210,12 +210,6 @@
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
-      [#local hasBranches = true /]
-      [#-- Branches --]
-      <div class="branchesBlock form-group" title="Select Branches clicking here" style="display:${hasBranches?string('block','none')}">
-        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="" keyFieldName=""  displayFieldName="" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
-      </div>
-      
       [#-- Filters --]
       [#if editable && isTemplate]
         <div class="filters-link"> <span class="glyphicon glyphicon-filter"></span> <span>[@s.text name="projectPartners.filters" /]</span></div>
@@ -242,6 +236,13 @@
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
         [/#if]
+      </div>
+      
+      [#local hasBranches = true /]
+      [#-- Branches --]
+      <div class="branchesBlock form-group" title="Select Branches clicking here" style="display:${hasBranches?string('block','none')}">
+        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="" keyFieldName=""  displayFieldName="" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
+        <br />
       </div>
 
       [#-- Indicate which PPA Partners for second level partners --]
