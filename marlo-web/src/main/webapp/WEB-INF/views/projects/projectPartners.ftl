@@ -182,6 +182,8 @@
   [#local isPPA = (action.isPPA(element.institution))!false /]
   
   <div id="projectPartner-${isTemplate?string('template',(projectPartner.id)!)}" class="projectPartner expandableBlock borderBox ${(isLeader?string('leader',''))!} ${(isCoordinator?string('coordinator',''))!}" style="display:${isTemplate?string('none','block')}">
+    [#-- Loading --]
+    <div class="loading" style="display:none"></div>
     [#-- Remove link for all partners --]
     [#if editable ] [#--&& (isTemplate) --]
       <div class="removeLink"><div id="removePartner" class="removePartner removeElement removeLink" title="[@s.text name="projectPartners.removePartner" /]"></div></div>
@@ -238,10 +240,11 @@
         [/#if]
       </div>
       
-      [#local hasBranches = true /]
+      
+      [#local hasBranches = element.institution?? && element.institution.branches?has_content /]
       [#-- Branches --]
       <div class="branchesBlock form-group" title="Select Branches clicking here" style="display:${hasBranches?string('block','none')}">
-        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="" keyFieldName=""  displayFieldName="" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
+        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="${name}.institution.branches" keyFieldName="id"  displayFieldName="branchName" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
         <br />
       </div>
 

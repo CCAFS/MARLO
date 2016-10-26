@@ -111,10 +111,19 @@ public class Institution implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getBranchName() {
+    try {
+      return this.acronym + " - " + this.locElement.getName();
+    } catch (Exception e) {
+      return this.name;
+    }
+
+  }
+
+
   public String getCity() {
     return this.city;
   }
-
 
   public String getComposedName() {
     try {

@@ -126,7 +126,7 @@
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
     <label for="">
-        [#if labelTitle != ""]${labelTitle}:[/#if] [@req required=required && editable /]
+        [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
         [#if help != ""]<img src="${baseUrl}/images/global/icon-help2.png" title="[@s.text name="${help}"/]" />[/#if]
     </label>
     [/#if]
