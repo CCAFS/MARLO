@@ -476,7 +476,8 @@ public class CrpAdminManagmentAction extends BaseAction {
 
 
           List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
-            .filter(u -> u.isActive() && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
+            .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
+              && u.getCrpProgram().getProgramType() == crpProgramPrev.getProgramType())
             .collect(Collectors.toList());
 
 
