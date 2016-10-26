@@ -100,6 +100,13 @@ function attachEvents() {
   });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
+  // Select multiple branches
+  $('.branchesSelect').on("select2:select", function(e){
+    console.log(e.currentTarget.value);
+    if(e.currentTarget.value == -1){
+      return
+    }
+  });
 
   /**
    * CCAFS Partners list events
@@ -460,11 +467,17 @@ function addPartnerEvent(e) {
     });
 
   });
-  // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
+  
   // Activate the select2 plugin for new partners created
-  $newElement.find("select").select2({
+  $newElement.find("select[class!='branchesSelect']").select2({
     width: '100%'
   });
+  
+  $newElement.find("select.branchesSelect ").select2({
+    placeholder: "Select the branches where the project is working on...",
+    width: '100%'
+  });
+  
   // Update indexes
   setProjectPartnersIndexes();
 }
@@ -587,7 +600,12 @@ function addItemList($option) {
 // Activate the chosen plugin to the countries, partner types and partners lists.
 function addSelect2() {
 
-  $("form select").select2({
+  $("form select[class!='branchesSelect']").select2({
+    width: '100%'
+  });
+  
+  $("form select.branchesSelect ").select2({
+    placeholder: "Select the branches where the project is working on...",
     width: '100%'
   });
 
