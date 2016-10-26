@@ -16,7 +16,8 @@
         <div class="col-md-4 col-md-offset-1 glossary">[@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.here" /][/@s.param][/@s.text]</a>
         </div>
       </div>
-    </footer> 
+    </footer>
+    
     [#compress]
     [#-- Importing JavaScript files --]
     [#if globalLibs??]
