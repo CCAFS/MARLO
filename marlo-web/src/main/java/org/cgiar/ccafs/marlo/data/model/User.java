@@ -144,6 +144,11 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.firstName + " " + this.lastName;
   }
 
+  public String getComposedID() {
+    String composedId = this.email.split("@")[0] + "-" + this.id;
+    return composedId;
+  }
+
 
   /**
    * This method returns a composed way to show a User.

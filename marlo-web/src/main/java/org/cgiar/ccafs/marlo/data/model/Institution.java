@@ -38,31 +38,35 @@ public class Institution implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
-
   @Expose
   private LocElement locElement;
 
-  @Expose
-  private String acronym;
-  @Expose
-  private String city;
-  @Expose
-  private String websiteLink;
 
   @Expose
+  private String acronym;
+
+
+  @Expose
+  private String city;
+
+  @Expose
+  private String websiteLink;
+  @Expose
   private Long programId;
+  @Expose
+  private Institution headquarter;
 
   @Expose
   private Date added;
+
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
+
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
-
   public Institution() {
   }
-
 
   public Institution(InstitutionType institutionType, String name, Date added) {
     this.institutionType = institutionType;
@@ -72,7 +76,8 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
 
   public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
-    Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement) {
+    Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement,
+    Institution headquarter) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -82,6 +87,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.added = added;
     this.crpPpaPartners = crpPpaPartners;
     this.locElement = locElement;
+    this.headquarter = headquarter;
   }
 
 
@@ -89,9 +95,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.acronym;
   }
 
+
   public Date getAdded() {
     return this.added;
   }
+
 
   public String getCity() {
     return this.city;
@@ -132,6 +140,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
+  }
+
+  public Institution getHeadquarter() {
+    return headquarter;
   }
 
   @Override
@@ -207,6 +219,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
+  }
+
+  public void setHeadquarter(Institution headquarter) {
+    this.headquarter = headquarter;
   }
 
   public void setId(Long id) {
