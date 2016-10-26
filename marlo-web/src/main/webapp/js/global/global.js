@@ -30,7 +30,6 @@ $(document)
         function() {
           showNotificationMessages();
           showHelpText();
-          applyWordCounter($("#justification"), justificationLimitWords);
 
           // Tawkto Widget
           var $dragButton = $("#draggable-button");

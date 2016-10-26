@@ -243,7 +243,7 @@
       
       [#local hasBranches = element.institution?? && element.institution.branches?has_content /]
       [#-- Branches --]
-      <div class="branchesBlock form-group" title="Select Branches clicking here" style="display:${hasBranches?string('block','none')}">
+      <div class="branchesBlock form-group" style="display:${hasBranches?string('block','none')}">
         [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="${name}.institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
         <br />
       </div>
