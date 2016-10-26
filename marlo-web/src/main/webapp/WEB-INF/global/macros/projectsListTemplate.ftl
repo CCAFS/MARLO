@@ -5,7 +5,7 @@
     <thead>
       <tr class="header">
         <th colspan="5">General Information</th>
-        <th colspan="3">[@s.text name="projectsList.projectBudget" /] ${currentCycleYear}</th> 
+        <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
         <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">

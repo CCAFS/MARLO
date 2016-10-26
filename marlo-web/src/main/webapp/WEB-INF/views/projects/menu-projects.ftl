@@ -87,7 +87,7 @@
 [#-- Open for Project Leaders --]
 [#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) ]
   <div class="grayBox text-center">
-    [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=editable inverse=false cssClass="projectEditLeader text-center" /]  
+    [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
   <br />
 [#else]

@@ -4,8 +4,7 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/projects_cofunded/cofundedList.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
-[#assign currentSection = "projects" /]
-[#assign currentStage = "cofunded" /]
+[#assign currentSection = "fundingSources" /] 
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/bilaterals", "action":""}
@@ -18,9 +17,6 @@
     
 <section class="container">
   <article class="fullBlock" id="mainInformation">
-  
-    [#-- Menu projects --]
-    [#include "/WEB-INF/views/projects/menu-projectsList.ftl" /]
   
     [#-- Projects List (My Projects) --]
     <h3 class="headTitle text-center">[@s.text name="Bilateral Co-Funded Projects you are leading  "/]</h3>

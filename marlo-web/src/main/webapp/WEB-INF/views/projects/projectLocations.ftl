@@ -41,7 +41,17 @@
             [#-- Content--]
               <div class="row">
               <div class="col-md-5">
-                [@customForm.yesNoInput name="project.locationGlobal" label="Is the project global?" editable=editable inverse=false value="${(project.locationGlobal?has_content)?string('true','false')}" cssClass="text-left " /]              
+                [#if editable]
+                  [@customForm.yesNoInput name="project.locationGlobal" label="Is the project global?"  inverse=false value="${(project.locationGlobal?has_content)?string('true','false')}" cssClass="text-left " /]              
+                [#else]
+                <h4 style="text-align:center; display: inline-block">
+                  [#if (project.locationGlobal?has_content)?string('true','false')=="true"]
+                    <label for="">This project is global</label>
+                  [#else]
+                    <label>This project is not global</label>
+                  [/#if]
+                </h4>
+                [/#if]
               </div>
               <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
               <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>

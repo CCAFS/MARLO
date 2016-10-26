@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -142,8 +143,44 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
+
+  public List<Deliverable> getDeliverables(boolean open) {
+
+    try {
+      if (open) {
+
+        List<Deliverable> openA = deliverables.stream()
+          .filter(a -> a.isActive()
+            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0))))
+          .collect(Collectors.toList());
+        return openA;
+
+      } else {
+
+        List<Deliverable> openA = deliverables.stream()
+          .filter(a -> a.isActive()
+            && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+          .collect(Collectors.toList());
+        return openA;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
+
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
+  }
+
+  public int getIndexDeliverables(long id) {
+    Deliverable activity = new Deliverable();
+    activity.setId(id);
+    return deliverables.indexOf(activity);
+
   }
 
   public Project getProject() {
@@ -153,6 +190,7 @@ public class DeliverableListAction extends BaseAction {
   public long getProjectID() {
     return projectID;
   }
+
 
   @Override
   public void prepare() throws Exception {

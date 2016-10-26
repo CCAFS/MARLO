@@ -12,6 +12,12 @@
     <div class="col-md-6">
       <h3>[@s.text name="login.marloTitle" /]</h3>
       <p>[@s.text name="login.marloDescription" /]  </p>
+      
+      <div class="note">
+        <p>[@s.text name="login.testersMessage2"/]</p>
+        <p>[@s.text name="login.testersMessage3"/]</p>
+      </div>
+      
     </div>
     <div class="col-md-offset-1 col-md-5">
       [#-- Login Form --]

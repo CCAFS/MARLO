@@ -10,7 +10,9 @@
   <li class="[#if currentStage == "w3"]active[/#if]">
     <a href="[@s.url namespace='/projects' action='${(crpSession)!}/projectsList'][@s.param name="filterBy"]w3[/@s.param][/@s.url]">W3/Bilateral Standalone Projects</a>
   </li>
+  [#-- 
   <li class="[#if currentStage == "cofunded"]active[/#if]">
     <a href="[@s.url namespace='/bilaterals' action='${(crpSession)!}/cofundedList'][/@s.url]">Supplement Projects</a>
   </li>
+    --]
 </ul>
