@@ -145,13 +145,13 @@
       [#if editable]
         <div class=" removeElement removeCluster" title="Remove Cluster"></div>
       [/#if]
+      [#-- Cluster Activity identifier --]
+      <div class=" form-group cluster-identifier ">
+        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true placeholder="e.g. CoA 1.1"   className="clusterIdentifier" editable=editable /]
+      </div>
       [#-- Cluster Activity Name --]
       <div class=" form-group cluster-title">
         [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-100" editable=editable /]
-      </div>
-      
-      <div class=" form-group cluster-identifier">
-        [@customForm.input name="${clusterCustomName}.identifier" i18nkey="cluster.identifier" required=true   className="clusterIdentifier limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]</label></span>

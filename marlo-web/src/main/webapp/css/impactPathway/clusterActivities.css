@@ -63,7 +63,7 @@ span.glyphicon.glyphicon-user {
 }
 
 .cluster-title {
-    margin-top: 20px;
+    /* margin-top: 20px; */
 }
 
 .subtitle {
@@ -130,4 +130,9 @@ span.outcomeStatement {
 
 span.koTitle {
     padding-left: 0;
+}
+
+.cluster-identifier {
+    margin-top: 20px;
+    width: 15%;
 }
