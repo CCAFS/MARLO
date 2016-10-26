@@ -61,7 +61,6 @@
             </p>
             
             [#-- Other fields --]
-             
             [#if project.projectEditLeader]
             <div class="simpleBox">
               [#-- -- -- REPORTING BLOCK -- -- --]
@@ -211,6 +210,12 @@
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
+      [#local hasBranches = true /]
+      [#-- Branches --]
+      <div class="branchesBlock form-group" title="Select Branches clicking here" style="display:${hasBranches?string('block','none')}">
+        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="" keyFieldName=""  displayFieldName="" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
+      </div>
+      
       [#-- Filters --]
       [#if editable && isTemplate]
         <div class="filters-link"> <span class="glyphicon glyphicon-filter"></span> <span>[@s.text name="projectPartners.filters" /]</span></div>
@@ -243,7 +248,7 @@
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
         [#assign showPPABlock][#if isPPA || isTemplate]none[#else]block[/#if][/#assign]
         <div class="ppaPartnersList panel tertiary" listname="${name}.partnerContributors" style="display:${showPPABlock}">
-          <div class="panel-head">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /]</div> 
+          <h5 class="sectionSubTitle">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /]</h5>
           <div class="panel-body">
             [#if !(element.partnerContributors?has_content) && !editable]
               <p>[@s.text name="projectPartners.noSelectedCCAFSPartners" /] </p>
@@ -270,7 +275,7 @@
       
       [#-- Contacts person(s)  --]
       <div class="contactsPerson panel tertiary">
-        <div class="panel-head">[@s.text name="projectPartners.projectPartnerContacts" /]</div>
+        <h5 class="sectionSubTitle">[@s.text name="projectPartners.projectPartnerContacts" /]</h5>
         <div class="fullPartBlock" listname="${name}.partnerPersons">
         [#if element.partnerPersons?has_content]
           [#list element.partnerPersons as partnerPerson]
