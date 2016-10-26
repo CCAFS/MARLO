@@ -74,5 +74,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBranch" />
         </set>
+        
+          <set name="branches" table="institutions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="headquarter" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -68,6 +68,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
   private Set<ProjectBranch> projectBranches = new HashSet<ProjectBranch>(0);
+  private Set<Institution> branches = new HashSet<Institution>(0);
 
   public Institution() {
   }
