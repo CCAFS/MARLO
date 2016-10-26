@@ -16,8 +16,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -110,7 +112,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return branches;
   }
 
-
   public String getBranchName() {
     try {
       return this.acronym + " - " + this.locElement.getName();
@@ -124,6 +125,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public String getCity() {
     return this.city;
   }
+
 
   public String getComposedName() {
     try {
@@ -158,7 +160,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
@@ -168,6 +169,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return headquarter;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
@@ -175,6 +177,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public InstitutionType getInstitutionType() {
     return institutionType;
+  }
+
+  public List<Institution> getInstitutuionsBranches() {
+    List<Institution> list = new ArrayList<Institution>();
+    list.add(this);
+    list.addAll(this.getBranches());
+    return list;
   }
 
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
