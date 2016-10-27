@@ -15,10 +15,6 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -2836976847017848957L;
 
 
@@ -32,6 +28,8 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+  @Expose
+  private Institution institution;
 
   @Expose
   private User createdBy;
@@ -57,7 +55,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
-    Set<DeliverablePartnership> deliverablePartnerships) {
+    Set<DeliverablePartnership> deliverablePartnerships, Institution institution) {
     this.projectPartner = projectPartner;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -67,6 +65,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.deliverablePartnerships = deliverablePartnerships;
+    this.institution = institution;
   }
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
