@@ -238,6 +238,7 @@
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
         [/#if]
+        <br />
       </div>
       
       
@@ -348,7 +349,7 @@
         [#-- Contact Branch --]
         <div class="col-md-6 partnerPerson-branch  ">
           [#if canEditContactType]
-            [@customForm.select name="${name}.contactBranch" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
+            [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
           [#else]
           
           [/#if]
