@@ -154,7 +154,7 @@
 			</result>
 		</action>
 		
-		  <action name="partnerSave" class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
+		  <action name="{crp}/partnerSave" class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
       <result name="input">/WEB-INF/global/pages/partnersSave.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">partnerSave</param>
