@@ -4,7 +4,7 @@
 [#assign customJS = ["${baseUrl}/js/global/partnersSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/global/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
-[#assign includeHeader = "false" /]
+
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 

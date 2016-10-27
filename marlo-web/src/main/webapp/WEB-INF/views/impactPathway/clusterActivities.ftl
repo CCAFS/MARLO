@@ -118,7 +118,7 @@
       </div>
       [#-- Cluster Activity Name --]
       <div class=" form-group cluster-title">
-        [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-100" editable=editable /]
+        [@customForm.textArea name="${clusterCustomName}.description" i18nkey="cluster.title" required=true className="outcome-statement limitWords-20" editable=editable /]
       </div>
       [#-- Cluster Activity Leaders --]
       <span class="subtitle cold-md-12"><label>[@s.text name="cluster.leaders.title" /]<span class="red">*</span></label></span>
@@ -201,7 +201,7 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output" value="${(element.keyOutput)!}" required=true className="limitWords-100 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
