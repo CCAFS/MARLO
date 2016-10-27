@@ -18,9 +18,9 @@
 			<column name="country_id" />
 		</many-to-one>
 		<many-to-one name="headquarter"
-      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
-      <column name="headquarter" />
-    </many-to-one>
+			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+			<column name="headquarter" />
+		</many-to-one>
 		<property name="name" type="string">
 			<column name="name" length="65535" not-null="true" />
 		</property>
@@ -46,40 +46,42 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpPpaPartner" />
 		</set>
-		 <set name="liaisonInstitutions" table="liaison_institutions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="institution_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
-        </set>
-        
-        <set name="projectPartners" order-by="id"  table="project_partners" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="institution_id" not-null="true">
-                    <comment>Foreign key to institutions table</comment>
-                </column>
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" />
-        </set>
-        
-         <set name="projectBudgets" order-by="id" table="project_budgets" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="institution_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
-        </set>
-        <set name="projectBranches" order-by="id" table="project_branches" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="institution_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBranch" />
-        </set>
-        
-          <set name="branches" table="institutions" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="headquarter" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
-        </set>
+		<set name="liaisonInstitutions" table="liaison_institutions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="institution_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" />
+		</set>
+		<set name="projectPartners" order-by="id" table="project_partners"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="institution_id" not-null="true">
+					<comment>Foreign key to institutions table</comment>
+				</column>
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartner" />
+		</set>
+		<set name="projectBudgets" order-by="id" table="project_budgets"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="institution_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBudget" />
+		</set>
+		<set name="branches" table="institutions" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="headquarter" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.Institution" />
+		</set>
+		<set name="projectPartnerPersons" table="project_partner_persons"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="institution_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
+		</set>
 	</class>
 </hibernate-mapping>

@@ -157,7 +157,6 @@ $(document).ready(function() {
 
   openSearchDialog = function(target) {
     $elementSelected = $(target);
-    console.log($elementSelected);
     dialog.dialog("open");
     $dialogContent.find(".search-loader").fadeOut("slow");
   }

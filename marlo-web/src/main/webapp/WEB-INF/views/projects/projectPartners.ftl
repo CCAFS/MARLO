@@ -238,16 +238,10 @@
         [#else]
           <input type="hidden" name="${name}.institution.id" class="institutionsList" value="${(element.institution.id)!}"/>
         [/#if]
-      </div>
-      
-      
-      [#local hasBranches = element.institution?? && element.institution.branches?has_content /]
-      [#-- Branches --]
-      <div class="branchesBlock form-group" style="display:${hasBranches?string('block','none')}">
-        [@customForm.select name="${name}.selectedBranches" label=""  i18nkey="projectPartners.branches" listName="${name}.institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" value="${name}.selectedBranches" multiple=true required=true  className="branchesSelect" disabled=!editable/]              
         <br />
       </div>
-
+      
+      
       [#-- Indicate which PPA Partners for second level partners --]
       [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
         [#assign showPPABlock][#if isPPA || isTemplate]none[#else]block[/#if][/#assign]
@@ -320,38 +314,52 @@
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
      
-    [#-- Contact type --]
+     
     <div class="form-group">
-      <div class="partnerPerson-type halfPartBlock clearfix">
-        [#if canEditContactType]
-          [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
-        [#else]
-          <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
-          <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
-          <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
-        [/#if]
-      </div>
-      
-      [#-- Contact Email --]
-      <div class="partnerPerson-email userField halfPartBlock clearfix">
-        [#attempt]
-          [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
-        [#recover]
-          [#assign canEditEmail=true /]
-        [/#attempt]
+    	<div class="row">
+    	    [#-- Contact Email --]
+          <div class="col-md-12 partnerPerson-email userField  ">
+            [#attempt]
+              [#assign canEditEmail=!((action.getActivitiesLedByUser((element.id)!-1)!false)?has_content) && canEditContactType/]
+            [#recover]
+              [#assign canEditEmail=true /]
+            [/#attempt]
+            <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
+            [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
+            [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
+            [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
+            <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
+            [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
+          </div>
+    	</div>
+    </div> 
+    <div class="form-group">
+      <div class="row">
+        [#-- Contact type --]
+        <div class="col-md-6 partnerPerson-type  ">
+          [#if canEditContactType]
+            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=true /]
+          [#else]
+            <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
+            <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
+            <input type="hidden" name="${name}.contactType" class="partnerPersonType" value="${(element.contactType)!}" />
+          [/#if]
+        </div>
         
-        <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
-        [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
-         [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
-        [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=true readOnly=true editable=editable && canEditEmail /]
-        <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
-        [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
-      </div> 
+        [#-- Contact Branch --]
+        <div class="col-md-6 partnerPerson-branch  ">
+          [#if canEditContactType]
+            [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
+          [#else]
+          
+          [/#if]
+        </div>
+      </div>
     </div>
     
     [#-- Responsibilities --]
     [#if project.projectEditLeader]
-    <div class="form-group partnerResponsabilities chosen"> 
+    <div class="partnerResponsabilities chosen"> 
       [@customForm.textArea name="${name}.responsibilities" className="resp limitWords-100" i18nkey="projectPartners.responsabilities" required=true editable=editable /]
       <div class="clearfix"></div>
     </div>
