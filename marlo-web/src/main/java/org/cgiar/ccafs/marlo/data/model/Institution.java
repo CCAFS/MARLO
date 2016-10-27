@@ -116,10 +116,11 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public String getBranchName() {
     try {
+      String composedAcronym = this.acronym != null ? this.acronym : "";
       if (this.headquarter == null) {
-        return "HQ: " + this.acronym != null ? this.acronym : "" + " - " + this.locElement.getName();
+        return "HQ: " + composedAcronym + " - " + this.locElement.getName();
       } else {
-        return this.acronym != null ? this.acronym : "" + " - " + this.locElement.getName();
+        return composedAcronym + " - " + this.locElement.getName();
       }
     } catch (Exception e) {
       return this.name;
