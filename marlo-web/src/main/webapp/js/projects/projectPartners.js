@@ -269,9 +269,9 @@ function changePartnerPersonType(e) {
 function updateOrganizationsList(e) {
   var $parent = $(e.target).parents('.projectPartner');
   var partner = new PartnerObject($parent);
-  var $selectInstitutions = $parent.find("select[name$='institution']"); // Institutions list
+  var $selectInstitutions = $parent.find("select.institutionsList"); // Institutions list
   var optionSelected = $selectInstitutions.find('option:selected').val(); // Institution selected
-  var source = baseURL + "/json/institutionsByTypeAndCountry.do";
+  var source = baseURL + "/institutionsByTypeAndCountry.do";
   if($(e.target).attr("class") != "filters-link") {
     var partnerTypes = $parent.find("select.partnerTypes").find('option:selected').val(); // Type value
     var countryList = $parent.find("select.countryList").find('option:selected').val(); // Value value
@@ -285,7 +285,7 @@ function updateOrganizationsList(e) {
       },
       success: function(data) {
         $.each(data.institutions, function(index,institution) {
-          $selectInstitutions.append(setOption(institution.id, institution.composedName));
+          $selectInstitutions.append(setOption(institution.id, institution.name));
         });
         if(!canUpdatePPAPartners) {
           removePPAPartnersFromList($selectInstitutions);
@@ -342,7 +342,9 @@ function updateProjectPPAPartnersLists(e) {
     }
     // If there is one selected , show an error message
     if(count > 1) {
-      $fieldError.text('This institution is already selected').animateCss('flipInX');
+      var institutionName = $(e.target).find('option[value="' + e.target.value + '"]').text();
+      $fieldError.text(institutionName + ' is already selected').animateCss('flipInX');
+      e.target.value = -1;
     }
   }
 

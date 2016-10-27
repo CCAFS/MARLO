@@ -67,14 +67,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
-
   private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
+
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
+
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
+  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
   private Set<Institution> branches = new HashSet<Institution>(0);
-
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
   public Institution() {
@@ -88,7 +90,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
     Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement,
-    Institution headquarter, Set<ProjectPartnerPerson> projectPartnerPersons) {
+    Institution headquarter, Set<ProjectPartnerPerson> projectPartnerPersons, Set<FundingSource> fundingSources) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -100,6 +102,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.locElement = locElement;
     this.headquarter = headquarter;
     this.projectPartnerPersons = projectPartnerPersons;
+    this.fundingSources = fundingSources;
   }
 
   public String getAcronym() {
@@ -127,7 +130,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     }
 
   }
-
 
   public String getCity() {
     return this.city;
@@ -171,16 +173,20 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return crpPpaPartners;
   }
 
+  public Set<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
 
   public Institution getHeadquarter() {
     return headquarter;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public InstitutionType getInstitutionType() {
     return institutionType;
@@ -193,6 +199,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     list.addAll(this.getBranches());
     return list;
   }
+
 
   public Set<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -266,6 +273,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setCrpPpaPartners(Set<CrpPpaPartner> crpPpaPartners) {
     this.crpPpaPartners = crpPpaPartners;
+  }
+
+  public void setFundingSources(Set<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
   }
 
   public void setHeadquarter(Institution headquarter) {

@@ -98,6 +98,7 @@
     <mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml"/>
     <mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml"/>
     <mapping resource="xmls/ProjectLocationElementTypes.hbm.xml"/>
+    <mapping resource="xmls/FundingSources.hbm.xml"/>    
   </session-factory>
 </hibernate-configuration>
 
