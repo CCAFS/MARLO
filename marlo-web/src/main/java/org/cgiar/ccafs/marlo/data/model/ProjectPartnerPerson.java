@@ -15,6 +15,7 @@ import com.google.gson.annotations.Expose;
  */
 public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
+
   private static final long serialVersionUID = -2836976847017848957L;
 
 
@@ -31,10 +32,13 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Expose
   private Institution institution;
 
+
   @Expose
   private User createdBy;
+
   @Expose
   private User user;
+
   @Expose
   private String contactType;
   @Expose
@@ -48,10 +52,8 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
   private Set<Activity> activities = new HashSet<Activity>(0);
 
-
   public ProjectPartnerPerson() {
   }
-
 
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, boolean isActive, Date activeSince, String modificationJustification,
@@ -68,6 +70,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.institution = institution;
   }
 
+
   public ProjectPartnerPerson(ProjectPartner projectPartner, User usersByModifiedBy, User usersByCreatedBy,
     User usersByUserId, String contactType, String responsibilities, boolean isActive, Date activeSince,
     String modificationJustification) {
@@ -81,6 +84,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -122,7 +126,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public String getContactType() {
     return this.contactType;
   }
@@ -131,6 +134,7 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     return this.createdBy;
   }
 
+
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
@@ -138,6 +142,10 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Institution getInstitution() {
+    return institution;
   }
 
   @Override
@@ -200,7 +208,6 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
     this.activities = activities;
   }
 
-
   public void setContactType(String contactType) {
     this.contactType = contactType;
   }
@@ -218,6 +225,11 @@ public class ProjectPartnerPerson implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setInstitution(Institution institution) {
+    this.institution = institution;
   }
 
 
