@@ -59,6 +59,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   public ProjectPartner() {
   }
 
+
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
     this.institution = institution;
