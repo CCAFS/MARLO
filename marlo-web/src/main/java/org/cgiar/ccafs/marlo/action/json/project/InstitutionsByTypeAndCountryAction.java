@@ -72,9 +72,34 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
 
     institutions = new ArrayList<>();
     Map<String, Object> institution;
-
     List<Institution> institutionsByTypeAndCountry = institutionManager.findAll().stream()
       .filter(i -> i.isActive() && i.getHeadquarter() == null).collect(Collectors.toList());
+
+
+    if (institutionTypeID == -1 && locElement != null) {
+      for (Institution i : institutionsByTypeAndCountry.stream()
+        .filter(i -> i.isActive() && i.getLocElement() != null && i.getLocElement().equals(locElement))
+        .collect(Collectors.toList())) {
+        institution = new HashMap<>();
+        institution.put("id", i.getId());
+        institution.put("name", i.getComposedName());
+        institutions.add(institution);
+      }
+
+      return SUCCESS;
+    }
+
+    if (countryID == -1 && institutionType != null) {
+      for (Institution i : institutionsByTypeAndCountry.stream()
+        .filter(i -> i.isActive() && i.getInstitutionType().equals(institutionType)).collect(Collectors.toList())) {
+        institution = new HashMap<>();
+        institution.put("id", i.getId());
+        institution.put("name", i.getComposedName());
+        institutions.add(institution);
+      }
+
+      return SUCCESS;
+    }
 
     for (Institution i : institutionsByTypeAndCountry) {
 
