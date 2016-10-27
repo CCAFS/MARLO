@@ -1,70 +1,79 @@
 [#ftl]
 [#assign title = "Insert a partner" /]
-[#assign globalLibs = ["jquery", "noty"] /]
-[#assign customJS = ["${baseUrl}/js/global/partnerSave.js"] /]
-
+[#assign globalLibs = ["jquery", "noty","select2"] /]
+[#assign customJS = ["${baseUrl}/js/global/partnersSave.js"] /]
+[#assign customCSS = ["${baseUrl}/css/global/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
+[#assign includeHeader = "false" /]
 
-[#include "/WEB-INF/global/pages/popup-header.ftl" /]
+[#include "/WEB-INF/global/pages/header.ftl" /]
+
   <section>
-    <article class="content container_9">
-      <h1>[@s.text name="partnersSave.addPartner" /]</h1>
-      [@s.form action="partnerSave" cssClass="pure-form"]
-
+    <article >
+    <div class="title col-xs-12">
+      <h3 class=" text-center form-group">[@s.text name="Request a new institution or branch" /]</h3>
+    </div>
+      [@s.form action="partnerSave" cssClass="pure-form "]
+      
+      <div class="col-xs-12 form-group">
+        [@customForm.yesNoInput name="isBranch" label="Is this institution a branch?"  inverse=false value="" cssClass="text-left " value="false" /]
+      </div>
+      <div class="selectHeadquater panel tertiary col-xs-12"  style="display:none">
+          <div class="panel-body">
+            [@customForm.select name="" label="" required=true  i18nkey="Select institution headquarter" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+          </div>
+        </div>
       [#-- Partner Name --]
-      <div id="partnerName" class="halfPartBlock ">
-        [@customForm.input name="activityPartner.partner.name" type="text" i18nkey="partnersSave.name" /]
+      <div id="partnerName" class="col-xs-6 form-group">
+        [@customForm.input name="activityPartner.partner.name" required=true className="col-md-6" type="text" i18nkey="Name" /]
       </div>
       
       [#-- Partner Acronym --]
-      <div id="partnerAcronym" class="halfPartBlock ">
-        [@customForm.input name="activityPartner.partner.acronym" type="text" i18nkey="partnersSave.acronym" /]
+      <div id="partnerAcronym" class="col-xs-6 form-group">
+        [@customForm.input name="activityPartner.partner.acronym" required=true type="text" i18nkey="Acronym" /]
       </div>
       
       [#-- Partner types list --]
-      <div id="partnerTypes" class="halfPartBlock ">
-        [@customForm.select name="activityPartner.partner.type.id" label="" i18nkey="partnersSave.partnerType" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
+      <div id="partnerTypes" class="col-xs-6 form-group">
+        [@customForm.select name="activityPartner.partner.type.id" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
       </div>
       
       [#-- Countries list --]
-      <div id="partnerCountry" class="halfPartBlock ">
-        [@customForm.select name="activityPartner.partner.country.id" label="" i18nkey="partnersSave.country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
+      <div id="partnerCountry" class="col-xs-6 form-group">
+        [@customForm.select name="activityPartner.partner.country.id" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
       </div>
       
       [#-- City of location --]
-      <div id="partnerCity" class="halfPartBlock ">
-        [@customForm.input name="activityPartner.partner.city" type="text" i18nkey="partnersSave.city" /]
+      <div id="partnerCity" class="col-xs-6 form-group">
+        [@customForm.input name="activityPartner.partner.city" required=true type="text" i18nkey="City" /]
       </div>
       
-     
-      
-      [#-- Contact point name --]
-      <!-- div id="partnerContactName" class="halfPartBlock ">
-        [@customForm.input name="activityPartner.contactName" type="text" i18nkey="partnersSave.contactName" /]
-      </div -->
-      
-      [#-- Contact point email --]
-      <!-- div id="partnerContactEmail" class="halfPartBlock ">
-        [@customForm.input name="activityPartner.contactEmail" type="text" i18nkey="partnersSave.contactEmail" /]
-      </div -->
-      
       [#-- Web page link --]
-      <div id="partnerPage" class="fullPartBlock ">
-        [@customForm.input name="partnerWebPage" type="text" i18nkey="partnersSave.webPage" /]
+      <div id="partnerPage" class="col-xs-12 form-group">
+        [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner web page please paste the link below" value="https://" /]
       </div>
       
       [#-- Hidden input with message of success --]
       <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
-            
-      <!-- internal parameter -->
-      [#if activityID?has_content]<input name="activityID" type="hidden" value="${activityID?c}" />[/#if]
-      [#if projectID?has_content]<input name="projectID" type="hidden" value="${projectID?c}" />[/#if]
-      <input id="messageSent" type="hidden" value="${messageSent?string}" />
-      <div class="grid_9 center">
+      
+      <div class="form-group pull-right">
         [@s.submit type="button" name="save"][@s.text name="form.buttons.savePartner.request" /][/@s.submit]
       </div>
+
       [/@s.form]
     </article>
   </section> 
-  [#include "/WEB-INF/global/pages/js-imports.ftl"]
+  
+  
+    [#-- Importing JavaScript files --]
+    [#if globalLibs??]
+      [#list globalLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
+    [/#if]
+    
+    [#-- Importing JavaScript files --]
+    [#if pageLibs??]
+      [#list pageLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
+    [/#if]
+    [#-- import the custom JS and CSS --]
+    [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
 </body>
