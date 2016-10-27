@@ -615,7 +615,8 @@ public class ProjectPartnerAction extends BaseAction {
     pcRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PC_ROLE)));
 
     // Getting the list of all institutions
-    allInstitutions = institutionManager.findAll();
+    allInstitutions =
+      institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
 
     // Getting the list of all PPA institutions
     allPPAInstitutions = new ArrayList<>();

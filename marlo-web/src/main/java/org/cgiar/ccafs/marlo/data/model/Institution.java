@@ -117,15 +117,16 @@ public class Institution implements java.io.Serializable, IAuditLog {
   public String getBranchName() {
     try {
       if (this.headquarter == null) {
-        return "HQ: " + this.acronym + " - " + this.locElement.getName();
+        return "HQ: " + this.acronym != null ? this.acronym : "" + " - " + this.locElement.getName();
       } else {
-        return this.acronym + " - " + this.locElement.getName();
+        return this.acronym != null ? this.acronym : "" + " - " + this.locElement.getName();
       }
     } catch (Exception e) {
       return this.name;
     }
 
   }
+
 
   public String getCity() {
     return this.city;
@@ -143,7 +144,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
       if (this.getAcronym() != null) {
         if (this.getAcronym().length() != 0) {
           try {
-            return this.getAcronym() + " - " + this.getName() + " - " + this.getLocElement().getName();
+            return this.getAcronym() + " - " + this.getName();// + " - " + this.getLocElement().getName();
           } catch (Exception e) {
             return this.getAcronym() + " - " + this.getName();
           }

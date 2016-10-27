@@ -99,22 +99,23 @@ function attachEvents() {
     $.ajax({
         url: baseURL + "/institutionBranchList.do",
         data: {
-          institutionId: $(this).val()
+          institutionID: $(this).val()
         },
         beforeSend: function() {
           partner.startLoader();
-          partner.showBranches();
-          console.log(partner.branchesSelect);
         },
         success: function(data) {
-          $.each(data.institutions, function(index,institution) {
-            // $selectInstitutions.append(setOption(institution.id, institution.composedName));
+          $(partner.persons).each(function(i,partnerPerson) {
+            var contact = new PartnerPersonObject($(partnerPerson));
+            $(contact.branchSelect).empty();
+            $.each(data.branches, function(index,branch) {
+              $(contact.branchSelect).append(setOption(branch.id, branch.name));
+            });
+            $(contact.branchSelect).trigger("change.select2");
           });
         },
         complete: function() {
           partner.stopLoader();
-          partner.hideBranches();
-          // $selectInstitutions.trigger("change.select2");
         }
     });
 
@@ -499,6 +500,8 @@ function addPartnerEvent(e) {
 function addContactEvent(e) {
   e.preventDefault();
   var $newElement = $("#contactPerson-template").clone(true).removeAttr("id");
+  var contact = new PartnerPersonObject($newElement);
+  var partner = new PartnerObject($(this).parents('.projectPartner'));
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
   // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
@@ -506,6 +509,21 @@ function addContactEvent(e) {
   $newElement.find("select").select2({
     width: '100%'
   });
+
+  $.ajax({
+      url: baseURL + "/institutionBranchList.do",
+      data: {
+        institutionID: partner.institutionId
+      },
+      success: function(data) {
+        $(contact.branchSelect).empty();
+        $.each(data.branches, function(index,branch) {
+          $(contact.branchSelect).append(setOption(branch.id, branch.name));
+        });
+        $(contact.branchSelect).trigger("change.select2");
+      }
+  });
+
   // Update indexes
   setProjectPartnersIndexes();
 }
@@ -638,7 +656,7 @@ function PartnerObject(partner) {
   this.institutionName =
       $('#projectPartner-template .institutionsList option[value=' + this.institutionId + ']').text();
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
-  this.branchesSelect = $(partner).find('select.branchesSelect');
+  this.persons = $(partner).find('.contactsPerson .contactPerson');
   this.setIndex = function(name,index) {
     var elementName = name + "[" + index + "].";
 
@@ -744,12 +762,6 @@ function PartnerObject(partner) {
     $(partner).find("> .blockTitle .index").addClass('ppa').text('PPA Partner');
     $(this.ppaPartnersList).slideUp();
   };
-  this.showBranches = function() {
-    $(partner).find(".branchesBlock").slideDown();
-  };
-  this.hideBranches = function() {
-    $(partner).find(".branchesBlock").slideUp();
-  };
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();
   };
@@ -768,6 +780,7 @@ function PartnerPersonObject(partnerPerson) {
   this.type = $(partnerPerson).find('.partnerPersonType').val();
   this.contactInfo = $(partnerPerson).find('.userName').val();
   this.canEditEmail = ($(partnerPerson).find('input.canEditEmail').val() === "true");
+  this.branchSelect = $(partnerPerson).find('.partnerPersonBranch');
   this.setPartnerType = function(type) {
     this.type = type;
     $(partnerPerson).find('.partnerPersonType').val(type).trigger('change.select2');
