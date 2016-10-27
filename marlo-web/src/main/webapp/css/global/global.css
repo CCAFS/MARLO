@@ -3523,7 +3523,7 @@ span.partnerTag {
 
 .contactPerson {
   font-size: 0.96em;
-  padding: 3px 30px 0px 31px !important;
+  padding: 5px 37px 5px 34px !important;
 }
 
 .contactPerson .removeElement{
@@ -3531,11 +3531,11 @@ span.partnerTag {
 }
 
 .contactPerson .partnerPerson-type {
-  width: 30%;
+  /* width: 30%; */
 }
 
 .contactPerson .partnerPerson-email {
-  width: 67%;
+  /* width: 67%; */
 }
 
 .contactPerson .contactTags {
@@ -5917,13 +5917,13 @@ hr {
 }
 
 .expandableBlock .blockContent{
-  padding: 0 15px 20px 15px;
+  padding: 0 6px 20px 6px;
 }
 
 .button-float {
     position: absolute;
     bottom: 1px;
-    right: 1px;
+    right: 1em;
     height: 25px;
 }
 

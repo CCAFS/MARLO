@@ -97,7 +97,7 @@ function attachEvents() {
     partner.updateBlockContent();
 
     $.ajax({
-        url: "",
+        url: baseURL + "/institutionBranchList.do",
         data: {
           institutionId: $(this).val()
         },
