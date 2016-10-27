@@ -95,17 +95,37 @@ function attachEvents() {
     var partner = new PartnerObject($(this).parents('.projectPartner'));
     // Update Partner Title
     partner.updateBlockContent();
+
+    $.ajax({
+        url: "",
+        data: {
+          institutionId: $(this).val()
+        },
+        beforeSend: function() {
+          partner.startLoader();
+          partner.showBranches();
+          console.log(partner.branchesSelect);
+        },
+        success: function(data) {
+          $.each(data.institutions, function(index,institution) {
+            // $selectInstitutions.append(setOption(institution.id, institution.composedName));
+          });
+        },
+        complete: function() {
+          partner.stopLoader();
+          partner.hideBranches();
+          // $selectInstitutions.trigger("change.select2");
+        }
+    });
+
     // Update PPA Partners List
     updateProjectPPAPartnersLists(e);
   });
   // Partners filters
   $(".filters-link span").on("click", filterInstitutions);
   // Select multiple branches
-  $('.branchesSelect').on("select2:select", function(e){
-    console.log(e.currentTarget.value);
-    if(e.currentTarget.value == -1){
-      return
-    }
+  $('.branchesSelect').on("select2:select", function(e) {
+
   });
 
   /**
@@ -461,17 +481,17 @@ function addPartnerEvent(e) {
     // Update component
     $(document).trigger('updateComponent');
   });
-  
+
   // Activate the select2 plugin for new partners created
   $newElement.find("select[class!='branchesSelect']").select2({
     width: '100%'
   });
-  
+
   $newElement.find("select.branchesSelect ").select2({
-    placeholder: "Select the branches where the project is working on...",
-    width: '100%'
+      placeholder: "Select the branches where the project is working on...",
+      width: '100%'
   });
-  
+
   // Update indexes
   setProjectPartnersIndexes();
 }
@@ -597,10 +617,10 @@ function addSelect2() {
   $("form select[class!='branchesSelect']").select2({
     width: '100%'
   });
-  
+
   $("form select.branchesSelect ").select2({
-    placeholder: "Select the branches where the project is working on...",
-    width: '100%'
+      placeholder: "Select the branches where the project is working on...",
+      width: '100%'
   });
 
 }
@@ -618,6 +638,7 @@ function PartnerObject(partner) {
   this.institutionName =
       $('#projectPartner-template .institutionsList option[value=' + this.institutionId + ']').text();
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
+  this.branchesSelect = $(partner).find('select.branchesSelect');
   this.setIndex = function(name,index) {
     var elementName = name + "[" + index + "].";
 
@@ -722,6 +743,12 @@ function PartnerObject(partner) {
   this.hidePPAs = function() {
     $(partner).find("> .blockTitle .index").addClass('ppa').text('PPA Partner');
     $(this.ppaPartnersList).slideUp();
+  };
+  this.showBranches = function() {
+    $(partner).find(".branchesBlock").slideDown();
+  };
+  this.hideBranches = function() {
+    $(partner).find(".branchesBlock").slideUp();
   };
   this.startLoader = function() {
     $(partner).find('.loading').fadeIn();
