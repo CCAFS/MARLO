@@ -4,43 +4,43 @@
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
-  <session-factory>
-    
-    <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
-    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-    <property name="hibernate.search.autoregister_listeners">false</property>
-    <property name="hibernate.validator.apply_to_ddl">false</property>
-    <property name="connection.autoReconnect">true</property>
-    <property name="connection.autoReconnectForPools">true</property>
-    <property name="connection.is-connection-validation-required">true</property>
-    <property name="show_sql">false</property>
-    <property name="use_sql_comments">false</property> 
-    <property name="generate_statistics">false</property>
-    
+	<session-factory>
 
-    
-    
-    
-    <property name="hibernate.c3p0.idle_test_period">6</property>
+		<property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.search.autoregister_listeners">false</property>
+		<property name="hibernate.validator.apply_to_ddl">false</property>
+		<property name="connection.autoReconnect">true</property>
+		<property name="connection.autoReconnectForPools">true</property>
+		<property name="connection.is-connection-validation-required">true</property>
+		<property name="show_sql">false</property>
+		<property name="use_sql_comments">false</property>
+		<property name="generate_statistics">false</property>
+
+
+
+
+
+		<property name="hibernate.c3p0.idle_test_period">6</property>
 		<property name="hibernate.c3p0.timeout">6</property>
 		<property name="hibernate.c3p0.max_size">7000</property>
 		<property name="hibernate.c3p0.min_size">20</property>
 		<property name="hibernate.c3p0.max_statements">100</property>
 		<property name="hibernate.c3p0.preferredTestQuery">select 1;</property>
-    <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
-    <property name="hibernate.c3p0.validate">true</property>
-    
-    
-    <!-- Model Mappings -->
-     <mapping resource="xmls/Auditlog.hbm.xml" />
-    <mapping resource="xmls/Users.hbm.xml" />
-    <mapping resource="xmls/Crps.hbm.xml" />
-    <mapping resource="xmls/CrpUsers.hbm.xml" />
-    <mapping resource="xmls/Roles.hbm.xml" />
-    <mapping resource="xmls/UserRoles.hbm.xml" />
-    <mapping resource="xmls/CrpParameters.hbm.xml" />
-    <mapping resource="xmls/SrfIdos.hbm.xml" />
+		<property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.validate">true</property>
+
+
+		<!-- Model Mappings -->
+		<mapping resource="xmls/Auditlog.hbm.xml" />
+		<mapping resource="xmls/Users.hbm.xml" />
+		<mapping resource="xmls/Crps.hbm.xml" />
+		<mapping resource="xmls/CrpUsers.hbm.xml" />
+		<mapping resource="xmls/Roles.hbm.xml" />
+		<mapping resource="xmls/UserRoles.hbm.xml" />
+		<mapping resource="xmls/CrpParameters.hbm.xml" />
+		<mapping resource="xmls/SrfIdos.hbm.xml" />
 		<mapping resource="xmls/CrpsSitesIntegration.hbm.xml" />
 		<mapping resource="xmls/CrpProgramLeaders.hbm.xml" />
 		<mapping resource="xmls/CrpSitesLeaders.hbm.xml" />
@@ -65,41 +65,42 @@
 		<mapping resource="xmls/InstitutionTypes.hbm.xml" />
 		<mapping resource="xmls/CrpPpaPartners.hbm.xml" />
 		<mapping resource="xmls/CrpProgramCountries.hbm.xml" />
-    <mapping resource="xmls/CrpClusterActivityLeaders.hbm.xml" />
-    <mapping resource="xmls/SectionStatuses.hbm.xml" />
-    <mapping resource="xmls/Submissions.hbm.xml" />
-    <mapping resource="xmls/Projects.hbm.xml" />
-    <mapping resource="xmls/ProjectFocuses.hbm.xml" />
-    <mapping resource="xmls/LiaisonInstitutions.hbm.xml" />
-    <mapping resource="xmls/LiaisonUsers.hbm.xml" />
-    <mapping resource="xmls/ProjectLocations.hbm.xml" />
-    <mapping resource="xmls/ProjectPartners.hbm.xml" />
-    <mapping resource="xmls/ProjectPartnerContributions.hbm.xml" />
-    <mapping resource="xmls/ProjectPartnerPersons.hbm.xml" />
-    <mapping resource="xmls/ProjectPartnerOverall.hbm.xml" />
-    <mapping resource="xmls/ProjectComponentLessons.hbm.xml" />  
-    <mapping resource="xmls/Files.hbm.xml" />  
-    <mapping resource="xmls/CrpClusterKeyOutputs.hbm.xml" />  
-    <mapping resource="xmls/ProjectClusterActivities.hbm.xml"/>
-    <mapping resource="xmls/ProjectOutcomes.hbm.xml"/>
-    <mapping resource="xmls/ProjectMilestones.hbm.xml"/>
-    <mapping resource="xmls/ProjectCommunications.hbm.xml"/>
-    <mapping resource="xmls/ProjectScopes.hbm.xml"/>
-    <mapping resource="xmls/Deliverables.hbm.xml"/>
-    <mapping resource="xmls/DeliverableTypes.hbm.xml"/>
-    <mapping resource="xmls/ProjectNextusers.hbm.xml"/>
-    <mapping resource="xmls/DeliverablePartnerships.hbm.xml"/>
-    <mapping resource="xmls/Activities.hbm.xml"/>
-    <mapping resource="xmls/ProjectCrpContributions.hbm.xml"/>
-    <mapping resource="xmls/ProjectBudgets.hbm.xml"/>
-    <mapping resource="xmls/BudgetTypes.hbm.xml"/>
-    <mapping resource="xmls/DeliverableActivities.hbm.xml"/>
-    <mapping resource="xmls/ProjectsBilateralCofinancing.hbm.xml"/>
-    <mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml"/>
-    <mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml"/>
-    <mapping resource="xmls/ProjectLocationElementTypes.hbm.xml"/>
-    <mapping resource="xmls/FundingSources.hbm.xml"/>    
-  </session-factory>
+		<mapping resource="xmls/CrpClusterActivityLeaders.hbm.xml" />
+		<mapping resource="xmls/SectionStatuses.hbm.xml" />
+		<mapping resource="xmls/Submissions.hbm.xml" />
+		<mapping resource="xmls/Projects.hbm.xml" />
+		<mapping resource="xmls/ProjectFocuses.hbm.xml" />
+		<mapping resource="xmls/LiaisonInstitutions.hbm.xml" />
+		<mapping resource="xmls/LiaisonUsers.hbm.xml" />
+		<mapping resource="xmls/ProjectLocations.hbm.xml" />
+		<mapping resource="xmls/ProjectPartners.hbm.xml" />
+		<mapping resource="xmls/ProjectPartnerContributions.hbm.xml" />
+		<mapping resource="xmls/ProjectPartnerPersons.hbm.xml" />
+		<mapping resource="xmls/ProjectPartnerOverall.hbm.xml" />
+		<mapping resource="xmls/ProjectComponentLessons.hbm.xml" />
+		<mapping resource="xmls/Files.hbm.xml" />
+		<mapping resource="xmls/CrpClusterKeyOutputs.hbm.xml" />
+		<mapping resource="xmls/ProjectClusterActivities.hbm.xml" />
+		<mapping resource="xmls/ProjectOutcomes.hbm.xml" />
+		<mapping resource="xmls/ProjectMilestones.hbm.xml" />
+		<mapping resource="xmls/ProjectCommunications.hbm.xml" />
+		<mapping resource="xmls/ProjectScopes.hbm.xml" />
+		<mapping resource="xmls/Deliverables.hbm.xml" />
+		<mapping resource="xmls/DeliverableTypes.hbm.xml" />
+		<mapping resource="xmls/ProjectNextusers.hbm.xml" />
+		<mapping resource="xmls/DeliverablePartnerships.hbm.xml" />
+		<mapping resource="xmls/Activities.hbm.xml" />
+		<mapping resource="xmls/ProjectCrpContributions.hbm.xml" />
+		<mapping resource="xmls/ProjectBudgets.hbm.xml" />
+		<mapping resource="xmls/BudgetTypes.hbm.xml" />
+		<mapping resource="xmls/DeliverableActivities.hbm.xml" />
+		<mapping resource="xmls/ProjectsBilateralCofinancing.hbm.xml" />
+		<mapping resource="xmls/ProjectBudgetsCluserActvities.hbm.xml" />
+		<mapping resource="xmls/CrpClusterKeyOutputsOutcome.hbm.xml" />
+		<mapping resource="xmls/ProjectLocationElementTypes.hbm.xml" />
+		<mapping resource="xmls/FundingSources.hbm.xml" />
+		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
+	</session-factory>
 </hibernate-configuration>
 
    
