@@ -99,7 +99,7 @@ function attachEvents() {
     $.ajax({
         url: baseURL + "/institutionBranchList.do",
         data: {
-          parentId: $(this).val()
+          institutionID: $(this).val()
         },
         beforeSend: function() {
           partner.startLoader();
@@ -116,8 +116,6 @@ function attachEvents() {
         },
         complete: function() {
           partner.stopLoader();
-
-          // $selectInstitutions.trigger("change.select2");
         }
     });
 
@@ -502,6 +500,8 @@ function addPartnerEvent(e) {
 function addContactEvent(e) {
   e.preventDefault();
   var $newElement = $("#contactPerson-template").clone(true).removeAttr("id");
+  var contact = new PartnerPersonObject($newElement);
+  var partner = new PartnerObject($(this).parents('.projectPartner'));
   $(e.target).parent().before($newElement);
   $newElement.show("slow");
   // applyWordCounter($newElement.find("textarea.resp"), lWordsResp);
@@ -509,6 +509,21 @@ function addContactEvent(e) {
   $newElement.find("select").select2({
     width: '100%'
   });
+
+  $.ajax({
+      url: baseURL + "/institutionBranchList.do",
+      data: {
+        institutionID: partner.institutionId
+      },
+      success: function(data) {
+        $(contact.branchSelect).empty();
+        $.each(data.branches, function(index,branch) {
+          $(contact.branchSelect).append(setOption(branch.id, branch.name));
+        });
+        $(contact.branchSelect).trigger("change.select2");
+      }
+  });
+
   // Update indexes
   setProjectPartnersIndexes();
 }
