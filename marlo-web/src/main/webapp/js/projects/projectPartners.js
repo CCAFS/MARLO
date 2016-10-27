@@ -342,7 +342,9 @@ function updateProjectPPAPartnersLists(e) {
     }
     // If there is one selected , show an error message
     if(count > 1) {
-      $fieldError.text('This institution is already selected').animateCss('flipInX');
+      var institutionName = $(e.target).find('option[value="' + e.target.value + '"]').text();
+      $fieldError.text(institutionName + ' is already selected').animateCss('flipInX');
+      e.target.value = -1;
     }
   }
 

@@ -129,7 +129,7 @@
       
       [#-- Activity status --]
       <div class="form-group">
-        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="Activity status" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" activityStatus" editable=editable/]
+        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="Activity status" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]
       </div>
       
       [#if reportingActive]

@@ -351,7 +351,9 @@
           [#if canEditContactType]
             [@customForm.select name="${name}.institution.id" className="partnerPersonBranch" disabled=!canEdit i18nkey="projectPartners.personBranch" header=false listName="project.partners[${partnerIndex}].institution.institutuionsBranches" keyFieldName="id"  displayFieldName="branchName" required=true /]
           [#else]
-          
+            <label class="readOnly">[@s.text name="projectPartners.personBranch" /]:</label>
+            <div class="select"><p>${(element.institution.branchName)!}</p></div>
+            <input type="hidden" name="${name}.institution.id" class="partnerPersonBranch" value="${(element.institution.id)!}" />
           [/#if]
         </div>
       </div>
