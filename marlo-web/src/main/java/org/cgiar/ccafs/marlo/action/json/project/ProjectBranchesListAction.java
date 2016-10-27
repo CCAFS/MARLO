@@ -81,7 +81,8 @@ public class ProjectBranchesListAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
-    institutionID = Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.ELEMENT_TYPE_ID))[0]));
+    institutionID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.INSTITUTION_REQUEST_ID))[0]));
   }
 
   public void setBranches(List<Map<String, Object>> branches) {

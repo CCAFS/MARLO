@@ -72,7 +72,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-  private Set<ProjectBranch> projectBranches = new HashSet<ProjectBranch>(0);
 
   private Set<Institution> branches = new HashSet<Institution>(0);
 
@@ -89,7 +88,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public Institution(InstitutionType institutionType, String name, String acronym, String city, String websiteLink,
     Long programId, Long countryId, Date added, Set<CrpPpaPartner> crpPpaPartners, LocElement locElement,
-    Institution headquarter, Set<ProjectBranch> projectBranches, Set<ProjectPartnerPerson> projectPartnerPersons) {
+    Institution headquarter, Set<ProjectPartnerPerson> projectPartnerPersons) {
     this.institutionType = institutionType;
     this.name = name;
     this.acronym = acronym;
@@ -100,7 +99,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     this.crpPpaPartners = crpPpaPartners;
     this.locElement = locElement;
     this.headquarter = headquarter;
-    this.projectBranches = projectBranches;
     this.projectPartnerPersons = projectPartnerPersons;
   }
 
@@ -223,10 +221,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.programId;
   }
 
-  public Set<ProjectBranch> getProjectBranches() {
-    return projectBranches;
-  }
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
@@ -294,10 +288,6 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   public void setProgramId(Long programId) {
     this.programId = programId;
-  }
-
-  public void setProjectBranches(Set<ProjectBranch> projectBranches) {
-    this.projectBranches = projectBranches;
   }
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {

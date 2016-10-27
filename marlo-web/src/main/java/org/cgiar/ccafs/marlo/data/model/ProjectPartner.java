@@ -52,7 +52,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
-  private Set<ProjectBranch> projectBranches = new HashSet<ProjectBranch>(0);
   private List<ProjectPartnerPerson> partnerPersons;
   private List<ProjectPartnerContribution> partnerContributors;
 
@@ -76,8 +75,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     boolean isActive, Date activeSince, String modificationJustification,
     Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerId,
     Set<ProjectPartnerContribution> projectPartnerContributionsesForProjectPartnerContributorId,
-    Set<ProjectPartnerOverall> projectPartnerOveralls, Set<ProjectPartnerPerson> projectPartnerPersonses,
-    Set<ProjectBranch> projectBranches) {
+    Set<ProjectPartnerOverall> projectPartnerOveralls, Set<ProjectPartnerPerson> projectPartnerPersonses) {
     this.institution = institution;
     this.project = project;
     this.createdBy = usersByCreatedBy;
@@ -89,7 +87,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     this.projectPartnerContributors = projectPartnerContributionsesForProjectPartnerContributorId;
     this.projectPartnerOveralls = projectPartnerOveralls;
     this.projectPartnerPersons = projectPartnerPersonses;
-    this.projectBranches = projectBranches;
   }
 
 
@@ -188,11 +185,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public Project getProject() {
     return project;
-  }
-
-
-  public Set<ProjectBranch> getProjectBranches() {
-    return projectBranches;
   }
 
   public Set<ProjectPartnerContribution> getProjectPartnerContributions() {
@@ -295,10 +287,6 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
 
   public void setProject(Project project) {
     this.project = project;
-  }
-
-  public void setProjectBranches(Set<ProjectBranch> projectBranches) {
-    this.projectBranches = projectBranches;
   }
 
   public void
