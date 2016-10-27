@@ -101,6 +101,17 @@ public class InstitutionsByTypeAndCountryAction extends BaseAction {
       return SUCCESS;
     }
 
+    if (institutionTypeID == -1 && countryID == -1) {
+      for (Institution i : institutionsByTypeAndCountry) {
+        institution = new HashMap<>();
+        institution.put("id", i.getId());
+        institution.put("name", i.getComposedName());
+        institutions.add(institution);
+      }
+
+      return SUCCESS;
+    }
+
     for (Institution i : institutionsByTypeAndCountry) {
 
       LocElement iLocElement = i.getLocElement();
