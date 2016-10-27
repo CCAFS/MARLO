@@ -31,16 +31,19 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -6117852720583204865L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private Institution institution;
   @Expose
   private ProjectBilateralCofinancing projectBilateralCofinancing;
-
   private Project project;
   @Expose
   private User createdBy;
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -53,10 +56,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   private Double genderPercentage;
   @Expose
   private Double genderValue;
-
   @Expose
   private boolean active;
-
+  @Expose
+  private FundingSource fundingSource;
 
   @Expose
   private Date activeSince;
@@ -102,14 +105,18 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+  public FundingSource getFundingSource() {
+    return fundingSource;
+  }
+
   public Double getGenderPercentage() {
     return genderPercentage;
   }
 
-
   public Double getGenderValue() {
     return genderValue;
   }
+
 
   @Override
   public Long getId() {
@@ -144,10 +151,10 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return projectBilateralCofinancing;
   }
 
-
   public int getYear() {
     return year;
   }
+
 
   @Override
   public int hashCode() {
@@ -178,9 +185,13 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.budgetType = budgetType;
   }
 
-
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+
+  public void setFundingSource(FundingSource fundingSource) {
+    this.fundingSource = fundingSource;
   }
 
   public void setGenderPercentage(Double genderPercentage) {

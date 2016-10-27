@@ -23,6 +23,7 @@ public class FundingSource implements java.io.Serializable {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private User createdBy;
 
@@ -64,6 +65,8 @@ public class FundingSource implements java.io.Serializable {
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
+  private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
   public FundingSource() {
   }
 
@@ -77,7 +80,7 @@ public class FundingSource implements java.io.Serializable {
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
     Integer type, boolean active, Date activeSince, String modificationJustification,
-    Set<FundingSourceBudget> fundingSourceBudgets) {
+    Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.institution = institution;
@@ -93,13 +96,12 @@ public class FundingSource implements java.io.Serializable {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.fundingSourceBudgets = fundingSourceBudgets;
+    this.projectBudgets = projectBudgets;
   }
-
 
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public Integer getCenterType() {
     return centerType;
@@ -161,9 +163,15 @@ public class FundingSource implements java.io.Serializable {
   }
 
 
+  public Set<ProjectBudget> getProjectBudgets() {
+    return projectBudgets;
+  }
+
+
   public Date getStartDate() {
     return startDate;
   }
+
 
   public Integer getType() {
     return type;
@@ -227,6 +235,10 @@ public class FundingSource implements java.io.Serializable {
 
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
+  }
+
+  public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
+    this.projectBudgets = projectBudgets;
   }
 
 
