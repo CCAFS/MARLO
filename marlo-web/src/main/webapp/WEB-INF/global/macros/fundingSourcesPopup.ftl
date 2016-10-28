@@ -65,7 +65,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" required=true /] </div>
-              <div class="col-md-6">[@customForm.input name="budget" i18nkey="projectCofunded.budgetAgreementPeriod" className="budgetAgreementPeriod" required=true/]</div>
+              <div class="col-md-6">[@customForm.select name="type"   i18nkey="projectCofunded.type" className="type" listName="status" required=true /]</div>
             </div>
           </div>
           <div class="form-group">
@@ -118,5 +118,5 @@
 </div>
 
 [#-- Project Bilateral Co-Funded  Popup JS --]
-[#assign customJS =  [ "${baseUrl}/js/global/bilateralCoFundedPopup.js" ]  + customJS/]
+[#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

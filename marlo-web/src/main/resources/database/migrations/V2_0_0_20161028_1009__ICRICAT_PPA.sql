@@ -1,0 +1,1 @@
+INSERT INTO `crp_ppa_partners` (`crp_id`, `institution_id`, `is_active`, `created_by`, `modified_by`, `modification_justification`) VALUES ('1', '1273', '1', '3', '3', ' ');
