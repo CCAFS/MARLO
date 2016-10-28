@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,8 +20,10 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import com.ibm.icu.text.SimpleDateFormat;
 
 public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
@@ -76,6 +78,34 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
 
     return fundingSource.getId();
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSources(String query, long institutionID, int year) {
+    StringBuilder q = new StringBuilder();
+    q.append("from " + FundingSource.class.getName());
+    q.append(" where description like '%" + query + "%' ");
+    q.append("OR id like '%" + query + "%' ");
+
+    List<FundingSource> fundingSources = dao.findAll(q.toString());
+    SimpleDateFormat df = new SimpleDateFormat("yyyy");
+    return fundingSources.stream().filter(c -> c.isActive() && c.getInstitution() != null
+      && c.getInstitution().getId().longValue() == institutionID && year <= Integer.parseInt(df.format(c.getEndDate())))
+      .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year) {
+    StringBuilder q = new StringBuilder();
+    q.append("from " + FundingSource.class.getName());
+    q.append(" where description like '%" + query + "%' ");
+    q.append("OR id like '%" + query + "%' ");
+
+    List<FundingSource> fundingSources = dao.findAll(q.toString());
+    SimpleDateFormat df = new SimpleDateFormat("yyyy");
+    return fundingSources.stream().filter(c -> c.isActive() && c.getInstitution() != null
+      && c.getInstitution().getId().longValue() == institutionID && year <= Integer.parseInt(df.format(c.getEndDate())))
+      .collect(Collectors.toList());
   }
 
 
