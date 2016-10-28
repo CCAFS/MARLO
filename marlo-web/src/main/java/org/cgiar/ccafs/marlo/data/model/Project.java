@@ -176,7 +176,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
   private List<ProjectBudget> budgets;
-  private List<ProjectBudget> budgetsCofinancing;
+
 
   private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
   private List<ProjectClusterActivity> clusterActivities;
@@ -339,9 +339,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return budgetsCluserActvities;
   }
 
-  public List<ProjectBudget> getBudgetsCofinancing() {
-    return budgetsCofinancing;
-  }
 
   public List<Activity> getClosedProjectActivities() {
     return closedProjectActivities;
@@ -555,11 +552,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public List<Activity> getProjectActivities() {
-    return projectActivities;
-  }
-
-
   public List<ProjectOutcome> getOutcomes() {
     return outcomes;
   }
@@ -569,13 +561,18 @@ public class Project implements java.io.Serializable, IAuditLog {
     return overall;
   }
 
+
   public List<ProjectPartner> getPartners() {
     return partners;
   }
 
-
   public Date getPresetDate() {
     return presetDate;
+  }
+
+
+  public List<Activity> getProjectActivities() {
+    return projectActivities;
   }
 
   public Set<ProjectBudget> getProjectBudgetCofinances() {
@@ -823,11 +820,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setBudgetsCofinancing(List<ProjectBudget> budgetsCofinancing) {
-    this.budgetsCofinancing = budgetsCofinancing;
-  }
-
-
   public void setClosedProjectActivities(List<Activity> closedProjectActivities) {
     this.closedProjectActivities = closedProjectActivities;
   }
@@ -916,11 +908,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.noRegional = noRegional;
   }
 
-  public void setProjectActivities(List<Activity> openProjectActivities) {
-    this.projectActivities = openProjectActivities;
-  }
-
-
   public void setOutcomes(List<ProjectOutcome> outcomes) {
     this.outcomes = outcomes;
   }
@@ -930,12 +917,17 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.overall = overall;
   }
 
+
   public void setPartners(List<ProjectPartner> partners) {
     this.partners = partners;
   }
 
   public void setPresetDate(Date presetDate) {
     this.presetDate = presetDate;
+  }
+
+  public void setProjectActivities(List<Activity> openProjectActivities) {
+    this.projectActivities = openProjectActivities;
   }
 
   public void setProjectBudgetCofinances(Set<ProjectBudget> projectBudgetCofinances) {

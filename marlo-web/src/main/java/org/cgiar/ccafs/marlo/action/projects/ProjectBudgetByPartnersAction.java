@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -173,40 +172,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectBudget.setAmount(new Long(0));
         projectBudget.setGenderPercentage(new Double(0));
         projectBudget.setGenderValue(new Double(0));
-        if (project.getBudgetsCofinancing() != null) {
-          for (ProjectBudget budget : project.getBudgetsCofinancing()) {
-            try {
-              if (budget.getInstitution().getId().longValue() == institutionId.longValue() && year == budget.getYear()
-                && type == budget.getBudgetType().getId().longValue()) {
-                if (budget.getGenderPercentage() != null) {
 
-                  if (budget.getAmount() != null) {
-                    projectBudget.setGenderValue(
-                      projectBudget.getGenderValue() + ((budget.getGenderPercentage() / 100) * budget.getAmount()));
-                  }
-
-                }
-                if (budget.getAmount() != null) {
-                  projectBudget.setAmount(projectBudget.getAmount() + budget.getAmount());
-                }
-              }
-
-
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-
-          }
-
-          if (projectBudget.getAmount() > 0) {
-            projectBudget.setGenderPercentage(
-              new BigDecimal(String.valueOf((projectBudget.getGenderValue() / projectBudget.getAmount()) * 100))
-                .setScale(2, BigDecimal.ROUND_FLOOR).doubleValue()
-
-            );
-          }
-
-        }
 
         return projectBudget;
       }
@@ -300,22 +266,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       }
     }
 
-    if (project.getBudgetsCofinancing() != null) {
 
-      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        if (projectBudget != null) {
-          if (projectBudget.getBudgetType() != null) {
-            if (year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-              if (projectBudget.getAmount() != null) {
-                total = total + projectBudget.getAmount();
-              }
-
-            }
-          }
-        }
-
-      }
-    }
     return total;
   }
 
@@ -421,10 +372,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         reader.close();
-        if (project.getBudgetsCofinancing() == null) {
-          project.setBudgetsCofinancing(new ArrayList<>());
-        }
-        this.setDraft(true);
+
       } else {
         this.setDraft(false);
 
@@ -433,9 +381,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
             .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
             .collect(Collectors.toList()));
 
-          project.setBudgetsCofinancing(project.getProjectBudgets().stream()
-            .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2))
-            .collect(Collectors.toList()));
+
         } else {
           project
             .setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
@@ -493,9 +439,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project.getPartners().clear();
       }
 
-      if (project.getBudgetsCofinancing() != null) {
-        project.getBudgetsCofinancing().clear();
-      }
+
       if (project.getBudgets() != null) {
         project.getBudgets().clear();
 
@@ -512,9 +456,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (this.hasPermission("canEdit")) {
       this.saveBasicBudgets();
       Project projectDB = projectManager.getProjectById(projectID);
-      if (!projectDB.isBilateralProject()) {
-        this.saveBilateralBudgets();
-      }
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_BUDGETS_RELATION);
 
@@ -600,63 +542,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
-  public void saveBilateralBudgets() {
-    Project projectDB = projectManager.getProjectById(projectID);
-
-    if (!projectDB.isBilateralProject()) {
-
-      project.setBudgets(projectDB.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2))
-        .collect(Collectors.toList()));
-
-
-    }
-    for (ProjectBudget projectBudget : project.getBudgets().stream().filter(c -> c.isActive())
-      .collect(Collectors.toList())) {
-
-      if (project.getBudgetsCofinancing() == null) {
-        project.setBudgets(new ArrayList<>());
-      }
-      if (projectBudget.getYear() == this.getCurrentCycleYear()) {
-        if (!project.getBudgetsCofinancing().contains(projectBudget)) {
-
-          projectBudgetManager.deleteProjectBudget(projectBudget.getId());
-
-        }
-      }
-
-    }
-
-    if (project.getBudgetsCofinancing() != null) {
-      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        if (projectBudget != null) {
-          if (projectBudget.getId() == null) {
-            projectBudget.setCreatedBy(this.getCurrentUser());
-
-            projectBudget.setActiveSince(new Date());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
-
-          } else {
-            ProjectBudget ProjectBudgetDB = projectBudgetManager.getProjectBudgetById(projectBudget.getId());
-            projectBudget.setCreatedBy(ProjectBudgetDB.getCreatedBy());
-
-            projectBudget.setActiveSince(ProjectBudgetDB.getActiveSince());
-            projectBudget.setActive(true);
-            projectBudget.setProject(project);
-            projectBudget.setModifiedBy(this.getCurrentUser());
-            projectBudget.setModificationJustification("");
-          }
-
-
-          projectBudgetManager.saveProjectBudget(projectBudget);
-        }
-
-      }
-    }
-  }
 
   public void saveBudget(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {

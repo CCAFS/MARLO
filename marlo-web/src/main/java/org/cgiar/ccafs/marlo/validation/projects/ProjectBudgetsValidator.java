@@ -29,9 +29,7 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.google.inject.Inject;
 
@@ -122,43 +120,6 @@ public class ProjectBudgetsValidator extends BaseValidator {
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
         }
 
-
-        if (project.getBudgetsCofinancing() != null && project.getBudgetsCofinancing().size() > 0) {
-          int i = 0;
-
-
-          for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-            List<String> params = new ArrayList<String>();
-
-            if (projectBudget != null) {
-
-              if (projectBudget.getInstitution().getId() != null) {
-                params.add(institutionManager.getInstitutionById(projectBudget.getInstitution().getId()).getAcronym());
-                params.add(String.valueOf(projectBudget.getProjectBilateralCofinancing().getId()));
-
-                if (projectBudget.getYear() == action.getCurrentCycleYear()) {
-                  if (!this.isValidNumber(String.valueOf(projectBudget.getAmount()))
-                    || projectBudget.getAmount() == 0) {
-                    this.addMessage(action.getText("projectBudgetCofinaning.requeried.amount", params));
-                    action.getInvalidFields().put("input-project.budgetsCofinancing[" + i + "].amount",
-                      InvalidFieldsMessages.EMPTYFIELD);
-                  }
-                }
-
-                if (projectBudget.getBudgetType() == null || projectBudget.getBudgetType().getId() == null
-                  || projectBudget.getBudgetType().getId() == -1) {
-                  action.addFieldError("project.budgetsCofinancing[" + i + "].budgetType.id",
-                    action.getText("validation.required", new String[] {action.getText("budget.budgetType")}));
-                  this.addMessage(action.getText("projectBudgetCofinaning.requeried.type", params));
-                }
-              }
-
-            }
-
-
-            i++;
-          }
-        }
       }
 
       if (!action.getFieldErrors().isEmpty()) {
