@@ -215,7 +215,7 @@
                 [#assign fundingSources++ /]
                 
                
-                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.type,budget.fundingSource.id) ]
+                [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.budgetType.id,budget.fundingSource.id) ]
                 [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
             
             [/#list]
@@ -266,7 +266,7 @@
         <div class="row col-md-6"><strong>Type:</strong>  </div>
         <div class="row col-md-6">
           ${(element.fundingSource.type)!}
-          <input type="hidden" name="${customName}.budgetType.id" value="${(element.fundingSource.type)!}" />
+          <input type="hidden" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>
       <div class="col-md-4">

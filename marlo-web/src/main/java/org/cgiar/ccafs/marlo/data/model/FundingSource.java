@@ -55,7 +55,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private Integer centerType;
 
   @Expose
-  private Integer type;
+  private BudgetType budgetType;
 
   @Expose
   private boolean active;
@@ -85,7 +85,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
-    Integer type, boolean active, Date activeSince, String modificationJustification,
+    BudgetType type, boolean active, Date activeSince, String modificationJustification,
     Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets, Crp crp) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
@@ -97,7 +97,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.contactPersonName = contactPersonName;
     this.contactPersonEmail = contactPersonEmail;
     this.centerType = centerType;
-    this.type = type;
+    this.budgetType = type;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
@@ -110,6 +110,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public BudgetType getBudgetType() {
+    return budgetType;
+  }
+
   public Integer getCenterType() {
     return centerType;
   }
@@ -117,6 +121,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
+
 
   public String getContactPersonName() {
     return contactPersonName;
@@ -192,11 +197,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
-
-  public Integer getType() {
-    return type;
-  }
-
   @Override
   public boolean isActive() {
     return active;
@@ -208,6 +208,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setBudgetType(BudgetType budgetType) {
+    this.budgetType = budgetType;
   }
 
   public void setCenterType(Integer centerType) {
@@ -258,10 +262,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
-
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
@@ -269,10 +273,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
-  }
-
-  public void setType(Integer type) {
-    this.type = type;
   }
 
 
