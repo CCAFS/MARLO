@@ -210,7 +210,7 @@
         [#assign fundingSources = 0 /]
         <div class="projectW3bilateralFund-list simpleBox">
           [#attempt]
-            [#list action.getBudgetsByPartner(element.institution.id) as budget ]
+            [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
            
                 [#assign fundingSources++ /]
                 

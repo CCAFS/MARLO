@@ -181,9 +181,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public List<ProjectBudget> getBudgetsByPartner(Long institutionId) {
-    List<ProjectBudget> budgets = project.getBudgets().stream()
-      .filter(c -> c.isActive() && c.getInstitution().getId().longValue() == institutionId.longValue())
+  public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
+    List<ProjectBudget> budgets =
+      project
+        .getBudgets().stream().filter(c -> c.isActive()
+          && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
       .collect(Collectors.toList());
     return budgets;
   }
