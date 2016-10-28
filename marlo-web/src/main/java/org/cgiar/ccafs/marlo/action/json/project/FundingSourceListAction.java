@@ -52,6 +52,7 @@ public class FundingSourceListAction extends BaseAction {
     InstitutionManager institutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override

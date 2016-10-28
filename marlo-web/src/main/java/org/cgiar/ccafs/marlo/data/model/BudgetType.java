@@ -19,11 +19,19 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = 4497778782300688556L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private String name;
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
+  public Set<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
 
   @Override
   public Long getId() {
@@ -59,6 +67,10 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
   public boolean isActive() {
 
     return true;
+  }
+
+  public void setFundingSources(Set<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
   }
 
   public void setId(Long id) {
