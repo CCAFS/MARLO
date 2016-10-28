@@ -33,7 +33,19 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   private static final long serialVersionUID = -6392709700346014366L;
 
   @Expose
-  private Long id;
+  private boolean active;
+
+  @Expose
+  private Date activeSince;
+
+  private List<ProjectClusterActivity> clusterActivities;
+
+  @Expose
+  private User createdBy;
+
+  private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
+
+  private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
 
   @Expose
   private CrpProgram crpProgram;
@@ -41,37 +53,25 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
 
-  @Expose
-  private boolean active;
 
   @Expose
-  private User createdBy;
+  private Long id;
 
-  @Expose
-  private Date activeSince;
-
-  @Expose
-  private User modifiedBy;
 
   @Expose
   private String identifier;
 
+  private List<CrpClusterKeyOutput> keyOutputs;
+
+  private List<CrpClusterActivityLeader> leaders;
 
   @Expose
   private String modificationJustification;
 
-
-  private List<CrpClusterActivityLeader> leaders;
-
-  private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
-
-  private Set<CrpClusterKeyOutput> crpClusterKeyOutputs = new HashSet<CrpClusterKeyOutput>(0);
-
-  private List<CrpClusterKeyOutput> keyOutputs;
+  @Expose
+  private User modifiedBy;
 
   private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
-
-  private List<ProjectClusterActivity> clusterActivities;
 
   public CrpClusterOfActivity() {
   }
@@ -115,7 +115,7 @@ public class CrpClusterOfActivity implements java.io.Serializable, IAuditLog {
 
   public String getComposedName() {
     if (this.getIdentifier() != null && !this.getIdentifier().isEmpty()) {
-      return this.getIdentifier() + " - " + this.description;
+      return this.getIdentifier() + " : " + this.description;
     } else {
       return description;
     }

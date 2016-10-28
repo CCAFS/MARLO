@@ -27,6 +27,12 @@ $(document).ready(function() {
 
   addSelect2();
 
+  $('form .CoASelect').select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: '100%'
+  });
+
   applyWordCounter($("textarea.project-title"), lWordsElemetTitle);
   applyWordCounter($("textarea.project-description"), lWordsElemetDesc);
 
@@ -339,3 +345,16 @@ function addSelect2() {
 function setDisabledCheckedBoxes() {
   $('#projectWorking input[type=checkbox].fpInput:checked').attr("onclick", "return false").addClass('disabled');
 }
+
+function formatState(state) {
+  console.log(state.text);
+  if(state.id != "-1") {
+    var text = state.text.split(/:(.+)?/);
+    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+    return $state;
+  } else {
+    var $state = $("<span>" + state.text + "</span>");
+    return $state;
+  }
+
+};
