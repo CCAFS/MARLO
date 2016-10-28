@@ -100,7 +100,7 @@
 </section>
 
 [#-- Bilateral Co-Funded Project Popup --]
-[#include "/WEB-INF/global/macros/bilateralCoFundedPopup.ftl"]
+[#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
 
 [#-- W3/bilaterl Fund Template --]
 [@fundingSourceMacro element={} name="project.budgetsCofinancing" selectedYear=-1 index=-1  isTemplate=true /]
@@ -207,16 +207,21 @@
       <h5 class="sectionSubTitle">Funding Sources:</h5>
       <div class="projectW3bilateralFund-block">
         [#-- Funding sources --]
-        [#assign coFundedProjects = 0 /]
+        [#assign fundingSources = 0 /]
         <div class="projectW3bilateralFund-list simpleBox">
-          [#list project.budgetsCofinancing as w3BilateralFund]
-            [#if w3BilateralFund.year=selectedYear && element.institution.id=w3BilateralFund.institution.id]
-              [#assign coFundedProjects++ /]
-              [#local indexBudgetW3BilateralFund=action.getIndexBudgetCofinancing(w3BilateralFund.institution.id,w3BilateralFund.projectBilateralCofinancing.id,selectedYear,w3BilateralFund.budgetType.id) ]
-              [@fundingSourceMacro element=w3BilateralFund name="project.budgetsCofinancing" selectedYear=selectedYear  index=indexBudgetW3BilateralFund /]
-            [/#if]
-          [/#list]
-          [#if coFundedProjects == 0]
+          [#attempt]
+            [#list action.budgetsByPartner(element.institution.id) as fundingSource ]
+              [#if fundingSource.year=selectedYear && element.institution.id=fundingSource.institution.id]
+                [#assign fundingSources++ /]
+                [#local indexBudgetfundingSource=action.getIndexBudgetCofinancing(fundingSource.institution.id,fundingSource.projectBilateralCofinancing.id,selectedYear,fundingSource.budgetType.id) ]
+                [@fundingSourceMacro element=fundingSource name="project.budgetsCofinancing" selectedYear=selectedYear  index=indexBudgetfundingSource /]
+              [/#if]
+            [/#list]
+          [#recover]
+            ERROR LOADING FUNDING SOURCES
+          [/#attempt]
+          
+          [#if fundingSources == 0]
             [#if editable && isYearEditable(selectedYear)]
               <p class="emptyMessage text-center">Add a new one clicking on "[@s.text name="form.buttons.selectProject" /]" button below.</p>
             [#else]
