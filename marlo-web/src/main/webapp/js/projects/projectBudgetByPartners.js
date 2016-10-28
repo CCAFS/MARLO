@@ -1,12 +1,12 @@
-var countW3BilateralFunds;
+var countFundingSources;
 
 $(document).ready(init);
 
 function init() {
 
-  countW3BilateralFunds = $('form .projectW3bilateralFund').length;
+  countFundingSources = $('form .projectW3bilateralFund').length;
 
-  addProject = addBilateralFundProject;
+  addProject = addFundingSource;
 
   // Setting Numeric Inputs
   $('form input.currencyInput, input.percentageInput').numericInput();
@@ -49,7 +49,7 @@ function attachEvents() {
   // Calculate currency and percentage
   $('input.currencyInput, input.percentageInput').on('keyup', calculateCurrencyPercentage);
 
-  $('input.currencyInput.fundInput').on('keyup', validateBilateralFund);
+  $('input.currencyInput.fundInput').on('keyup', validateFundingSource);
 
 }
 
@@ -91,12 +91,10 @@ function calculateCurrencyPercentage() {
  * General Functions
  */
 
-function validateBilateralFund() {
+function validateFundingSource() {
   var value = parseInt($(this).val()) || 0;
   var limit = removeCurrencyFormat($(this).parents('.projectW3bilateralFund').find('.projectAmount').text());
 
-  console.log(limit);
-  console.log(value);
   if(value > limit) {
     $(this).addClass('fieldError');
   } else {
@@ -105,7 +103,7 @@ function validateBilateralFund() {
 }
 
 // Add bilateral project function
-function addBilateralFundProject(composedName,projectId,budget) {
+function addFundingSource(composedName,projectId,budget) {
   dialog.dialog("close");
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
@@ -124,8 +122,8 @@ function addBilateralFundProject(composedName,projectId,budget) {
   // Setting Percentage Inputs
   $item.find('input.percentageInput').percentageInput();
   // Update Index
-  $item.setNameIndexes(1, countW3BilateralFunds);
-  countW3BilateralFunds++;
+  $item.setNameIndexes(1, countFundingSources);
+  countFundingSources++;
   // Add the W3bilateralFund to the list
   $list.append($item);
   // Remove emptyMessage

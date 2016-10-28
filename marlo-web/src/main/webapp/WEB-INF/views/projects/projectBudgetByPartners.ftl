@@ -258,21 +258,22 @@
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
-    <input type="hidden" class="projectId" name="${customName}.projectBilateralCofinancing.id" value="${(element.fundingSource.id)!}"/>
+    <input type="hidden" class="projectId" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
     
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-4">
-        <div class="row col-md-4"><strong>Type:</strong>  </div>
-        <div class="row col-md-9">
+        <div class="row col-md-6"><strong>Type:</strong>  </div>
+        <div class="row col-md-6">
           ${(element.fundingSource.type)!}
+          <input type="hidden" name="${customName}.fundingSource.type" value="${(element.fundingSource.type)!}" />
         </div>
       </div>
       <div class="col-md-4">
-        <div class="row col-md-6">
+        <div class="row col-md-5">
           <strong>Amount:</strong>
         </div>
-        <div class="row col-md-7">
+        <div class="row col-md-8">
         [#if (editable && isYearEditable(selectedYear)) || isTemplate]
           [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.type)!'none'}" required=true /]
         [#else]

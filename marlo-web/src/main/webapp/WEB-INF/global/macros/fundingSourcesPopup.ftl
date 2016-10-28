@@ -62,15 +62,6 @@
               <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" /] </div>
             </div>
           </div>
-          [#-- Budget --]
-          <div class="form-group">
-            <div class="budgetByYears">
-                <ul class="nav nav-tabs" role="tablist">
-                </ul>
-                <div class="tab-content">
-                </div>
-            </div>
-          </div>
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>
@@ -93,7 +84,15 @@
           <div class="note">
             [@s.text name="projectCofunded.donor.disclaimer" /]
           </div>
-          
+          [#-- Budget --]
+          <div class="form-group">
+            <div class="budgetByYears">
+                <ul class="nav nav-tabs" role="tablist">
+                </ul>
+                <div class="tab-content">
+                </div>
+            </div>
+          </div>
           
           
           [#-- Save button --]

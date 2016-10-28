@@ -274,8 +274,9 @@ function date(start,end) {
   });
 
   function getYears() {
-    var endYear = (new Date(to.val())).getFullYear(), years = [];
-    startYear = (new Date(from.val())).getFullYear() || 2015;
+    var endYear = (new Date(to.val())).getFullYear();
+    var years = [];
+    var startYear = (new Date(from.val())).getFullYear() || 2015;
 
     $('.budgetByYears .nav-tabs').empty();
     $('.budgetByYears .tab-content').empty();
@@ -294,6 +295,9 @@ function date(start,end) {
 
       years.push(startYear++);
     }
+
+    console.log(selectedYear);
+    console.log(years.indexOf(selectedYear));
 
     console.log(years);
 
