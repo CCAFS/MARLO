@@ -249,23 +249,23 @@
     [#-- Remove --]
     [#if (editable && isYearEditable(selectedYear)) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="checked"><small>Funding source #<span class="titleId">${(element.projectBilateralCofinancing.id)!}</span></small> - 
+    <p class="checked"><small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
 
-    <small class="grayLabel"> (US$ <span class="projectAmount">${((element.projectBilateralCofinancing.budget)!0)?number?string(",##0.00")}</span>) </small>
+    <small class="grayLabel"> (US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
     </p> 
-    <span class="title">${(element.projectBilateralCofinancing.title)!}</span> </p>
+    <span class="title">${(element.fundingSource.description)!}</span> </p>
 
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
-    <input type="hidden" class="projectId" name="${customName}.projectBilateralCofinancing.id" value="${(element.projectBilateralCofinancing.id)!}"/>
+    <input type="hidden" class="projectId" name="${customName}.projectBilateralCofinancing.id" value="${(element.fundingSource.id)!}"/>
     
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-4">
         <div class="row col-md-4"><strong>Type:</strong>  </div>
         <div class="row col-md-9">
-          ${(element.budgetType.name)!}
+          ${(element.fundingSource.type)!}
           [#-- @customForm.select name="${customName}.budgetType.id" i18nkey="budget.budgetType" className="budgetTypeSelect" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=(editable && isYearEditable(selectedYear)) || isTemplate/--]
         </div>
       </div>
@@ -284,7 +284,7 @@
       </div>
       <div class="col-md-4">
         [#if project.projectEditLeader]
-          <div class="row col-md-8"><strong>Gender %:</strong>  </div>
+          <div class="row col-md-6"><strong>Gender %:</strong>  </div>
           <div class="row col-md-7">
           [#if (editable && isYearEditable(selectedYear)) || isTemplate]
             [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true   /]

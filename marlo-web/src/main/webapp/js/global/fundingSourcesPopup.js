@@ -2,7 +2,7 @@ var dialog, notyDialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
 var openSearchDialog, addProject, addUserMessage;
-var institutionSelected, selectedPartnerTitle;
+var institutionSelected, selectedPartnerTitle, selectedYear;
 
 $(document).ready(function() {
 
@@ -166,6 +166,7 @@ $(document).ready(function() {
     selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
     $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
     institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
+    selectedYear = $elementSelected.parents('.tab-pane').attr('id').split('-')[1];
 
     dialog.dialog("open");
 
@@ -259,6 +260,7 @@ function date(start,end) {
       changeYear: true
   }).on("change", function() {
     to.datepicker("option", "minDate", getDate(this));
+    getYears();
   }), to = $(end).datepicker({
       dateFormat: dateFormat,
       minDate: '2015-01-01',
@@ -268,7 +270,34 @@ function date(start,end) {
       changeYear: true
   }).on("change", function() {
     from.datepicker("option", "maxDate", getDate(this));
+    getYears();
   });
+
+  function getYears() {
+    var endYear = (new Date(to.val())).getFullYear(), years = [];
+    startYear = (new Date(from.val())).getFullYear() || 2015;
+
+    $('.budgetByYears .nav-tabs').empty();
+    $('.budgetByYears .tab-content').empty();
+
+    while(startYear <= endYear) {
+      var state = '';
+      if(selectedYear == startYear) {
+        state = 'active';
+      }
+      $('.budgetByYears .nav-tabs').append(
+          '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
+              + '</a></li>');
+      $('.budgetByYears .tab-content').append(
+          '<div class="tab-pane ' + state + '" id="fundingYear-' + startYear + '">' + '<label for="">Budget for '
+              + startYear + ':</label> <input type="text" class="form-control input-sm" />' + '</div>');
+
+      years.push(startYear++);
+    }
+
+    console.log(years);
+
+  }
 
   function getDate(element) {
     var date;
