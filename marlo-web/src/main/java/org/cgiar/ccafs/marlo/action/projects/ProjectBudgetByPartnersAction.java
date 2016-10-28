@@ -374,9 +374,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         this.setDraft(false);
 
         if (!project.isBilateralProject()) {
-          project.setBudgets(project.getProjectBudgets().stream()
-            .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
-            .collect(Collectors.toList()));
+          project
+            .setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
         } else {

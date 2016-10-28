@@ -403,18 +403,12 @@ public class ValidateProjectSectionAction extends BaseAction {
   private void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-    if (!project.isBilateralProject()) {
-      project.setBudgets(project.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
-        .collect(Collectors.toList()));
+
+    project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
-    } else {
-      project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-
-    }
     projectBudgetsValidator.validate(this, project, false);
+
   }
 
 
