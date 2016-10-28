@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -69,6 +69,16 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   public long saveFundingSource(FundingSource fundingSource) {
 
     return fundingSourceDAO.save(fundingSource);
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSources(String query, int year) {
+    return fundingSourceDAO.searchFundingSources(query, year);
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year);
   }
 
 

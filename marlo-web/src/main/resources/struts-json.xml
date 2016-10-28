@@ -83,8 +83,8 @@
 			</result>
 		</action>
 
-		<action name="projectsBilateralList"
-			class="org.cgiar.ccafs.marlo.action.json.project.ProjectsBilaterCofinancingListAction">
+		<action name="FundingSourceList"
+			class="org.cgiar.ccafs.marlo.action.json.project.FundingSourceListAction">
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
