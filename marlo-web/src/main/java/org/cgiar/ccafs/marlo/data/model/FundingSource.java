@@ -30,6 +30,7 @@ public class FundingSource implements java.io.Serializable {
   @Expose
   private Institution institution;
 
+
   @Expose
   private String description;
 
@@ -63,6 +64,9 @@ public class FundingSource implements java.io.Serializable {
   @Expose
   private String modificationJustification;
 
+  @Expose
+  private Crp crp;
+
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
@@ -80,7 +84,7 @@ public class FundingSource implements java.io.Serializable {
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
     Integer type, boolean active, Date activeSince, String modificationJustification,
-    Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets) {
+    Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets, Crp crp) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.institution = institution;
@@ -97,6 +101,7 @@ public class FundingSource implements java.io.Serializable {
     this.modificationJustification = modificationJustification;
     this.fundingSourceBudgets = fundingSourceBudgets;
     this.projectBudgets = projectBudgets;
+    this.crp = crp;
   }
 
   public Date getActiveSince() {
@@ -107,11 +112,9 @@ public class FundingSource implements java.io.Serializable {
     return centerType;
   }
 
-
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
-
 
   public String getContactPersonName() {
     return contactPersonName;
@@ -120,6 +123,11 @@ public class FundingSource implements java.io.Serializable {
 
   public User getCreatedBy() {
     return createdBy;
+  }
+
+
+  public Crp getCrp() {
+    return crp;
   }
 
 
@@ -177,6 +185,7 @@ public class FundingSource implements java.io.Serializable {
     return type;
   }
 
+
   public boolean isActive() {
     return active;
   }
@@ -203,6 +212,10 @@ public class FundingSource implements java.io.Serializable {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+  public void setCrp(Crp crp) {
+    this.crp = crp;
   }
 
   public void setDescription(String description) {
