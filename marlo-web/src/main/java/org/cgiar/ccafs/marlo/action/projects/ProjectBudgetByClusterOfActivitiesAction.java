@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterOfActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetsCluserActvityManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -88,7 +87,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public ProjectBudgetByClusterOfActivitiesAction(APConfig config,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ProjectManager projectManager, CrpManager crpManager,
     ProjectBudgetManager projectBudgetManager, AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
-    ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
+
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator,
     ProjectBudgetsCluserActvityManager projectBudgetsCluserActvityManager, ProjectBudgetsCoAValidator validator) {
     super(config);

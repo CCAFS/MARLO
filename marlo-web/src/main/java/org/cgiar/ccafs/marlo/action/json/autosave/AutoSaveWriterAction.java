@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -127,11 +126,11 @@ public class AutoSaveWriterAction extends BaseAction {
       if (nameClass.equals(Project.class.getName())) {
         jSon = jSon.replaceAll("project\\.", "");
       }
-
-      if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
-        jSon = jSon.replaceAll("project\\.", "");
-      }
-
+      /*
+       * if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
+       * jSon = jSon.replaceAll("project\\.", "");
+       * }
+       */
       if (nameClass.equals(ProjectOutcome.class.getName())) {
         jSon = jSon.replaceAll("projectOutcome\\.", "");
       }

@@ -3,56 +3,7 @@
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="bilaterals" namespace="/bilaterals" extends="marlo-default">
-		<action name="{crp}/cofundedList"
-			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<interceptor-ref name="projectsStack" />
-			<result name="input">/WEB-INF/views/projects_cofunded/cofundedList.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/cofundedList</param>
-				<param name="edit">true</param>
-			</result>
-			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/cofundedList</param>
-				<param name="edit">true</param>
-				<param name="cancel">true</param>
-			</result>
-		</action>
-
-		<action name="{crp}/cofunded"
-			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedAction">
-			<interceptor-ref name="editProjectListStack" />
-      <interceptor-ref name="editCofunded" />
-      <interceptor-ref name="defaultStack" />
-			<result name="input">/WEB-INF/views/projects_cofunded/projectCofunded.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/cofunded</param>
-				<param name="projectID">${project.id}</param>
-				<param name="edit">true</param>
-			</result>
-		</action>
-
-		<action name="{crp}/addNewCofunded" method="add"
-			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<interceptor-ref name="projectsStack" />
-			<result name="input">/WEB-INF/views/projects_cofunded/cofundedList.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/cofunded</param>
-				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
-			</result>
-		</action>
-
-		<action name="{crp}/deleteCofunded" method="delete"
-			class="org.cgiar.ccafs.marlo.action.bilaterals.CofundedListAction">
-			<interceptor-ref name="projectsStack" />
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/cofundedList</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-		</action>
+		
 
 	</package>
 </struts>

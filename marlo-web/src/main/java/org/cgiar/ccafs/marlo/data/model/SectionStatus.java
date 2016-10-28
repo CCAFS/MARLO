@@ -45,7 +45,7 @@ public class SectionStatus implements java.io.Serializable {
   private Project project;
   private Deliverable deliverable;
   private ProjectOutcome projectOutcome;
-  private ProjectBilateralCofinancing projectBilateralCofinancing;
+
 
   public SectionStatus() {
   }
@@ -86,10 +86,6 @@ public class SectionStatus implements java.io.Serializable {
 
   public Project getProject() {
     return project;
-  }
-
-  public ProjectBilateralCofinancing getProjectBilateralCofinancing() {
-    return projectBilateralCofinancing;
   }
 
 
@@ -133,9 +129,6 @@ public class SectionStatus implements java.io.Serializable {
     this.project = project;
   }
 
-  public void setProjectBilateralCofinancing(ProjectBilateralCofinancing projectBilateralCofinancing) {
-    this.projectBilateralCofinancing = projectBilateralCofinancing;
-  }
 
   public void setProjectOutcome(ProjectOutcome projectOutcome) {
     this.projectOutcome = projectOutcome;

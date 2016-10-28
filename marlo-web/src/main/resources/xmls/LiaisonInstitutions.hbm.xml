@@ -42,11 +42,6 @@
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.Project" />
         </set>
         
-         <set name="projectsBilateralCofinancings" table="projects_bilateral_cofinancing" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="liason_institution" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectBilateralCofinancing" />
-        </set>
+       
     </class>
 </hibernate-mapping>

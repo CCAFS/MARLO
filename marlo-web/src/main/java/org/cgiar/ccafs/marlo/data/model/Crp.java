@@ -65,8 +65,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
 
   private Set<CrpSubIdosContribution> crpSubIdosContributions = new HashSet<CrpSubIdosContribution>(0);
 
-  private Set<ProjectBilateralCofinancing> ProjectBilateralCofinancings = new HashSet<ProjectBilateralCofinancing>(0);
-
 
   @Expose
   private boolean active;
@@ -234,9 +232,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     return programManagmenTeam;
   }
 
-  public Set<ProjectBilateralCofinancing> getProjectBilateralCofinancings() {
-    return ProjectBilateralCofinancings;
-  }
 
   public Set<Project> getProjects() {
     return projects;
@@ -376,9 +371,6 @@ public class Crp implements java.io.Serializable, IAuditLog {
     this.programManagmenTeam = programManagmenTeam;
   }
 
-  public void setProjectBilateralCofinancings(Set<ProjectBilateralCofinancing> projectBilateralCofinancings) {
-    ProjectBilateralCofinancings = projectBilateralCofinancings;
-  }
 
   public void setProjects(Set<Project> projects) {
     this.projects = projects;

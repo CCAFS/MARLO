@@ -53,8 +53,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   private Set<Project> projects = new HashSet<Project>(0);
 
 
-  private Set<ProjectBilateralCofinancing> projectsBilateralCofinancings = new HashSet<ProjectBilateralCofinancing>(0);
-
   public LiaisonInstitution() {
   }
 
@@ -145,10 +143,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return projects;
   }
 
-  public Set<ProjectBilateralCofinancing> getProjectsBilateralCofinancings() {
-    return projectsBilateralCofinancings;
-  }
-
 
   @Override
   public boolean isActive() {
@@ -192,10 +186,6 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.projects = projects;
   }
 
-
-  public void setProjectsBilateralCofinancings(Set<ProjectBilateralCofinancing> projectsBilateralCofinancings) {
-    this.projectsBilateralCofinancings = projectsBilateralCofinancings;
-  }
 
   @Override
   public String toString() {

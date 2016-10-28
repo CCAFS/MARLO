@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectBilateralCofinancingManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
@@ -79,8 +78,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private ProjectBudgetManager projectBudgetManager;
 
 
-  private ProjectBilateralCofinancingManager projectBilateralCofinancingManager;
-
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private ProjectBudgetsValidator projectBudgetsValidator;
@@ -103,7 +100,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
     AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
-    ProjectBilateralCofinancingManager projectBilateralCofinancingManager,
+
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
@@ -113,7 +110,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
-    this.projectBilateralCofinancingManager = projectBilateralCofinancingManager;
+
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
   }
