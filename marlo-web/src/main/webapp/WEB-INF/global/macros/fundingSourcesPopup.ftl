@@ -62,7 +62,7 @@
               <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" /] </div>
             </div>
           </div>
-          [#-- Budget --]  <label for=""></label>
+          [#-- Budget --]
           <div class="form-group">
             <div class="budgetByYears">
                 <ul class="nav nav-tabs" role="tablist">

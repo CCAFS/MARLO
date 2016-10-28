@@ -41,10 +41,10 @@
             [#assign endYear = (project.endDate?string.yyyy)?number /]
             [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
             [#assign type = { 
-              'w1w2': 'w1w2',
-              'w3': '2',
-              'bilateral': '3',
-              'centerFunds': 'centerFunds'
+              'w1w2':         '1',
+              'w3':           '2',
+              'bilateral':    '3',
+              'centerFunds':  '4'
             } /]
             
             [#-- Year Tabs --]
@@ -266,7 +266,6 @@
         <div class="row col-md-4"><strong>Type:</strong>  </div>
         <div class="row col-md-9">
           ${(element.fundingSource.type)!}
-          [#-- @customForm.select name="${customName}.budgetType.id" i18nkey="budget.budgetType" className="budgetTypeSelect" showTitle=false  disabled=!editable  listName="w3bilateralBudgetTypes" required=true editable=(editable && isYearEditable(selectedYear)) || isTemplate/--]
         </div>
       </div>
       <div class="col-md-4">
@@ -275,7 +274,7 @@
         </div>
         <div class="row col-md-7">
         [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.budgetType.id)!'none'}" required=true /]
+          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.type)!'none'}" required=true /]
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
           <input type="hidden" name="${customName}.amount" value="${(element.amount)!0}" />
@@ -287,7 +286,7 @@
           <div class="row col-md-6"><strong>Gender %:</strong>  </div>
           <div class="row col-md-7">
           [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.budgetType.id)!'none'}" required=true   /]
+            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.type)!'none'}" required=true   /]
           [#else]  
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
             <input type="hidden" name="${customName}.genderPercentage" value="${(element.genderPercentage)!0}" />
