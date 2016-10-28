@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -37,24 +38,22 @@ public class FundingSourceAddAction extends BaseAction {
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
   private static String CENTER_TYPE = "centerType";
-
-  private static String STATUS = "status";
-  private static String BUDGET = "budget";
-  private static String LEAD_CENTER = "liaisonInstitution";
+  private static String TYPE = "centerType";
 
 
-  private static String COFUNDED_MODE = "cofundedMode";
-
+  private String crpID;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
+  private BudgetTypeManager budgetTypeManager;
 
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
+    this.budgetTypeManager = budgetTypeManager;
   }
 
   @Override

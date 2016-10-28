@@ -36,14 +36,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FundingSourceListAction extends BaseAction {
 
+
   private static final long serialVersionUID = 6304226585314276677L;
+
 
   List<Map<String, Object>> sources;
 
   private long institutionID;
-  private int year;
-  private String queryParameter;
 
+  private int year;
+
+  private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
 
@@ -79,6 +82,10 @@ public class FundingSourceListAction extends BaseAction {
     return SUCCESS;
   }
 
+  public List<Map<String, Object>> getSources() {
+    return sources;
+  }
+
   @Override
   public void prepare() throws Exception {
     Map<String, Object> parameters = this.getParameters();
@@ -88,6 +95,10 @@ public class FundingSourceListAction extends BaseAction {
     }
     queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
     year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+  }
+
+  public void setSources(List<Map<String, Object>> sources) {
+    this.sources = sources;
   }
 
 }
