@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
@@ -74,6 +75,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+  private FundingSourceManager fundingSourceManager;
 
   private ProjectBudgetManager projectBudgetManager;
 
@@ -99,8 +101,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
     ProjectManager projectManager, CrpManager crpManager, ProjectBudgetManager projectBudgetManager,
-    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager,
-
+    AuditLogManager auditLogManager, BudgetTypeManager budgetTypeManager, FundingSourceManager fundingSourceManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectBudgetsValidator projectBudgetsValidator) {
     super(config);
 
@@ -110,7 +111,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetManager = projectBudgetManager;
     this.auditLogManager = auditLogManager;
     this.budgetTypeManager = budgetTypeManager;
-
+    this.fundingSourceManager = fundingSourceManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.projectBudgetsValidator = projectBudgetsValidator;
   }
@@ -177,6 +178,47 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
       return project.getBudgets().get(this.getIndexBudget(institutionId, year, type));
     }
+  }
+
+
+  public List<ProjectBudget> getBudgetsByPartner(Long institutionId) {
+    List<ProjectBudget> budgets = project.getBudgets().stream()
+      .filter(c -> c.isActive() && c.getInstitution().getId().longValue() == institutionId.longValue())
+      .collect(Collectors.toList());
+    return budgets;
+  }
+
+
+  public int getIndexBudget(long institutionId, int year, long type, long fundingSourceID) {
+    if (project.getBudgets() != null) {
+      int i = 0;
+      for (ProjectBudget projectBudget : project.getBudgets()) {
+        if (projectBudget != null) {
+          if (projectBudget.getInstitution() != null) {
+            if (projectBudget.getInstitution().getId().longValue() == institutionId && year == projectBudget.getYear()
+              && type == projectBudget.getBudgetType().getId().longValue()
+              && projectBudget.getFundingSource().getId().longValue() == fundingSourceID) {
+              return i;
+            }
+
+          }
+        }
+
+        i++;
+      }
+
+    } else {
+      project.setBudgets(new ArrayList<>());
+    }
+
+    ProjectBudget projectBudget = new ProjectBudget();
+    projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
+    projectBudget.setYear(year);
+    projectBudget.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));;
+    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
+    project.getBudgets().add(projectBudget);
+
+    return this.getIndexBudget(institutionId, year, type);
   }
 
 
