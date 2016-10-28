@@ -209,12 +209,13 @@ $(document).ready(function() {
   }
 
   function getData(query) {
+    console.log(institutionSelected);
     $.ajax({
-        'url': baseURL + '/projectsBilateralList.do',
+        'url': baseURL + '/FundingSourceList.do',
         'data': {
             q: query,
             institutionID: institutionSelected,
-            year: new Date().getFullYear()
+            year: selectedYear
         },
         'dataType': "json",
         beforeSend: function(xhr,opts) {
@@ -222,15 +223,14 @@ $(document).ready(function() {
           $dialogContent.find(".panel-body ul").empty();
         },
         success: function(data) {
-          var usersFound = (data.projects).length;
+          var usersFound = (data.sources).length;
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
-            $.each(data.projects, function(i,project) {
-              console.log(project);
+            $.each(data.sources, function(i,source) {
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-              $item.find('.name').html(project.title);
-              $item.find('.contactId').html(project.id);
-              $item.find('.budget').html(project.budget);
+              $item.find('.name').html(source.name);
+              $item.find('.contactId').html(source.id);
+              $item.find('.budget').html(source.budget);
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
@@ -290,16 +290,17 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div class="tab-pane ' + state + '" id="fundingYear-' + startYear + '">' + '<label for="">Budget for '
-              + startYear + ':</label> <input type="text" class="form-control input-sm" />' + '</div>');
+          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
+              + '<label for="">Budget for ' + startYear
+              + ':</label> <input type="text" class="form-control input-sm col-md-4" />' + '</div>');
 
       years.push(startYear++);
     }
 
-    console.log(selectedYear);
-    console.log(years.indexOf(selectedYear));
-
-    console.log(years);
+    if(years.indexOf(parseInt(selectedYear)) == -1) {
+      $('.budgetByYears .nav-tabs li').last().addClass('active');
+      $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+    }
 
   }
 
