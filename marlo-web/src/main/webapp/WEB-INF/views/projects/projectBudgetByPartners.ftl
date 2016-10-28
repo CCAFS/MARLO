@@ -266,7 +266,7 @@
         <div class="row col-md-6"><strong>Type:</strong>  </div>
         <div class="row col-md-6">
           ${(element.fundingSource.type)!}
-          <input type="hidden" name="${customName}.fundingSource.type" value="${(element.fundingSource.type)!}" />
+          <input type="hidden" name="${customName}.budgetType.id" value="${(element.fundingSource.type)!}" />
         </div>
       </div>
       <div class="col-md-4">

@@ -182,10 +182,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
-    List<ProjectBudget> budgets =
-      project
-        .getBudgets().stream().filter(c -> c.isActive()
-          && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
+    List<ProjectBudget> budgets = project.getBudgets().stream()
+      .filter(
+        c -> c.isActive() && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
       .collect(Collectors.toList());
     return budgets;
   }
@@ -198,6 +197,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         if (projectBudget != null) {
           if (projectBudget.getInstitution() != null) {
             if (projectBudget.getInstitution().getId().longValue() == institutionId && year == projectBudget.getYear()
+              && projectBudget.getBudgetType().getId() != null
               && type == projectBudget.getBudgetType().getId().longValue()
               && projectBudget.getFundingSource().getId().longValue() == fundingSourceID) {
               return i;
@@ -537,9 +537,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(projectID);
 
     if (!projectDB.isBilateralProject()) {
-      projectDB.setBudgets(projectDB.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
-        .collect(Collectors.toList()));
+      projectDB
+        .setBudgets(projectDB.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
     } else {
@@ -567,17 +566,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-          if (!projectDB.isBilateralProject()) {
-            switch (projectBudget.getBudgetType().getId().intValue()) {
-              case 1:
-              case 4:
-                this.saveBudget(projectBudget);
-                break;
 
-            }
-          } else {
-            this.saveBudget(projectBudget);
-          }
+          this.saveBudget(projectBudget);
 
 
         }
