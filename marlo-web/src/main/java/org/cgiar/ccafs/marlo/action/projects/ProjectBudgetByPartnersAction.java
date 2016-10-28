@@ -411,7 +411,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         reader.close();
-
+        for (ProjectBudget projectBudget : project.getBudgets()) {
+          projectBudget
+            .setFundingSource(fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId()));
+        }
+        this.setDraft(true);
       } else {
         this.setDraft(false);
 
