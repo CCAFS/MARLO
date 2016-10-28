@@ -217,12 +217,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public ProjectBudget getBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
-
-    return project.getBudgetsCofinancing()
-      .get(this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type));
-  }
-
   public int getIndexBudget(Long institutionId, int year, long type) {
     if (project.getBudgets() != null) {
       int i = 0;
@@ -253,40 +247,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return this.getIndexBudget(institutionId, year, type);
   }
 
-
-  public int getIndexBudgetCofinancing(Long institutionId, Long projectCofinanceId, int year, long type) {
-    if (project.getBudgetsCofinancing() != null) {
-      int i = 0;
-      for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-        if (projectBudget != null) {
-          if (projectBudget.getProjectBilateralCofinancing() != null
-            || projectBudget.getProjectBilateralCofinancing().getId() != null) {
-            if (projectBudget.getInstitution().getId().longValue() == institutionId.longValue()
-              && projectBudget.getProjectBilateralCofinancing().getId().longValue() == projectCofinanceId.longValue()
-              && year == projectBudget.getYear() && type == projectBudget.getBudgetType().getId().longValue()) {
-              return i;
-            }
-          }
-
-        }
-
-        i++;
-      }
-
-    } else {
-      project.setBudgets(new ArrayList<>());
-    }
-
-    ProjectBudget projectBudget = new ProjectBudget();
-    projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
-    projectBudget.setYear(year);
-    projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
-    projectBudget.setProjectBilateralCofinancing(
-      projectBilateralCofinancingManager.getProjectBilateralCofinancingById(projectCofinanceId));
-    project.getBudgetsCofinancing().add(projectBudget);
-
-    return this.getIndexBudgetCofinancing(institutionId, projectCofinanceId, year, type);
-  }
 
   public List<Institution> getInstitutions() {
     return institutions;
@@ -470,13 +430,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         if (!project.isBilateralProject()) {
           project.setBudgets(project.getProjectBudgets().stream()
-            .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
-              && c.getProjectBilateralCofinancing() == null)
+            .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
             .collect(Collectors.toList()));
 
           project.setBudgetsCofinancing(project.getProjectBudgets().stream()
-            .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
-              && c.getProjectBilateralCofinancing() != null)
+            .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2))
             .collect(Collectors.toList()));
         } else {
           project
@@ -504,13 +462,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
           projectPartner.getProjectPartnerPersons().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       }
 
-      if (project.getBudgetsCofinancing() != null) {
-        for (ProjectBudget projectBudget : project.getBudgetsCofinancing()) {
-
-          projectBudget.setProjectBilateralCofinancing(projectBilateralCofinancingManager
-            .getProjectBilateralCofinancingById(projectBudget.getProjectBilateralCofinancing().getId()));
-        }
-      }
 
       this.projectPPAPartners = new ArrayList<ProjectPartner>();
       for (ProjectPartner pp : project.getPartners()) {
@@ -601,8 +552,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
     if (!projectDB.isBilateralProject()) {
       projectDB.setBudgets(projectDB.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
-          && c.getProjectBilateralCofinancing() == null)
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
         .collect(Collectors.toList()));
 
 
@@ -656,8 +606,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (!projectDB.isBilateralProject()) {
 
       project.setBudgets(projectDB.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
-          && c.getProjectBilateralCofinancing() != null)
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2))
         .collect(Collectors.toList()));
 
 

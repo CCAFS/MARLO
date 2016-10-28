@@ -405,13 +405,11 @@ public class ValidateProjectSectionAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
     if (!project.isBilateralProject()) {
       project.setBudgets(project.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2)
-          && c.getProjectBilateralCofinancing() == null)
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() != 3 || c.getBudgetType().getId() != 2))
         .collect(Collectors.toList()));
 
       project.setBudgetsCofinancing(project.getProjectBudgets().stream()
-        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2)
-          && c.getProjectBilateralCofinancing() != null)
+        .filter(c -> c.isActive() && (c.getBudgetType().getId() == 3 || c.getBudgetType().getId() == 2))
         .collect(Collectors.toList()));
     } else {
       project.setBudgets(project.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()));

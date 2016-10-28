@@ -38,8 +38,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Institution institution;
-  @Expose
-  private ProjectBilateralCofinancing projectBilateralCofinancing;
+
   private Project project;
   @Expose
   private User createdBy;
@@ -147,9 +146,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-  public ProjectBilateralCofinancing getProjectBilateralCofinancing() {
-    return projectBilateralCofinancing;
-  }
 
   public int getYear() {
     return year;
@@ -223,10 +219,6 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
-
-  public void setProjectBilateralCofinancing(ProjectBilateralCofinancing projectBilateralCofinancing) {
-    this.projectBilateralCofinancing = projectBilateralCofinancing;
-  }
 
   public void setYear(int year) {
     this.year = year;
