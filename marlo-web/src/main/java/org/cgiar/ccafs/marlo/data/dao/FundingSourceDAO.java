@@ -72,11 +72,10 @@ public interface FundingSourceDAO {
    * This method get the list of FundingSource that like a specifics parameters.
    * 
    * @param query - word parameter
-   * @param institutionID - the institution ID
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSources(String query, long institutionID, int year);
+  public List<FundingSource> searchFundingSources(String query, int year);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.
