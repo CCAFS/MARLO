@@ -25,6 +25,10 @@
       class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
       <column name="crp_id" />
     </many-to-one>
+    <many-to-one name="budgetType"
+      class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
+      <column name="type" />
+    </many-to-one>
 		<property name="description" type="string">
 			<column name="description" length="65535" />
 		</property>
@@ -45,9 +49,6 @@
 		</property>
 		<property name="centerType" type="java.lang.Integer">
 			<column name="center_type" />
-		</property>
-		<property name="type" type="java.lang.Integer">
-			<column name="type" />
 		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

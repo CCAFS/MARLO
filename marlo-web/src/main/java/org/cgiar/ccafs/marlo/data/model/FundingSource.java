@@ -37,6 +37,7 @@ public class FundingSource implements java.io.Serializable {
   @Expose
   private Date startDate;
 
+
   @Expose
   private Date endDate;
 
@@ -53,9 +54,6 @@ public class FundingSource implements java.io.Serializable {
   private Integer centerType;
 
   @Expose
-  private Integer type;
-
-  @Expose
   private boolean active;
 
   @Expose
@@ -63,6 +61,9 @@ public class FundingSource implements java.io.Serializable {
 
   @Expose
   private String modificationJustification;
+
+  @Expose
+  private BudgetType budgetType;
 
   @Expose
   private Crp crp;
@@ -83,8 +84,8 @@ public class FundingSource implements java.io.Serializable {
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
-    Integer type, boolean active, Date activeSince, String modificationJustification,
-    Set<FundingSourceBudget> fundingSourceBudgets, Set<ProjectBudget> projectBudgets, Crp crp) {
+    boolean active, Date activeSince, String modificationJustification, Set<FundingSourceBudget> fundingSourceBudgets,
+    Set<ProjectBudget> projectBudgets, Crp crp, BudgetType budgetType) {
     this.modifiedBy = modifiedBy;
     this.createdBy = createdBy;
     this.institution = institution;
@@ -95,17 +96,21 @@ public class FundingSource implements java.io.Serializable {
     this.contactPersonName = contactPersonName;
     this.contactPersonEmail = contactPersonEmail;
     this.centerType = centerType;
-    this.type = type;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.fundingSourceBudgets = fundingSourceBudgets;
     this.projectBudgets = projectBudgets;
     this.crp = crp;
+    this.budgetType = budgetType;
   }
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+  public BudgetType getBudgetType() {
+    return budgetType;
   }
 
   public Integer getCenterType() {
@@ -119,7 +124,6 @@ public class FundingSource implements java.io.Serializable {
   public String getContactPersonName() {
     return contactPersonName;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -180,15 +184,10 @@ public class FundingSource implements java.io.Serializable {
     return startDate;
   }
 
-
-  public Integer getType() {
-    return type;
-  }
-
-
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -196,6 +195,10 @@ public class FundingSource implements java.io.Serializable {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setBudgetType(BudgetType budgetType) {
+    this.budgetType = budgetType;
   }
 
   public void setCenterType(Integer centerType) {
@@ -257,10 +260,6 @@ public class FundingSource implements java.io.Serializable {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
-  }
-
-  public void setType(Integer type) {
-    this.type = type;
   }
 
 
