@@ -1,6 +1,6 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
-[#macro cofundedList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
+[#macro list projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">

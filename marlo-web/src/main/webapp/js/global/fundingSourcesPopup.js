@@ -101,6 +101,13 @@ $(document).ready(function() {
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+    project.budgets = [];
+    $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
+      project.budgets.push({
+          year: $(e).attr('id').split('-')[2],
+          amount: $(e).find('input').val()
+      });
+    });
 
     var projectValidate = {};
     projectValidate.title = project.title;
@@ -290,8 +297,8 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
-              + '<label for="">Budget for ' + startYear
+          '<div id="tab-pane-' + startYear + '" class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear
+              + '">' + '<label for="">Budget for ' + startYear
               + ':</label> <input type="text" class="form-control input-sm col-md-4" />' + '</div>');
 
       years.push(startYear++);

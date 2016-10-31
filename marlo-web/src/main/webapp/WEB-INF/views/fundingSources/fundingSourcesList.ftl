@@ -21,7 +21,7 @@
     [#-- Projects List (My Projects) --]
     <h3 class="headTitle text-center">[@s.text name="Funding Sources"/]</h3>
     <div class="loadingBlock"></div>
-    <div style="display:none">[@CofundedList.cofundedList projects=myProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]</div>
+    <div style="display:none">[@fundingSourcesList.list projects=myProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]</div>
     <div class="clearfix"></div>
     <div class="text-right">
       <div class="addProject button-blue"><a  href="[@s.url namespace="/bilaterals" action='${(crpSession)!}/addFundingSource'][/@s.url]">
