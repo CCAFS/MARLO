@@ -146,8 +146,31 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
+  public FundingSourceBudget getBuget(int year) {
+
+    for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+      if (fundingSourceBudget.getYear().intValue() == year) {
+        return fundingSourceBudget;
+      }
+    }
+    return null;
+
+  }
+
   public FundingSource getFundingSource() {
     return fundingSource;
+  }
+
+  public int getIndexBugets(int year) {
+    int i = 0;
+    for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+      if (fundingSourceBudget.getYear().intValue() == year) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
+
   }
 
   public List<Institution> getInstitutions() {
