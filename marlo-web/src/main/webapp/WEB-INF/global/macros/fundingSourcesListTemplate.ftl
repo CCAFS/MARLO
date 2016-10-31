@@ -45,7 +45,7 @@
           </td>
           [#-- Project Donor --]
           <td class=""> 
-            ${(project.institution.composedName)!'Not defined'}
+            ${(project.institution.composedName)!'Not applicable'}
           </td>
           [#-- Delete Project--]
           <td class="text-center">
