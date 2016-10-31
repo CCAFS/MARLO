@@ -10,7 +10,7 @@
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         <th id="projectType">[@s.text name="projectsList.projectType" /]</th>
         <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
@@ -36,9 +36,9 @@
         </td>
           [#-- Project Title --]
           <td class="left"> 
-            [#if project.description?has_content]
-              <a href="${projectUrl}" title="${project.description}">
-              [#if project.description?length < 120] ${project.description}</a> [#else] [@utilities.wordCutter string=project.description maxPos=120 /]...</a> [/#if]
+            [#if project.title?has_content]
+              <a href="${projectUrl}" title="${project.title}">
+              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="${projectUrl}">
                 [@s.text name="projectsList.title.none" /]
