@@ -72,6 +72,8 @@ public interface FundingSourceManager {
    */
   public long saveFundingSource(FundingSource fundingSource);
 
+  public long saveFundingSource(FundingSource fundingSource, String section, List<String> relationsName);
+
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 

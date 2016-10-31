@@ -82,6 +82,18 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
+  public long save(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+    if (fundingSource.getId() == null) {
+      dao.save(fundingSource, sectionName, relationsName);
+    } else {
+      dao.update(fundingSource, sectionName, relationsName);
+    }
+
+
+    return fundingSource.getId();
+  }
+
+  @Override
   public List<FundingSource> searchFundingSources(String query, int year) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());

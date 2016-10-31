@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -95,7 +96,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private List<Institution> institutions;
   // Model for the view
-  private Map<String, String> w3bilateralBudgetTypes; // List of W3/Bilateral budget types (W3, Bilateral).
+  private Map<String, String> budgetTypes;
+  private Map<String, String> w3bilateralBudgetTypes;// List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
 
   @Inject
@@ -182,11 +184,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
-    List<ProjectBudget> budgets = project.getBudgets().stream()
-      .filter(
-        c -> c.isActive() && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
+    List<ProjectBudget> budgets =
+      project
+        .getBudgets().stream().filter(c -> c.isActive()
+          && c.getInstitution().getId().longValue() == institutionId.longValue() && c.getYear() == year)
       .collect(Collectors.toList());
     return budgets;
+  }
+
+
+  public Map<String, String> getBudgetTypes() {
+    return budgetTypes;
   }
 
 
@@ -264,10 +272,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -278,7 +286,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
@@ -286,6 +293,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
+
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -311,10 +319,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return total;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public Map<String, String> getW3bilateralBudgetTypes() {
     return w3bilateralBudgetTypes;
@@ -372,6 +380,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     w3bilateralBudgetTypes = new HashMap<>();
+    budgetTypes = new HashMap<>();
+
+    for (BudgetType budgetType : budgetTypeManager.findAll()) {
+      budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+    }
     w3bilateralBudgetTypes.put("2", "W3");
     w3bilateralBudgetTypes.put("3", "Bilateral");
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -532,7 +545,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
-
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
@@ -600,6 +612,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
     projectBudgetManager.saveProjectBudget(projectBudget);
+  }
+
+
+  public void setBudgetTypes(Map<String, String> budgetTypes) {
+    this.budgetTypes = budgetTypes;
   }
 
   public void setInstitutions(List<Institution> institutions) {

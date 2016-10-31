@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -70,8 +71,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private Crp crp;
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
+  private List<FundingSourceBudget> budgets;
+
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
 
   public FundingSource() {
   }
@@ -110,6 +114,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public List<FundingSourceBudget> getBudgets() {
+    return budgets;
+  }
+
   public BudgetType getBudgetType() {
     return budgetType;
   }
@@ -121,7 +129,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
-
 
   public String getContactPersonName() {
     return contactPersonName;
@@ -197,6 +204,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
+
   @Override
   public boolean isActive() {
     return active;
@@ -208,6 +216,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setBudgets(List<FundingSourceBudget> budgets) {
+    this.budgets = budgets;
   }
 
   public void setBudgetType(BudgetType budgetType) {
