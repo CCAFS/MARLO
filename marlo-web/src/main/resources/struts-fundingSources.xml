@@ -5,6 +5,7 @@
 	<package name="fundingSources" namespace="/fundingSources" extends="marlo-default">
 	
     <action name="{crp}/fundingSourcesList" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+        <interceptor-ref name="projectsStack" /> 
       <result name="input">/WEB-INF/views/fundingSources/fundingSourcesList.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingSourcesList</param>
@@ -12,6 +13,7 @@
     </action>
     
     <action name="{crp}/fundingSource" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceAction">
+           <interceptor-ref name="projectsStack" /> 
       <result name="input">/WEB-INF/views/fundingSources/fundingSource.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/{crp}/fundingSource</param>

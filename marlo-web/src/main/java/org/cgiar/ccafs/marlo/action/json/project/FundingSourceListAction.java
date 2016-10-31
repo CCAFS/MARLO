@@ -75,10 +75,12 @@ public class FundingSourceListAction extends BaseAction {
 
     Map<String, Object> source;
     if (institution == null) {
-      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year);
+      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue());
     } else {
       fundingSources =
         fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year);
+      fundingSources
+        .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
     }
 
     for (FundingSource fundingSource : fundingSources) {
@@ -86,6 +88,7 @@ public class FundingSourceListAction extends BaseAction {
       source.put("id", fundingSource.getId());
       source.put("name", fundingSource.getDescription());
       source.put("type", fundingSource.getBudgetType().getName());
+      source.put("typeId", fundingSource.getBudgetType().getId());
 
       FundingSourceBudget fundingSourceBudget =
         fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);

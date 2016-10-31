@@ -94,10 +94,10 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year) {
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
-    q.append(" where description like '%" + query + "%' ");
+    q.append(" where crp_id=" + crpID + " and description like '%" + query + "%' ");
     q.append("OR id like '%" + query + "%' ");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
