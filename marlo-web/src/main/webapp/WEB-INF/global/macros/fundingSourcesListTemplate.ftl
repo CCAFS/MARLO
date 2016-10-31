@@ -4,14 +4,15 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="4">Funding Source information</th>
+        <th colspan="5">Funding Source information</th>
         <th colspan="1">Actions</th> 
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
+        <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
     </thead>
@@ -34,13 +35,17 @@
               </a>
             [/#if]
           </td>
+          [#-- Project Budget --]
+          <td class=""> 
+            ${(project.budgetType.name)!'Not defined'}
+          </td>
           [#-- Project Status --]
           <td>
             ${(project.statusName)!'none'}
           </td>
-          [#-- Project Leader --]
+          [#-- Project Donor --]
           <td class=""> 
-            ${(project.createdBy.composedName)!'Not defined'}
+            ${(project.institution.composedName)!'Not defined'}
           </td>
           [#-- Delete Project--]
           <td class="text-center">
