@@ -1,0 +1,1 @@
+UPDATE project_budgets set is_active=0 where institution_id in (1200,1201,1202,1203,1204)
