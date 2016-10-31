@@ -27,7 +27,7 @@
           [#-- Funding source Title --]
           <td class="left"> 
             [#if project.description?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.description}">
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.description}">
               [#if project.description?length < 120] ${project.description}</a> [#else] [@utilities.wordCutter string=project.description maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
