@@ -4,7 +4,7 @@
 	<!-- Add addition packages and configuration here. -->
 	<package name="fundingSources" namespace="/fundingSources" extends="marlo-default">
 	
-    <action name="{crp}/fundingSourcesList" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/fundingSourcesList" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
       <result name="input">/WEB-INF/views/fundingSources/fundingSourcesList.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/fundingSourcesList</param>
