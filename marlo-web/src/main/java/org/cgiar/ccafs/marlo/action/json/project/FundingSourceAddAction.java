@@ -31,6 +31,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -50,8 +52,11 @@ public class FundingSourceAddAction extends BaseAction {
 
   private static String START_DATE = "startDate";
 
+
   private static String END_DATE = "endDate";
+
   private static String FINANCE_CODE = "financeCode";
+
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
@@ -59,14 +64,15 @@ public class FundingSourceAddAction extends BaseAction {
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
-
-
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
+
+
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
   private CrpManager crpManager;
+  private List<Map<String, Object>> fsCreated;
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
@@ -172,8 +178,26 @@ public class FundingSourceAddAction extends BaseAction {
 
     }
 
+    Map<String, Object> fsProp = new HashMap<>();
+
+    if (fundingSourceID > 0) {
+      fsProp.put("id", fundingSource);
+      fsProp.put("title", fundingSource.getDescription());
+      fsProp.put("status", "OK");
+    } else {
+      fsProp.put("status", "FAIL");
+      fsProp.put("message", this.getText("manageUsers.email.notAdded"));
+    }
 
     return SUCCESS;
+  }
+
+  public List<Map<String, Object>> getFsCreated() {
+    return fsCreated;
+  }
+
+  public void setFsCreated(List<Map<String, Object>> fsCreated) {
+    this.fsCreated = fsCreated;
   }
 
 }
