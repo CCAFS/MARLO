@@ -78,6 +78,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private List<FundingSourceBudget> budgets;
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+  private List<ProjectBudget> projectBudgetsList;
+
 
   public FundingSource() {
   }
@@ -114,9 +116,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
@@ -146,11 +150,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public String getDescription() {
     return description;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -202,6 +204,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<ProjectBudget> getProjectBudgetsList() {
+    return projectBudgetsList;
+  }
+
+
   public Date getStartDate() {
     return startDate;
   }
@@ -221,6 +228,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -286,9 +294,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
   }
 
-
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
+  }
+
+
+  public void setProjectBudgetsList(List<ProjectBudget> projectBudgetsList) {
+    this.projectBudgetsList = projectBudgetsList;
   }
 
   public void setStartDate(Date startDate) {

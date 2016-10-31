@@ -245,6 +245,10 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
         .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
+
+      fundingSource.setProjectBudgetsList(
+        fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+
     }
 
     budgetTypes = new HashMap<>();
@@ -297,6 +301,13 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setDescription(fundingSource.getDescription());
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+          FundingSourceBudget fundingSourceBudgetBD =
+            fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
+          fundingSourceBudget.setActive(true);
+          fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
+          fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+          fundingSourceBudget.setModificationJustification("");
+          fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
           fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
         }
       }
