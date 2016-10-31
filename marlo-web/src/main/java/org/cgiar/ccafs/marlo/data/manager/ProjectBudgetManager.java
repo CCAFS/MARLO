@@ -29,6 +29,17 @@ public interface ProjectBudgetManager {
 
 
   /**
+   * Gets the budget amount for a specific institution , year and budget type.
+   * 
+   * @param institutionId
+   * @param year
+   * @param budgetType
+   * @return
+   */
+  public String amountByBudgetType(long institutionId, int year, long budgetType);
+
+
+  /**
    * This method removes a specific projectBudget value from the database.
    * 
    * @param projectBudgetId is the projectBudget identifier.
@@ -52,7 +63,6 @@ public interface ProjectBudgetManager {
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> findAll();
-
 
   /**
    * This method gets a projectBudget object by a given projectBudget identifier.

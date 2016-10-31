@@ -34,6 +34,18 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   }
 
   @Override
+  public String amountByBudgetType(long institutionId, int year, long budgetType) {
+    String query = "select SUM(amount) as amount from project_budgets where institution_id= " + institutionId
+      + " and year= " + year + "and budget_type= " + budgetType + " and is_active=1";
+    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    if (list.size() > 0) {
+      Map<String, Object> result = list.get(0);
+      return result.get("amount").toString();
+    }
+    return null;
+  }
+
+  @Override
   public String amountByFundingSource(long fundingSourceID, int year) {
     String query = "select SUM(amount) as amount from project_budgets where funding_source_id= " + fundingSourceID
       + " and year= " + year + " and is_active=1";
