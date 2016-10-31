@@ -91,11 +91,12 @@ $(document).ready(function() {
     var invalidFields = [];
     var project = {};
     project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
-    project.title = $dialogContent.find("#title").val().trim();
+    project.description = $dialogContent.find("#description").val().trim();
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
     project.status = $dialogContent.find("#status").val().trim();
+    project.budgetType = $dialogContent.find("#budgetType").val().trim();
     project.liaisonInstitution = institutionSelected;
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
@@ -104,13 +105,13 @@ $(document).ready(function() {
     $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
       project.budgets.push({
           year: $(e).attr('id').split('-')[1],
-          amount: $(e).find('input').val()
+          budget: $(e).find('input').val()
       });
     });
     project.budgets = JSON.stringify(project.budgets);
 
     var projectValidate = {};
-    projectValidate.title = project.title;
+    projectValidate.description = project.rescription;
     projectValidate.startDate = project.startDate;
     projectValidate.endDate = project.endDate;
     projectValidate.status = project.status;

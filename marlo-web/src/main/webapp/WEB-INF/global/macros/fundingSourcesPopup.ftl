@@ -52,7 +52,7 @@
           [#-- Project title --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">[@customForm.textArea name="title" i18nkey="projectCofunded.title" required=true/] </div>
+              <div class="col-md-12">[@customForm.textArea name="description" i18nkey="projectCofunded.title" required=true/] </div>
             </div>
           </div>
           <div class="form-group">
@@ -65,7 +65,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>
-              <div class="col-md-6">[@customForm.select name="type"   i18nkey="projectCofunded.type" className="type" listName="status" header=false required=true /]</div>
+              <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
             </div>
           </div>
           <div class="form-group">
