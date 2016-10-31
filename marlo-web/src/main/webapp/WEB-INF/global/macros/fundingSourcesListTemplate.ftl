@@ -9,7 +9,7 @@
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
@@ -45,7 +45,7 @@
           </td>
           [#-- Project Donor --]
           <td class=""> 
-            ${(project.institution.composedName)!'Not defined'}
+            ${(project.institution.composedName)!'Not applicable'}
           </td>
           [#-- Delete Project--]
           <td class="text-center">
