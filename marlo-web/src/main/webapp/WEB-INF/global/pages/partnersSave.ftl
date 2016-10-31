@@ -10,11 +10,34 @@
 
   <section>
     <article >
+    [#-- title --]
     <div class="title col-xs-12">
       <h3 class=" text-center form-group">[@s.text name="Request a new institution or branch" /]</h3>
     </div>
+    
+    
+    <div class="slideshow-container col-xs-12 form-group">
+    [#-- SLIDE 1 --]
+    <div class="mySlides fades">
+      <p  class="helpMessage ">
+        <span class="glyphicon glyphicon-hand-right"> </span> Please enter the institution as “Partner,” the legal entity. <br />
+      </p>
+    </div>
+    [#-- SLIDE 2 --]
+    <div class="mySlides fades">
+      <p  class="helpMessage">
+        <span class="glyphicon glyphicon-hand-right"> </span> The name of the institution should be in its official language. (e.g. For CIAT: Centro Internacional de Agricultura Tropical).
+      </p>
+    </div>
+    [#-- DOTS --]
+    <div class="col-xs-12" style="text-align:center">
+      <span class="dot" onclick="currentSlide(1)"></span> 
+      <span class="dot" onclick="currentSlide(2)"></span> 
+    </div>
+    </div>
       [@s.form action="partnerSave" cssClass="pure-form "]
-      
+      <div class="clearfix"></div>
+      <hr  />
       <div class="col-xs-12 form-group">
         [@customForm.yesNoInput name="isBranch" label="Is this institution a branch?"  inverse=false value="" cssClass="text-left " value="false" /]
       </div>
@@ -23,15 +46,16 @@
             [@customForm.select name="" label="" required=true  i18nkey="Select institution headquarter" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
           </div>
         </div>
+        [#-- Partner Acronym --]
+      <div id="partnerAcronym" class="col-xs-6 form-group">
+        [@customForm.input name="activityPartner.partner.acronym"  type="text" i18nkey="Acronym" /]
+      </div>
       [#-- Partner Name --]
       <div id="partnerName" class="col-xs-6 form-group">
         [@customForm.input name="activityPartner.partner.name" required=true className="col-md-6" type="text" i18nkey="Name" /]
       </div>
       
-      [#-- Partner Acronym --]
-      <div id="partnerAcronym" class="col-xs-6 form-group">
-        [@customForm.input name="activityPartner.partner.acronym" required=true type="text" i18nkey="Acronym" /]
-      </div>
+      
       
       [#-- Partner types list --]
       <div id="partnerTypes" class="col-xs-6 form-group">
@@ -50,7 +74,7 @@
       
       [#-- Web page link --]
       <div id="partnerPage" class="col-xs-12 form-group">
-        [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner web page please paste the link below" value="https://" /]
+        [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
       </div>
       
       [#-- Hidden input with message of success --]

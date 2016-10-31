@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/home/dashboard.js","${baseUrl}/js/global/impactGraphic.js"] /]
-[#assign customCSS = ["${baseUrl}/css/home/dashboard.css","${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/css/home/dashboard.css","${baseUrl}/css/global/customDataTable.css","${baseUrl}/css/global/impactGraphic.css"] /]
 [#assign currentSection = "home" /]
 [#assign breadCrumb = [
   {"label":"home", "nameSpace":"", "action":""}
@@ -94,13 +94,49 @@
               </div>
             </div>
             <div id="contentGraph">
+              [#-- Download button--]
+             [#--  <span id="buttonShowAll"><span class="glyphicon glyphicon-download-alt"></span></span>--]
               <div id="impactGraphic" ></div>
+              [#-- Download button--]
+              <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
             </div>
           </div>
         </div>  
       </div>    
     </div>
+    <div id="impactGraphic-content"  style="display:none;" >
+  
+  [#-- Information panel --]
+  <div id="infoRelations" class="panel panel-default">
+    <div class="panel-heading"><strong>Relations</strong></div>
+    <div id="infoContent" class="panel-body">
+     <ul></ul>
+    </div>
   </div>
+  
+  [#-- Controls --]
+  <div id="controls" class="">
+    <span id="zoomIn" class="glyphicon glyphicon-zoom-in tool"></span>
+    <span id="zoomOut" class="glyphicon glyphicon-zoom-out tool "></span>
+    <span id="panRight" class="glyphicon glyphicon-arrow-right tool "></span>
+    <span id="panDown" class="glyphicon glyphicon-arrow-down tool "></span>
+    <span id="panLeft" class="glyphicon glyphicon-arrow-left tool "></span>
+    <span id="panUp" class="glyphicon glyphicon-arrow-up tool "></span>
+    <span id="resize" class="glyphicon glyphicon-resize-full  tool"></span>
+  </div>
+  
+  [#-- Change to full or current graph --]
+  <div id="changeGraph">
+  <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
+  </div>
+  
+  [#-- Download button--]
+  <a class="download" href=""><span id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
+  
+  <div id="impactGraphic"></div>
+</div>
+  </div>
+ 
  
 </section>
 

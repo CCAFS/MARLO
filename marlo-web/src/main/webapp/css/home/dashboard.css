@@ -140,3 +140,50 @@
 #projects_wrapper {
     margin-bottom: 0;
 }
+
+#buttonShowAll {
+    position: absolute;
+    /* right: 2%; */
+    /* top: 16%; */
+    z-index: 100;
+    text-align: center;
+    /* width: 3%; */
+    background-color: #2BA6CB;
+    color: #fff;
+    border: 0;
+    padding: 3px 5px;
+    font-weight: bold;
+    border-bottom: 3px solid #1E94B8;
+    border-radius: 6px;
+}
+#controls {
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 24%;
+    width: 5%;
+    z-index: 999;
+    right: 2.6%;
+    background-color: whitesmoke;
+    /* padding: 5px; */
+}
+
+.tool {cursor: pointer;padding: 20%;text-align: center;font-size: 1.6em;width: 100%;padding-top: 40%;}
+
+.tool:hover {
+    color: #2ba6cb;
+}
+
+#fullscreen{
+	position: absolute;
+    right: 4%;
+    top: 14%;
+    z-index: 100;
+    text-align: center;
+    background-color: #117fa8;
+    color: #fff;
+    border: 0;
+    padding: 7px 7px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}

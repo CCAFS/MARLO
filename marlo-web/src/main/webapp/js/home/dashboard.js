@@ -179,3 +179,30 @@ $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
   }
   ajaxService(url, data, "impactGraphic", true, true, 'concentric', true);
 })
+
+// Impact pathway full screen
+
+$("#fullscreen").on("click", function() {
+  $("#impactGraphic-content").dialog({
+      resizable: false,
+      width: '90%',
+      modal: true,
+      height: $(window).height() * 0.80,
+      show: {
+          effect: "blind",
+          duration: 500
+      },
+      hide: {
+          effect: "fadeOut",
+          duration: 500
+      },
+      open: function(event,ui) {
+        var dataFull = {
+          crpID: currentCrpID
+        }
+        var url = baseURL + "/impactPathway/impactPathwayGraph.do";
+        ajaxService(url, dataFull, "impactGraphic", true, true, 'breadthfirst', false);
+      }
+  });
+
+});

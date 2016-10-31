@@ -25,7 +25,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   var outcomes;
   var clusters;
   var keyOutputs;
-  var cy = cytoscape({
+  cy = cytoscape({
       container: document.getElementById(graphicContent),
 
       boxSelectionEnabled: false,
@@ -108,13 +108,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   });
 
   if(inPopUp === true) {
-    cy.panzoom({
-    // options here...
-    });
-    $(".cy-panzoom").css('position', 'absolute');
-    $(".cy-panzoom").css("right", '10%');
-    $(".cy-panzoom").css('top', '17%');
-    $(".cy-panzoom").css('z-index', '99');
+    /*
+     * cy.panzoom({ // options here... }); $(".cy-panzoom").css('position', 'absolute'); $(".cy-panzoom").css("right",
+     * '10%'); $(".cy-panzoom").css('top', '17%'); $(".cy-panzoom").css('z-index', '99');
+     */
   }
 
 // tap a node
@@ -293,7 +290,57 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   }
 
 }
+// Controls
 
+$(".tool").on("click", function() {
+
+  var level = cy.zoom();
+  var action = $(this).attr("id");
+  switch (action) {
+    case "zoomIn":
+      level += 0.2;
+      cy.zoom({
+        level: level
+      });
+      break;
+    case "zoomOut":
+      level -= 0.2;
+      cy.zoom({
+        level: level
+      });
+      break;
+    case "panRight":
+      cy.panBy({
+          x: -100,
+          y: 0
+      });
+      break;
+    case "panDown":
+      cy.panBy({
+          x: 0,
+          y: -100
+      });
+      break;
+    case "panLeft":
+      cy.panBy({
+          x: 100,
+          y: 0
+      });
+      break;
+    case "panUp":
+      cy.panBy({
+          x: 0,
+          y: 100
+      });
+      break;
+    case "resize":
+      cy.zoom({
+        level: 1
+      });
+      cy.center();
+      break;
+  }
+})
 // EVENTS
 
 $("#mini-graphic").on("mouseenter", function() {
