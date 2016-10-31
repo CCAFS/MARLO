@@ -16,12 +16,19 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.text.SimpleDateFormat;
+import java.util.Map;
+
 import com.google.inject.Inject;
+import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -38,7 +45,8 @@ public class FundingSourceAddAction extends BaseAction {
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
   private static String CENTER_TYPE = "centerType";
-  private static String TYPE = "centerType";
+  private static String TYPE = "type";
+  private static String BUDGETS = "budgets";
 
 
   private String crpID;
@@ -57,8 +65,18 @@ public class FundingSourceAddAction extends BaseAction {
   }
 
   @Override
-  public void prepare() throws Exception {
+  public String execute() throws Exception {
 
+    Map<String, Object> parameters = ActionContext.getContext().getParameters();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
+
+    FundingSource fundingSource = new FundingSource();
+
+    String budgets = StringUtils.trim(((String[]) parameters.get(BUDGETS))[0]);
+
+
+    return SUCCESS;
   }
 
 }
