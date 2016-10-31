@@ -107,6 +107,7 @@ $(document).ready(function() {
           amount: $(e).find('input').val()
       });
     });
+    project.budgets = JSON.stringify(project.budgets);
 
     var projectValidate = {};
     projectValidate.title = project.title;
@@ -135,6 +136,7 @@ $(document).ready(function() {
       var msj = "You must fill " + invalidFields.join(', ');
       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
     } else {
+
       $.ajax({
           'url': baseURL + '/fundingSourceAdd.do',
           method: 'POST',
