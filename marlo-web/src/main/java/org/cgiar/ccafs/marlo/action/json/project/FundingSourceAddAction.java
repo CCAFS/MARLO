@@ -56,7 +56,7 @@ public class FundingSourceAddAction extends BaseAction {
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
   private static String CENTER_TYPE = "cofundedMode";
-  private static String TYPE = "type";
+  private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
 
@@ -109,6 +109,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
     fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
     fundingSource.setCenterType(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(CENTER_TYPE))[0])));
+    fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
 
     Institution institutionDonor =
       institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
@@ -118,16 +119,24 @@ public class FundingSourceAddAction extends BaseAction {
       budgetTypeManager.getBudgetTypeById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(TYPE))[0])));
     fundingSource.setBudgetType(budgetType);
 
+
+    fundingSource.setActive(true);
+    fundingSource.setActiveSince(new Date());
+    fundingSource.setCreatedBy(this.getCurrentUser());
+    fundingSource.setModificationJustification("");
+    fundingSource.setModifiedBy(this.getCurrentUser());
+
     long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
 
     fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
+    boolean hasYear = false;
+    boolean hasAmount = false;
+    FundingSourceBudget fundingSourceBudget = null;
     for (String comaString : budgets.split(",")) {
 
       String[] value = comaString.split(":");
-      boolean hasYear = false;
-      boolean hasAmount = false;
-      FundingSourceBudget fundingSourceBudget = null;
+
       for (int i = 0; i < value.length; i++) {
 
         if (!hasYear && !hasAmount) {
