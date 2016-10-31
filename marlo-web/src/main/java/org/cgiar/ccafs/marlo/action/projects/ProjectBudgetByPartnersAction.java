@@ -444,7 +444,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
         }
 
-
+        System.out.println("Size budgets" + project.getBudgets().size());
       }
 
       // Pre-load Project Co-Funded Lists.

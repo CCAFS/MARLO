@@ -19,12 +19,14 @@ package org.cgiar.ccafs.marlo.action.funding;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
@@ -63,6 +65,7 @@ public class FundingSourceAction extends BaseAction {
   private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   private InstitutionManager institutionManager;
+  private BudgetTypeManager budgetTypeManager;
 
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -81,27 +84,32 @@ public class FundingSourceAction extends BaseAction {
 
   private Map<String, String> status;
 
+  private Map<String, String> budgetTypes;
+
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
   private List<Institution> institutions;
 
-
   private String transaction;
+
 
   @Inject
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager) {
+    AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
+    BudgetTypeManager budgetTypeManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
+
 
   @Override
   public String cancel() {
@@ -132,6 +140,10 @@ public class FundingSourceAction extends BaseAction {
     String autoSaveFile = fundingSource.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public Map<String, String> getBudgetTypes() {
+    return budgetTypes;
   }
 
   public FundingSource getFundingSource() {
@@ -235,7 +247,11 @@ public class FundingSourceAction extends BaseAction {
 
     }
 
+    budgetTypes = new HashMap<>();
 
+    for (BudgetType budgetType : budgetTypeManager.findAll()) {
+      budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+    }
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_W3_COFUNDED_BASE_PERMISSION, params));
 
@@ -308,6 +324,10 @@ public class FundingSourceAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  public void setBudgetTypes(Map<String, String> budgetTypes) {
+    this.budgetTypes = budgetTypes;
   }
 
   public void setFundingSource(FundingSource fundingSource) {
