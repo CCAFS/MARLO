@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,6 +63,15 @@ public interface ProjectBudgetManager {
   public ProjectBudget getProjectBudgetById(long projectBudgetID);
 
   /**
+   * Gets the remaining budget amount for a specific funding source and year
+   * 
+   * @param fundingSourceID - Funding Source ID
+   * @param year - Specific year
+   * @return a remaining Budget amount.
+   */
+  public double getReaminingAmount(long fundingSourceID, int year, double budget);
+
+  /**
    * This method saves the information of the given projectBudget
    * 
    * @param projectBudget - is the projectBudget object with the new information to be added/updated.
@@ -71,6 +80,5 @@ public interface ProjectBudgetManager {
    *         or -1 is some error occurred.
    */
   public long saveProjectBudget(ProjectBudget projectBudget);
-
 
 }

@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectBudgetDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -30,6 +31,18 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   @Inject
   public ProjectBudgetMySQLDAO(StandardDAO dao) {
     this.dao = dao;
+  }
+
+  @Override
+  public String amountByFundingSource(long fundingSourceID, int year) {
+    String query = "select SUM(amount) as amount from project_budgets where funding_source_id= " + fundingSourceID
+      + " and year= " + year + " and is_active=1";
+    List<Map<String, Object>> list = dao.findCustomQuery(query);
+    if (list.size() > 0) {
+      Map<String, Object> result = list.get(0);
+      return result.get("amount").toString();
+    }
+    return null;
   }
 
   @Override

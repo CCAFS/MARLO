@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,6 +27,15 @@ import com.google.inject.ImplementedBy;
 public interface ProjectBudgetDAO {
 
   /**
+   * Gets the budget amount for a specific funding source and year
+   * 
+   * @param fundingSourceID - Funding Source ID
+   * @param year - Specific year
+   * @return a Budget amount.
+   */
+  public String amountByFundingSource(long fundingSourceID, int year);
+
+  /**
    * This method removes a specific projectBudget value from the database.
    * 
    * @param projectBudgetId is the projectBudget identifier.
@@ -50,13 +59,13 @@ public interface ProjectBudgetDAO {
    */
   public ProjectBudget find(long id);
 
+
   /**
    * This method gets a list of projectBudget that are active
    * 
    * @return a list from ProjectBudget null if no exist records
    */
   public List<ProjectBudget> findAll();
-
 
   /**
    * This method saves the information of the given projectBudget

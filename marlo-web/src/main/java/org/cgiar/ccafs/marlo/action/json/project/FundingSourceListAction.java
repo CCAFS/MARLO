@@ -17,9 +17,12 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -49,13 +52,18 @@ public class FundingSourceListAction extends BaseAction {
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
+  private ProjectBudgetManager projectBudgetManager;
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
+    FundingSourceBudgetManager fundingSourceBudgetManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
+    this.projectBudgetManager = projectBudgetManager;
+    this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
   @Override
@@ -77,6 +85,18 @@ public class FundingSourceListAction extends BaseAction {
       source = new HashMap<>();
       source.put("id", fundingSource.getId());
       source.put("name", fundingSource.getDescription());
+      source.put("type", fundingSource.getBudgetType().getName());
+
+      FundingSourceBudget fundingSourceBudget =
+        fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
+      double remainingAmount = 0;
+      if (fundingSourceBudget != null) {
+        remainingAmount =
+          projectBudgetManager.getReaminingAmount(fundingSource.getId(), year, fundingSourceBudget.getBudget());
+      }
+
+      source.put("amount", remainingAmount);
+
       sources.add(source);
     }
     return SUCCESS;
