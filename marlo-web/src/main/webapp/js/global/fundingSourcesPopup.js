@@ -107,7 +107,7 @@ $(document).ready(function() {
     $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
       project.budgets.push({
           year: $(e).attr('id').split('-')[1],
-          budget: $(e).find('input').val()
+          budget: removeCurrencyFormat($(e).find('input').val())
       });
     });
     project.budgets = JSON.stringify(project.budgets);

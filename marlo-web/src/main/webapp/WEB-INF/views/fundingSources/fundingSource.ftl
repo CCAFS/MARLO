@@ -82,18 +82,18 @@
     </div>
     
     
-    <h4 class="headTitle">Annual project contribution</h4> 
-    <div class="contributionWrapper">
+    <h4 class="headTitle">Annual funding source contribution</h4> 
+    <div class="contributionWrapper budgetByYears">
           [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">
             [#list startYear .. endYear as year]
-              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} </a></li>
+              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
             [/#list]
           </ul>
           [#-- Years Content --]
           <div class="tab-content col-md-12 contributionContent">
             [#list startYear .. endYear as year]
-              <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+              <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
               
               <div class="budgetsYear">
                 <div class="col-md-4">
@@ -102,17 +102,17 @@
                 </div>
               </div>
               
-              [#list fundingSource.budgets as fundingSourceBudget]
-                [#if fundingSourceBudget.year == year]
+              [#list fundingSource.projectBudgets as projectBudget]
+                [#if projectBudget.year == year]
                 <div class="grayBox col-md-12 borderBox">
-                  <div class="col-md-12 pContributionTitle form-group">${(fundingSource.composedName)!'null'}</div>
+                  <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
                   <div class="col-md-5 form-group">
                     <span class="col-md-2"><b>Type:</b></span>
-                    <span class="col-md-3">${fundingSource.budgetType.name}</span>
+                    <span class="col-md-3">${projectBudget.budgetType.name}</span>
                   </div>
                   <div class="col-md-7">
                     <span class="col-md-2"><b>Amount:</b></span>
-                    <span class="col-md-5 currencyInput">US$ <span>${((fundingSourceBudget.budget)!0)?number?string(",##0.00")} </span>
+                    <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.budget)!0)?number?string(",##0.00")} </span>
                   </div>
                 </div>
                 [/#if]

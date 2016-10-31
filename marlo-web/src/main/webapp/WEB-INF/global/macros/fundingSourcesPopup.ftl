@@ -17,7 +17,7 @@
       <div class="accordion-block">
         <div class="search-content clearfix">
           <div class="search-input">
-            [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="Search by project name or project ID"/]
+            [@customForm.input name="" showTitle=false type="text" i18nkey="form.buttons.searchUser" placeholder="Search by funding source name or ID"/]
             <div class="search-loader" style="display:none"><img src="${baseUrl}/images/global/loading_2.gif"></div>
           </div>  
           <div class="search-button">[@s.text name="form.buttons.search" /]</div>
@@ -98,7 +98,7 @@
           [#-- Save button --]
           <br />
           <div class="text-right">
-            <div class="button create-button"> Create Project </div>
+            <div class="button create-button"> Create Funding Source </div>
           </div>
         </div>
       </div> 

@@ -19,6 +19,7 @@ function date(start,end) {
       changeYear: true
   }).on("change", function() {
     to.datepicker("option", "minDate", getDate(this));
+    getYears();
   }), to = $(end).datepicker({
       dateFormat: dateFormat,
       minDate: '2015-01-01',
@@ -28,10 +29,53 @@ function date(start,end) {
       changeYear: true
   }).on("change", function() {
     from.datepicker("option", "maxDate", getDate(this));
+    getYears();
   });
 
+  function getYears() {
+    var endYear = (new Date(to.val())).getFullYear();
+    var years = [];
+    var startYear = (new Date(from.val())).getFullYear() || 2015;
+
+    $('.budgetByYears .nav-tabs').empty();
+    $('.budgetByYears .tab-content').empty();
+
+    var index = 0;
+    while(startYear <= endYear) {
+      var state = '';
+      if(currentCycleYear == startYear) {
+        state = 'active';
+      }
+
+      var tab = '<li class="' + state + '">';
+      tab += '<a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear + '</a>';
+      tab += '</li>';
+      $('.budgetByYears .nav-tabs').append(tab);
+
+      var content = '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">';
+      content += '<label for="">Budget for ' + startYear + ':</label>';
+      content += '<input type="hidden" name="fundingSource.budgets[' + index + '].year" value="' + startYear + '">';
+      content +=
+          '<input type="text" name="fundingSource.budgets[' + index
+              + '].budget" class="currencyInput form-control input-sm col-md-4" />';
+      content += '</div>';
+      $('.budgetByYears .tab-content').append(content);
+
+      index++;
+      years.push(startYear++);
+    }
+
+    if(years.indexOf(parseInt(currentCycleYear)) == -1) {
+      $('.budgetByYears .nav-tabs li').last().addClass('active');
+      $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+    }
+
+    // Set currency format
+    $('.currencyInput').currencyInput();
+
+  }
+
   function getDate(element) {
-    console.log(element);
     var date;
     try {
       date = $.datepicker.parseDate(dateFormat, element.value);
