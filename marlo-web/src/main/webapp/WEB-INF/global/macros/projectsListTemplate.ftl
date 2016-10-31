@@ -10,7 +10,7 @@
       </tr>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
+        <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         <th id="projectType">[@s.text name="projectsList.projectType" /]</th>
         <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
