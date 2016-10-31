@@ -301,6 +301,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return status;
   }
 
+  public String getTotalAmount(long institutionId, int year, long budgetType) {
+    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType);
+  }
+
+
   public long getTotalYear(int year, long type) {
     long total = 0;
     if (project.getBudgets() != null) {
@@ -325,10 +330,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return total;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   public Map<String, String> getW3bilateralBudgetTypes() {
     return w3bilateralBudgetTypes;
@@ -561,7 +566,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
-
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
@@ -605,6 +609,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+
   public void saveBudget(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
       projectBudget.setCreatedBy(this.getCurrentUser());
@@ -635,15 +640,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.budgetIndex = budgetIndex;
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
-
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
@@ -656,6 +660,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void setProject(Project project) {
     this.project = project;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
@@ -671,10 +676,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.status = status;
   }
 
-
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
+
 
   public void setW3bilateralBudgetTypes(Map<String, String> w3bilateralBudgetTypes) {
     this.w3bilateralBudgetTypes = w3bilateralBudgetTypes;
@@ -687,6 +692,5 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       projectBudgetsValidator.validate(this, project, true);
     }
   }
-
 
 }

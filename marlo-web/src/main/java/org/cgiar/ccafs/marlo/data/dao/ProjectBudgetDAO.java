@@ -27,6 +27,16 @@ import com.google.inject.ImplementedBy;
 public interface ProjectBudgetDAO {
 
   /**
+   * Gets the budget amount for a specific institution , year and budget type.
+   * 
+   * @param institutionId
+   * @param year
+   * @param budgetType
+   * @return
+   */
+  public String amountByBudgetType(long institutionId, int year, long budgetType);
+
+  /**
    * Gets the budget amount for a specific funding source and year
    * 
    * @param fundingSourceID - Funding Source ID
