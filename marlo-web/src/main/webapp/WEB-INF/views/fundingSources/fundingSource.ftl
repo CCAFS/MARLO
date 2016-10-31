@@ -1,13 +1,13 @@
 [#ftl]
-[#assign title = "MARLO Projects Bilateral Co-funded" /]
+[#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrl}/js/projects_cofunded/projectCofunded.js", "${baseUrl}/js/global/autoSave.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/projects_cofunded/projectCofunded.css"] /]
+[#assign customJS = ["${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
+[#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "cofundedList" /]
 
 [#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"/bilaterals", "action":""}
+  {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]

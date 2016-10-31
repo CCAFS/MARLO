@@ -216,6 +216,6 @@
 	<include file="struts-superadmin.xml" />
 	<include file="struts-impactPathway.xml" />
 	<include file="struts-projects.xml" />
-	<include file="struts-bilaterals.xml" />
+	<include file="struts-fundingSources.xml" />
 
 </struts>

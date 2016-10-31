@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN" "http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- Add addition packages and configuration here. -->
+	<package name="fundingSources" namespace="/fundingSources" extends="marlo-default">
+	
+    <action name="{crp}/fundingSourcesList" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceListAction">
+      <result name="input">/WEB-INF/views/fundingSources/fundingSourcesList.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/fundingSourcesList</param>
+      </result>
+    </action>
+
+	</package>
+</struts>

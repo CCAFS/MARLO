@@ -211,13 +211,9 @@
         <div class="projectW3bilateralFund-list simpleBox">
           [#attempt]
             [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
-           
                 [#assign fundingSources++ /]
-                
-               
                 [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.budgetType.id,budget.fundingSource.id) ]
                 [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
-            
             [/#list]
           [#recover]
             ERROR LOADING FUNDING SOURCES
