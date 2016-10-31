@@ -18,12 +18,19 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import com.google.inject.Inject;
@@ -35,45 +42,126 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FundingSourceAddAction extends BaseAction {
 
+
   private static final long serialVersionUID = -2726882911129987628L;
 
+
   private static String DESCRIPTION = "description";
+
   private static String START_DATE = "startDate";
+
   private static String END_DATE = "endDate";
   private static String FINANCE_CODE = "financeCode";
   private static String CONTACT_NAME = "contactName";
   private static String CONTACT_EMAIL = "contactEmail";
   private static String DONOR = "institution";
-  private static String CENTER_TYPE = "centerType";
+  private static String CENTER_TYPE = "cofundedMode";
   private static String TYPE = "type";
   private static String BUDGETS = "budgets";
+  private static String STATUS = "status";
 
 
-  private String crpID;
+  private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
-
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
+  private CrpManager crpManager;
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
-    InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager) {
+    InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
+    FundingSourceBudgetManager fundingSourceBudgetManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
     this.budgetTypeManager = budgetTypeManager;
+    this.crpManager = crpManager;
+    this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
   @Override
   public String execute() throws Exception {
 
     Map<String, Object> parameters = ActionContext.getContext().getParameters();
+    String budgets = StringUtils.trim(((String[]) parameters.get(BUDGETS))[0]);
+    budgets = budgets.replace("\"", "");
+    budgets = budgets.replace("[", "");
+    budgets = budgets.replace("{", "");
+    budgets = budgets.replace("]", "");
+    budgets = budgets.replace("}", "");
+
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
 
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
 
     FundingSource fundingSource = new FundingSource();
 
-    String budgets = StringUtils.trim(((String[]) parameters.get(BUDGETS))[0]);
+    fundingSource.setCrp(loggedCrp);
+
+    fundingSource.setStartDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(START_DATE))[0])));
+    fundingSource.setEndDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(END_DATE))[0])));
+
+    fundingSource.setDescription(StringUtils.trim(((String[]) parameters.get(DESCRIPTION))[0]));
+    fundingSource.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
+    fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));
+    fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
+    fundingSource.setCenterType(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(CENTER_TYPE))[0])));
+
+    Institution institutionDonor =
+      institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
+    fundingSource.setInstitution(institutionDonor);
+
+    BudgetType budgetType =
+      budgetTypeManager.getBudgetTypeById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(TYPE))[0])));
+    fundingSource.setBudgetType(budgetType);
+
+    long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+
+    fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+
+    for (String comaString : budgets.split(",")) {
+
+      String[] value = comaString.split(":");
+      boolean hasYear = false;
+      boolean hasAmount = false;
+      FundingSourceBudget fundingSourceBudget = null;
+      for (int i = 0; i < value.length; i++) {
+
+        if (!hasYear && !hasAmount) {
+          fundingSourceBudget = new FundingSourceBudget();
+        }
+
+        if (value[i].equals("year") && !hasYear) {
+          fundingSourceBudget.setYear(Integer.parseInt(value[i + 1]));
+          hasYear = true;
+        }
+
+        if (value[i].equals("budget") && !hasAmount) {
+          fundingSourceBudget.setBudget(Double.parseDouble(value[i + 1]));
+          hasAmount = true;
+        }
+
+        if (hasYear && hasAmount) {
+
+          fundingSourceBudget.setFundingSource(fundingSource);
+          fundingSourceBudget.setActive(true);
+          fundingSourceBudget.setActiveSince(new Date());
+          fundingSourceBudget.setCreatedBy(this.getCurrentUser());
+          fundingSourceBudget.setModificationJustification("");
+          fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+
+          fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+
+          hasYear = false;
+          hasAmount = false;
+
+        }
+      }
+
+    }
 
 
     return SUCCESS;

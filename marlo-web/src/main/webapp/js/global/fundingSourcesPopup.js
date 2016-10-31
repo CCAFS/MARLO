@@ -111,7 +111,7 @@ $(document).ready(function() {
     project.budgets = JSON.stringify(project.budgets);
 
     var projectValidate = {};
-    projectValidate.description = project.rescription;
+    projectValidate.description = project.description;
     projectValidate.startDate = project.startDate;
     projectValidate.endDate = project.endDate;
     projectValidate.status = project.status;
