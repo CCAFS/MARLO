@@ -76,17 +76,21 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+
   private FundingSourceManager fundingSourceManager;
 
-  private ProjectBudgetManager projectBudgetManager;
 
+  private ProjectBudgetManager projectBudgetManager;
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private ProjectBudgetsValidator projectBudgetsValidator;
 
+
   private CrpManager crpManager;
+
   private long projectID;
+
   private Crp loggedCrp;
   private Project project;
   private String transaction;
@@ -99,6 +103,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   private Map<String, String> budgetTypes;
   private Map<String, String> w3bilateralBudgetTypes;// List of W3/Bilateral budget types (W3, Bilateral).
   private List<ProjectPartner> projectPPAPartners; // Is used to list all the PPA partners that belongs to the project.
+  private int budgetIndex;
 
   @Inject
   public ProjectBudgetByPartnersAction(APConfig config, InstitutionManager institutionManager,
@@ -182,6 +187,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
+  public int getBudgetIndex() {
+    return budgetIndex;
+  }
 
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
     List<ProjectBudget> budgets = project.getBudgets().stream()
@@ -270,10 +278,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public Project getProject() {
     return project;
@@ -284,6 +292,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
+
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
@@ -291,7 +300,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -317,10 +325,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return total;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public Map<String, String> getW3bilateralBudgetTypes() {
     return w3bilateralBudgetTypes;
@@ -474,6 +482,13 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
       }
     }
+
+    if (project.getBudgets().size() == 0) {
+      budgetIndex = 0;
+    } else {
+      budgetIndex = project.getBudgets().size() - 1;
+    }
+
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
 
@@ -546,6 +561,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
@@ -589,7 +605,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
   }
 
-
   public void saveBudget(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
       projectBudget.setCreatedBy(this.getCurrentUser());
@@ -613,6 +628,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
     projectBudgetManager.saveProjectBudget(projectBudget);
+  }
+
+
+  public void setBudgetIndex(int budgetIndex) {
+    this.budgetIndex = budgetIndex;
   }
 
 
