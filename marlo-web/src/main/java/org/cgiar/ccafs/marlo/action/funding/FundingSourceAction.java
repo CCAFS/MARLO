@@ -146,8 +146,31 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
+  public FundingSourceBudget getBuget(int year) {
+
+    for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+      if (fundingSourceBudget.getYear().intValue() == year) {
+        return fundingSourceBudget;
+      }
+    }
+    return null;
+
+  }
+
   public FundingSource getFundingSource() {
     return fundingSource;
+  }
+
+  public int getIndexBugets(int year) {
+    int i = 0;
+    for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+      if (fundingSourceBudget.getYear().intValue() == year) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
+
   }
 
   public List<Institution> getInstitutions() {
@@ -245,6 +268,10 @@ public class FundingSourceAction extends BaseAction {
       fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
         .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
+
+      fundingSource.setProjectBudgetsList(
+        fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+
     }
 
     budgetTypes = new HashMap<>();
@@ -297,6 +324,13 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setDescription(fundingSource.getDescription());
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+          FundingSourceBudget fundingSourceBudgetBD =
+            fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
+          fundingSourceBudget.setActive(true);
+          fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
+          fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+          fundingSourceBudget.setModificationJustification("");
+          fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
           fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
         }
       }

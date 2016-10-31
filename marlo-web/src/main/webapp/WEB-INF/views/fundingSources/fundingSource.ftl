@@ -97,12 +97,13 @@
               
               <div class="budgetsYear">
                 <div class="col-md-4">
-                  <input type="hidden" name="fundingSource.budgets[${year_index}].year" value="${year}"/>
-                  [@customForm.input name="fundingSource.budgets[${year_index}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
+                  <input type="hidden" name="fundingSource.budgets[0].year" value="${year}"/>
+                   <input type="hidden" name="fundingSource.budgets[0].id" value="${fundingSource.budgets[0].id}"/>
+                  [@customForm.input name="fundingSource.budgets[0].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
                 </div>
               </div>
               
-              [#list fundingSource.projectBudgets as projectBudget]
+              [#list fundingSource.projectBudgetsList as projectBudget]
                 [#if projectBudget.year == year]
                 <div class="grayBox col-md-12 borderBox">
                   <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
@@ -112,7 +113,7 @@
                   </div>
                   <div class="col-md-7">
                     <span class="col-md-2"><b>Amount:</b></span>
-                    <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.budget)!0)?number?string(",##0.00")} </span>
+                    <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")} </span>
                   </div>
                 </div>
                 [/#if]

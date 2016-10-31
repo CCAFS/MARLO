@@ -96,8 +96,8 @@ public class FundingSourceListAction extends BaseAction {
 
 
     if (fundingSourceManager.deleteFundingSource(fundingSource.getId())) {
-      this
-        .addActionMessage(this.getText("deleting.success", new String[] {this.getText("fundingSource").toLowerCase()}));
+      this.addActionMessage(
+        "message:" + this.getText("deleting.success", new String[] {this.getText("fundingSource").toLowerCase()}));
     } else {
       this.addActionError(this.getText("deleting.problem", new String[] {this.getText("fundingSource").toLowerCase()}));
     }
