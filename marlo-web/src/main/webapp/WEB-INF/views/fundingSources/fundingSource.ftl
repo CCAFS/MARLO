@@ -95,11 +95,13 @@
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
               
+              [#assign budgetIndex = action.getIndexBugets(year) /]
+              [#assign budget = action.getBuget(year) /]
               <div class="budgetsYear">
                 <div class="col-md-4">
-                  <input type="hidden" name="fundingSource.budgets[0].year" value="${year}"/>
-                   <input type="hidden" name="fundingSource.budgets[0].id" value="${fundingSource.budgets[0].id}"/>
-                  [@customForm.input name="fundingSource.budgets[0].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
+                  <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
+                   <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${budget.id}"/>
+                  [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
                 </div>
               </div>
               

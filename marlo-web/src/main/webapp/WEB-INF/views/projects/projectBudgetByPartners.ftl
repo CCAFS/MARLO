@@ -99,6 +99,8 @@
     </div>  
 </section>
 
+<span id="budgetIndex" style="display:none">${budgetIndex+1}</span>
+
 [#-- Bilateral Co-Funded Project Popup --]
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
 
