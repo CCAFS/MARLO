@@ -73,16 +73,20 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 }
 
 .budgetColumn input {
-    height: 25px;
-    text-align: center !important;
+  height: 25px;
+  text-align: center !important;
 }
 
 .blockTitle {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .accordion-block {
-    height: 491px;
+  height: 520px;
+}
+
+.usersList ul {
+  max-height: 428px;
 }
 
 .overallYearBudget {

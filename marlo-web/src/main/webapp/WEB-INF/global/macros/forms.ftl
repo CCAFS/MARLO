@@ -235,7 +235,7 @@
       [@s.form action=action namespace="${namespace}" cssClass="pure-form"]
         [@textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
         [#if nameId != ""]
-          <input name="${nameId}" type="hidden" value="-1" />
+          <input class="nameId" name="${nameId}" type="hidden" value="-1" />
         [/#if]
         <input name="projectID" type="hidden" value="${projectID}" />
         <!-- Allow form submission with keyboard without duplicating the dialog button -->

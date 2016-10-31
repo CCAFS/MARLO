@@ -17,23 +17,10 @@
     [#-- What do you want to do --]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">
-      <div id="newProject" class="option"><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
+      <a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]"><div id="newProject" class="option"><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div></a>
       <div id="updatePlanning" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
       <div id="reportProject" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p></div>
       <div class="clearfix"></div>
-      <div class="addProjectButtons clearfix" style="display:none">
-        <p class="title">[@s.text name="dashboard.decisionTree.typeProjectQuestion" /]</p>
-        [#if action.canAddCoreProject() || action.canAddBilateralProject() ]
-          [#if action.canAddCoreProject() ]
-            <a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.coreProject" /]</p></div></a>
-          [/#if]
-          [#if action.canAddBilateralProject() ]
-            <a href="[@s.url namespace="/projects" action='${crpSession}/addNewBilateralProject'/]"><div class="addProject"><p>[@s.text name="dashboard.decisionTree.bilateralProject" /]</p></div></a>
-          [/#if]
-        [#else]
-          <p>[@s.text name="dashboard.decisionTree.notPermissions" /]</p>
-        [/#if]
-      </div>
     </div>
     
     [#-- Shorcuts --]    

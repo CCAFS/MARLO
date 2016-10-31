@@ -26,15 +26,15 @@
     
     [#-- Add --]
     <div class="buttons">
-        <div class="buttons-content">
-          <a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources'][/@s.url]">Add Funding Source</a>
-          <div class="clearfix"></div>
-        </div>
+      <div class="buttons-content">
+        <a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources'][/@s.url]">Add Funding Source</a>
+        <div class="clearfix"></div>
       </div>
+    </div>
     
   </article>
 </section>
-[@customForm.confirmJustification action="deleteFundingSource.do" namespace="/${currentSection}" title="Remove Funding Source" /]
+[@customForm.confirmJustification action="deleteFundingSource.do" namespace="/${currentSection}" nameId="fundingSourceID" title="Remove Funding Source" /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
