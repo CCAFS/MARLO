@@ -1,19 +1,19 @@
 [#ftl] 
 [#assign isActive=false /]
 <!-- Search Users Dialog -->
-<div id="dialog-searchProjects" title="Search Bilateral Project" style="display:none"> 
+<div id="dialog-searchProjects" title="Search Funding Source" style="display:none"> 
   <div class="dialog-content"> 
     <form class="pure-form">
-      [#--  Search a Bilateral Co-funded Project  --]
+      [#--  Search a Funding Source  --]
       <div id="search-users">
         <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
-        <h4 class="text-center"> Search a Bilateral Project
+        <h4 class="text-center"> Search a Funding Source
         <br />
         <small class="cgiarCenter"> {CGIAR Center}  </small>
         </h4>
         <hr />
       </div>
-      [#-- Search Bilateral Projects --]
+      [#-- Search Funding Source --]
       <div class="accordion-block">
         <div class="search-content clearfix">
           <div class="search-input">
@@ -26,16 +26,16 @@
           <div class="panel-head"> Projects list </div>
           <div class="panel-body"> 
             <p class="userMessage">
-              If you do not find the bilateral project, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
+              If you do not find the Funding Source, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
             </p>
             <ul></ul>
           </div>
         </div> 
       </div>
       
-      [#-- Create Bilateral Projects Form --]
+      [#-- Create Funding Sources Form --]
       <div id="create-user" class="accordion  text-center">
-        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create bilateral project </span> 
+        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create Funding Source </span> 
       </div>
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">
@@ -52,7 +52,7 @@
           [#-- Project title --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">[@customForm.textArea name="title" i18nkey="projectCofunded.title" required=true/] </div>
+              <div class="col-md-12">[@customForm.textArea name="description" i18nkey="projectCofunded.title" required=true/] </div>
             </div>
           </div>
           <div class="form-group">
@@ -65,7 +65,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>
-              <div class="col-md-6">[@customForm.select name="type"   i18nkey="projectCofunded.type" className="type" listName="status" header=false required=true /]</div>
+              <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
             </div>
           </div>
           <div class="form-group">
@@ -112,11 +112,13 @@
     <ul style="display:none"> 
       <li id="userTemplate">
         <div class="row">
-          <div class="col-md-1"><span class="contactId">{userId}</span></div>
+          <div class="col-md-1">F<span class="contactId">{userId}</span></div>
           <div class="col-md-9"><span class="contact name">{composedName}</span></div>
           <div class="col-md-2"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
           [#-- Hidden parameters --]
           <span style="display:none" class="budget">{budget}</span>
+          <span style="display:none" class="budgetTypeName">{budget}</span>
+          <span style="display:none" class="budgetTypeId">{budget}</span>
         </div>
       </li> 
     </ul>  
@@ -127,6 +129,6 @@
   </div>  
 </div>
 
-[#-- Project Bilateral Co-Funded  Popup JS --]
+[#-- Project Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

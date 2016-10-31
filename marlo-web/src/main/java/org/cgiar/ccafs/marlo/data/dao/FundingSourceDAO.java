@@ -68,6 +68,8 @@ public interface FundingSourceDAO {
    */
   public long save(FundingSource fundingSource);
 
+  public long save(FundingSource fundingSource, String section, List<String> relationsName);
+
   /**
    * This method get the list of FundingSource that like a specifics parameters.
    * 
@@ -75,7 +77,7 @@ public interface FundingSourceDAO {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSources(String query, int year);
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID);
 
   /**
    * This method get the list of FundingSource that like a specifics parameters.

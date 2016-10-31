@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,10 +82,22 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year) {
+  public long save(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+    if (fundingSource.getId() == null) {
+      dao.save(fundingSource, sectionName, relationsName);
+    } else {
+      dao.update(fundingSource, sectionName, relationsName);
+    }
+
+
+    return fundingSource.getId();
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
-    q.append(" where description like '%" + query + "%' ");
+    q.append(" where crp_id=" + crpID + " and description like '%" + query + "%' ");
     q.append("OR id like '%" + query + "%' ");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
@@ -101,11 +114,20 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     q.append(" where description like '%" + query + "%' ");
     q.append("OR id like '%" + query + "%' ");
 
+
     List<FundingSource> fundingSources = dao.findAll(q.toString());
+    List<FundingSource> fundingSourcesReturn = new ArrayList<>();
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream().filter(c -> c.isActive() && c.getInstitution() != null
-      && c.getInstitution().getId().longValue() == institutionID && year <= Integer.parseInt(df.format(c.getEndDate())))
-      .collect(Collectors.toList());
+    for (FundingSource fundingSource : fundingSources) {
+      if (year <= Integer.parseInt(df.format(fundingSource.getEndDate())) && fundingSource.getInstitution() != null) {
+        long insID = fundingSource.getInstitution().getId();
+        if (insID == institutionID) {
+          fundingSourcesReturn.add(fundingSource);
+        }
+      }
+    }
+
+    return fundingSourcesReturn;
   }
 
 

@@ -103,7 +103,7 @@
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
 
 [#-- W3/bilaterl Fund Template --]
-[@fundingSourceMacro element={} name="project.budgetsCofinancing" selectedYear=-1 index=-1  isTemplate=true /]
+[@fundingSourceMacro element={} name="project.budgets" selectedYear=-1 index=-1  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -211,13 +211,9 @@
         <div class="projectW3bilateralFund-list simpleBox">
           [#attempt]
             [#list action.getBudgetsByPartner(element.institution.id,selectedYear) as budget ]
-           
                 [#assign fundingSources++ /]
-                
-               
                 [#local indexBudgetfundingSource=action.getIndexBudget(element.institution.id,selectedYear,budget.fundingSource.budgetType.id,budget.fundingSource.id) ]
                 [@fundingSourceMacro element=budget name="project.budgets" selectedYear=selectedYear  index=indexBudgetfundingSource /]
-            
             [/#list]
           [#recover]
             ERROR LOADING FUNDING SOURCES
@@ -251,7 +247,7 @@
     [#-- Project Title --]
     <p class="checked"><small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
 
-    <small class="grayLabel"> (US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
+    <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
     </p> 
     <span class="title">${(element.fundingSource.description)!}</span> </p>
 
@@ -265,8 +261,8 @@
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Type:</strong>  </div>
         <div class="row col-md-6">
-          ${(element.fundingSource.budgetType.name)!}
-          <input type="hidden" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
+          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
+          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>
       <div class="col-md-4">
@@ -275,7 +271,7 @@
         </div>
         <div class="row col-md-8">
         [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.type)!'none'}" required=true /]
+          [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
           <input type="hidden" name="${customName}.amount" value="${(element.amount)!0}" />
@@ -287,7 +283,7 @@
           <div class="row col-md-6"><strong>Gender %:</strong>  </div>
           <div class="row col-md-7">
           [#if (editable && isYearEditable(selectedYear)) || isTemplate]
-            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.type)!'none'}" required=true   /]
+            [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true   /]
           [#else]  
             <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
             <input type="hidden" name="${customName}.genderPercentage" value="${(element.genderPercentage)!0}" />

@@ -56,7 +56,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu <br /><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /] ${project.cofinancing?string('Co-Funded','')})</small></p>
+  <p>Project Menu [#-- <br /><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /] ${project.cofinancing?string('Co-Funded','')})</small>--]</p> 
   <ul>
     [#list menus as menu]
     <li>

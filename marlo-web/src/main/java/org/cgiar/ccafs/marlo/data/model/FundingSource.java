@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -31,10 +32,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Institution institution;
+  @Expose
+  private Integer status;
 
 
   @Expose
   private String description;
+
 
   @Expose
   private Date startDate;
@@ -71,10 +75,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
 
+  private List<FundingSourceBudget> budgets;
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
   public FundingSource() {
   }
+
 
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
@@ -82,6 +89,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
@@ -110,6 +118,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+  public List<FundingSourceBudget> getBudgets() {
+    return budgets;
+  }
+
   public BudgetType getBudgetType() {
     return budgetType;
   }
@@ -122,16 +134,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return contactPersonEmail;
   }
 
-
   public String getContactPersonName() {
     return contactPersonName;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public Crp getCrp() {
     return crp;
@@ -197,10 +206,17 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return startDate;
   }
 
+
+  public Integer getStatus() {
+    return status;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -208,6 +224,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+  public void setBudgets(List<FundingSourceBudget> budgets) {
+    this.budgets = budgets;
   }
 
   public void setBudgetType(BudgetType budgetType) {
@@ -262,10 +282,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public void setModifiedBy(User modifiedBy) {
     this.modifiedBy = modifiedBy;
   }
+
 
   public void setProjectBudgets(Set<ProjectBudget> projectBudgets) {
     this.projectBudgets = projectBudgets;
@@ -273,6 +293,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
   }
 
 

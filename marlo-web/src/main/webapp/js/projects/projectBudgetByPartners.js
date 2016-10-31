@@ -103,7 +103,7 @@ function validateFundingSource() {
 }
 
 // Add bilateral project function
-function addFundingSource(composedName,projectId,budget) {
+function addFundingSource(composedName,projectId,budget,type,typeId) {
   dialog.dialog("close");
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
@@ -115,8 +115,12 @@ function addFundingSource(composedName,projectId,budget) {
   $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
   $item.find('.projectId').val(projectId);
   // Set type as default
-  $item.find('.budgetTypeSelect').val(2);
-  $item.find('.budgetTypeSelect').trigger('change');
+  $item.find('.budgetTypeName').text(type);
+  $item.find('.budgetTypeId').val(typeId);
+
+  // Set type
+  $item.find('input:text').removeClass('type-none').addClass('type-' + typeId)
+
   // Setting Currency Inputs
   $item.find('input.currencyInput').currencyInput();
   // Setting Percentage Inputs

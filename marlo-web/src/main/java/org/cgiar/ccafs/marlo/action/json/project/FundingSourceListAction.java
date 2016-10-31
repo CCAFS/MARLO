@@ -17,9 +17,12 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -36,23 +39,31 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FundingSourceListAction extends BaseAction {
 
+
   private static final long serialVersionUID = 6304226585314276677L;
+
 
   List<Map<String, Object>> sources;
 
   private long institutionID;
-  private int year;
-  private String queryParameter;
 
+  private int year;
+
+  private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
+  private ProjectBudgetManager projectBudgetManager;
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
 
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
+    FundingSourceBudgetManager fundingSourceBudgetManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
+    this.projectBudgetManager = projectBudgetManager;
+    this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
   @Override
@@ -64,19 +75,38 @@ public class FundingSourceListAction extends BaseAction {
 
     Map<String, Object> source;
     if (institution == null) {
-      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year);
+      fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue());
     } else {
       fundingSources =
         fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year);
+      fundingSources
+        .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
     }
 
     for (FundingSource fundingSource : fundingSources) {
       source = new HashMap<>();
       source.put("id", fundingSource.getId());
       source.put("name", fundingSource.getDescription());
+      source.put("type", fundingSource.getBudgetType().getName());
+      source.put("typeId", fundingSource.getBudgetType().getId());
+
+      FundingSourceBudget fundingSourceBudget =
+        fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
+      double remainingAmount = 0;
+      if (fundingSourceBudget != null) {
+        remainingAmount =
+          projectBudgetManager.getReaminingAmount(fundingSource.getId(), year, fundingSourceBudget.getBudget());
+      }
+
+      source.put("amount", remainingAmount);
+
       sources.add(source);
     }
     return SUCCESS;
+  }
+
+  public List<Map<String, Object>> getSources() {
+    return sources;
   }
 
   @Override
@@ -88,6 +118,10 @@ public class FundingSourceListAction extends BaseAction {
     }
     queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
     year = Integer.parseInt(StringUtils.trim(((String[]) parameters.get(APConstants.YEAR_REQUEST))[0]));
+  }
+
+  public void setSources(List<Map<String, Object>> sources) {
+    this.sources = sources;
   }
 
 }

@@ -11,7 +11,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 620,
+      height: 650,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',
@@ -41,12 +41,12 @@ $(document).ready(function() {
     if($(this).next().is(':visible')) {
       $('#search-users').next().slideDown();
       $(this).removeClass('active');
-      $(this).find('span.title').text('Create bilateral project');
+      $(this).find('span.title').text('Create Funding Source');
       $(this).find('span.glyphicon').removeClass('glyphicon-search').addClass('glyphicon-plus');
     } else {
       $(this).next().slideDown();
       $(this).addClass('active');
-      $(this).find('span.title').text('Search bilateral project');
+      $(this).find('span.title').text('Search Funding Source');
       $(this).find('span.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-search');
     }
 
@@ -67,9 +67,11 @@ $(document).ready(function() {
     var projectId = $parent.find(".contactId").text();
     var composedName = $parent.find(".name").text();
     var budget = $parent.find(".budget").text();
-    console.log(budget);
+    var type = $parent.find(".budgetTypeName").text();
+    var typeId = $parent.find(".budgetTypeId").text();
+
     // Add user
-    addProject(composedName, projectId, budget);
+    addProject(composedName, projectId, budget, type, typeId);
   });
 
   // Event to find an user according to search field
@@ -91,23 +93,30 @@ $(document).ready(function() {
     var invalidFields = [];
     var project = {};
     project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
-    project.title = $dialogContent.find("#title").val().trim();
+    project.description = $dialogContent.find("#description").val().trim();
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
     project.status = $dialogContent.find("#status").val().trim();
-    project.budget = $dialogContent.find("#budget").val().trim();
+    project.budgetType = $dialogContent.find("#budgetType").val().trim();
     project.liaisonInstitution = institutionSelected;
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+    project.budgets = [];
+    $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
+      project.budgets.push({
+          year: $(e).attr('id').split('-')[1],
+          budget: $(e).find('input').val()
+      });
+    });
+    project.budgets = JSON.stringify(project.budgets);
 
     var projectValidate = {};
-    projectValidate.title = project.title;
+    projectValidate.description = project.description;
     projectValidate.startDate = project.startDate;
     projectValidate.endDate = project.endDate;
     projectValidate.status = project.status;
-    projectValidate.budget = project.budget;
     projectValidate.contactName = project.contactName;
     projectValidate.contactEmail = project.contactEmail;
     projectValidate.institution = project.institution;
@@ -130,8 +139,9 @@ $(document).ready(function() {
       var msj = "You must fill " + invalidFields.join(', ');
       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
     } else {
+
       $.ajax({
-          'url': baseURL + '/projectsBilateralAdd.do',
+          'url': baseURL + '/fundingSourceAdd.do',
           method: 'POST',
           data: project,
           beforeSend: function() {
@@ -141,7 +151,7 @@ $(document).ready(function() {
             var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.budget);
+              addProject(data.title, data.id, data.amount, data.type, data.typeId);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
@@ -183,7 +193,7 @@ $(document).ready(function() {
     getData('');
   }
 
-  addProject = function(composedName,projectId,budget) {
+  addProject = function(composedName,projectId,budget,type,typeId) {
     dialog.dialog("close");
   }
 
@@ -209,12 +219,13 @@ $(document).ready(function() {
   }
 
   function getData(query) {
+    console.log(institutionSelected);
     $.ajax({
-        'url': baseURL + '/projectsBilateralList.do',
+        'url': baseURL + '/FundingSourceList.do',
         'data': {
             q: query,
             institutionID: institutionSelected,
-            year: new Date().getFullYear()
+            year: selectedYear
         },
         'dataType': "json",
         beforeSend: function(xhr,opts) {
@@ -222,15 +233,16 @@ $(document).ready(function() {
           $dialogContent.find(".panel-body ul").empty();
         },
         success: function(data) {
-          var usersFound = (data.projects).length;
+          var usersFound = (data.sources).length;
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
-            $.each(data.projects, function(i,project) {
-              console.log(project);
+            $.each(data.sources, function(i,source) {
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-              $item.find('.name').html(project.title);
-              $item.find('.contactId').html(project.id);
-              $item.find('.budget').html(project.budget);
+              $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
+              $item.find('.contactId').html(source.id);
+              $item.find('.budget').html(source.amount);
+              $item.find('.budgetTypeName').html(source.type);
+              $item.find('.budgetTypeId').html(source.typeId);
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
@@ -290,16 +302,17 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div class="tab-pane ' + state + '" id="fundingYear-' + startYear + '">' + '<label for="">Budget for '
-              + startYear + ':</label> <input type="text" class="form-control input-sm" />' + '</div>');
+          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
+              + '<label for="">Budget for ' + startYear
+              + ':</label> <input type="text" class="form-control input-sm col-md-4" />' + '</div>');
 
       years.push(startYear++);
     }
 
-    console.log(selectedYear);
-    console.log(years.indexOf(selectedYear));
-
-    console.log(years);
+    if(years.indexOf(parseInt(selectedYear)) == -1) {
+      $('.budgetByYears .nav-tabs li').last().addClass('active');
+      $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
+    }
 
   }
 

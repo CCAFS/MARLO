@@ -72,8 +72,14 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSources(String query, int year) {
-    return fundingSourceDAO.searchFundingSources(query, year);
+  public long saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName) {
+
+    return fundingSourceDAO.save(fundingSource, sectionName, relationsName);
+  }
+
+  @Override
+  public List<FundingSource> searchFundingSources(String query, int year, long crpID) {
+    return fundingSourceDAO.searchFundingSources(query, year, crpID);
   }
 
   @Override
