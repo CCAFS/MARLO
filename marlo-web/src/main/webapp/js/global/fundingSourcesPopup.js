@@ -11,7 +11,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 620,
+      height: 650,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',
@@ -96,7 +96,6 @@ $(document).ready(function() {
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
     project.status = $dialogContent.find("#status").val().trim();
-    project.budget = $dialogContent.find("#budget").val().trim();
     project.liaisonInstitution = institutionSelected;
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
@@ -104,7 +103,7 @@ $(document).ready(function() {
     project.budgets = [];
     $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
       project.budgets.push({
-          year: $(e).attr('id').split('-')[2],
+          year: $(e).attr('id').split('-')[1],
           amount: $(e).find('input').val()
       });
     });
@@ -114,7 +113,6 @@ $(document).ready(function() {
     projectValidate.startDate = project.startDate;
     projectValidate.endDate = project.endDate;
     projectValidate.status = project.status;
-    projectValidate.budget = project.budget;
     projectValidate.contactName = project.contactName;
     projectValidate.contactEmail = project.contactEmail;
     projectValidate.institution = project.institution;
@@ -138,7 +136,7 @@ $(document).ready(function() {
       $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
     } else {
       $.ajax({
-          'url': baseURL + '/projectsBilateralAdd.do',
+          'url': baseURL + '/fundingSourceAdd.do',
           method: 'POST',
           data: project,
           beforeSend: function() {
@@ -297,8 +295,8 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div id="tab-pane-' + startYear + '" class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear
-              + '">' + '<label for="">Budget for ' + startYear
+          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
+              + '<label for="">Budget for ' + startYear
               + ':</label> <input type="text" class="form-control input-sm col-md-4" />' + '</div>');
 
       years.push(startYear++);
