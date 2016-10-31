@@ -41,12 +41,12 @@ $(document).ready(function() {
     if($(this).next().is(':visible')) {
       $('#search-users').next().slideDown();
       $(this).removeClass('active');
-      $(this).find('span.title').text('Create bilateral project');
+      $(this).find('span.title').text('Create Funding Source');
       $(this).find('span.glyphicon').removeClass('glyphicon-search').addClass('glyphicon-plus');
     } else {
       $(this).next().slideDown();
       $(this).addClass('active');
-      $(this).find('span.title').text('Search bilateral project');
+      $(this).find('span.title').text('Search Funding Source');
       $(this).find('span.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-search');
     }
 

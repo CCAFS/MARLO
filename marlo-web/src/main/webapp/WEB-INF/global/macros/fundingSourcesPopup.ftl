@@ -1,19 +1,19 @@
 [#ftl] 
 [#assign isActive=false /]
 <!-- Search Users Dialog -->
-<div id="dialog-searchProjects" title="Search Bilateral Project" style="display:none"> 
+<div id="dialog-searchProjects" title="Search Funding Source" style="display:none"> 
   <div class="dialog-content"> 
     <form class="pure-form">
-      [#--  Search a Bilateral Co-funded Project  --]
+      [#--  Search a Funding Source  --]
       <div id="search-users">
         <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
-        <h4 class="text-center"> Search a Bilateral Project
+        <h4 class="text-center"> Search a Funding Source
         <br />
         <small class="cgiarCenter"> {CGIAR Center}  </small>
         </h4>
         <hr />
       </div>
-      [#-- Search Bilateral Projects --]
+      [#-- Search Funding Source --]
       <div class="accordion-block">
         <div class="search-content clearfix">
           <div class="search-input">
@@ -26,16 +26,16 @@
           <div class="panel-head"> Projects list </div>
           <div class="panel-body"> 
             <p class="userMessage">
-              If you do not find the bilateral project, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
+              If you do not find the Funding Source, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
             </p>
             <ul></ul>
           </div>
         </div> 
       </div>
       
-      [#-- Create Bilateral Projects Form --]
+      [#-- Create Funding Sources Form --]
       <div id="create-user" class="accordion  text-center">
-        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create bilateral project </span> 
+        <span class="glyphicon glyphicon-plus"></span> <span class="title"> Create Funding Source </span> 
       </div>
       <div class="accordion-block create-user clearfix" style="display:none">
         <div class="create-user-block">
@@ -127,6 +127,6 @@
   </div>  
 </div>
 
-[#-- Project Bilateral Co-Funded  Popup JS --]
+[#-- Project Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

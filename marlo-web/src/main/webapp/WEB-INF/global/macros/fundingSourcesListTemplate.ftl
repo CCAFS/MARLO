@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="4">Project information</th>
+        <th colspan="4">Funding Source information</th>
         <th colspan="1">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -21,13 +21,13 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">F${project.id}</a>
         </td>
-          [#-- Deliverable Title --]
+          [#-- Funding source Title --]
           <td class="left"> 
-            [#if project.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
-              [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
+            [#if project.description?has_content]
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.description}">
+              [#if project.description?length < 120] ${project.description}</a> [#else] [@utilities.wordCutter string=project.description maxPos=120 /]...</a> [/#if]
             [#else]
               <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
