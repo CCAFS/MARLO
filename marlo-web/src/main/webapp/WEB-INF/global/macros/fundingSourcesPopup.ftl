@@ -112,11 +112,13 @@
     <ul style="display:none"> 
       <li id="userTemplate">
         <div class="row">
-          <div class="col-md-1"><span class="contactId">{userId}</span></div>
+          <div class="col-md-1">F<span class="contactId">{userId}</span></div>
           <div class="col-md-9"><span class="contact name">{composedName}</span></div>
           <div class="col-md-2"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
           [#-- Hidden parameters --]
           <span style="display:none" class="budget">{budget}</span>
+          <span style="display:none" class="budgetTypeName">{budget}</span>
+          <span style="display:none" class="budgetTypeId">{budget}</span>
         </div>
       </li> 
     </ul>  

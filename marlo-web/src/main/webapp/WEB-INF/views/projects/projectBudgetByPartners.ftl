@@ -103,7 +103,7 @@
 [#include "/WEB-INF/global/macros/fundingSourcesPopup.ftl"]
 
 [#-- W3/bilaterl Fund Template --]
-[@fundingSourceMacro element={} name="project.budgetsCofinancing" selectedYear=-1 index=-1  isTemplate=true /]
+[@fundingSourceMacro element={} name="project.budgets" selectedYear=-1 index=-1  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -247,7 +247,7 @@
     [#-- Project Title --]
     <p class="checked"><small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
 
-    <small class="grayLabel"> (US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
+    <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
     </p> 
     <span class="title">${(element.fundingSource.description)!}</span> </p>
 
@@ -261,8 +261,8 @@
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Type:</strong>  </div>
         <div class="row col-md-6">
-          ${(element.fundingSource.budgetType.name)!}
-          <input type="hidden" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
+          <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
+          <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
       </div>
       <div class="col-md-4">

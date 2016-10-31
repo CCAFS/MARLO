@@ -67,9 +67,11 @@ $(document).ready(function() {
     var projectId = $parent.find(".contactId").text();
     var composedName = $parent.find(".name").text();
     var budget = $parent.find(".budget").text();
-    console.log(budget);
+    var type = $parent.find(".budgetTypeName").text();
+    var typeId = $parent.find(".budgetTypeId").text();
+
     // Add user
-    addProject(composedName, projectId, budget);
+    addProject(composedName, projectId, budget, type, typeId);
   });
 
   // Event to find an user according to search field
@@ -149,7 +151,7 @@ $(document).ready(function() {
             var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.amount);
+              addProject(data.title, data.id, data.amount, data.type, data.typeId);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
@@ -191,7 +193,7 @@ $(document).ready(function() {
     getData('');
   }
 
-  addProject = function(composedName,projectId,budget) {
+  addProject = function(composedName,projectId,budget,type,typeId) {
     dialog.dialog("close");
   }
 
@@ -236,9 +238,11 @@ $(document).ready(function() {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.sources, function(i,source) {
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-              $item.find('.name').html(source.name);
+              $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
               $item.find('.contactId').html(source.id);
-              $item.find('.budget').html(source.budget);
+              $item.find('.budget').html(source.amount);
+              $item.find('.budgetTypeName').html(source.type);
+              $item.find('.budgetTypeId').html(source.typeId);
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
