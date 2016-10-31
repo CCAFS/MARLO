@@ -4,7 +4,9 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
-[#assign currentSection = "cofundedList" /]
+[#assign currentSection = "fundingSources" /]
+
+[#assign editable = true /]
 
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
@@ -21,7 +23,6 @@
   
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
-  <h4 class="sectionTitle">[@s.text name="Project summary overview" /]</h4>
   <div class="col-md-12">
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
@@ -34,22 +35,22 @@
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-12">[@customForm.textArea name="fundingSource.title" i18nkey="projectCofunded.title" editable=editable /] </div>
+          <div class="col-md-12">[@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.title" required=true editable=editable /] </div>
         </div>
       </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" editable=editable/] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" editable=editable/] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.financeCode" i18nkey="projectCofunded.financeCode" editable=editable/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true editable=editable /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true editable=editable/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.select name="fundingSource.agreement" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" editable=editable /] </div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.budget" i18nkey="projectCofunded.budgetAgreementPeriod" className="currencyInput" editable=editable /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.agreement" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
@@ -63,8 +64,8 @@
       [#-- Contact person name and email --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" editable=editable /]</div>
-          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" editable=editable /]</div>
+          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonName" i18nkey="projectCofunded.contactName" required=true editable=editable /]</div>
+          <div class="col-md-6">[@customForm.input name="fundingSource.contactPersonEmail" i18nkey="projectCofunded.contactEmail" required=true editable=editable /]</div>
         </div>
       </div>
       [#-- Donor --]
@@ -83,7 +84,7 @@
     
     <h4 class="headTitle">Annual project contribution</h4> 
     <div class="contributionWrapper">
-      [#-- Year Tabs --]
+          [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">
             [#list startYear .. endYear as year]
               <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} </a></li>
@@ -93,10 +94,18 @@
           <div class="tab-content col-md-12 contributionContent">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+              
+              <div class="budgetsYear">
+                <div class="col-md-4">
+                  <input type="hidden" name="fundingSource.budgets[${year_index}].year" value="${year}"/>
+                  [@customForm.input name="fundingSource.budgets[${year_index}].budget" i18nkey="projectCofunded.budgetYear" required=true editable=editable /]
+                </div>
+              </div>
+              
               [#list fundingSource.budgets as fundingSourceBudget]
-                [#if fundingSource.year == year]
+                [#if fundingSourceBudget.year == year]
                 <div class="grayBox col-md-12 borderBox">
-                  <div class="col-md-12 pContributionTitle form-group">${fundingSource.fundingSource.composedName}</div>
+                  <div class="col-md-12 pContributionTitle form-group">${(fundingSource.composedName)!'null'}</div>
                   <div class="col-md-5 form-group">
                     <span class="col-md-2"><b>Type:</b></span>
                     <span class="col-md-3">${fundingSource.budgetType.name}</span>
@@ -114,7 +123,7 @@
     </div>
       
           [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+          [#include "/WEB-INF/views/fundingSources/buttons-fundingSources.ftl" /]
   </div>
   
   [/@s.form] 

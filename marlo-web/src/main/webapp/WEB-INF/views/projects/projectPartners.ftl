@@ -16,7 +16,7 @@
 
 
 <div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectPartners.help" /] </p></div> 
+  <div class="helpMessage"><img class="col-md-2" src="${baseUrl}/images/global/icon-help.png" /><p class="col-md-10"> [@s.text name="projectPartners.help" /] </p></div> 
 </div>
     
 <section class="container">

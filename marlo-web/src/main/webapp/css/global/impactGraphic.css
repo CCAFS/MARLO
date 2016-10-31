@@ -88,3 +88,20 @@ span.btn {
     border-bottom: 3px solid #1E94B8;
     border-radius: 2px;
 }
+
+#controls {
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 28%;
+    width: 3%;
+    z-index: 999;
+    right: 0%;
+    background-color: whitesmoke;
+    /* padding: 5px; */
+}
+
+.tool {cursor: pointer;padding: 20%;text-align: center;font-size: 1.6em;width: 100%;padding-top: 40%;}
+
+.tool:hover {
+    color: #2ba6cb;
+}
