@@ -102,9 +102,8 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream()
-      .filter(c -> c.isActive() && c.getInstitution() == null && year <= Integer.parseInt(df.format(c.getEndDate())))
-      .collect(Collectors.toList());
+    return fundingSources.stream().filter(c -> c.isActive() && c.getInstitution() == null && c.getEndDate() != null
+      && year <= Integer.parseInt(df.format(c.getEndDate()))).collect(Collectors.toList());
   }
 
   @Override
@@ -119,11 +118,20 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     List<FundingSource> fundingSourcesReturn = new ArrayList<>();
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
     for (FundingSource fundingSource : fundingSources) {
-      if (year <= Integer.parseInt(df.format(fundingSource.getEndDate())) && fundingSource.getInstitution() != null) {
-        long insID = fundingSource.getInstitution().getId();
-        if (insID == institutionID) {
-          fundingSourcesReturn.add(fundingSource);
+      try {
+        if (fundingSource.getEndDate() != null) {
+          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))
+            && fundingSource.getInstitution() != null) {
+            long insID = fundingSource.getInstitution().getId();
+            if (insID == institutionID) {
+              fundingSourcesReturn.add(fundingSource);
+            }
+          }
         }
+
+      } catch (Exception e) {
+
+        e.printStackTrace();
       }
     }
 
