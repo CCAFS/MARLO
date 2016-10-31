@@ -31,7 +31,7 @@ $(document)
             var $thisLabel = $(this);
 
             var notyOptions = jQuery.extend({}, notyDefaultOptions);
-            notyOptions.text = "Are you sure you want ?";
+            notyOptions.text = "Are you sure ?";
             notyOptions.type = 'confirm';
             notyOptions.layout = 'center';
             notyOptions.modal = true;
