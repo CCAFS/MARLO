@@ -23,12 +23,14 @@
     <div class="loadingBlock"></div>
     <div style="display:none">[@fundingSourcesList.list projects=myProjects canValidate=true canEdit=true namespace="/fundingSources" defaultAction="${(crpSession)!}/fundingSource" /]</div>
     <div class="clearfix"></div>
-    <div class="text-right">
-      <div class="addProject button-blue"><a  href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources'][/@s.url]">
-        <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Add Funding Source
-        </a>
+    
+    [#-- Add --]
+    <div class="buttons">
+        <div class="buttons-content">
+          <a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources'][/@s.url]">Add Funding Source</a>
+          <div class="clearfix"></div>
+        </div>
       </div>
-    </div>
     
   </article>
 </section>

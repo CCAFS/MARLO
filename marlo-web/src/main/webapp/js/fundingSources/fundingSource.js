@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
 // Setting Currency Inputs
   $('.currencyInput').currencyInput();
-  date("form #project\\.startDate", "form #project\\.endDate");
+  date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
   $('form select').select2({
     width: "100%"
   });

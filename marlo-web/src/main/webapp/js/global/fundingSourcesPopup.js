@@ -183,9 +183,6 @@ $(document).ready(function() {
     // Hide search loader
     $dialogContent.find(".search-loader").fadeOut("slow");
 
-    // Set currency format
-    $dialogContent.find('#budgetAgreementPeriod').currencyInput();
-
     // Set dates
     date('#startDate', '#endDate');
 
@@ -304,7 +301,7 @@ function date(start,end) {
       $('.budgetByYears .tab-content').append(
           '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
               + '<label for="">Budget for ' + startYear
-              + ':</label> <input type="text" class="form-control input-sm col-md-4" />' + '</div>');
+              + ':</label> <input type="text" class="currencyInput form-control input-sm col-md-4" />' + '</div>');
 
       years.push(startYear++);
     }
@@ -313,6 +310,9 @@ function date(start,end) {
       $('.budgetByYears .nav-tabs li').last().addClass('active');
       $('.budgetByYears .tab-content .tab-pane').last().addClass('active');
     }
+
+    // Set currency format
+    $dialogContent.find('.currencyInput').currencyInput();
 
   }
 

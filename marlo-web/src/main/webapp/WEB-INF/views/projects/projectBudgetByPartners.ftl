@@ -260,7 +260,7 @@
     <div class="row w3bilateralFund">
       <div class="col-md-4">
         <div class="row col-md-6"><strong>Type:</strong>  </div>
-        <div class="row col-md-6">
+        <div class="row col-md-8">
           <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
           <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
         </div>
