@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -61,19 +60,7 @@ public class ProjectLeaderEditAction extends BaseAction {
       project.setPresetDate(new Date());
       projectManager.saveProject(project);
 
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.PARTNERS.getStatus());
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.DESCRIPTION.getStatus());
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.BUDGET.getStatus());
 
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.ACTIVITIES.getStatus());
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.DELIVERABLES.getStatus());
-      this.saveMissingFields(project, APConstants.PLANNING, this.getPlanningYear(),
-        ProjectSectionStatusEnum.OUTCOMES.getStatus());
       status.put("status", project.isProjectEditLeader());
       status.put("ok", true);
     } else {

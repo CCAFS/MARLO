@@ -168,9 +168,9 @@ public class ProjectDescriptionAction extends BaseAction {
     if (!messages.isEmpty()) {
       String validationMessage = messages.iterator().next();
       this.setActionMessages(null);
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     } else {
-      this.addActionMessage("draft:"+this.getText("cancel.autoSave"));
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
     }
     messages = this.getActionMessages();
 
@@ -652,8 +652,9 @@ public class ProjectDescriptionAction extends BaseAction {
             ProjectFocus projectFocus = new ProjectFocus();
             projectFocus.setCrpProgram(program);
             projectFocus.setProject(project);
-            if (!projectDB.getProjectFocuses().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-              .contains(projectFocus)) {
+            if (projectDB.getProjectFocuses().stream()
+              .filter(c -> c.isActive() && c.getCrpProgram().getId().longValue() == program.getId().longValue())
+              .collect(Collectors.toList()).isEmpty()) {
               projectFocus.setActive(true);
               projectFocus.setActiveSince(new Date());
               projectFocus.setCreatedBy(this.getCurrentUser());

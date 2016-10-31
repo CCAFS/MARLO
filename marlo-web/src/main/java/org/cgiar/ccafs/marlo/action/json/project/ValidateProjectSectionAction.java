@@ -448,6 +448,12 @@ public class ValidateProjectSectionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       regions.add(projectFocuses.getCrpProgram());
+      if (project.getRegionsValue() == null) {
+        project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+
+      } else {
+        project.setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+      }
     }
 
     List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
