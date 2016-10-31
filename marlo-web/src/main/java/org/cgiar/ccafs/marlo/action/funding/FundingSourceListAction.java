@@ -88,7 +88,7 @@ public class FundingSourceListAction extends BaseAction {
   @Override
   public String delete() {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-
+    System.out.println("fundign id" + fundingSourceID);
     fundingSource.setModifiedBy(this.getCurrentUser());
     fundingSource.setModificationJustification(justification);
 
