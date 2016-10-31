@@ -149,7 +149,7 @@ $(document).ready(function() {
             var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.budget);
+              addProject(data.title, data.id, data.amount);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
