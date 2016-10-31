@@ -57,7 +57,7 @@ public class BudgetTypeMySQLDAO implements BudgetTypeDAO {
 
   @Override
   public List<BudgetType> findAll() {
-    String query = "from " + BudgetType.class.getName() + " where is_active=1";
+    String query = "from " + BudgetType.class.getName() + " ";
     List<BudgetType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
