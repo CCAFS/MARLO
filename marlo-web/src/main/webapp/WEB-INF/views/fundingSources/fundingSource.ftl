@@ -82,7 +82,7 @@
     </div>
     
     
-    <h4 class="headTitle">Annual funding source contribution</h4> 
+    <h4 class="headTitle">Annual funding source contribution</h4>
     <div class="contributionWrapper budgetByYears">
           [#-- Year Tabs --]
           <ul class="nav nav-tabs budget-tabs" role="tablist">

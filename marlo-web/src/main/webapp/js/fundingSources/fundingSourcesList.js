@@ -76,6 +76,6 @@ function removeProject(e) {
   e.preventDefault();
   $dialogContent.find("#justification").val('').removeClass('fieldError');
   // Getting deliverable ID and setting input hidden to remove that deliverable
-  $dialogContent.find('input[name$=projectID]').val($(e.target).parent().attr('id').split('-')[1]);
+  $dialogContent.find('input.nameId').val($(e.target).parent().attr('id').split('-')[1]);
   dialog.dialog("open");
 }

@@ -34,7 +34,7 @@
     
   </article>
 </section>
-[@customForm.confirmJustification action="deleteFundingSource.do" namespace="/${currentSection}" title="Remove Funding Source" /]
+[@customForm.confirmJustification action="deleteFundingSource.do" namespace="/${currentSection}" nameId="fundingSourceID" title="Remove Funding Source" /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
