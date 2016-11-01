@@ -213,7 +213,7 @@
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
       [#-- Filters --]
-      [#if editable && isTemplate]
+      [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
         <div class="filters-link"> <span class="glyphicon glyphicon-filter"></span> <span>[@s.text name="projectPartners.filters" /]</span></div>
         <div class="filters-content">
           [#-- Partner type list --]
