@@ -129,7 +129,7 @@ public class ProjectDescriptionValidator extends BaseValidator
 
     if (project.getFlagships() != null) {
       if (project.getFlagships().size() == 0) {
-        if (project.getFlagshipValue().length() == 0) {
+        if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
           this.addMessage(action.getText("projectDescription.flagships"));
           action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }

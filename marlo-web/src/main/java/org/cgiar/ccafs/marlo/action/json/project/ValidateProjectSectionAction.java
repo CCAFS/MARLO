@@ -441,6 +441,13 @@ public class ValidateProjectSectionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList())) {
       programs.add(projectFocuses.getCrpProgram());
+
+      if (project.getFlagshipValue() == null) {
+        project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+
+      } else {
+        project.setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+      }
     }
 
     List<CrpProgram> regions = new ArrayList<>();
