@@ -307,7 +307,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public String getTotalGender(long institutionId, int year, int budgetType) {
+  public double getTotalGender(long institutionId, int year, int budgetType) {
 
     Institution institution = institutionManager.getInstitutionById(institutionId);
 
@@ -329,18 +329,18 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     }
 
 
-    return String.valueOf(totalGender);
+    return totalGender;
   }
 
-  public String getTotalGenderPer(long institutionId, int year, int budgetType) {
+  public double getTotalGenderPer(long institutionId, int year, int budgetType) {
 
     String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
 
-    String totalGender = this.getTotalGender(institutionId, year, budgetType);
+    double totalGender = this.getTotalGender(institutionId, year, budgetType);
 
-    double genderPercentage = (Double.parseDouble(totalGender) * 100) / Double.parseDouble(totalAmount);
+    double genderPercentage = (totalGender * 100) / Double.parseDouble(totalAmount);
 
-    return String.valueOf(genderPercentage);
+    return genderPercentage;
   }
 
   public long getTotalYear(int year, long type) {
