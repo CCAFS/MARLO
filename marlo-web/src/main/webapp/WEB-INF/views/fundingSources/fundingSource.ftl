@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
-[#assign currentSectionString = "${actionName?replace('/','-')}" /]
+[#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
@@ -24,6 +24,10 @@
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
   <div class="col-md-12">
+  
+  [#-- Messages --]
+  [#include "/WEB-INF/views/fundingSources/messages-fundingSource.ftl" /]
+  
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
@@ -88,49 +92,52 @@
     
     <h4 class="headTitle">Annual funding source contribution</h4>
     <div class="contributionWrapper budgetByYears">
-          [#-- Year Tabs --]
-          <ul class="nav nav-tabs budget-tabs" role="tablist">
-            [#list startYear .. endYear as year]
-              <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
-            [/#list]
-          </ul>
-          [#-- Years Content --]
-          <div class="tab-content col-md-12 contributionContent">
-            [#list startYear .. endYear as year]
-              <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-              [#assign budget = action.getBudget(year) /]
-              [#assign budgetIndex = action.getIndexBugets(year) /]
-              
-              <div class="budgetsYear">
-                <div class="col-md-4">
-                  <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
-                   <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
-                  [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
-                </div>
-              </div>
-              
-              [#list fundingSource.projectBudgetsList as projectBudget]
-                [#if projectBudget.year == year]
-                <div class="grayBox col-md-12 borderBox">
-                  <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
-                  <div class="col-md-5 form-group">
-                    <span class="col-md-2"><b>Type:</b></span>
-                    <span class="col-md-3">${projectBudget.budgetType.name}</span>
-                  </div>
-                  <div class="col-md-7">
-                    <span class="col-md-2"><b>Amount:</b></span>
-                    <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")} </span>
-                  </div>
-                </div>
-                [/#if]
-              [/#list] 
-              </div>
-            [/#list] 
+      [#-- Year Tabs --]
+      <ul class="nav nav-tabs budget-tabs" role="tablist">
+        [#list startYear .. endYear as year]
+          <li class="[#if year == currentCycleYear]active[/#if]"><a href="#fundingYear-${year}" role="tab" data-toggle="tab">${year} </a></li>
+        [/#list]
+      </ul>
+      [#-- Years Content --]
+      <div class="tab-content col-md-12 contributionContent">
+        [#list startYear .. endYear as year]
+          <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
+          [#assign budget = action.getBudget(year) /]
+          [#assign budgetIndex = action.getIndexBugets(year) /]
+          
+          <h5 class="sectionSubTitle">Budget Amount</h5>
+          <div class="budgetsYear">
+            <div class="col-md-4">
+              <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
+              <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
+              [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
+            </div>
+            <div class="clearfix"></div>
           </div>
+          <br />
+          <h5 class="sectionSubTitle">Projects</h5>
+          [#list fundingSource.projectBudgetsList as projectBudget]
+            [#if projectBudget.year == year]
+            <div class="grayBox col-md-12 borderBox">
+              <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
+              <div class="col-md-5 form-group">
+                <span class="col-md-2"><b>Type:</b></span>
+                <span class="col-md-3">${projectBudget.budgetType.name}</span>
+              </div>
+              <div class="col-md-7">
+                <span class="col-md-2"><b>Amount:</b></span>
+                <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")} </span>
+              </div>
+            </div>
+            [/#if]
+          [/#list] 
+          </div>
+        [/#list] 
+      </div>
     </div>
       
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/views/fundingSources/buttons-fundingSources.ftl" /]
+    [#-- Section Buttons & hidden inputs--]
+    [#include "/WEB-INF/views/fundingSources/buttons-fundingSources.ftl" /]
   </div>
   
   [/@s.form] 

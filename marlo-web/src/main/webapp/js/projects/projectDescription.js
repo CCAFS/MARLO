@@ -347,11 +347,19 @@ function setDisabledCheckedBoxes() {
 }
 
 function formatState(state) {
-  console.log(state.text);
+  console.log(state.text.length);
+  if(state.text.length == 0) {
+    return;
+  }
   if(state.id != "-1") {
     var text = state.text.split(/:(.+)?/);
-    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
-    return $state;
+    if(typeof text[1] != "undefined") {
+      var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+      return $state;
+    } else {
+      var $state = $("<span>" + state.text + "</span>");
+      return $state;
+    }
   } else {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
