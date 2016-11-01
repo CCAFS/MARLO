@@ -38,10 +38,12 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String description;
-
+  @Expose
+  private LiaisonInstitution liaisonInstitution;
 
   @Expose
   private Date startDate;
+
 
   @Expose
   private Date endDate;
@@ -78,12 +80,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private List<FundingSourceBudget> budgets;
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-  private List<ProjectBudget> projectBudgetsList;
 
+  private List<ProjectBudget> projectBudgetsList;
 
   public FundingSource() {
   }
-
 
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
@@ -126,9 +127,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgets;
   }
 
+
   public BudgetType getBudgetType() {
     return budgetType;
   }
+
 
   public Integer getCenterType() {
     return centerType;
@@ -158,11 +161,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return endDate;
   }
 
-
   public String getFinanceCode() {
     return financeCode;
   }
-
 
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
@@ -177,6 +178,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public Institution getInstitution() {
     return institution;
+  }
+
+
+  public LiaisonInstitution getLiaisonInstitution() {
+    return liaisonInstitution;
   }
 
 
@@ -234,6 +240,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
+
   public void setBudgets(List<FundingSourceBudget> budgets) {
     this.budgets = budgets;
   }
@@ -284,6 +291,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setInstitution(Institution institution) {
     this.institution = institution;
+  }
+
+  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
+    this.liaisonInstitution = liaisonInstitution;
   }
 
   public void setModificationJustification(String modificationJustification) {

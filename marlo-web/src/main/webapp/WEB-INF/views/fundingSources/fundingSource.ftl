@@ -6,7 +6,7 @@
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
 
-[#assign editable = true /]
+
 
 [#assign breadCrumb = [
   {"label":"fundingSourcesList", "nameSpace":"/fundingSources", "action":""}
@@ -49,8 +49,8 @@
       [#-- Agreement status and total budget --]
       <div class="form-group">
         <div class="row">
-          <div class="col-md-6">[@customForm.select name="fundingSource.agreement" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="budgetType"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
@@ -94,13 +94,13 @@
           <div class="tab-content col-md-12 contributionContent">
             [#list startYear .. endYear as year]
               <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="fundingYear-${year}">
-              
+              [#assign budget = action.getBudget(year) /]
               [#assign budgetIndex = action.getIndexBugets(year) /]
-              [#assign budget = action.getBuget(year) /]
+              
               <div class="budgetsYear">
                 <div class="col-md-4">
                   <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
-                   <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${budget.id}"/>
+                   <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
                   [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
                 </div>
               </div>

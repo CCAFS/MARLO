@@ -43,6 +43,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,19 +143,32 @@ public class FundingSourceAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Map<String, String> getBudgetTypes() {
-    return budgetTypes;
-  }
-
-  public FundingSourceBudget getBuget(int year) {
+  public FundingSourceBudget getBudget(int year) {
 
     for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
-      if (fundingSourceBudget.getYear().intValue() == year) {
-        return fundingSourceBudget;
-      }
-    }
-    return null;
 
+
+      if (fundingSourceBudget != null) {
+        if (fundingSourceBudget.getYear() != null) {
+          if (fundingSourceBudget.getYear().intValue() == year) {
+            return fundingSourceBudget;
+          }
+        }
+
+      }
+
+
+    }
+    FundingSourceBudget fundingSourceBudget = new FundingSourceBudget();
+    fundingSourceBudget.setYear(year);
+    fundingSourceBudget.setBudget(0.0);
+    fundingSource.getBudgets().add(fundingSourceBudget);
+    return this.getBudget(year);
+
+  }
+
+  public Map<String, String> getBudgetTypes() {
+    return budgetTypes;
   }
 
   public FundingSource getFundingSource() {
@@ -246,8 +260,19 @@ public class FundingSourceAction extends BaseAction {
         reader.close();
 
         this.setDraft(true);
+        FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(projectID);
+        fundingSource.setProjectBudgetsList(
+          fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+
       } else {
         this.setDraft(false);
+        fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
+          .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+
+
+        fundingSource.setProjectBudgetsList(
+          fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
+
       }
 
       status = new HashMap<>();
@@ -264,13 +289,6 @@ public class FundingSourceAction extends BaseAction {
       liaisonInstitutions.addAll(
         liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
 
-
-      fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
-        .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
-
-
-      fundingSource.setProjectBudgetsList(
-        fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
     }
 
@@ -309,9 +327,13 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setActiveSince(fundingSourceDB.getActiveSince());
 
 
-      Institution institution = institutionManager.getInstitutionById(fundingSource.getInstitution().getId());
-      fundingSourceDB.setInstitution(institution);
-
+      if (fundingSource.getInstitution().getId().longValue() != -1) {
+        fundingSourceDB.setInstitution(fundingSource.getInstitution());
+      }
+      if (fundingSource.getLiaisonInstitution().getId().longValue() != -1) {
+        fundingSourceDB.setLiaisonInstitution(fundingSource.getLiaisonInstitution());
+      }
+      fundingSourceDB.setStatus(fundingSource.getStatus());
       fundingSourceDB.setStartDate(fundingSource.getStartDate());
       fundingSourceDB.setEndDate(fundingSource.getEndDate());
 
@@ -324,18 +346,30 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setDescription(fundingSource.getDescription());
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
-          FundingSourceBudget fundingSourceBudgetBD =
-            fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
-          fundingSourceBudget.setActive(true);
-          fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
-          fundingSourceBudget.setModifiedBy(this.getCurrentUser());
-          fundingSourceBudget.setModificationJustification("");
-          fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
-          fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+          if (fundingSourceBudget.getId() == null) {
+
+            fundingSourceBudget.setActive(true);
+            fundingSourceBudget.setCreatedBy(this.getCurrentUser());
+            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+            fundingSourceBudget.setModificationJustification("");
+            fundingSourceBudget.setActiveSince(new Date());
+            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+          } else {
+            FundingSourceBudget fundingSourceBudgetBD =
+              fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
+            fundingSourceBudget.setActive(true);
+            fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
+            fundingSourceBudget.setModifiedBy(this.getCurrentUser());
+            fundingSourceBudget.setModificationJustification("");
+            fundingSourceBudget.setActiveSince(fundingSourceDB.getActiveSince());
+            fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
+          }
+
         }
       }
 
       List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
       fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
@@ -343,17 +377,19 @@ public class FundingSourceAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-
-
+      this.setInvalidFields(new HashMap<>());
       Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
+      if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
-      } else {
-        this.addActionMessage(this.getText("saving.saved"));
-      }
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
 
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
