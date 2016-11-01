@@ -24,6 +24,10 @@
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   
   <div class="col-md-12">
+  
+  [#-- Messages --]
+  [#include "/WEB-INF/views/fundingSources/messages-fundingSource.ftl" /]
+  
   <h4 class="headTitle">General information</h4> 
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
