@@ -309,8 +309,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        long amount = projectBudget.getAmount();
-        double gender = projectBudget.getGenderPercentage();
+        long amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
 
         totalGender = totalGender + (amount * (gender / 100));
       }
