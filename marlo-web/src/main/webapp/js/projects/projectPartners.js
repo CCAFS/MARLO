@@ -272,10 +272,13 @@ function updateOrganizationsList(e) {
   var $selectInstitutions = $parent.find("select.institutionsList"); // Institutions list
   var optionSelected = $selectInstitutions.find('option:selected').val(); // Institution selected
   var source = baseURL + "/institutionsByTypeAndCountry.do";
-  if($(e.target).attr("class") != "filters-link") {
-    var partnerTypes = $parent.find("select.partnerTypes").find('option:selected').val(); // Type value
-    var countryList = $parent.find("select.countryList").find('option:selected').val(); // Value value
+
+  if($(e.target).parent().attr("class") != "filters-link") {
+    var partnerTypes = $parent.find("select.partnerTypes").find('option:selected').val() || -1; // Type value
+    var countryList = $parent.find("select.countryList").find('option:selected').val() || -1; // Value value
     source += "?institutionTypeID=" + partnerTypes + "&countryID=" + countryList;
+  } else {
+    source += "?institutionTypeID=-1&countryID=-1";
   }
   $.ajax({
       url: source,
