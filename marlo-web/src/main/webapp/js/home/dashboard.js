@@ -120,13 +120,13 @@ function timeline() {
       // value: any class, default to selected
       issuesSpeed: 'fast',
       // value: integer between 100 and 1000 (recommended) or 'slow', 'normal' or 'fast'; default to fast
-      issuesTransparency: 0.2,
+      issuesTransparency: 0.1,
       // value: integer between 0 and 1 (recommended), default to 0.2
       issuesTransparencySpeed: 500,
       // value: integer between 100 and 1000 (recommended), default to 500 (normal)
-      prevButton: '#prev',
+      prevButton: '.leftControl',
       // value: any HTML tag or #id, default to #prev
-      nextButton: '#next',
+      nextButton: '.rigthControl',
       // value: any HTML tag or #id, default to #next
       arrowKeys: 'false',
       // value: true/false, default to false
