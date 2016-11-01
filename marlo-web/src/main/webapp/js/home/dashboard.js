@@ -200,8 +200,8 @@ $("#fullscreen").on("click", function() {
         var dataFull = {
           crpID: currentCrpID
         }
-        var url = baseURL + "/impactPathway/impactPathwayGraph.do";
-        ajaxService(url, dataFull, "impactGraphic", true, true, 'breadthfirst', false);
+        var url = baseURL + "/impactPathway/impactPathwayFullGraph.do";
+        ajaxService(url, dataFull, "impactGraphic-fullscreen", true, true, 'breadthfirst', false);
       }
   });
 
