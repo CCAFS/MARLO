@@ -42,11 +42,11 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
       Map<String, Object> result = list.get(0);
       if (result.containsKey("amount")) {
         if (result.get("amount") != null) {
-          return result.get("amount").toString();
+          return String.valueOf(result.get("amount"));
         }
       }
     }
-    return null;
+    return "0";
   }
 
   @Override
