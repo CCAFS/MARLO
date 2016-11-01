@@ -175,30 +175,30 @@
             <td class="amountType"> Gender %:</td> 
             [#-- W1/W2 --]
             <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.w1w2}">${((budgetW1W2.genderPercentage)!0)}%</span></p></div>
+              <div class="input"><p><span class="percentageLabel type-${type.w1w2}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.w1w2))!0)}%</span></p></div>
               <div class="row percentageAmount type-${type.w1w2} text-center">
-                <small>US$ <span>${(((budgetW1W2.amount/100)*budgetW1W2.genderPercentage)!0)?string(",##0.00")}</span></small>
+                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.w1w2))!0)?number?string(",##0.00")}</span></small>
               </div>
             </td>
             [#-- W3 --]
             <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.w3}">${((budgetW3.genderPercentage)!0)}%</span></p></div>
+              <div class="input"><p><span class="percentageLabel type-${type.w3}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.w3))!0)}%</span></p></div>
               <div class="row percentageAmount type-${type.w3} text-center">
-                <small>US$ <span>${(((budgetW3.amount/100)*budgetW3.genderPercentage)!0)?string(",##0.00")}</span></small>
+                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.W3))!0)?number?string(",##0.00")}</span></small>
               </div>
             </td>
             [#-- Bilateral  --]
             <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.bilateral}">${((budgetBilateral.genderPercentage)!0)}%</span></p></div>
+              <div class="input"><p><span class="percentageLabel type-${type.bilateral}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.bilateral))!0)}%</span></p></div>
               <div class="row percentageAmount type-${type.bilateral} text-center">
-                <small>US$ <span>${(((budgetBilateral.amount/100)*budgetBilateral.genderPercentage)!0)?string(",##0.00")}</span></small>
+                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.bilateral))!0)?number?string(",##0.00")}</span></small>
               </div>
             </td>
             [#-- Center Funds --]
             <td class="budgetColumn">
-              <div class="input"><p><span class="percentageLabel type-${type.centerFunds}">${((budgetCenterFunds.genderPercentage)!0)}%</span></p></div>
+              <div class="input"><p><span class="percentageLabel type-${type.centerFunds}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.centerFunds))!0)}%</span></p></div>
               <div class="row percentageAmount type-${type.centerFunds} text-center">
-                <small>US$ <span>${(((budgetCenterFunds.amount/100)*budgetCenterFunds.genderPercentage)!0)?string(",##0.00")}</span></small>
+                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.centerFunds))!0)?number?string(",##0.00")}</span></small>
               </div>
             </td>
           </tr>
