@@ -25,15 +25,11 @@
   <article class="row" id="mainInformation">
     <div class="col-md-12">
     
-      [#-- Menu projects --]
-      [#include "/WEB-INF/views/projects/menu-projectsList.ftl" /]
-    
       [#-- Projects List (My Projects) --]
       <h3 class="headTitle text-center">[@s.text name="projectsList.yourProjects"/]</h3>
       <div class="loadingBlock"></div>
       <div style="display:none">[@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]</div>
   
-     
       [#-- Section Buttons --]
       [#if action.canAddCoreProject() || action.canAddBilateralProject()]
       <div class="buttons">

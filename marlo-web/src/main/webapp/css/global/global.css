@@ -3537,6 +3537,9 @@ span.partnerTag {
 .contactPerson .partnerPerson-email {
   /* width: 67%; */
 }
+.contactPerson .partnerPerson-email .form-control[readonly] {
+  background-color: #f7f5f5 !important;
+}
 
 .contactPerson .contactTags {
 }
