@@ -314,11 +314,12 @@ public class Project implements java.io.Serializable, IAuditLog {
     return annualReportToDonnor;
   }
 
-  public long getBilateralBudget() {
+  public long getBilateralBudget(int year) {
 
     long total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 3).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getYear() == year)
+      .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
       }
@@ -387,13 +388,12 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getCoreBudget() {
-    if (id.longValue() == 249) {
-      System.out.println("STOP");
-    }
+  public long getCoreBudget(int year) {
+
     long total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 1).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 1 && c.getYear() == year)
+      .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
       }
@@ -717,10 +717,11 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getW3Budget() {
+  public long getW3Budget(int year) {
     long total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
-      .filter(c -> c.isActive() && c.getBudgetType().getId() == 2).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getBudgetType().getId() == 2 && c.getYear() == year)
+      .collect(Collectors.toList())) {
       if (projectBudget.getAmount() != null) {
         total = total + projectBudget.getAmount();
       }
