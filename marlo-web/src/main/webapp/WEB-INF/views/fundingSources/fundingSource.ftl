@@ -28,10 +28,14 @@
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
       <div class="pull-right">
+        [#if editable]
         <label for="cofundedMode-1"><input type="radio" name="fundingSource.cofundedMode" id="cofundedMode-1" value="1" [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 1]checked="checked"[/#if] /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
         <label for="cofundedMode-2"><input type="radio" name="fundingSource.cofundedMode" id="cofundedMode-2" value="2" [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 2]checked="checked"[/#if] /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+        [#else]
+          [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 1][@s.text name="projectCofunded.participatingCenter" /][/#if]
+          [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 2][@s.text name="projectCofunded.crpLeadCenter" /][/#if]
+        [/#if]
       </div>
-    
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
