@@ -199,15 +199,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     }
   });
   function nodeSelected(ele) {
+    var stop;
     if(ele.isChild()) {
       var parent = ele.parent();
-      parent.addClass('eating');
-      parent.css('background-opacity', '1');
-      parent.css('text-opacity', '1');
-      parent.css('z-index', '9');
-      parent.css('line-color', '#999999');
-      parent.css('source-arrow-color', '#999999');
-      parent.css('target-arrow-color', '#999999');
+      nodeSelected(parent);
     }
 
     // change Styles
@@ -218,6 +213,45 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     ele.css('line-color', '#999999');
     ele.css('source-arrow-color', '#999999');
     ele.css('target-arrow-color', '#999999');
+
+    // Validate if the node exists in any array
+
+    // In flagships array
+    flagships.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In Outcomes array
+    outcomes.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In Outcomes array
+    clusters.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In Outcomes array
+    keyOutputs.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // Break nodeSelected function
+    if(stop == 1) {
+      return;
+    }
 
     // arrays information
     if(ele.data('description') != 'undefined' && ele.data('description') != null) {
@@ -242,6 +276,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         keyOutputs.push(data);
       }
     }
+
   }
 
   // Download
