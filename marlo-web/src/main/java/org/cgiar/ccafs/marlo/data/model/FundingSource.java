@@ -86,13 +86,13 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public FundingSource() {
   }
 
+
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.active = active;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
@@ -137,6 +137,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return centerType;
   }
 
+
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
@@ -168,7 +169,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
   }
-
 
   @Override
   public Long getId() {
@@ -222,6 +222,18 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public Integer getStatus() {
     return status;
+  }
+
+
+  public String getStatusName() {
+    if (status != null && status.intValue() != -1) {
+      AgreementStatusEnum statusEnum = AgreementStatusEnum.getValue(status.intValue());
+      if (statusEnum != null) {
+        return statusEnum.getStatus();
+      }
+    }
+    return "";
+
   }
 
 
