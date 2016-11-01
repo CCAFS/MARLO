@@ -101,14 +101,17 @@
           [#assign budget = action.getBudget(year) /]
           [#assign budgetIndex = action.getIndexBugets(year) /]
           
+          <h5 class="sectionSubTitle">Budget Amount</h5>
           <div class="budgetsYear">
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
                <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
               [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
             </div>
+            <div class="clearfix"></div>
           </div>
-          
+          <br />
+          <h5 class="sectionSubTitle">Projects</h5>
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
             <div class="grayBox col-md-12 borderBox">

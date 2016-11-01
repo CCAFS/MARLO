@@ -65,7 +65,7 @@
           [#-- Budget W1/W2 --]
           <td class="budget"> 
             [#if project.getCoreBudget()?has_content]
-              <p id="">US$ <span id="">${((project.getCoreBudget())!0)?string(",##0.00")}</span></p> 
+              <p id="">US$ <span id="">${((project.getCoreBudget(currentCycleYear))!0)?string(",##0.00")}</span></p> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
@@ -73,14 +73,14 @@
           [#-- Budget W3/ Bilateral --]
           <td class="budget"> 
             [#if project.getW3Budget()?has_content]
-              <p id="">US$ <span id="">${((project.getW3Budget())!0)?string(",##0.00")}</span></p> 
+              <p id="">US$ <span id="">${((project.getW3Budget(currentCycleYear))!0)?string(",##0.00")}</span></p> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
            <td class="budget"> 
             [#if project.getBilateralBudget()?has_content]
-              <p id="">US$ <span id="">${((project.getBilateralBudget())!0)?string(",##0.00")}</span></p> 
+              <p id="">US$ <span id="">${((project.getBilateralBudget(currentCycleYear))!0)?string(",##0.00")}</span></p> 
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
