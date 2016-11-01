@@ -76,8 +76,10 @@ function removeBilateralFund() {
   $parent.slideUp('slow', function() {
     $parent.remove();
     // Update overalls; Type-2: w3, type-3: bilateral
-    updateActiveYearCurrency('3', $partner);
+    updateActiveYearCurrency('1', $partner);
     updateActiveYearCurrency('2', $partner);
+    updateActiveYearCurrency('3', $partner);
+    updateActiveYearCurrency('4', $partner);
   });
 }
 
