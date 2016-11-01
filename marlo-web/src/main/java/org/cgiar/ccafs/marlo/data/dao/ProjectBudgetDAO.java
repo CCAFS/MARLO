@@ -32,9 +32,10 @@ public interface ProjectBudgetDAO {
    * @param institutionId
    * @param year
    * @param budgetType
+   * @param projectId
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId);
 
   /**
    * Gets the budget amount for a specific funding source and year

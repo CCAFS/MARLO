@@ -20,14 +20,38 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = 4497778782300688556L;
 
-
   @Expose
   private Long id;
 
   @Expose
   private String name;
+
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    BudgetType other = (BudgetType) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
 
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
@@ -61,6 +85,14 @@ public class BudgetType implements java.io.Serializable, IAuditLog {
 
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

@@ -34,9 +34,10 @@ public interface ProjectBudgetManager {
    * @param institutionId
    * @param year
    * @param budgetType
+   * @param projectId
    * @return
    */
-  public String amountByBudgetType(long institutionId, int year, long budgetType);
+  public String amountByBudgetType(long institutionId, int year, long budgetType, long projectId);
 
 
   /**

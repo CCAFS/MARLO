@@ -61,10 +61,6 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ProjectBudgetByPartnersAction extends BaseAction {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 7833194831832715444L;
 
 
@@ -302,9 +298,50 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public String getTotalAmount(long institutionId, int year, long budgetType) {
-    return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType);
+    String total = projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
+    if (total != null) {
+      return total;
+    } else {
+      return "0";
+    }
   }
 
+
+  public String getTotalGender(long institutionId, int year, int budgetType) {
+
+    Institution institution = institutionManager.getInstitutionById(institutionId);
+
+    BudgetType type = budgetTypeManager.getBudgetTypeById(budgetType);
+
+    Project tProject = projectManager.getProjectById(projectID);
+
+    List<ProjectBudget> budgets = projectBudgetManager
+      .findAll().stream().filter(pb -> pb.isActive() && pb.getInstitution().equals(institution)
+        && pb.getBudgetType().equals(type) && pb.getProject().equals(tProject) && pb.getYear() == year)
+      .collect(Collectors.toList());
+
+    double totalGender = 0;
+    for (ProjectBudget projectBudget : budgets) {
+      long amount = projectBudget.getAmount();
+      double gender = projectBudget.getGenderPercentage();
+
+      totalGender = totalGender + (amount * (gender / 100));
+    }
+
+
+    return String.valueOf(totalGender);
+  }
+
+  public String getTotalGenderPer(long institutionId, int year, int budgetType) {
+
+    String totalAmount = this.getTotalAmount(institutionId, year, budgetType);
+
+    String totalGender = this.getTotalGender(institutionId, year, budgetType);
+
+    double genderPercentage = (Double.parseDouble(totalGender) * 100) / Double.parseDouble(totalAmount);
+
+    return String.valueOf(genderPercentage);
+  }
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -317,18 +354,16 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
               if (projectBudget.getAmount() != null) {
                 total = total + projectBudget.getAmount();
               }
-
             }
           }
         }
-
-
       }
     }
 
 
     return total;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -528,7 +563,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -566,6 +600,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   }
 
+
   public void saveBasicBudgets() {
     Project projectDB = projectManager.getProjectById(projectID);
 
@@ -599,12 +634,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (project.getBudgets() != null) {
       for (ProjectBudget projectBudget : project.getBudgets()) {
         if (projectBudget != null) {
-
           this.saveBudget(projectBudget);
-
-
         }
-
       }
     }
   }
@@ -635,15 +666,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     projectBudgetManager.saveProjectBudget(projectBudget);
   }
 
-
   public void setBudgetIndex(int budgetIndex) {
     this.budgetIndex = budgetIndex;
   }
 
+
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
-
 
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
@@ -656,6 +686,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
+
 
   public void setProject(Project project) {
     this.project = project;
@@ -671,15 +702,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectPPAPartners = projectPPAPartners;
   }
 
-
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
-
 
   public void setW3bilateralBudgetTypes(Map<String, String> w3bilateralBudgetTypes) {
     this.w3bilateralBudgetTypes = w3bilateralBudgetTypes;
