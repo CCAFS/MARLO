@@ -23,7 +23,7 @@
           <div class="search-button">[@s.text name="form.buttons.search" /]</div>
         </div> 
         <div class="usersList panel secondary">
-          <div class="panel-head"> Projects list </div>
+          <div class="panel-head"> Funding sources list </div>
           <div class="panel-body"> 
             <p class="userMessage">
               If you do not find the Funding Source, please add it by <span class="link">[@s.text name="form.buttons.clickingHere" /]</span>.
@@ -49,7 +49,7 @@
             <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
           </div>
           
-          [#-- Project title --]
+          [#-- Title --]
           <div class="form-group">
             <div class="row">
               <div class="col-md-12">[@customForm.textArea name="description" i18nkey="projectCofunded.title" required=true/] </div>
@@ -129,6 +129,6 @@
   </div>  
 </div>
 
-[#-- Project Funding Source Popup JS --]
+[#--  Funding Source Popup JS --]
 [#assign customJS =  [ "${baseUrl}/js/global/fundingSourcesPopup.js" ]  + customJS/]
   

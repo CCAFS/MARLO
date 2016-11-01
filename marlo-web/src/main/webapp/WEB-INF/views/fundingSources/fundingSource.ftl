@@ -50,7 +50,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
