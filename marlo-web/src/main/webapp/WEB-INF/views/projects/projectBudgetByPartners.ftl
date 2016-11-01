@@ -41,10 +41,10 @@
             [#assign endYear = (project.endDate?string.yyyy)?number /]
             [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
             [#assign type = { 
-              'w1w2':         '1',
-              'w3':           '2',
-              'bilateral':    '3',
-              'centerFunds':  '4'
+              'w1w2':         1,
+              'w3':           2,
+              'bilateral':    3,
+              'centerFunds':  4
             } /]
             
             [#-- Year Tabs --]
@@ -153,19 +153,19 @@
             <td class="amountType"> Budget:</td>
             [#-- W1/W2 --]
             <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w1w2}">${((budgetW1W2.amount)!0)?number?string(",##0.00")}</span></p></div>
+              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w1w2}">${((action.getTotalAmount(element.institution.id, selectedYear, type.w1w2))!0)?number?string(",##0.00")}</span></p></div>
             </td>
             [#-- W3 --]
             <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w3}">${((budgetW3.amount)!0)?number?string(",##0.00")}</span></p></div>
+              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.w3}">${((action.getTotalAmount(element.institution.id, selectedYear, type.w3))!0)?number?string(",##0.00")}</span></p></div>
             </td>
             [#-- Bilateral  --]
             <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.bilateral}">${((budgetBilateral.amount)!0)?number?string(",##0.00")}</span></p></div>
+              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.bilateral}">${((action.getTotalAmount(element.institution.id, selectedYear, type.bilateral))!0)?number?string(",##0.00")}</span></p></div>
             </td>
             [#-- Center Funds --]
             <td class="budgetColumn">
-              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.centerFunds}">${((budgetCenterFunds.amount)!0)?number?string(",##0.00")}</span></p></div>
+              <div class="input"><p>US$ <span class="currencyInput totalByPartner-${type.centerFunds}">${((action.getTotalAmount(element.institution.id, selectedYear, type.centerFunds))!0)?number?string(",##0.00")}</span></p></div>
             </td>
             
           </tr>
