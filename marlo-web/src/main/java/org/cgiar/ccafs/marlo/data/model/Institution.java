@@ -123,13 +123,13 @@ public class Institution implements java.io.Serializable, IAuditLog {
       if (this.headquarter == null) {
         // Verify if there exist a city to show
         if (this.city != null && this.city != "") {
-          return "HQ: " + composedAcronym + " - " + this.locElement.getName() + " - " + this.city;
+          return "HQ: " + composedAcronym + " - " + this.city + ", " + this.locElement.getName();
         }
         return "HQ: " + composedAcronym + " - " + this.locElement.getName();
       } else {
         // Verify if there exist a city to show
         if (this.city != null && this.city != "") {
-          return composedAcronym + " - " + this.locElement.getName() + " - " + this.city;
+          return composedAcronym + " - " + this.city + ", " + this.locElement.getName();
         }
         return composedAcronym + " - " + this.locElement.getName();
       }
