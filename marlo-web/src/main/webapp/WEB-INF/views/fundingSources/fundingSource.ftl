@@ -105,7 +105,7 @@
           <div class="budgetsYear">
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
-               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
+              <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
               [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
             </div>
             <div class="clearfix"></div>
