@@ -91,10 +91,12 @@
         </div>  
       </div>    
     </div>
+    
+    
     <div id="impactGraphic-content"  style="display:none;" >
   
   [#-- Information panel --]
-  <div id="infoRelations" class="panel panel-default">
+  <div id="infoRelation" class="panel panel-default">
     <div class="panel-heading"><strong>Relations</strong></div>
     <div id="infoContent" class="panel-body">
      <ul></ul>
@@ -112,15 +114,10 @@
     <span id="resize" class="glyphicon glyphicon-resize-full  tool"></span>
   </div>
   
-  [#-- Change to full or current graph --]
-  <div id="changeGraph">
-  <span class="btn btn-primary btn-md currentGraph">Show full graph</span>
-  </div>
-  
   [#-- Download button--]
   <a class="download" href=""><span id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
   
-  <div id="impactGraphic"></div>
+  <div id="impactGraphic-fullscreen"></div>
 </div>
   </div>
  

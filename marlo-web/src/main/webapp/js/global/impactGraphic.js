@@ -406,6 +406,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
+    console.log("done");
     var nodes = m.elements.nodes;
     var count = {
         F: 0,
