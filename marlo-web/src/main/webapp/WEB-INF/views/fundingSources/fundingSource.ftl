@@ -28,10 +28,14 @@
     <div class="borderBox informationWrapper">
       [#-- Participating Center, CRP Lead Center --]
       <div class="pull-right">
-        <label for="cofundedMode-1"><input type="radio" name="fundingSource.cofundedMode" id="cofundedMode-1" value="1" [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 1]checked="checked"[/#if] /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
-        <label for="cofundedMode-2"><input type="radio" name="fundingSource.cofundedMode" id="cofundedMode-2" value="2" [#if fundingSource.cofundedMode?? && fundingSource.cofundedMode == 2]checked="checked"[/#if] /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+        [#if editable]
+        <label for="cofundedMode-1"><input type="radio" name="fundingSource.centerType" id="cofundedMode-1" value="1" [#if fundingSource.centerType?? && fundingSource.centerType == 1]checked="checked"[/#if] /> [@s.text name="projectCofunded.participatingCenter" /] </label><br />
+        <label for="cofundedMode-2"><input type="radio" name="fundingSource.centerType" id="cofundedMode-2" value="2" [#if fundingSource.centerType?? && fundingSource.centerType == 2]checked="checked"[/#if] /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+        [#else]
+          [#if fundingSource.centerType?? && fundingSource.centerType == 1][@s.text name="projectCofunded.participatingCenter" /][/#if]
+          [#if fundingSource.centerType?? && fundingSource.centerType == 2][@s.text name="projectCofunded.crpLeadCenter" /][/#if]
+        [/#if]
       </div>
-    
       [#-- Project title --]
       <div class="form-group">
         <div class="row">
@@ -50,7 +54,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
