@@ -216,7 +216,6 @@ $(document).ready(function() {
   }
 
   function getData(query) {
-    console.log(institutionSelected);
     $.ajax({
         'url': baseURL + '/FundingSourceList.do',
         'data': {

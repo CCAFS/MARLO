@@ -184,7 +184,7 @@
             <td class="budgetColumn">
               <div class="input"><p><span class="percentageLabel type-${type.w3}">${((action.getTotalGenderPer(element.institution.id, selectedYear, type.w3))!0)}%</span></p></div>
               <div class="row percentageAmount type-${type.w3} text-center">
-                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.W3))!0)?number?string(",##0.00")}</span></small>
+                <small>US$ <span>${((action.getTotalGender(element.institution.id, selectedYear, type.w3))!0)?number?string(",##0.00")}</span></small>
               </div>
             </td>
             [#-- Bilateral  --]
