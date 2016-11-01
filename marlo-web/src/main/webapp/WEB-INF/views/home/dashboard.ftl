@@ -115,7 +115,7 @@
   </div>
   
   [#-- Download button--]
-  <a class="download" href=""><span id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
+  <a class="download" href=""><span title="download" id="buttonDownload"><span class="glyphicon glyphicon-download-alt"></span></span></a>
   
   <div id="impactGraphic-fullscreen"></div>
 </div>
