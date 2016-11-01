@@ -79,6 +79,17 @@ public interface ProjectBudgetDAO {
   public List<ProjectBudget> findAll();
 
   /**
+   * gets a list of ProjectBudget of a specific parameters
+   * 
+   * @param institutionID
+   * @param year
+   * @param budgetTypeId
+   * @param projectId
+   * @return a list from ProjectBudget null if no exist records
+   */
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId);
+
+  /**
    * This method saves the information of the given projectBudget
    * 
    * @param projectBudget - is the projectBudget object with the new information to be added/updated.

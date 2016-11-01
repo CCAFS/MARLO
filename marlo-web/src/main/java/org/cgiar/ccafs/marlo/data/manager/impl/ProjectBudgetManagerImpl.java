@@ -65,6 +65,11 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId) {
+    return projectBudgetDAO.getByParameters(institutionID, year, budgetTypeId, projectId);
+  }
+
+  @Override
   public ProjectBudget getProjectBudgetById(long projectBudgetID) {
 
     return projectBudgetDAO.find(projectBudgetID);

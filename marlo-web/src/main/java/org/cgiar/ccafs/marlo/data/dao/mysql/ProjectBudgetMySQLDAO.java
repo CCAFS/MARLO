@@ -96,6 +96,17 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
   }
 
   @Override
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId) {
+    String query = "from " + ProjectBudget.class.getName() + " where institution_id= " + institutionID + " and year= "
+      + year + " and budget_type= " + budgetTypeId + " and project_id= " + projectId + " and is_active=1";
+    List<ProjectBudget> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public long save(ProjectBudget projectBudget) {
     if (projectBudget.getId() == null) {
       dao.save(projectBudget);

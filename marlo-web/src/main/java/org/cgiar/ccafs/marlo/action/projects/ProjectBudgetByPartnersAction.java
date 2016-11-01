@@ -304,25 +304,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public double getTotalGender(long institutionId, int year, long budgetType) {
 
-    Institution institution = institutionManager.getInstitutionById(institutionId);
-
-    BudgetType type = budgetTypeManager.getBudgetTypeById(budgetType);
-
-    Project tProject = projectManager.getProjectById(projectID);
-
-    List<ProjectBudget> budgets = projectBudgetManager
-      .findAll().stream().filter(pb -> pb.isActive() && pb.getInstitution().equals(institution)
-        && pb.getBudgetType().equals(type) && pb.getProject().equals(tProject) && pb.getYear() == year)
-      .collect(Collectors.toList());
+    List<ProjectBudget> budgets = projectBudgetManager.getByParameters(institutionId, year, budgetType, projectID);
 
     double totalGender = 0;
-    for (ProjectBudget projectBudget : budgets) {
-      long amount = projectBudget.getAmount();
-      double gender = projectBudget.getGenderPercentage();
+    if (budgets != null) {
+      for (ProjectBudget projectBudget : budgets) {
+        long amount = projectBudget.getAmount();
+        double gender = projectBudget.getGenderPercentage();
 
-      totalGender = totalGender + (amount * (gender / 100));
+        totalGender = totalGender + (amount * (gender / 100));
+      }
     }
-
 
     return totalGender;
   }
