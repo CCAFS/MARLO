@@ -93,6 +93,9 @@
               <div class="form-group">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable /]
               </div>
+              <div class="form-group">
+                [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-100" editable=editable /]
+              </div>
             </div>
             [/#if]
             [#-- Project Outcome achieved target (AT THE END) --]
@@ -115,6 +118,9 @@
               </div>
               <div class="form-group">
                 [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100" editable=editable /]
+              </div>
+              <div class="form-group">
+                [@customForm.textArea name="projectOutcome.narrativeGenderAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
             [/#if]
@@ -245,17 +251,6 @@
       <span class="elementId"> Project Milestone Target </span>
     </div>
 
-    [#-- Milestone Title --]
-    <div class="form-group grayBox">
-      <div class="row">
-        <div class="col-md-6">
-          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
-          [#-- <span class="crpMilestoneValue">${(element.value)!}</span>  --]
-        </div>
-      </div>
-      <span class="title">${(element.title)!}</span>
-    </div>
-    
     [#-- Milestone content --]
     [#if isTemplate]
       [#local year = -1 /]
@@ -267,6 +262,24 @@
       [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
     [/#if]
 
+    [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
+    
+    [#-- Milestone Title --]
+    <div class="form-group grayBox">
+      [#if showMilestoneValue]
+        <div class="form-group pull-right">
+          <strong>Target Value:</strong> ${(element.value)!}
+        </div>
+      [/#if]
+      <div class="row">
+        <div class="col-md-6">
+          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!}</span> </strong> 
+        </div>
+      </div>
+      
+      <span class="title">${(element.title)!}</span>
+    </div>
+    
     <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear${index}-${year}">
       [#local customName = "${name}[${projectMilestoneIndex}]" /]
       <div class="outcomeMilestoneYear">
@@ -275,11 +288,10 @@
         <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
         <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
         
-        [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="${(element.value)!}" className="targetValue" required=isYearRequired(year) editable=editable /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
           </div>
           <div class="col-md-4">
             <div class="select">
