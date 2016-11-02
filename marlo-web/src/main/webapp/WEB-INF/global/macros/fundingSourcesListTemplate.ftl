@@ -56,7 +56,7 @@
           <td class="text-center">
             [#if action.canBeDeleted(project.id, project.class.name)]
               <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="">
-                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.removeDeliverable" /]" /> 
+                <img src="${baseUrl}/images/global/trash.png"/> 
               </a>
             [#else]
               <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="projectsList.cannotDelete" /]" />

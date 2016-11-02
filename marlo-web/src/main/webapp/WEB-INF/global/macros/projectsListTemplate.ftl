@@ -91,7 +91,7 @@
             [#assign currentCycleYear= currentCycleYear /]
             [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
             [#assign completed = (action.isCompleteProject(project.id))!false /]
-            [#assign canSubmit = false /] [#-- action.hasProjectPermission("submitProject", project.id, "manage") --]
+            [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
             
             [#-- Check button --] 
             [#if !submission ]

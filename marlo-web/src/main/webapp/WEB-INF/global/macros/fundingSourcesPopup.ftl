@@ -87,6 +87,7 @@
           [#-- Budget --]
           <div class="form-group">
             <div class="budgetByYears">
+                <span>Total $US 0.00</span>
                 <ul class="nav nav-tabs" role="tablist">
                 </ul>
                 <div class="tab-content">
