@@ -298,7 +298,7 @@ public class FundingSourceAction extends BaseAction {
       budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
     }
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_W3_COFUNDED_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
       if (institutions != null) {
@@ -330,8 +330,8 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getInstitution().getId().longValue() != -1) {
         fundingSourceDB.setInstitution(fundingSource.getInstitution());
       }
-      if (fundingSource.getLiaisonInstitution().getId().longValue() != -1) {
-        fundingSourceDB.setLiaisonInstitution(fundingSource.getLiaisonInstitution());
+      if (fundingSource.getLeader().getId().longValue() != -1) {
+        fundingSourceDB.setLeader(fundingSource.getLeader());
       }
       fundingSourceDB.setStatus(fundingSource.getStatus());
       fundingSourceDB.setStartDate(fundingSource.getStartDate());
@@ -352,12 +352,14 @@ public class FundingSourceAction extends BaseAction {
             fundingSourceBudget.setCreatedBy(this.getCurrentUser());
             fundingSourceBudget.setModifiedBy(this.getCurrentUser());
             fundingSourceBudget.setModificationJustification("");
+            fundingSourceBudget.setFundingSource(fundingSource);
             fundingSourceBudget.setActiveSince(new Date());
             fundingSourceBudgetManager.saveFundingSourceBudget(fundingSourceBudget);
           } else {
             FundingSourceBudget fundingSourceBudgetBD =
               fundingSourceBudgetManager.getFundingSourceBudgetById(fundingSourceBudget.getId());
             fundingSourceBudget.setActive(true);
+            fundingSourceBudget.setFundingSource(fundingSource);
             fundingSourceBudget.setCreatedBy(fundingSourceBudgetBD.getCreatedBy());
             fundingSourceBudget.setModifiedBy(this.getCurrentUser());
             fundingSourceBudget.setModificationJustification("");

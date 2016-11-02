@@ -21,8 +21,11 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -48,6 +51,9 @@ public class FundingSourceListAction extends BaseAction {
 
 
   private CrpManager crpManager;
+  private RoleManager roleManager;
+  private UserManager userManager;
+
   private ProjectManager projectManager;
 
   private long fundingSourceID;
@@ -57,11 +63,12 @@ public class FundingSourceListAction extends BaseAction {
 
 
   @Inject
-  public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager, CrpManager crpManager,
-    ProjectManager projectManager) {
+  public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
+    CrpManager crpManager, ProjectManager projectManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
+    this.roleManager = roleManager;
     this.projectManager = projectManager;
   }
 
@@ -134,18 +141,23 @@ public class FundingSourceListAction extends BaseAction {
 
     if (fundingSourceManager.findAll() != null) {
 
-      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+      Role role = roleManager.getRoleById(Long.parseLong(this.getSession().get(APConstants.CRP_PMU_ROLE).toString()));
+      boolean isPMU = !role.getUserRoles().stream()
+        .filter(c -> c.getUser().getId().longValue() == this.getCurrentUser().getId().longValue())
+        .collect(Collectors.toList()).isEmpty();
+      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin() || isPMU
+
+      ) {
         myProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects
           .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
       } else {
         allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
-        allProjects
-          .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
-        // myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
-        // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-        myProjects = allProjects;
-        // allProjects.removeAll(myProjects);
+
+        myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+
+
+        allProjects.removeAll(myProjects);
       }
     }
 

@@ -65,8 +65,8 @@
 			<interceptor name="editDeliverable"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
-			<interceptor name="editCofunded"
-				class="org.cgiar.ccafs.marlo.interceptor.bilateral.EditCofundedInterceptor" />
+			<interceptor name="editFunding"
+				class="org.cgiar.ccafs.marlo.interceptor.funding.FundingSourceInterceptor" />
 
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />

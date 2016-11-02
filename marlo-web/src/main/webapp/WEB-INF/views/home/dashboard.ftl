@@ -12,6 +12,16 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
+[#assign timeline = [
+  {"id":"23-11-2016", "startDate":"Nov 23th", "endDate":"Nov 25th","what":"MARLO opens for impact pathway and project pre-setting (Mgmt Liaisons and CPs)","who":"MARLO Team, Finance, MLs & CPs"},
+  {"id":"28-11-2016", "startDate":"Nov 28th", "endDate":"Dec 9th","what":"MARLO opens for planning (Project Leaders)","who":"Project Leaders"},
+  {"id":"12-12-2016", "startDate":"Dec 12th ", "endDate":"Dec 14th","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"MLs"},
+  {"id":"15-12-2016", "startDate":"Dec 15th", "endDate":"Dec 21nd","what":"PLs to make changes accordingly and resubmit the project","who":"PLs"},
+  {"id":"22-12-2016", "startDate":"Dec 22nd", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
+]/]
+
+
+
 <section class="marlo-content">
   <div class="container">
     [#-- What do you want to do --]
@@ -28,31 +38,27 @@
       <div class="homeTitle"><strong>Timeline</strong></div>   
       <div class="borderBox col-md-12">
         <div id="timeline">
+        <span class="timelineControl leftControl glyphicon glyphicon-chevron-left"></span>
+        <span class="timelineControl rigthControl control glyphicon glyphicon-chevron-right"></span>
           <ul id="dates">
-            <li><a href="#1900">Fri Mar 18th</a></li>
-            <li><a href="#1700">Mon Mar 21st</a></li>
-            <li><a href="#1600">Open 4/2017</a></li>
-            <li><a href="#1400">Close 5/2017</a></li>
+          [#list timeline as time]
+            <li><a href="#${time.id}">${time.startDate}</a></li>
+          [/#list]
           </ul>
           
           <div class="borderBox">
             <ul id="issues">
-              <li id="1900">
-                <h1>18/3/2017</h1>
-                <p>Regional Program Leaders will have until Friday, March 18th to complete the Outcome and MOG synthesis</p>
+            [#list timeline as time]
+              <li id="${time.id}">
+                <h1>${time.startDate} - ${time.endDate}</h1>
+                <hr />
+                <label for="">What?</label>
+                <p> ${time.what}</p>
+                <hr />
+                <label for="">Who?</label>
+                <p>${time.who}</p>
               </li>
-              <li id="1700">
-                <h1>2/2017</h1>
-                <p>Flagship Leaders are expected to start from March 21st and complete by April 1st, 2016; and</p>
-              </li>
-              <li id="1600">
-                <h1>3/2017</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae maxime autem expedita laborum aliquid quibusdam deleniti in quisquam assumenda est officia modi ipsam laboriosam possimus blanditiis reprehenderit adipisci mollitia officiis.</p>
-              </li>
-              <li id="1400">
-                <h1>4/2017</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae maxime autem expedita laborum aliquid quibusdam deleniti in quisquam assumenda est officia modi ipsam laboriosam possimus blanditiis reprehenderit adipisci mollitia officiis.</p>
-              </li>
+            [/#list]
             </ul> 
           </div>
         </div>
