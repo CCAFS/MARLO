@@ -54,6 +54,8 @@ public interface FundingSourceManager {
   public List<FundingSource> findAll();
 
 
+  public List<FundingSource> getFundingSource(long userId, String crp);
+
   /**
    * This method gets a fundingSource object by a given fundingSource identifier.
    * 

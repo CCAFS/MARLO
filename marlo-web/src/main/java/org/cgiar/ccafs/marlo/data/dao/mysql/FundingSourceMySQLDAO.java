@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -67,6 +68,13 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     }
     return null;
 
+  }
+
+  @Override
+  public List<Map<String, Object>> getFundingSource(long userId, String crp) {
+    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
+      + "' and permission_id = 438 and project_id is not null";
+    return dao.findCustomQuery(query);
   }
 
   @Override

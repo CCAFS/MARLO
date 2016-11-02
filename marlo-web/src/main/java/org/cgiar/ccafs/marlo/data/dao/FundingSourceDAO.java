@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.mysql.FundingSourceMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.ImplementedBy;
 
@@ -50,12 +51,15 @@ public interface FundingSourceDAO {
    */
   public FundingSource find(long id);
 
+
   /**
    * This method gets a list of fundingSource that are active
    * 
    * @return a list from FundingSource null if no exist records
    */
   public List<FundingSource> findAll();
+
+  public List<Map<String, Object>> getFundingSource(long userId, String crp);
 
 
   /**

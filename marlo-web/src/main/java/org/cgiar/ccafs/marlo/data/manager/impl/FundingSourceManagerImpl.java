@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.data.dao.FundingSourceDAO;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -57,6 +59,20 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
 
     return fundingSourceDAO.findAll();
 
+  }
+
+  @Override
+  public List<FundingSource> getFundingSource(long userId, String crp) {
+    List<FundingSource> projects = new ArrayList<>();
+
+    List<Map<String, Object>> view = fundingSourceDAO.getFundingSource(userId, crp);
+
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        projects.add(this.getFundingSourceById((Long.parseLong(map.get("project_id").toString()))));
+      }
+    }
+    return projects;
   }
 
   @Override

@@ -13,7 +13,10 @@
     </action>
     
     <action name="{crp}/fundingSource" class="org.cgiar.ccafs.marlo.action.funding.FundingSourceAction">
-           <interceptor-ref name="projectsStack" /> 
+            <interceptor-ref name="projectsStack" /> 
+           <interceptor-ref name="editFunding" /> 
+        
+         
       <result name="input">/WEB-INF/views/fundingSources/fundingSource.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/{crp}/fundingSource</param>
