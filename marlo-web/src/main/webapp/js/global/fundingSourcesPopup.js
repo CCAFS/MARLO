@@ -103,6 +103,7 @@ $(document).ready(function() {
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+    project.selectedYear = selectedYear;
     project.budgets = [];
     $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
       project.budgets.push({
