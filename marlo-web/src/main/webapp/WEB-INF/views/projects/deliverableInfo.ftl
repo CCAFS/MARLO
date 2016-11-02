@@ -49,7 +49,7 @@
 
 [#-- Funding Source --] 
 <div class="col-md-12 form-group">
-  [@customForm.select name="deliverable.fundingSource.id" label=""  i18nkey="deliverable.fundingSource" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="" editable=editable/]
+  [@customForm.select name="deliverable.fundingSource.id" label=""  i18nkey="deliverable.fundingSource" listName="fundingSources" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="" editable=editable/]
 </div>
 
 [#-- Partners --] 
