@@ -69,11 +69,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
       }
     }
 
-    if ((project.getProjectActivities() == null || project.getProjectActivities().isEmpty())) {
 
-      action.getInvalidFields().put("list-project.projectActivities",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activites"}));
-    }
     if (project.getProjectActivities() != null) {
       int i = 0;
       for (Activity activity : project.getProjectActivities()) {

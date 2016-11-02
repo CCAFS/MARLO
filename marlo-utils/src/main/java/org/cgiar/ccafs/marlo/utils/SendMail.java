@@ -76,7 +76,6 @@ public class SendMail {
     properties.put("mail.smtp.host", config.getEmailHost());
     properties.put("mail.smtp.port", config.getEmailPort());
 
-
     // Un-comment this line to watch javaMail debug
     // properties.put("mail.debug", "true");
 
@@ -94,33 +93,20 @@ public class SendMail {
 
     // Set the FROM and TO fields
     try {
-      if (!config.isProduction()) {
-        // Adding TEST words.
-        // Set the Test Header to list the emails that will send in production
-        StringBuilder testingHeader = new StringBuilder();
-        testingHeader.append("To: " + toEmail + "<br>");
-        testingHeader.append("CC: " + ccEmail + "<br>");
-        testingHeader.append("BBC: " + bbcEmail + "<br>");
-        testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
-        messageContent = testingHeader.toString() + messageContent;
-      } else {
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
-          LOG.info("   - TO: " + toEmail);
-        }
-        if (ccEmail != null) {
-          msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
-          LOG.info("   - CC: " + ccEmail);
-        }
-      }
       msg.setFrom(new InternetAddress(config.getEmailHost(), "MARLO Platform"));
+      if (toEmail != null) {
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+      }
+      if (ccEmail != null) {
+        msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
+      }
       if (bbcEmail != null) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - BBC: " + bbcEmail);
       }
-
-
+      // Adding TEST word at the beginning of the subject.
+      if (!config.isProduction()) {
+        subject = "TEST " + subject;
+      }
       msg.setSubject(subject);
       msg.setSentDate(new Date());
 
@@ -145,7 +131,10 @@ public class SendMail {
 
       msg.setContent(mimeMultipart);
       Transport.send(msg);
-      LOG.info("Message sent: \n" + subject);
+      LOG.info("Message sent: " + subject);
+      LOG.info("   - TO: " + toEmail);
+      LOG.info("   - CC: " + ccEmail);
+      LOG.info("   - BBC: " + bbcEmail);
 
     } catch (MessagingException e) {
       e.printStackTrace();

@@ -245,7 +245,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
-  private double getRemaining(int year) {
+  public double getRemaining(int year) {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
