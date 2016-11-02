@@ -13,11 +13,11 @@
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
-  {"id":"23-11-2016", "startDate":"Nov 23th", "endDate":"Nov 25th","what":"MARLO opens for impact pathway and project pre-setting (Mgmt Liaisons and CPs)","who":"MARLO Team, Finance, MLs & CPs"},
-  {"id":"28-11-2016", "startDate":"Nov 28th", "endDate":"Dec 9th","what":"MARLO opens for planning (Project Leaders)","who":"Project Leaders"},
-  {"id":"12-12-2016", "startDate":"Dec 12th ", "endDate":"Dec 14th","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"MLs"},
-  {"id":"15-12-2016", "startDate":"Dec 15th", "endDate":"Dec 21nd","what":"PLs to make changes accordingly and resubmit the project","who":"PLs"},
-  {"id":"22-12-2016", "startDate":"Dec 22nd", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
+  {"id":"1", "startDate":"11/23/2016", "endDate":"11/25/2016","what":"MARLO opens for impact pathway and project pre-setting (Mgmt Liaisons and CPs)","who":"MARLO Team, Finance, MLs & CPs"},
+  {"id":"2", "startDate":"11/28/2016", "endDate":"12/9/2016","what":"MARLO opens for planning (Project Leaders)","who":"Project Leaders"},
+  {"id":"3", "startDate":"12/12/2016 ", "endDate":"12/14/2016","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"MLs"},
+  {"id":"4", "startDate":"12/15/2016", "endDate":"12/21/2016","what":"PLs to make changes accordingly and resubmit the project","who":"PLs"},
+  {"id":"5", "startDate":"12/22/2016", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
 ]/]
 
 
@@ -42,15 +42,17 @@
         <span class="timelineControl rigthControl control glyphicon glyphicon-chevron-right"></span>
           <ul id="dates">
           [#list timeline as time]
-            <li><a href="#${time.id}">${time.startDate}</a></li>
+            <li><a href="#${time.id}">[#if time.startDate?has_content]${(time.startDate)?date("MM/dd/yyyy")}[/#if]</a></li>
           [/#list]
           </ul>
           
           <div class="borderBox">
             <ul id="issues">
             [#list timeline as time]
-              <li id="${time.id}">
-                <h1>${time.startDate} - ${time.endDate}</h1>
+              <li class="infoActions" id="${time.id}">
+                <span class="startDate hidden">${time.startDate}</span>
+                <span class="endDate hidden">${time.endDate}</span>
+                <h1>[#if time.startDate?has_content]${((time.startDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if] [#if time.endDate?has_content]- ${((time.endDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if]</h1>
                 <hr />
                 <label for="">What?</label>
                 <p> ${time.what}</p>

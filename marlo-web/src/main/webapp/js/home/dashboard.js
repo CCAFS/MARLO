@@ -93,6 +93,55 @@ function initSlidr() {
 }
 
 function timeline() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth(); // January is 0!
+  var yyyy = today.getFullYear();
+
+  if(dd < 10) {
+    dd = '0' + dd
+  }
+  if(mm < 10) {
+    mm = '0' + mm
+  }
+
+  today = new Date(yyyy, mm, dd);
+  // today = new Date("12/11/2016");
+
+  var timelineStart = 1;
+  var current = [];
+  var state = 0;
+
+  $(".infoActions").each(function(i,e) {
+    var startDate = new Date($(e).find(".startDate").html());
+    if($(e).find(".endDate").html().length == 0) {
+      var endDate = startDate;
+    } else {
+      var endDate = new Date($(e).find(".endDate").html());
+    }
+
+    if(today >= startDate && today <= endDate) {
+      current[i] = 1;
+      state = 1;
+    } else {
+      current[i] = startDate + "/" + endDate;
+    }
+  });
+
+  if(state != 1) {
+    for(var i = 0; i < current.length; i++) {
+      var resta = new Date(current[i].split("/")[1]) - today;
+      var dias = resta / (1000 * 60 * 60 * 24);
+      if(dias < 0) {
+        current[i] = 0;
+      } else {
+        current[i] = 1;
+        break;
+      }
+    }
+  }
+  timelineStart = current.indexOf(1) + 1;
+
   $().timelinr({
       orientation: 'horizontal',
       // value: horizontal | vertical, default to horizontal
@@ -120,7 +169,7 @@ function timeline() {
       // value: any HTML tag or #id, default to #next
       arrowKeys: 'false',
       // value: true/false, default to false
-      startAt: 1,
+      startAt: timelineStart,
       // value: integer, default to 1 (first)
       autoPlay: 'false',
       // value: true | false, default to false
