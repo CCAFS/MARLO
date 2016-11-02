@@ -206,7 +206,7 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectType">[@s.text name="projectsList.projectType" /]</th>
+        [#-- <th id="projectType">[@s.text name="projectsList.projectType" /]</th> --]
         [#if isPlanning]
           <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
         [/#if]
@@ -231,10 +231,11 @@
               </a>
             [/#if]
           </td>
-          [#-- Project Type --]
+          [#-- Project Type 
           <td>
             [@s.text name="project.type.${(project.type?lower_case)!'none'}" /]
           </td>
+          --]
         </tr>  
       [/#list]
     [/#if]
