@@ -1075,7 +1075,7 @@ select#partnerSave_activityPartner_partner_type_id {
     padding: 5px 0 8px 0;
     border-bottom: 1px solid #ccc;
 }
-.panel .panel-body > ul.list > li:hover { 
+.panel .panel-body > ul.list > li:hover, .panel .panel-body > ul > li:hover { 
   color: #444;
   background-color: #F4F4F4;
 }

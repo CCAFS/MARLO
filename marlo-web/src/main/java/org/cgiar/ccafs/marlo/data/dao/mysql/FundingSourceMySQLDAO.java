@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -70,6 +71,13 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   }
 
   @Override
+  public List<Map<String, Object>> getFundingSource(long userId, String crp) {
+    String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
+      + "' and permission_id = 438 and project_id is not null";
+    return dao.findCustomQuery(query);
+  }
+
+  @Override
   public long save(FundingSource fundingSource) {
     if (fundingSource.getId() == null) {
       dao.save(fundingSource);
@@ -98,12 +106,14 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where crp_id=" + crpID + " and description like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' ");
+    q.append("OR id like '%" + query + "%' and institution_id is null and type=1");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream().filter(c -> c.isActive() && c.getInstitution() == null && c.getEndDate() != null
-      && year <= Integer.parseInt(df.format(c.getEndDate()))).collect(Collectors.toList());
+    return fundingSources.stream()
+      .filter(c -> c.isActive() && c.getLeader() == null && c.getEndDate() != null
+        && c.getCrp().getId().longValue() == crpID && year <= Integer.parseInt(df.format(c.getEndDate())))
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -120,9 +130,8 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     for (FundingSource fundingSource : fundingSources) {
       try {
         if (fundingSource.getEndDate() != null) {
-          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))
-            && fundingSource.getInstitution() != null) {
-            long insID = fundingSource.getInstitution().getId();
+          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate())) && fundingSource.getLeader() != null) {
+            long insID = fundingSource.getLeader().getId();
             if (insID == institutionID) {
               fundingSourcesReturn.add(fundingSource);
             }

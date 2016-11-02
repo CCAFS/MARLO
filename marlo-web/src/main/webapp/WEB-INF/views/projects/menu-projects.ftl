@@ -49,10 +49,11 @@
 [/#if]
 
 
-[#assign submission = (action.submission)! /]
-[#assign canSubmit = (action.hasPersmissionSubmit())!false /]
+[#assign submission = (action.isProjectSubmitted(projectID))! /]
+[#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
 [#assign sectionsForChecking = [] /]
+
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">

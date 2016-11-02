@@ -53,11 +53,15 @@ public class LiasonUsersByInstitutionsAction extends BaseAction {
     Map<String, Object> liasonsUser;
     List<LiaisonUser> liaisonUsers = liasonUserManager.getLiasonUsersByInstitutionId(liasonIntitutionId);
     for (LiaisonUser liaisonUser : liaisonUsers) {
-      liasonsUser = new HashMap<String, Object>();
-      liasonsUser.put("id", liaisonUser.getId());
-      liasonsUser.put("description", liaisonUser.getComposedName());
-      liasonsUser.put("active", liaisonUser.isActive());
-      this.liasonsUsers.add(liasonsUser);
+      try {
+        liasonsUser = new HashMap<String, Object>();
+        liasonsUser.put("id", liaisonUser.getId());
+        liasonsUser.put("description", liaisonUser.getComposedName());
+        liasonsUser.put("active", liaisonUser.isActive());
+        this.liasonsUsers.add(liasonsUser);
+      } catch (Exception e) {
+
+      }
     }
     return SUCCESS;
 

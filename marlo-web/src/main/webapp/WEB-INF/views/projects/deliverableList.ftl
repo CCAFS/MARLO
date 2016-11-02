@@ -63,10 +63,12 @@
             [/#if]
           </div>
           
-          <h3 class="subTitle headTitle">Completed deliverables</h3>
-           <hr />
-           <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
-             
+          ${(action.getDeliverables(false)?has_content?string)}
+          [#if action.getDeliverables(false)?has_content]
+            <h3 class="subTitle headTitle">Completed deliverables</h3>
+            <hr />
+            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
+          [/#if]
 
          
           [/@s.form] 

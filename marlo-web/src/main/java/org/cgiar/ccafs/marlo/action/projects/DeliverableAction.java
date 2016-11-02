@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -87,6 +89,7 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+  private FundingSourceManager fundingSourceManager;
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
 
@@ -113,7 +116,11 @@ public class DeliverableAction extends BaseAction {
 
   private List<ProjectPartnerPerson> partnerPersons;
 
+  private List<FundingSource> fundingSources;
+
+
   private Project project;
+
 
   private Map<String, String> status;
 
@@ -133,7 +140,7 @@ public class DeliverableAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
     AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
-    ProjectPartnerManager projectPartnerManager) {
+    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -146,6 +153,7 @@ public class DeliverableAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.deliverableValidator = deliverableValidator;
     this.projectPartnerManager = projectPartnerManager;
+    this.fundingSourceManager = fundingSourceManager;
   }
 
   @Override
@@ -192,37 +200,41 @@ public class DeliverableAction extends BaseAction {
     return deliverableSubTypes;
   }
 
-
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
+
+  public List<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
@@ -236,6 +248,7 @@ public class DeliverableAction extends BaseAction {
     return transaction;
   }
 
+  @Override
   public Boolean isDeliverableNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -525,6 +538,8 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      fundingSources = fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
+
 
     }
 
@@ -585,7 +600,6 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -616,6 +630,10 @@ public class DeliverableAction extends BaseAction {
         crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
 
       deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+
+      FundingSource fundingSource = fundingSourceManager.getFundingSourceById(deliverable.getFundingSource().getId());
+
+      deliverablePrew.setFundingSource(fundingSource);
 
       DeliverablePartnership partnershipResponsible = null;
       ProjectPartnerPerson partnerPerson = null;
@@ -719,6 +737,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -733,6 +752,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
+  }
+
+  public void setFundingSources(List<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
   }
 
 

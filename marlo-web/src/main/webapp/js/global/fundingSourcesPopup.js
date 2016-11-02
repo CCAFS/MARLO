@@ -103,6 +103,7 @@ $(document).ready(function() {
     project.institution = $dialogContent.find("#institution").val().trim();
     project.contactName = $dialogContent.find("#contactName").val().trim();
     project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+    project.selectedYear = selectedYear;
     project.budgets = [];
     $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
       project.budgets.push({
@@ -148,10 +149,9 @@ $(document).ready(function() {
             $dialogContent.find('.loading').show();
           },
           success: function(data) {
-            var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.amount, data.type, data.typeId);
+              addProject(data.title, data.id, data.ammount, data.type, data.typeID);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
@@ -298,7 +298,7 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
+          '<div id="fundingYear-' + startYear + '" class="tab-pane col-md-4 ' + state + '">'
               + '<label for="">Budget for ' + startYear
               + ':</label> <input type="text" class="currencyInput form-control input-sm col-md-4" />' + '</div>');
 
@@ -312,6 +312,10 @@ function date(start,end) {
 
     // Set currency format
     $dialogContent.find('.currencyInput').currencyInput();
+
+    $dialogContent.find('.currencyInput').on('keyup', function() {
+
+    });
 
   }
 

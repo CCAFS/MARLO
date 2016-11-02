@@ -683,6 +683,8 @@ public class ProjectPartnerAction extends BaseAction {
 
         for (ProjectPartner projectPartner : project.getPartners()) {
           if (projectPartner.getId() == null) {
+
+
             projectPartner.setActive(true);
 
             projectPartner.setCreatedBy(this.getCurrentUser());
@@ -722,7 +724,9 @@ public class ProjectPartnerAction extends BaseAction {
                 partnerPerson.setModifiedBy(this.getCurrentUser());
                 partnerPerson.setModificationJustification("");
                 partnerPerson.setActiveSince(dbPerson.getActiveSince());
-
+                if (!project.isProjectEditLeader()) {
+                  partnerPerson.setResponsibilities(dbPerson.getResponsibilities());
+                }
 
               }
               partnerPerson.setProjectPartner(projectPartner);

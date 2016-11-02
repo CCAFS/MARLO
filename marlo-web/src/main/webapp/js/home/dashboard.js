@@ -77,16 +77,6 @@ function initDatatable() {
       ],
       "iDisplayLength": 5
   });
-  $("#activities-table").dataTable({
-      "aLengthMenu": [
-          [
-              5, 10
-          ], [
-              5, 10
-          ]
-      ],
-      "iDisplayLength": 5
-  });
 
   $("#deadlineDates table").dataTable();
 }
@@ -208,7 +198,7 @@ $('table.projectsList').dataTable({
         {
             bSortable: false,
             aTargets: [
-                -1, -2, -3,
+
             ]
         }, {
             sType: "natural",

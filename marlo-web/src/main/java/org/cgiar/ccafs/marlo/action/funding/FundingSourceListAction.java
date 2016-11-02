@@ -20,9 +20,17 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -48,6 +56,10 @@ public class FundingSourceListAction extends BaseAction {
 
 
   private CrpManager crpManager;
+  private RoleManager roleManager;
+  private UserManager userManager;
+  private LiaisonUserManager liaisonUserManager;
+  private InstitutionManager institutionManager;
   private ProjectManager projectManager;
 
   private long fundingSourceID;
@@ -57,12 +69,16 @@ public class FundingSourceListAction extends BaseAction {
 
 
   @Inject
-  public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager, CrpManager crpManager,
-    ProjectManager projectManager) {
+  public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
+    CrpManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
+    InstitutionManager institutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
+    this.roleManager = roleManager;
+    this.liaisonUserManager = liaisonUserManager;
     this.projectManager = projectManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
@@ -73,6 +89,13 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setModificationJustification("New expected project bilateral cofunded created");
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
+    fundingSource.setCrp(loggedCrp);
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    if (user != null) {
+      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+      Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+      fundingSource.setLeader(institution);
+    }
     // project.setCrp(loggedCrp);
 
     fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
@@ -134,18 +157,23 @@ public class FundingSourceListAction extends BaseAction {
 
     if (fundingSourceManager.findAll() != null) {
 
-      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+      Role role = roleManager.getRoleById(Long.parseLong(this.getSession().get(APConstants.CRP_PMU_ROLE).toString()));
+      boolean isPMU = !role.getUserRoles().stream()
+        .filter(c -> c.getUser().getId().longValue() == this.getCurrentUser().getId().longValue())
+        .collect(Collectors.toList()).isEmpty();
+      if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin() || isPMU
+
+      ) {
         myProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
         myProjects
           .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
       } else {
         allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
-        allProjects
-          .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
-        // myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym());
-        // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-        myProjects = allProjects;
-        // allProjects.removeAll(myProjects);
+
+        myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+
+
+        allProjects.removeAll(myProjects);
       }
     }
 

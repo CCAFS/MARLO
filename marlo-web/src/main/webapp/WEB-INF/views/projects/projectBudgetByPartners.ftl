@@ -247,11 +247,16 @@
     [#-- Remove --]
     [#if (editable && isYearEditable(selectedYear)) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
-    <p class="checked"><small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
-
-    <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
+    
+    <p class="checked">
+      <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
+      <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
     </p> 
-    <span class="title">${(element.fundingSource.description)!}</span> </p>
+    
+    <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 
+       
+      <p> <span class="title">${(element.fundingSource.description)!}</span> </p>
+    </a>
 
     <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
@@ -261,7 +266,7 @@
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
       <div class="col-md-4">
-        <div class="row col-md-6"><strong>Type:</strong>  </div>
+        <div class="row col-md-6"> <strong>Type:</strong> </div>
         <div class="row col-md-8">
           <span class="budgetTypeName">${(element.fundingSource.budgetType.name)!}</span> 
           <input type="hidden" class="budgetTypeId" name="${customName}.budgetType.id" value="${(element.fundingSource.budgetType.id)!}" />
@@ -269,9 +274,9 @@
       </div>
       <div class="col-md-4">
         <div class="row col-md-5">
-          <strong>Amount:</strong>
+          <div class="row"><strong>Amount:</strong></div>
         </div>
-        <div class="row col-md-8">
+        <div class="row col-md-9">
         [#if (editable && isYearEditable(selectedYear)) || isTemplate]
           [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
@@ -282,7 +287,7 @@
       </div>
       <div class="col-md-4">
         [#if project.projectEditLeader]
-          <div class="row col-md-6"><strong>Gender %:</strong>  </div>
+          <div class="row col-md-6"> <div class="row"><strong>Gender %:</strong></div> </div>
           <div class="row col-md-7">
           [#if (editable && isYearEditable(selectedYear)) || isTemplate]
             [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true   /]

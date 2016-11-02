@@ -39,6 +39,10 @@ public class DoubleTypeAdapter extends TypeAdapter<Double> {
       if (value.contains("%")) {
         value = value.replace("%", "");
       }
+
+      if (value.contains(".00")) {
+        value = value.replace(".00", "").replace(",", "");
+      }
       if ("".equals(value)) {
         return new Double(0);
       }
