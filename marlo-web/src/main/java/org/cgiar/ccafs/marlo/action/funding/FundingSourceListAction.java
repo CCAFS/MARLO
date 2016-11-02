@@ -20,11 +20,16 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -53,7 +58,8 @@ public class FundingSourceListAction extends BaseAction {
   private CrpManager crpManager;
   private RoleManager roleManager;
   private UserManager userManager;
-
+  private LiaisonUserManager liaisonUserManager;
+  private InstitutionManager institutionManager;
   private ProjectManager projectManager;
 
   private long fundingSourceID;
@@ -64,12 +70,15 @@ public class FundingSourceListAction extends BaseAction {
 
   @Inject
   public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
-    CrpManager crpManager, ProjectManager projectManager) {
+    CrpManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
+    InstitutionManager institutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
     this.roleManager = roleManager;
+    this.liaisonUserManager = liaisonUserManager;
     this.projectManager = projectManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
@@ -80,6 +89,13 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setModificationJustification("New expected project bilateral cofunded created");
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
+    fundingSource.setCrp(loggedCrp);
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    if (user != null) {
+      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+      Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+      fundingSource.setLeader(institution);
+    }
     // project.setCrp(loggedCrp);
 
     fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);

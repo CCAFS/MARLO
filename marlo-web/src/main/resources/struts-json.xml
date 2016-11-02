@@ -91,12 +91,12 @@
 			</result>
 		</action>
 
-		<action name="fundingSourceAdd"
+		<action name="fundingSourceAdd" method="execute"
 			class="org.cgiar.ccafs.marlo.action.json.project.FundingSourceAddAction">
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
-				<param name="root">projectCreated</param>
+				<param name="root">fsProp</param>
 			</result>
 		</action>
 

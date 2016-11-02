@@ -22,11 +22,14 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
@@ -52,7 +55,7 @@ public class FundingSourceAddAction extends BaseAction {
 
   private static String START_DATE = "startDate";
 
-
+  private static String SELECTED_YEAR = "selectedYear";
   private static String END_DATE = "endDate";
 
   private static String FINANCE_CODE = "financeCode";
@@ -66,25 +69,29 @@ public class FundingSourceAddAction extends BaseAction {
   private static String STATUS = "status";
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
-
+  private LiaisonUserManager liaisonUserManager;
 
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
   private CrpManager crpManager;
   private List<Map<String, Object>> fsCreated;
+  private Map<String, Object> fsProp = new HashMap<>();
+
 
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
-    FundingSourceBudgetManager fundingSourceBudgetManager) {
+    FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
     this.budgetTypeManager = budgetTypeManager;
     this.crpManager = crpManager;
+    this.liaisonUserManager = liaisonUserManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -100,7 +107,7 @@ public class FundingSourceAddAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-
+    int selectedYear = Integer.parseInt(((String[]) parameters.get(SELECTED_YEAR))[0]);
     SimpleDateFormat dateFormat = new SimpleDateFormat(APConstants.DATE_FORMAT);
 
     FundingSource fundingSource = new FundingSource();
@@ -131,11 +138,17 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setCreatedBy(this.getCurrentUser());
     fundingSource.setModificationJustification("");
     fundingSource.setModifiedBy(this.getCurrentUser());
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    if (user != null) {
+      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+      Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+      fundingSource.setLeader(institution);
+    }
 
     long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
 
     fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
-
+    double remaining = 0;
     boolean hasYear = false;
     boolean hasAmount = false;
     FundingSourceBudget fundingSourceBudget = null;
@@ -151,12 +164,17 @@ public class FundingSourceAddAction extends BaseAction {
 
         if (value[i].equals("year") && !hasYear) {
           fundingSourceBudget.setYear(Integer.parseInt(value[i + 1]));
+
           hasYear = true;
         }
 
         if (value[i].equals("budget") && !hasAmount) {
           fundingSourceBudget.setBudget(Double.parseDouble(value[i + 1]));
+
           hasAmount = true;
+          if (hasYear && fundingSourceBudget.getYear().intValue() == selectedYear) {
+            remaining = fundingSourceBudget.getBudget().doubleValue();
+          }
         }
 
         if (hasYear && hasAmount) {
@@ -178,11 +196,13 @@ public class FundingSourceAddAction extends BaseAction {
 
     }
 
-    Map<String, Object> fsProp = new HashMap<>();
 
     if (fundingSourceID > 0) {
-      fsProp.put("id", fundingSource);
+      fsProp.put("id", fundingSourceID);
       fsProp.put("title", fundingSource.getDescription());
+      fsProp.put("ammount", remaining);
+      fsProp.put("type", budgetType.getName());
+      fsProp.put("typeID", budgetType.getId());
       fsProp.put("status", "OK");
     } else {
       fsProp.put("status", "FAIL");
@@ -192,12 +212,14 @@ public class FundingSourceAddAction extends BaseAction {
     return SUCCESS;
   }
 
-  public List<Map<String, Object>> getFsCreated() {
-    return fsCreated;
+
+  public Map<String, Object> getFsProp() {
+    return fsProp;
   }
 
-  public void setFsCreated(List<Map<String, Object>> fsCreated) {
-    this.fsCreated = fsCreated;
+
+  public void setFsProp(Map<String, Object> fsProp) {
+    this.fsProp = fsProp;
   }
 
 }
