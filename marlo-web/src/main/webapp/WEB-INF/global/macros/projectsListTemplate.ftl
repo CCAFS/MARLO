@@ -89,12 +89,12 @@
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = {} /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
+            [#assign submission = action.isProjectSubmitted(project.id) /] [#-- (project.isSubmitted(currentCycleYear, cycleName))! --]
             [#assign completed = (action.isCompleteProject(project.id))!false /]
             [#assign canSubmit = false /] [#-- action.hasProjectPermission("submitProject", project.id, "manage") --]
             
             [#-- Check button --] 
-            [#if !submission?has_content ]
+            [#if !submission ]
               [#if canEdit && canSubmit && !completed]
                 <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
                 <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
@@ -102,16 +102,20 @@
             [/#if]
             
             [#-- Submit button --]
-            [#if submission?has_content]
-              <p title="Submitted on ${(submission.dateTime?date)?string.full} ">Submitted</p>
+            [#if submission]
+              <p title="Submitted">Submitted</p>
             [#else]
               [#if canSubmit]
-                [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+                [#assign showSubmit=(canSubmit && !submission && completed)]
                 <a id="submitProject-${project.id}" class="submitButton" href="[@s.url namespace=namespace action='submit'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]" style="display:${showSubmit?string('block','none')}">[@s.text name="form.buttons.submit" /]</a>
               [/#if]
             [/#if]
             
-            [#if !submission?has_content && (!canEdit || !canSubmit) ]
+            [#if !project.projectEditLeader]
+              <p>Pre-setting</p>
+            [/#if]
+            
+            [#if !submission && (!canEdit || !canSubmit) && project.projectEditLeader ]
               <p title="The project can be submitted by Management liaisons and Contact points">Not Submitted</p>
             [/#if]
           </td>

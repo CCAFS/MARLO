@@ -12,9 +12,7 @@
         <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
-        
         <th id="projectStatus">CGIAR lead center</th>
-        
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
@@ -46,17 +44,16 @@
           <td>
             ${(project.statusName)!'none'}
           </td>
-          [#-- Project Donor --]
-          
+          [#-- Center Lead --]
           <td class=""> 
-            ${(project.leader.composedName)!'Not applicable'}
+            ${(project.leader.composedName)!'Not defined'}
           </td>
+           [#-- Donor --]
           <td class=""> 
-            ${(project.institution.composedName)!'Not applicable'}
+            ${(project.institution.composedName)!'Not defined'}
           </td>
           [#-- Delete Project--]
           <td class="text-center">
-            [#--if (action.hasProjectPermission("deleteProject", project.id, "manage") && project.isNew(currentPlanningStartDate)) --]
             [#if true]
               <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.removeDeliverable" /]" /> 

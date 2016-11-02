@@ -20,20 +20,20 @@
 [/#if]
 
 [#-- Submission Message --]
-[#if submission?has_content]
+[#if submission]
   <div class="submission-mode text-center animated flipInX">
-    <p>[@s.text name="project.message.submittedOn" ][@s.param]${submission.dateTime}[/@s.param][/@s.text]</p>
+    <p>[@s.text name="project.message.submittedOn" ][@s.param]${(submission.dateTime)!}[/@s.param][/@s.text]</p>
   </div>
 [/#if]
 
 [#-- Privileges Message --]
-[#if !canEdit && !(transaction??) && !(submission?has_content)]
+[#if !canEdit && !(transaction??) && !(submission)]
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if]
 
 
-[#-- Program completed Message--]
-[#if canSubmit && !submission?has_content && completed]
+[#-- Completed Message--]
+[#if canSubmit && !submission && completed]
   <div class="completed-mode text-center animated flipInX">
     <p>[@s.text name="project.message.completed" /]</p>
   </div>
