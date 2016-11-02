@@ -114,6 +114,9 @@ ul.nav.nav-tabs.budget-tabs>li>a:hover {
 .projectW3bilateralFund {
     border: 1px solid #f3f2f2;
 }
+.projectW3bilateralFund a {
+  color: #575757;
+}
 
 .expandableBlock .blockTitle.opened {
     opacity: 1 !important;

@@ -12,6 +12,7 @@
         <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
+        <th id="projectCenter" >[@s.text name="projectsList.projectCenter" /]</th>
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
@@ -42,6 +43,10 @@
           [#-- Project Status --]
           <td>
             ${(project.statusName)!'none'}
+          </td>
+          [#-- Project Center --]
+          <td class=""> 
+            ${(project.liaisonInstitution.composedName)!'Not applicable'}
           </td>
           [#-- Project Donor --]
           <td class=""> 

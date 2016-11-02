@@ -49,8 +49,8 @@
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true editable=editable /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true editable=editable/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true readOnly=true editable=false /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true readOnly=true editable=false/] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
@@ -122,7 +122,7 @@
               <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
               <div class="col-md-5 form-group">
                 <span class="col-md-2"><b>Type:</b></span>
-                <span class="col-md-3">${projectBudget.budgetType.name}</span>
+                <span class="col-md-5">${projectBudget.budgetType.name}</span>
               </div>
               <div class="col-md-7">
                 <span class="col-md-2"><b>Amount:</b></span>

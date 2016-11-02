@@ -38,12 +38,12 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String description;
+
   @Expose
   private LiaisonInstitution liaisonInstitution;
 
   @Expose
   private Date startDate;
-
 
   @Expose
   private Date endDate;
