@@ -49,7 +49,7 @@
 [/#if]
 
 
-[#assign submission = (action.submission)! /]
+[#assign submission = (action.isProjectSubmitted(projectID))! /]
 [#assign canSubmit = (action.hasPersmissionSubmit())!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
 [#assign sectionsForChecking = [] /]
