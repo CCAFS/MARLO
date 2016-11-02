@@ -54,7 +54,6 @@
 [#assign completed = (action.isCompleteProject(projectID))!false /]
 [#assign sectionsForChecking = [] /]
 
-${action.hasPersmissionSubmit(projectID)?string}
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
