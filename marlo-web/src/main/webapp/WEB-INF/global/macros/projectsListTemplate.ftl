@@ -93,13 +93,14 @@
             [#assign completed = (action.isCompleteProject(project.id))!false /]
             [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
             
-            [#-- Check button --] 
+            [#-- Check button 
             [#if !submission ]
               [#if canEdit && canSubmit && !completed]
                 <a id="validateProject-${project.id}" title="Check for missing fields" class="validateButton ${(project.type)!''}" href="#" >[@s.text name="form.buttons.check" /]</a>
                 <div id="progressbar-${project.id}" class="progressbar" style="display:none"></div>
               [/#if]
             [/#if]
+            --] 
             
             [#-- Submit button --]
             [#if submission]

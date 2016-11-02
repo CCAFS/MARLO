@@ -40,7 +40,6 @@ $(document)
                     addClass: 'btn btn-primary',
                     text: 'Yes',
                     onClick: function($noty) {
-                      location.reload();
                       $.ajax({
                           url: baseURL + "/projectLeaderEdit.do",
                           data: {
@@ -48,6 +47,7 @@ $(document)
                               projectStatus: value
                           },
                           success: function(data) {
+                            location.reload();
                             if(data.ok) {
                               $thisLabel.siblings().removeClass('radio-checked');
                               $thisLabel.addClass('radio-checked');
