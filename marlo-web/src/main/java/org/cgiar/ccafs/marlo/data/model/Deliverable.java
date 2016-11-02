@@ -76,6 +76,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private User createdBy;
 
+  @Expose
+  private FundingSource fundingSource;
+
 
   @Expose
   private User modifiedBy;
@@ -83,6 +86,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String modificationJustification;
+
 
   @Expose
   private CrpClusterKeyOutput crpClusterKeyOutput;
@@ -104,12 +108,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private DeliverablePartnership responsiblePartner;
 
-  private List<DeliverablePartnership> otherPartners;
 
+  private List<DeliverablePartnership> otherPartners;
 
   public Deliverable() {
   }
-
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -175,6 +178,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
   public Date getCreateDate() {
     return createDate;
   }
@@ -183,7 +187,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
@@ -194,9 +197,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crpProgramOutcome;
   }
 
+
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
   }
+
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -204,6 +209,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
+  }
+
+  public FundingSource getFundingSource() {
+    return fundingSource;
   }
 
   @Override
@@ -231,10 +240,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return otherPartners;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
@@ -269,10 +278,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.typeOther;
   }
 
-
   public int getYear() {
     return this.year;
   }
+
 
   @Override
   public int hashCode() {
@@ -315,13 +324,17 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableActivities = deliverableActivities;
   }
 
-
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
   }
 
+
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
+  }
+
+  public void setFundingSource(FundingSource fundingSource) {
+    this.fundingSource = fundingSource;
   }
 
   public void setId(Long id) {
