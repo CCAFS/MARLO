@@ -298,7 +298,7 @@ function date(start,end) {
           '<li class="' + state + '"><a href="#fundingYear-' + startYear + '" data-toggle="tab">' + startYear
               + '</a></li>');
       $('.budgetByYears .tab-content').append(
-          '<div class="tab-pane col-md-4 ' + state + '" id="fundingYear-' + startYear + '">'
+          '<div id="fundingYear-' + startYear + '" class="tab-pane col-md-4 ' + state + '">'
               + '<label for="">Budget for ' + startYear
               + ':</label> <input type="text" class="currencyInput form-control input-sm col-md-4" />' + '</div>');
 
@@ -312,6 +312,10 @@ function date(start,end) {
 
     // Set currency format
     $dialogContent.find('.currencyInput').currencyInput();
+
+    $dialogContent.find('.currencyInput').on('keyup', function() {
+
+    });
 
   }
 

@@ -54,7 +54,7 @@
           </td>
           [#-- Delete Project--]
           <td class="text-center">
-            [#if true]
+            [#if action.canBeDeleted(project.id, project.class.name)]
               <a id="removeDeliverable-${project.id}" class="removeProject" href="[@s.url namespace=namespace action="${(crpSession)!}/deleteFundingSources"][@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.removeDeliverable" /]" /> 
               </a>
