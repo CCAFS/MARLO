@@ -69,7 +69,11 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
 
     if (view != null) {
       for (Map<String, Object> map : view) {
-        projects.add(this.getFundingSourceById((Long.parseLong(map.get("project_id").toString()))));
+        FundingSource fs = this.getFundingSourceById((Long.parseLong(map.get("project_id").toString())));
+        if (fs != null) {
+          projects.add(fs);
+        }
+
       }
     }
     return projects;

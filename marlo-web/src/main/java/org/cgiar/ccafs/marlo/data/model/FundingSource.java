@@ -32,24 +32,25 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Institution institution;
+
+
   @Expose
   private Integer status;
-
 
   @Expose
   private String description;
   @Expose
   private Institution leader;
 
+
   @Expose
   private Date startDate;
-
-
   @Expose
   private Date endDate;
 
   @Expose
   private String financeCode;
+
 
   @Expose
   private String contactPersonName;
@@ -89,7 +90,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public FundingSource() {
   }
 
-
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
     this.active = active;
@@ -122,6 +122,28 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    FundingSource other = (FundingSource) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -144,6 +166,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
+
 
 
   public String getContactPersonName() {
@@ -242,6 +265,15 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     }
     return "";
 
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 
