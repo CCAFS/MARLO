@@ -863,9 +863,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasPersmissionSubmit(long projectId) {
-
-    boolean permissions = this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
-      this.getCurrentCrp().getAcronym(), String.valueOf(projectId)));
+    String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
+      this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
+    boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
 
