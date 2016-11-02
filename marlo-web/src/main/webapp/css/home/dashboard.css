@@ -25,11 +25,11 @@
 
 #timeline {
     width: 100%;
-    margin: 20px 0 0 0;
+    margin: 10px 0 0 0;
     overflow: hidden;
     background: url('./../../images/global/backgroundTimeline.png') left 45px repeat-x;
     background-size: 0.5% 0.5%;
-    height: 330px;
+    height: 360px;
 }
 
 #dates {
@@ -63,7 +63,7 @@
 
 #issues {
   width: 100%;
-  height: 200px;
+  height: 238px;
   overflow: hidden;
   padding: 0;
 }
@@ -77,7 +77,7 @@
 
 #issues li h1 {
   color:black;
-  font-size: 2em;
+  font-size: 1.5em;
   margin: 20px 0;
   text-align:center;
 }
@@ -88,7 +88,7 @@
   margin-right: 70px;
   font-weight: normal;
   line-height: 22px;
-  text-align: center;
+  /* text-align: center; */
 }
 
 #infoRelations {
@@ -197,4 +197,23 @@
 div#impactGraphic-fullscreen {
     width: 100%;
     height: 100%;
+}
+
+span.leftControl {
+    left: 5px;
+}
+
+span.rigthControl {
+    right: 5px;
+}
+
+span.timelineControl {
+    position: absolute;
+    cursor: pointer;
+    color: #0e697d;
+    top: 58px;
+}
+
+span.timelineControl:hover {
+    color: #117fa8;
 }

@@ -66,6 +66,17 @@ public interface ProjectBudgetManager {
   public List<ProjectBudget> findAll();
 
   /**
+   * gets a list of ProjectBudget of a specific parameters
+   * 
+   * @param institutionID
+   * @param year
+   * @param budgetTypeId
+   * @param projectId
+   * @return a list from ProjectBudget null if no exist records
+   */
+  public List<ProjectBudget> getByParameters(long institutionID, int year, long budgetTypeId, long projectId);
+
+  /**
    * This method gets a projectBudget object by a given projectBudget identifier.
    * 
    * @param projectBudgetID is the projectBudget identifier.
