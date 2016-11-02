@@ -29,9 +29,12 @@
       class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
       <column name="type" />
     </many-to-one>
-        <many-to-one name="liaisonInstitution"
-      class="org.cgiar.ccafs.marlo.data.model.LiaisonInstitution" fetch="select">
-      <column name="liasion_instiution_id" />
+   
+    
+        
+        <many-to-one name="leader"
+      class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
+      <column name="institution_id" />
     </many-to-one>
     
 		<property name="description" type="string">

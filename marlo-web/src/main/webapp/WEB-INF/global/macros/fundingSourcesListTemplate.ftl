@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="5">Funding Source information</th>
+        <th colspan="6">Funding Source information</th>
         <th colspan="1">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -12,6 +12,9 @@
         <th id="projectTitles" >[@s.text name="projectsList.fundingTitle" /]</th>
         <th id="projectBudgetType" >[@s.text name="projectsList.projectBudgetType" /]</th>
         <th id="projectStatus">[@s.text name="projectsList.projectStatus" /]</th>
+        
+        <th id="projectStatus">CGIAR lead center</th>
+        
         <th id="projectDonor" >[@s.text name="projectsList.projectDonor" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
       </tr>
@@ -44,6 +47,10 @@
             ${(project.statusName)!'none'}
           </td>
           [#-- Project Donor --]
+          
+          <td class=""> 
+            ${(project.leader.composedName)!'Not applicable'}
+          </td>
           <td class=""> 
             ${(project.institution.composedName)!'Not applicable'}
           </td>

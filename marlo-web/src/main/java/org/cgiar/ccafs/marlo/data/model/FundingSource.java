@@ -39,7 +39,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private String description;
   @Expose
-  private LiaisonInstitution liaisonInstitution;
+  private Institution leader;
 
   @Expose
   private Date startDate;
@@ -181,8 +181,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
-  public LiaisonInstitution getLiaisonInstitution() {
-    return liaisonInstitution;
+  public Institution getLeader() {
+    return leader;
   }
 
 
@@ -305,8 +305,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.institution = institution;
   }
 
-  public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
-    this.liaisonInstitution = liaisonInstitution;
+  public void setLeader(Institution leader) {
+    this.leader = leader;
   }
 
   public void setModificationJustification(String modificationJustification) {
