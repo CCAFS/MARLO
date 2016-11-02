@@ -83,6 +83,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private List<ProjectBudget> projectBudgetsList;
 
+  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
+
   public FundingSource() {
   }
 
@@ -93,6 +96,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
@@ -122,7 +126,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
   }
@@ -142,9 +145,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return contactPersonEmail;
   }
 
+
   public String getContactPersonName() {
     return contactPersonName;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
@@ -170,11 +175,14 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return fundingSourceBudgets;
   }
 
+  public Set<FundingSource> getFundingSources() {
+    return fundingSources;
+  }
+
   @Override
   public Long getId() {
     return id;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -257,6 +265,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.budgets = budgets;
   }
 
+
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
@@ -295,6 +304,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setFundingSourceBudgets(Set<FundingSourceBudget> fundingSourceBudgets) {
     this.fundingSourceBudgets = fundingSourceBudgets;
+  }
+
+  public void setFundingSources(Set<FundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
   }
 
   public void setId(Long id) {
