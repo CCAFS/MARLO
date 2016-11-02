@@ -631,6 +631,10 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setCrpClusterKeyOutput(keyOutput);
 
+      FundingSource fundingSource = fundingSourceManager.getFundingSourceById(deliverable.getFundingSource().getId());
+
+      deliverablePrew.setFundingSource(fundingSource);
+
       DeliverablePartnership partnershipResponsible = null;
       ProjectPartnerPerson partnerPerson = null;
 
