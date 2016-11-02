@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -86,9 +87,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
-
   public FundingSource() {
   }
+
 
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
@@ -96,7 +97,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public FundingSource(User modifiedBy, User createdBy, Institution institution, String description, Date startDate,
     Date endDate, String financeCode, String contactPersonName, String contactPersonEmail, Integer centerType,
@@ -144,6 +144,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -151,7 +152,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
   }
-
 
   public BudgetType getBudgetType() {
     return budgetType;
@@ -168,7 +168,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
-
   public String getContactPersonName() {
     return contactPersonName;
   }
@@ -177,6 +176,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Crp getCrp() {
     return crp;
@@ -211,7 +211,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
-
   public Institution getLeader() {
     return leader;
   }
@@ -243,6 +242,22 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
+  }
+
+
+  private double getRemaining(int year) {
+    double used = 0;
+    double total = 0;
+    for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList())) {
+      total = total + fundingSourceBudget.getBudget().doubleValue();
+    }
+    for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList())) {
+      used = used + projectBudget.getAmount().doubleValue();
+    }
+    return total - used;
+
   }
 
 
