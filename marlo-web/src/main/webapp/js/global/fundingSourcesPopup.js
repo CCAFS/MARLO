@@ -149,10 +149,9 @@ $(document).ready(function() {
             $dialogContent.find('.loading').show();
           },
           success: function(data) {
-            var data = data[0];
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.amount, data.type, data.typeId);
+              addProject(data.title, data.id, data.ammount, data.type, data.typeID);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
