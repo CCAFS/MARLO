@@ -1,5 +1,6 @@
 var timeoutAutoSave;
 var $draftTag, $editedBy, $cancelButton;
+var notification;
 
 $(document).ready(function() {
 
@@ -31,6 +32,7 @@ function autoSave() {
       },
       success: function(data) {
         if(data.status.status) {
+
           successNotification('Draft saved...');
           $draftTag.text('(Draft Version)').addClass('animated flipInX');
           $editedBy.find('.datetime').text(data.status.activeSince);
@@ -66,7 +68,7 @@ function successNotification(msj) {
       open: 'animated fadeInDown',
       close: 'animated fadeOutUp'
   };
-  noty(notyOptions);
+  notification = noty(notyOptions);
 }
 
 function errorNotification(msj) {
@@ -78,7 +80,7 @@ function errorNotification(msj) {
       open: 'animated fadeInDown',
       close: 'animated fadeOutUp'
   };
-  noty(notyOptions);
+  notification = noty(notyOptions);
 }
 
 function changeDetected(e) {

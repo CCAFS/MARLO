@@ -63,7 +63,7 @@
             [/#if]
           </div>
           
-          ${(action.getDeliverables(false)?has_content?string)}
+          
           [#if action.getDeliverables(false)?has_content]
             <h3 class="subTitle headTitle">Completed deliverables</h3>
             <hr />
@@ -71,7 +71,7 @@
           [/#if]
 
          
-          [/@s.form] 
+        [/@s.form] 
       </div>
     </div>  
 </section>
