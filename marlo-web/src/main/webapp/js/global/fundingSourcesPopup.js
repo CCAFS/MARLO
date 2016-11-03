@@ -234,6 +234,12 @@ $(document).ready(function() {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.sources, function(i,source) {
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
+
+              if(source.amount <= 0) {
+                $item.find('.noBudgetMessage').show();
+                // $item.find('.listButton.select').hide();
+              }
+
               $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
               $item.find('.contactId').html(source.id);
               $item.find('.budget').html(source.amount);

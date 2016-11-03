@@ -249,8 +249,8 @@
     [#-- Project Title --]
     
     <p class="checked">
-      <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> - 
-      <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.budget)!0)?number?string(",##0.00")}</span>) </small>
+      <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
+      <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.getRemaining(selectedYear))!0)?number?string(",##0.00")}</span>) </small>
     </p> 
     
     <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 

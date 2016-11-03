@@ -113,9 +113,16 @@
     <ul style="display:none"> 
       <li id="userTemplate">
         <div class="row">
-          <div class="col-md-1">F<span class="contactId">{userId}</span></div>
-          <div class="col-md-9"><span class="contact name">{composedName}</span></div>
-          <div class="col-md-2"><span class="listButton select">[@s.text name="form.buttons.select" /]</span></div>
+          <div class="col-md-1">
+            F<span class="contactId">{userId}</span>
+          </div>
+          <div class="col-md-9">
+            <small><span class="red noBudgetMessage pull-left glyphicon glyphicon-exclamation-sign" style="display:none" title="Insufficient budget for the selected year"></span></small>
+            <span class="contact name">{composedName}</span>  
+          </div>
+          <div class="col-md-2">
+            <span class="listButton select">[@s.text name="form.buttons.select" /]</span>
+          </div>
           [#-- Hidden parameters --]
           <span style="display:none" class="budget">{budget}</span>
           <span style="display:none" class="budgetTypeName">{budget}</span>

@@ -6,7 +6,7 @@
 
 
 [#assign submission = (action.submission)! /]
-[#assign canSubmit = (action.hasPersmissionSubmit())!false /]
+[#assign canSubmit = (action.hasPersmissionSubmitImpact())!false /]
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
 
 
