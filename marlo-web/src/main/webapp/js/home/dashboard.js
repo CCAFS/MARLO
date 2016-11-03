@@ -95,7 +95,7 @@ function initSlidr() {
 function timeline() {
   var today = new Date();
   var dd = today.getDate();
-  var mm = today.getMonth(); // January is 0!
+  var mm = today.getMonth(); 
   var yyyy = today.getFullYear();
 
   if(dd < 10) {

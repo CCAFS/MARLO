@@ -141,8 +141,8 @@ function attachEvents() {
     }
   });
 
-  $("#view1").on("click", changeLayout);
-  $("#view2").on("click", changeLayout2);
+  $("#view1").on("click", changeLayout2);
+  $("#view2").on("click", changeLayout);
 
   $('.projectLocationsWrapper .button-label').on('click', function() {
     var $t = $(this).parent().find('input.onoffswitch-radio');
@@ -190,7 +190,7 @@ function changeLayout2() {
 
 // Change width of selectWrapper
 function calculateWidthSelect() {
-  var widthSelect = ($("form .locationLevel").length) * 440;
+  var widthSelect = ($("form .locationLevel").length) * 395;
   $(".select-horizontal").css("width", widthSelect + "px");
 }
 

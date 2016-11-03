@@ -59,7 +59,12 @@
               [#if editable]
               <div class="text-center col-md-12  alert alert-info"><span> [@s.text name="projectLocations.selectLocations" /] </span></div>
               [/#if]
-              <div id="selectsContent" class="col-md-6 simpleBox" listname="project.locationsData">
+              
+              <div  class="col-md-12 map">
+                <div id="map" class="col-md-12"></div>
+              </div>
+              
+              <div id="selectsContent" class="col-md-12 selectWrapper-horizontal simpleBox " listname="project.locationsData">
                 [#-- Content collapsible--]
                 <div class="selectWrapper row">
                 [#if project.locationsData?has_content]
@@ -71,10 +76,6 @@
                 </div>
               </div>
               
-              <div  class="col-md-6 map">
-                <div id="map" class="col-md-12"></div>
-              </div>
-                
             [#if editable]
             [#-- locations level Select --]
             <select name="" id="" class="selectLocationLevel select " >
@@ -111,7 +112,7 @@
 [#macro locationLevel element  name index template=false list=false]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
-  <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
+  <div id="locationLevel-${template?string('template',index)}" class="locationLevel locationLevel-horizontal" style="display:${template?string('none','block')}">
     [#-- header element --]
     <div class="col-md-12 locationName-content borderBox closed">
       <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
