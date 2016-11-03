@@ -2,114 +2,145 @@ var tasksLength;
 var sections;
 var currentCycle;
 
-$(document)
-    .ready(
-        function() {
+$(document).ready(function() {
 
-          sections = $('#sectionsForChecking').text().split(',');
+  sections = $('#sectionsForChecking').text().split(',');
 
-          // Progress bar
-          tasksLength = sections.length;
-          $(".progressbar").progressbar({
-            max: tasksLength
-          });
+  // Progress bar
+  tasksLength = sections.length;
+  $(".progressbar").progressbar({
+    max: tasksLength
+  });
 
-          // Event for validate button inside each project
-          $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+  // Event for validate button inside each project
+  $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
 
-          // Refresh event when table is reloaded in project list section
-          $('table.projectsList').on('draw.dt', function() {
-            $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
-            $(".progressbar").progressbar({
-              max: tasksLength
-            });
-          });
+  // Refresh event when table is reloaded in project list section
+  $('table.projectsList').on('draw.dt', function() {
+    $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+    $(".progressbar").progressbar({
+      max: tasksLength
+    });
+  });
 
-          $('.projectEditLeader .button-label').on('click', function() {
-            var $t = $(this).parent().find('input.onoffswitch-radio');
-            var value = ($(this).hasClass('yes-button-label'));
-            var $thisLabel = $(this);
-
-            var notyOptions = jQuery.extend({}, notyDefaultOptions);
-            notyOptions.text = "Are you sure ?";
-            notyOptions.type = 'confirm';
-            notyOptions.layout = 'center';
-            notyOptions.modal = true;
-            notyOptions.buttons = [
-                {
-                    addClass: 'btn btn-primary',
-                    text: 'Yes',
-                    onClick: function($noty) {
-                      $.ajax({
-                          url: baseURL + "/projectLeaderEdit.do",
-                          data: {
-                              projectID: $('input[name="projectID"]').val(),
-                              projectStatus: value
-                          },
-                          success: function(data) {
-                            location.reload();
-                            if(data.ok) {
-                              $thisLabel.siblings().removeClass('radio-checked');
-                              $thisLabel.addClass('radio-checked');
-                              $t.val(value);
-                            }
-                          }
-                      });
+  /* Change Pre-setting state */
+  $('.projectEditLeader .button-label').on('click', function() {
+    var $t = $(this).parent().find('input.onoffswitch-radio');
+    var value = ($(this).hasClass('yes-button-label'));
+    var $thisLabel = $(this);
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = "Are you sure ?";
+    notyOptions.type = 'confirm';
+    notyOptions.layout = 'center';
+    notyOptions.modal = true;
+    notyOptions.buttons = [
+        {
+            addClass: 'btn btn-primary',
+            text: 'Yes',
+            onClick: function($noty) {
+              $.ajax({
+                  url: baseURL + "/projectLeaderEdit.do",
+                  data: {
+                      projectID: $('input[name="projectID"]').val(),
+                      projectStatus: value
+                  },
+                  success: function(data) {
+                    location.reload();
+                    if(data.ok) {
+                      $thisLabel.siblings().removeClass('radio-checked');
+                      $thisLabel.addClass('radio-checked');
+                      $t.val(value);
                     }
-                }, {
-                    addClass: 'btn btn-primary',
-                    text: 'No',
-                    onClick: function($noty) {
-                      $noty.close();
-                    }
-                }
-            ];
-            noty(notyOptions);
-
-          });
-
-          // Click on submit button
-          $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
-
-          var saveMessage =
-              "Please be aware that this section has information saved in a draft version, we suggest you to click on the Save button";
-
-          $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
-            var url = $.trim($(this).attr("href"));
-            if((isChanged() || forceChange) && editable && draft && url) {
-              e.preventDefault();
-              var notyOptions = jQuery.extend({}, notyDefaultOptions);
-              notyOptions.text = saveMessage;
-              notyOptions.type = 'confirm';
-              notyOptions.layout = 'center';
-              notyOptions.modal = true;
-              notyOptions.buttons = [
-                  {
-                      addClass: 'btn btn-primary',
-                      text: 'Continue without saving',
-                      onClick: function($noty) {
-                        window.location.replace(url);
-                        window.location.href = url;
-                        $noty.close();
-                      }
-                  }, {
-                      addClass: 'btn btn-success',
-                      text: 'Save',
-                      onClick: function($noty) {
-                        $('button[name="save"]').trigger('click');
-                        $noty.close();
-                      }
                   }
-              ];
-              noty(notyOptions);
+              });
             }
-          });
-        });
+        }, {
+            addClass: 'btn btn-primary',
+            text: 'No',
+            onClick: function($noty) {
+              $noty.close();
+            }
+        }
+    ];
+    noty(notyOptions);
+
+  });
+
+  // Click on submit button
+  $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
+
+  // Pop up when exists a draft version
+  var saveMessage = "Please be aware that this section has information saved in a draft version,";
+  saveMessage += ' we suggest you to click on the Save button';
+  $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
+    var url = $.trim($(this).attr("href"));
+    if((isChanged() || forceChange) && editable && draft && url) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = saveMessage;
+      notyOptions.type = 'confirm';
+      notyOptions.layout = 'center';
+      notyOptions.modal = true;
+      notyOptions.buttons = [
+          {
+              addClass: 'btn btn-primary',
+              text: 'Continue without saving',
+              onClick: function($noty) {
+                window.location.replace(url);
+                window.location.href = url;
+                $noty.close();
+              }
+          }, {
+              addClass: 'btn btn-success',
+              text: 'Save',
+              onClick: function($noty) {
+                $('button[name="save"]').trigger('click');
+                $noty.close();
+              }
+          }
+      ];
+      noty(notyOptions);
+    }
+  });
+
+  /* Validate justification for old projects */
+  var $justification = $('#justification');
+  var $parent = $justification.parent().parent();
+  var errorClass = 'fieldError';
+  $parent.prepend('<div class="loading" style="display:none"></div>');
+  $('[name=save]').on('click', function(e) {
+
+    $justification.removeClass(errorClass);
+
+    if(!validateField($('#justification'))) {
+      // If field is not valid
+      e.preventDefault();
+      $justification.addClass(errorClass);
+      // Go to justification field
+      if($justification.exists) {
+        $('html, body').animate({
+          scrollTop: $justification.offset().top - 110
+        }, 1500);
+      }
+      // Notify justification needs to be filled
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'The justification field needs to be filled';
+      noty(notyOptions);
+
+    }
+
+    // }
+
+  });
+
+});
 
 function submitButtonEvent(e) {
   e.preventDefault();
+  var message = 'Are you sure you want to submit the project now?';
+  message += 'Once submitted, you will no longer have editing rights.';
   noty({
-      text: 'Are you sure you want to submit the project now?  Once submitted, you will no longer have editing rights.',
+      text: message,
       type: 'confirm',
       dismissQueue: true,
       layout: 'center',

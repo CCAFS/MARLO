@@ -62,7 +62,7 @@
             
             [#-- Other fields --]
             [#if project.projectEditLeader]
-            <div class="simpleBox">
+            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')}">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <br />
@@ -90,14 +90,10 @@
                   </div>
                 </div>
               [/#if]
+            </div>
             [/#if]
               
-              
-            </div>
-             
           </div>
-          
-          
            
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]

@@ -236,8 +236,9 @@
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
-
     </div>
+    
+    <div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>
   </div>
 [/#macro]
 

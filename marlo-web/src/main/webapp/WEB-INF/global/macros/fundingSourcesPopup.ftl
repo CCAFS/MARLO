@@ -117,7 +117,7 @@
             F<span class="contactId">{userId}</span>
           </div>
           <div class="col-md-9">
-            <small><span class="red noBudgetMessage pull-left glyphicon glyphicon-exclamation-sign" style="display:none" title="Insufficient budget for the selected year"></span></small>
+            <small><span class="red noBudgetMessage pull-left glyphicon glyphicon-exclamation-sign" style="display:none" title="Insufficient funds for {year}"></span></small>
             <span class="contact name">{composedName}</span>  
           </div>
           <div class="col-md-2">

@@ -237,6 +237,7 @@ $(document).ready(function() {
 
               if(source.amount <= 0) {
                 $item.find('.noBudgetMessage').show();
+                $item.find('.noBudgetMessage').attr('title', 'Insufficient funds for ' + selectedYear);
                 // $item.find('.listButton.select').hide();
               }
 

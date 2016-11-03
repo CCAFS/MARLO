@@ -8,6 +8,14 @@
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 
 <div class="buttons">
+  [#if !action.isProjectNew(projectID)]
+    [#if editable]
+    <div class="form-group">
+      [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+    </div>
+    [/#if]
+  [/#if]
+
   <div class="buttons-content">
     [#-- History Log --]
     [#if action.getListLog(project)?has_content]
