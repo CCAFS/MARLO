@@ -420,7 +420,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     budgetTypes = new HashMap<>();
 
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
-      budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      if (budgetType.getId().intValue() == 1) {
+        if (this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))) {
+          budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+        }
+      } else {
+        budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      }
+
     }
     w3bilateralBudgetTypes.put("2", "W3");
     w3bilateralBudgetTypes.put("3", "Bilateral");

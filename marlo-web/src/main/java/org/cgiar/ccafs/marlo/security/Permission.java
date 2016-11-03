@@ -59,6 +59,8 @@ public class Permission {
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
 
+  public static final String PROJECT_FUNDING_W1_BASE_PERMISSION = "crp:{0}:fundingSource:w1";
+
   // Create Projects Permissions
   public static final String PROJECT_CORE_ADD = "crp:{0}:project:projectsList:addCoreProject";
   public static final String PROJECT_BILATERAL_ADD = "crp:{0}:project:projectsList:addBilateralProject";
