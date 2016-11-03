@@ -144,13 +144,16 @@ public class ProjectDescriptionValidator extends BaseValidator
     }
 
 
-    if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
-      && (project.getNoRegional() == null || project.getNoRegional().booleanValue() == false)) {
-      this.addMessage(action.getText("projectDescription.regions"));
-      action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+    if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)) {
+      if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
+        && (project.getNoRegional() == null || project.getNoRegional().booleanValue() == false)) {
+        this.addMessage(action.getText("projectDescription.regions"));
+        action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
 
 
+      }
     }
+
 
     /*
      * if (project.getRegions() != null) {
