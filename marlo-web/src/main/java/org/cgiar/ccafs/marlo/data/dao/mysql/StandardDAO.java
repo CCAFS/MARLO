@@ -315,8 +315,9 @@ public class StandardDAO {
       detail = "Action: " + actionName + " " + entity.getLogDeatil();
     }
 
-    Auditlog auditRecord = new Auditlog(action, detail, new Date(), entity.getId().toString(),
-      entity.getClass().toString(), json, userId, transactionId, principal, relationName);
+    Auditlog auditRecord =
+      new Auditlog(action, detail, new Date(), entity.getId().toString(), entity.getClass().toString(), json, userId,
+        transactionId, principal, relationName, entity.getModificationJustification());
 
     Session session = null;
     Transaction tx = null;

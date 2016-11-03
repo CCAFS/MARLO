@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,12 +33,15 @@ public interface IAuditLog {
    */
   public Object getId();
 
+
   /**
    * This method get a entity information detail to identify in the audit.
    * 
    * @return a Model class log Detail
    */
   public String getLogDeatil();
+
+  public String getModificationJustification();
 
   /**
    * This method gets the user that insert or update the information to the database.
