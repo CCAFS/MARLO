@@ -184,7 +184,6 @@ $(document).ready(function() {
 
     // Verify if has permission to create
     canAddFunding = $elementSelected.hasClass('canAddFunding');
-    console.log($elementSelected.attr('class'));
 
     if(canAddFunding) {
       $('#create-user').show();
@@ -245,6 +244,9 @@ $(document).ready(function() {
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.sources, function(i,source) {
+
+              console.log(source);
+
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
 
               if(source.amount <= 0) {
@@ -261,7 +263,9 @@ $(document).ready(function() {
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
-              $dialogContent.find(".panel-body ul").append($item);
+              if(source.canSelect) {
+                $dialogContent.find(".panel-body ul").append($item);
+              }
             });
           } else {
             $dialogContent.find(".panel-body .userMessage").show();
