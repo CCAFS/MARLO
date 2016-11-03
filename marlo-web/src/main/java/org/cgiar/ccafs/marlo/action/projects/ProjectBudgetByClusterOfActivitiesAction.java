@@ -402,6 +402,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
       project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
+      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

@@ -847,6 +847,7 @@ public class ProjectPartnerAction extends BaseAction {
       this.updateRoles(previousCoordinator, coordinator, pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
+      project.setModificationJustification(this.getJustification());
       project.setModifiedBy(this.getCurrentUser());
 
       List<String> relationsName = new ArrayList<>();
