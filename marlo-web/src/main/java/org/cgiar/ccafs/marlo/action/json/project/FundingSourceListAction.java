@@ -96,10 +96,10 @@ public class FundingSourceListAction extends BaseAction {
       source.put("type", fundingSource.getBudgetType().getName());
       source.put("typeId", fundingSource.getBudgetType().getId());
       if (fundingSource.getCenterType().intValue() == 1) {
-        source.put("canRemove", this.hasPermissionNoBase(
+        source.put("canSelect", this.hasPermissionNoBase(
           this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
       } else {
-        source.put("canRemove", true);
+        source.put("canSelect", true);
       }
 
       FundingSourceBudget fundingSourceBudget =
