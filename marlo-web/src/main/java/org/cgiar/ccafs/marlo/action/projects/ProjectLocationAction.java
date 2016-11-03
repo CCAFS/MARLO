@@ -630,6 +630,7 @@ public class ProjectLocationAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LOCATIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
+      project.setModificationJustification(this.getJustification());
       project.setModifiedBy(this.getCurrentUser());
       project.setLocationGlobal(isProjectGlobal);
       projectManager.saveProject(project, this.getActionName(), relationsName);
