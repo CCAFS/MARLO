@@ -98,46 +98,34 @@ function removeactivity() {
 
 }
 
-// check items
-function checkItems(block) {
-  console.log(block);
-  var items = $(block).find('.projectActivity').length;
-  if(items == 0) {
-    $(block).parent().find('p.emptyText').fadeIn();
-  } else {
-    $(block).parent().find('p.emptyText').fadeOut();
-  }
-}
-
 // Add a new deliverable element
 function addDeliverable() {
   var option = $(this).find("option:selected");
   var canAdd = true;
-  if(option.val() == "-1"){
+  if(option.val() == "-1") {
     canAdd = false;
   }
-  
+
   var $list = $(this).parents(".select").parent().parent().find(".deliverableWrapper");
   var $item = $("#deliverableActivity-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
-  
-  
+
   // Check if is already selected
-  $list.find('.deliverableActivity').each(function(i,e){
-    if ($(e).find('input.id').val() == option.val()){
+  $list.find('.deliverableActivity').each(function(i,e) {
+    if($(e).find('input.id').val() == option.val()) {
       canAdd = false;
-      return
+      return;
     }
   });
-  
+
   // Reset select
   $(this).val("-1");
   $(this).trigger('change.select2');
-  
-  if(!canAdd){
-    return
+
+  if(!canAdd) {
+    return;
   }
-  
+
   // Set deliverable parameters
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
@@ -147,8 +135,8 @@ function addDeliverable() {
   var $activity = $list.parents(".projectActivity");
   var activityIndex = $activity.find(".index").html();
   updateDeliverable($activity, activityIndex);
-  
-  
+  checkItems($list);
+
 }
 
 // Remove a new deliverable element
@@ -205,5 +193,15 @@ function date(start,end) {
     }
 
     return date;
+  }
+}
+
+function checkItems(block) {
+  console.log(block);
+  var items = $(block).find('.deliverableActivity').length;
+  if(items == 0) {
+    $(block).parent().find('p.inf').fadeIn();
+  } else {
+    $(block).parent().find('p.inf').fadeOut();
   }
 }

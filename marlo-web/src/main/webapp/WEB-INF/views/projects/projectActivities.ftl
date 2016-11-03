@@ -145,6 +145,7 @@
               [@deliverablesMacro element=deliverable name="${customName}.deliverables"  index=deliverable_index /]
           [/#list]
         [/#if]
+        <p class="text-center inf" style="display:${(element.deliverables?has_content)?string('none','block')}">[@s.text name="project.activities.notDeliverables" /]</p>
       </div>
       [#if editable]
       <div class="form-group">
