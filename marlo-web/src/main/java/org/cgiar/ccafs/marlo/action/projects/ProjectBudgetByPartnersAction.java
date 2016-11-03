@@ -142,6 +142,20 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return SUCCESS;
   }
 
+  public boolean canSearchFunding(long institutionID) {
+
+    return this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this
+        .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+          loggedCrp.getAcronym(), projectID + "", institutionID + ""));
+
+  }
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -186,6 +200,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public int getBudgetIndex() {
     return budgetIndex;
   }
+
 
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
     List<ProjectBudget> budgets = project.getBudgets().stream()
@@ -274,10 +289,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -288,7 +303,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
@@ -297,10 +311,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return status;
   }
 
+
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
   }
-
 
   public double getTotalGender(long institutionId, int year, long budgetType) {
 
@@ -333,6 +347,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       return 0.0;
     }
   }
+
 
   public long getTotalYear(int year, long type) {
     long total = 0;
