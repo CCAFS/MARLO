@@ -3,6 +3,7 @@ var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
 var openSearchDialog, addProject, addUserMessage;
 var institutionSelected, selectedPartnerTitle, selectedYear;
+var canAddFunding;
 
 $(document).ready(function() {
 
@@ -58,7 +59,8 @@ $(document).ready(function() {
 
   // Event to open dialog box and search an contact person
   $(".searchProject").on("click", function(e) {
-    openSearchDialog(e);
+    e.preventDefault();
+    openSearchDialog($(this));
   });
 
   // Event when the user select the contact person
@@ -170,15 +172,25 @@ $(document).ready(function() {
 
   /** Functions * */
 
-  openSearchDialog = function(e) {
-    e.preventDefault();
-    $elementSelected = $(e.target);
+  openSearchDialog = function(selected) {
+
+    $elementSelected = $(selected);
     selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
     $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
     institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
     selectedYear = $elementSelected.parents('.tab-pane').attr('id').split('-')[1];
 
     dialog.dialog("open");
+
+    // Verify if has permission to create
+    canAddFunding = $elementSelected.hasClass('canAddFunding');
+    console.log($elementSelected.attr('class'));
+
+    if(canAddFunding) {
+      $('#create-user').show();
+    } else {
+      $('#create-user').hide();
+    }
 
     // Hide search loader
     $dialogContent.find(".search-loader").fadeOut("slow");
