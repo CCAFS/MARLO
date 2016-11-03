@@ -144,15 +144,20 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public boolean canSearchFunding(long institutionID) {
 
-    return this.hasPermissionNoBase(
+    boolean permission = this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
 
       || this.hasPermissionNoBase(
         this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
 
+      || this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
+        loggedCrp.getAcronym(), projectID + ""))
+
+
       || this
         .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
           loggedCrp.getAcronym(), projectID + "", institutionID + ""));
+    return permission;
 
   }
 
