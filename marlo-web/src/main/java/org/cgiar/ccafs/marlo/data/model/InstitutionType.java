@@ -95,6 +95,12 @@ public class InstitutionType implements java.io.Serializable, IAuditLog {
   }
 
   @Override
+  public String getModificationJustification() {
+
+    return "";
+  }
+
+  @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
