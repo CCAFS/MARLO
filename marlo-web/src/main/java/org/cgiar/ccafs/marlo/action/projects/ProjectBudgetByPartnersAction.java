@@ -119,6 +119,21 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetsValidator = projectBudgetsValidator;
   }
 
+  public boolean canAddFunding(long institutionID) {
+    boolean permission = this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+
+      || this
+        .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+          loggedCrp.getAcronym(), projectID + "", institutionID + ""));
+    return permission;
+  }
+
+
   @Override
   public String cancel() {
     Path path = this.getAutoSaveFilePath();
