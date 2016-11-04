@@ -87,7 +87,7 @@
           [#-- Budget --]
           <div class="form-group">
             <div class="budgetByYears">
-                <span>Total $US 0.00</span>
+                <strong class="pull-right">Entire funding budget $US <span class="fundingTotalAmount">0.00</span></strong>
                 <ul class="nav nav-tabs" role="tablist">
                 </ul>
                 <div class="tab-content">

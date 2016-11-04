@@ -110,6 +110,8 @@ $(document).ready(function() {
   $parent.prepend('<div class="loading" style="display:none"></div>');
   $('[name=save]').on('click', function(e) {
 
+    autoSaveActive = false;
+
     $justification.removeClass(errorClass);
 
     if(!validateField($('#justification'))) {
