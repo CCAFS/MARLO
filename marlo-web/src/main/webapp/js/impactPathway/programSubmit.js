@@ -2,67 +2,96 @@ var tasksLength;
 var sections;
 var currentCycle;
 
-$(document)
-    .ready(
-        function() {
-          sections = [
-              "outcomes", "clusterActivities"
-          ];
+$(document).ready(function() {
+  sections = [
+      "outcomes", "clusterActivities"
+  ];
 
-          // Progress bar
-          tasksLength = sections.length;
-          $(".progressbar").progressbar({
-            max: tasksLength
-          });
-          // Event for validate button inside each project
-          $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+  // Progress bar
+  tasksLength = sections.length;
+  $(".progressbar").progressbar({
+    max: tasksLength
+  });
+  // Event for validate button inside each project
+  $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
 
-          // Refresh event when table is reloaded in project list section
-          $('table.projectsList').on('draw.dt', function() {
-            $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
-            $(".progressbar").progressbar({
-              max: tasksLength
-            });
-          });
+  // Refresh event when table is reloaded in project list section
+  $('table.projectsList').on('draw.dt', function() {
+    $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+    $(".progressbar").progressbar({
+      max: tasksLength
+    });
+  });
 
-          // Click on submit button
-          $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
+  // Click on submit button
+  $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
-          var saveMessage =
-              "Please be aware that this section has information saved in a draft version, we suggest you to click on the Save button";
+  var saveMessage = "Please be aware that this section has information saved ";
+  saveMessage += "in a draft version, we suggest you to click on the Save button";
 
-          $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
-            var url = $.trim($(this).attr("href"));
-            if((isChanged() || forceChange) && editable && draft && url) {
-              e.preventDefault();
-              var notyOptions = jQuery.extend({}, notyDefaultOptions);
-              notyOptions.text = saveMessage;
-              notyOptions.type = 'confirm';
-              notyOptions.layout = 'center';
-              notyOptions.modal = true;
-              notyOptions.buttons = [
-                  {
-                      addClass: 'btn btn-primary',
-                      text: 'Continue without saving',
-                      onClick: function($noty) {
-                        window.location.replace(url);
-                        window.location.href = url;
-                        $noty.close();
-                      }
-                  }, {
-                      addClass: 'btn btn-success',
-                      text: 'Save',
-                      onClick: function($noty) {
-                        $('button[name="save"]').trigger('click');
-                        $noty.close();
-                      }
-                  }
-              ];
-              noty(notyOptions);
-            }
-          });
+  $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
+    var url = $.trim($(this).attr("href"));
+    if((isChanged() || forceChange) && editable && draft && url) {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = saveMessage;
+      notyOptions.type = 'confirm';
+      notyOptions.layout = 'center';
+      notyOptions.modal = true;
+      notyOptions.buttons = [
+          {
+              addClass: 'btn btn-primary',
+              text: 'Continue without saving',
+              onClick: function($noty) {
+                window.location.replace(url);
+                window.location.href = url;
+                $noty.close();
+              }
+          }, {
+              addClass: 'btn btn-success',
+              text: 'Save',
+              onClick: function($noty) {
+                $('button[name="save"]').trigger('click');
+                $noty.close();
+              }
+          }
+      ];
+      noty(notyOptions);
+    }
+  });
 
-        });
+  /* Validate justification for old projects */
+  var $justification = $('#justification');
+  var $parent = $justification.parent().parent();
+  var errorClass = 'fieldError';
+  $parent.prepend('<div class="loading" style="display:none"></div>');
+  $('[name=save]').on('click', function(e) {
+
+    // Cancel Auto Save
+    autoSaveActive = false;
+
+    $justification.removeClass(errorClass);
+
+    if(!validateField($('#justification'))) {
+      // If field is not valid
+      e.preventDefault();
+      $justification.addClass(errorClass);
+      // Go to justification field
+      if($justification.exists) {
+        $('html, body').animate({
+          scrollTop: $justification.offset().top - 110
+        }, 1500);
+      }
+      // Notify justification needs to be filled
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'The justification field needs to be filled';
+      noty(notyOptions);
+
+    }
+
+  });
+
+});
 
 function submitButtonEvent(e) {
   e.preventDefault();

@@ -110,6 +110,7 @@ $(document).ready(function() {
   $parent.prepend('<div class="loading" style="display:none"></div>');
   $('[name=save]').on('click', function(e) {
 
+    // Cancel Auto Save
     autoSaveActive = false;
 
     $justification.removeClass(errorClass);
@@ -130,8 +131,6 @@ $(document).ready(function() {
       noty(notyOptions);
 
     }
-
-    // }
 
   });
 
