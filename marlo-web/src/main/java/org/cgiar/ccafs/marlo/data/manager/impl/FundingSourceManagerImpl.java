@@ -103,8 +103,8 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year) {
-    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year);
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID) {
+    return fundingSourceDAO.searchFundingSourcesByInstitution(query, institutionID, year, crpID);
   }
 
 

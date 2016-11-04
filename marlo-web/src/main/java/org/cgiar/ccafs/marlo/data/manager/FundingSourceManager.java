@@ -93,7 +93,7 @@ public interface FundingSourceManager {
    * @param year - the year
    * @return the list of FundingSource
    */
-  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year);
+  public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year, long crpID);
 
 
 }

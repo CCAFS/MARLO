@@ -81,8 +81,8 @@ public class FundingSourceListAction extends BaseAction {
     if (institution == null) {
       fundingSources = fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue());
     } else {
-      fundingSources =
-        fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year);
+      fundingSources = fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year,
+        this.getCrpID());
 
 
       fundingSources
