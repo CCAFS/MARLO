@@ -73,7 +73,7 @@ $(document).ready(function() {
     var typeId = $parent.find(".budgetTypeId").text();
 
     // Add user
-    addProject(composedName, projectId, budget, type, typeId);
+    addProject(composedName, projectId, budget, type, typeId, institutionSelected, selectedYear);
   });
 
   // Event to find an user according to search field
@@ -240,6 +240,11 @@ $(document).ready(function() {
           $dialogContent.find(".panel-body ul").empty();
         },
         success: function(data) {
+          var idsArray = [];
+          $(".institution-" + institutionSelected + ".year-" + selectedYear + "").each(function(i,e) {
+            idsArray.push(parseInt($(e).val()));
+          });
+          console.log(idsArray);
           var usersFound = (data.sources).length;
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
@@ -248,13 +253,11 @@ $(document).ready(function() {
               console.log(source);
 
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
-
               if(source.amount <= 0) {
                 $item.find('.noBudgetMessage').show();
                 $item.find('.noBudgetMessage').attr('title', 'Insufficient funds for ' + selectedYear);
                 // $item.find('.listButton.select').hide();
               }
-
               $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
               $item.find('.contactId').html(source.id);
               $item.find('.budget').html(source.amount);
@@ -263,7 +266,7 @@ $(document).ready(function() {
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
-              if(source.canSelect) {
+              if(source.canSelect && idsArray.indexOf(source.id) == -1) {
                 $dialogContent.find(".panel-body ul").append($item);
               }
             });
@@ -278,7 +281,6 @@ $(document).ready(function() {
     });
 
   }
-
 });
 
 function date(start,end) {
