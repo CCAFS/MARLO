@@ -121,7 +121,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where is_active=1 and description like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' and crp_id" + crpID);
+    q.append("OR id like '%" + query + "%' and crp_id=" + crpID);
 
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
