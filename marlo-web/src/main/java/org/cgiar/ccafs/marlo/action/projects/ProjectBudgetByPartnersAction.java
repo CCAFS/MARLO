@@ -119,6 +119,21 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     this.projectBudgetsValidator = projectBudgetsValidator;
   }
 
+  public boolean canAddFunding(long institutionID) {
+    boolean permission = this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+
+      || this
+        .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+          loggedCrp.getAcronym(), projectID + "", institutionID + ""));
+    return permission;
+  }
+
+
   @Override
   public String cancel() {
     Path path = this.getAutoSaveFilePath();
@@ -140,6 +155,25 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     messages = this.getActionMessages();
 
     return SUCCESS;
+  }
+
+  public boolean canSearchFunding(long institutionID) {
+
+    boolean permission = this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
+        loggedCrp.getAcronym(), projectID + ""))
+
+
+      || this
+        .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+          loggedCrp.getAcronym(), projectID + "", institutionID + ""));
+    return permission;
+
   }
 
   /**
@@ -186,6 +220,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   public int getBudgetIndex() {
     return budgetIndex;
   }
+
 
   public List<ProjectBudget> getBudgetsByPartner(Long institutionId, int year) {
     List<ProjectBudget> budgets = project.getBudgets().stream()
@@ -274,10 +309,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return liaisonInstitutions;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
+
 
   public Project getProject() {
     return project;
@@ -288,7 +323,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectPartner> getProjectPPAPartners() {
     return projectPPAPartners;
   }
@@ -297,10 +331,10 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return status;
   }
 
+
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
   }
-
 
   public double getTotalGender(long institutionId, int year, long budgetType) {
 
@@ -333,6 +367,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       return 0.0;
     }
   }
+
 
   public long getTotalYear(int year, long type) {
     long total = 0;
@@ -420,7 +455,15 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     budgetTypes = new HashMap<>();
 
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
-      budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      if (budgetType.getId().intValue() == 1) {
+        if (this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))) {
+          budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+        }
+      } else {
+        budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      }
+
     }
     w3bilateralBudgetTypes.put("2", "W3");
     w3bilateralBudgetTypes.put("3", "Bilateral");
@@ -566,6 +609,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
       project.setModifiedBy(this.getCurrentUser());
       project.setActiveSince(new Date());
+      project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 

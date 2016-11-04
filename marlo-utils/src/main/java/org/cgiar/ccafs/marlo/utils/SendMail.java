@@ -105,6 +105,7 @@ public class SendMail {
       }
       // Adding TEST word at the beginning of the subject.
       if (!config.isProduction()) {
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
         subject = "TEST " + subject;
       }
       msg.setSubject(subject);

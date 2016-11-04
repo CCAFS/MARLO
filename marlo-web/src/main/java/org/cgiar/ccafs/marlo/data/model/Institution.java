@@ -50,32 +50,31 @@ public class Institution implements java.io.Serializable, IAuditLog {
   @Expose
   private String city;
 
-
   @Expose
   private String websiteLink;
-
   @Expose
   private Long programId;
-
 
   @Expose
   private Institution headquarter;
 
+
   @Expose
   private Date added;
 
-
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
 
-  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
+  private Set<LiaisonInstitution> liaisonInstitutions = new HashSet<LiaisonInstitution>(0);
 
   private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
 
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
+
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
   private Set<Institution> branches = new HashSet<Institution>(0);
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<>(0);
 
@@ -176,15 +175,14 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
   }
 
-
   public Set<CrpPpaPartner> getCrpPpaPartners() {
     return crpPpaPartners;
   }
 
+
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
-
 
   public Institution getHeadquarter() {
     return headquarter;
@@ -196,10 +194,10 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return this.id;
   }
 
+
   public InstitutionType getInstitutionType() {
     return institutionType;
   }
-
 
   public List<Institution> getInstitutuionsBranches() {
     List<Institution> list = new ArrayList<Institution>();
@@ -213,6 +211,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
     return liaisonInstitutions;
   }
 
+
   public LocElement getLocElement() {
     return locElement;
   }
@@ -225,6 +224,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
 
 
     return sb.toString();
+  }
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
   }
 
   @Override

@@ -52,10 +52,8 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
   private Set<LiaisonUser> liaisonUsers = new HashSet<LiaisonUser>(0);
   private Set<Project> projects = new HashSet<Project>(0);
 
-
   public LiaisonInstitution() {
   }
-
 
   public LiaisonInstitution(CrpProgram crpProgram, Institution institution, String name, String acronym,
     Set<LiaisonUser> liaisonUserses, Set<Project> projectses) {
@@ -72,6 +70,7 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     this.institution = institution;
     this.name = name;
   }
+
 
   public String getAcronym() {
     return this.acronym;
@@ -95,16 +94,15 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
+
 
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public Institution getInstitution() {
     return institution;
@@ -124,6 +122,13 @@ public class LiaisonInstitution implements java.io.Serializable, IAuditLog {
 
 
     return sb.toString();
+  }
+
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
   }
 
 

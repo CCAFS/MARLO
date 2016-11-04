@@ -135,6 +135,12 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
+  public boolean canEditInstitution() {
+    return (this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
+
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -206,6 +212,7 @@ public class FundingSourceAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -294,8 +301,17 @@ public class FundingSourceAction extends BaseAction {
 
     budgetTypes = new HashMap<>();
 
+
     for (BudgetType budgetType : budgetTypeManager.findAll()) {
-      budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      if (budgetType.getId().intValue() == 1) {
+        if (this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))) {
+          budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+        }
+      } else {
+        budgetTypes.put(budgetType.getId().toString(), budgetType.getName());
+      }
+
     }
     String params[] = {loggedCrp.getAcronym(), fundingSource.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));

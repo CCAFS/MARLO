@@ -249,13 +249,39 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     List<Map<String, Object>> parentLocations = new ArrayList<>();
     List<CountryLocationLevel> locationLevels = new ArrayList<>();
-
+    List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
+      project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
     project.setLocations(new ArrayList<ProjectLocation>(
       project.getProjectLocations().stream().filter(p -> p.isActive()).collect(Collectors.toList())));
-
+    Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
-      Map<String, Object> locationParent;
+
+      if (locationsElementType != null) {
+        for (ProjectLocationElementType projectLocationElementType : locationsElementType) {
+          boolean existElementType = false;
+          for (ProjectLocation location : project.getLocations()) {
+            if (projectLocationElementType.getLocElementType().getId() == location.getLocElement().getLocElementType()
+              .getId()) {
+              existElementType = true;
+            }
+          }
+          if (!existElementType) {
+            locationParent = new HashMap<String, Object>();
+            if (!parentLocations.isEmpty()) {
+              locationParent.put(projectLocationElementType.getLocElementType().getName(),
+                projectLocationElementType.getLocElementType().getId());
+              if (!parentLocations.contains(locationParent)) {
+                parentLocations.add(locationParent);
+              }
+            } else {
+              locationParent.put(projectLocationElementType.getLocElementType().getName(),
+                projectLocationElementType.getLocElementType().getId());
+              parentLocations.add(locationParent);
+            }
+          }
+        }
+      }
 
       for (ProjectLocation location : project.getLocations()) {
         locationParent = new HashMap<String, Object>();
@@ -273,10 +299,27 @@ public class ValidateProjectSectionAction extends BaseAction {
 
       }
 
+    } else {
+      if (!locationsElementType.isEmpty()) {
+        for (ProjectLocationElementType projectLocationElementType : locationsElementType) {
+          locationParent = new HashMap<String, Object>();
+          if (!parentLocations.isEmpty()) {
+            locationParent.put(projectLocationElementType.getLocElementType().getName(),
+              projectLocationElementType.getLocElementType().getId());
+            if (!parentLocations.contains(locationParent)) {
+              parentLocations.add(locationParent);
+            }
+          } else {
+            locationParent.put(projectLocationElementType.getLocElementType().getName(),
+              projectLocationElementType.getLocElementType().getId());
+            parentLocations.add(locationParent);
+          }
+        }
+      }
     }
 
     CountryLocationLevel countryLocationLevel;
-
+    ProjectLocationElementType locationElementType = null;
     for (Map<String, Object> map : parentLocations) {
 
       for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -300,7 +343,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         if (elementType.getId() == 2 || elementType.getCrp() != null) {
 
-          ProjectLocationElementType locationElementType =
+          locationElementType =
             projectLocationElementTypeManager.getByProjectAndElementType(projectID, elementType.getId());
 
           countryLocationLevel.setList(true);
@@ -314,6 +357,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         locationLevels.add(countryLocationLevel);
       }
+
 
     }
 

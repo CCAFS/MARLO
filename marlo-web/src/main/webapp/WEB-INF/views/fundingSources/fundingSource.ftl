@@ -49,8 +49,8 @@
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true readOnly=true editable=false /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true readOnly=true editable=false/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable/] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
@@ -65,7 +65,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.leader.id" i18nkey="CGIAR lead center"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable /]
+            [@customForm.select name="fundingSource.leader.id" i18nkey="CGIAR lead center"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
           </div>
         </div>
       </div>

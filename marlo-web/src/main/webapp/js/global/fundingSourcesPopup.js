@@ -3,6 +3,7 @@ var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
 var openSearchDialog, addProject, addUserMessage;
 var institutionSelected, selectedPartnerTitle, selectedYear;
+var canAddFunding;
 
 $(document).ready(function() {
 
@@ -58,7 +59,8 @@ $(document).ready(function() {
 
   // Event to open dialog box and search an contact person
   $(".searchProject").on("click", function(e) {
-    openSearchDialog(e);
+    e.preventDefault();
+    openSearchDialog($(this));
   });
 
   // Event when the user select the contact person
@@ -170,15 +172,24 @@ $(document).ready(function() {
 
   /** Functions * */
 
-  openSearchDialog = function(e) {
-    e.preventDefault();
-    $elementSelected = $(e.target);
+  openSearchDialog = function(selected) {
+
+    $elementSelected = $(selected);
     selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
     $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
     institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
     selectedYear = $elementSelected.parents('.tab-pane').attr('id').split('-')[1];
 
     dialog.dialog("open");
+
+    // Verify if has permission to create
+    canAddFunding = $elementSelected.hasClass('canAddFunding');
+
+    if(canAddFunding) {
+      $('#create-user').show();
+    } else {
+      $('#create-user').hide();
+    }
 
     // Hide search loader
     $dialogContent.find(".search-loader").fadeOut("slow");
@@ -238,9 +249,13 @@ $(document).ready(function() {
           if(usersFound > 0) {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.sources, function(i,source) {
+
+              console.log(source);
+
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
               if(source.amount <= 0) {
                 $item.find('.noBudgetMessage').show();
+                $item.find('.noBudgetMessage').attr('title', 'Insufficient funds for ' + selectedYear);
                 // $item.find('.listButton.select').hide();
               }
               $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
@@ -251,7 +266,7 @@ $(document).ready(function() {
               if(i == usersFound - 1) {
                 $item.addClass('last');
               }
-              if(idsArray.indexOf(source.id) == -1) {
+              if(source.canSelect && idsArray.indexOf(source.id) == -1) {
                 $dialogContent.find(".panel-body ul").append($item);
               }
             });

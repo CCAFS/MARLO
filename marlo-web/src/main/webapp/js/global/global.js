@@ -231,7 +231,7 @@ $(document)
             $(this).parent().parent().parent().find('.tickBox-toggle').slideToggle($(e.target).is(':checked'));
           }
 
-          // History log popup
+          // History log pop up
           $('.button-history').on('click', function() {
             $('#log-history').dialog({
                 modal: true,
@@ -244,8 +244,6 @@ $(document)
                 }
             });
           });
-
-          $("textarea[id!='justification']").autoGrow();
 
           // Generating hash from form information
           setFormHash();

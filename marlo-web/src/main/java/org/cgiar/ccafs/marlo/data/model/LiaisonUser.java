@@ -50,12 +50,10 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
   public LiaisonUser() {
   }
 
-
   public LiaisonUser(LiaisonInstitution liaisonInstitution, User user) {
     this.liaisonInstitution = liaisonInstitution;
     this.user = user;
   }
-
 
   public LiaisonUser(LiaisonInstitution liaisonInstitution, User user, Set<Project> projectses) {
     this.liaisonInstitution = liaisonInstitution;
@@ -63,20 +61,20 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
     this.projects = projectses;
   }
 
+
   public String getComposedName() {
     return user.getComposedName();
   }
-
 
   public Crp getCrp() {
     return crp;
   }
 
+
   @Override
   public Long getId() {
     return this.id;
   }
-
 
   public LiaisonInstitution getLiaisonInstitution() {
     return liaisonInstitution;
@@ -91,6 +89,13 @@ public class LiaisonUser implements java.io.Serializable, IAuditLog {
 
 
     return sb.toString();
+  }
+
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
   }
 
 

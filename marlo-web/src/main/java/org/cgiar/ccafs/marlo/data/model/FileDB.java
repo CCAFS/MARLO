@@ -31,7 +31,6 @@ public class FileDB implements java.io.Serializable, IAuditLog {
     this.tokenId = tokenId;
   }
 
-
   public String getFileName() {
     return this.fileName;
   }
@@ -40,7 +39,6 @@ public class FileDB implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return this.id;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -51,6 +49,13 @@ public class FileDB implements java.io.Serializable, IAuditLog {
 
     return sb.toString();
 
+  }
+
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
   }
 
   @Override

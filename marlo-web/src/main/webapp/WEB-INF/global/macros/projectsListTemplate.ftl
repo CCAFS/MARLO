@@ -35,7 +35,7 @@
           <a href="${projectUrl}"> P${project.id}</a>
         </td>
           [#-- Project Title --]
-          <td class="left"> 
+          <td class="left">  
             [#if project.title?has_content]
               <a href="${projectUrl}" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]

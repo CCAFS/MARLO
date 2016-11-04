@@ -17,13 +17,16 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class FundingSourceListAction extends BaseAction {
   private long institutionID;
 
   private int year;
-
+  private CrpManager crpManager;
   private String queryParameter;
   private FundingSourceManager fundingSourceManager;
   private InstitutionManager institutionManager;
@@ -58,11 +61,12 @@ public class FundingSourceListAction extends BaseAction {
   @Inject
   public FundingSourceListAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    FundingSourceBudgetManager fundingSourceBudgetManager) {
+    FundingSourceBudgetManager fundingSourceBudgetManager, CrpManager crpManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
     this.projectBudgetManager = projectBudgetManager;
+    this.crpManager = crpManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
@@ -70,7 +74,7 @@ public class FundingSourceListAction extends BaseAction {
   public String execute() throws Exception {
     sources = new ArrayList<>();
     List<FundingSource> fundingSources;
-
+    Crp loggedCrp = crpManager.getCrpById(this.getCrpID());
     Institution institution = institutionManager.getInstitutionById(institutionID);
 
     Map<String, Object> source;
@@ -79,6 +83,8 @@ public class FundingSourceListAction extends BaseAction {
     } else {
       fundingSources =
         fundingSourceManager.searchFundingSourcesByInstitution(queryParameter, institution.getId(), year);
+
+
       fundingSources
         .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
     }
@@ -89,6 +95,12 @@ public class FundingSourceListAction extends BaseAction {
       source.put("name", fundingSource.getDescription());
       source.put("type", fundingSource.getBudgetType().getName());
       source.put("typeId", fundingSource.getBudgetType().getId());
+      if (fundingSource.getCenterType().intValue() == 1) {
+        source.put("canSelect", this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
+      } else {
+        source.put("canSelect", true);
+      }
 
       FundingSourceBudget fundingSourceBudget =
         fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);

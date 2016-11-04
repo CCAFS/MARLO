@@ -543,7 +543,7 @@ public class ProjectActivitiesAction extends BaseAction {
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
       project.setModifiedBy(this.getCurrentUser());
-      project.setModificationJustification("");
+      project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
       this.activitiesPreviousData(project.getProjectActivities(), true);

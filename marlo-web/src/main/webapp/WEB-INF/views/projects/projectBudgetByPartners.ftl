@@ -222,7 +222,7 @@
           [/#attempt]
           
           [#if fundingSources == 0]
-            [#if editable && isYearEditable(selectedYear)]
+            [#if editable && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
               <p class="emptyMessage text-center">Add a new one clicking on "[@s.text name="form.buttons.selectProject" /]" button below.</p>
             [#else]
               <p class="emptyMessage text-center">Theres is not a funding source added.</p>
@@ -230,9 +230,9 @@
           [/#if]
         </div>
         [#-- Search project bilateral co-funded --]
-        [#if editable  && isYearEditable(selectedYear)]
+        [#if editable  && isYearEditable(selectedYear) && action.canSearchFunding(element.institution.id)]
         <div class="text-right">
-          <div class="searchProject button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.selectProject" /]</div>
+          <div class="searchProject button-blue ${action.canAddFunding(element.institution.id)?string('canAddFunding','')}"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> [@s.text name="form.buttons.selectProject" /]</div>
         </div>
         [/#if]
       </div>
