@@ -46,6 +46,12 @@
           <div class="col-md-12">[@customForm.textArea name="fundingSource.description" i18nkey="projectCofunded.title" required=true editable=editable /] </div>
         </div>
       </div>
+      [#-- Project summary --]
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-12">[@customForm.textArea name="fundingSource.summary" i18nkey="projectCofunded.description" required=false editable=editable /] </div>
+        </div>
+      </div>
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="row">

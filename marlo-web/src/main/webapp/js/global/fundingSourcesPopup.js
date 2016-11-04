@@ -12,7 +12,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 650,
+      height: 710,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',
@@ -96,6 +96,7 @@ $(document).ready(function() {
     var project = {};
     project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
     project.description = $dialogContent.find("#description").val().trim();
+    project.summary = $dialogContent.find("#summary").val().trim();
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
