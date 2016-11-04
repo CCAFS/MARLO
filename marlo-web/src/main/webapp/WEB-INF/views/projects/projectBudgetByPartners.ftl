@@ -258,10 +258,10 @@
       <p> <span class="title">${(element.fundingSource.description)!}</span> </p>
     </a>
 
-    <input type="hidden" class="id" name="${customName}.id" value="${(element.id)!}"/>
+    <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
-    <input type="hidden" class="projectId" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
+    <input type="hidden" class="projectId institution-${(element.institution.id)!} year-${(selectedYear)!}" name="${customName}.fundingSource.id" value="${(element.fundingSource.id)!}"/>
     
     [#-- Project Fund --]
     <div class="row w3bilateralFund">
