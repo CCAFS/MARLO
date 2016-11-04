@@ -106,7 +106,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where crp_id=" + crpID + " and description like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' and institution_id is null and type=1");
+    q.append("OR id like '%" + query + "%' and is_active=1  and institution_id is null and type=1");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
@@ -120,7 +120,7 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
   public List<FundingSource> searchFundingSourcesByInstitution(String query, long institutionID, int year) {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
-    q.append(" where description like '%" + query + "%' ");
+    q.append(" where is_active=1 and description like '%" + query + "%' ");
     q.append("OR id like '%" + query + "%' ");
 
 
