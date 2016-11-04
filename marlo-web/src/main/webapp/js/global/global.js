@@ -245,6 +245,9 @@ $(document)
             });
           });
 
+          // Set autogrow
+          $("textarea[id!='justification']").autoGrow();
+
           // Generating hash from form information
           setFormHash();
 

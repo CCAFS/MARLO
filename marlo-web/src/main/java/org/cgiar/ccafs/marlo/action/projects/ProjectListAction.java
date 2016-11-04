@@ -249,9 +249,6 @@ public class ProjectListAction extends BaseAction {
   }
 
   public boolean deletePermission(long projectID) {
-    if (projectID == 257) {
-      System.out.println("stop");
-    }
     String permissionStr =
       this.generatePermission(Permission.PROJECT_DELETE_BASE_PERMISSION, loggedCrp.getAcronym(), projectID + "");
     boolean permission = this.hasPermissionNoBase(permissionStr);

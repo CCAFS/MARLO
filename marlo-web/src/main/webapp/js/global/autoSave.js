@@ -27,8 +27,13 @@ function autoSave() {
       data: {
         autoSave: JSON.stringify($('form').serializeObject())
       },
-      beforeSend: function() {
-        $draftTag.text('... Saving');
+      beforeSend: function(xhr,opts) {
+        if(autoSaveActive) {
+          $draftTag.text('... Saving');
+        } else {
+          // Auto save Cancelled
+          xhr.abort();
+        }
       },
       success: function(data) {
         if(data.status.status) {

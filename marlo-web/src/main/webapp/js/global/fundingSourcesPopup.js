@@ -12,7 +12,7 @@ $(document).ready(function() {
   $searchInput = $('.search-input .input input');
   var dialogOptions = {
       autoOpen: false,
-      height: 650,
+      height: 710,
       width: 550,
       modal: true,
       dialogClass: 'dialog-searchUsers',
@@ -96,6 +96,7 @@ $(document).ready(function() {
     var project = {};
     project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
     project.description = $dialogContent.find("#description").val().trim();
+    project.summary = $dialogContent.find("#summary").val().trim();
     project.startDate = $dialogContent.find("#startDate").val().trim();
     project.endDate = $dialogContent.find("#endDate").val().trim();
     project.financeCode = $dialogContent.find("#financeCode").val().trim();
@@ -250,8 +251,6 @@ $(document).ready(function() {
             $dialogContent.find(".panel-body .userMessage").hide();
             $.each(data.sources, function(i,source) {
 
-              console.log(source);
-
               var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
               if(source.amount <= 0) {
                 $item.find('.noBudgetMessage').show();
@@ -313,6 +312,7 @@ function date(start,end) {
 
     $('.budgetByYears .nav-tabs').empty();
     $('.budgetByYears .tab-content').empty();
+    $('.budgetByYears .fundingTotalAmount').html(setCurrencyFormat(0));
 
     while(startYear <= endYear) {
       var state = '';
@@ -339,7 +339,12 @@ function date(start,end) {
     $dialogContent.find('.currencyInput').currencyInput();
 
     $dialogContent.find('.currencyInput').on('keyup', function() {
-
+      var total = 0;
+      $dialogContent.find('input.currencyInput').each(function(i,e) {
+        total += removeCurrencyFormat($(e).val());
+      });
+      console.log(total);
+      $('.budgetByYears .fundingTotalAmount').html(setCurrencyFormat(total));
     });
 
   }

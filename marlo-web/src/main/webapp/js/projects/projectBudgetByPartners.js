@@ -5,7 +5,6 @@ $(document).ready(init);
 function init() {
 
   countFundingSources = parseInt($('#budgetIndex').text());
-  console.log(countFundingSources);
   addProject = addFundingSource;
 
   // Setting Numeric Inputs
