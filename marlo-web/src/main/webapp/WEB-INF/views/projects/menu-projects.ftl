@@ -93,7 +93,7 @@
   <br />
 [#else]
   [#if !project.projectEditLeader]
-    <p class="text-justify note"><small>In order to set-up the project for Project Leader completion, you need to complete all the sections above (with a green check mark).</small></p>
+    <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
   [/#if]
 [/#if]
 
