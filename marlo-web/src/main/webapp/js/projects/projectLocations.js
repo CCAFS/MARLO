@@ -42,6 +42,7 @@ function init() {
 
   /* Declaring Events */
   attachEvents();
+  calculateWidthSelect();
 }
 
 function attachEvents() {

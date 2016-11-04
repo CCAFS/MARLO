@@ -136,7 +136,7 @@ span.lPos {
 .selectWrapper-horizontal {
     overflow-x: auto;
     overflow-y: hidden;
-    max-height: 300px;
+    max-height: 400px;
     max-width: 100%;
 }
 

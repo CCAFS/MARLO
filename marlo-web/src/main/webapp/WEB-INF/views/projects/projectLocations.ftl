@@ -66,7 +66,7 @@
               
               <div id="selectsContent" class="col-md-12 selectWrapper-horizontal simpleBox " listname="project.locationsData">
                 [#-- Content collapsible--]
-                <div class="selectWrapper row">
+                <div class="selectWrapper select-horizontal row">
                 [#if project.locationsData?has_content]
                   [#list project.locationsData as locationLevels]
                     [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
