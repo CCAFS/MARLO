@@ -110,6 +110,8 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
 
 
+  private List<DeliverableFundingSource> fundingSources;
+
   private List<DeliverablePartnership> otherPartners;
 
 
@@ -141,6 +143,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createDate = createDate;
   }
 
+
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification) {
     this.project = project;
@@ -151,6 +154,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -174,11 +178,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
-
 
   public Date getCreateDate() {
     return createDate;
@@ -199,6 +201,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crpProgramOutcome;
   }
 
+
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
   }
@@ -207,7 +210,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
-
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -218,8 +220,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.deliverableType;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
+  }
+
+
+  public List<DeliverableFundingSource> getFundingSources() {
+    return fundingSources;
   }
 
   @Override
@@ -256,10 +264,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return responsiblePartner;
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   public Integer getStatus() {
     return this.status;
@@ -298,11 +306,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public void setActive(boolean active) {
     this.active = active;
@@ -340,13 +348,17 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverablePartnerships = deliverablePartnerships;
   }
 
-
   public void setDeliverableType(DeliverableType deliverableType) {
     this.deliverableType = deliverableType;
   }
 
+
   public void setFundingSource(FundingSource fundingSource) {
     this.fundingSource = fundingSource;
+  }
+
+  public void setFundingSources(List<DeliverableFundingSource> fundingSources) {
+    this.fundingSources = fundingSources;
   }
 
   public void setId(Long id) {

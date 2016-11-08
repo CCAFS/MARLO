@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
@@ -31,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -131,7 +133,7 @@ public class DeliverableAction extends BaseAction {
   private String transaction;
 
   private AuditLogManager auditLogManager;
-
+  private DeliverableFundingSourceManager deliverableFundingSourceManager;
   private ProjectPartnerManager projectPartnerManager;
 
   @Inject
@@ -140,7 +142,8 @@ public class DeliverableAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
     AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
-    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager) {
+    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
+    DeliverableFundingSourceManager deliverableFundingSourceManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -153,6 +156,7 @@ public class DeliverableAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.deliverableValidator = deliverableValidator;
     this.projectPartnerManager = projectPartnerManager;
+    this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.fundingSourceManager = fundingSourceManager;
   }
 
@@ -489,11 +493,16 @@ public class DeliverableAction extends BaseAction {
 
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
-
+        for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
+          fundingSource
+            .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+        }
         this.setDraft(true);
       } else {
         deliverable.setResponsiblePartner(this.responsiblePartner());
         deliverable.setOtherPartners(this.otherPartners());
+        deliverable.setFundingSources(
+          deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         this.setDraft(false);
       }
 
@@ -565,6 +574,9 @@ public class DeliverableAction extends BaseAction {
 
       if (deliverable.getOtherPartners() != null) {
         deliverable.getOtherPartners().clear();
+      }
+      if (deliverable.getFundingSources() != null) {
+        deliverable.getFundingSources().clear();
       }
     }
   }
@@ -645,9 +657,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
@@ -703,8 +716,42 @@ public class DeliverableAction extends BaseAction {
       this.partnershipPreviousData(deliverableSave);
       this.parnershipNewData();
 
+
+      if (deliverable.getFundingSources() != null) {
+        if (deliverablePrew.getDeliverableFundingSources() != null
+          && deliverablePrew.getDeliverableFundingSources().size() > 0) {
+          List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
+            .filter(dp -> dp.isActive()).collect(Collectors.toList());
+
+
+          for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
+            if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
+              deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+            }
+          }
+        }
+
+        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+          if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+
+
+            deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            deliverableFundingSource.setActive(true);
+            deliverableFundingSource.setCreatedBy(this.getCurrentUser());
+            deliverableFundingSource.setModifiedBy(this.getCurrentUser());
+            deliverableFundingSource.setModificationJustification("");
+            deliverableFundingSource.setActiveSince(new Date());
+
+            deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+
+
+          }
+        }
+      }
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());
