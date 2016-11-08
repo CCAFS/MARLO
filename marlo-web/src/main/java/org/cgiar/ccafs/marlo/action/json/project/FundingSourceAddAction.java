@@ -200,7 +200,7 @@ public class FundingSourceAddAction extends BaseAction {
 
         }
       }
-
+      this.clearPermissionsCache();
     }
 
 

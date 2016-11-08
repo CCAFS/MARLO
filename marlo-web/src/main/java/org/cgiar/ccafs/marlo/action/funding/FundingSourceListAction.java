@@ -101,6 +101,7 @@ public class FundingSourceListAction extends BaseAction {
       } catch (Exception e) {
         fundingSource.setLeader(null);
       }
+      this.clearPermissionsCache();
 
     }
     // project.setCrp(loggedCrp);

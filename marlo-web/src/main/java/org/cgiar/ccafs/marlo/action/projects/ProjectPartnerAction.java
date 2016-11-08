@@ -875,7 +875,7 @@ public class ProjectPartnerAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
 
-
+      this.clearPermissionsCache();
       return SUCCESS;
     }
     return NOT_AUTHORIZED;
