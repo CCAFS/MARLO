@@ -140,9 +140,16 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setModifiedBy(this.getCurrentUser());
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
     if (user != null) {
-      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-      Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-      fundingSource.setLeader(institution);
+      try {
+        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+          fundingSource.setLeader(institution);
+        }
+      } catch (Exception e) {
+        fundingSource.setLeader(null);
+      }
+
     }
 
     long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
