@@ -287,7 +287,8 @@
         [@assumptionMacro assumption=assumption name="${subIDOCustomName}.assumptions" index=assumption_index /]
       [/#list]
     [#else]
-    <p class="message text-center">[@s.text name="outcome.subIDOs.section.notAssumptions.span"/]</p>
+    [@assumptionMacro assumption={} name="${subIDOCustomName}.assumptions" index=0 /]
+    [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notAssumptions.span"/]</p> --]
     [/#if]
     </div>
     [#-- Add Assumption Button --]
