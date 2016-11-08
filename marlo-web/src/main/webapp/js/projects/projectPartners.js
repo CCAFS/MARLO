@@ -318,7 +318,8 @@ function updateProjectPPAPartnersLists(e) {
     var partner = new PartnerObject($(projectPartner));
     // Collecting partners institutions
     projectInstitutions.push(parseInt(partner.institutionId));
-    // Validating if the partners is CCAFS Partner
+    // Validating if the partners is PPA Partner
+    console.log(partner);
     if(partner.isPPA()) {
       partner.hidePPAs();
       // Collecting list CCAFS partners from all project partners
@@ -331,6 +332,7 @@ function updateProjectPPAPartnersLists(e) {
       }
     }
   });
+  $projectPPAPartners.trigger("change.select2");
 
   // Validating if the institution chosen is already selected
   if(e) {
@@ -659,7 +661,8 @@ function PartnerObject(partner) {
   this.id = parseInt($(partner).find('.partnerId').val());
   this.institutionId = parseInt($(partner).find('.institutionsList').val());
   this.institutionName =
-      $('#projectPartner-template .institutionsList option[value=' + this.institutionId + ']').text();
+      $('#projectPartner-template .institutionsList option[value=' + this.institutionId + ']').text()
+          || $(partner).find('.partnerTitle').text();
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
   this.setIndex = function(name,index) {
