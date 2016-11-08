@@ -58,7 +58,7 @@
           [#-- Description --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">[@customForm.textArea name="summary" i18nkey="projectCofunded.description" required=false/] </div>
+              <div class="col-md-12">[@customForm.textArea name="summary" i18nkey="projectCofunded.description" className="limitWords-150" required=false/] </div>
             </div>
           </div>
           <div class="form-group">
