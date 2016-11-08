@@ -66,11 +66,72 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
+  $(".fundingSource").on("change", addFundingSource);
+  $(".removeFundingSource").on("click", removeFundingSource);
+
   /*
    * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
    * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option
    * value='2'>On-going</option>"); }
    */
+}
+
+// Add a new fundingSource element
+function addFundingSource() {
+  var option = $(this).find("option:selected");
+  var canAdd = true;
+  console.log(option.val());
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+
+  var $list = $(this).parents(".select").parents("#fundingSourceList").find(".list");
+  var $item = $("#fsourceTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.fundingSources').each(function(i,e) {
+    if($(e).find('input.fId').val() == option.val()) {
+      canAdd = false;
+      return;
+    }
+  });
+
+  // Reset select
+  $(this).val("-1");
+  $(this).trigger('change.select2');
+
+  if(!canAdd) {
+    return;
+  }
+
+  // Set deliverable parameters
+  $item.find(".name").attr("title", $(option).text()).tooltip();
+  $item.find(".name").html(v);
+  $item.find(".fId").val(option.val());
+  $list.append($item);
+  $item.show('slow');
+  updateFundingSources($list);
+  checkFundingItems($list);
+
+}
+
+function removeFundingSource() {
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.fundingSources');
+  $item.hide(1000, function() {
+    $item.remove();
+    checkItems($list);
+    updateFundingSources($list);
+  });
+
+}
+
+function updateFundingSources($list) {
+  $($list).find('.fundingSources').each(function(i,e) {
+    // Set funding sources indexes
+    $(e).setNameIndexes(1, i);
+  });
 }
 
 function validateCurrentDate() {
@@ -199,6 +260,16 @@ function keyOutputs() {
 function checkItems(block) {
   console.log(block);
   var items = $(block).find('.deliverablePartner').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
+}
+
+function checkFundingItems(block) {
+  console.log(block);
+  var items = $(block).find('.fundingSources').length;
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {

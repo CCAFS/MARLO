@@ -47,10 +47,41 @@
   </div>
 [/#if]
 
-[#-- Funding Source --] 
-<div class="col-md-12 form-group">
-  [@customForm.select name="deliverable.fundingSource.id" label=""  i18nkey="deliverable.fundingSource" listName="fundingSources" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="" editable=editable/]
+[#-- Funding Source --]
+<div class="panel tertiary col-md-12">
+  <div class="panel-head"><label for=""> [@customForm.text name="deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+  <div id="fundingSourceList" class="panel-body" listname="project.clusterActivities"> 
+    <ul class="list">
+    [#if deliverable.fundingSources?has_content]
+      [#list deliverable.fundingSources as element]
+        <li class="fundingSources clearfix">
+          [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
+          <input class="id" type="hidden" name="deliverable.fundingSource[${element_index}]" value="${element.fundingSource.id}" />
+          <input class="fId" type="hidden" name="deliverable.fundingSource[${element_index}].id" value="${(element.id)!}" />
+          <span class="name">${(element.description)!'null'}</span>
+          <div class="clearfix"></div>
+        </li>
+      [/#list]
+    [#else]
+      <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p> 
+    [/#if]  
+    </ul>
+    [#if editable ]
+      [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="fundingSource" editable=editable/]
+    [/#if] 
+  </div>
 </div>
+
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
+    <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
+    <input class="id" type="hidden" name="deliverable.fundingSource[-1]" value="" />
+    <input class="fId" type="hidden" name="deliverable.fundingSource[-1].id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
 
 [#-- Partners --] 
 <div id="deliverable-partnership" class="clearfix col-md-12">

@@ -690,9 +690,9 @@ function openInfoWindow(marker) {
   var content;
   if(editable) {
     content =
-        '<div id="infoContent"><input placeholder="'
+        '<div id="infoContent"><label for="nameMapMarker">Change the location name:</label><input placeholder="'
             + marker.name
-            + '" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-ok button-green"></span></div>';
+            + '" id="nameMapMarker" class="nameMap form-control" type="text" /><span class="editLocationName glyphicon glyphicon-ok button-green"></span></div>';
   } else {
     content = '<div id="infoContent"><div class=" form-control">' + marker.name + '</div></div>';
   }
