@@ -107,12 +107,15 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   private DeliverablePartnership responsiblePartner;
+  private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
 
 
   private List<DeliverablePartnership> otherPartners;
 
+
   public Deliverable() {
   }
+
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -138,7 +141,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createDate = createDate;
   }
 
-
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification) {
     this.project = project;
@@ -149,7 +151,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -188,6 +189,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
+
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
@@ -197,15 +199,20 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crpProgramOutcome;
   }
 
-
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
+  }
+
+
+  public Set<DeliverableFundingSource> getDeliverableFundingSources() {
+    return deliverableFundingSources;
   }
 
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
+
 
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
@@ -227,6 +234,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -244,10 +252,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -282,7 +290,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -290,6 +297,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -322,6 +330,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setDeliverableActivities(Set<DeliverableActivity> deliverableActivities) {
     this.deliverableActivities = deliverableActivities;
+  }
+
+  public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {
+    this.deliverableFundingSources = deliverableFundingSources;
   }
 
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
