@@ -93,15 +93,12 @@ public class FundingSourceListAction extends BaseAction {
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
     if (user != null) {
       LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-      try {
-        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-          fundingSource.setLeader(institution);
-        }
-      } catch (Exception e) {
+      if (liaisonInstitution.getInstitution() == null) {
         fundingSource.setLeader(null);
+      } else {
+        Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+        fundingSource.setLeader(institution);
       }
-
     }
     // project.setCrp(loggedCrp);
 
