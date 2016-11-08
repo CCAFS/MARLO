@@ -22,13 +22,12 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -8386210768059621143L;
-
-
   @Expose
   private Long id;
 
   @Expose
   private Institution institution;
+
   @Expose
   private Project project;
   @Expose
@@ -37,27 +36,26 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private boolean active;
-
   @Expose
   private Date activeSince;
-
 
   @Expose
   private String modificationJustification;
 
-  private Set<ProjectPartnerContribution> projectPartnerContributions = new HashSet<ProjectPartnerContribution>(0);
 
+  private Set<ProjectPartnerContribution> projectPartnerContributions = new HashSet<ProjectPartnerContribution>(0);
 
   private Set<ProjectPartnerContribution> projectPartnerContributors = new HashSet<ProjectPartnerContribution>(0);
 
+
   private Set<ProjectPartnerOverall> projectPartnerOveralls = new HashSet<ProjectPartnerOverall>(0);
+
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
   private List<ProjectPartnerPerson> partnerPersons;
   private List<ProjectPartnerContribution> partnerContributors;
 
   public ProjectPartner() {
   }
-
 
   public ProjectPartner(Institution institution, Project project, User usersByCreatedBy, User usersByModifiedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -112,8 +110,43 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
+  }
+
+  public String getComposedName() {
+    try {
+      if (this.getInstitution().getLocElement() == null) {
+        return this.getInstitution().getAcronym() + " - " + this.getInstitution().getName();
+      }
+
+      if (this.getInstitution().getLocElement().getName() == null) {
+        this.getInstitution().getLocElement().setName("");
+      }
+      if (this.getInstitution().getAcronym() != null) {
+        if (this.getInstitution().getAcronym().length() != 0) {
+          try {
+            return this.getInstitution().getAcronym() + " - " + this.getInstitution().getName();// + " - " +
+                                                                                                // this.getLocElement().getName();
+          } catch (Exception e) {
+            return this.getInstitution().getAcronym() + " - " + this.getInstitution().getName();
+          }
+
+        }
+      } else {
+        try {
+          return this.getInstitution().getName() + "-" + this.getInstitution().getLocElement().getName();
+        } catch (Exception e) {
+          return this.getInstitution().getName();
+        }
+      }
+      return this.getInstitution().getName();
+    } catch (Exception e) {
+      return this.getInstitution().getName();
+    }
+
+
   }
 
   public User getCreatedBy() {
@@ -139,6 +172,7 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
