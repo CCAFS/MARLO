@@ -125,18 +125,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
 
         if (!(this.isValidString(projectMilestone.getNarrativeTarget())
-          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 100)) {
+          && this.wordCount(projectMilestone.getNarrativeTarget()) <= 50)) {
           this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
           action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].narrativeTarget",
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (!(this.isValidString(projectMilestone.getExpectedGender())
-          && this.wordCount(projectMilestone.getExpectedGender()) <= 100)) {
-          this.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedGenderSocialNarrative", params));
-          action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedGender",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
+
       }
 
 
@@ -187,7 +182,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
       if (this.validationMessage.toString().contains("Lessons")) {
         this.replaceAll(validationMessage, "Lessons",
           "Lessons regarding partnerships and possible implications for the coming planning cycle");
-        action.getInvalidFields().put("input-project.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-projectOutcome.projectComponentLesson.lessons",
+          InvalidFieldsMessages.EMPTYFIELD);
       }
     }
     if (action.isPlanningActive()) {
@@ -207,6 +203,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
         this.addMessage(action.getText("projectOutcome.narrativeTarget"));
         action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
       }
+
+      // TODO: Validate outcome gender here
 
     }
 

@@ -311,7 +311,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-50" editable=editable /]
         </div>
         [#--
         <div class="form-group">
