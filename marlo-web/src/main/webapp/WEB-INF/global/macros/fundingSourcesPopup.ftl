@@ -52,7 +52,7 @@
           [#-- Title --]
           <div class="form-group">
             <div class="row">
-              <div class="col-md-12">[@customForm.textArea name="description" i18nkey="projectCofunded.title" required=true/] </div>
+              <div class="col-md-12">[@customForm.input name="description" i18nkey="projectCofunded.title" required=true/] </div>
             </div>
           </div>
           [#-- Description --]

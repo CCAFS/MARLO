@@ -46,7 +46,7 @@
           </small>
           
           [#-- Title --]
-          <h3 class="headTitle"> Project Contribution</h3>  
+          <h3 class="headTitle"> Project Contribution </h3>  
           
           [#-- Outcomen name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
@@ -313,17 +313,21 @@
         <div class="form-group">
           [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
         </div>
+        [#--
         <div class="form-group">
           [@customForm.textArea name="${customName}.expectedGender" i18nkey="projectOutcomeMilestone.expectedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
         </div>
+        --]
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
           [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
         </div>
+        [#--
         <div class="form-group">
           [@customForm.textArea name="${customName}.narrativeGender" i18nkey="projectOutcomeMilestone.achievedGenderSocialNarrative" required=isYearRequired(year) className="limitWords-100" editable=editable /]
         </div>
+        --]
         [/#if]
       </div>
     </div>
