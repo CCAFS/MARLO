@@ -74,7 +74,8 @@ $(document).ready(function() {
   saveMessage += ' we suggest you to click on the Save button';
   $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
     var url = $.trim($(this).attr("href"));
-    if((isChanged() || forceChange) && editable && draft && url) {
+    console.log((myTurn == 1));
+    if((isChanged() || forceChange) && editable && draft && url && (myTurn == 1)) {
       e.preventDefault();
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = saveMessage;

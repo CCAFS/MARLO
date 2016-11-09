@@ -31,6 +31,7 @@ $(document).ready(function() {
 
   $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
     var url = $.trim($(this).attr("href"));
+
     if((isChanged() || forceChange) && editable && draft && url) {
       e.preventDefault();
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
