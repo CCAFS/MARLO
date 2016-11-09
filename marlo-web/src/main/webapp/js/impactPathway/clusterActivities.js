@@ -113,6 +113,7 @@ function updateClustersIndex() {
     updateUsersIndex(item, customName);
     updateKeyOtuputsIndex(item, customName);
   });
+  $(document).trigger('updateComponent');
 }
 
 // USERS-LEADERS

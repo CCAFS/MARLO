@@ -241,7 +241,7 @@
       [#-- Statement --]
       <div class="form-group col-md-12">
         <label style="display:block;" for="">Outcome statement</label>
-        <span title="${(element.crpProgramOutcome.description)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
+        <span title="${(element.crpProgramOutcome.composedName)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.composedName)!"undefined" maxPos=100 substr=" "/]</span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
