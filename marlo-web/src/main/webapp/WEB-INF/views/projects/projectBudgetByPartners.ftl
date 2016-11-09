@@ -255,7 +255,7 @@
     
     <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 
        
-      <p> <span class="title">${(element.fundingSource.description)!}</span> </p>
+      <p> <span class="title">${(element.fundingSource.title)!}</span> </p>
     </a>
 
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>

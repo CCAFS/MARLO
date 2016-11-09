@@ -36,6 +36,9 @@
 		<property name="description" type="string">
 			<column name="description" length="65535" />
 		</property>
+		<property name="title" type="string">
+      <column name="title" length="65535" />
+    </property>
 		<property name="startDate" type="date">
 			<column name="start_date" length="10" />
 		</property>

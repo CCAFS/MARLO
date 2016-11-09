@@ -38,26 +38,32 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private Integer status;
 
+
+  @Expose
+  private String title;
+
+
   @Expose
   private String description;
+
+
   @Expose
   private Institution leader;
-
 
   @Expose
   private Date startDate;
   @Expose
   private Date endDate;
 
+
   @Expose
   private String financeCode;
-
-
   @Expose
   private String contactPersonName;
 
   @Expose
   private String contactPersonEmail;
+
 
   @Expose
   private Integer centerType;
@@ -89,7 +95,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public FundingSource() {
   }
-
 
   public FundingSource(User modifiedBy, boolean active, Date activeSince, String modificationJustification) {
     this.modifiedBy = modifiedBy;
@@ -144,24 +149,23 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
   }
 
+
   public BudgetType getBudgetType() {
     return budgetType;
   }
 
-
   public Integer getCenterType() {
     return centerType;
   }
-
 
   public String getContactPersonEmail() {
     return contactPersonEmail;
@@ -182,9 +186,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
+
   public String getDescription() {
     return description;
   }
+
 
   public Date getEndDate() {
     return endDate;
@@ -215,7 +221,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return leader;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -223,7 +228,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -283,6 +288,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getTitle() {
+    return title;
+  }
+
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -316,6 +326,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public void setBudgetType(BudgetType budgetType) {
     this.budgetType = budgetType;
   }
+
 
   public void setCenterType(Integer centerType) {
     this.centerType = centerType;
@@ -381,10 +392,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.projectBudgets = projectBudgets;
   }
 
-
   public void setProjectBudgetsList(List<ProjectBudget> projectBudgetsList) {
     this.projectBudgetsList = projectBudgetsList;
   }
+
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
@@ -392,6 +403,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setStatus(Integer status) {
     this.status = status;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
 

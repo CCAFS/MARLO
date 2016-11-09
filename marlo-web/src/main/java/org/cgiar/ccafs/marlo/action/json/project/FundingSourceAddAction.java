@@ -52,7 +52,7 @@ public class FundingSourceAddAction extends BaseAction {
 
 
   private static String DESCRIPTION = "description";
-
+  private static String TITLE = "title";
   private static String START_DATE = "startDate";
 
   private static String SELECTED_YEAR = "selectedYear";
@@ -116,7 +116,7 @@ public class FundingSourceAddAction extends BaseAction {
 
     fundingSource.setStartDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(START_DATE))[0])));
     fundingSource.setEndDate(dateFormat.parse(StringUtils.trim(((String[]) parameters.get(END_DATE))[0])));
-
+    fundingSource.setTitle(StringUtils.trim(((String[]) parameters.get(TITLE))[0]));
     fundingSource.setDescription(StringUtils.trim(((String[]) parameters.get(DESCRIPTION))[0]));
     fundingSource.setFinanceCode(StringUtils.trim(((String[]) parameters.get(FINANCE_CODE))[0]));
     fundingSource.setContactPersonEmail(StringUtils.trim(((String[]) parameters.get(CONTACT_EMAIL))[0]));

@@ -93,7 +93,7 @@ public class FundingSourceListAction extends BaseAction {
       if (fundingSource.isActive()) {
         source = new HashMap<>();
         source.put("id", fundingSource.getId());
-        source.put("name", fundingSource.getDescription());
+        source.put("name", fundingSource.getTitle());
         source.put("type", fundingSource.getBudgetType().getName());
         source.put("typeId", fundingSource.getBudgetType().getId());
         if (fundingSource.getCenterType().intValue() == 2) {
