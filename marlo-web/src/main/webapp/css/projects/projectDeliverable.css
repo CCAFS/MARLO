@@ -134,3 +134,7 @@ span#notDefined {
 .personRead-content .glyphicon {
     margin-right: 1%;
 }
+
+div#fundingSourceList {
+    position: relative;
+}
