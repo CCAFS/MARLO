@@ -72,7 +72,7 @@ $(document).ready(function() {
     var type = $parent.find(".budgetTypeName").text();
     var typeId = $parent.find(".budgetTypeId").text();
 
-    // Add user
+    // Add Funding source
     addProject(composedName, projectId, budget, type, typeId, institutionSelected, selectedYear);
   });
 
@@ -154,7 +154,8 @@ $(document).ready(function() {
           success: function(data) {
             if(data.status == "OK") {
               console.log('create');
-              addProject(data.title, data.id, data.ammount, data.type, data.typeID);
+              console.log(data);
+              addProject(data.title, data.id, data.ammount, data.type, data.typeID, institutionSelected, selectedYear);
             } else {
               $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
             }
@@ -202,7 +203,7 @@ $(document).ready(function() {
     getData('');
   }
 
-  addProject = function(composedName,projectId,budget,type,typeId) {
+  addProject = function(composedName,projectId,budget,type,typeId,institutionSelected,selectedYear) {
     dialog.dialog("close");
   }
 
