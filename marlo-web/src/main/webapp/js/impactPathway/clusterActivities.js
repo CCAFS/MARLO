@@ -28,6 +28,17 @@ function init() {
 // Remove outcome
   $('.removeOutcome').on('click', removeOutcome);
 
+  // Validate if funding source exists in select
+
+  $("form .outcomeByClusterItem").each(function(i,e) {
+    var options = $(e).parent().parent().parent().find(".outcomeList option");
+    options.each(function(iOption,eOption) {
+      if($(e).find(".outcomeId").val() == $(eOption).val()) {
+        $(eOption).remove();
+      }
+    });
+  });
+
   // updateClustersIndex();
 
   $(".keyOutputInput").on("change keyup", changeTitle);
@@ -354,16 +365,25 @@ function checkOutcomes(block) {
 }
 
 function formatState(state) {
+  console.log(state.text.length);
+  if(state.text.length == 0) {
+    return;
+  }
   if(state.id != "-1") {
     var text = state.text.split(/:(.+)?/);
-    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
-    return $state;
+    if(typeof text[1] != "undefined") {
+      var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
+      return $state;
+    } else {
+      var $state = $("<span>" + state.text + "</span>");
+      return $state;
+    }
   } else {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
   }
 
-};
+}
 
 function notify(text) {
   var notyOptions = jQuery.extend({}, notyDefaultOptions);

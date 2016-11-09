@@ -239,17 +239,18 @@
       </div>
     [/#if]    
       [#-- Statement --]
-      <div class="form-group col-md-9">
+      <div class="form-group col-md-12">
         <label style="display:block;" for="">Outcome statement</label>
         <span title="${(element.crpProgramOutcome.description)!}" class="outcomeStatement">[@utils.wordCutter string=(element.crpProgramOutcome.description)!"undefined" maxPos=100 substr=" "/]</span>
         <input class="outcomeContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
         <input class="outcomeId" type="hidden" name="${customName}.crpProgramOutcome.id" value="${(element.crpProgramOutcome.id)!}"/>
         
       </div>
-      [#-- Contribution --]
+      [#-- Contribution 
       <div class="form-group col-md-3">
           [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution)!}" className="outcomeContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
+      --]
   
   </div>
 
