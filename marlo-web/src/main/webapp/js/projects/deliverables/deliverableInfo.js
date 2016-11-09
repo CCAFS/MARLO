@@ -66,7 +66,16 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
-  $(".fundingSource").on("change", addFundingSource);
+  $(".fundingSource").on("change", function() {
+
+    var option = $(this).find("option:selected");
+    if(option.val() != "-1") {
+      addFundingSource(option);
+    }
+    // Remove option from select
+    option.remove();
+    $(this).trigger("change.select2");
+  });
   $(".removeFundingSource").on("click", removeFundingSource);
 
   /*
@@ -77,15 +86,14 @@ function init() {
 }
 
 // Add a new fundingSource element
-function addFundingSource() {
-  var option = $(this).find("option:selected");
+function addFundingSource(option) {
   var canAdd = true;
   console.log(option.val());
   if(option.val() == "-1") {
     canAdd = false;
   }
 
-  var $list = $(this).parents(".select").parents("#fundingSourceList").find(".list");
+  var $list = $(option).parents(".select").parents("#fundingSourceList").find(".list");
   var $item = $("#fsourceTemplate").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
@@ -96,16 +104,11 @@ function addFundingSource() {
       return;
     }
   });
-
-  // Reset select
-  $(this).val("-1");
-  $(this).trigger('change.select2');
-
   if(!canAdd) {
     return;
   }
 
-  // Set deliverable parameters
+  // Set funding source parameters
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".fId").val(option.val());
@@ -114,17 +117,27 @@ function addFundingSource() {
   updateFundingSources($list);
   checkFundingItems($list);
 
+// Reset select
+  $(option).val("-1");
+  $(option).trigger('change.select2');
+
 }
 
 function removeFundingSource() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.fundingSources');
+  var value = $item.find(".fId").val();
+  var name = $item.find(".name").attr("title");
+  console.log(name + "-" + value);
+  var $select = $(".fundingSource");
   $item.hide(1000, function() {
     $item.remove();
-    checkItems($list);
+    checkFundingItems($list);
     updateFundingSources($list);
   });
-
+// Add funding source option again
+  $select.addOption(value, name);
+  $select.trigger("change.select2");
 }
 
 function updateFundingSources($list) {
@@ -140,7 +153,6 @@ function validateCurrentDate() {
     var statusSelect = $("form .status");
     var option = $(yearSelect).find("option:selected");
     if(option.val() <= currentCycleYear) {
-      console.log("holi");
       if($(statusSelect).val() === "2") {
         console.log("holi");
         statusSelect.val("-1");
@@ -270,6 +282,7 @@ function checkItems(block) {
 function checkFundingItems(block) {
   console.log(block);
   var items = $(block).find('.fundingSources').length;
+  console.log(items);
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
   } else {
