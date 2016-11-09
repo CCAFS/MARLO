@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
@@ -28,7 +29,9 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -50,7 +53,8 @@ public class ProjectListAction extends BaseAction {
 
 
   private Crp loggedCrp;
-
+  @Inject
+  private SectionStatusManager sectionStatusManager;
   private long projectID;
 
   // Managers
@@ -121,6 +125,7 @@ public class ProjectListAction extends BaseAction {
         long liId = liaisonUser.getLiaisonInstitution().getId();
         LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liId);
         if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution)) {
+
           this.clearPermissionsCache();
           return SUCCESS;
         }
@@ -184,6 +189,19 @@ public class ProjectListAction extends BaseAction {
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
 
       projectID = projectManager.saveProject(project);
+      SectionStatus status = null;
+      if (status == null) {
+
+        status = new SectionStatus();
+        status.setCycle(this.getCurrentCycle());
+        status.setYear(this.getCurrentCycleYear());
+        status.setProject(project);
+        status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+
+
+      }
+      status.setMissingFields("");
+      sectionStatusManager.saveSectionStatus(status);
 
       if (projectID > 0) {
         return true;
@@ -206,7 +224,21 @@ public class ProjectListAction extends BaseAction {
       project.setPresetDate(new Date());
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
 
+
       projectID = projectManager.saveProject(project);
+      SectionStatus status = null;
+      if (status == null) {
+
+        status = new SectionStatus();
+        status.setCycle(this.getCurrentCycle());
+        status.setYear(this.getCurrentCycleYear());
+        status.setProject(project);
+        status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
+
+
+      }
+      status.setMissingFields("");
+      sectionStatusManager.saveSectionStatus(status);
       if (projectID > 0) {
         return true;
       }
