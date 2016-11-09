@@ -49,16 +49,16 @@
 
 [#-- Funding Source --]
 <div class="panel tertiary col-md-12">
-  <div class="panel-head"><label for=""> [@customForm.text name="deliverable.fundingSources" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+  <div class="panel-head"><label for=""> [@customForm.text name="deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="project.clusterActivities"> 
     <ul class="list">
     [#if deliverable.fundingSources?has_content]
       [#list deliverable.fundingSources as element]
         <li class="fundingSources clearfix">
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
-          <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${element.fundingSource.id}" />
+          <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
           <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-          <span class="name">${(element.composedName)!'null'}</span>
+          <span class="name">${(element.fundingSource.description)!'null'}</span>
           <div class="clearfix"></div>
         </li>
       [/#list]
@@ -77,7 +77,7 @@
   <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
     <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
     <input class="id" type="hidden" name="deliverable.fundingSources[-1].id" value="" />
-    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSources.id" value="" />
+    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSource.id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>
