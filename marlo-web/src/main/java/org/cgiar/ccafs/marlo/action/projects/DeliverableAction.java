@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -60,8 +61,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -487,6 +490,7 @@ public class DeliverableAction extends BaseAction {
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
+        deliverable.setProject(deliverableDb.getProject());
         project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
         reader.close();
@@ -546,9 +550,24 @@ public class DeliverableAction extends BaseAction {
           partnerPersons.add(partnerPerson);
         }
       }
+      this.fundingSources = new ArrayList<>();
+      List<FundingSource> fundingSources =
+        fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
+      for (FundingSource fundingSource : fundingSources) {
+        for (ProjectBudget budget : fundingSource.getProjectBudgets().stream().filter(c -> c.isActive())
+          .collect(Collectors.toList())) {
+          if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
+            this.fundingSources.add(fundingSource);
+          }
+          {
 
-      fundingSources = fundingSourceManager.findAll().stream().filter(fs -> fs.isActive()).collect(Collectors.toList());
-
+          }
+        }
+      }
+      Set<FundingSource> hs = new HashSet();
+      hs.addAll(this.fundingSources);
+      this.fundingSources.clear();
+      this.fundingSources.addAll(hs);
 
     }
 

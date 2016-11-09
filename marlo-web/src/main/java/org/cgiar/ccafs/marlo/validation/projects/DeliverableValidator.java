@@ -140,6 +140,11 @@ public class DeliverableValidator extends BaseValidator {
       action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+
+    if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
+      this.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
+      action.getInvalidFields().put("list-deliverable.fundingSources", InvalidFieldsMessages.EMPTYLIST);
+    }
     /*
      * if (deliverable.getOtherPartners() != null) {
      * if (deliverable.getOtherPartners().size() == 0) {
