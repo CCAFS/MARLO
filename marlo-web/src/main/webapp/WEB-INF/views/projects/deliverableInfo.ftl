@@ -58,7 +58,7 @@
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
           <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-          <span class="name">${(element.fundingSource.description)!'null'}</span>
+          <span title="${(element.fundingSource.description)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.description)!"undefined" maxPos=100 substr=" "/]</span>
           <div class="clearfix"></div>
         </li>
       [/#list]

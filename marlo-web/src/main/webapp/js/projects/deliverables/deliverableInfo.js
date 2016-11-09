@@ -78,6 +78,18 @@ function init() {
   });
   $(".removeFundingSource").on("click", removeFundingSource);
 
+  // Validate if funding source exists in select
+
+  $("form .fundingSources").each(function(i,e) {
+    var options = $(".fundingSource option");
+    options.each(function(iOption,eOption) {
+      if($(e).find(".fId").val() == $(eOption).val()) {
+        $(eOption).remove();
+      }
+    });
+
+  })
+
   /*
    * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
    * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option

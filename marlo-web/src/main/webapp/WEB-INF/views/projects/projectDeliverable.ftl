@@ -16,6 +16,7 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container">
   <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> </p></div> 
