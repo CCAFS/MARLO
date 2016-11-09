@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
+import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
@@ -39,7 +40,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
-import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -530,14 +530,18 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList()));
       }
 
-      if (project.getProjectClusterActivities() != null) {
+      if (project.getProjectOutcomes() != null) {
 
         keyOutputs = new ArrayList<>();
 
-        for (ProjectClusterActivity clusterActivity : project.getProjectClusterActivities().stream()
-          .filter(ca -> ca.isActive()).collect(Collectors.toList())) {
-          keyOutputs.addAll(clusterActivity.getCrpClusterOfActivity().getCrpClusterKeyOutputs().stream()
-            .filter(ko -> ko.isActive()).collect(Collectors.toList()));
+        for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream().filter(ca -> ca.isActive())
+          .collect(Collectors.toList())) {
+
+          for (CrpClusterKeyOutputOutcome keyOutcome : projectOutcome.getCrpProgramOutcome()
+            .getCrpClusterKeyOutputOutcomes().stream().filter(ko -> ko.isActive()).collect(Collectors.toList())) {
+            keyOutputs.add(keyOutcome.getCrpClusterKeyOutput());
+          }
+
         }
       }
       partnerPersons = new ArrayList<>();
