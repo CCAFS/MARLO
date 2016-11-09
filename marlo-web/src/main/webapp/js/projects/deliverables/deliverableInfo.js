@@ -87,8 +87,7 @@ function init() {
         $(eOption).remove();
       }
     });
-
-  })
+  });
 
   /*
    * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
