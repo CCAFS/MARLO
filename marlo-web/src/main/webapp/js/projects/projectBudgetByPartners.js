@@ -103,7 +103,7 @@ function validateFundingSource() {
   }
 }
 
-// Add bilateral project function
+// Add funding source function
 function addFundingSource(composedName,projectId,budget,type,typeId,institutionSelected,selectedYear) {
   dialog.dialog("close");
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');

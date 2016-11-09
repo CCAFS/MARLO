@@ -72,9 +72,15 @@ $(document).ready(function() {
   // Pop up when exists a draft version
   var saveMessage = "Please be aware that this section has information saved in a draft version,";
   saveMessage += ' we suggest you to click on the Save button';
+
   $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
     var url = $.trim($(this).attr("href"));
-    console.log((myTurn == 1));
+
+    // Prevent middle click
+    if(e.which == 2) {
+      return;
+    }
+
     if((isChanged() || forceChange) && editable && draft && url && (myTurn == 1)) {
       e.preventDefault();
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
