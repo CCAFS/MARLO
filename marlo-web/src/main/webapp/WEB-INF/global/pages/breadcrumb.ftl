@@ -24,7 +24,7 @@
     --]
     
     [#-- Users Online --]
-    <span id="usersOnline" class="""> <span>0</span> users online on this section </span>
+    <span id="usersOnline" class="""> <span>0</span> user(s) online on this section </span>
     
     [#-- Channel name --]
     <span id="currentSectionString" style="display:none">${(currentSectionString)!'none'}</span>

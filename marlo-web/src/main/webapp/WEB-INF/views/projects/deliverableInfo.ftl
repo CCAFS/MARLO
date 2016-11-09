@@ -49,7 +49,7 @@
 
 [#-- Funding Source --]
 <div class="panel tertiary col-md-12">
-  <div class="panel-head"><label for=""> [@customForm.text name="deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+ <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="project.clusterActivities"> 
     <ul class="list">
     [#if deliverable.fundingSources?has_content]
