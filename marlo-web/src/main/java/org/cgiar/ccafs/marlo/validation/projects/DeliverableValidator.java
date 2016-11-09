@@ -143,7 +143,8 @@ public class DeliverableValidator extends BaseValidator {
 
     if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
       this.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
-      action.getInvalidFields().put("list-deliverable.fundingSources", InvalidFieldsMessages.EMPTYLIST);
+      action.getInvalidFields().put("list-deliverable.fundingSources",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
     }
     /*
      * if (deliverable.getOtherPartners() != null) {
