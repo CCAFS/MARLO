@@ -104,10 +104,10 @@ public class SendMail {
         testingHeader.append("----------------------------------------------------<br><br>");
         subject = "TEST " + subject;
         messageContent = testingHeader.toString() + messageContent;
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
-          LOG.info("   - TO: " + bbcEmail);
-        }
+        // if (toEmail != null) {
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
+        LOG.info("   - TO: " + bbcEmail);
+        // }
       } else {
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
