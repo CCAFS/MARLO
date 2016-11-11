@@ -49,6 +49,7 @@
       var draft = ${draft?string};
       var autoSaveActive = ${((currentUser.autoSave)!false)?string};
       var currentCrpID=${(crpID)!'-1'};
+      var currentCrpSession='${(crpSession)!'-1'}';
       var currentCycleYear = ${(currentCycleYear)!1999};
       var reportingActive= ${((reportingActive)!false)?string};
       
