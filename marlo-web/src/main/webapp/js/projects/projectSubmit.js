@@ -1,7 +1,7 @@
 var tasksLength;
 var sections;
 var currentCycle;
-var selectedUrl;
+var selectedUrl, selectedAction;
 
 $(document).ready(function() {
 
@@ -70,22 +70,6 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
-  // Pop up when exists a draft version
-  $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
-    selectedUrl = $.trim($(this).attr("href"));
-
-    // Prevent middle click
-    if(e.which == 2) {
-      return;
-    }
-
-    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
-      e.preventDefault();
-      $('#myModal').modal();
-    }
-
-  });
-
   /* Validate justification for old projects */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
@@ -117,19 +101,32 @@ $(document).ready(function() {
 
   });
 
+  // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
+  $('#secondaryMenu a').on('click', function(e) {
+    selectedUrl = $.trim($(this).attr("href"));
+    selectedAction = getClassParameter($(this), 'action')
+    // Prevent middle click
+    if(e.which == 2) {
+      return;
+    }
+    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
+      e.preventDefault();
+      $('#discardChanges').modal();
+    }
+  });
+
 });
 
 function acceptChanges() {
-  $('#redirectionUrl').val(selectedUrl);
-  console.log($('#redirectionUrl').val());
+  $('#redirectionUrl').val(selectedAction);
   $('button[name="save"]').trigger('click');
-  $('#myModal').modal('hide');
+  $('#discardChanges').modal('hide');
 }
 
 function cancel() {
   window.location.replace(selectedUrl);
   window.location.href = selectedUrl;
-  $('#myModal').modal('hide');
+  $('#discardChanges').modal('hide');
 }
 
 function submitButtonEvent(e) {

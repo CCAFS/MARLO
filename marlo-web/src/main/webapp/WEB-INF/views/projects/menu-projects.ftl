@@ -66,7 +66,7 @@
           [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
           [#if (item.show)!true ]
             <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-              <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" style="">
+              <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                 [@s.text name=item.name/]
               </a>
             </li>
@@ -125,26 +125,8 @@
 
 [/#if]
 
-
-<div id="myModal" class="modal fade">
-  <div class="modal-dialog modal-sm" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">Discard Changes ?</h4>
-      </div>
-      <div class="modal-body">
-        <p>You have unsaved changes which will be lost if you exit this page.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" onclick="acceptChanges()">Accept Changes</button>
-        <button type="button" class="btn btn-danger" onclick="cancel()">Cancel</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
 [#assign customJS = [ "${baseUrl}/js/projects/projectSubmit.js" ] + customJS  /]

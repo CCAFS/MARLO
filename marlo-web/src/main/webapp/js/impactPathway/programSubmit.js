@@ -1,6 +1,7 @@
 var tasksLength;
 var sections;
 var currentCycle;
+var selectedUrl, selectedAction;
 
 $(document).ready(function() {
   sections = [
@@ -26,48 +27,12 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
-  var saveMessage = "Please be aware that this section has information saved ";
-  saveMessage += "in a draft version, we suggest you to click on the Save button";
-
-  $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
-    var url = $.trim($(this).attr("href"));
-
-    if((isChanged() || forceChange) && editable && draft && url) {
-      e.preventDefault();
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = saveMessage;
-      notyOptions.type = 'confirm';
-      notyOptions.layout = 'center';
-      notyOptions.modal = true;
-      notyOptions.buttons = [
-          {
-              addClass: 'btn btn-primary',
-              text: 'Continue without saving',
-              onClick: function($noty) {
-                window.location.replace(url);
-                window.location.href = url;
-                $noty.close();
-              }
-          }, {
-              addClass: 'btn btn-success',
-              text: 'Save',
-              onClick: function($noty) {
-                $('button[name="save"]').trigger('click');
-                $noty.close();
-              }
-          }
-      ];
-      noty(notyOptions);
-    }
-  });
-
   /* Validate justification for old projects */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
   var errorClass = 'fieldError';
   $parent.prepend('<div class="loading" style="display:none"></div>');
   $('[name=save]').on('click', function(e) {
-
     // Cancel Auto Save
     autoSaveActive = false;
 
@@ -89,10 +54,35 @@ $(document).ready(function() {
       noty(notyOptions);
 
     }
+  });
 
+  // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
+  $('#secondaryMenu a').on('click', function(e) {
+    selectedUrl = $.trim($(this).attr("href"));
+    selectedAction = getClassParameter($(this), 'action')
+    // Prevent middle click
+    if(e.which == 2) {
+      return;
+    }
+    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
+      e.preventDefault();
+      $('#discardChanges').modal();
+    }
   });
 
 });
+
+function acceptChanges() {
+  $('#redirectionUrl').val(selectedAction);
+  $('button[name="save"]').trigger('click');
+  $('#discardChanges').modal('hide');
+}
+
+function cancel() {
+  window.location.replace(selectedUrl);
+  window.location.href = selectedUrl;
+  $('#discardChanges').modal('hide');
+}
 
 function submitButtonEvent(e) {
   e.preventDefault();

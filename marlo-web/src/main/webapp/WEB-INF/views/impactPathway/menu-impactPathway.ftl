@@ -57,6 +57,9 @@
   </a>
 [/#if]
 
+[#-- Discard Changes Popup --]
+[#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
+
 [#-- Mini-graph --]
 <div id="graphicWrapper">
 <p class="text-center"><b>Impact Pathway Graph</b></p>

@@ -435,6 +435,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return ServletActionContext.getActionMapping().getName();
   }
 
+
   public String getBasePermission() {
     return basePermission;
   }
@@ -443,10 +444,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return config.getBaseUrl();
   }
 
-
   public APConfig getConfig() {
     return config;
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -545,7 +546,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Get the user that is currently saved in the session.
    * 
@@ -562,6 +562,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return u;
   }
+
 
   /**
    * This method gets the specific section status from the sectionStatuses array for a Deliverable.
@@ -624,7 +625,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -634,6 +634,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   public HashMap<String, String> getInvalidFields() {
     return invalidFields;
@@ -660,10 +661,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return Locale.ENGLISH;
   }
 
-
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
   }
+
 
   /**
    * get the number of users log in in the application
@@ -811,10 +812,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
+
 
   public HttpServletRequest getRequest() {
     return request;
@@ -823,7 +824,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
@@ -864,6 +864,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return version;
   }
 
+
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -885,11 +886,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
-
   public boolean hasPersmissionSubmitImpact() {
 
     return this.hasPermission("submit");
   }
+
 
   public boolean hasProgramnsRegions() {
     try {
@@ -937,7 +938,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-
   public boolean isCompletePreProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -975,6 +975,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -993,7 +994,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public boolean isDataSaved() {
     return dataSaved;
@@ -1037,6 +1037,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
   }
+
 
   public boolean isDraft() {
     return draft;
@@ -1134,10 +1135,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isSaveable() {
     return saveable;
   }
+
 
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
@@ -1183,7 +1184,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
   }
-
 
   public void loadLessons(Crp crp, Project project, String actionName) {
 
@@ -1254,16 +1254,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return NEXT;
   }
 
+
   @Override
   public void prepare() throws Exception {
     // So far, do nothing here!
   }
 
-
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
+
 
   public void saveLessons(Crp crp, Project project) {
 
@@ -1324,7 +1325,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.add = true;
   }
 
-
   public void setBasePermission(String basePermission) {
     this.basePermission = basePermission;
   }
@@ -1334,28 +1334,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.cancel = true;
   }
 
+
   public void setCanEdit(boolean canEdit) {
     this.canEdit = canEdit;
   }
-
 
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
 
+
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
-
 
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
 
+
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
-
 
   public void setDraft(boolean draft) {
     this.draft = draft;
@@ -1366,19 +1366,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
+
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
-
 
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
+
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
-
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -1388,6 +1388,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setLessonsActive(boolean lessonsActive) {
     this.lessonsActive = lessonsActive;
   }
+
 
   public void setNext(boolean next) {
     this.next = true;
@@ -1405,10 +1406,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.reportingActive = reportingActive;
   }
 
-
   public void setReportingYear(int reportingYear) {
     this.reportingYear = reportingYear;
   }
+
 
   public void setSave(boolean save) {
     this.save = true;
@@ -1438,6 +1439,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setSubmit(boolean submit) {
     this.submit = true;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public String submit() {
