@@ -1,6 +1,7 @@
 var tasksLength;
 var sections;
 var currentCycle;
+var selectedUrl;
 
 $(document).ready(function() {
 
@@ -70,44 +71,19 @@ $(document).ready(function() {
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
   // Pop up when exists a draft version
-  var saveMessage = "Please be aware that this section has information saved in a draft version,";
-  saveMessage += ' we suggest you to click on the Save button';
-
   $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a').on('click', function(e) {
-    var url = $.trim($(this).attr("href"));
+    selectedUrl = $.trim($(this).attr("href"));
 
     // Prevent middle click
     if(e.which == 2) {
       return;
     }
 
-    if((isChanged() || forceChange) && editable && draft && url && (myTurn == 1)) {
+    if((isChanged() || forceChange) && editable && draft && selectedUrl && (myTurn == 1)) {
       e.preventDefault();
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = saveMessage;
-      notyOptions.type = 'confirm';
-      notyOptions.layout = 'center';
-      notyOptions.modal = true;
-      notyOptions.buttons = [
-          {
-              addClass: 'btn btn-primary',
-              text: 'Continue without saving',
-              onClick: function($noty) {
-                window.location.replace(url);
-                window.location.href = url;
-                $noty.close();
-              }
-          }, {
-              addClass: 'btn btn-success',
-              text: 'Save',
-              onClick: function($noty) {
-                $('button[name="save"]').trigger('click');
-                $noty.close();
-              }
-          }
-      ];
-      noty(notyOptions);
+      $('#myModal').modal();
     }
+
   });
 
   /* Validate justification for old projects */
@@ -142,6 +118,18 @@ $(document).ready(function() {
   });
 
 });
+
+function acceptChanges() {
+  $('#redirectionUrl').val(selectedUrl);
+  $('button[name="save"]').trigger('click');
+  $('#myModal').modal('hide');
+}
+
+function cancel() {
+  window.location.replace(selectedUrl);
+  window.location.href = selectedUrl;
+  $('#myModal').modal('hide');
+}
 
 function submitButtonEvent(e) {
   e.preventDefault();

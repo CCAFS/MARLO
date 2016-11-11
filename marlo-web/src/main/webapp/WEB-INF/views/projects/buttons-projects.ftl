@@ -7,6 +7,8 @@
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 
+<input id="redirectionUrl" type="hidden" name="url" value="" />
+
 <div class="buttons">
   [#if !action.isProjectNew(projectID)]
     [#if editable]
