@@ -460,7 +460,7 @@ public class OutcomesAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-        return REDIRECT;
+           this.addActionMessage(""); return REDIRECT;
       }
     } else {
       this.setActionMessages(null);

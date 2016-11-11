@@ -877,7 +877,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-        return REDIRECT;
+           this.addActionMessage(""); return REDIRECT;
       }
     }
     return NOT_AUTHORIZED;
