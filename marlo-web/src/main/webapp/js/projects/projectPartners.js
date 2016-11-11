@@ -767,7 +767,7 @@ function PartnerObject(partner) {
     $(this.ppaPartnersList).slideDown();
   };
   this.hidePPAs = function() {
-    $(partner).find("> .blockTitle .index").addClass('ppa').text('PPA Partner');
+    $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing / PPA Partner');
     $(this.ppaPartnersList).slideUp();
   };
   this.startLoader = function() {
