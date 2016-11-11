@@ -137,21 +137,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private CrpManager crpManager;
   // Variables
   private String crpSession;
+  private String url;
+
 
   private Crp currentCrp;
+
   protected boolean dataSaved;
   protected boolean delete;
-
-
   private boolean draft;
+
+
   private boolean reportingActive;
   private boolean planningActive;
   private boolean lessonsActive;
   private int reportingYear;
   private int planningYear;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
+
   @Inject
   private ProjectManager projectManager;
   private boolean fullEditable; // If user is able to edit all the form.
@@ -159,44 +162,42 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean isEditable; // If user is able to edit the form.
   // Justification of the changes
   private String justification;
-
   protected boolean next;
+
   @Inject
   private FileDBManager fileDBManager;
-
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
-  private Map<String, Object> parameters;
 
+  private Map<String, Object> parameters;
   @Inject
   private LiaisonUserManager liaisonUserManager;
+
   @Inject
   private UserRoleManager userRoleManager;
-
   @Inject
   private CrpProgramManager crpProgramManager;
 
-
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
 
   @Inject
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
   @Inject
   private FundingSourceManager fundingSourceManager;
+
   private HttpServletRequest request;
   // button actions
   protected boolean save;
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
   @Inject
   private SectionStatusManager sectionStatusManager;
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
-
   private Map<String, Object> session;
 
 
@@ -213,6 +214,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.fullEditable = true;
     this.justification = "";
   }
+
 
   /* Override this method depending of the save action. */
   public String add() {
@@ -428,6 +430,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -436,10 +439,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return basePermission;
   }
 
-
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   public APConfig getConfig() {
     return config;
@@ -530,7 +533,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public int getCurrentCycleYear() {
     try {
       if (this.isReportingActive()) {
@@ -542,6 +544,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return 0;
     }
   }
+
 
   /**
    * Get the user that is currently saved in the session.
@@ -579,7 +582,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
-
 
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
@@ -622,6 +624,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -649,7 +652,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Define default locale while we decide to support other languages in the future.
    */
@@ -657,6 +659,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Locale getLocale() {
     return Locale.ENGLISH;
   }
+
 
   public String getNamespace() {
     return ServletActionContext.getActionMapping().getNamespace();
@@ -704,7 +707,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return null;
   }
-
 
   public boolean getProjectSectionStatus(String section, long projectID) {
     boolean returnValue = false;
@@ -809,6 +811,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -816,7 +819,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
-
 
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
@@ -830,6 +832,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Submission getSubmission() {
     return submission;
+  }
+
+
+  public String getUrl() {
+    return url;
   }
 
 
