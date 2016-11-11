@@ -325,8 +325,9 @@ public class OutcomesAction extends BaseAction {
 
           User user = userManager.getUser(this.getCurrentUser().getId());
           List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-            .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram()!=null&& c.getCrpProgram().getId().longValue()==(crpProgramID)
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
+              && c.getCrpProgram().getId().longValue() == (crpProgramID)
+              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList());
           if (!userLeads.isEmpty()) {
             crpProgramID = userLeads.get(0).getCrpProgram().getId();
@@ -436,19 +437,6 @@ public class OutcomesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
-      Collection<String> messages = this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
-
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
-
 
       Path path = this.getAutoSaveFilePath();
 
@@ -456,7 +444,24 @@ public class OutcomesAction extends BaseAction {
         path.toFile().delete();
       }
 
-      return SUCCESS;
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        return REDIRECT;
+      }
     } else {
       this.setActionMessages(null);
       return NOT_AUTHORIZED;

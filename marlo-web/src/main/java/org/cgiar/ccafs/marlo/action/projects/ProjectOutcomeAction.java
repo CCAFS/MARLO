@@ -470,25 +470,29 @@ public class ProjectOutcomeAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_NEXT_USERS_RELATION);
       relationsName.add(APConstants.PROJECT_OUTCOME_LESSONS_RELATION);
       projectOutcomeManager.saveProjectOutcome(projectOutcome, this.getActionName(), relationsName);
-      Collection<String> messages = this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
-
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
 
       Path path = this.getAutoSaveFilePath();
 
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      return SUCCESS;
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        return REDIRECT;
+      }
     } else
 
     {

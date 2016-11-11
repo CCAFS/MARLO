@@ -258,7 +258,7 @@ public class ClusterActivitiesAction extends BaseAction {
         user.setPassword(password);
       }
       message
-      .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
       message.append(this.getText("email.support"));
       message.append(this.getText("email.bye"));
 
@@ -406,8 +406,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
           User user = userManager.getUser(this.getCurrentUser().getId());
           List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-            .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram()!=null&& c.getCrpProgram().getId().longValue()==(crpProgramID)
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+            .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
+              && c.getCrpProgram().getId().longValue() == (crpProgramID)
+              && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
             .collect(Collectors.toList());
           if (!userLeads.isEmpty()) {
             crpProgramID = userLeads.get(0).getCrpProgram().getId();
@@ -733,26 +734,30 @@ public class ClusterActivitiesAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
-      Collection<String> messages = this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
-        this.setActionMessages(null);
-        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-        for (String key : keys) {
-          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-        }
 
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
-      messages = this.getActionMessages();
 
       Path path = this.getAutoSaveFilePath();
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
 
-      return SUCCESS;
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        return REDIRECT;
+      }
     } else {
       return NOT_AUTHORIZED;
     }
