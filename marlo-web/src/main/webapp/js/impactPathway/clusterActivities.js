@@ -244,8 +244,9 @@ function verifyKoContribution(list) {
   var cont = list.find(".keyOutputItem ").length;
   if(cont != 0) {
     var newContribution = contribution / cont;
+    console.log(newContribution);
     list.find(".keyOutputItem ").each(function(i,e) {
-      $(e).find(".keyOutputContribution").val(newContribution.toFixed(3));
+      $(e).find(".keyOutputContribution").val(newContribution);
     });
   }
 }
