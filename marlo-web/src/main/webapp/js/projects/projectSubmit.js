@@ -121,6 +121,7 @@ $(document).ready(function() {
 
 function acceptChanges() {
   $('#redirectionUrl').val(selectedUrl);
+  console.log($('#redirectionUrl').val());
   $('button[name="save"]').trigger('click');
   $('#myModal').modal('hide');
 }
