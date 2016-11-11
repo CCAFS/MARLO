@@ -107,7 +107,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NEXT = "next";
 
-
+  public static final String REDIRECT = "redirect";
   public static final String NOT_AUTHORIZED = "403";
 
   public static final String NOT_FOUND = "404";

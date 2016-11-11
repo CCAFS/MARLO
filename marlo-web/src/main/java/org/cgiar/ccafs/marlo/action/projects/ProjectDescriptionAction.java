@@ -787,6 +787,7 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       project.setActiveSince(new Date());
+
       project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
@@ -806,7 +807,12 @@ public class ProjectDescriptionAction extends BaseAction {
       } else {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-      return SUCCESS;
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        return SUCCESS;
+      } else {
+        return REDIRECT;
+      }
+
     } else
 
     {
