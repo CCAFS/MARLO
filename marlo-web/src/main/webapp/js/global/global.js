@@ -245,6 +245,11 @@ $(document)
             });
           });
 
+          // Cancel button
+          $('#cancelButton').on('click', function() {
+            $('button[name="cancel"]').trigger('click');
+          });
+
           // Set autogrow
           $("textarea[id!='justification']").autoGrow();
 

@@ -54,8 +54,7 @@
   <div class="layer"></div>
   <div class="content">
     <span class="glyphicon glyphicon-lock"></span>
-    <p>[@s.text name="project.message.concurrence" /]</p>
-    <p>[@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectOutcome" value=projectOutcome /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+    <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectOutcome" value=projectOutcome /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
   </div>
   
 </div>
