@@ -1,13 +1,13 @@
 $(document).ready(init);
 
 function init() {
-  verifyContributions();
+  // verifyContributions();
   // Add User - Override function from userManagement.js
   addUser = addUserItem;
 
 // Numeric inputs
   $('input.keyOutputContribution , input.outcomeContribution').numericInput();
-  $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
+  // $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
 
   $('form select').select2({
       templateResult: formatState,
@@ -66,14 +66,13 @@ function init() {
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
       $(this).find(".errorTag").hide();
-      console.log($(this).find(".errorTag"));
       $(this).find(".errorTag").css("left", $(this).find(".outcomesWrapper").outerWidth());
       $(this).find(".errorTag").fadeIn(2000);
     });
   });
 
 // verify contributions
-  $(".keyOutputContribution , .outcomeContribution").on("change keyup", verifyContributions);
+  // $(".keyOutputContribution , .outcomeContribution").on("change keyup", verifyContributions);
 
   // Missing fields in KO
   $("form .keyOutputItem ").each(function(i,e) {
@@ -241,23 +240,14 @@ function updateKeyOtuputsIndex(item,clustersName) {
 }
 
 function verifyKoContribution(list) {
-  var contribution = 0;
-  var val = 0;
-  list.find(".keyOutputItem ").each(function(i,e) {
-
-    // nuevo
-    if($(e).find(".keyOutputContribution ").val()) {
-      val = parseFloat($(e).find(".keyOutputContribution ").val());
-      console.log(val);
-      contribution = contribution + val;
-    } else {
-      val = 0;
-      contribution = contribution + val;
-    }
-    console.log(contribution);
-  });
-  var newContribution = 100 - contribution;
-  return newContribution.toFixed(2);
+  var contribution = 100;
+  var cont = list.find(".keyOutputItem ").length;
+  if(cont != 0) {
+    var newContribution = contribution / cont;
+    list.find(".keyOutputItem ").each(function(i,e) {
+      $(e).find(".keyOutputContribution").val(newContribution.toFixed(3));
+    });
+  }
 }
 
 // OUTCOMES BY CoA
@@ -271,7 +261,7 @@ function addOutcome(option) {
   } else {
     contribution = verifyOutcomeContribution($list);
   }
-  var v = $(option).text().length > 80 ? $(option).text().substr(0, 100) + ' ... ' : $(option).text();
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 160) + ' ... ' : $(option).text();
   $item.find(".outcomeStatement").attr("title", $(option).text()).tooltip();
   $item.find(".outcomeStatement").html(v);
   $item.find(".outcomeId").val(option.val());
@@ -287,7 +277,6 @@ function addOutcome(option) {
 }
 
 function removeOutcome() {
-  console.log("holiClose");
   var $item = $(this).parents('.outcomeByClusterItem');
   var $list = $item.parent();
   var value = $item.find(".outcomeId").val();
@@ -310,7 +299,6 @@ function updateOutcomesIndex(item,keyOutputName) {
   var name = $("#outcomesName").val();
   $(item).find('.outcomesWrapper .outcomeByClusterItem').each(function(indexOutcome,outcomeItem) {
     var customName = keyOutputName + '.' + name + '[' + indexOutcome + ']';
-    console.log(customName);
     $(outcomeItem).find('.outcomeContributionId').attr('name', customName + '.id');
     $(outcomeItem).find('.outcomeContribution').attr('name', customName + '.contribution');
     $(outcomeItem).find('.outcomeId').attr('name', customName + '.crpProgramOutcome.id');
@@ -321,21 +309,14 @@ function updateOutcomesIndex(item,keyOutputName) {
 }
 
 function verifyOutcomeContribution(list) {
-  var contribution = 0;
-  var val = 0;
-  list.find(".outcomeByClusterItem").each(function(i,e) {
-    // nuevo
-    if($(e).find(".outcomeContribution  ").val()) {
-      val = parseFloat($(e).find(".outcomeContribution").val());
-      contribution = contribution + val;
-    } else {
-      val = 0;
-      contribution = contribution + val;
-    }
-
-  });
-  var newContribution = 100 - contribution;
-  return newContribution.toFixed(2);
+  var contribution = 100;
+  var cont = list.find(".outcomeByClusterItem ").length;
+  if(cont != 0) {
+    var newContribution = contribution / cont;
+    list.find(".outcomeByClusterItem ").each(function(i,e) {
+      $(e).find(".outcomeContribution").val(newContribution.toFixed(3));
+    });
+  }
 }
 
 function checkItems(block) {
@@ -366,7 +347,6 @@ function checkOutcomes(block) {
 }
 
 function formatState(state) {
-  console.log(state.text.length);
   if(state.text.length == 0) {
     return;
   }
@@ -398,38 +378,12 @@ function verifyContributions() {
   contentCluster.find(".cluster").each(function(i,e) {
     // verify Key output contributions
     var keyOutputList = $(e).find(".keyOutputsItems-list");
-    var percentageRemaining = verifyKoContribution(keyOutputList);
-    if(percentageRemaining < 0) {
-      $(keyOutputList).find(".keyOutputContribution").removeClass('fieldChecked');
-      $(keyOutputList).find(".keyOutputContribution").addClass('fieldError');
-      $(keyOutputList).find(".koContribution-title").addClass('errorText');
-    } else {
-      $(keyOutputList).find(".koContribution-title").removeClass('errorText');
-      $(keyOutputList).find(".keyOutputContribution").removeClass('fieldError');
-      $(keyOutputList).find(".keyOutputContribution").addClass('fieldChecked');
-    }
-    if(percentageRemaining > 0) {
-      $(keyOutputList).find(".keyOutputContribution").removeClass('fieldChecked');
-      $(keyOutputList).find(".keyOutputContribution").addClass('fieldError');
-      $(keyOutputList).find(".koContribution-title").addClass('errorText');
-    }
+    verifyKoContribution(keyOutputList);
 
     // verify Outcome contributions
     keyOutputList.find(".keyOutputItem ").each(function(i1,e1) {
       var outcomeList = $(e1).find(".outcomesWrapper");
-      var outcomeRemaining = verifyOutcomeContribution(outcomeList);
-      if(outcomeRemaining < 0) {
-        $(outcomeList).find(".outcomeContribution ").removeClass('fieldChecked');
-        $(outcomeList).find(".outcomeContribution ").addClass('fieldError');
-
-      } else {
-        $(outcomeList).find(".outcomeContribution ").removeClass('fieldError');
-        $(outcomeList).find(".outcomeContribution ").addClass('fieldChecked');
-      }
-      if(outcomeRemaining > 0) {
-        $(outcomeList).find(".outcomeContribution").removeClass('fieldChecked');
-        $(outcomeList).find(".outcomeContribution").addClass('fieldError');
-      }
+      verifyOutcomeContribution(outcomeList);
     });
   });
 }
