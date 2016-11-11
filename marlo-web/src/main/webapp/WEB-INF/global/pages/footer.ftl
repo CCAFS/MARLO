@@ -9,11 +9,11 @@
       </div>    
       <div class="container">
         <div class="col-md-5 infoLinks">
-          <div class="col-md-5 contact">Contact person: <a href="">h.f.tobon@cgiar.org</a></div>
+          <div class="col-md-5 contact">Contact person: <a href="mailto:h.f.tobon@cgiar.org">h.f.tobon@cgiar.org</a></div>
           <div class="col-md-2 scrollup"><a href="#">Top</a></div>
         </div>
         <div class="col-md-2 copyRight">@ Copyright 2016 <br /> Current version ${action.getVersion()}</div>
-        <div class="col-md-4 col-md-offset-1 glossary">[@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.here" /][/@s.param][/@s.text]</a>
+        <div class="col-md-4 col-md-offset-1 glossary">[@s.text name="footer.glossary"][@s.param]<a target="_blank" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="global.clickHere" /][/@s.param][/@s.text] <span class="glyphicon glyphicon-hand-left"></span> </a>
         </div>
       </div>
     </footer>
