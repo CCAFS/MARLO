@@ -281,7 +281,32 @@ $(document).ready(function() {
     });
 
   }
-});
+
+  // When select center as Funding Window----------
+  var lastDonor = -1;
+  $("#budgetType").on("change", function() {
+    var option = $(this).find("option:selected");
+    var institutionSelect = $("#institution");
+    console.log(option.val());
+    // If the option selected is center
+    if(option.val() == 4) {
+      if(institutionSelect.val() != "-1") {
+        lastDonor = institutionSelect.val();
+      }
+      institutionSelect.attr("disabled", "disabled");
+      institutionSelect.val(institutionSelected);
+      $(".note").hide("slow");
+    } else {
+      $(".note").show("slow");
+
+      if(institutionSelect.attr("disabled") == "disabled") {
+        institutionSelect.removeAttr("disabled");
+        institutionSelect.val(lastDonor);
+      }
+    }
+  });
+
+});// End document ready event
 
 function date(start,end) {
   var dateFormat = "yy-mm-dd", from = $(start).datepicker({
