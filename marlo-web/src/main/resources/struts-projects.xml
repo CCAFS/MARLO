@@ -83,7 +83,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -107,7 +106,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -131,7 +129,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -144,7 +141,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -204,7 +200,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -228,7 +223,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -241,7 +235,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -259,7 +252,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -276,7 +268,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -296,7 +287,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 			<!-- <result name="next" type="redirectAction"> <param name="actionName">impactPathway</param> 
@@ -325,7 +315,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -349,7 +338,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
       </result>
 		</action>
@@ -373,7 +361,6 @@
 			<result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>
         <param name="edit">true</param>
-        <param name="cancel">true</param>
         <param name="projectID">${projectID}</param>
 		  </result>
 		</action>

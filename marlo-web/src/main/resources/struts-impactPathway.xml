@@ -18,6 +18,11 @@
         <param name="edit">true</param>
         <param name="cancel">true</param>
       </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="crpProgramID">${crpProgramID}</param>
+      </result>
     </action>
     
     <action name="{crp}/clusterActivities" class="org.cgiar.ccafs.marlo.action.impactpathway.ClusterActivitiesAction">
@@ -27,6 +32,11 @@
         <param name="actionName">${crpSession}/clusterActivities</param>
         <param name="crpProgramID">${crpProgramID}</param>
         <param name="edit">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="crpProgramID">${crpProgramID}</param>
       </result>
     </action>
     
