@@ -93,10 +93,8 @@
               <div class="form-group">
                 [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-100" editable=editable /]
               </div>
-              <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-100" editable=editable /]
-              </div>
-            </div>
+              
+            </div> 
             [/#if]
             [#-- Project Outcome achieved target (AT THE END) --]
             [#if showAchievedTarget]
@@ -123,7 +121,20 @@
                 [@customForm.textArea name="projectOutcome.narrativeGenderAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
+            
             [/#if]
+            
+            [#-- Cross-cutting contributions --]
+            <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
+            <div class="form-group">
+              <div class="form-group">
+                [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-50" editable=editable /]
+              </div>
+              <div class="form-group">
+                [@customForm.textArea name="projectOutcome.narrativeYouth" required=true className="limitWords-50" editable=editable /]
+              </div> 
+            </div>
+            
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]
