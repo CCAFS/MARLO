@@ -514,6 +514,7 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
+    programFlagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     clusterofActivites = new ArrayList<>();
 
     for (CrpProgram crpProgram : project.getFlagships()) {
@@ -811,7 +812,8 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
 
     } else
