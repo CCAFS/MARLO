@@ -247,8 +247,8 @@ public class ClusterActivitiesAction extends BaseAction {
       // Building the Email message:
       StringBuilder message = new StringBuilder();
       message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
-      message.append(this.getText("email.newUser.part1"));
-      message.append(this.getText("email.newUser.part2"));
+      // message.append(this.getText("email.newUser.part1"));
+      // message.append(this.getText("email.newUser.part2"));
 
       String password = this.getText("email.outlookPassword");
       if (!user.isCgiarUser()) {
@@ -258,7 +258,7 @@ public class ClusterActivitiesAction extends BaseAction {
         user.setPassword(password);
       }
       message
-        .append(this.getText("email.newUser.part3", new String[] {config.getBaseUrl(), user.getEmail(), password}));
+        .append(this.getText("email.newUser.part1", new String[] {config.getBaseUrl(), user.getEmail(), password}));
       message.append(this.getText("email.support"));
       message.append(this.getText("email.bye"));
 
@@ -266,11 +266,10 @@ public class ClusterActivitiesAction extends BaseAction {
       userManager.saveUser(user, this.getCurrentUser());
 
       String toEmail = null;
-      if (config.isProduction()) {
-        // Send email to the new user and the P&R notification email.
-        // TO
-        toEmail = user.getEmail();
-      }
+      // Send email to the new user and the P&R notification email.
+      // TO
+      toEmail = user.getEmail();
+
       // BBC
       String bbcEmails = this.config.getEmailNotification();
       sendMail.send(toEmail, null, bbcEmails,
@@ -299,15 +298,15 @@ public class ClusterActivitiesAction extends BaseAction {
 
     String toEmail = null;
     String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
+
+    // Send email to the new user and the P&R notification email.
+    // TO
+    toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
     }
+
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
@@ -331,15 +330,15 @@ public class ClusterActivitiesAction extends BaseAction {
 
     String toEmail = null;
     String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the new user and the P&R notification email.
-      // TO
-      toEmail = userAssigned.getEmail();
-      // CC will be the user who is making the modification.
-      if (this.getCurrentUser() != null) {
-        ccEmail = this.getCurrentUser().getEmail();
-      }
+
+    // Send email to the new user and the P&R notification email.
+    // TO
+    toEmail = userAssigned.getEmail();
+    // CC will be the user who is making the modification.
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail();
     }
+
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
