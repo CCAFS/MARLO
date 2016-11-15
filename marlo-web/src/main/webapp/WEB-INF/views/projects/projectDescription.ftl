@@ -104,7 +104,6 @@
             
             [#--  Regions/global and Flagships that the project is working on --]
             <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
-           
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
@@ -150,7 +149,9 @@
             
             [#-- Cluster of Activities --]
             <div class="panel tertiary">
-              <div class="panel-head"> [@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</div>
+              <div class="panel-head"> 
+                <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
+              </div>
               <div id="projectsList" class="panel-body" listname="project.clusterActivities"> 
                 <ul class="list">
                 [#if project.clusterActivities?has_content]
@@ -179,51 +180,31 @@
               </div>
             </div>
             
-            [#-- Scale of the project 
-            <div class="panel tertiary">
-              <div class="panel-head"> [@customForm.text name="projectDescription.scale" readText=!editable /]:[@customForm.req required=true /]</div>
-              <div id="" class="projectScale">
-                <label class="radio-inline" for="isProjectNational">
-                  [#if editable]<input type="radio" name="project.scale" id="isProjectNational"  value="1"  [#if (project.scale?? && (project.scale == 1))]checked="checked"[/#if]/> [/#if]
-                  [#if editable || (project.scale?? && (project.scale == 1))] [@s.text name="project.national"/] [/#if]
-                </label>
-                <label class="radio-inline" for="isProjectRegional">
-                  [#if editable]<input type="radio" name="project.scale" id="isProjectRegional" value="2" [#if (project.scale?? && (project.scale == 2))]checked="checked"[/#if]/> [/#if]
-                  [#if editable || (project.scale?? && (project.scale == 2))] [@s.text name="project.regional"/] [/#if]
-                </label>
-                <label class="radio-inline" for="isProjectGlobal">
-                  [#if editable]<input type="radio" name="project.scale" id="isProjectGlobal" value="3" [#if (project.scale?? && (project.scale == 3))]checked="checked"[/#if]/> [/#if]
-                  [#if editable || (project.scale?? && (project.scale == 3))] [@s.text name="project.global"/] [/#if]
-                </label>
-              </div>
-            </div>--]
-            
-            [#-- Scope of the project 
-            [#if locScopeElements?has_content]
-            <div class="panel tertiary">
-              <div class="panel-head"> [@customForm.text name="projectDescription.scope" readText=!editable /]:</div>
-              <div id="projectsScopes" class="panel-body"> 
-                <ul class="list">
-                [#if project.scopes?has_content]
-                  [#list project.scopes as element]
-                    <li class="projectScope clearfix [#if !element_has_next]last[/#if]">
-                      [#if editable && action.hasPermission("scope")]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
-                      <input class="id" type="hidden" name="project.scopes[${element_index}].id" value="${(element.id)!}" />
-                      <input class="cid" type="hidden" name="project.scopes[${element_index}].locElementType.id" value="${(element.locElementType.id)!}" />
-                      <span class="name">${(element.locElementType.name)!'null'}</span>
-                    </li>
-                  [/#list]
-                [#else]
-                  [#if !editable]<p class="emptyText"> [@s.text name="projectDescription.scope.empty" /]</p> [/#if]
-                [/#if]  
-                </ul>
-                [#if editable && action.hasPermission("scope") ]
-                  <span id="scopesSelectedIds" style="display:none">[#if project.scopes?has_content][#list project.scopes as e]${e.locElementType.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="locScopeElements " keyFieldName="id" displayFieldName="name" className="" value="" /]
-                [/#if] 
-              </div>
+            [#--  What type of gender analysis informed the design of this project and how? --]
+            <div class="form-group">
+              [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
             </div>
-            [/#if]--]
+            
+            [#-- Select the cross-cutting dimension(s) to this project? --]
+            <div class="form-group">
+              <label for="">[@s.text name="project.crossCuttingDimensions" /]</label>
+              <div class="row">
+                <div class="col-md-12">
+                  [#if editable]
+                    <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
+                    <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
+                    <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
+                    <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
+                  [/#if]
+                </div>
+              </div>
+              <br />
+            </div>
+            
+            [#-- If no gender dimension, then please explain why not --]
+            <div class="form-group">
+              [@customForm.textArea name="project.noGenderDimension" required=true className=" limitWords-50" editable=editable /]
+            </div>
             
           </div> 
            
