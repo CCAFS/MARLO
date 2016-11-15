@@ -48,7 +48,7 @@ $(document).ready(
         } else {
           $(this).next().slideDown();
           $(this).addClass('active');
-          $(this).find('span.title').text('Search Funding Source');
+          $(this).find('span.title').text('Back to the list');
           $(this).find('span.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-search');
         }
 
@@ -117,6 +117,7 @@ $(document).ready(
             project.financeCode = $dialogContent.find("#financeCode").val().trim();
             project.status = $dialogContent.find("#status").val().trim();
             project.budgetType = $dialogContent.find("#budgetType").val().trim();
+            project.fileName = $dialogContent.find('input[name="file"]').val();
             project.liaisonInstitution = institutionSelected;
             project.institution = $dialogContent.find("#institution").val().trim();
             project.contactName = $dialogContent.find("#contactName").val().trim();
@@ -130,6 +131,11 @@ $(document).ready(
               });
             });
             project.budgets = JSON.stringify(project.budgets);
+
+            /*
+             * var form_data = new FormData(); for( var key in project) { form_data.append(key, project[key]); }
+             * console.log(project); console.log(form_data);
+             */
 
             var projectValidate = {};
             projectValidate.description = project.description;
@@ -148,6 +154,7 @@ $(document).ready(
                 invalidFields.push('Select an option');
               }
             });
+
             // Validate Email
             var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
             if(!emailReg.test(project.contactEmail)) {
@@ -168,7 +175,6 @@ $(document).ready(
                   },
                   success: function(data) {
                     if(data.status == "OK") {
-                      console.log('create');
                       console.log(data);
                       addProject(data.title, data.id, data.ammount, data.type, data.typeID, institutionSelected,
                           selectedYear);
@@ -275,7 +281,8 @@ $(document).ready(
                     // $item.find('.listButton.select').hide();
                   }
                   $item.find('.name').html('<strong>' + source.type + '</strong> - ' + source.name);
-                  $item.find(".currentBudget").html("<br> <strong> Current Budget</strong> - $" + source.amount);
+                  $item.find(".currentBudget").html(
+                      "<br> <strong> Current Budget</strong> - $" + setCurrencyFormat(source.amount));
                   $item.find('.contactId').html(source.id);
                   $item.find('.budget').html(source.amount);
                   $item.find('.budgetTypeName').html(source.type);
