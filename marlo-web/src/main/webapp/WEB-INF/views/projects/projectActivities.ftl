@@ -32,10 +32,10 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           
-          <h3 class="headTitle">Project Activities</h3>
+          <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>
           
           <div class="activitiesOG-content simpleBox" listname="project.openProjectActivities">
-          <h4 class="subTitle headTitle">On going activities</h4>
+          <h4 class="subTitle headTitle">[@s.text name="project.activities.onGoing" /]</h4>
           <hr />
           [#if action.getActivities(true)?has_content]
             [#list action.getActivities(true) as activity]
@@ -51,7 +51,7 @@
           
           [#if action.getActivities(false)?has_content]
           <div class="activitiesC-content simpleBox" listname="project.closedProjectActivities">
-            <h4 class="subTitle headTitle">Completed Activities</h4>
+            <h4 class="subTitle headTitle">[@s.text name="project.activities.completed" /]</h4>
             <hr />
             [#list action.getActivities(false) as activity]
                 [@projectActivityMacro element=activity name="project.projectActivities"  index=action.getIndexActivities((activity.id)!-1) isActive=false /]
@@ -82,7 +82,7 @@
 [#macro projectActivityMacro element name index=0 isTemplate=false isActive=false]
   [#assign customName = "${name}[${index}]" /]
     <div id="projectActivity-${isTemplate?string('template',(element.id)!)}" class="projectActivity expandableBlock borderBox"  style="display:${isTemplate?string('none','block')}">
-    <div class="activityIndex"><span>Activity [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span></div>
+    <div class="activityIndex"><span>[@s.text name="project.activities.index" /] [#if element.id?? && element.id?number != -1]${(element.id)!}[/#if]</span></div>
     [#if isActive && editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div id="removeActivity" class="removeActivity removeElement removeLink" title="[@s.text name='projectActivities.removeActivity' /]"></div>
@@ -102,34 +102,34 @@
     <div class="blockContent" style="display:none">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="Title"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable /]
+        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <span class="index hidden">${index}</span>
       </div>
       [#-- Description --]
       <div class="form-group">
-        [@customForm.textArea  name="${customName}.description" i18nkey="Activity description" value="${(element.description)!}" required=true className="limitWords-150 activityDescription" editable=editable /]
+        [@customForm.textArea  name="${customName}.description" i18nkey="project.activities.inputDescription" value="${(element.description)!}" required=true className="limitWords-150 activityDescription" editable=editable /]
       </div>
       <div class="form-group row">  
         [#-- Start Date --]
         <div class="col-md-6">
-          [@customForm.input name="${customName}.startDate" i18nkey="Start date" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.startDate" i18nkey="project.activities.inputStartDate" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
         </div> 
         [#-- End Date --]
         <div class="col-md-6">
-         [@customForm.input name="${customName}.endDate" i18nkey="End date" className="endDate" type="text" disabled=!editable required=true editable=editable  /]
+         [@customForm.input name="${customName}.endDate" i18nkey="project.activities.inputEndDate" className="endDate" type="text" disabled=!editable required=true editable=editable  /]
         </div>
         <div class="clearfix"></div>
       </div>
       
       [#-- Activity leader --]
       <div class="form-group">
-        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="Activity leader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
+        [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
       
       [#-- Activity status --]
       <div class="form-group">
-        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="Activity status" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]
+        [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="project.activities.inputStatus" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]
       </div>
       
       [#if reportingActive]
@@ -138,7 +138,7 @@
       [/#if]
       
       [#-- Activity deliverables --]
-      <label for="" class="${editable?string('editable', 'readOnly')}">Deliverables in this activity:</label>
+      <label for="" class="${editable?string('editable', 'readOnly')}">[@s.text name="project.activities.deliverableList" /]:</label>
       <div class="deliverableWrapper simpleBox form-group" listname="${customName}.deliverables">
         [#if element.deliverables?has_content]
           [#list element.deliverables as deliverable]
@@ -149,7 +149,7 @@
       </div>
       [#if editable]
       <div class="form-group">
-        [@customForm.select name="" label=""  i18nkey="Select to add a deliverable" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
+        [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
       </div>
       [/#if]
     </div>
