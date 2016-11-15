@@ -80,7 +80,7 @@
           </td>
           [#-- Delete Deliverable--]
           <td class="text-center">
-            [#if canEdit && action.isDeliverableNew(deliverable.id)]
+            [#if action.isDeliverableNew(deliverable.id)]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>

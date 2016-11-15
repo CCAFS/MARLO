@@ -522,7 +522,11 @@ public class ProjectDescriptionAction extends BaseAction {
       clusterofActivites
         .addAll(crpProgram.getCrpClusterOfActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     }
-    clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
+    try {
+      clusterofActivites.sort((p1, p2) -> p1.getIdentifier().compareTo(p2.getIdentifier()));
+    } catch (Exception e) {
+      clusterofActivites.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    }
     /*
      * clusterofActivites = crpClusterOfActivityManager.findAll().stream()
      * .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))

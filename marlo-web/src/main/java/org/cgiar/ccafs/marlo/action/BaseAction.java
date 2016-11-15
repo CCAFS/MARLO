@@ -1023,6 +1023,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     } else {
       try {
+
         Date reportingDate = dateFormat.parse(this.getSession().get(APConstants.CRP_OPEN_PLANNING_DATE).toString());
         if (deliverable.getCreateDate().compareTo(reportingDate) >= 0) {
           return true;

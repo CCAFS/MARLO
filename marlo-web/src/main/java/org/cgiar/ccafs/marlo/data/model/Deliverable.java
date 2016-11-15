@@ -278,10 +278,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public String getStatusName() {
-    if (this.status != null) {
-      return ProjectStatusEnum.getValue(this.status).getStatus() != null
-        ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
-    } else {
+    try {
+      if (this.status != null) {
+        return ProjectStatusEnum.getValue(this.status).getStatus() != null
+          ? ProjectStatusEnum.getValue(this.status).getStatus() : "";
+      } else {
+        return "";
+      }
+    } catch (Exception e) {
       return "";
     }
   }
