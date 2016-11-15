@@ -42,13 +42,13 @@
               <div class="row">
               <div class="col-md-5">
                 [#if editable]
-                  [@customForm.yesNoInput name="project.locationGlobal" label="Is the project global?"  inverse=false value="${(project.locationGlobal?has_content)?string('true','false')}" cssClass="text-left " /]              
+                  [@customForm.yesNoInput name="project.locationGlobal" label="projectLocations.isGlobal"  inverse=false value="${(project.locationGlobal?has_content)?string('true','false')}" cssClass="text-left " /]              
                 [#else]
                 <h4 style="text-align:center; display: inline-block">
                   [#if (project.locationGlobal?has_content)?string('true','false')=="true"]
-                    <label for="">This project is global</label>
+                    <label for="">[@s.text name="projectLocations.isGlobalYes" /]</label>
                   [#else]
-                    <label>This project is not global</label>
+                    <label>[@s.text name="projectLocations.isGlobalNo" /]</label>
                   [/#if]
                 </h4>
                 [/#if]
@@ -124,7 +124,7 @@
     <div class="col-md-12 locationLevel-optionContent " listname="${customName}.locElements">
       [#if editable]
       <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
-        <span class="col-md-10">Select all sites</span>
+        <span class="col-md-10">[@s.text name="projectLocations.selectAllSites" /]</span>
         <input  name="${customName}.allCountries" class="col-md-1 allCountries" type="checkbox" [#if (element.allCountries?has_content)?string == "false"]value="false" [#else]value="true" checked[/#if]   />
       </div>
       [/#if]
