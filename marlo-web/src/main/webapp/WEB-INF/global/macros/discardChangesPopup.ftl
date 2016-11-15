@@ -6,14 +6,14 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        <h4 class="modal-title">Discard Changes ?</h4>
+        <h4 class="modal-title">Save Changes ?</h4>
       </div>
       <div class="modal-body">
-        <p>You have unsaved changes which will be lost if you exit this page.</p>
+        <p>MARLO saved a temporary version of your work. Please confirm your changes by clicking on the save button.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" onclick="acceptChanges()">Accept Changes</button>
-        <button type="button" class="btn btn-danger" onclick="cancel()">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="acceptChanges()">Save</button>
+        <button type="button" class="btn btn-danger" onclick="cancel()">Continue</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->

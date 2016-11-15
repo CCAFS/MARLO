@@ -39,10 +39,10 @@ function autoSave() {
         if(data.status.status) {
 
           successNotification('Draft saved...');
-          $draftTag.text('(Draft Version)').addClass('animated flipInX');
+          // $draftTag.text('(Draft Version)').addClass('animated flipInX');
+          // $cancelButton.css('display', 'inline-block');
           $editedBy.find('.datetime').text(data.status.activeSince);
           $editedBy.find('.modifiedBy').text(data.status.modifiedBy);
-          $cancelButton.css('display', 'inline-block');
 
           draft = true;
 
