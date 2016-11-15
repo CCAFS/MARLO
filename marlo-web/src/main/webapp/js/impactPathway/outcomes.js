@@ -18,6 +18,7 @@ function init() {
 }
 
 function attachEvents() {
+  validateDecimalsContributions();
 
   // Change a target unit
   $('select.targetUnit').on('change', function() {
@@ -74,14 +75,6 @@ function attachEvents() {
     var $text = $(this).parents('.outcome').find('p.contributioRem');
     var $contributions = $(this).parents('.subIdos-list').find('input.contribution');
     updateTotalContribution($contributions, $text);
-    console.log($(this).val());
-    if($(this).val() > 0) {
-      $(this).val(parseInt($(this).val()));
-    } else if($(this).val == 0) {
-      $(this).val(0);
-    } else {
-      $(this).val("");
-    }
   });
   $('input.contribution').trigger('keyup');
 
@@ -111,16 +104,6 @@ function attachEvents() {
     $("#subIDOs-graphic").dialog("open");
   });
 
-  // New Target unit
-  /*
-   * var $targetUnit = $("#dialog-targetUnit"); $('.addOtherTargetUnit').on('click', function(e) { e.preventDefault();
-   * var $select = $(this).parent().find('select'); $targetUnit.dialog({ modal: true, buttons: [ { text: "Add Target",
-   * click: function() { var targetUnitName = $.trim($('#targetUnitName').val()); if(targetUnitName != "") { $.ajax({
-   * 'url': baseURL + '/newTargetUnit.do', data: { targetUnitName: targetUnitName }, success: function(data) {
-   * if(data.newTargetUnit.status) { $('select.targetUnit').each(function(i,select) {
-   * $(select).addOption(data.newTargetUnit.id, data.newTargetUnit.name); }); } $select.val(data.newTargetUnit.id); },
-   * complete: function(data) { $('#targetUnitName').val(""); $targetUnit.dialog("close"); } }); } } } ] }); });
-   */
   // Filter SubIDOs
   $("#filterForm").on("change", filter);
   // Select a subIdo
@@ -140,14 +123,13 @@ function attachEvents() {
     $subIdosList.find('.subIdo').each(function(i,e) {
       if($(e).find("input.subIdoId").val() == value[value.length - 1]) {
         canAdd = false;
-        return
-
+        return;
       }
     });
 
     if(!canAdd) {
       console.log($(this).animateCss('jello'));
-      return
+      return;
     }
 
     $inputSubIdo.val(value[value.length - 1]);
@@ -155,7 +137,14 @@ function attachEvents() {
     // Update component
     $(document).trigger('updateComponent');
   });
+}
 
+function validateDecimalsContributions() {
+  $('input.contribution').each(function(i,e) {
+    if(($(e).val() % 1) == 0) {
+      $(e).val(parseInt($(e).val()));
+    }
+  });
 }
 
 /**
@@ -242,7 +231,7 @@ function updateTotalContribution(list,text) {
   // calculated total
   var total = 0;
   $(list).each(function(i,item) {
-    var itemVal = parseInt(removePercentageFormat(($(item).val()) || '0'));
+    var itemVal = parseFloat(removePercentageFormat(($(item).val()) || '0'));
     total += (itemVal > 100) ? 100 : itemVal;
   });
 
