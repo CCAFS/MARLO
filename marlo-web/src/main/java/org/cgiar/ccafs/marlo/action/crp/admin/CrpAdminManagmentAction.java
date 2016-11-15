@@ -420,7 +420,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     flagshipsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
-
+    flagshipsPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
     // Get the regions list of this CRP
     regionsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())

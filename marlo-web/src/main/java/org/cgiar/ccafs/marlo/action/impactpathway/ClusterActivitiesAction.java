@@ -395,6 +395,7 @@ public class ClusterActivitiesAction extends BaseAction {
       List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
         .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
         .collect(Collectors.toList());
+      allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       crpProgramID = -1;
 
       if (allPrograms != null) {
@@ -756,7 +757,8 @@ public class ClusterActivitiesAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
     } else {
       return NOT_AUTHORIZED;
