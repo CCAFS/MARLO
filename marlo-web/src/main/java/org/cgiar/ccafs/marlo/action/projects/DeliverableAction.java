@@ -800,7 +800,7 @@ public class DeliverableAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-        return REDIRECT;
+           this.addActionMessage(""); return REDIRECT;
       }
 
     } else {

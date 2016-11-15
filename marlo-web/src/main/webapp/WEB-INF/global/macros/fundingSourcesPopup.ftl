@@ -3,7 +3,7 @@
 <!-- Search Users Dialog -->
 <div id="dialog-searchProjects" title="Search Funding Source" style="display:none"> 
   <div class="dialog-content"> 
-    <form class="pure-form">
+    <form id="fundingSourceForm" class="pure-form">
       [#--  Search a Funding Source  --]
       <div id="search-users">
         <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
@@ -67,6 +67,13 @@
               <div class="col-md-4">[@customForm.input name="endDate" i18nkey="projectCofunded.endDate" required=true/] </div>
               <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" /] </div>
             </div>
+          </div>
+          [#-- Upload bilateral contract --]
+          <div class="form-group fileUpload bilateralContract">
+            <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
+            <div class="uploadContainer">
+              [@customForm.inputFile name="file" fileUrl="${(fundingSourceContractURL)!}" fileName="fundingSource.contractName.fileName" editable=editable /]
+            </div>  
           </div>
           <div class="form-group">
             <div class="row">

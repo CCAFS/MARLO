@@ -632,7 +632,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-        return REDIRECT;
+           this.addActionMessage(""); return REDIRECT;
       }
     } else {
       return NOT_AUTHORIZED;
