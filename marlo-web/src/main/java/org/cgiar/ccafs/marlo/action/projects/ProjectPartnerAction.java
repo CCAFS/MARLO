@@ -629,7 +629,7 @@ public class ProjectPartnerAction extends BaseAction {
         institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
 
     }
-
+    allInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     // Getting the list of all PPA institutions
     allPPAInstitutions = new ArrayList<>();
     for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
@@ -637,7 +637,7 @@ public class ProjectPartnerAction extends BaseAction {
       .collect(Collectors.toList())) {
       allPPAInstitutions.add(crpPpaPartner.getInstitution());
     }
-
+    allPPAInstitutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     // Getting all the countries
     countries = locationManager.findAll().stream().filter(c -> c.isActive() && c.getLocElementType().getId() == 2)
       .collect(Collectors.toList());
