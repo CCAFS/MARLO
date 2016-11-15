@@ -74,6 +74,14 @@ function attachEvents() {
     var $text = $(this).parents('.outcome').find('p.contributioRem');
     var $contributions = $(this).parents('.subIdos-list').find('input.contribution');
     updateTotalContribution($contributions, $text);
+    console.log($(this).val());
+    if($(this).val() > 0) {
+      $(this).val(parseInt($(this).val()));
+    } else if($(this).val == 0) {
+      $(this).val(0);
+    } else {
+      $(this).val("");
+    }
   });
   $('input.contribution').trigger('keyup');
 
@@ -133,6 +141,7 @@ function attachEvents() {
       if($(e).find("input.subIdoId").val() == value[value.length - 1]) {
         canAdd = false;
         return
+
       }
     });
 
@@ -140,8 +149,6 @@ function attachEvents() {
       console.log($(this).animateCss('jello'));
       return
     }
-    
-    
 
     $inputSubIdo.val(value[value.length - 1]);
     $("#subIDOs-graphic").dialog("close");
@@ -235,13 +242,15 @@ function updateTotalContribution(list,text) {
   // calculated total
   var total = 0;
   $(list).each(function(i,item) {
-    var itemVal = parseFloat(removePercentageFormat(($(item).val()) || '0'));
+    var itemVal = parseInt(removePercentageFormat(($(item).val()) || '0'));
     total += (itemVal > 100) ? 100 : itemVal;
   });
 
   // Removing classes
   $(text).removeClass('fieldError fieldChecked');
   $(list).removeClass('fieldError');
+
+  console.log(total);
 
   // Set percentage and classes
   $(text).find('.value').text(setPercentageFormat(total));
