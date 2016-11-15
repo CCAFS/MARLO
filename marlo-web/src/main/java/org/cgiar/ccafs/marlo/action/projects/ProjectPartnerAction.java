@@ -615,12 +615,25 @@ public class ProjectPartnerAction extends BaseAction {
     pcRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_PC_ROLE)));
 
     // Getting the list of all institutions
-    allInstitutions =
-      institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+
+    if (!project.isProjectEditLeader()) {
+      allInstitutions = new ArrayList<>();
+      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
+        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+        .collect(Collectors.toList())) {
+        allInstitutions.add(crpPpaPartner.getInstitution());
+      }
+
+    } else {
+      allInstitutions =
+        institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+
+    }
 
     // Getting the list of all PPA institutions
     allPPAInstitutions = new ArrayList<>();
-    for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream().filter(c -> c.isActive())
+    for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
       .collect(Collectors.toList())) {
       allPPAInstitutions.add(crpPpaPartner.getInstitution());
     }
@@ -877,7 +890,8 @@ public class ProjectPartnerAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
     }
     return NOT_AUTHORIZED;
