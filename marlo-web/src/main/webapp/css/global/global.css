@@ -12,7 +12,7 @@ table{
 label {
   margin-bottom: 2px;
   font-weight: 600;
-  line-height: 1.1em;
+  /* line-height: 1.1em; */
   vertical-align: middle;
   cursor: pointer;
 }
@@ -1101,7 +1101,6 @@ select#partnerSave_activityPartner_partner_type_id {
 
 .panel span.listButton.select {
     background-color: #E6E6E6;
-    margin: 30% auto;
 }
 .panel span.name {
   cursor:pointer;
