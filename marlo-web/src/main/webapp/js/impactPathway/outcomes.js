@@ -140,7 +140,7 @@ function attachEvents() {
 }
 
 function validateDecimalsContributions() {
-  $('input.contribution').each(function(i,e) {
+  $('form input.contribution').each(function(i,e) {
     if(($(e).val() % 1) == 0) {
       $(e).val(parseInt($(e).val()));
     }
