@@ -82,15 +82,7 @@
             </div>
             [/#if]--]
             
-            [#-- Project upload bilateral contract --]
-            [#if (project.bilateralProject)!false && action.hasPermission("bilateralContract") ]
-            <div class="fullBlock fileUpload bilateralContract">
-              <label>[@customForm.text name="projectDescription.uploadBilateral" readText=!editable /]:</label>
-              <div class="uploadContainer">
-                [@customForm.inputFile name="file" fileUrl="${(bilateralContractURL)!}" fileName="project.bilateralContractName.fileName" editable=editable && action.hasPermission("bilateralContract") /]
-              </div>  
-            </div>
-            [/#if]
+            
             
             [#-- Project Summary --]
             <div class="form-group">
