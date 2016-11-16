@@ -157,7 +157,26 @@ $(document).ready(function() {
   var scopesSelectedIds = ($('#scopesSelectedIds').text()).split(',');
   $projectsScopesSelect.clearOptions(scopesSelectedIds);
 
-  /** Events */
+  /** Gender questions * */
+
+  $('input#gender').on('change', function() {
+    if($(this).is(':checked')) {
+      $('#gender-question').slideUp();
+    } else {
+      $('#gender-question').slideDown();
+    }
+  });
+
+  $('input#gender, input#youth, input#capacity').on('change', function() {
+    $('input#na').prop("checked", false);
+  });
+
+  $('input#na').on('change', function() {
+    $('input#gender, input#youth, input#capacity').prop("checked", false);
+    $('#gender-question').slideDown();
+  });
+
+  /** Events * */
 
   // Event to add an item to core Project list from select option
   $coreSelect.on('change', function(e) {

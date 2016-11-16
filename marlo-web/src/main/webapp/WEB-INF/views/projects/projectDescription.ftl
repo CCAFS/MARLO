@@ -203,7 +203,7 @@
             </div>
             
             [#-- If no gender dimension, then please explain why not --]
-            <div class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
+            <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
               [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
             </div>
             
