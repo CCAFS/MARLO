@@ -108,5 +108,14 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
+		
+		
+		 <set name="deliverableGenderLevels" table="deliverable_gender_levels" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel" />
+        </set>
+		
 	</class>
 </hibernate-mapping>

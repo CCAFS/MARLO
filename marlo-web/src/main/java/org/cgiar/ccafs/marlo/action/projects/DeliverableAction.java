@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
@@ -34,6 +35,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -128,15 +131,21 @@ public class DeliverableAction extends BaseAction {
 
 
   private Map<String, String> status;
+  private Map<String, String> genderLevels;
+
 
   private Deliverable deliverable;
+
 
   private List<ProjectFocus> projectPrograms;
 
   private String transaction;
 
   private AuditLogManager auditLogManager;
+
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
+
+  private DeliverableGenderLevelManager deliverableGenderLevelManager;
   private ProjectPartnerManager projectPartnerManager;
 
   @Inject
@@ -146,7 +155,8 @@ public class DeliverableAction extends BaseAction {
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
     AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
     ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager) {
+    DeliverableFundingSourceManager deliverableFundingSourceManager,
+    DeliverableGenderLevelManager deliverableGenderLevelManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -161,7 +171,9 @@ public class DeliverableAction extends BaseAction {
     this.projectPartnerManager = projectPartnerManager;
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.fundingSourceManager = fundingSourceManager;
+    this.deliverableGenderLevelManager = deliverableGenderLevelManager;
   }
+
 
   @Override
   public String cancel() {
@@ -215,37 +227,41 @@ public class DeliverableAction extends BaseAction {
     return fundingSources;
   }
 
+  public Map<String, String> getGenderLevels() {
+    return genderLevels;
+  }
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
 
+
   public Project getProject() {
     return project;
   }
-
 
   public long getProjectID() {
     return projectID;
   }
 
+
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
-
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
+
 
   public Map<String, String> getStatus() {
     return status;
@@ -507,6 +523,8 @@ public class DeliverableAction extends BaseAction {
         deliverable.setOtherPartners(this.otherPartners());
         deliverable.setFundingSources(
           deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        deliverable.setGenderLevels(
+          deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         this.setDraft(false);
       }
 
@@ -517,6 +535,11 @@ public class DeliverableAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
 
+      genderLevels = new HashMap<>();
+      List<DeliverableGenderTypeEnum> listGenders = Arrays.asList(DeliverableGenderTypeEnum.values());
+      for (DeliverableGenderTypeEnum projectStatusEnum : listGenders) {
+        genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getValue());
+      }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
         .filter(dt -> dt.getDeliverableType() == null).collect(Collectors.toList()));
@@ -607,6 +630,9 @@ public class DeliverableAction extends BaseAction {
       }
       if (deliverable.getFundingSources() != null) {
         deliverable.getFundingSources().clear();
+      }
+      if (deliverable.getGenderLevels() != null) {
+        deliverable.getGenderLevels().clear();
       }
     }
   }
@@ -792,6 +818,39 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+
+      if (deliverable.getGenderLevels() != null) {
+        if (deliverablePrew.getDeliverableGenderLevels() != null
+          && deliverablePrew.getDeliverableGenderLevels().size() > 0) {
+          List<DeliverableGenderLevel> fundingSourcesPrew = deliverablePrew.getDeliverableGenderLevels().stream()
+            .filter(dp -> dp.isActive()).collect(Collectors.toList());
+
+
+          for (DeliverableGenderLevel deliverableFundingSource : fundingSourcesPrew) {
+            if (!deliverable.getGenderLevels().contains(deliverableFundingSource)) {
+              deliverableGenderLevelManager.deleteDeliverableGenderLevel(deliverableFundingSource.getId());
+            }
+          }
+        }
+
+        for (DeliverableGenderLevel deliverableFundingSource : deliverable.getGenderLevels()) {
+          if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+
+
+            deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            deliverableFundingSource.setActive(true);
+            deliverableFundingSource.setCreatedBy(this.getCurrentUser());
+            deliverableFundingSource.setModifiedBy(this.getCurrentUser());
+            deliverableFundingSource.setModificationJustification("");
+            deliverableFundingSource.setActiveSince(new Date());
+
+            deliverableGenderLevelManager.saveDeliverableGenderLevel(deliverableFundingSource);
+
+
+          }
+        }
+      }
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
@@ -830,10 +889,10 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -849,6 +908,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
+  }
+
+  public void setGenderLevels(Map<String, String> genderLevels) {
+    this.genderLevels = genderLevels;
   }
 
 
