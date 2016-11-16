@@ -180,31 +180,34 @@
               </div>
             </div>
             
-            [#--  What type of gender analysis informed the design of this project and how? --]
-            <div class="form-group">
-              [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
-            </div>
             
-            [#-- Select the cross-cutting dimension(s) to this project? --]
-            <div class="form-group">
-              <label for="">[@s.text name="project.crossCuttingDimensions" /]</label>
-              <div class="row">
-                <div class="col-md-12">
-                  [#if editable]
-                    <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
-                  [/#if]
-                </div>
+            [#if project.projectEditLeader]
+              [#--  What type of gender analysis informed the design of this project and how? --]
+              <div class="form-group">
+                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
               </div>
-              <br />
-            </div>
-            
-            [#-- If no gender dimension, then please explain why not --]
-            <div class="form-group">
-              [@customForm.textArea name="project.noGenderDimension" required=true className=" limitWords-50" editable=editable /]
-            </div>
+              
+              [#-- Select the cross-cutting dimension(s) to this project? --]
+              <div class="form-group">
+                <label for="">[@s.text name="project.crossCuttingDimensions" /]</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    [#if editable]
+                      <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
+                      <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
+                      <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
+                      <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
+                    [/#if]
+                  </div>
+                </div>
+                <br />
+              </div>
+              
+              [#-- If no gender dimension, then please explain why not --]
+              <div class="form-group">
+                [@customForm.textArea name="project.noGenderDimension" required=true className=" limitWords-50" editable=editable /]
+              </div>
+            [/#if]
             
           </div> 
            
