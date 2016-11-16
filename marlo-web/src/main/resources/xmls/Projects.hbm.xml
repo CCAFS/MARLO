@@ -57,6 +57,26 @@
 		<property name="cofinancing" type="boolean">
 			<column name="is_cofinancing" not-null="true" />
 		</property>
+		
+		<property name="genderAnalysis" type="string">
+     <column name="gender_analysis" length="65535" />
+     </property>
+        <property name="crossCuttingGender" type="java.lang.Boolean">
+            <column name="cross_cutting_gender" />
+        </property>
+        <property name="crossCuttingYouth" type="java.lang.Boolean">
+            <column name="cross_cutting_youth" />
+        </property>
+        <property name="crossCuttingCapacity" type="java.lang.Boolean">
+            <column name="cross_cutting_capacity" />
+        </property>
+        
+         <property name="crossCuttingNa" type="java.lang.Boolean">
+            <column name="cross_cutting_na" />
+        </property>
+        <property name="dimension" type="string">
+            <column name="dimension" length="65535" />
+            </property>
 		<property name="leaderResponsabilities" type="string">
 			<column name="leader_responsabilities" length="65535" />
 		</property>

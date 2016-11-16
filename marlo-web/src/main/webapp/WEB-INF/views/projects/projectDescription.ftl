@@ -203,7 +203,7 @@
             
             [#-- If no gender dimension, then please explain why not --]
             <div class="form-group">
-              [@customForm.textArea name="project.noGenderDimension" required=true className=" limitWords-50" editable=editable /]
+              [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
             </div>
             
           </div> 
