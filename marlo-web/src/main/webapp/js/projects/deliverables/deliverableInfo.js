@@ -12,7 +12,7 @@ function init() {
   subTypes();
   keyOutputs();
 
-  justificationByStatus($(".status").find("option:selected").val());
+  // justificationByStatus($(".status").find("option:selected").val());
   // validateCurrentDate();
 
   $(".addPartner").on("click", addPartnerEvent);
