@@ -2253,7 +2253,7 @@ margin: 0;
 .helpMessage img {
   float: left;
   padding: 5px;
-  width: 27px;
+  width: 35px;
 }
 
 .helpMessage p {
@@ -6042,6 +6042,7 @@ span.programTag {
 
 .subMainMenu {
     background: #f5f5f5;
+    margin-bottom: 10px;
 }
 .footer{
 	background: #0b5da6 url("./../../images/global/footerBackground.png") repeat-x 0 0;

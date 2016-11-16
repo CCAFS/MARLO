@@ -138,3 +138,7 @@ span#notDefined {
 div#fundingSourceList {
     position: relative;
 }
+
+a#opener {
+    cursor: pointer;
+}
