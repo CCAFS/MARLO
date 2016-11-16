@@ -77,7 +77,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.leader.id" i18nkey="CGIAR lead center"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
+            [@customForm.select name="fundingSource.leader.id" i18nkey="CGIAR lead center" className="institution"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
           </div>
         </div>
       </div>
@@ -92,13 +92,11 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
           </div>
         </div>
       </div>
-      <div class="note">
-        [@s.text name="projectCofunded.donor.disclaimer" /]
-      </div>
+      
     </div>
     
     

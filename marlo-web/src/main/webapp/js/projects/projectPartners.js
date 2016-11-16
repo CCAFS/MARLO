@@ -27,8 +27,7 @@ function init() {
     }
     // Update initial project CCAFS partners list for each partner
     updateProjectPPAPartnersLists();
-    // This function enables launch the pop up window
-    popups();
+
     // Activate the chosen to the existing partners
     addSelect2();
     // Applying word counters to form fields
@@ -42,6 +41,8 @@ function init() {
     }
 
   }
+// This function enables launch the pop up window
+  popups();
   // Attaching listeners
   attachEvents();
   if(($partnersBlock.find('.projectPartner').length == 0) && editable) {
