@@ -556,8 +556,13 @@ public class ProjectDescriptionAction extends BaseAction {
     if (this.isHttpPost()) {
       if (project.getClusterActivities() != null) {
         project.getClusterActivities().clear();
-        project.setNoRegional(null);
+
       }
+      project.setNoRegional(null);
+      project.setCrossCuttingGender(null);
+      project.setCrossCuttingCapacity(null);
+      project.setCrossCuttingNa(null);
+      project.setCrossCuttingYouth(null);
     }
 
   }
@@ -581,18 +586,18 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.isNoRegional() == null) {
         project.setNoRegional(false);
       }
-      /*
-       * if (!projectDB.isBilateralProject()) {
-       * if (file != null) {
-       * project
-       * .setWorkplan(this.getFileDB(projectDB.getWorkplan(), file, fileFileName, this.getWorplansAbsolutePath()));
-       * FileManager.copyFile(file, this.getWorplansAbsolutePath() + fileFileName);
-       * }
-       * if (project.getWorkplan().getFileName().isEmpty()) {
-       * project.setWorkplan(null);
-       * }
-       * }
-       */
+      if (project.getCrossCuttingCapacity() == null) {
+        project.setCrossCuttingCapacity(false);
+      }
+      if (project.getCrossCuttingNa() == null) {
+        project.setCrossCuttingNa(false);
+      }
+      if (project.getCrossCuttingGender() == null) {
+        project.setCrossCuttingGender(false);
+      }
+      if (project.getCrossCuttingYouth() == null) {
+        project.setCrossCuttingYouth(false);
+      }
       if (projectDB.isBilateralProject()) {
 
         if (file != null) {

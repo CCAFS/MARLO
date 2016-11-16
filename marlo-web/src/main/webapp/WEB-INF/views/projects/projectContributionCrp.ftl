@@ -124,16 +124,21 @@
             [/#if]
             
             [#-- Cross-cutting contributions --]
+            [#if ((project.crossCuttingGender)!false) || ((project.crossCuttingYouth)!false)]
             <h5 class="sectionSubTitle">Cross-cutting contributions</h5>
             <div class="form-group">
-              <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-50" editable=editable /]
-              </div>
-              <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeYouth" required=true className="limitWords-50" editable=editable /]
-              </div> 
+              [#if (project.crossCuttingGender)!false]
+                <div class="form-group">
+                  [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-50" editable=editable /]
+                </div>
+              [/#if]
+              [#if (project.crossCuttingYouth)!false]
+                <div class="form-group">
+                  [@customForm.textArea name="projectOutcome.narrativeYouth" required=true className="limitWords-50" editable=editable /]
+                </div> 
+              [/#if]
             </div>
-            
+            [/#if]
           </div>
           
           [#-- Project Milestones and Communications contributions per year--]

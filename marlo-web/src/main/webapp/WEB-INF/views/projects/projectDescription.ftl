@@ -180,34 +180,36 @@
               </div>
             </div>
             
+            [#--  What type of gender analysis informed the design of this project and how? --]
+            <div class="form-group">
+              [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
+            </div>
             
-            [#if project.projectEditLeader]
-              [#--  What type of gender analysis informed the design of this project and how? --]
-              <div class="form-group">
-                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
-              </div>
-              
-              [#-- Select the cross-cutting dimension(s) to this project? --]
-              <div class="form-group">
-                <label for="">[@s.text name="project.crossCuttingDimensions" /]</label>
-                <div class="row">
-                  <div class="col-md-12">
-                    [#if editable]
-                      <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
-                      <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
-                      <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
-                      <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
-                    [/#if]
-                  </div>
+            [#-- Select the cross-cutting dimension(s) to this project? --]
+            <div class="form-group">
+              <label for="">[@customForm.text name="project.crossCuttingDimensions" readText=!editable/]</label>
+              <div class="row">
+                <div class="col-md-12">
+                  [#if editable]
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingGender"   id="gender"   value="true" [#if (project.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingYouth"    id="youth"    value="true" [#if (project.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+                  [#else]
+                    [#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
+                    [#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
+                    [#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
+                    [#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+                  [/#if]
                 </div>
-                <br />
               </div>
-              
-              [#-- If no gender dimension, then please explain why not --]
-              <div class="form-group">
-                [@customForm.textArea name="project.noGenderDimension" required=true className=" limitWords-50" editable=editable /]
-              </div>
-            [/#if]
+              <br />
+            </div>
+            
+            [#-- If no gender dimension, then please explain why not --]
+            <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
+              [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
+            </div>
             
           </div> 
            
