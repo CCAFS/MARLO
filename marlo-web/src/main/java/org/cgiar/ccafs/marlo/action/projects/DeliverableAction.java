@@ -583,6 +583,13 @@ public class DeliverableAction extends BaseAction {
         deliverableTypeParent.clear();
       }
 
+
+      deliverable.setCrossCuttingGender(null);
+      deliverable.setCrossCuttingCapacity(null);
+      deliverable.setCrossCuttingNa(null);
+      deliverable.setCrossCuttingYouth(null);
+
+
       if (projectOutcome != null) {
         projectOutcome.clear();
       }
@@ -651,6 +658,19 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setTitle(deliverable.getTitle());
       deliverablePrew.setYear(deliverable.getYear());
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
+
+      if (deliverable.getCrossCuttingCapacity() == null) {
+        deliverablePrew.setCrossCuttingCapacity(false);
+      }
+      if (deliverable.getCrossCuttingNa() == null) {
+        deliverablePrew.setCrossCuttingNa(false);
+      }
+      if (deliverable.getCrossCuttingGender() == null) {
+        deliverablePrew.setCrossCuttingGender(false);
+      }
+      if (deliverable.getCrossCuttingYouth() == null) {
+        deliverablePrew.setCrossCuttingYouth(false);
+      }
 
       if (deliverable.getStatus() != null) {
         deliverablePrew.setStatus(deliverable.getStatus());
@@ -800,7 +820,8 @@ public class DeliverableAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
 
     } else {
