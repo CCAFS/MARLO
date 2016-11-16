@@ -195,17 +195,32 @@ public class Project implements java.io.Serializable, IAuditLog {
   private List<ProjectOutcome> outcomes;
   private List<ProjectLocation> locations;
 
+  @Expose
+  private String genderAnalysis;
+  @Expose
+  private Boolean crossCuttingGender;
+  @Expose
+  private Boolean crossCuttingYouth;
+  @Expose
+  private Boolean crossCuttingCapacity;
+  @Expose
+  private Boolean crossCuttingNa;
+
+  @Expose
+  private String dimension;
+
 
   private List<ProjectScope> scopes;
 
-
   private List<Activity> projectActivities;
+
 
   private List<Activity> closedProjectActivities;
 
 
   public Project() {
   }
+
 
   public Project(Crp crp, LiaisonInstitution liaisonInstitution, LiaisonUser liaisonUser, User usersByCreatedBy,
     User usersByModifiedBy, String title, String summary, Date startDate, Date endDate, String type, boolean isGlobal,
@@ -244,6 +259,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.projectLocationElementTypes = projectLocationElementTypes;
   }
 
+
   public Project(Crp crp, User usersByModifiedBy, boolean isGlobal, boolean isCofinancing, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.crp = crp;
@@ -254,6 +270,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -277,6 +294,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
@@ -285,6 +303,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public Set<Activity> getActivities() {
     return activities;
   }
+
 
   /**
    * This method calculates all the years between the start date and the end date.
@@ -310,9 +329,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;
   }
+
 
   public long getBilateralBudget(int year) {
 
@@ -331,6 +352,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public FileDB getBilateralContractName() {
     return bilateralContractName;
   }
+
 
   public List<ProjectBudget> getBudgets() {
     return budgets;
@@ -387,7 +409,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
-
   public long getCoreBudget(int year) {
 
     long total = 0;
@@ -402,6 +423,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return total;
   }
 
+
   public Date getCreateDate() {
     return createDate;
   }
@@ -410,9 +432,26 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.createdBy;
   }
 
+  public Boolean getCrossCuttingCapacity() {
+    return crossCuttingCapacity;
+  }
+
+  public Boolean getCrossCuttingGender() {
+    return crossCuttingGender;
+  }
+
+  public Boolean getCrossCuttingNa() {
+    return crossCuttingNa;
+  }
+
+  public Boolean getCrossCuttingYouth() {
+    return crossCuttingYouth;
+  }
+
   public Crp getCrp() {
     return crp;
   }
+
 
   public List<CrpClusterOfActivity> getCrpActivities() {
     return crpActivities;
@@ -422,9 +461,14 @@ public class Project implements java.io.Serializable, IAuditLog {
     return deliverables;
   }
 
+  public String getDimension() {
+    return dimension;
+  }
+
   public Date getEndDate() {
     return this.endDate;
   }
+
 
   public List<CrpProgram> getFlagships() {
     return flagships;
@@ -432,6 +476,10 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public String getFlagshipValue() {
     return flagshipValue;
+  }
+
+  public String getGenderAnalysis() {
+    return genderAnalysis;
   }
 
   @Override
@@ -465,7 +513,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     }
     return null;
   }
-
 
   /**
    * This method returns the project partner person who is leading the project.
@@ -502,7 +549,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return null;
   }
 
-
   public String getLeaderResponsabilities() {
     return this.leaderResponsabilities;
   }
@@ -511,16 +557,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.liaisonInstitution;
   }
 
-
   public LiaisonUser getLiaisonUser() {
     return this.liaisonUser;
   }
 
-
   public List<ProjectLocation> getLocations() {
     return locations;
   }
-
 
   public List<CountryLocationLevel> getLocationsData() {
     return locationsData;
@@ -537,15 +580,17 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
   }
+
 
   public Boolean getNoRegional() {
     return noRegional;
@@ -589,10 +634,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectBudgetsCluserActvities;
   }
 
+
   public Set<ProjectClusterActivity> getProjectClusterActivities() {
     return projectClusterActivities;
   }
-
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
@@ -612,14 +657,15 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCrpContributions;
   }
 
+
   public List<Deliverable> getProjectDeliverables() {
     return projectDeliverables;
   }
 
-
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
   }
+
 
   public Set<ProjectLocationElementType> getProjectLocationElementTypes() {
     return projectLocationElementTypes;
@@ -630,7 +676,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectLocations;
   }
 
-
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
@@ -640,19 +685,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectPartners;
   }
 
-
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
   }
+
 
   public List<CrpProgram> getRegions() {
     return regions;
   }
 
-
   public String getRegionsValue() {
     return regionsValue;
   }
+
 
   public Boolean getRequiresWorkplanUpload() {
     return this.requiresWorkplanUpload;
@@ -663,9 +708,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return scale;
   }
 
+
   public List<ProjectScope> getScopes() {
     return scopes;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -690,6 +737,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
+
   public Date getStartDate() {
     return this.startDate;
   }
@@ -707,7 +755,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.summary;
   }
 
-
   public String getTitle() {
     return this.title;
   }
@@ -715,7 +762,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public String getType() {
     return this.type;
   }
-
 
   public long getW3Budget(int year) {
     long total = 0;
@@ -734,6 +780,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return workplan;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -742,11 +789,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
     return active;
   }
+
 
   public boolean isBilateralProject() {
     return (type != null) ? type.equals(APConstants.PROJECT_BILATERAL) : false;
@@ -780,7 +827,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return locationGlobal;
   }
 
-
   public Boolean isNoRegional() {
     return noRegional;
   }
@@ -793,7 +839,6 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -808,6 +853,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.annualReportToDonnor = annualReportToDonnor;
   }
 
+
   public void setBilateralContractName(FileDB bilateralContractName) {
     this.bilateralContractName = bilateralContractName;
   }
@@ -815,6 +861,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   public void setBudgets(List<ProjectBudget> budgets) {
     this.budgets = budgets;
   }
+
 
   public void setBudgetsCluserActvities(List<ProjectBudgetsCluserActvity> budgetsCluserActvities) {
     this.budgetsCluserActvities = budgetsCluserActvities;
@@ -842,6 +889,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.createdBy = usersByCreatedBy;
   }
 
+  public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
+    this.crossCuttingCapacity = crossCuttingCapacity;
+  }
+
+
+  public void setCrossCuttingGender(Boolean crossCuttingGender) {
+    this.crossCuttingGender = crossCuttingGender;
+  }
+
+  public void setCrossCuttingNa(Boolean crossCuttingNa) {
+    this.crossCuttingNa = crossCuttingNa;
+  }
+
+
+  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
+    this.crossCuttingYouth = crossCuttingYouth;
+  }
+
   public void setCrp(Crp crp) {
     this.crp = crp;
   }
@@ -854,6 +919,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.deliverables = deliverables;
   }
 
+  public void setDimension(String dimension) {
+    this.dimension = dimension;
+  }
+
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
   }
@@ -862,9 +931,13 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.flagships = flagships;
   }
 
-
   public void setFlagshipValue(String flagshipValue) {
     this.flagshipValue = flagshipValue;
+  }
+
+
+  public void setGenderAnalysis(String genderAnalysis) {
+    this.genderAnalysis = genderAnalysis;
   }
 
 
