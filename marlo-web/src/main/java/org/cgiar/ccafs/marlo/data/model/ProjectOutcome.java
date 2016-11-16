@@ -44,6 +44,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String narrativeTarget;
+  @Expose
+  private String genderDimenssion;
+
+  @Expose
+  private String youthComponent;
 
 
   @Expose
@@ -52,27 +57,33 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   @Expose
   private boolean active;
+
+
   @Expose
   private Date activeSince;
 
+
   @Expose
   private String modificationJustification;
+
+
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
+
+
   private Set<ProjectCommunication> projectCommunications = new HashSet<ProjectCommunication>(0);
   private List<ProjectMilestone> milestones;
+
   private List<ProjectCommunication> communications;
   private List<ProjectNextuser> nextUsers;
-
   private Set<ProjectNextuser> projectNextusers = new HashSet<ProjectNextuser>(0);
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
-  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public ProjectOutcome() {
   }
-
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, Long achievedValue, String narrativeTarget,
@@ -95,7 +106,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.projectCommunications = projectCommunicationses;
   }
 
-
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
     User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget, boolean isActive,
     Date activeSince, String modificationJustification) {
@@ -111,7 +121,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
   }
-
 
   public SrfTargetUnit getAchievedUnit() {
     return achievedUnit;
@@ -153,6 +162,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getGenderDimenssion() {
+    return genderDimenssion;
+  }
+
+
   @Override
   public Long getId() {
     return id;
@@ -174,9 +188,12 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return milestones;
   }
 
+
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -188,11 +205,9 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return narrativeAchieved;
   }
 
-
   public String getNarrativeTarget() {
     return narrativeTarget;
   }
-
 
   public List<ProjectNextuser> getNextUsers() {
     return nextUsers;
@@ -213,6 +228,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return projectComponentLesson;
   }
 
+
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
   }
@@ -227,7 +243,6 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
     return projectMilestones;
   }
 
-
   public Set<ProjectNextuser> getProjectNextusers() {
     return projectNextusers;
   }
@@ -235,6 +250,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+
+  public String getYouthComponent() {
+    return youthComponent;
   }
 
 
@@ -286,6 +306,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setExpectedValue(long expectedValue) {
     this.expectedValue = expectedValue;
+  }
+
+
+  public void setGenderDimenssion(String genderDimenssion) {
+    this.genderDimenssion = genderDimenssion;
   }
 
 
@@ -361,6 +386,11 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+
+  public void setYouthComponent(String youthComponent) {
+    this.youthComponent = youthComponent;
   }
 
 

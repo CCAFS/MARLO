@@ -129,12 +129,12 @@
             <div class="form-group">
               [#if (project.crossCuttingGender)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.narrativeGender" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.genderDimenssion" required=true className="limitWords-50" editable=editable /]
                 </div>
               [/#if]
               [#if (project.crossCuttingYouth)!false]
                 <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.narrativeYouth" required=true className="limitWords-50" editable=editable /]
+                  [@customForm.textArea name="projectOutcome.youthComponent" required=true className="limitWords-50" editable=editable /]
                 </div> 
               [/#if]
             </div>

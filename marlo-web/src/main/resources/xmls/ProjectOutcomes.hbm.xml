@@ -53,6 +53,12 @@
             <column name="narrative_achieved" length="65535" />
         </property>
 
+  <property name="genderDimenssion" type="string">
+     <column name="gender_dimenssion" length="65535" />
+     </property>
+      <property name="youthComponent" type="string">
+     <column name="youth_component" length="65535" />
+     </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
