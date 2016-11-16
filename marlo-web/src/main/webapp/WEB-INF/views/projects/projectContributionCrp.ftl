@@ -121,7 +121,6 @@
                 [@customForm.textArea name="projectOutcome.narrativeGenderAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
-            
             [/#if]
             
             [#-- Cross-cutting contributions --]
