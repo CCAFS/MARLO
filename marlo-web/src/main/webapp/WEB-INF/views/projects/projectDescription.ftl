@@ -191,10 +191,10 @@
               <div class="row">
                 <div class="col-md-12">
                   [#if editable]
-                    <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
-                    <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingGender"   id="gender"   value="true" [#if (project.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingYouth"    id="youth"    value="true" [#if (project.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
                   [/#if]
                 </div>
               </div>
@@ -202,7 +202,7 @@
             </div>
             
             [#-- If no gender dimension, then please explain why not --]
-            <div class="form-group">
+            <div class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
               [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
             </div>
             
