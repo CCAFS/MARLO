@@ -7,6 +7,32 @@ function init() {
   $('form select').select2({
     width: "100%"
   });
+// When select center as Funding Window----------
+  var lastDonor = -1;
+  $(".type").on("change", function() {
+    var option = $(this).find("option:selected");
+    var institutionSelect = $(".donor");
+    var institutionSelected = $(".institution").find("option:selected").val();
+    console.log(institutionSelected);
+    // If the option selected is center
+    if(option.val() == 4) {
+      if(institutionSelect.val() != "-1") {
+        lastDonor = institutionSelect.val();
+      }
+      institutionSelect.attr("disabled", "disabled");
+      institutionSelect.val(institutionSelected);
+      institutionSelect.trigger('change.select2');
+      $(".note").hide("slow");
+    } else {
+      $(".note").show("slow");
+
+      if(institutionSelect.attr("disabled") == "disabled") {
+        institutionSelect.removeAttr("disabled");
+        institutionSelect.val(lastDonor);
+        institutionSelect.trigger('change.select2');
+      }
+    }
+  });
 }
 
 function date(start,end) {
