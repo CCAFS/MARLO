@@ -55,7 +55,19 @@
 			class="org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput" fetch="select">
 			<column name="key_output_id" />
 		</many-to-one>
-		
+		<property name="crossCuttingGender" type="java.lang.Boolean">
+            <column name="cross_cutting_gender" />
+        </property>
+        <property name="crossCuttingYouth" type="java.lang.Boolean">
+            <column name="cross_cutting_youth" />
+        </property>
+        <property name="crossCuttingCapacity" type="java.lang.Boolean">
+            <column name="cross_cutting_capacity" />
+        </property>
+        
+         <property name="crossCuttingNa" type="java.lang.Boolean">
+            <column name="cross_cutting_na" />
+        </property>
 		<many-to-one name="crpProgramOutcome"
 			class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
 			<column name="outcome_id" />

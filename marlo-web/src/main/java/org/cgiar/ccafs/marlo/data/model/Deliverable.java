@@ -114,6 +114,15 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private List<DeliverablePartnership> otherPartners;
 
+  @Expose
+  private Boolean crossCuttingGender;
+  @Expose
+  private Boolean crossCuttingYouth;
+  @Expose
+  private Boolean crossCuttingCapacity;
+  @Expose
+  private Boolean crossCuttingNa;
+
 
   public Deliverable() {
   }
@@ -178,9 +187,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public Date getCreateDate() {
     return createDate;
@@ -192,15 +203,33 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Boolean getCrossCuttingCapacity() {
+    return crossCuttingCapacity;
+  }
+
+
+  public Boolean getCrossCuttingGender() {
+    return crossCuttingGender;
+  }
+
+
+  public Boolean getCrossCuttingNa() {
+    return crossCuttingNa;
+  }
+
+
+  public Boolean getCrossCuttingYouth() {
+    return crossCuttingYouth;
+  }
+
+
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
 
-
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
-
 
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
@@ -210,6 +239,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
+
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -235,6 +265,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -242,10 +273,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -267,7 +300,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
-
 
   public Integer getStatus() {
     return this.status;
@@ -294,6 +326,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.title;
   }
 
+
   public String getTypeOther() {
     return this.typeOther;
   }
@@ -315,7 +348,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -330,6 +362,23 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
+  }
+
+
+  public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
+    this.crossCuttingCapacity = crossCuttingCapacity;
+  }
+
+  public void setCrossCuttingGender(Boolean crossCuttingGender) {
+    this.crossCuttingGender = crossCuttingGender;
+  }
+
+  public void setCrossCuttingNa(Boolean crossCuttingNa) {
+    this.crossCuttingNa = crossCuttingNa;
+  }
+
+  public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
+    this.crossCuttingYouth = crossCuttingYouth;
   }
 
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
