@@ -67,7 +67,7 @@
     [/#if]  
     </ul>
     [#if editable ]
-      [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="description"  multiple=false required=true  className="fundingSource" editable=editable/]
+      [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className="fundingSource" editable=editable/]
     [/#if] 
   </div>
 </div>
@@ -82,6 +82,7 @@
     <div class="clearfix"></div>
   </li>
 </ul>
+
 
 [#-- Deliverable table with categories and sub categories --]
 <div id="dialog" title="Deliverable types" style="display: none">
@@ -113,6 +114,27 @@
     <p><a href="#" id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
   </div>
   <br />
+
+[#-- Does this deliverable have a cross-cutting dimension --]
+<div class="form-group col-md-12">
+  <label for="">[@s.text name="deliverable.crossCuttingDimensions" /]</label>
+  <div class="row">
+    <div class="col-md-12">
+      [#if editable]
+        <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
+        <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
+        <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
+        <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
+      [/#if]
+    </div>
+  </div> 
+</div>
+
+[#-- If gender dimension, select with ones --]
+<div class="form-group col-md-12">
+  [@customForm.select name="deliverable.selectedGenderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id"  displayFieldName="name" value="deliverable.selectedCountries" multiple=true required=true  className="" disabled=!editable/]
+</div>
+
 
 [#-- Partners --] 
 <div id="deliverable-partnership" class="clearfix col-md-12">

@@ -59,7 +59,9 @@ $(document).ready(function() {
   // Pop up when exists a draft version $('header a, #mainMenu a, .subMainMenu a, #secondaryMenu a')
   $('#secondaryMenu a').on('click', function(e) {
     selectedUrl = $.trim($(this).attr("href"));
-    selectedAction = getClassParameter($(this), 'action')
+    selectedAction = getClassParameter($(this), 'action');
+
+    console.log(selectedAction);
     // Prevent middle click
     if(e.which == 2) {
       return;
