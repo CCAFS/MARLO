@@ -115,24 +115,31 @@
   </li>
 </ul>
 
+
+
 [#-- Does this deliverable have a cross-cutting dimension --]
 <div class="form-group col-md-12">
-  <label for="">[@s.text name="deliverable.crossCuttingDimensions" /]</label>
+  <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/]</label>
   <div class="row">
     <div class="col-md-12">
       [#if editable]
-        <label class="checkbox-inline"><input type="checkbox" id="gender" value="option1"> Gender</label>
-        <label class="checkbox-inline"><input type="checkbox" id="youth" value="option2"> Youth</label>
-        <label class="checkbox-inline"><input type="checkbox" id="capacity" value="option3"> Capacity Development</label>
-        <label class="checkbox-inline"><input type="checkbox" id="na" value="option3"> N/A</label>
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingGender"   id="gender"   value="true" [#if (deliverable.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingYouth"    id="youth"    value="true" [#if (deliverable.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingCapacity" id="capacity" value="true" [#if (deliverable.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+        <label class="checkbox-inline"><input type="checkbox" name="deliverable.crossCuttingNa"       id="na"       value="true" [#if (deliverable.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+      [#else]
+        [#if (deliverable.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
+        [#if (deliverable.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
+        [#if (deliverable.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
+        [#if (deliverable.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
       [/#if]
     </div>
-  </div> 
+  </div>
 </div>
 
 [#-- If gender dimension, select with ones --]
-<div class="form-group col-md-12">
-  [@customForm.select name="deliverable.selectedGenderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id"  displayFieldName="name" value="deliverable.selectedCountries" multiple=true required=true  className="" disabled=!editable/]
+<div id="gender-levels" class="form-group col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+  [@customForm.select name="deliverable.selectedGenderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id"  displayFieldName="name" value="deliverable.selectedGenderLevels" multiple=true required=true  className="" disabled=!editable/]
 </div>
 
 

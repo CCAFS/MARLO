@@ -91,6 +91,25 @@ function init() {
     });
   });
 
+  /** Gender questions * */
+
+  $('input#gender').on('change', function() {
+    if($(this).is(':checked')) {
+      $('#gender-levels').slideDown();
+    } else {
+      $('#gender-levels').slideUp();
+    }
+  });
+
+  $('input#gender, input#youth, input#capacity').on('change', function() {
+    $('input#na').prop("checked", false);
+  });
+
+  $('input#na').on('change', function() {
+    $('input#gender, input#youth, input#capacity').prop("checked", false);
+    $('#gender-levels').slideUp();
+  });
+
   /*
    * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
    * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option
