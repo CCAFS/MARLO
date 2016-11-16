@@ -90,6 +90,9 @@ function errorNotification(msj) {
 
 function changeDetected(e) {
   if(isChanged()) {
+    // Hide concurrence message
+    $('#concurrenceMessage').fadeOut();
+
     if(autoSaveActive) {
       if(timeoutAutoSave) {
         clearTimeout(timeoutAutoSave);

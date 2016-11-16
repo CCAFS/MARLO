@@ -137,7 +137,11 @@ if(editable && canEdit){
   
   function informSavedVersion(name){
     if(myTurn == 1){
-      $('#concurrenceMessage').find('.person').text(name); $('#concurrenceMessage').fadeIn();
+      $('#concurrenceMessage').find('.person').text(name); 
+      $('#concurrenceMessage').fadeIn();
+      $('html, body').animate({
+        scrollTop: $("#concurrenceMessage").offset().top - 40
+      }, 1000);
     }
   }
   
