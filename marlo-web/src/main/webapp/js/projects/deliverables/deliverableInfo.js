@@ -6,6 +6,8 @@ function init() {
     width: '100%'
   });
 
+  $('.helpMessage3').on("click", openDialog);
+
   // select name
   $(".keyOutput").attr("name", "deliverable.crpClusterKeyOutput.id");
   /* Events select */
@@ -94,6 +96,10 @@ function init() {
    * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option
    * value='2'>On-going</option>"); }
    */
+}
+
+function openDialog() {
+  $("#dialog").dialog();
 }
 
 // Add a new fundingSource element
