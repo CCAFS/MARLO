@@ -28,7 +28,7 @@
 
 [#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
-<div class="col-md-12 form-group justificationContent" style="display:none;">
+<div class="col-md-12 form-group justificationContent" >
   <div class="col-md-12">[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
 </div>
 [/#if]
@@ -82,6 +82,37 @@
     <div class="clearfix"></div>
   </li>
 </ul>
+
+[#-- Deliverable table with categories and sub categories --]
+<div id="dialog" title="Deliverable types" style="display: none">
+    <table id="deliverableTypes" style="height:700px; width:900px;">
+      <th> [@s.text name="planning.deliverables.dialogMessage.part1" /] </th>
+      <th> [@s.text name="planning.deliverables.dialogMessage.part2" /] </th>
+      <th> [@s.text name="planning.deliverables.dialogMessage.part3" /] </th>
+      [#if deliverableTypes?has_content]
+      [#list deliverableTypes as mt]
+        [#list action.getDeliverableSubTypes(mt.id) as st]
+          [#if st_index == 0]
+          <tr>
+            <th rowspan="${action.getDeliverableSubTypes(mt.id).size()}"> ${mt.name} </th>
+                <td> ${st.name} </td>
+                <td> ${(st.description)!}</td>
+          </tr>
+          [#else]
+          <tr>
+            <td> ${st.name} </td>
+            <td> ${(st.description)!} </td>
+          </tr>
+          [/#if]
+        [/#list]
+      [/#list]
+      [/#if]  
+    </table>
+  </div> <!-- End dialog-->
+  <div class="helpMessage3">
+    <p><a href="#" id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
+  </div>
+  <br />
 
 [#-- Partners --] 
 <div id="deliverable-partnership" class="clearfix col-md-12">
