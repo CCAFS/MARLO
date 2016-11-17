@@ -43,7 +43,7 @@
       </div>
       <div class="selectHeadquater panel tertiary col-xs-12"  style="display:none">
           <div class="panel-body">
-            [@customForm.select name="" label="" required=true  i18nkey="Select institution headquarter" listName="" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
+            [@customForm.select name="activityPartner.partner.headqueater.id" label="" required=true  i18nkey="Select institution headquarter" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" value="" /]
           </div>
         </div>
         [#-- Partner Acronym --]

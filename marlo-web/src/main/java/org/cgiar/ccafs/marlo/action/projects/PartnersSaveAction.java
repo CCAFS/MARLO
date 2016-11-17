@@ -20,10 +20,12 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -52,37 +54,49 @@ public class PartnersSaveAction extends BaseAction {
   // Managers
   private LocElementManager locationManager;
   private InstitutionTypeManager institutionManager;
+  private InstitutionManager institutionsManager;
   private ActivityManager activityManager;
   private ProjectManager projectManager;
 
   // Model
   private List<LocElement> countriesList;
   private List<InstitutionType> institutionTypesList;
+  private List<Institution> institutions;
+
   // private ActivityPartner activityPartner;
   private boolean messageSent;
 
+
   private String partnerWebPage;
+
   private int projectID;
+
   private int activityID;
 
   @Inject
   public PartnersSaveAction(APConfig config, LocElementManager locationManager,
-    InstitutionTypeManager institutionManager, ActivityManager activityManager, ProjectManager projectManager) {
+    InstitutionTypeManager institutionManager, InstitutionManager institutionsManager, ActivityManager activityManager,
+    ProjectManager projectManager) {
     super(config);
     this.locationManager = locationManager;
     this.institutionManager = institutionManager;
     this.activityManager = activityManager;
     this.projectManager = projectManager;
+    this.institutionsManager = institutionsManager;
   }
 
   public int getActivityID() {
     return activityID;
   }
 
-
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
+
+  public List<Institution> getInstitutions() {
+    return institutions;
+  }
+
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
@@ -114,23 +128,31 @@ public class PartnersSaveAction extends BaseAction {
     this.countriesList = locationManager.findAll().stream()
       .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
     this.institutionTypesList = institutionManager.findAll();
+    institutions = institutionsManager.findAll().stream().filter(c -> c.getHeadquarter() == null && c.isActive())
+      .collect(Collectors.toList());
   }
 
   @Override
   public String save() {
-    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city;
+    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName;
     String subject;
     StringBuilder message = new StringBuilder();
 
     long partnerTypeId;
-
+    long headQuater = -1;
     // Take the values to create the message
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
     countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
     city = activityPartner.getPartner().getCity();
-
+    headQuaterName = "";
+    try {
+      headQuater = activityPartner.getPartner().getHeadquarter().getId();
+      headQuaterName = institutionsManager.getInstitutionById(headQuater).getName();
+    } catch (Exception e) {
+      headQuater = -1;
+    }
     // Get the country name
     countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
 
@@ -141,8 +163,9 @@ public class PartnersSaveAction extends BaseAction {
         institutionTypeName = pt.getName();
       }
     }
+
     // message subject
-    subject = "[CCAFS P&R] Partner verification - " + institutionName;
+    subject = "[" + this.getCrpSession().toUpperCase() + "-MARLO] Partner verification - " + institutionName;
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
@@ -157,6 +180,12 @@ public class PartnersSaveAction extends BaseAction {
     message.append("Partner type: ");
     message.append(institutionTypeName);
     message.append(" \n");
+
+    if (headQuater != -1) {
+      message.append("HeadQuater: ");
+      message.append(headQuaterName);
+      message.append(" \n");
+    }
     message.append("City: ");
     message.append(city);
     message.append(" \n");
@@ -194,13 +223,17 @@ public class PartnersSaveAction extends BaseAction {
     return INPUT;
   }
 
-
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
 
+
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
+  }
+
+  public void setInstitutions(List<Institution> institutions) {
+    this.institutions = institutions;
   }
 
   public void setPartnerWebPage(String partnerWebPage) {
