@@ -201,11 +201,24 @@ public class ValidateProjectSectionAction extends BaseAction {
         if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
           section.put("missingFields", section.get("missingFields") + "-" + "deliveralbes");
         }
-        for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
-          .collect(Collectors.toList())) {
+
+        List<Deliverable> deliverables =
+          project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<Deliverable> openA = deliverables.stream()
+          .filter(a -> a.isActive()
+            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0))))
+          .collect(Collectors.toList());
+
+        for (Deliverable deliverable : openA) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
             this.getCurrentCycleYear(), sectionName);
+          if (sectionStatus == null) {
 
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
           if (sectionStatus.getMissingFields().length() > 0) {
             section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
 
@@ -481,9 +494,10 @@ public class ValidateProjectSectionAction extends BaseAction {
     for (Deliverable deliverable : openA) {
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
-      deliverableValidator.validate(this, deliverable, false);
+
       deliverable.setFundingSources(
         deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      deliverableValidator.validate(this, deliverable, false);
     }
 
   }

@@ -146,29 +146,7 @@ public class DeliverableValidator extends BaseValidator {
       action.getInvalidFields().put("list-deliverable.fundingSources",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
     }
-    /*
-     * if (deliverable.getOtherPartners() != null) {
-     * if (deliverable.getOtherPartners().size() == 0) {
-     * this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
-     * action.getInvalidFields().put("list-deliverable.otherPartners",
-     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
-     * } else {
-     * int i = 0;
-     * for (DeliverablePartnership partner : deliverable.getOtherPartners()) {
-     * if (partner.getProjectPartnerPerson() == null || partner.getProjectPartnerPerson().getId() == null
-     * || partner.getProjectPartnerPerson().getId().longValue() == -1) {
-     * action.addFieldError("deliverable.otherPartners[" + i + "].projectPartnerPerson.id",
-     * InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     * i++;
-     * }
-     * }
-     * } else {
-     * this.addMessage(action.getText("project.deliverable.generalInformation.partnerOthers"));
-     * action.getInvalidFields().put("list-deliverable.otherPartners",
-     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Other Partners"}));
-     * }
-     */
+
 
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
