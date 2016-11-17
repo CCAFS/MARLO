@@ -514,8 +514,11 @@ public class DeliverableAction extends BaseAction {
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
         for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
-          fundingSource
-            .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+          if (fundingSource != null && fundingSource.getFundingSource() != null) {
+            fundingSource
+              .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+          }
+
         }
         this.setDraft(true);
       } else {
@@ -687,15 +690,23 @@ public class DeliverableAction extends BaseAction {
 
       if (deliverable.getCrossCuttingCapacity() == null) {
         deliverablePrew.setCrossCuttingCapacity(false);
+      } else {
+        deliverablePrew.setCrossCuttingCapacity(true);
       }
       if (deliverable.getCrossCuttingNa() == null) {
         deliverablePrew.setCrossCuttingNa(false);
+      } else {
+        deliverablePrew.setCrossCuttingNa(true);
       }
       if (deliverable.getCrossCuttingGender() == null) {
         deliverablePrew.setCrossCuttingGender(false);
+      } else {
+        deliverablePrew.setCrossCuttingGender(true);
       }
       if (deliverable.getCrossCuttingYouth() == null) {
         deliverablePrew.setCrossCuttingYouth(false);
+      } else {
+        deliverablePrew.setCrossCuttingYouth(true);
       }
 
       if (deliverable.getStatus() != null) {

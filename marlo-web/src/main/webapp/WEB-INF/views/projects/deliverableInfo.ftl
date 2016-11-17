@@ -93,7 +93,7 @@
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
           <input class="fId" type="hidden" name="deliverable.fundingSources[${element_index}].fundingSource.id" value="${(element.fundingSource.id)!}" />
-          <span title="${(element.fundingSource.description)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.description)!"undefined" maxPos=100 substr=" "/]</span>
+          <span title="${(element.fundingSource.title)!'undefined'}" class="name">[@utils.wordCutter string=(element.fundingSource.title)!"undefined" maxPos=100 substr=" "/]</span>
           <div class="clearfix"></div>
         </li>
       [/#list]
@@ -142,7 +142,7 @@
 
 [#-- If gender dimension, select with ones --]
 <div id="gender-levels" class="form-group col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-  [@customForm.select name="deliverable.selectedGenderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels" keyFieldName="id"  displayFieldName="name" value="deliverable.selectedGenderLevels" multiple=true required=true  className="" disabled=!editable/]
+  [@customForm.select name="deliverable.genderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels"  value="deliverable.genderLevels" multiple=true required=true  className="" disabled=!editable/]
 </div>
 
 
