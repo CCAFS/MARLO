@@ -5,6 +5,8 @@
 [#assign customCSS = ["${baseUrl}/css/global/partnersSave.css"] /]
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#assign includeHeader = "false" /]
+[#assign currentSection = "projects" /]
+[#assign currentStage = "partners" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 
@@ -14,7 +16,7 @@
     <div class="title col-xs-12">
       <h3 class=" text-center form-group">[@s.text name="Request a new institution or branch" /]</h3>
     </div>
-    
+    [#include "/WEB-INF/global/pages/generalMessages.ftl" /]
     
     <div class="slideshow-container col-xs-12 form-group">
     [#-- SLIDE 1 --]
@@ -35,7 +37,7 @@
       <span class="dot" onclick="currentSlide(2)"></span> 
     </div>
     </div>
-      [@s.form action="partnerSave" cssClass="pure-form "]
+      [@s.form action="${crpSession}/partnerSave" cssClass="pure-form "]
       <div class="clearfix"></div>
       <hr  />
       <div class="col-xs-12 form-group">
@@ -74,11 +76,12 @@
       
       [#-- Web page link --]
       <div id="partnerPage" class="col-xs-12 form-group">
-        [@customForm.input name="partnerWebPage" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
+        [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="If you know the partner website please paste the link below" value="http://" /]
       </div>
       
       [#-- Hidden input with message of success --]
       <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
+      <input type="hidden" name="projectID" value="${projectID}"/>
       
       <div class="form-group pull-right">
         [@s.submit type="button" name="save"][@s.text name="form.buttons.savePartner.request" /][/@s.submit]
