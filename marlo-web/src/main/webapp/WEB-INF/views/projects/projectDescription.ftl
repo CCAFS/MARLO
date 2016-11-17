@@ -179,7 +179,7 @@
                 [/#if] 
               </div>
             </div>
-            
+             [#if project.projectEditLeader]
             [#--  What type of gender analysis informed the design of this project and how? --]
             <div class="form-group">
               [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
@@ -210,7 +210,7 @@
             <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
               [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
             </div>
-            
+            [/#if]
           </div> 
            
           [#-- Section Buttons & hidden inputs--]
@@ -222,7 +222,8 @@
     </div>  
 </section>
 
-<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram)!-1}[#if institution_has_next], [/#if][/#list]}</span>
+
+<span id="liaisonInstitutionsPrograms" style="display:none">{[#list liaisonInstitutions as institution]"${institution}" : ${(institution.crpProgram.id)!-1}[#if institution_has_next], [/#if][/#list]}</span>
 
 
 [#-- Cluster of activity list template --]

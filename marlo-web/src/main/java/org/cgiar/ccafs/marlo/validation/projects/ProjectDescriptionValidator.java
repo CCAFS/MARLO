@@ -144,7 +144,8 @@ public class ProjectDescriptionValidator extends BaseValidator
     }
 
 
-    if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)) {
+    if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
+      && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
       if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
         && (project.getNoRegional() == null || project.getNoRegional().booleanValue() == false)) {
         this.addMessage(action.getText("projectDescription.regions"));
@@ -155,15 +156,6 @@ public class ProjectDescriptionValidator extends BaseValidator
     }
 
 
-    /*
-     * if (project.getRegions() != null) {
-     * if (project.getRegions().size() == 0) {
-     * this.addMessage(action.getText("projectDescription.regions"));
-     * }
-     * } else {
-     * this.addMessage(action.getText("projectDescription.regions"));
-     * }
-     */
     if (project.getClusterActivities() != null) {
       if (project.getClusterActivities().size() == 0) {
         this.addMessage(action.getText("projectDescription.clusterActivities"));
