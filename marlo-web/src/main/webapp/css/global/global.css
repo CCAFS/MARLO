@@ -127,7 +127,7 @@ input.disabled {
 }
 
 .viewMore-block {
-  overflow-y:hidden;
+  overflow: hidden;
   padding-bottom: 50px;
   -webkit-transition: height 1s;
   -moz-transition: height 1s;
@@ -135,12 +135,14 @@ input.disabled {
 }
 
 .viewMore {
+  color: #287fa1;
+  /* border-bottom: 1px solid #f2f2f2; */
   position:absolute;
   bottom: 0;
-  width: 99%;
+  width: 96%;
   margin: 0 0.5%;
   cursor: pointer;
-  padding: 30px 0 12px 0;
+  padding: 5px 0 0px 0;
   font-weight: 900;
   text-align: center;
   background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 0%);
@@ -148,7 +150,7 @@ input.disabled {
   background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
   background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#FFF 70%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,#d9edf7 70%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
 }
 
@@ -2223,16 +2225,14 @@ margin: 0;
 }
 
 .helpMessage {
+  background: #F8F8F8;
+  border-radius: 15px 0;
   position: relative;
   -webkit-box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 1px 2px 8px rgba(0,0,0,.3);
   box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.1);
-  -webkit-border-radius:2px;
-  -moz-border-radius:2px;
-  border-radius:2px;
   padding: 10px;
   border: 1px solid #EEE;
-  background: #F8F8F8;
   margin: 0 auto;
 }
 
@@ -2245,8 +2245,10 @@ margin: 0;
   clear: both;
 }
 
-.helpMessage {
-  *zoom: 1;
+.infoText {
+  *
+  zoom: 1;
+  background: #d9edf7;
 }
 
 
@@ -2338,6 +2340,7 @@ margin: 0;
   /* padding: 1px; */
   color: #636368;
   margin-bottom: 5px;
+  width: 118%;
 }
 
 .textArea textarea{
@@ -6138,4 +6141,20 @@ div#projectsList {
 
 .glossary a:hover {
     color: #e7e7e7;
+}
+
+.helpText {
+    margin-bottom: 10px;
+}
+
+div#projectPartnersBlock {
+    position: relative;
+}
+
+.removeHelp {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    color: #aaa;
 }
