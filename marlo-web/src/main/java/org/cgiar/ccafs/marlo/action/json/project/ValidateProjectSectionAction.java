@@ -468,8 +468,9 @@ public class ValidateProjectSectionAction extends BaseAction {
   private void validateProjectDeliverables() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
-    for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
-      .collect(Collectors.toList())) {
+
+    for (Deliverable deliverable : project.getDeliverables().stream()
+      .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())) {
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
       deliverableValidator.validate(this, deliverable, false);

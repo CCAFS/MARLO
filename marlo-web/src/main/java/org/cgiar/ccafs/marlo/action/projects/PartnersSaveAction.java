@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -220,6 +221,11 @@ public class PartnersSaveAction extends BaseAction {
 
     LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),
       projectID);
+
+
+    Collection<String> messages = this.getActionMessages();
+    this.addActionMessage("message:" + this.getText("saving.saved"));
+    messages = this.getActionMessages();
     return INPUT;
   }
 
