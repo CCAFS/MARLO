@@ -140,5 +140,6 @@ div#fundingSourceList {
 }
 
 a#opener {
+    width: 100%;
     cursor: pointer;
 }

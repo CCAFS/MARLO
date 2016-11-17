@@ -11,39 +11,42 @@
   <div class="col-md-6 form-group">
     [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
   </div>
-<div class="clearfix"></div>
 [#-- Deliverable table with categories and sub categories --]
-<div id="dialog" title="Deliverable types" style="display: none">
-    <table id="deliverableTypes" style="height:700px; width:900px;">
-      <th> [@s.text name="planning.deliverables.dialogMessage.part1" /] </th>
-      <th> [@s.text name="planning.deliverables.dialogMessage.part2" /] </th>
-      <th> [@s.text name="planning.deliverables.dialogMessage.part3" /] </th>
-      [#if deliverableTypes?has_content]
-      [#list deliverableTypes as mt]
-        [#list action.getDeliverableSubTypes(mt.id) as st]
-          [#if st_index == 0]
-          <tr>
-            <th rowspan="${action.getDeliverableSubTypes(mt.id).size()}"> ${mt.name} </th>
-                <td> ${st.name} </td>
-                <td> ${(st.description)!}</td>
-          </tr>
-          [#else]
-          <tr>
-            <td> ${st.name} </td>
-            <td> ${(st.description)!} </td>
-          </tr>
-          [/#if]
+<div class="col-md-12 deliverableTypeMessage">
+  <div id="dialog" title="Deliverable types" style="display: none">
+      <table id="deliverableTypes" style="height:700px; width:900px;">
+        <th> [@s.text name="planning.deliverables.dialogMessage.part1" /] </th>
+        <th> [@s.text name="planning.deliverables.dialogMessage.part2" /] </th>
+        <th> [@s.text name="planning.deliverables.dialogMessage.part3" /] </th>
+        [#if deliverableTypes?has_content]
+        [#list deliverableTypes as mt]
+          [#list action.getDeliverableSubTypes(mt.id) as st]
+            [#if st_index == 0]
+            <tr>
+              <th rowspan="${action.getDeliverableSubTypes(mt.id).size()}"> ${mt.name} </th>
+                  <td> ${st.name} </td>
+                  <td> ${(st.description)!}</td>
+            </tr>
+            [#else]
+            <tr>
+              <td> ${st.name} </td>
+              <td> ${(st.description)!} </td>
+            </tr>
+            [/#if]
+          [/#list]
         [/#list]
-      [/#list]
-      [/#if]  
-    </table>
-  </div> <!-- End dialog-->
-  <div id="popup" class="helpMessage3">
-    <p><a  id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
-  </div>
-  
-  <br />
-  
+        [/#if]  
+      </table>
+    </div> <!-- End dialog-->
+    <div id="popup" class="helpMessage3">
+      <p><a  id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
+    </div>
+  <div class="fullBlock">
+    <div class="note left">
+      <p>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</p>
+    </div>
+  </div>  
+</div>
 [#-- Description textArea --] 
 <div class="form-group" style="display:none;">
   <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
