@@ -1,0 +1,15 @@
+insert into role_permissions(role_id,permission_id) values (2,446);
+insert into role_permissions(role_id,permission_id) values (11,446);
+insert into role_permissions(role_id,permission_id) values (12,446);
+insert into role_permissions(role_id,permission_id) values (21,446);
+insert into role_permissions(role_id,permission_id) values (22,446);
+insert into role_permissions(role_id,permission_id) values (28,446);
+insert into role_permissions(role_id,permission_id) values (29,446);
+insert into role_permissions(role_id,permission_id) values (34,446);
+insert into role_permissions(role_id,permission_id) values (35,446);
+insert into role_permissions(role_id,permission_id) values (39,446);
+insert into role_permissions(role_id,permission_id) values (40,446);
+insert into role_permissions(role_id,permission_id) values (48,446);
+insert into role_permissions(role_id,permission_id) values (49,446);
+insert into role_permissions(role_id,permission_id) values (50,446);
+insert into role_permissions(role_id,permission_id) values (51,446);

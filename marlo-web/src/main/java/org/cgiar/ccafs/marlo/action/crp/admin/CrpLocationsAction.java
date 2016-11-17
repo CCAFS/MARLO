@@ -270,7 +270,7 @@ public class CrpLocationsAction extends BaseAction {
         this.setActionMessages(null);
         this.addActionWarning(this.getText("saving.saved") + validationMessage);
       } else {
-        this.addActionMessage(this.getText("saving.saved"));
+        this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
 
