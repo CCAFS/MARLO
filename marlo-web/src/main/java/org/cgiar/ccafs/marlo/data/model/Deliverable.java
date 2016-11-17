@@ -120,17 +120,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private List<DeliverablePartnership> otherPartners;
 
+
   @Expose
   private Boolean crossCuttingGender;
+
+
   @Expose
   private Boolean crossCuttingYouth;
 
-
   @Expose
   private Boolean crossCuttingCapacity;
-
   @Expose
   private Boolean crossCuttingNa;
+
 
   public Deliverable() {
   }
@@ -192,11 +194,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return this.activeSince;
   }
-
 
   public Date getCreateDate() {
     return createDate;
@@ -252,19 +252,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableGenderLevels;
   }
 
+
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
   }
+
 
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
   }
 
-
   public FundingSource getFundingSource() {
     return fundingSource;
   }
-
 
   public List<DeliverableFundingSource> getFundingSources() {
     return fundingSources;
@@ -289,11 +289,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -309,6 +309,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Project getProject() {
     return project;
   }
+
 
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
@@ -351,7 +352,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -359,6 +359,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -389,10 +390,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crossCuttingGender = crossCuttingGender;
   }
 
-
   public void setCrossCuttingNa(Boolean crossCuttingNa) {
     this.crossCuttingNa = crossCuttingNa;
   }
+
 
   public void setCrossCuttingYouth(Boolean crossCuttingYouth) {
     this.crossCuttingYouth = crossCuttingYouth;
@@ -430,14 +431,15 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.fundingSource = fundingSource;
   }
 
-
   public void setFundingSources(List<DeliverableFundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
 
+
   public void setGenderLevels(List<DeliverableGenderLevel> genderLevels) {
     this.genderLevels = genderLevels;
   }
+
 
   public void setId(Long id) {
     this.id = id;
