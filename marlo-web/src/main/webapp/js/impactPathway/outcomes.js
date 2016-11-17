@@ -142,7 +142,7 @@ function attachEvents() {
 function validateDecimalsContributions() {
   $('form input.contribution').each(function(i,e) {
     if(($(e).val() % 1) == 0) {
-      $(e).val(parseInt($(e).val()));
+      $(e).val(parseInt($(e).val() || 0));
     }
   });
 }
