@@ -469,8 +469,16 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    for (Deliverable deliverable : project.getDeliverables().stream()
-      .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList())) {
+    List<Deliverable> deliverables =
+      project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+    List<Deliverable> openA = deliverables.stream()
+      .filter(a -> a.isActive()
+        && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getStatus().intValue() == 0))))
+      .collect(Collectors.toList());
+
+    for (Deliverable deliverable : openA) {
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
       deliverableValidator.validate(this, deliverable, false);
