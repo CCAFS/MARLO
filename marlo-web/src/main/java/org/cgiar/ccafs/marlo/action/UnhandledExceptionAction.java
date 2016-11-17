@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,9 +63,6 @@ public class UnhandledExceptionAction extends BaseAction {
     StringWriter writer = new StringWriter();
     exception.printStackTrace(new PrintWriter(writer));
 
-    if (!config.getBaseUrl().contains("activities.ccafs.cgiar.org")) {
-      return;
-    }
 
     subject = "Exception occurred in MARLO";
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " <"
@@ -76,7 +73,8 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append(writer.toString());
 
     SendMail sendMail = new SendMail(this.config);
-    sendMail.send(config.getEmailNotification(), null, null, subject, message.toString(), null, null, null, false);
+    sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
+      null, null, true);
     LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.",
       this.getCurrentUser().getEmail());
   }

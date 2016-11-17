@@ -134,6 +134,8 @@ public class SendMail {
       MimeBodyPart mimeBodyPart = new MimeBodyPart();
       if (isHtml) {
         mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
+      } else {
+        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
       }
 
       mimeMultipart.addBodyPart(mimeBodyPart);
