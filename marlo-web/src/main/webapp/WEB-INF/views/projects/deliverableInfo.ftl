@@ -141,9 +141,40 @@
 </div>
 
 [#-- If gender dimension, select with ones --]
-<div id="gender-levels" class="form-group col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-  [@customForm.select name="deliverable.genderLevels" label=""  i18nkey="deliverable.genderLevels" listName="genderLevels"  value="deliverable.genderLevels" multiple=true required=true  className="" disabled=!editable/]
+<div id="gender-levels" class="panel tertiary col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+ <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+  <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+    <ul class="list">
+    [#if deliverable.genderLevels?has_content]
+      [#list deliverable.genderLevels as element]
+        <li class="genderLevel clearfix">
+          [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
+          <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
+          <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel.id" value="${(element.genderLevel.id)!}" />
+          <span title="${(element.genderLevel.title)!'undefined'}" class="name">[@utils.wordCutter string=(element.genderLevel.title)!"undefined" maxPos=100 substr=" "/]</span>
+          <div class="clearfix"></div>
+        </li>
+      [/#list]
+    [#else]
+      <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+    [/#if]  
+    </ul>
+    [#if editable ]
+      [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/]
+    [/#if] 
+  </div>
 </div>
+
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="glevelTemplate" class="genderLevel clearfix" style="display:none;">
+    <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
+    <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
 
 
 [#-- Partners --] 

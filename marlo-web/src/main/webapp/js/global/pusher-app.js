@@ -1,6 +1,7 @@
 /**
  * * MARLO Pusher Initializing
  */
+
 // Pusher.logToConsole = debugMode;
 
 var pusher = new Pusher(PUSHER_KEY, {

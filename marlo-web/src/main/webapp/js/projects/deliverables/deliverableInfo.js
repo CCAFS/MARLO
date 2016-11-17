@@ -68,8 +68,9 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
-  $(".fundingSource").on("change", function() {
+  /** Funding source * */
 
+  $(".fundingSource").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       addFundingSource(option);
@@ -81,9 +82,31 @@ function init() {
   $(".removeFundingSource").on("click", removeFundingSource);
 
   // Validate if funding source exists in select
-
   $("form .fundingSources").each(function(i,e) {
     var options = $(".fundingSource option");
+    options.each(function(iOption,eOption) {
+      if($(e).find(".fId").val() == $(eOption).val()) {
+        $(eOption).remove();
+      }
+    });
+  });
+
+  /** Gender Levels * */
+
+  $(".genderLevelsSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "-1") {
+      addGenderLevel(option);
+    }
+    // Remove option from select
+    option.remove();
+    $(this).trigger("change.select2");
+  });
+  $(".removeGenderLevel").on("click", removeGenderLevel);
+
+  // Validate if funding source exists in select
+  $("form .genderLevel").each(function(i,e) {
+    var options = $(".genderLevelsSelect option");
     options.each(function(iOption,eOption) {
       if($(e).find(".fId").val() == $(eOption).val()) {
         $(eOption).remove();
@@ -153,7 +176,7 @@ function addFundingSource(option) {
   updateFundingSources($list);
   checkFundingItems($list);
 
-// Reset select
+  // Reset select
   $(option).val("-1");
   $(option).trigger('change.select2');
 
@@ -178,6 +201,69 @@ function removeFundingSource() {
 
 function updateFundingSources($list) {
   $($list).find('.fundingSources').each(function(i,e) {
+    // Set funding sources indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+/** Add gender level * */
+
+function addGenderLevel(option) {
+  var canAdd = true;
+  console.log(option.val());
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+
+  var $list = $(option).parents(".select").parents("#genderLevelsList").find(".list");
+  var $item = $("#glevelTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.genderLevel').each(function(i,e) {
+    if($(e).find('input.fId').val() == option.val()) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
+
+  // Set funding source parameters
+  $item.find(".name").attr("title", $(option).text()).tooltip();
+  $item.find(".name").html(v);
+  $item.find(".fId").val(option.val());
+  $list.append($item);
+  $item.show('slow');
+  updateGenderLevels($list);
+  checkGenderItems($list);
+
+  // Reset select
+  $(option).val("-1");
+  $(option).trigger('change.select2');
+
+}
+
+function removeGenderLevel() {
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.genderLevel');
+  var value = $item.find(".fId").val();
+  var name = $item.find(".name").attr("title");
+  console.log(name + "-" + value);
+  var $select = $(".genderLevelsSelect");
+  $item.hide(800, function() {
+    $item.remove();
+    checkGenderItems($list);
+    updateGenderLevels($list);
+  });
+// Add funding source option again
+  $select.addOption(value, name);
+  $select.trigger("change.select2");
+}
+
+function updateGenderLevels($list) {
+  $($list).find('.genderLevel').each(function(i,e) {
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -318,6 +404,17 @@ function checkItems(block) {
 function checkFundingItems(block) {
   console.log(block);
   var items = $(block).find('.fundingSources').length;
+  console.log(items);
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
+}
+
+function checkGenderItems(block) {
+  console.log(block);
+  var items = $(block).find('.genderLevel').length;
   console.log(items);
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
