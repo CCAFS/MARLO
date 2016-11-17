@@ -58,6 +58,8 @@ function init() {
     $("form .projectPartner ").each(function(i,e) {
       verifyMissingFields(e);
     });
+    showHelpText();
+    setViewMore();
   });
 
   $("textarea[id!='justification']").autoGrow();
@@ -154,6 +156,11 @@ function attachEvents() {
   // Event when click in a relation tag of partner person
   $(".tag").on("click", showPersonRelations);
 
+}
+
+function showHelpText() {
+  $('.helpMessage').show();
+  $('.helpMessage').addClass('animated flipInX');
 }
 
 function getProjectLeader() {
