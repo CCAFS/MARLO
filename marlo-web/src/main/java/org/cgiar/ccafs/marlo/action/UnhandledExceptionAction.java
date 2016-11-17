@@ -44,9 +44,9 @@ public class UnhandledExceptionAction extends BaseAction {
     // Print the exception in the log
     LOG.error("There was an unexpected exception", exception);
     // Send email only if we are in production mode.
-    if (config.isProduction()) {
-      this.sendExceptionMessage();
-    }
+    // if (config.isProduction()) {
+    this.sendExceptionMessage();
+    // }
     return super.execute();
   }
 
@@ -67,9 +67,9 @@ public class UnhandledExceptionAction extends BaseAction {
     subject = "Exception occurred in MARLO";
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " <"
       + this.getCurrentUser().getEmail() + "> ");
-    message.append("has experienced an exception on the platform. \n");
-    message.append("This execption occurs in the server: " + config.getBaseUrl() + ".\n");
-    message.append("The exception message was: \n\n");
+    message.append("has experienced an exception on the platform. </br>");
+    message.append("This execption occurs in the server: " + config.getBaseUrl() + ".</br>");
+    message.append("The exception message was: </br></br>");
     message.append(writer.toString());
 
     SendMail sendMail = new SendMail(this.config);
