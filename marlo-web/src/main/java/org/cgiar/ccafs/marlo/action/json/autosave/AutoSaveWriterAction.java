@@ -146,8 +146,9 @@ public class AutoSaveWriterAction extends BaseAction {
       try {
 
         String fileName = fileId + "_" + fileClass + "_" + fileAction + ".json";
-
-        Path path = Paths.get(config.getAutoSaveFolder());
+        String pathFile = config.getAutoSaveFolder();
+        System.out.println(pathFile);
+        Path path = Paths.get(pathFile);
 
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
           File file = new File(config.getAutoSaveFolder() + fileName);
