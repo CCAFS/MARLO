@@ -220,9 +220,13 @@ public class PartnersSaveAction extends BaseAction {
 
     message.append(".</br>");
     message.append("</br>");
-    SendMail sendMail = new SendMail(this.config);
-    sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
-      null, null, true);
+    try {
+      SendMail sendMail = new SendMail(this.config);
+      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
+        null, null, null, true);
+    } catch (Exception e) {
+
+    }
     messageSent = true;
 
     LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),
