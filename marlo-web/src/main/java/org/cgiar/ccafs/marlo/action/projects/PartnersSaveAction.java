@@ -236,7 +236,7 @@ public class PartnersSaveAction extends BaseAction {
     Collection<String> messages = this.getActionMessages();
     this.addActionMessage("message:" + this.getText("saving.saved"));
     messages = this.getActionMessages();
-    return INPUT;
+    return SUCCESS;
   }
 
   public void setActivityID(int activityID) {
