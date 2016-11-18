@@ -177,7 +177,7 @@ function getRandomColor() {
 function popups() {
   $("a.popup").click(function(event) {
     event.preventDefault();
-    var options = "width=620,height=500,resizable=1,scrollbars=1,location=0";
+    var options = "width=620,height=550,resizable=1,scrollbars=1,location=0";
     nueva = window.open(this.href, '_blank', options);
   });
 }

@@ -239,17 +239,22 @@ public class PartnersSaveAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setActivityID(int activityID) {
     this.activityID = activityID;
   }
-
 
   public void setActivityPartner(ActivityPartner activityPartner) {
     this.activityPartner = activityPartner;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  public void setMessageSent(boolean messageSent) {
+    this.messageSent = messageSent;
   }
 
   public void setPartnerWebPage(String partnerWebPage) {

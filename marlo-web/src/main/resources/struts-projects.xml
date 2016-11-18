@@ -170,11 +170,12 @@
 			</result>
 		</action>
 		
-		  <action name="{crp}/partnerSave" class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
+		<action name="{crp}/partnerSave" class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
       <result name="input">/WEB-INF/global/pages/partnersSave.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">partnerSave</param>
+        <param name="actionName">${crpSession}/partnerSave</param>
         <param name="projectID">${projectID}</param>
+        <param name="messageSent">${messageSent}</param>
       </result>
     </action>
 		

@@ -54,12 +54,10 @@
       var reportingActive= ${((reportingActive)!false)?string};
       
       
-      
-      
-      [#-- Marlo Develop ID as default --]
+      [#-- MARLO Develop ID as default --]
       [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
       [#if config.production]
-        [#if crpSession??]
+        [#if crpSession?? && logged]
           [#if crpSession == "a4nh"]
             [#-- MARLO Production (A4NH) --]
             [#assign tawktoSiteId = "582f0db6fccdfa3ec8373386"]
