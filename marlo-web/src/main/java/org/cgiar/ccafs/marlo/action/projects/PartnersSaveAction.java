@@ -269,6 +269,23 @@ public class PartnersSaveAction extends BaseAction {
         anyError = true;
       }
 
+
+      if (activityPartner.getPartner().getCity().isEmpty()) {
+        this.addFieldError("activityPartner.partner.city", this.getText("validation.field.required"));
+        anyError = true;
+      }
+
+      if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
+        this.addFieldError("activityPartner.institutionType.id", this.getText("validation.field.required"));
+        anyError = true;
+      }
+
+      if (activityPartner.getPartner().getLocElement().getId() == -1) {
+        this.addFieldError("activityPartner.locElement.id", this.getText("validation.field.required"));
+        anyError = true;
+      }
+
+
       if (anyError) {
         this.addActionError(this.getText("saving.fields.required"));
       }
