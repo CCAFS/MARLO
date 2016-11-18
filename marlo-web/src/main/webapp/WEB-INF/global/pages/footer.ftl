@@ -55,6 +55,33 @@
       
       
       
+      
+      [#-- Marlo Develop ID as default --]
+      [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
+      [#if config.production]
+        [#if crpSession??]
+          [#if crpSession == "a4nh"]
+            [#-- MARLO Production (A4NH) --]
+            [#assign tawktoSiteId = "582f0db6fccdfa3ec8373386"]
+          [#elseif crpSession == "ccafs"]
+            [#-- MARLO Production (CCAFS) --]
+            [#assign tawktoSiteId = "582f0d28fccdfa3ec8373342"]
+          [#elseif crpSession == "livestock"]
+            [#-- MARLO Production (LIVESTOCK) --]
+            [#assign tawktoSiteId = "582f0df2fccdfa3ec837347a"]
+          [#elseif crpSession == "pim"]
+            [#-- MARLO Production (PIM) --]
+            [#assign tawktoSiteId = "582f0d82fccdfa3ec837336e"]
+          [#elseif crpSession == "wle"]
+            [#-- MARLO Production (WLE) --]
+            [#assign tawktoSiteId = "582f0d9cfccdfa3ec837337d"]
+          [/#if]
+        [#else]
+          [#-- MARLO Production - Public --]
+          [#assign tawktoSiteId = "582f0c81f9976a1964b0c240"]
+        [/#if]
+      [/#if]
+      
       [#-- Tawk.to Widget --]
       var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
       Tawk_LoadStart = new Date();
@@ -77,7 +104,7 @@
       (function() {
         var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
         s1.async = true;
-        s1.src = 'https://embed.tawk.to/${config.tawktoApiKey}/default';
+        s1.src = 'https://embed.tawk.to/${tawktoSiteId}/default';
         s1.charset = 'UTF-8';
         s1.setAttribute('crossorigin', '*');
         s0.parentNode.insertBefore(s1, s0);
