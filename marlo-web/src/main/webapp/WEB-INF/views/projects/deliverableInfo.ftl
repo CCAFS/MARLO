@@ -150,8 +150,8 @@
         <li class="genderLevel clearfix">
           [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
-          <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel.id" value="${(element.genderLevel.id)!}" />
-          <span title="${(element.genderLevel.title)!'undefined'}" class="name">[@utils.wordCutter string=(element.genderLevel.title)!"undefined" maxPos=100 substr=" "/]</span>
+          <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
+          <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
           <div class="clearfix"></div>
         </li>
       [/#list]
@@ -170,7 +170,7 @@
   <li id="glevelTemplate" class="genderLevel clearfix" style="display:none;">
     <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
     <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
-    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel.id" value="" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>

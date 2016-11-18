@@ -51,6 +51,7 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -76,7 +77,6 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -119,6 +119,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
   @Override
   public User getModifiedBy() {
     return modifiedBy;
+  }
+
+
+  public String getNameGenderLevel() {
+    return DeliverableGenderTypeEnum.getValue(genderLevel).getValue();
   }
 
 

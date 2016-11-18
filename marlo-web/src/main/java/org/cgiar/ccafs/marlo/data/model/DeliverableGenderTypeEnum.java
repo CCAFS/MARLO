@@ -23,7 +23,18 @@ public enum DeliverableGenderTypeEnum {
   WOMEN_FOCUS(1, "Women focus"), SEX_DISAGGREGATED_DATA(2, "Sex disaggregated data"),
   GENDER_RESEARCH_QUESTIONS(3, "Gender research questions");
 
+  public static DeliverableGenderTypeEnum getValue(long id) {
+    DeliverableGenderTypeEnum[] lst = DeliverableGenderTypeEnum.values();
+    for (DeliverableGenderTypeEnum projectStatusEnum : lst) {
+      if (projectStatusEnum.getId() == id) {
+        return projectStatusEnum;
+      }
+    }
+    return null;
+  }
+
   private long id;
+
   private String value;
 
   private DeliverableGenderTypeEnum(long id, String value) {
@@ -34,6 +45,7 @@ public enum DeliverableGenderTypeEnum {
   public long getId() {
     return id;
   }
+
 
   public String getValue() {
     return value;
