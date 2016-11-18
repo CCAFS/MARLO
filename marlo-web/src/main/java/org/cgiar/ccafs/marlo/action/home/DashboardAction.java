@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Collections;
@@ -71,10 +72,17 @@ public class DashboardAction extends BaseAction {
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        myProjects =
+          loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
       } else {
-        myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-          .filter(p -> p.isActive()).collect(Collectors.toList());
+        myProjects =
+          projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
 

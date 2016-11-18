@@ -314,10 +314,18 @@ public class ProjectListAction extends BaseAction {
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        myProjects =
+          loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
 
       } else {
-        allProjects = loggedCrp.getProjects().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        allProjects =
+          loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .collect(Collectors.toList());
         myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
           .filter(p -> p.isActive()).collect(Collectors.toList());
         // Sort the projects.
