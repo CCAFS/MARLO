@@ -70,20 +70,23 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
 
       User user = (User) session.get(APConstants.SESSION_USER);
       user = userManager.getUser(user.getId());
-      List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-        .filter(c -> c.isActive() && c.getCrpProgram().isActive()
-          && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-        .collect(Collectors.toList());
-      if (!userLeads.isEmpty()) {
-        return userLeads.get(0).getCrpProgram().getId();
-      } else {
-        List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-          .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+      if (user.getCrpProgramLeaders() != null) {
+        List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+          .filter(c -> c.isActive() && c.getCrpProgram().isActive()
+            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList());
-        if (!allPrograms.isEmpty()) {
-          return allPrograms.get(0).getId();
+        if (!userLeads.isEmpty()) {
+          return userLeads.get(0).getCrpProgram().getId();
+        } else {
+          List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+            .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive())
+            .collect(Collectors.toList());
+          if (!allPrograms.isEmpty()) {
+            return allPrograms.get(0).getId();
+          }
         }
       }
+
     }
     return 0;
   }
