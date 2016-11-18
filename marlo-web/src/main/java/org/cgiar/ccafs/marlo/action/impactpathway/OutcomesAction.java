@@ -66,6 +66,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.ibm.icu.util.Calendar;
+import com.ibm.icu.util.GregorianCalendar;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -205,8 +206,8 @@ public class OutcomesAction extends BaseAction {
     List<Integer> targetYears = new ArrayList<>();
 
     Date date = new Date();
-    Calendar calendarStart = Calendar.getInstance();
-    calendarStart.setTime(date);
+
+    Calendar calendarStart = new GregorianCalendar(2017, 0, 10, 01, 10, 30);
 
     Calendar calendarEnd = Calendar.getInstance();
     calendarEnd.set(Calendar.YEAR, APConstants.END_YEAR);
