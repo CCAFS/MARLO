@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -112,6 +113,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           && baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params))) {
           canEdit = true;
 
+        }
+
+        if (project.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+          canEdit = false;
         }
 
         if (!project.isProjectEditLeader()
