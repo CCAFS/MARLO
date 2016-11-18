@@ -90,14 +90,18 @@ public class PartnersSaveAction extends BaseAction {
     return activityID;
   }
 
+  public ActivityPartner getActivityPartner() {
+    return activityPartner;
+  }
+
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
 
+
   public List<Institution> getInstitutions() {
     return institutions;
   }
-
 
   public List<InstitutionType> getInstitutionTypesList() {
     return institutionTypesList;
@@ -133,6 +137,7 @@ public class PartnersSaveAction extends BaseAction {
       .collect(Collectors.toList());
   }
 
+
   @Override
   public String save() {
     String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName;
@@ -150,7 +155,7 @@ public class PartnersSaveAction extends BaseAction {
     headQuaterName = "";
     try {
       headQuater = activityPartner.getPartner().getHeadquarter().getId();
-      headQuaterName = institutionsManager.getInstitutionById(headQuater).getName();
+      headQuaterName = institutionsManager.getInstitutionById(headQuater).getComposedName();
     } catch (Exception e) {
       headQuater = -1;
     }
@@ -171,35 +176,35 @@ public class PartnersSaveAction extends BaseAction {
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
     message.append("is requesting to add the following partner information:");
-    message.append("\n\n");
+    message.append("</br></br>");
     message.append("Partner Name: ");
     message.append(institutionName);
-    message.append("\n");
+    message.append("</br>");
     message.append("Acronym: ");
     message.append(institutionAcronym);
-    message.append(" \n");
+    message.append(" </br>");
     message.append("Partner type: ");
     message.append(institutionTypeName);
-    message.append(" \n");
+    message.append(" </br>");
 
     if (headQuater != -1) {
       message.append("HeadQuater: ");
       message.append(headQuaterName);
-      message.append(" \n");
+      message.append(" </br>");
     }
     message.append("City: ");
     message.append(city);
-    message.append(" \n");
+    message.append(" </br>");
     message.append("Country: ");
     message.append(countryName);
-    message.append(" \n");
+    message.append(" </br>");
     // Is there a web page?
     if (this.partnerWebPage != null && this.partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
-      message.append(" \n");
+      message.append(" </br>");
     }
-    message.append(" \n");
+    message.append(" </br>");
 
     if (activityID > 0) {
       message.append("Activity: (");
@@ -213,10 +218,11 @@ public class PartnersSaveAction extends BaseAction {
       message.append(projectManager.getProjectById(projectID).getTitle());
     }
 
-    message.append(".\n");
-    message.append("\n");
+    message.append(".</br>");
+    message.append("</br>");
     SendMail sendMail = new SendMail(this.config);
-    sendMail.send(config.getEmailNotification(), null, null, subject, message.toString(), null, null, null, false);
+    sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
+      null, null, true);
     messageSent = true;
 
     LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),

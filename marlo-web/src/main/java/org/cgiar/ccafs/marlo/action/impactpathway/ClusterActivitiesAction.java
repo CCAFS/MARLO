@@ -272,9 +272,9 @@ public class ClusterActivitiesAction extends BaseAction {
 
       // BBC
       String bbcEmails = this.config.getEmailNotification();
-      sendMail.send(toEmail, null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+      // sendMail.send(toEmail, null, bbcEmails,
+      // this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+      // null, true);
     }
   }
 
@@ -309,11 +309,12 @@ public class ClusterActivitiesAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.cluster.assigned.subject",
-        new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterPreview.getCrpProgram().getAcronym()}),
-      message.toString(), null, null, null, true);
-  }
+    /*
+     * sendMail.send(toEmail, ccEmail, bbcEmails,
+     * this.getText("email.cluster.assigned.subject",
+     * new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterPreview.getCrpProgram().getAcronym()}),
+     * message.toString(), null, null, null, true);
+     */ }
 
   private void notifyRoleUnassigned(User userAssigned, Role role, CrpClusterOfActivity crpClusterOfActivity) {
     String ClusterRole = this.getText("cluster.role");
