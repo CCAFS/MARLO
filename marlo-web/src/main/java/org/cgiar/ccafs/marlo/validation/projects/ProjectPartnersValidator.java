@@ -166,44 +166,48 @@ public class ProjectPartnersValidator extends BaseValidator {
    * @param project the project with the partners on it.
    */
   private void validateContactPersons(BaseAction action, Project project) {
-    if (project != null) {
-      int c = 0, j = 0;
-      for (ProjectPartner partner : project.getPartners()) {
-        j = 0;
-        // Validating that the partner has a least one contact person
-
-
-        Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
-        if (inst.getCrpPpaPartners().stream()
-          .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
-          .collect(Collectors.toList()).isEmpty()) {
-
-          if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
-            this.addMissingField("project.partners[" + c + "].partnerContributors");
-            action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
-          }
-        }
-
-        if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
-          action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
-            new String[] {partner.getInstitution().getName()}));
-          this.addMissingField("project.partner[" + c + "].contactPersons.empty");
-        } else {
+    try {
+      if (project != null) {
+        int c = 0, j = 0;
+        for (ProjectPartner partner : project.getPartners()) {
           j = 0;
-          // iterating all the contact persons.
-          for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-            this.validatePersonType(action, c, j, person);
-            this.validateUser(action, c, j, person);
-            if (project.isProjectEditLeader()) {
-              this.validatePersonResponsibilities(action, c, j, person);
-            }
+          // Validating that the partner has a least one contact person
 
-            j++;
+
+          Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
+          if (inst.getCrpPpaPartners().stream()
+            .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+            .collect(Collectors.toList()).isEmpty()) {
+
+            if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
+              this.addMissingField("project.partners[" + c + "].partnerContributors");
+              action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+            }
           }
+
+          if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
+            action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
+              new String[] {partner.getInstitution().getName()}));
+            this.addMissingField("project.partner[" + c + "].contactPersons.empty");
+          } else {
+            j = 0;
+            // iterating all the contact persons.
+            for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
+              this.validatePersonType(action, c, j, person);
+              this.validateUser(action, c, j, person);
+              if (project.isProjectEditLeader()) {
+                this.validatePersonResponsibilities(action, c, j, person);
+              }
+
+              j++;
+            }
+          }
+          c++;
         }
-        c++;
       }
+    } catch (Exception e) {
+
     }
   }
 
