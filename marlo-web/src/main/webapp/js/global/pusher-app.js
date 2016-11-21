@@ -39,9 +39,10 @@ function showSystemResetMessage(data) {
         
         if(this.leadingZeros(data.min, 1) == 0) {
           $(this.el).addClass('ended animated infinite flash');
-           console.log(this.leadingZeros(data.sec, 1));
           if(this.leadingZeros(data.sec, 1) == 0){
             $timer.find('.finishedMessage').show();
+            $timer.find('.message').hide();
+            $(this.el).hide();
           }
         } else {
           $(this.el).removeClass('ended animated infinite flash');

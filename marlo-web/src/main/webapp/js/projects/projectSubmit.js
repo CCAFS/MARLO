@@ -30,7 +30,12 @@ $(document).ready(function() {
     var value = ($(this).hasClass('yes-button-label'));
     var $thisLabel = $(this);
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = "Are you sure ?";
+    if(value) {
+      notyOptions.text = "Are you sure this project is ready to be completed by the project leader?";
+    } else {
+      notyOptions.text = "Are you sure you want to make this project to be in pre-set mode? ";
+      notyOptions.text += "it won't be able to be edited by the Project Leader and/or Coordinator";
+    }
     notyOptions.type = 'confirm';
     notyOptions.layout = 'center';
     notyOptions.modal = true;
