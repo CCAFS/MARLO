@@ -123,7 +123,11 @@ public class DeliverableGenderLevel implements java.io.Serializable, IAuditLog {
 
 
   public String getNameGenderLevel() {
-    return DeliverableGenderTypeEnum.getValue(genderLevel).getValue();
+    try {
+      return DeliverableGenderTypeEnum.getValue(genderLevel).getValue();
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 

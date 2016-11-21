@@ -342,10 +342,12 @@ public class ClusterActivitiesAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-    sendMail.send(toEmail, ccEmail, bbcEmails,
-      this.getText("email.cluster.unassigned.subject",
-        new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterOfActivity.getCrpProgram().getAcronym()}),
-      message.toString(), null, null, null, true);
+    /*
+     * sendMail.send(toEmail, ccEmail, bbcEmails,
+     * this.getText("email.cluster.unassigned.subject",
+     * new String[] {loggedCrp.getName(), ClusterRoleAcronym, crpClusterOfActivity.getCrpProgram().getAcronym()}),
+     * message.toString(), null, null, null, true);
+     */
   }
 
   @Override

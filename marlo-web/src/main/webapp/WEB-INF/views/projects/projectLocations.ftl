@@ -19,8 +19,13 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectLocations.help" /] </p></div> 
+<div class="container helpText viewMore-block">
+  <div  class="helpMessage infoText">
+    <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div>
+    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="projectLocations.help" /] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
 </div>
     
 <section class="container">
