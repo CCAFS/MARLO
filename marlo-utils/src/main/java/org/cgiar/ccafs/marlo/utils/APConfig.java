@@ -41,7 +41,6 @@ public class APConfig {
   private static final String PUSH_API_KEY = "pusher.api.key";
   private static final String PUSH_APP_ID = "pusher.api.appid";
   private static final String PUSH_SECRETE_KEY = "pusher.api.privatekey";
-  private static final String TAWKTO_API_KEY = "tawkto.api.key";
   private static final String FILE_DOWNLOADS = "file.downloads";
   private static final String PROJECTS_BASE_FOLDER = "file.uploads.projectsFolder";
   private static final String PROJECT_BILATERAL_PROPOSAL_FOLDER = "file.uploads.project.bilateralProposalFolder";
@@ -268,14 +267,6 @@ public class APConfig {
     return "";
   }
 
-  public String getTawktoApiKey() {
-    try {
-      return properties.getPropertiesAsString(TAWKTO_API_KEY);
-    } catch (Exception e) {
-      LOG.error("there is not an Tawkto api key configured.");
-    }
-    return "";
-  }
 
   /**
    * Get the base folder where the uploaded files should be saved
