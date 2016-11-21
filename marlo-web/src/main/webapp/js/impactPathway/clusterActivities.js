@@ -43,7 +43,25 @@ function init() {
 
   $(".keyOutputInput").on("change keyup", changeTitle);
 
-  $(".keyOutputContribution").on("change keyup", changeKOcontribution);
+// verify contributions
+  $("form .keyOutputContribution").on("change keyup", function() {
+    var list = $(this).parents(".keyOutputsItems-list");
+    var total = 0;
+    $(this).parents(".keyOutputItem").find(".koContribution-percentage").html($(this).val() + "%");
+    if($(this).val() < 0 || $(this).val() == "undefined" || $(this).val() == "") {
+      $(this).parents(".keyOutputItem").find(".koContribution-percentage").html("0%");
+    }
+    $(list).find(".keyOutputItem ").each(function(i,e) {
+      total += parseFloat($(e).find(".keyOutputContribution").val());
+    });
+    if(total > 100) {
+      $(list).find(".keyOutputContribution").addClass("fieldError");
+      $(list).find(".keyOutputContribution").removeClass("fieldChecked");
+    } else {
+      $(list).find(".keyOutputContribution").removeClass("fieldError");
+      $(list).find(".keyOutputContribution").addClass("fieldChecked");
+    }
+  });
 
   // Select outcomes
   $(".outcomeList").on("change", function() {
@@ -70,9 +88,6 @@ function init() {
       $(this).find(".errorTag").fadeIn(2000);
     });
   });
-
-// verify contributions
-  // $(".keyOutputContribution , .outcomeContribution").on("change keyup", verifyContributions);
 
   // Missing fields in KO
   $("form .keyOutputItem ").each(function(i,e) {
@@ -250,6 +265,7 @@ function verifyKoContribution(list) {
       $(e).find(".koContribution-percentage").html(newContribution.toFixed(2) + "%");
     });
   }
+  return newContribution;
 }
 
 // OUTCOMES BY CoA
@@ -381,7 +397,6 @@ function verifyContributions() {
     // verify Key output contributions
     var keyOutputList = $(e).find(".keyOutputsItems-list");
     verifyKoContribution(keyOutputList);
-
     // verify Outcome contributions
     keyOutputList.find(".keyOutputItem ").each(function(i1,e1) {
       var outcomeList = $(e1).find(".outcomesWrapper");
