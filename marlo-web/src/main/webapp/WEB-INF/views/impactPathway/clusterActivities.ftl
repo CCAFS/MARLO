@@ -191,21 +191,19 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
        <span title="${(element.keyOutput)!}" class="koTitle col-md-9">[#if element.keyOutput?has_content][@utils.wordCutter string=(element.keyOutput) maxPos=70 substr=" "/][#else]New Key output[/#if]</span>
-    
-      
-      [#--  <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span> --]
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span>
     <div class="clearfix"></div>
     </div>
     
     <div class="blockContent" style="display:none">
       <hr />
       [#-- Statement --]
-      <div class="form-group col-md-12">
+      <div class="form-group col-md-9">
         [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
-      <div class="hidden">
+      <div class="form-group col-md-3">
           [@customForm.input name="${customName}.contribution" i18nkey="Contribution" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
             

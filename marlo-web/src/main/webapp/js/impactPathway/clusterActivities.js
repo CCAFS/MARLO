@@ -7,7 +7,7 @@ function init() {
 
 // Numeric inputs
   $('input.keyOutputContribution , input.outcomeContribution').numericInput();
-  // $('form input.keyOutputContribution , form input.outcomeContribution').percentageInput();
+  $('form input.keyOutputContribution').percentageInput();
 
   $('form select').select2({
       templateResult: formatState,
@@ -246,7 +246,8 @@ function verifyKoContribution(list) {
     var newContribution = contribution / cont;
     console.log(newContribution);
     list.find(".keyOutputItem ").each(function(i,e) {
-      $(e).find(".keyOutputContribution").val(newContribution);
+      $(e).find(".keyOutputContribution").val(newContribution.toFixed(2));
+      $(e).find(".koContribution-percentage").html(newContribution.toFixed(2) + "%");
     });
   }
 }
