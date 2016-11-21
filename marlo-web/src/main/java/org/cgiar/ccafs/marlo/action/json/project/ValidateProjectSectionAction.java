@@ -73,26 +73,26 @@ import org.slf4j.LoggerFactory;
 public class ValidateProjectSectionAction extends BaseAction {
 
 
-  private static final long serialVersionUID = 2334147747892988744L;
+  public static final long serialVersionUID = 2334147747892988744L;
 
 
   // Logger
-  private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
+  public static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
 
   // Model
-  private boolean existProject;
-  private Crp loggedCrp;
-  private boolean validSection;
+  public boolean existProject;
+  public Crp loggedCrp;
+  public boolean validSection;
 
-  private String sectionName;
-  private Long projectID;
-  private SectionStatus sectionStatus;
-  private Map<String, Object> section;
+  public String sectionName;
+  public Long projectID;
+  public SectionStatus sectionStatus;
+  public Map<String, Object> section;
   // Managers
   @Inject
-  private SectionStatusManager sectionStatusManager;
+  public SectionStatusManager sectionStatusManager;
   @Inject
-  private ProjectManager projectManager;
+  public ProjectManager projectManager;
   @Inject
   ProjectLocationValidator locationValidator;
 
@@ -120,12 +120,13 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   ProjectActivitiesValidator projectActivitiesValidator;
   @Inject
-  private CrpManager crpManager;
+  public CrpManager crpManager;
 
   @Inject
   public ValidateProjectSectionAction(APConfig config) {
     super(config);
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -259,6 +260,12 @@ public class ValidateProjectSectionAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public Long getProjectID() {
+    return projectID;
+  }
+
+
   public List<CountryLocationLevel> getProjectLocationsData(Project project) {
 
     List<Map<String, Object>> parentLocations = new ArrayList<>();
@@ -378,9 +385,26 @@ public class ValidateProjectSectionAction extends BaseAction {
     return locationLevels;
   }
 
+
   public Map<String, Object> getSection() {
     return section;
   }
+
+
+  public String getSectionName() {
+    return sectionName;
+  }
+
+
+  public boolean isExistProject() {
+    return existProject;
+  }
+
+
+  public boolean isValidSection() {
+    return validSection;
+  }
+
 
   public List<DeliverablePartnership> otherPartners(Deliverable deliverable) {
     try {
@@ -410,7 +434,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
-  private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
+  public DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
         .filter(
@@ -422,12 +446,28 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
   }
 
+  public void setExistProject(boolean existProject) {
+    this.existProject = existProject;
+  }
+
+  public void setProjectID(Long projectID) {
+    this.projectID = projectID;
+  }
+
   public void setSection(Map<String, Object> section) {
     this.section = section;
   }
 
+  public void setSectionName(String sectionName) {
+    this.sectionName = sectionName;
+  }
 
-  private void validateProjectActivities() {
+  public void setValidSection(boolean validSection) {
+    this.validSection = validSection;
+  }
+
+
+  public void validateProjectActivities() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
@@ -458,7 +498,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project, false);
   }
 
-  private void validateProjectBudgets() {
+  public void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
@@ -470,7 +510,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
-  private void validateProjectBudgetsCoAs() {
+  public void validateProjectBudgetsCoAs() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsCluserActvities(
@@ -479,7 +519,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectBudgetsCoAValidator.validate(this, project, false);
   }
 
-  private void validateProjectDeliverables() {
+  public void validateProjectDeliverables() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
@@ -503,7 +543,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
-  private void validateProjectDescription() {
+  public void validateProjectDescription() {
     Project project = projectManager.getProjectById(projectID);
     List<CrpProgram> programs = new ArrayList<>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -556,7 +596,7 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
-  private void validateProjectLocations() {
+  public void validateProjectLocations() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     project.setLocationsData(new ArrayList<>(this.getProjectLocationsData(project)));
@@ -564,7 +604,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     locationValidator.validate(this, project, false);
   }
 
-  private void validateProjectOutcomes() {
+  public void validateProjectOutcomes() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
     List<ProjectOutcome> projectOutcomes =
@@ -586,7 +626,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
-  private void validateProjectParnters() {
+  public void validateProjectParnters() {
     Project project = projectManager.getProjectById(projectID);
     project.setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     for (ProjectPartner projectPartner : project.getPartners()) {
