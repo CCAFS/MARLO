@@ -6,7 +6,9 @@
 
 var pusher = new Pusher(PUSHER_KEY, {
   authEndpoint: baseURL + '/pusherAutentication.do',
-  encrypted: true
+  encrypted: true,
+  activityTimeout: 15000,
+  pongTimeout: 30000
 });
 
 var globalChannel = pusher.subscribe('presence-global');
