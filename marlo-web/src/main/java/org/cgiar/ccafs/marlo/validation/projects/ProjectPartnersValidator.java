@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -31,6 +33,7 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -44,6 +47,8 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   @Inject
   private CrpManager crpManager;
+  @Inject
+  private InstitutionManager institutionManager;
   private boolean hasErros;
   private ProjectValidator projectValidator;
 
@@ -167,11 +172,19 @@ public class ProjectPartnersValidator extends BaseValidator {
         j = 0;
         // Validating that the partner has a least one contact person
 
-        if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
-          this.addMissingField("project.partners[" + c + "].partnerContributors");
-          action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+
+        Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
+        if (inst.getCrpPpaPartners().stream()
+          .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+          .collect(Collectors.toList()).isEmpty()) {
+
+          if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
+            this.addMissingField("project.partners[" + c + "].partnerContributors");
+            action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+          }
         }
+
         if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
           action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
             new String[] {partner.getInstitution().getName()}));
