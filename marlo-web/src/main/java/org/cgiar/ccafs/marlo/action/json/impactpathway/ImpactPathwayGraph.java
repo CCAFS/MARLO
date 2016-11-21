@@ -99,7 +99,12 @@ public class ImpactPathwayGraph extends BaseAction {
         dataDetailKeyOutput.put("source", "O" + crpProgramOutcome.getId());
         dataDetailKeyOutput.put("target", "KO" + keyOutputOutcome.getCrpClusterKeyOutput().getId());
         dataEdgeKeyOoutput.put("data", dataDetailKeyOutput);
-        dataEdges.add(dataEdgeKeyOoutput);
+        if (keyOutputOutcome.getCrpClusterKeyOutput().isActive()) {
+
+          dataEdges.add(dataEdgeKeyOoutput);
+        }
+
+
       }
 
       dataNodes.add(dataOutcome);

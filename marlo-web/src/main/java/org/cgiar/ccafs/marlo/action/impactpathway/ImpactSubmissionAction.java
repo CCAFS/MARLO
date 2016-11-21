@@ -95,7 +95,7 @@ public class ImpactSubmissionAction extends BaseAction {
           submission.setCrpProgram(crpProgram);
           submission.setDateTime(new Date());
           submission.setUser(this.getCurrentUser());
-
+          submission.setYear((short) this.getCurrentCycleYear());
           submissionManager.saveSubmission(submission);
           this.sendNotficationEmail();
         }
