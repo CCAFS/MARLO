@@ -564,8 +564,27 @@ public class ProjectPartnerAction extends BaseAction {
       } else {
 
         this.setDraft(false);
-        project
-          .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+        if (project.isProjectEditLeader()) {
+          project
+            .setPartners(project.getProjectPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        } else {
+          List<ProjectPartner> partnes = new ArrayList<>();
+          for (ProjectPartner projectPartner : project.getProjectPartners().stream().filter(c -> c.isActive())
+            .collect(Collectors.toList())) {
+            Institution inst = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
+            if (!inst.getCrpPpaPartners().stream()
+              .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
+              .collect(Collectors.toList()).isEmpty()) {
+              partnes.add(projectPartner);
+            }
+
+          }
+          project.setPartners(partnes);
+
+        }
         if (!project.getPartners().isEmpty()) {
           if (this.isReportingActive()) {
 
@@ -685,8 +704,26 @@ public class ProjectPartnerAction extends BaseAction {
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
+
+
         if (project.getPartners() == null || !project.getPartners().contains(previousPartner)) {
-          projectPartnerManager.deleteProjectPartner(previousPartner.getId());
+
+
+          if (project.isProjectEditLeader()) {
+            projectPartnerManager.deleteProjectPartner(previousPartner.getId());
+
+          } else {
+
+            Institution inst = institutionManager.getInstitutionById(previousPartner.getInstitution().getId());
+            if (!inst.getCrpPpaPartners().stream()
+              .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
+              .collect(Collectors.toList()).isEmpty()) {
+              projectPartnerManager.deleteProjectPartner(previousPartner.getId());
+            }
+
+          }
+
+
           // budgetManager.deleteBudgetsByInstitution(project.getId(), previousPartner.getInstitution(),
           // this.getCurrentUser(), this.getJustification());
         }
@@ -895,6 +932,7 @@ public class ProjectPartnerAction extends BaseAction {
       }
     }
     return NOT_AUTHORIZED;
+
   }
 
 
