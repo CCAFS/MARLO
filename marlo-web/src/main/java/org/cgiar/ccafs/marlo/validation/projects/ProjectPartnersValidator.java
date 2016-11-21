@@ -134,7 +134,7 @@ public class ProjectPartnersValidator extends BaseValidator {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {
         action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
       if (action.isReportingActive()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
@@ -166,6 +166,12 @@ public class ProjectPartnersValidator extends BaseValidator {
       for (ProjectPartner partner : project.getPartners()) {
         j = 0;
         // Validating that the partner has a least one contact person
+
+        if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
+          this.addMissingField("project.partners[" + c + "].partnerContributors");
+          action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+        }
         if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
           action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",
             new String[] {partner.getInstitution().getName()}));
@@ -229,7 +235,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private void validatePersonType(BaseAction action, int partnerCounter, int personCounter,
     ProjectPartnerPerson person) {
-    if (person.getContactType() == null || person.getContactType().isEmpty()|| person.getContactType().equals("-1")) {
+    if (person.getContactType() == null || person.getContactType().isEmpty() || person.getContactType().equals("-1")) {
       action.addFieldError("project.partners[" + partnerCounter + "].partnerPersons[" + personCounter + "].contactType",
         action.getText("validation.required", new String[] {action.getText("projectPartners.personType")}));
       // No need to add missing fields because field error doesn't allow to save into the database.
