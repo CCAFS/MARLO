@@ -2259,6 +2259,7 @@ margin: 0;
 }
 
 .helpMessage p {
+  margin-top: 5px;
   padding: 1px;
   color: #636368;
   margin-bottom: 5px;

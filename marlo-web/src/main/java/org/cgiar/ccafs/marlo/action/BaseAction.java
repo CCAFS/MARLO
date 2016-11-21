@@ -107,104 +107,104 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String NEXT = "next";
 
-  public static final String REDIRECT = "redirect";
   public static final String NOT_AUTHORIZED = "403";
-
   public static final String NOT_FOUND = "404";
 
-
   public static final String NOT_LOGGED = "401";
+
+
+  public static final String REDIRECT = "redirect";
 
   public static final String SAVED_STATUS = "savedStatus";
   private static final long serialVersionUID = -740360140511380630L;
 
-  private HashMap<String, String> invalidFields;
   protected boolean add;
   @Inject
   private AuditLogManager auditLogManager;
-  @Inject
-  private DeliverableManager deliverableManager;
-
   private String basePermission;
   protected boolean cancel;
+
   private boolean canEdit; // If user is able to edit the form.
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
   protected APConfig config;
+  @Inject
+  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
   private Long crpID;
-
   // Managers
   @Inject
   private CrpManager crpManager;
+
+  @Inject
+  private CrpProgramLeaderManager crpProgramLeaderManager;
+  @Inject
+  private CrpProgramManager crpProgramManager;
   // Variables
   private String crpSession;
-  private String url;
 
 
   private Crp currentCrp;
 
   protected boolean dataSaved;
   protected boolean delete;
+  @Inject
+  private DeliverableManager deliverableManager;
+
+
   private boolean draft;
-
-
-  private boolean reportingActive;
-  private boolean planningActive;
-  private boolean lessonsActive;
-  private int reportingYear;
-  private int planningYear;
-  @Inject
-  private ProjectOutcomeManager projectOutcomeManager;
-
-  @Inject
-  private ProjectManager projectManager;
-  private boolean fullEditable; // If user is able to edit all the form.
-  // User actions
-  private boolean isEditable; // If user is able to edit the form.
-  // Justification of the changes
-  private String justification;
-  protected boolean next;
-
   @Inject
   private FileDBManager fileDBManager;
-  @Inject
-  private ProjectComponentLessonManager projectComponentLessonManager;
-
-  private Map<String, Object> parameters;
-  @Inject
-  private LiaisonUserManager liaisonUserManager;
-
-  @Inject
-  private UserRoleManager userRoleManager;
-  @Inject
-  private CrpProgramManager crpProgramManager;
-
-  @Inject
-  private CrpProgramLeaderManager crpProgramLeaderManager;
-
-
-  @Inject
-  private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
-
+  private boolean fullEditable; // If user is able to edit all the form.
   @Inject
   private FundingSourceManager fundingSourceManager;
+  private HashMap<String, String> invalidFields;
+  // User actions
+  private boolean isEditable; // If user is able to edit the form.
+
+  // Justification of the changes
+  private String justification;
+  private boolean lessonsActive;
+  @Inject
+  private LiaisonUserManager liaisonUserManager;
+  protected boolean next;
+  private Map<String, Object> parameters;
+
+  private boolean planningActive;
+  private int planningYear;
+
+  @Inject
+  private ProjectComponentLessonManager projectComponentLessonManager;
+  @Inject
+  private ProjectManager projectManager;
+
+  @Inject
+  private ProjectOutcomeManager projectOutcomeManager;
+  private boolean reportingActive;
+
+  private int reportingYear;
+
 
   private HttpServletRequest request;
+
   // button actions
   protected boolean save;
-  private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
+  private boolean saveable; // If user is able to see the save, cancel, delete buttons
   @Inject
   private SectionStatusManager sectionStatusManager;
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
+
   private Map<String, Object> session;
-
-
   private Submission submission;
-
-
   protected boolean submit;
+
+
+  private String url;
+
+
+  @Inject
+  private UserRoleManager userRoleManager;
 
 
   @Inject
@@ -273,7 +273,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         long cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
         List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
           .filter(c -> c.getUser().getId().longValue() == userRole.getUser().getId().longValue()
-            && c.getLiaisonInstitution().getId().longValue() == cuId)
+          && c.getLiaisonInstitution().getId().longValue() == cuId)
           .collect(Collectors.toList());
 
         for (LiaisonUser liaisonUser : liaisonUsers) {
@@ -398,7 +398,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public void clearPermissionsCache() {
     ((APCustomRealm) securityContext.getRealm())
-      .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
+    .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
 
   /* Override this method depending of the delete action. */
@@ -460,7 +460,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-        this.crpID = crp.getId();
+          this.crpID = crp.getId();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -492,7 +492,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-        this.crpSession = crp.getAcronym();
+          this.crpSession = crp.getAcronym();
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -510,7 +510,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         Crp crp =
           (Crp) session.get(APConstants.SESSION_CRP) != null ? (Crp) session.get(APConstants.SESSION_CRP) : null;
-        this.currentCrp = crp;
+          this.currentCrp = crp;
       } catch (Exception e) {
         LOG.warn("There was a problem trying to find the user crp in the session.");
       }
@@ -944,26 +944,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
     int i = 0;
     for (SectionStatus sectionStatus : sections) {
-      switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-        case DESCRIPTION:
-          i++;
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-          break;
-        case PARTNERS:
-          i++;
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-          break;
-        case BUDGET:
-          i++;
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
-          break;
+      if (sectionStatus.getCycle().equals(this.getCurrentCycle()) && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+        switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+          case DESCRIPTION:
+            i++;
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
+            }
+            break;
+          case PARTNERS:
+            i++;
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
+            }
+            break;
+          case BUDGET:
+            i++;
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
+            }
+            break;
+        } 
       }
+
 
     }
     if (sections.size() == 0) {
@@ -1162,14 +1165,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(
           c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
-          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
         project.setProjectComponentLessonPreview(lessonsPreview.get(0));
@@ -1178,7 +1181,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
-          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
@@ -1193,14 +1196,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
-          && c.getCycle().equals(APConstants.REPORTING) && c.getComponentName().equals(actionName))
+        && c.getCycle().equals(APConstants.REPORTING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
       }
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons()
         .stream().filter(c -> c.isActive() && c.getYear() == this.getReportingYear()
-          && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
+        && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
         project.setProjectComponentLessonPreview(lessonsPreview.get(0));
@@ -1209,7 +1212,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons()
         .stream().filter(c -> c.isActive() && c.getYear() == this.getPlanningYear()
-          && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
+        && c.getCycle().equals(APConstants.PLANNING) && c.getComponentName().equals(actionName))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         project.setProjectComponentLesson(lessons.get(0));
@@ -1226,14 +1229,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(
           c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
-            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         projectOutcome.setProjectComponentLesson(lessons.get(0));
       }
       List<ProjectComponentLesson> lessonsPreview = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
-          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessonsPreview.isEmpty()) {
         projectOutcome.setProjectComponentLessonPreview(lessonsPreview.get(0));
@@ -1242,7 +1245,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
-          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
         .collect(Collectors.toList());
       if (!lessons.isEmpty()) {
         projectOutcome.setProjectComponentLesson(lessons.get(0));
