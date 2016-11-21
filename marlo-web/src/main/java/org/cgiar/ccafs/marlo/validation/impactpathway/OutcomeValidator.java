@@ -90,6 +90,8 @@ public class OutcomeValidator extends BaseValidator
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
     params.add(String.valueOf(k + 1));
+
+
     if (!(this.isValidString(assuption.getDescription()) && this.wordCount(assuption.getDescription()) <= 100)) {
       this.addMessage(action.getText("outcome.action.subido.assumption.required", params));
       action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "].description",
@@ -237,13 +239,14 @@ public class OutcomeValidator extends BaseValidator
       action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-    int k = 0;
-    if (subIdo.getAssumptions() != null) {
-      for (CrpAssumption crpAssumption : subIdo.getAssumptions()) {
-        this.validateAssumption(action, crpAssumption, i, j, k);
-        k++;
-      }
-    }
-
+    /*
+     * int k = 0;
+     * if (subIdo.getAssumptions() != null) {
+     * for (CrpAssumption crpAssumption : subIdo.getAssumptions()) {
+     * this.validateAssumption(action, crpAssumption, i, j, k);
+     * k++;
+     * }
+     * }
+     */
   }
 }
