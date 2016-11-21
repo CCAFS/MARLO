@@ -30,7 +30,11 @@ $(document).ready(function() {
     var value = ($(this).hasClass('yes-button-label'));
     var $thisLabel = $(this);
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = "Are you sure ?";
+    if(value) {
+      notyOptions.text = "Are you sure this project is ready to be completed by the project leader?";
+    } else {
+      notyOptions.text = "Are you sure? this project will be editable only for the management liaisons";
+    }
     notyOptions.type = 'confirm';
     notyOptions.layout = 'center';
     notyOptions.modal = true;
