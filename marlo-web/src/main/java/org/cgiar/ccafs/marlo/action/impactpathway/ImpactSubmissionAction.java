@@ -165,26 +165,26 @@ public class ImpactSubmissionAction extends BaseAction {
      */
     String toEmail = null;
     String ccEmail = null;
-    if (config.isProduction()) {
-      // Send email to the user that is submitting the project.
-      // TO
-      toEmail = this.getCurrentUser().getEmail();
 
-      // Getting all the MLs associated to the Project Liaison institution
-      List<CrpProgramLeader> owners =
-        crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      StringBuilder ccEmails = new StringBuilder();
-      for (CrpProgramLeader crpProgramLeader : owners) {
-        User user = crpProgramLeader.getUser();
-        if (user.getId() != this.getCurrentUser().getId()) {
-          ccEmails.append(user.getEmail());
-          ccEmails.append(" ");
-        }
+    // Send email to the user that is submitting the project.
+    // TO
+    toEmail = this.getCurrentUser().getEmail();
+
+    // Getting all the MLs associated to the Project Liaison institution
+    List<CrpProgramLeader> owners =
+      crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    StringBuilder ccEmails = new StringBuilder();
+    for (CrpProgramLeader crpProgramLeader : owners) {
+      User user = crpProgramLeader.getUser();
+      if (user.getId() != this.getCurrentUser().getId()) {
+        ccEmails.append(user.getEmail());
+        ccEmails.append(" ");
       }
-      // CC will be the other MLs.
-      ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
-
     }
+    // CC will be the other MLs.
+    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+
+
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
