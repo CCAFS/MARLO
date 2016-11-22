@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
@@ -780,7 +781,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       case ACTIVITIES:
         project = projectManager.getProjectById(projectID);
-        if (project.getActivities().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+
+        project
+          .setProjectActivities(
+            new ArrayList<Activity>(project.getActivities().stream()
+              .filter(a -> a.isActive()
+                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+            .collect(Collectors.toList())));
+
+        if (project.getProjectActivities().isEmpty()) {
           return false;
         }
 
