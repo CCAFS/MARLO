@@ -9,6 +9,8 @@
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
+[#assign recordsList = (action.getListLog(project))!{} /]
+
 <div class="buttons">
   [#if !action.isProjectNew(projectID)]
     [#if editable]
@@ -20,9 +22,9 @@
 
   <div class="buttons-content">
     [#-- History Log --]
-    [#if action.getListLog(project)?has_content]
+    [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=action.getListLog(project) itemName="projectID" itemId=project.id /]
+      [@logHistory.logList list=recordsList itemName="projectID" itemId=project.id /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
@@ -40,3 +42,13 @@
     [/#if]
   </div>
 </div>
+
+[#-- Last update message --]
+[#if recordsList?has_content]
+[#assign lastRecord = recordsList[0] /]
+<div class="clearfix"></div>
+<span id="lastUpdateMessage" class="pull-right"> 
+  Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
+</span>
+[/#if]
+
