@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -43,6 +44,8 @@ public class ProjectLeaderEditAction extends BaseAction {
   private long projectId;
   private boolean projectStatus;
   private Map<String, Object> status;
+  @Inject
+  private ValidateProjectSectionAction validateProject;
 
   @Inject
   public ProjectLeaderEditAction(APConfig config, ProjectManager projectManager) {
@@ -56,6 +59,7 @@ public class ProjectLeaderEditAction extends BaseAction {
     status = new HashMap<String, Object>();
     status.put("ProjectId", projectId);
     if (project != null) {
+
       project.setProjectEditLeader(projectStatus);
       project.setPresetDate(new Date());
       projectManager.saveProject(project);
@@ -63,6 +67,43 @@ public class ProjectLeaderEditAction extends BaseAction {
 
       status.put("status", project.isProjectEditLeader());
       status.put("ok", true);
+      validateProject.setProjectID(projectId);
+      validateProject.setExistProject(true);
+      validateProject.setValidSection(true);
+      validateProject.setCrpID(this.getCrpID());
+      validateProject.setSession(this.getSession());
+      for (ProjectSectionStatusEnum projectSectionStatusEnum : ProjectSectionStatusEnum.values()) {
+        switch (projectSectionStatusEnum) {
+          case LOCATIONS:
+            validateProject.validateProjectLocations();
+            break;
+          case DESCRIPTION:
+            validateProject.validateProjectDescription();
+            break;
+          case ACTIVITIES:
+            validateProject.validateProjectActivities();
+            break;
+          case PARTNERS:
+            validateProject.validateProjectParnters();
+          case BUDGET:
+            validateProject.validateProjectBudgets();
+            break;
+          case BUDGETBYCOA:
+            validateProject.validateProjectBudgetsCoAs();
+            break;
+
+          case DELIVERABLES:
+            validateProject.validateProjectDeliverables();
+            break;
+
+          case OUTCOMES:
+            validateProject.validateProjectOutcomes();
+            break;
+
+          default:
+            break;
+        }
+      }
     } else {
       status.put("ok", false);
     }

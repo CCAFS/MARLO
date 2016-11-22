@@ -114,6 +114,8 @@
             
             [#if !project.projectEditLeader]
               <p>Pre-setting</p>
+            [#else]
+               
             [/#if]
             
             [#if !submission && (!canEdit || !canSubmit) && project.projectEditLeader ]

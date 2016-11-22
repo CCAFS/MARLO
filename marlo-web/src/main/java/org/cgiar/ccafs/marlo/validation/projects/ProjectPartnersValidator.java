@@ -173,18 +173,20 @@ public class ProjectPartnersValidator extends BaseValidator {
           j = 0;
           // Validating that the partner has a least one contact person
 
+          if (project.isProjectEditLeader()) {
+            Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
+            if (inst.getCrpPpaPartners().stream()
+              .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
+              .collect(Collectors.toList()).isEmpty()) {
 
-          Institution inst = institutionManager.getInstitutionById(partner.getInstitution().getId());
-          if (inst.getCrpPpaPartners().stream()
-            .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == action.getCrpID().longValue())
-            .collect(Collectors.toList()).isEmpty()) {
-
-            if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
-              this.addMissingField("project.partners[" + c + "].partnerContributors");
-              action.getInvalidFields().put("list-project.partners[" + j + "].partnerContributors",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+              if (partner.getPartnerContributors() == null || partner.getPartnerContributors().isEmpty()) {
+                this.addMissingField("project.partners[" + c + "].partnerContributors");
+                action.getInvalidFields().put("list-project.partners[" + c + "].partnerContributors",
+                  action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partner Contribution"}));
+              }
             }
           }
+
 
           if (partner.getPartnerPersons() == null || partner.getPartnerPersons().isEmpty()) {
             action.addActionMessage(action.getText("planning.projectPartners.contactPersons.empty",

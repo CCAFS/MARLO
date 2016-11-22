@@ -82,6 +82,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
+    boolean canSwitchProject = false;
 
     String projectParameter = ((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0];
 
@@ -118,9 +119,14 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
       }
 
+      if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
+        canSwitchProject = true;
+      }
+
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
+      baseAction.setCanSwitchProject(canSwitchProject);
 
     } else {
       throw new NullPointerException();

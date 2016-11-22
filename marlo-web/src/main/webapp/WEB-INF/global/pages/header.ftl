@@ -88,6 +88,7 @@
     <div class="" style="display:none">
       <div id="timer-content">
         <div class="message">{{message}}</div>
+        <div class="finishedMessage" style="display:none">The server is being restarted right now, please refresh this page in 3 minutes approx.</div>
         <div class="countdown"></div>
         <div class="clearfix"></div>
       </div>

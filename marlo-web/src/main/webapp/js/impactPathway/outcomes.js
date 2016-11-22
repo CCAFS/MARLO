@@ -239,7 +239,6 @@ function updateTotalContribution(list,text) {
   $(text).removeClass('fieldError fieldChecked');
   $(list).removeClass('fieldError');
 
-  console.log(total);
 
   // Set percentage and classes
   $(text).find('.value').text(setPercentageFormat(total));

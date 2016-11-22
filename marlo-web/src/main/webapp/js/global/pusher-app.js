@@ -36,8 +36,14 @@ function showSystemResetMessage(data) {
       date: +(new Date) + (1000*diffTime),
       render: function(data) {
         $(this.el).text(this.leadingZeros(data.min, 2) + " min " + this.leadingZeros(data.sec, 2) + " sec");
+        
         if(this.leadingZeros(data.min, 1) == 0) {
           $(this.el).addClass('ended animated infinite flash');
+          if(this.leadingZeros(data.sec, 1) == 0){
+            $timer.find('.finishedMessage').show();
+            $timer.find('.message').hide();
+            $(this.el).hide();
+          }
         } else {
           $(this.el).removeClass('ended animated infinite flash');
         }

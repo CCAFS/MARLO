@@ -74,7 +74,7 @@
             <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(false) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
           [/#if]
 
-         
+          <input type="hidden" name="projectID" value="${projectID}" />
         [/@s.form] 
       </div>
     </div>  
