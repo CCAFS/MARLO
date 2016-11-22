@@ -206,6 +206,26 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       // TODO: Validate outcome gender here
 
+      if (project.getCrossCuttingGender() != null && project.getCrossCuttingGender().booleanValue() == true) {
+
+        if (!(this.isValidString(projectOutcome.getGenderDimenssion())
+          && this.wordCount(projectOutcome.getGenderDimenssion()) <= 50)) {
+          this.addMessage(action.getText("projectOutcome.genderDimenssion"));
+          action.getInvalidFields().put("input-projectOutcome.genderDimenssion", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+
+      if (project.getCrossCuttingYouth() != null && project.getCrossCuttingYouth().booleanValue() == true) {
+
+        if (!(this.isValidString(projectOutcome.getYouthComponent())
+          && this.wordCount(projectOutcome.getYouthComponent()) <= 50)) {
+          this.addMessage(action.getText("projectOutcome.youthComponent"));
+          action.getInvalidFields().put("input-projectOutcome.youthComponent", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+
+
     }
 
 
