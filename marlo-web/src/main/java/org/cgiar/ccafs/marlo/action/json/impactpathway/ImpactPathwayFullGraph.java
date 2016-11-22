@@ -107,7 +107,10 @@ public class ImpactPathwayFullGraph extends BaseAction {
           dataDetailKeyOutput.put("source", "O" + crpProgramOutcome.getId());
           dataDetailKeyOutput.put("target", "KO" + keyOutputOutcome.getCrpClusterKeyOutput().getId());
           dataEdgeKeyOoutput.put("data", dataDetailKeyOutput);
-          dataEdges.add(dataEdgeKeyOoutput);
+          if (keyOutputOutcome.getCrpClusterKeyOutput().isActive()) {
+
+            dataEdges.add(dataEdgeKeyOoutput);
+          }
         }
 
         dataNodes.add(dataOutcome);
@@ -145,7 +148,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
           dataNodes.add(dataKeyOutput);
         }
 
-        dataNodes.add(dataOutcome);
+
         i1++;
       }
     }
