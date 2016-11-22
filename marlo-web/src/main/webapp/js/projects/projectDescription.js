@@ -318,12 +318,11 @@ function date(start,end) {
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
-      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
-      onClose: function(dateText,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
@@ -335,12 +334,11 @@ function date(start,end) {
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
-      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
-      onClose: function(dateText,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0)
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
@@ -349,7 +347,6 @@ function date(start,end) {
   });
 
   function getDate(element) {
-    console.log(element);
     var date;
     try {
       date = $.datepicker.parseDate(dateFormat, element.value);
@@ -371,7 +368,6 @@ function setDisabledCheckedBoxes() {
 }
 
 function formatState(state) {
-  console.log(state.text.length);
   if(state.text.length == 0) {
     return;
   }

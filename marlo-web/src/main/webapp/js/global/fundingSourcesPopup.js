@@ -273,7 +273,6 @@ $(document).ready(
               if(usersFound > 0) {
                 $dialogContent.find(".panel-body .userMessage").hide();
                 $.each(data.sources, function(i,source) {
-                  console.log(source);
                   var $item = $dialogContent.find("li#userTemplate").clone(true).removeAttr("id");
                   if(source.amount <= 0) {
                     $item.find('.noBudgetMessage').show();
@@ -338,11 +337,10 @@ function date(start,end) {
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
-      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
-      onClose: function(dateText,inst) {
+      onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
@@ -358,11 +356,10 @@ function date(start,end) {
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
-      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
       changeYear: true,
-      onClose: function(dateText,inst) {
+      onChangeMonthYear: function(year,month,inst) {
         var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0)
         $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
