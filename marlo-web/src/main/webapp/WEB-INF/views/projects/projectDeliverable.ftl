@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2","font-awesome"] /]
 [#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]

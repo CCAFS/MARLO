@@ -128,7 +128,7 @@ input.disabled {
 
 .viewMore-block {
   overflow: hidden;
-  padding-bottom: 50px;
+  /* padding-bottom: 50px; */
   -webkit-transition: height 1s;
   -moz-transition: height 1s;
   transition: height 1s;
