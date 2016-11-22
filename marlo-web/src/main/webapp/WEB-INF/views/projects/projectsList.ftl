@@ -17,8 +17,12 @@
 [#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
-<div class="container">
-  <div class="helpMessage"><img src="${baseUrl}/images/global/icon-help.png" /><p> [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text]</p></div> 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="projectsList.help"][@s.param]${currentCycle}[/@s.param][/@s.text] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
 </div>
 
 <section class="container">
