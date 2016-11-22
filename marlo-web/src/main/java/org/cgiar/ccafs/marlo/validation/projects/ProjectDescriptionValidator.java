@@ -168,6 +168,20 @@ public class ProjectDescriptionValidator extends BaseValidator
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
     }
 
+
+    if (project.isProjectEditLeader()) {
+      if (!(this.isValidString(project.getGenderAnalysis()) && this.wordCount(project.getGenderAnalysis()) <= 50)) {
+        this.addMessage(action.getText("project.genderAnalysis"));
+        action.getInvalidFields().put("input-project.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (project.getCrossCuttingGender() == null || project.getCrossCuttingGender().booleanValue() == false) {
+        if (!(this.isValidString(project.getDimension()) && this.wordCount(project.getDimension()) <= 50)) {
+          this.addMessage(action.getText("project.dimension"));
+          action.getInvalidFields().put("input-project.dimension", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    }
     /*
      * if (project.getScopes() != null) {
      * if (project.getScopes().size() == 0) {
