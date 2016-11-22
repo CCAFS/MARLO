@@ -96,6 +96,7 @@ public class ImpactSubmissionAction extends BaseAction {
           submission.setDateTime(new Date());
           submission.setUser(this.getCurrentUser());
           submission.setYear((short) this.getCurrentCycleYear());
+          submission.setCycle(this.getCurrentCycle());
           submissionManager.saveSubmission(submission);
           this.sendNotficationEmail();
         }
