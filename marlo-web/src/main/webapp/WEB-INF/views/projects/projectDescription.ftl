@@ -17,7 +17,7 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div>
+    [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [#if project.projectEditLeader] [#if reportingActive] [@s.text name="projectDescription.help3" /] [#else] [@s.text name="projectDescription.help2" /] [/#if]  [#else] [@s.text name="projectDescription.help1" /] [/#if]</p>
   </div> 

@@ -20,14 +20,7 @@
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
 
-<div class="container helpText viewMore-block">
-  <div style= class="helpMessage infoText">
-    <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div>
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectContributionCrp.help" /] </p>
-  </div> 
-  <div style="display:none" class="viewMore closed"></div>
-</div>
+
     
 <section class="container">
     <div class="row">

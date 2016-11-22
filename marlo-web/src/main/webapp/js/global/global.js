@@ -391,11 +391,11 @@ $('input').on("keypress", function(event) {
 
 function setViewMore() {
   var element = $('.helpText');
-  if($(element).height() < 70) {
+  if($(element).height() < 75) {
     $(element).find('.viewMore').hide();
   } else {
     $(element).css({
-      "height": 70
+      "height": 75
     })
     $(element).find('.viewMore').html('View More');
     $(element).find('.viewMore').show();
@@ -405,7 +405,7 @@ function setViewMore() {
 function expandViewMoreBlock() {
   if($(this).hasClass("closed")) {
     $(this).parent().css({
-      height: $(this).parent().find('.helpMessage').height() + $(this).height()
+      height: $(this).parent().find('.helpMessage').height() + $(this).height() + 5
     });
     $(this).css("border-bottom", "none");
     $(this).html('View less');
