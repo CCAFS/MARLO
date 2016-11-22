@@ -8,12 +8,14 @@
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
+[#assign recordsList = (action.getListLog(selectedProgram))!{} /]
+
 <div class="buttons">
   <div class="buttons-content">
     [#-- History Log --]
-    [#if action.getListLog(selectedProgram)?has_content]
+    [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=action.getListLog(selectedProgram) itemName="crpProgramID" itemId=crpProgramID /]
+      [@logHistory.logList list=recordsList itemName="crpProgramID" itemId=crpProgramID /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
@@ -33,9 +35,11 @@
 </div>
 
 [#-- Last update message --]
-[#if selectedProgram?has_content]
+[#if recordsList?has_content]
+[#assign lastRecord = recordsList[0] /]
+<div class="clearfix"></div>
 <span id="lastUpdateMessage" class="pull-right"> 
-  Last edit was made on <span class="datetime">${(selectedProgram.activeSince)?datetime}</span> by <span class="modifiedBy">${selectedProgram.modifiedBy.composedCompleteName}</span>  
+  Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
 </span>
 [/#if]
 
