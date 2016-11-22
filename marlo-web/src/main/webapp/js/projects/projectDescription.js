@@ -309,51 +309,56 @@ $(document).ready(function() {
  * Attach to the date fields the datepicker plugin
  */
 function datePickerConfig(element) {
-  var defaultMinDateValue = element.defaultMinDateValue;
-  var defaultMaxDateValue = element.defaultMaxDateValue;
-  var minDateValue = defaultMinDateValue;
-  var maxDateValue = defaultMaxDateValue;
+  date($(element.startDate), $(element.endDate));
+}
 
-  // Start date calendar
-  maxDateValue = $(element.endDate).val();
-
-  // Add readonly attribute to prevent inappropriate user input
-  // $(element.startDate).attr('readonly', true);
-  var finalMaxDate = (maxDateValue != 0) ? maxDateValue : defaultMaxDateValue;
-  $(element.startDate).datepicker({
-      dateFormat: "yy-mm-dd",
-
+function date(start,end) {
+  var dateFormat = "yy-mm-dd";
+  var from = $(start).datepicker({
+      dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
+      showButtonPanel: true,
       changeMonth: true,
+      numberOfMonths: 1,
       changeYear: true,
-      defaultDate: '2017-01-01',
-      onClose: function(selectedDate) {
+      onClose: function(dateText,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+        $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
-          $(element.endDate).datepicker("option", "minDate", selectedDate);
+          $(end).datepicker("option", "minDate", selectedDate);
         }
       }
   });
 
-  // End date calendar
-  minDateValue = $(element.startDate).val();
-
-  // Add readonly attribute to prevent inappropriate user input
-  // $(element.endDate).attr('readonly', true);
-  var finalMinDate = (minDateValue != 0) ? minDateValue : defaultMinDateValue;
-  $(element.endDate).datepicker({
-      dateFormat: "yy-mm-dd",
+  var to = $(end).datepicker({
+      dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
+      showButtonPanel: true,
       changeMonth: true,
+      numberOfMonths: 1,
       changeYear: true,
-      defaultDate: null,
-      onClose: function(selectedDate) {
+      onClose: function(dateText,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0)
+        $(this).datepicker('setDate', selectedDate);
         if(selectedDate != "") {
-          // $(element.startDate).datepicker("option", "maxDate", selectedDate);
+          $(start).datepicker("option", "maxDate", selectedDate);
         }
       }
   });
+
+  function getDate(element) {
+    console.log(element);
+    var date;
+    try {
+      date = $.datepicker.parseDate(dateFormat, element.value);
+    } catch(error) {
+      date = null;
+    }
+
+    return date;
+  }
 }
 
 // Activate the chosen plugin.

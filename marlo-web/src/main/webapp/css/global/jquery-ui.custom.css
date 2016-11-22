@@ -755,3 +755,8 @@ html, body{background-color:#ffffff;}
 
 
 
+
+
+table.ui-datepicker-calendar {
+    display: none;
+}
