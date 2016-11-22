@@ -130,7 +130,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
-
+      baseAction.setCanSwitchProject(canSwitchProject);
     } else {
       throw new NullPointerException();
     }

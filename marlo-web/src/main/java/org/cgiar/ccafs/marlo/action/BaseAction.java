@@ -750,11 +750,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
-        if (project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
+
+        List<Deliverable> deliverables =
+          project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<Deliverable> openA = deliverables.stream()
+          .filter(a -> a.isActive()
+            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0))))
+          .collect(Collectors.toList());
+        if (openA.isEmpty()) {
           return false;
         }
-        for (Deliverable deliverable : project.getDeliverables().stream().filter(d -> d.isActive())
-          .collect(Collectors.toList())) {
+        for (Deliverable deliverable : openA) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), APConstants.PLANNING,
             this.getCurrentCycleYear(), section);
           if (sectionStatus == null) {
