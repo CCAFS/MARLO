@@ -17,6 +17,14 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
+<div class="container helpText viewMore-block">
+  <div class="helpMessage infoText">
+    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
+  </div> 
+  <div style="display:none" class="viewMore closed"></div>
+</div>
+
 <section class="marlo-content">
   <div class="container"> 
     [#if programs?has_content]
