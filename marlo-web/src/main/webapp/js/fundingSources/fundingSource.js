@@ -36,25 +36,44 @@ function init() {
 }
 
 function date(start,end) {
-  var dateFormat = "yy-mm-dd", from = $(start).datepicker({
+  var dateFormat = "yy-mm-dd";
+  var from = $(start).datepicker({
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
+      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
-      changeYear: true
+      changeYear: true,
+      onClose: function(dateText,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+        $(this).datepicker('setDate', selectedDate);
+        if(selectedDate != "") {
+          $(end).datepicker("option", "minDate", selectedDate);
+        }
+        getYears();
+      }
   }).on("change", function() {
-    to.datepicker("option", "minDate", getDate(this));
     getYears();
-  }), to = $(end).datepicker({
+  });
+
+  var to = $(end).datepicker({
       dateFormat: dateFormat,
       minDate: '2015-01-01',
       maxDate: '2030-12-31',
+      showButtonPanel: true,
       changeMonth: true,
       numberOfMonths: 1,
-      changeYear: true
+      changeYear: true,
+      onClose: function(dateText,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0)
+        $(this).datepicker('setDate', selectedDate);
+        if(selectedDate != "") {
+          $(start).datepicker("option", "maxDate", selectedDate);
+        }
+        getYears();
+      }
   }).on("change", function() {
-    from.datepicker("option", "maxDate", getDate(this));
     getYears();
   });
 
