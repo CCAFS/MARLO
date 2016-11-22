@@ -437,6 +437,7 @@ public class OutcomesAction extends BaseAction {
       selectedProgram.setModifiedBy(this.getCurrentUser());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
+      selectedProgram.setModificationJustification(this.getJustification());
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName);
 

@@ -733,6 +733,7 @@ public class ClusterActivitiesAction extends BaseAction {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       selectedProgram.setActiveSince(new Date());
       selectedProgram.setModifiedBy(this.getCurrentUser());
+      selectedProgram.setModificationJustification(this.getJustification());
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_ACTIVITIES_RELATION);
