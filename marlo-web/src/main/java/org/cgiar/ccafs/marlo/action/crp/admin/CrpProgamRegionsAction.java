@@ -53,6 +53,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,6 +77,24 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class CrpProgamRegionsAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
+
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
 
   // Managers
   private RoleManager roleManager;
@@ -96,14 +118,15 @@ public class CrpProgamRegionsAction extends BaseAction {
   private UserManager userManager;
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
-  private Role rplRole;
 
+  private Role rplRole;
   private Long slRoleid;
+
   private Role slRole;
+
 
   // Util
   private SendMail sendMail;
-
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
@@ -219,6 +242,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
+
   private void deleteSiteIntegrationLeader(CrpProgramCountry crpProgramCountry, User user) {
 
     for (CrpSitesLeader sitesLeader : user.getCrpSitesLeaders().stream().filter(sl -> sl.isActive())
@@ -269,10 +293,10 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
-
   public List<LocElement> getCountriesList() {
     return countriesList;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -287,7 +311,6 @@ public class CrpProgamRegionsAction extends BaseAction {
   public List<CrpProgram> getRegionsPrograms() {
     return regionsPrograms;
   }
-
 
   public Role getRolePmu() {
     return rolePmu;
@@ -337,9 +360,42 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
       // BBC
       String bbcEmails = this.config.getEmailNotification();
-      sendMail.send(toEmail, null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+
+      // Send pdf
+      String contentType = "application/pdf";
+      String fileName = "MARLO_UserManual.pdf";
+      byte[] buffer = null;
+      InputStream inputStream = null;
+
+      try {
+        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        buffer = readFully(inputStream);
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
+          contentType, fileName, true);
+      } else {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+          null, true);
+      }
     }
   }
 

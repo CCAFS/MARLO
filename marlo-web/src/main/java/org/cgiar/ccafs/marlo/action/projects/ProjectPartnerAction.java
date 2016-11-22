@@ -59,7 +59,11 @@ import org.cgiar.ccafs.marlo.utils.SendMail;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -86,11 +90,29 @@ public class ProjectPartnerAction extends BaseAction {
    */
   private static final long serialVersionUID = 7833194831832715444L;
 
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
+
   private ProjectPartnerManager projectPartnerManager;
   private ProjectComponentLesson projectComponentLesson;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
-  private ProjectPartnerContributionManager projectPartnerContributionManager;
 
+  private ProjectPartnerContributionManager projectPartnerContributionManager;
   private ProjectPartnerOverallManager projectPartnerOverallManager;
   private InstitutionManager institutionManager;
   private InstitutionTypeManager institutionTypeManager;
@@ -101,18 +123,18 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectManager projectManager;
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private CrpManager crpManager;
-  private CrpUserManager crpUserManager;
 
+  private CrpUserManager crpUserManager;
   private ProjectPartnersValidator projectPartnersValidator;
   private long projectID;
   private Crp loggedCrp;
-  private Project previousProject;
 
+  private Project previousProject;
   private Project project;
   // Model for the view
   private List<InstitutionType> intitutionTypes;
-  private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
 
+  private Map<String, String> partnerPersonTypes; // List of partner person types (CP, PL, PC).
   private List<LocElement> countries;
   private List<Institution> allInstitutions; // Is used to list all the partner institutions that have the system.
   private List<Institution> allPPAInstitutions; // Is used to list all the PPA partners institutions
@@ -123,6 +145,7 @@ public class ProjectPartnerAction extends BaseAction {
   private ProjectPartnerOverall partnerOverall;
   private AuditLogManager auditLogManager;
   private String transaction;
+
   // Util
   private SendMail sendMail;
 
@@ -214,6 +237,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+
   /**
    * This method clears the cache and re-load the user permissions in the next iteration.
    */
@@ -222,7 +246,6 @@ public class ProjectPartnerAction extends BaseAction {
     ((APCustomRealm) securityContext.getRealm())
       .clearCachedAuthorizationInfo(securityContext.getSubject().getPrincipals());
   }
-
 
   public List<Activity> getActivitiesLedByUser(long userID) {
 
@@ -242,14 +265,15 @@ public class ProjectPartnerAction extends BaseAction {
     return allInstitutions;
   }
 
+
   public List<Institution> getAllPPAInstitutions() {
     return allPPAInstitutions;
   }
 
-
   public List<User> getAllUsers() {
     return allUsers;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
@@ -302,7 +326,6 @@ public class ProjectPartnerAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
@@ -311,10 +334,10 @@ public class ProjectPartnerAction extends BaseAction {
     return projectPPAPartners;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isPPA(Institution institution) {
     if (institution == null) {
@@ -376,12 +399,43 @@ public class ProjectPartnerAction extends BaseAction {
 
       // BBC
       String bbcEmails = this.config.getEmailNotification();
-      sendMail.send(toEmail, null, bbcEmails,
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+      // Send pdf
+      String contentType = "application/pdf";
+      String fileName = "MARLO_UserManual.pdf";
+      byte[] buffer = null;
+      InputStream inputStream = null;
+
+      try {
+        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        buffer = readFully(inputStream);
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
+          contentType, fileName, true);
+      } else {
+        sendMail.send(toEmail, null, bbcEmails,
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+          null, true);
+      }
     }
   }
-
 
   /**
    * This method notify the user that is been assigned as Project Leader/Coordinator for a specific project.
