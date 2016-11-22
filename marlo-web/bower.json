@@ -39,7 +39,8 @@
     "jQuery-Timelinr": "https://github.com/juanbrujo/jQuery-Timelinr.git#^0.9.6",
     "cytoscape-qtip": "^2.4.0",
     "qtip2": "https://github.com/qTip2/qTip2.git#^3.0.3",
-    "intro.js": "^2.3.0"
+    "intro.js": "^2.3.0",
+    "font-awesome": "^4.7.0"
   },
   "overrides": {
     "jquery": {
@@ -85,6 +86,11 @@
     "jQuery-Timelinr": {
       "main": [
         "js/jquery.timelinr-0.9.6.js"
+      ]
+    },
+    "font-awesome": {
+      "main": [
+        "css/font-awesome.css"
       ]
     }
   }

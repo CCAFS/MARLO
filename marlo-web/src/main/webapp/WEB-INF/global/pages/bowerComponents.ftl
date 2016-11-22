@@ -21,6 +21,7 @@
   [#if libraryName="datatables.net-bs" ]<link rel="stylesheet" href="${baseUrl}/bower_components/datatables.net-bs/css/dataTables.bootstrap.css" />[/#if]
   [#if libraryName="qtip2" ]<link rel="stylesheet" href="${baseUrl}/bower_components/qtip2/dist/jquery.qtip.css" />[/#if]
   [#if libraryName="intro.js" ]<link rel="stylesheet" href="${baseUrl}/bower_components/intro.js/introjs.css" />[/#if]
+  [#if libraryName="font-awesome" ]<link rel="stylesheet" href="${baseUrl}/bower_components/font-awesome/css/font-awesome.css" />[/#if]
   [#-- endbower --]
 [/#macro]
 
