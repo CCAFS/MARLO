@@ -197,7 +197,7 @@
 
 		<action name="unhandledExceptionAction"
 			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
-			<result name="success">/WEB-INF/global/pages/error/500.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
 			 <result name="input">/WEB-INF/global/pages/error/404.ftl</result>
 			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
 		</action>
