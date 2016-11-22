@@ -1169,9 +1169,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
-
+    int year = this.getCurrentCycleYear();
     List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == year)
       .collect(Collectors.toList());
 
     if (submissions.isEmpty()) {

@@ -535,7 +535,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     for (Deliverable deliverable : openA) {
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
-
+      deliverable.setGenderLevels(
+        deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       deliverable.setFundingSources(
         deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       deliverableValidator.validate(this, deliverable, false);

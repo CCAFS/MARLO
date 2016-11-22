@@ -120,12 +120,20 @@
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
-              [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
+              [#if editable]
+                [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
+              [#else]
+              <div class="input">
+              	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
+              </div>
+                
+              [/#if]
             </div>
             <div class="clearfix"></div>
           </div>
           <br />
           <h5 class="sectionSubTitle">Projects</h5>
+          [#assign counter = 0 /]
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
             <div class="grayBox col-md-12 borderBox">
@@ -139,8 +147,12 @@
                 <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")} </span>
               </div>
             </div>
+            [#assign counter = counter + 1 /]
             [/#if]
-          [/#list] 
+          [/#list]
+          [#if counter = 0 ]
+            <p class="messageText">No projects adopting this funding source for ${year}.</p>
+          [/#if] 
           </div>
         [/#list] 
       </div>

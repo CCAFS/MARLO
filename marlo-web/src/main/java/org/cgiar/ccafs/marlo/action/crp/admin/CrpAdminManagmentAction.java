@@ -45,6 +45,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -67,6 +71,24 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
 
+  /**
+   * Helper method to read a stream into memory.
+   * 
+   * @param stream
+   * @return
+   * @throws IOException
+   */
+  public static byte[] readFully(InputStream stream) throws IOException {
+    byte[] buffer = new byte[8192];
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    int bytesRead;
+    while ((bytesRead = stream.read(buffer)) != -1) {
+      baos.write(buffer, 0, bytesRead);
+    }
+    return baos.toByteArray();
+  }
+
   // Managers
   private RoleManager roleManager;
   private UserRoleManager userRoleManager;
@@ -80,18 +102,19 @@ public class CrpAdminManagmentAction extends BaseAction {
   private long pmuRol;
   private long cuId;
   private List<CrpProgram> flagshipsPrograms;
+
+
   private List<CrpProgram> regionsPrograms;
 
 
   private List<CrpParameter> parameters;
 
-
   private CrpProgramLeaderManager crpProgramLeaderManager;
-
   private LiaisonUserManager liaisonUserManager;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private UserManager userManager;
   private Role fplRole;
+
   // Util
   private SendMail sendMail;
 
@@ -147,14 +170,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+
   public List<CrpProgram> getFlagshipsPrograms() {
     return flagshipsPrograms;
   }
 
-
   public Role getFplRole() {
     return fplRole;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -174,7 +198,6 @@ public class CrpAdminManagmentAction extends BaseAction {
   public Role getRolePmu() {
     return rolePmu;
   }
-
 
   /**
    * This method will validate if the user is deactivated. If so, it will send an email indicating the credentials to
@@ -205,12 +228,43 @@ public class CrpAdminManagmentAction extends BaseAction {
       // Saving the new user configuration.
       userManager.saveUser(user, this.getCurrentUser());
 
-      sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
-        this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
-        null, true);
+      // Send pdf
+      String contentType = "application/pdf";
+      String fileName = "MARLO_UserManual.pdf";
+      byte[] buffer = null;
+      InputStream inputStream = null;
+
+      try {
+        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        buffer = readFully(inputStream);
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } finally {
+        if (inputStream != null) {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+
+      if (buffer != null && fileName != null && contentType != null) {
+        sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
+          contentType, fileName, true);
+      } else {
+        sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
+          this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
+          null, true);
+      }
     }
   }
-
 
   /**
    * This method notify the user that is been assigned as Program Leader for an specific Flagship

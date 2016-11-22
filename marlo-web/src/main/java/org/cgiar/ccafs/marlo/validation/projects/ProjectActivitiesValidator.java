@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -73,8 +74,13 @@ public class ProjectActivitiesValidator extends BaseValidator {
     if (project.getProjectActivities() != null) {
       int i = 0;
       for (Activity activity : project.getProjectActivities()) {
+
         if (activity != null) {
-          this.validateActivity(activity, i, "projectActivities");
+          if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+            this.validateActivity(activity, i, "projectActivities");
+          }
+
         }
 
         i++;

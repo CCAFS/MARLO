@@ -55,6 +55,5 @@
   <div class="content">
     <span class="glyphicon glyphicon-lock"></span>
     <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
-  </div>
-  
+  </div> 
 </div>
