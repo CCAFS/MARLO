@@ -88,10 +88,12 @@ public class CrpPpaPartnersAction extends BaseAction {
     if (loggedCrp.getCrpPpaPartners() != null) {
       loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(
         loggedCrp.getCrpPpaPartners().stream().filter(ppa -> ppa.isActive()).collect(Collectors.toList())));
+      loggedCrp.getCrpInstitutionsPartners()
+        .sort((p1, p2) -> p1.getInstitution().getName().compareTo(p2.getInstitution().getName()));
     }
 
-    institutions =
-      institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+
+    institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
