@@ -9,7 +9,7 @@
       </div>    
       <div class="container">
         <div class="col-md-5 infoLinks">
-          <div class="col-md-5 contact">Contact person: <a href="mailto:h.f.tobon@cgiar.org">h.f.tobon@cgiar.org</a></div>
+          <div class="col-md-5 contact">Contact person: <a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a></div>
           <div class="col-md-2 scrollup"><a href="#">Top</a></div>
         </div>
         <div class="col-md-2 copyRight">@ Copyright 2016 <br /> Current version ${action.getVersion()}</div>

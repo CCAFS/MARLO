@@ -5174,12 +5174,11 @@ vertical-align: middle;}
 .summariesOption label { 
 }
 
-.summariesOption label span{ 
-background-color: #f1f1f1;font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
+.summariesOption label span{/* background-color: #f1f1f1; */font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
 
 .extraOptions {
-  margin: 10px 16px;
-  width: 60.4%;
+  /* margin: 10px 16px; */
+  /* width: 60.4%; */
 }
 
 /* Summaries Section icons*/

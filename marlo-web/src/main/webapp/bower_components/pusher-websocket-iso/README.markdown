@@ -36,7 +36,7 @@ If you're using PusherJS on a web page, you can install the library via:
 #### CDN
 
 ```html
-<script src="//js.pusher.com/3.1/pusher.min.js"></script>
+<script src="//js.pusher.com/3.2/pusher.min.js"></script>
 ```
 
 #### Bower
@@ -83,7 +83,15 @@ Notes:
 You can import the worker script (`pusher.worker.js`, not `pusher.js`) from the CDN:
 
 ```javascript
-importScripts("https://js.pusher.com/3.1/pusher.worker.min.js");
+importScripts("https://js.pusher.com/3.2/pusher.worker.min.js");
+```
+
+### NodeJS
+
+Having installed `pusher-js` via NPM, simply call:
+
+```javascript
+var Pusher = require('pusher-js/node');
 ```
 
 Notes:
@@ -159,7 +167,7 @@ var pusher = new Pusher(API_KEY, { cluster: "eu" });
 
 #### `disableStats` (Boolean)
 
-Disables stats collection, so that connection metrics are not submitted to Pusher’s servers.
+Disables stats collection, so that connection metrics are not submitted to Pusher’s servers. These stats are used for internal monitoring only and they do not affect the account stats.
 
 #### `enabledTransports` (Array)
 
@@ -348,7 +356,27 @@ channel.unbind(); // removes all handlers on `channel`
 
 ### Binding to everything
 
-It is possible to bind to all events at either the global or channel level by using the method `bind_all`. This is used for debugging, but may have other utilities.
+It is possible to bind to all events, rather than specifying the event name, using the method `bind_all`. This can be used for debugging, but may have other utilities.
+
+This binding can be done for a single channel or for all subscribed channels. Here is how to bind to all events on a single channel:
+
+```javascript
+var channel = pusher.subscribe('test_channel');
+channel.bind_all(function(eventName, data) {
+  console.log("Received event on channel test_channel event with name", eventName, "and data", data);
+});
+```
+
+To bind to all events on all subscribed channels, instead call `pusher.bind_all`:
+
+```javascript
+pusher.bind_all(function(eventName, data) {
+  console.log("Received event with name", eventName, "and data", data);
+});
+```
+
+(Note that this will only work if the event is sent on a subscribed channel. Also note that this does not tell your callback which subscribed channel the event was sent on.)
+
 
 ## Batching auth requests (aka multi-auth)
 
@@ -358,8 +386,21 @@ Currently, pusher-js itself does not support authenticating multiple channels in
 
 There are a number of events which are used internally, but can also be of use elsewhere:
 
-* connection_established
 * subscribe
+
+## Connection Events
+
+To listen for when you connect to Pusher:
+
+```js
+pusher.connection.bind('connected', callback);
+```
+
+And to bind to disconnections:
+
+```js
+pusher.connection.bind('disconnected', callback);
+```
 
 ## Self-serving JS files
 
@@ -371,17 +412,17 @@ First, clone this repository and run `npm install && git submodule init && git s
 
 In the `dist/web` folder, you should see the files you need: `pusher.js`, `pusher.min.js`, `json2.js`, `json.min.js`, `sockjs.js` and `sockjs.min.js`. `pusher.js` should be built referencing your URLs as the dependency hosts.
 
-First, make sure you expose all files from the `dist` directory. They need to be in a directory with named after the version number. For example, if you're hosting version 3.1.0 under `http://example.com/pusher-js` (and https for SSL), files should be accessible under following URL's:
+First, make sure you expose all files from the `dist` directory. They need to be in a directory with named after the version number. For example, if you're hosting version 3.2.0 under `http://example.com/pusher-js` (and https for SSL), files should be accessible under following URL's:
 
-    http://example.com/pusher-js/3.1.0/pusher.js
-    http://example.com/pusher-js/3.1.0/json2.js
-    http://example.com/pusher-js/3.1.0/sockjs.js
+    http://example.com/pusher-js/3.2.0/pusher.js
+    http://example.com/pusher-js/3.2.0/json2.js
+    http://example.com/pusher-js/3.2.0/sockjs.js
 
 Minified files should have `.min` in their names, as in the `dist/web` directory:
 
-    http://example.com/pusher-js/2.1.3/pusher.min.js
-    http://example.com/pusher-js/2.1.3/json2.min.js
-    http://example.com/pusher-js/2.1.3/sockjs.min.js
+    http://example.com/pusher-js/3.2.0/pusher.min.js
+    http://example.com/pusher-js/3.2.0/json2.min.js
+    http://example.com/pusher-js/3.2.0/sockjs.min.js
 
 ## SockJS compatibility
 

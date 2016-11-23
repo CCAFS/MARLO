@@ -1,8 +1,9 @@
 {
 	"name": "qtip2",
 	"description": "Introducing... qTip2. The second generation of the advanced qTip plugin for the ever popular jQuery framework.",
-	"version": "3.0.3",
+	"version": "2.2.1",
 	"homepage": "http://qtip2.com",
+	"location": "https://github.com/qTip2/bower",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/qTip2/qTip2.git"
@@ -15,7 +16,6 @@
 		"tooltip",
 		"tooltips",
 		"jquery",
-		"jquery-plugin",
 		"qtip",
 		"qtip2",
 		"simpletip",
@@ -25,8 +25,11 @@
 		"craga89"
 	],
 	"main": [
-		"./dist/jquery.qtip.js",
-		"./dist/jquery.qtip.css"
+		"./jquery.qtip.js",
+		"./basic/jquery.qtip.js"
+	],
+	"ignore": [
+		"bin"
 	],
 	"dependencies": {
 		"jquery": ">=1.6.0",
