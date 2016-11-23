@@ -492,20 +492,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
             return partner;
           }
         }
       }
     } else {
       for (ProjectPartner partner : projectPartners.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-        for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
-          if (person.isActive()) {
-            if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
-              return partner;
-            }
-          }
+        if (partner.isActive()) {
 
+
+          for (ProjectPartnerPerson person : partner.getProjectPartnerPersons()) {
+            if (person.isActive()) {
+              if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+                return partner;
+              }
+            }
+
+          }
         }
       }
 
