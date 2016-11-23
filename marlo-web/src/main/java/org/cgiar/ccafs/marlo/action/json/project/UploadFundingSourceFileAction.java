@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.File;
 
@@ -52,7 +53,7 @@ public class UploadFundingSourceFileAction extends BaseAction {
   // Model
   private File file;
   private String fileContentType;
-  private String filename;
+  private String fileFileName;
 
 
   private boolean saved;
@@ -75,9 +76,9 @@ public class UploadFundingSourceFileAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    FileDB fileDB = this.getFileDB(null, file, filename, this.getFundingSourceFilePath());
+    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFundingSourceFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
-
+    FileManager.copyFile(file, this.getFundingSourceFilePath() + fileDB.getFileName());
     fileID = fileDB.getId();
     return SUCCESS;
   }
@@ -103,8 +104,8 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
-  public String getFilename() {
-    return filename;
+  public String getFileFileName() {
+    return fileFileName;
   }
 
   private String getFundingSourceFilePath() {
@@ -148,8 +149,8 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
-  public void setFilename(String filename) {
-    this.filename = filename;
+  public void setFileFileName(String filename) {
+    this.fileFileName = filename;
   }
 
 
