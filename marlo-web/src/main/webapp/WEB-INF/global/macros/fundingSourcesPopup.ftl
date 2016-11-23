@@ -63,13 +63,13 @@
             </div>
           </div>
           
-          [#-- Upload bilateral contract --] 
+          [#-- Upload bilateral contract 
           <div class="form-group">
             <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
             <div id="file-dropzone" class="dropzone dropzone-previews" >
             </div>
           </div> 
-
+          --] 
           
           <div class="form-group">
             <div class="row">
