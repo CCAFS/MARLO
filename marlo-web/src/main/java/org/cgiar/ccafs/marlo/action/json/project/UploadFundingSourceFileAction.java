@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -46,7 +45,7 @@ public class UploadFundingSourceFileAction extends BaseAction {
 
 
   // Manager
-  private DeliverableManager deliverableManager;
+
   private FileDBManager fileDBManager;
 
 
@@ -63,10 +62,9 @@ public class UploadFundingSourceFileAction extends BaseAction {
 
 
   @Inject
-  public UploadFundingSourceFileAction(APConfig config, DeliverableManager deliverableManager,
-    FileDBManager fileDBManager) {
+  public UploadFundingSourceFileAction(APConfig config, FileDBManager fileDBManager) {
     super(config);
-    this.deliverableManager = deliverableManager;
+
     this.fileDBManager = fileDBManager;
     this.config = config;
 
@@ -84,11 +82,6 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
-  public DeliverableManager getDeliverableManager() {
-    return deliverableManager;
-  }
-
-
   public File getFile() {
     return file;
   }
@@ -99,13 +92,13 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
-  public long getFileID() {
-    return fileID;
+  public String getFileFileName() {
+    return fileFileName;
   }
 
 
-  public String getFileFileName() {
-    return fileFileName;
+  public long getFileID() {
+    return fileID;
   }
 
   private String getFundingSourceFilePath() {
@@ -144,13 +137,13 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
-  public void setFileID(long fileID) {
-    this.fileID = fileID;
+  public void setFileFileName(String filename) {
+    this.fileFileName = filename;
   }
 
 
-  public void setFileFileName(String filename) {
-    this.fileFileName = filename;
+  public void setFileID(long fileID) {
+    this.fileID = fileID;
   }
 
 
