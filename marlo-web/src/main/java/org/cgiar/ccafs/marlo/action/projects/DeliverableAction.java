@@ -228,7 +228,8 @@ public class DeliverableAction extends BaseAction {
           .collect(Collectors.toList())) {
           keyOutput = new HashMap<String, Object>();
           keyOutput.put("id", deliverableSubType.getId());
-          keyOutput.put("description", deliverableSubType.getName());
+          keyOutput.put("name", deliverableSubType.getName());
+          keyOutput.put("description", deliverableSubType.getDescription());
           subTypes.add(keyOutput);
         }
       }
