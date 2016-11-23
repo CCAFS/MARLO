@@ -1,1 +1,1 @@
-delete from user_roles where role_id in (5,6)
+delete from user_roles where role_id in (5,6);
