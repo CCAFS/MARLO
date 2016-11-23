@@ -10,6 +10,10 @@ function attachEvents() {
   $('input[name=formOptions]').on('change', selectTypeReport);
   $('select[name=projectID], input[name=q]').on('change', updateUrl);
   $('#generateReport').on('click', generateReport);
+
+  $(".summariesFiles").on("click", function() {
+    updateUrl(this);
+  });
 }
 
 function selectSummariesSection(e) {
@@ -29,13 +33,14 @@ function selectSummariesSection(e) {
 }
 
 function selectTypeReport(e) {
-  var $option = $(e.target).parent();
+  console.log(e.target);
+  var $option = $(e.target).parents(".summariesFiles");
   $option.parent().parent().find('.extraOptions').find('select, input').attr('disabled', true);
-  $option.parent().parent().find('.extraOptions').hide();
+  $option.parent().parent().find('.extraOptions').fadeOut();
   $option.find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
   $option.find('.extraOptions').fadeIn();
 
-  updateUrl();
+  // updateUrl();
 }
 
 function generateReport(e) {
@@ -60,9 +65,9 @@ function generateReport(e) {
 
 }
 
-function updateUrl() {
+function updateUrl(element) {
   var generateUrl = "";
-  var $formOptions = $('input[name=formOptions]:checked');
+  var $formOptions = $(element).find('input[name=formOptions]');
   var formOption = $formOptions.val() || 0;
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
   if(formOption != 0) {
@@ -87,7 +92,8 @@ function setUrl(url) {
 // Activate the select plugin.
 function addSelect2() {
   $("form select#projectID").select2({
-    search_contains: true
+      search_contains: true,
+      width: '100%'
   });
   $("#genderKeywords").select2({
     tags: [

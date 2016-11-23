@@ -55,12 +55,11 @@ vertical-align: middle;}
 .summariesOption label { 
 }
 
-.summariesOption label span{ 
-background-color: #f1f1f1;font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
+.summariesOption label span{/* background-color: #f1f1f1; */font-size: 1em;padding: 0 7px;border-radius: 4px;}
 
 .extraOptions {
   margin: 10px 16px;
-  width: 60.4%;
+  /* width: 60.4%; */
 }
 
 /* Summaries Section icons*/
@@ -96,3 +95,111 @@ background-color: #f1f1f1;font-size: 0.9em;padding: 0 7px;border-radius: 4px;}
 #budget.summariesSection.current span {
   background-position: -92px -173px;
 }
+
+.headerBlock {
+    margin-top: 5px;
+}
+
+.headerBlock h5 {
+    line-height: 25px;
+}
+
+.selectReport-title {
+    text-align: center;
+    color: #8a6d3b;
+}
+
+.pdfIcon {
+    color: red;
+    text-align: center;
+    font-size: 4em;
+    margin: 15px 0;
+}
+
+.title-file {
+    text-align: center;
+}
+
+.title-file span {
+    cursor: help;
+}
+
+.summariesFiles {
+    margin: 10px 4%;
+    cursor: pointer;
+}
+
+.excelIcon {
+    color: #3c763d;
+    text-align: center;
+    font-size: 4em;
+    margin: 15px 0;
+}
+
+.info-file {
+    position: absolute;
+    right: 4%;
+    cursor: help;
+}
+
+/* INFO ANIMATION */
+
+span.info-file {
+
+ -webkit-animation: jump 1.5s ease 0s infinite normal ;
+ animation: jump 1.5s ease 0s 1 normal ;
+}
+
+@-webkit-keyframes jump {
+  0%{
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  }
+  20%{
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  }
+  40%{
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+  }
+  50%{
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  }
+  60%{
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+  }
+  80%{
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  }
+  100%{
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  }
+}
+
+@keyframes jump {
+  0%{
+  transform: translateY(0);
+  }
+  20%{
+  transform: translateY(0);
+  }
+  40%{
+  transform: translateY(-5px);
+  }
+  50%{
+  transform: translateY(0);
+  }
+  60%{
+  transform: translateY(-5px);
+  }
+  80%{
+  transform: translateY(0);
+  }
+  100%{
+  transform: translateY(0);
+  }
