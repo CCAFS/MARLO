@@ -6244,3 +6244,32 @@ span#lastUpdateMessage {
     font-style: italic;
     color: #8e8e8e;
 }
+
+.dropzone {
+    min-height: 70px !important;
+    padding: 0;
+    border: 2px dashed #ccc;
+}
+
+.dropzone .dz-preview {
+    min-height: 18px;
+    margin: 4px !important;
+    width: 100%;
+}
+
+.dz-size {
+    display: none;
+}
+
+.dz-image {
+    width: 98% !important;
+    height: 20px !important;
+    border-radius: 5px !important;
+}
+
+.dz-details {
+    padding: 0 !important;
+    margin: 0;
+}
+
+.dz-error-mark {left: 100% !important;}

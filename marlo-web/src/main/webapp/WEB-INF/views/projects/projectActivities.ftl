@@ -17,7 +17,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="project.activities.help" /] </p>
+    <p class="col-md-10">[#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
