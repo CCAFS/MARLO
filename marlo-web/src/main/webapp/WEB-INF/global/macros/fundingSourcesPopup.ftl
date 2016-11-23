@@ -63,13 +63,15 @@
             </div>
           </div>
           
-          [#-- Upload bilateral contract 
-          <div class="form-group">
+           
+          [#-- Upload bilateral contract --]
+          <div class="form-group fileUpload bilateralContract">
             <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-            <div id="file-dropzone" class="dropzone dropzone-previews" >
-            </div>
-          </div> 
-          --] 
+            <div class="uploadContainer"> 
+              <input id="fileupload" class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do">
+            </div>  
+          </div>
+          
           
           <div class="form-group">
             <div class="row">

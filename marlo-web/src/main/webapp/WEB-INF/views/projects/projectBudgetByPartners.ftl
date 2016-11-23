@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Project Budget By Partners" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = ["select2", "dropzone"] /]
+[#assign pageLibs = ["select2", "dropzone", "blueimp-file-upload"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectBudgetByPartners.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]

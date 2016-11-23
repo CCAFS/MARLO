@@ -52,7 +52,7 @@ public class UploadFundingSourceFileAction extends BaseAction {
   // Model
   private File file;
   private String fileContentType;
-  private String fileFileName;
+  private String filename;
 
 
   private boolean saved;
@@ -75,7 +75,7 @@ public class UploadFundingSourceFileAction extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-    FileDB fileDB = this.getFileDB(null, file, fileFileName, this.getFundingSourceFilePath());
+    FileDB fileDB = this.getFileDB(null, file, filename, this.getFundingSourceFilePath());
     saved = (fileDB.getId() != null) && fileDB.getId().longValue() > 0 ? true : false;
 
     fileID = fileDB.getId();
@@ -97,19 +97,20 @@ public class UploadFundingSourceFileAction extends BaseAction {
     return fileContentType;
   }
 
-  public String getFileFileName() {
-    return fileFileName;
-  }
 
   public long getFileID() {
     return fileID;
+  }
+
+
+  public String getFilename() {
+    return filename;
   }
 
   private String getFundingSourceFilePath() {
     String upload = config.getUploadsBaseFolder();
     return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
   }
-
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
@@ -132,8 +133,23 @@ public class UploadFundingSourceFileAction extends BaseAction {
   }
 
 
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+
   public void setFileID(long fileID) {
     this.fileID = fileID;
+  }
+
+
+  public void setFilename(String filename) {
+    this.filename = filename;
   }
 
 

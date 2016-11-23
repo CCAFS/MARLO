@@ -593,6 +593,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
+      fileFileName = "test.xlsx";
       FileInputStream fis = new FileInputStream(file);
       String md5 = DigestUtils.md5Hex(fis);
       FileDB dbFile = null;
@@ -782,13 +783,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case ACTIVITIES:
         project = projectManager.getProjectById(projectID);
 
-        project
-          .setProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-            .collect(Collectors.toList())));
+        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+          .filter(
+            a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          .collect(Collectors.toList())));
 
         if (project.getProjectActivities().isEmpty()) {
           return false;

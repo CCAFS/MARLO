@@ -1811,7 +1811,11 @@ border-radius: 2px;
   background-position: 97% 6px;
 }
 
-
+.blockLoading{
+  background-image: url("../../images/global/loading_3.gif");
+  background-repeat: no-repeat;
+  background-position: 97% 6px;
+}
 
 #secondaryMenu ul li ul li a{
   display: block;
@@ -6244,6 +6248,8 @@ span#lastUpdateMessage {
     color: #8e8e8e;
 }
 
+
+/* Dropzone */
 .dropzone {
     min-height: 70px !important;
     padding: 0;
@@ -6272,3 +6278,11 @@ span#lastUpdateMessage {
 }
 
 .dz-error-mark {left: 100% !important;}
+
+
+/* Progress bar */
+
+.bar {
+    height: 18px;
+    background: green;
+}

@@ -221,7 +221,34 @@ $(document).ready(
         date('#startDate', '#endDate');
 
         // Set dropzone
-        addDropzone();
+
+        var $fileUpload = $('#fileupload')
+        var $uploadBlock = $fileUpload.parents('.uploadContainer');
+        $fileUpload.fileupload({
+            dataType: 'json',
+            done: function(e,data) {
+              $.each(data.result.files, function(index,file) {
+                $uploadBlock.find('.textMessage').text("Uploaded - " + file.name);
+              });
+            },
+            progressall: function(e,data) {
+              var progress = parseInt(data.loaded / data.total * 100, 10);
+              if(progress == 100) {
+                $uploadBlock.removeClass('blockLoading');
+              }
+            },
+            drop: function(e,data) {
+              $.each(data.files, function(index,file) {
+                console.log('Dropped file: ' + file.name);
+              });
+            },
+            change: function(e,data) {
+              $.each(data.files, function(index,file) {
+                console.log('Selected file: ' + file.name);
+                $uploadBlock.addClass('blockLoading');
+              });
+            }
+        });
 
         // Search initial projects
         getData('');
