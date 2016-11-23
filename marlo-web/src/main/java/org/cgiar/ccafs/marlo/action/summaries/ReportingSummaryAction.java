@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -26,6 +27,9 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
+import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -64,8 +68,8 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.Band;
-import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -128,11 +132,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     long startTime = System.currentTimeMillis();
     System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
-    ClassicEngineBoot.getInstance().start();
+
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ResourceManager manager = new ResourceManager();
-    // (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
-    manager.registerDefaults();
+    ResourceManager manager = // new ResourceManager();
+      (ResourceManager) ServletActionContext.getServletContext().getAttribute(PentahoListener.KEY_NAME);
+    // manager.registerDefaults();
     try {
       Resource reportResource =
         manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
@@ -575,9 +579,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getDeliverablesTableModel(int year) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "keyOutputcrpAcry", "leader", "institution"},
+        "key_output", "keyOutputcrpAcry", "leader", "institution", "funding_sources", "cross_cutting"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
@@ -591,6 +595,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String keyOutputcrpAcry = null;
         String leader = null;
         String institution = null;
+        String funding_sources = "";
         if (deliverable.getDeliverableType() != null) {
           deliv_sub_type = deliverable.getDeliverableType().getName();
           if (deliverable.getDeliverableType().getDeliverableType() != null) {
@@ -627,8 +632,58 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
 
+        // Get funding sources if exist
+        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
+          .filter(d -> d.isActive()).collect(Collectors.toList())) {
+          funding_sources += "&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
+        }
+        if (funding_sources.isEmpty()) {
+          funding_sources = null;
+        }
+
+        // TODO: Get cross_cutting dimension
+        String cross_cutting = "";
+        if (deliverable.getCrossCuttingNa() != null) {
+          if (deliverable.getCrossCuttingNa() == true) {
+            cross_cutting += "&#9679; N/A <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            cross_cutting += "&#9679; Gender <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingYouth() != null) {
+          if (deliverable.getCrossCuttingYouth() == true) {
+            cross_cutting += "&#9679; Youth <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingCapacity() != null) {
+          if (deliverable.getCrossCuttingCapacity() == true) {
+            cross_cutting += "&#9679; Capacity Development <br>";
+          }
+        }
+
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            if (deliverable.getDeliverableGenderLevels() == null
+              || deliverable.getDeliverableGenderLevels().isEmpty()) {
+              cross_cutting += "<br><b>Gender level(s):</b> &lt;Not Defined&gt;";
+            } else {
+              cross_cutting += "<br><b>Gender level(s): </b><br>";
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
+                cross_cutting +=
+                  "&#9679; " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+              }
+            }
+          }
+        }
+        if (cross_cutting.isEmpty()) {
+          cross_cutting = null;
+        }
+
         model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
-          deliv_status, deliv_year, key_output, keyOutputcrpAcry, leader, institution});
+          deliv_status, deliv_year, key_output, keyOutputcrpAcry, leader, institution, funding_sources, cross_cutting});
       }
     }
     return model;
@@ -711,7 +766,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     if (project.getCrossCuttingGender() != null) {
       if (project.getCrossCuttingGender() == false) {
-        cross_cutting += "<br><br>" + "<b>No gender dimension because: </b>" + project.getDimension();
+        if (project.getDimension() == null || project.getDimension().isEmpty()) {
+          cross_cutting += "<br><br>" + "<b>No gender dimension because: </b> &lt;Not Defined&gt;";
+        } else {
+          cross_cutting += "<br><br>" + "<b>No gender dimension because: </b>" + project.getDimension();
+        }
       }
     }
     if (cross_cutting.isEmpty()) {
@@ -937,9 +996,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "exp_unit", "narrative", "outcome_id", "out_fl", "out_year", "out_value",
-        "out_statement", "out_unit"},
+        "out_statement", "out_unit", "cross_cutting"},
       new Class[] {Long.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
 
     if (!project.getProjectOutcomes().isEmpty()) {
@@ -951,6 +1010,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String out_value = null;
         String out_statement = null;
         String out_unit = null;
+        String cross_cutting = "";
 
 
         if (project_outcome.getCrpProgramOutcome() != null) {
@@ -972,8 +1032,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           exp_unit = out_unit;
         }
 
+        if (project_outcome.getGenderDimenssion() != null && !project_outcome.getGenderDimenssion().isEmpty()) {
+          cross_cutting +=
+            "<b>Narrative for your expected project contribution to the gender dimensions of this outcome: </b>"
+              + project_outcome.getGenderDimenssion() + "<br><br>";
+        }
+        if (project_outcome.getYouthComponent() != null && !project_outcome.getYouthComponent().isEmpty()) {
+          cross_cutting +=
+            "<b>Narrative for your expected project contribution to the youth component of this outcome: </b>"
+              + project_outcome.getYouthComponent();
+        }
+        if (cross_cutting.isEmpty()) {
+          cross_cutting = null;
+        }
+
         model.addRow(new Object[] {project_outcome.getExpectedValue(), exp_unit, project_outcome.getNarrativeTarget(),
-          project_outcome.getId(), out_fl, out_year, out_value, out_statement, out_unit});
+          project_outcome.getId(), out_fl, out_year, out_value, out_statement, out_unit, cross_cutting});
       }
     }
 

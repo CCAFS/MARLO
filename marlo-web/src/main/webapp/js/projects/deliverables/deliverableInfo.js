@@ -6,6 +6,11 @@ function init() {
     width: '100%'
   });
 
+  $(".fundingSource").select2({
+      templateResult: formatState,
+      templateSelection: formatState
+  })
+
   $('.helpMessage3').on("click", openDialog);
 
   // select name
@@ -432,13 +437,7 @@ function notify(text) {
 
 function formatState(state) {
   console.log(state.text);
-  if(state.id != "-1") {
-    var text = state.text.split(/:(.+)?/);
-    var $state = $("<span><strong>" + text[0] + ":</strong> " + text[1] + "</span>");
-    return $state;
-  } else {
-    var $state = $("<span>" + state.text + "</span>");
-    return $state;
-  }
+  var $state = $("<span>" + state.text + "</span>");
+  return $state;
 
 };

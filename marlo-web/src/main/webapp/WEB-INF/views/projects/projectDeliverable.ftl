@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2","font-awesome"] /]
 [#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
@@ -21,7 +21,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="project.deliverable.help" /] </p>
+    <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>

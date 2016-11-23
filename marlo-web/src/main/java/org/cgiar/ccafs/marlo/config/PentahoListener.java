@@ -20,6 +20,7 @@ package org.cgiar.ccafs.marlo.config;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
 public class PentahoListener implements ServletContextListener {
@@ -37,7 +38,7 @@ public class PentahoListener implements ServletContextListener {
   public void contextInitialized(ServletContextEvent event) {
 
     try {
-
+      ClassicEngineBoot.getInstance().start();
       ResourceManager manager = new ResourceManager();
       manager.registerDefaults();
 

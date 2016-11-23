@@ -22,76 +22,76 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private Long id;
+  private boolean active;
 
   @Expose
-  private User modifiedBy;
+  private Date activeSince;
 
 
-  @Expose
-  private User createdBy;
-
-  @Expose
-  private Institution institution;
-
+  private List<FundingSourceBudget> budgets;
 
   @Expose
-  private Integer status;
+  private BudgetType budgetType;
 
 
   @Expose
-  private String title;
+  private Integer centerType;
 
-
-  @Expose
-  private String description;
-
-
-  @Expose
-  private Institution leader;
-
-  @Expose
-  private Date startDate;
-  @Expose
-  private Date endDate;
-
-
-  @Expose
-  private String financeCode;
-  @Expose
-  private String contactPersonName;
 
   @Expose
   private String contactPersonEmail;
 
 
   @Expose
-  private Integer centerType;
+  private String contactPersonName;
+
 
   @Expose
-  private BudgetType budgetType;
+  private User createdBy;
 
   @Expose
-  private boolean active;
+  private Crp crp;
+  @Expose
+  private String description;
+
 
   @Expose
-  private Date activeSince;
+  private Date endDate;
+  @Expose
+  private String financeCode;
+
+  private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
+
+
+  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
+  @Expose
+  private Long id;
+
+  @Expose
+  private Institution institution;
+
+  @Expose
+  private Institution leader;
 
   @Expose
   private String modificationJustification;
 
   @Expose
-  private Crp crp;
-
-  private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
-
-  private List<FundingSourceBudget> budgets;
+  private User modifiedBy;
 
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
 
   private List<ProjectBudget> projectBudgetsList;
 
-  private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+  @Expose
+  private Date startDate;
+
+  @Expose
+  private Integer status;
+
+  @Expose
+  private String title;
 
   public FundingSource() {
   }
@@ -167,6 +167,14 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return centerType;
   }
 
+  public String getComposedName(){
+    if(this.getLeader()==null){
+      return "<b>"+this.getBudgetType().getName()+"</b> - "+ this.title;
+    }
+    return "<b>"+this.getBudgetType().getName()+"</b> - "+ this.title+" ("+this.getLeader().getAcronym()+")";
+  }
+
+
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
@@ -190,7 +198,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public String getDescription() {
     return description;
   }
-
 
   public Date getEndDate() {
     return endDate;
@@ -227,6 +234,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   @Override
   public String getModificationJustification() {
@@ -291,7 +299,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public String getTitle() {
     return title;
   }
-
 
   @Override
   public int hashCode() {
