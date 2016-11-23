@@ -20,6 +20,8 @@
 
 
 
+
+
 		<action name="institutionsLeader"
 			class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersAction">
 			<result name="success" type="stream">
@@ -39,6 +41,16 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+
+
+
+    <action name="deliverableTypes"
+      class="org.cgiar.ccafs.marlo.action.json.global.DeliverableTypesAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
 
 		<action name="institutionsByTypeAndCountry"
