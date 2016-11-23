@@ -1,5 +1,30 @@
 # Changelog
 
+## 3.2.3 (2016-10-22)
+
+[NEW] Cancelled subscriptions are now re-instated on subsequent `subscribe`
+calls, allowing arbitrary chains of `subscribe`/`unsubscribe` calls, where the
+final method is always respected regardless of the timings.
+See [PR 201](https://github.com/pusher/pusher-js/pull/201) for details.
+
+## 3.2.2 (2016-10-03)
+
+[FIXED] Fix unsubscribe behaviour while subscription is pending (thanks to @hot-leaf-juice).
+
+## 3.2.1 (2016-08-02)
+
+[FIXED] Removes instances of evalling for global scope in timers module.
+
+## 3.2.0 (2016-08-01)
+
+[FIXED] CSP Issue with 3.1 in Chrome extension background context. #168
+
+[FIXED] Stringifying circular JSON structures for React Native. #182
+
+[NEW] Add a new global unbind method.
+
+[INTERNAL] Uses webpack define plugin to specify the global for each runtime.
+
 ## 3.1.0 (2016-05-08)
 
 [NEW] New builds for ReactNative, NodeJS and Web Workers. The first two are available on NPM. The last is available as a download.

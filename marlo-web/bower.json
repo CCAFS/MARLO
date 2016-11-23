@@ -38,9 +38,10 @@
     "datatables.net-bs": "^1.10.12",
     "jQuery-Timelinr": "https://github.com/juanbrujo/jQuery-Timelinr.git#^0.9.6",
     "cytoscape-qtip": "^2.4.0",
-    "qtip2": "https://github.com/qTip2/qTip2.git#^3.0.3",
     "intro.js": "^2.3.0",
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "blueimp-file-upload": "^9.14.1",
+    "qtip2": "^2.2.1"
   },
   "overrides": {
     "jquery": {
