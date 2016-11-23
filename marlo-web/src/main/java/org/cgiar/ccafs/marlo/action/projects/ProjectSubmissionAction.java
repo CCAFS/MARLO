@@ -267,8 +267,9 @@ public class ProjectSubmissionAction extends BaseAction {
       // Making the URL to get the report.
 
       // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      URL pdfURL = new URL(
-        config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "=" + projectID);
+      URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "="
+        + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
+        + this.getCurrentCycle());
 
       // Getting the file data.
       Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
