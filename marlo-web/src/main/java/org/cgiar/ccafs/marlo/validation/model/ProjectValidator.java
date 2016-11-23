@@ -49,9 +49,7 @@ public class ProjectValidator extends BaseValidator {
 
       leader.setInstitution(institutionManager.getInstitutionById(leader.getInstitution().getId()));
       // For bilateral projects the leader must be a PPA institution
-      if (isBilateral && leader.getInstitution().getInstitutionType().getId().longValue() != 3) {
-        return false;
-      }
+
       return true;
     }
     return false;

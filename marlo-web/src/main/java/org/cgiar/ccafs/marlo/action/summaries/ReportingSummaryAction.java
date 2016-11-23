@@ -96,22 +96,31 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   // Front-end
   private long projectID;
+  private int year;
+  private String cycle;
+
+
   // XLS bytes
   private byte[] bytesPDF;
+
 
   // Streams
   InputStream inputStream;
 
+
   // Managers
   private Crp loggedCrp;
-  private ProjectManager projectManager;
-  private CrpProgramManager programManager;
-  private InstitutionManager institutionManager;
-  private ProjectBudgetManager projectBudgetManager;
 
+
+  private ProjectManager projectManager;
+
+  private CrpProgramManager programManager;
+
+  private InstitutionManager institutionManager;
+
+  private ProjectBudgetManager projectBudgetManager;
   // Project from DB
   private Project project;
-
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
@@ -149,9 +158,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       String masterQueryName = "Main_Query";
       int year = 0;
       String cycle = "";
-      year = this.getCurrentCycleYear();
-      if (this.getCurrentCycle() != null) {
-        cycle = this.getCurrentCycle();
+      year = this.getYear();
+      if (this.getCycle() != null) {
+        cycle = this.getCycle();
       }
       // General list to store parameters of Subreports
       List<Object> args = new LinkedList<>();
@@ -285,7 +294,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   private void fillSubreport(SubReport subReport, String query, List<Object> args) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -386,6 +394,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   /**
    * Get all subreports and store then in a hash map.
    * If it encounters a band, search subreports in the band
@@ -438,6 +447,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
   }
+
 
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
 
@@ -509,7 +519,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getBudgetsbyPartnersTableModel(int year) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -574,6 +583,11 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Override
   public String getContentType() {
     return "application/pdf";
+  }
+
+
+  public String getCycle() {
+    return cycle;
   }
 
   private TypedTableModel getDeliverablesTableModel(int year) {
@@ -645,22 +659,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String cross_cutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
-            cross_cutting += "&#9679; N/A <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp; N/A <br>";
           }
         }
         if (deliverable.getCrossCuttingGender() != null) {
           if (deliverable.getCrossCuttingGender() == true) {
-            cross_cutting += "&#9679; Gender <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Gender <br>";
           }
         }
         if (deliverable.getCrossCuttingYouth() != null) {
           if (deliverable.getCrossCuttingYouth() == true) {
-            cross_cutting += "&#9679; Youth <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Youth <br>";
           }
         }
         if (deliverable.getCrossCuttingCapacity() != null) {
           if (deliverable.getCrossCuttingCapacity() == true) {
-            cross_cutting += "&#9679; Capacity Development <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Capacity Development <br>";
           }
         }
 
@@ -668,12 +682,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           if (deliverable.getCrossCuttingGender() == true) {
             if (deliverable.getDeliverableGenderLevels() == null
               || deliverable.getDeliverableGenderLevels().isEmpty()) {
-              cross_cutting += "<br><b>Gender level(s):</b> &lt;Not Defined&gt;";
+              cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
             } else {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
-                cross_cutting +=
-                  "&#9679; " + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
+                  + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
               }
             }
           }
@@ -992,7 +1006,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "exp_unit", "narrative", "outcome_id", "out_fl", "out_year", "out_value",
@@ -1076,7 +1089,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   private TypedTableModel getPartnersLessonsTableModel(String cycle) {
     TypedTableModel model =
       new TypedTableModel(new String[] {"year", "lesson"}, new Class[] {Integer.class, String.class}, 0);
@@ -1090,6 +1102,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getPartnersOtherTableModel(ProjectPartner projectLeader) {
     TypedTableModel model = new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count"},
@@ -1151,6 +1164,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
   }
+
 
   /**
    * Get gender amount per institution, year and budet type
@@ -1219,6 +1233,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return total;
   }
 
+  public int getYear() {
+    return year;
+  }
+
   /**
    * Verify if an institution isPPA or not
    * 
@@ -1242,7 +1260,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return false;
   }
 
-
   @Override
   public void prepare() {
     try {
@@ -1250,11 +1267,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
+      this.setYear(Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.YEAR_REQUEST))));
+      this.setCycle(StringUtils.trim(this.getRequest().getParameter(APConstants.CYCLE)));
     } catch (Exception e) {
 
     }
   }
-
 
   private DeliverablePartnership responsiblePartner(Deliverable deliverable) {
     try {
@@ -1270,12 +1288,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 

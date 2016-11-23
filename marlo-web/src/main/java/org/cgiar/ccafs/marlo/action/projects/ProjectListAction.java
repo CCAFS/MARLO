@@ -110,7 +110,7 @@ public class ProjectListAction extends BaseAction {
 
   public String addCoreProject() {
 
-    if (this.canAccessSuperAdmin()) {
+    if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
       if (this.createProject(APConstants.PROJECT_CORE, null, null)) {
         this.clearPermissionsCache();

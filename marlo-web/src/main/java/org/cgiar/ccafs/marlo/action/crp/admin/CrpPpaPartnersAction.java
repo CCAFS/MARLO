@@ -93,7 +93,8 @@ public class CrpPpaPartnersAction extends BaseAction {
     }
 
 
-    institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
+    institutions =
+      institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null).collect(Collectors.toList());
 
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
     if (this.isHttpPost()) {

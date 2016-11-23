@@ -148,6 +148,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
   private ProjectPartnerManager projectPartnerManager;
 
+
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
@@ -199,6 +200,7 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -213,6 +215,27 @@ public class DeliverableAction extends BaseAction {
 
   public long getDeliverableID() {
     return deliverableID;
+  }
+
+  public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
+    List<Map<String, Object>> subTypes = new ArrayList<>();
+    Map<String, Object> keyOutput;
+
+    DeliverableType deliverableType = deliverableTypeManager.getDeliverableTypeById(deliverableTypeID);
+    if (deliverableType != null) {
+      if (deliverableType.getDeliverableTypes() != null) {
+        for (DeliverableType deliverableSubType : deliverableType.getDeliverableTypes().stream()
+          .collect(Collectors.toList())) {
+          keyOutput = new HashMap<String, Object>();
+          keyOutput.put("id", deliverableSubType.getId());
+          keyOutput.put("name", deliverableSubType.getName());
+          keyOutput.put("description", deliverableSubType.getDescription());
+          subTypes.add(keyOutput);
+        }
+      }
+    }
+    return subTypes;
+
   }
 
   public List<DeliverableType> getDeliverableSubTypes() {
