@@ -102,7 +102,7 @@ public class ProjectPartnersValidator extends BaseValidator {
           this.addMissingField("draft");
         }
       }
-      if (!project.getPartners().isEmpty() && (project.isCoreProject() || project.isCoFundedProject())) {
+      if (project.getPartners() != null && !project.getPartners().isEmpty()) {
 
         if (action.isReportingActive()) {
           if (!this.isValidString(project.getOverall())) {
@@ -117,6 +117,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
 
       if (project.getPartners() == null || project.getPartners().isEmpty()) {
+        this.addMissingField("project.partners.empty");
         action.getInvalidFields().put("list-project.partners",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Partners"}));
       }
