@@ -1,5 +1,6 @@
 [#ftl] 
 [#assign isActive=false /]
+
 <!-- Search Users Dialog -->
 <div id="dialog-searchProjects" title="Search Funding Source" style="display:none"> 
   <div class="dialog-content"> 
@@ -61,6 +62,15 @@
               <div class="col-md-12">[@customForm.textArea name="description" i18nkey="projectCofunded.description" className="limitWords-150" required=false/] </div>
             </div>
           </div>
+          
+          [#-- Upload bilateral contract --] 
+          <div class="form-group">
+            <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
+            <div id="file-dropzone" class="dropzone dropzone-previews" >
+            </div>
+          </div> 
+
+          
           <div class="form-group">
             <div class="row">
               <div class="col-md-4">[@customForm.input name="startDate" i18nkey="projectCofunded.startDate" required=true/] </div>
@@ -68,14 +78,7 @@
               <div class="col-md-4">[@customForm.input name="financeCode" i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" /] </div>
             </div>
           </div>
-          [#-- Upload bilateral contract 
-          <div class="form-group fileUpload bilateralContract">
-            <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-            <div class="uploadContainer">
-              [@customForm.inputFile name="file" fileUrl="${(fundingSourceContractURL)!}" fileName="fileName" editable=editable /]
-            </div>  
-          </div>
-          --]
+          
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">[@customForm.select name="status" i18nkey="projectCofunded.agreementStatus"  listName="status" header=false required=true /] </div>

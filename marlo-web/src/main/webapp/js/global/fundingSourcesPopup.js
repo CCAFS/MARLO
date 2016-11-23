@@ -5,6 +5,8 @@ var openSearchDialog, addProject, addUserMessage;
 var institutionSelected, selectedPartnerTitle, selectedYear;
 var canAddFunding;
 
+Dropzone.autoDiscover = false;
+
 $(document).ready(
     function() {
 
@@ -78,16 +80,13 @@ $(document).ready(
       });
 
       // Event to redirect to funding source section
-      $dialogContent.find("span.name").on(
-          "click",
-          function() {
-            var $parent = $(this).parent().parent();
-            var projectId = $parent.find(".contactId").text();
-            var url =
-                baseURL + "/fundingSources/" + currentCrpSession + "/fundingSource.do?fundingSourceID=" + projectId
-                    + "&edit=true";
-            window.open(url, '_blank');
-          });
+      $dialogContent.find("span.name").on("click", function() {
+        var $parent = $(this).parent().parent();
+        var projectId = $parent.find(".contactId").text();
+        var url = baseURL + "/fundingSources/" + currentCrpSession;
+        url += "/fundingSource.do?fundingSourceID=" + projectId + "&edit=true";
+        window.open(url, '_blank');
+      });
 
       // Event to find an user according to search field
       $dialogContent.find(".search-content input").on("keyup", searchUsersEvent);
@@ -221,6 +220,9 @@ $(document).ready(
         // Set dates
         date('#startDate', '#endDate');
 
+        // Set dropzone
+        addDropzone();
+
         // Search initial projects
         getData('');
       }
@@ -268,7 +270,6 @@ $(document).ready(
               $(".institution-" + institutionSelected + ".year-" + selectedYear + "").each(function(i,e) {
                 idsArray.push(parseInt($(e).val()));
               });
-              console.log(idsArray);
               var usersFound = (data.sources).length;
               if(usersFound > 0) {
                 $dialogContent.find(".panel-body .userMessage").hide();
@@ -424,4 +425,37 @@ function date(start,end) {
     }
     return date;
   }
+}
+
+function addDropzone() {
+
+  $("div#file-dropzone").dropzone({
+      init: function() {
+        console.log("init");
+      },
+      fallback: function() { // Run this function if the browser not support dropzone plugin
+        console.log("fallBackDropzone");
+      },
+      forceFallback: false,
+      uploadMultiple: false,
+      parallelUploads: 1,
+      createImageThumbnails: false,
+      paramName: "file", // The name that will be used to transfer the file
+      addRemoveLinks: true,
+      params: {},
+      url: baseURL + '/uploadFile.do',
+      maxFilesize: 30,
+      accept: function(file,done) {
+        console.log(file.name);
+        done();
+      },
+      success: function(file,responseText) {
+        console.log("success");
+        console.log(file);
+      },
+      removedfile: function(file) {
+        console.log(file);
+      }
+  });
+
 }
