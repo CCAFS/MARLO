@@ -255,14 +255,23 @@ function updateKeyOtuputsIndex(item,clustersName) {
 }
 
 function verifyKoContribution(list) {
+  var sum = 0;
   var contribution = 100;
   var cont = list.find(".keyOutputItem ").length;
   if(cont != 0) {
     var newContribution = contribution / cont;
+    newContribution = parseFloat(newContribution.toFixed(2));
     console.log(newContribution);
     list.find(".keyOutputItem ").each(function(i,e) {
-      $(e).find(".keyOutputContribution").val(newContribution.toFixed(2));
-      $(e).find(".koContribution-percentage").html(newContribution.toFixed(2) + "%");
+      $(e).find(".keyOutputContribution").val(newContribution);
+      $(e).find(".koContribution-percentage").html(newContribution + "%");
+      if(i == cont - 1) {
+        sum = newContribution * cont;
+        sum = parseFloat((100 - sum).toFixed(2));
+        console.log((newContribution + sum));
+        $(e).find(".keyOutputContribution").val((newContribution + sum).toFixed(2));
+        $(e).find(".koContribution-percentage").html((newContribution + sum).toFixed(2) + "%");
+      }
     });
   }
   return newContribution;
