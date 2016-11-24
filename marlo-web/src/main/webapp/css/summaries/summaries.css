@@ -142,6 +142,10 @@ vertical-align: middle;}
     cursor: help;
 }
 
+.selected{
+	border-color: #2ba6cb;
+}
+
 /* INFO ANIMATION */
 
 span.info-file {

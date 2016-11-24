@@ -7,11 +7,18 @@ function init() {
 
 function attachEvents() {
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  $('input[name=formOptions]').on('change', selectTypeReport);
   $('select[name=projectID], input[name=q]').on('change', updateUrl);
   $('#generateReport').on('click', generateReport);
 
   $(".summariesFiles").on("click", function() {
+    $(".summariesFiles").removeClass("selected");
+    $(".extraOptions").fadeOut();
+    $('.extraOptions').find('select, input').attr('disabled', true);
+    if($(this).find("#projectPortfolio").val() == "project") {
+      $(this).find('.extraOptions').fadeIn();
+      $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
+    }
+    $(this).addClass("selected");
     updateUrl(this);
   });
 }
@@ -32,34 +39,19 @@ function selectSummariesSection(e) {
   setUrl('#');
 }
 
-function selectTypeReport(e) {
-  console.log(e.target);
-  var $option = $(e.target).parents(".summariesFiles");
-  $option.parent().parent().find('.extraOptions').find('select, input').attr('disabled', true);
-  $option.parent().parent().find('.extraOptions').fadeOut();
-  $option.find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
-  $option.find('.extraOptions').fadeIn();
-
-  // updateUrl();
-}
-
 function generateReport(e) {
-  var $formOptions = $('input[name=formOptions]:checked');
-  var formOption = $formOptions.val() || 0;
-  if(formOption == 0) {
+  var $selected = $('.selected');
+  if($selected.length == "0") {
     e.preventDefault();
     var notyOptions = jQuery.extend({}, notyDefaultOptions);
     notyOptions.text = 'You must to select a report option';
     noty(notyOptions);
   } else {
-    if($formOptions[0].value == "project") {
-      var projectId = $('#projectID').val();
-      if(projectId == -1) {
-        e.preventDefault();
-        var notyOptions = jQuery.extend({}, notyDefaultOptions);
-        notyOptions.text = 'You must to select a project';
-        noty(notyOptions);
-      }
+    if($selected.find(".extraOptions").find("select").val() == "-1") {
+      e.preventDefault();
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = 'You must to select a project';
+      noty(notyOptions);
     }
   }
 

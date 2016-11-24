@@ -49,7 +49,7 @@
           <span title="[@s.text name="summaries.board.report.genderContributionSummary.description" /]" class="info-file fa fa-info-circle"></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
-              <label for="searchTermsSummary">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
+              <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
@@ -59,7 +59,7 @@
             <span title="[@s.text name="summaries.board.report.projectPartnersSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectPartnersSummary" value="leadProjectPartnersSummary"/>
-              <label for="leadProjectPartnersSummary">[@s.text name="summaries.board.report.projectPartnersSummary" /]  </label>
+              <label for="">[@s.text name="summaries.board.report.projectPartnersSummary" /]  </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
@@ -69,7 +69,7 @@
             <span title="[@s.text name="summaries.board.report.impactPathwayContributionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="impactPathwayContributionsSummary"/>
-              <label for="impactPathwayContributionsSummary">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
+              <label for="">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
               <div class="extraOptions" style="display:none"> 
@@ -82,7 +82,7 @@
             <span title="[@s.text name="summaries.board.report.submmitedProjects.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="submmitedProjects" value="submmitedProjects"/>
-              <label for="submmitedProjects">[@s.text name="summaries.board.report.submmitedProjects" /]</label>
+              <label for="">[@s.text name="summaries.board.report.submmitedProjects" /]</label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
             <div class="extraOptions" style="display:none"> 
@@ -95,7 +95,7 @@
             <span title="[@s.text name="summaries.board.report.projectPortfolio.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input type="radio" name="formOptions" id="projectPortfolio" value="project" class="hidden"/>
-              <label for="projectPortfolio">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
+              <label for="">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
             </div>
             <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
             <div class="extraOptions" style="display:none"> 
@@ -113,7 +113,7 @@
             <span title="[@s.text name="summaries.board.report.leadProjectInstitutionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="leadProjectInstitutionsSummary"/>
-              <label for="leadProjectInstitutionsSummary">[@s.text name="summaries.board.report.leadProjectInstitutionsSummary" /] </label>
+              <label for="">[@s.text name="summaries.board.report.leadProjectInstitutionsSummary" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
@@ -122,7 +122,7 @@
             <span title="[@s.text name="summaries.board.report.partnersWorkingWithProjects.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="projectPartnersSummary" value="projectPartnersSummary"/>
-              <label for="projectPartnersSummary">[@s.text name="summaries.board.report.partnersWorkingWithProjects" /] </label>
+              <label for="">[@s.text name="summaries.board.report.partnersWorkingWithProjects" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
@@ -136,7 +136,7 @@
             <span title="[@s.text name="summaries.board.report.expectedDeliverables.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="expectedDeliverables" value="expectedDeliverables"/>
-              <label for="expectedDeliverables">[@s.text name="summaries.board.report.expectedDeliverables" /] </label>
+              <label for="">[@s.text name="summaries.board.report.expectedDeliverables" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
