@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -35,8 +36,10 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,8 +76,12 @@ public class FundingSourceAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
-
+  private FileDBManager fileDBManager;
   private Crp loggedCrp;
+
+  private File file;
+  private String fileContentType;
+  private String fileFileName;
 
 
   private long projectID;
@@ -84,6 +91,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   private Map<String, String> status;
+
 
   private Map<String, String> budgetTypes;
 
@@ -100,7 +108,7 @@ public class FundingSourceAction extends BaseAction {
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
-    BudgetTypeManager budgetTypeManager) {
+    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
@@ -108,6 +116,7 @@ public class FundingSourceAction extends BaseAction {
     this.institutionManager = institutionManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
+    this.fileDBManager = fileDBManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
@@ -141,6 +150,7 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -148,6 +158,7 @@ public class FundingSourceAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public FundingSourceBudget getBudget(int year) {
 
@@ -177,8 +188,35 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
+
+  public File getFile() {
+    return file;
+  }
+
+
+  public String getFileContentType() {
+    return fileContentType;
+  }
+
+  public String getFileFileName() {
+    return fileFileName;
+  }
+
   public FundingSource getFundingSource() {
     return fundingSource;
+  }
+
+  private String getFundingSourceFilePath() {
+    String upload = config.getUploadsBaseFolder();
+    return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
+  }
+
+  public String getFundingSourceFileURL() {
+    return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
+  }
+
+  private String getFundingSourceRelativePath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
 
   public int getIndexBugets(int year) {
@@ -212,7 +250,6 @@ public class FundingSourceAction extends BaseAction {
   public Map<String, String> getStatus() {
     return status;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -331,6 +368,7 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -360,6 +398,21 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setBudgetType(fundingSource.getBudgetType());
       fundingSourceDB.setCenterType(fundingSource.getCenterType());
       fundingSourceDB.setDescription(fundingSource.getDescription());
+
+      if (file != null) {
+
+
+        fundingSourceDB
+          .setFile(this.getFileDB(fundingSourceDB.getFile(), file, fileFileName, this.getFundingSourceFilePath()));
+        FileManager.copyFile(file, this.getFundingSourceFilePath() + fundingSourceDB.getFile().getFileName());
+
+
+      }
+      if (fundingSourceDB.getFile().getFileName().isEmpty()) {
+        fundingSourceDB.setFile(null);
+      }
+
+
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
           if (fundingSourceBudget.getId() == null) {
@@ -414,8 +467,21 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
+
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
+  }
+
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+  public void setFileContentType(String fileContentType) {
+    this.fileContentType = fileContentType;
+  }
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
   }
 
   public void setFundingSource(FundingSource fundingSource) {

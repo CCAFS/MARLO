@@ -25,6 +25,10 @@
 			fetch="select">
 			<column name="crp_id" />
 		</many-to-one>
+		  <many-to-one name="file"
+      class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+      <column name="file" not-null="false" />
+    </many-to-one>
 		<many-to-one name="budgetType"
 			class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
 			<column name="type" />

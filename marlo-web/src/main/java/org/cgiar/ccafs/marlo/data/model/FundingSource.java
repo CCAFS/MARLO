@@ -51,22 +51,27 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   @Expose
   private Crp crp;
+
+  @Expose
+  private FileDB file;
+
   @Expose
   private String description;
 
 
   @Expose
   private Date endDate;
+
   @Expose
   private String financeCode;
 
+
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
-
-
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
 
   @Expose
   private Long id;
+
 
   @Expose
   private Institution institution;
@@ -126,7 +131,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.crp = crp;
   }
 
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -158,27 +162,26 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgets;
   }
 
-
   public BudgetType getBudgetType() {
     return budgetType;
   }
+
 
   public Integer getCenterType() {
     return centerType;
   }
 
-  public String getComposedName(){
-    if(this.getLeader()==null){
-      return "<b>"+this.getBudgetType().getName()+"</b> - "+ this.title;
-    }
-    return "<b>"+this.getBudgetType().getName()+"</b> - "+ this.title+" ("+this.getLeader().getAcronym()+")";
-  }
 
+  public String getComposedName() {
+    if (this.getLeader() == null) {
+      return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title;
+    }
+    return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title + " (" + this.getLeader().getAcronym() + ")";
+  }
 
   public String getContactPersonEmail() {
     return contactPersonEmail;
   }
-
 
   public String getContactPersonName() {
     return contactPersonName;
@@ -199,8 +202,14 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return description;
   }
 
+
   public Date getEndDate() {
     return endDate;
+  }
+
+
+  public FileDB getFile() {
+    return file;
   }
 
   public String getFinanceCode() {
@@ -234,7 +243,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -300,6 +308,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return title;
   }
 
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -307,7 +316,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -339,6 +347,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.centerType = centerType;
   }
 
+
   public void setContactPersonEmail(String contactPersonEmail) {
     this.contactPersonEmail = contactPersonEmail;
   }
@@ -361,6 +370,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   public void setEndDate(Date endDate) {
     this.endDate = endDate;
+  }
+
+  public void setFile(FileDB file) {
+    this.file = file;
   }
 
   public void setFinanceCode(String financeCode) {

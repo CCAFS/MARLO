@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -67,7 +68,7 @@ public class FundingSourceAddAction extends BaseAction {
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
-  private static String FILE = "file";
+  private static String FILE = "fileID";
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
   private LiaisonUserManager liaisonUserManager;
@@ -76,6 +77,7 @@ public class FundingSourceAddAction extends BaseAction {
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
   private CrpManager crpManager;
+  private FileDBManager fileDBManager;
   private List<Map<String, Object>> fsCreated;
   private Map<String, Object> fsProp = new HashMap<>();
 
@@ -83,12 +85,14 @@ public class FundingSourceAddAction extends BaseAction {
   @Inject
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
-    FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager) {
+    FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager,
+    FileDBManager fileDBManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
     this.budgetTypeManager = budgetTypeManager;
     this.crpManager = crpManager;
+    this.fileDBManager = fileDBManager;
     this.liaisonUserManager = liaisonUserManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
@@ -124,6 +128,12 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setContactPersonName(StringUtils.trim(((String[]) parameters.get(CONTACT_NAME))[0]));
     fundingSource.setCenterType(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(CENTER_TYPE))[0])));
     fundingSource.setStatus(Integer.parseInt(StringUtils.trim(((String[]) parameters.get(STATUS))[0])));
+    try {
+      fundingSource
+        .setFile(fileDBManager.getFileDBById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(FILE))[0]))));
+    } catch (Exception e1) {
+      fundingSource.setFile(null);
+    }
 
     Institution institutionDonor =
       institutionManager.getInstitutionById(Long.parseLong(StringUtils.trim(((String[]) parameters.get(DONOR))[0])));
