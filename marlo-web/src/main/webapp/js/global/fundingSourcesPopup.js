@@ -199,65 +199,69 @@ $(document).ready(
 
       /** Functions * */
 
-      openSearchDialog =
-          function(selected) {
+      openSearchDialog = function(selected) {
 
-            $elementSelected = $(selected);
-            selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
-            $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
-            institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
-            selectedYear = $elementSelected.parents('.tab-pane').attr('id').split('-')[1];
+        $elementSelected = $(selected);
+        selectedPartnerTitle = $elementSelected.parents('.projectPartner').find('.partnerTitle').text();
+        $dialogContent.find('.cgiarCenter').text(selectedPartnerTitle);
+        institutionSelected = $elementSelected.parents('.projectPartner').find('.partnerInstitutionId').text();
+        selectedYear = $elementSelected.parents('.tab-pane').attr('id').split('-')[1];
 
-            dialog.dialog("open");
+        dialog.dialog("open");
 
-            // Verify if has permission to create
-            canAddFunding = $elementSelected.hasClass('canAddFunding');
+        // Verify if has permission to create
+        canAddFunding = $elementSelected.hasClass('canAddFunding');
 
-            if(canAddFunding) {
-              $('#create-user').show();
-            } else {
-              $('#create-user').hide();
+        if(canAddFunding) {
+          $('#create-user').show();
+        } else {
+          $('#create-user').hide();
+        }
+
+        // Hide search loader
+        $dialogContent.find(".search-loader").fadeOut("slow");
+
+        // Set dates
+        date('#startDate', '#endDate');
+
+        // Set dropzone
+
+        var $uploadBlock = $('.fileUploadContainer');
+        var $fileUpload = $uploadBlock.find('.upload')
+        $fileUpload.fileupload({
+            dataType: 'json',
+            start: function(e) {
+              $uploadBlock.addClass('blockLoading');
+            },
+            stop: function(e) {
+              $uploadBlock.removeClass('blockLoading');
+            },
+            done: function(e,data) {
+              var r = data.result;
+              console.log(r);
+              if(r.saved) {
+                $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
+                $uploadBlock.find('.textMessage').show();
+                $uploadBlock.find('.fileUpload').hide();
+                // Set file ID
+                fileID = r.fileID;
+              }
+            },
+            progressall: function(e,data) {
+              var progress = parseInt(data.loaded / data.total * 100, 10);
             }
+        });
 
-            // Hide search loader
-            $dialogContent.find(".search-loader").fadeOut("slow");
+        $uploadBlock.find('.removeIcon').on('click', function() {
+          $uploadBlock.find('.textMessage .contentResult').html("");
+          $uploadBlock.find('.textMessage').hide();
+          $uploadBlock.find('.fileUpload').show();
+          fileID = -1;
+        });
 
-            // Set dates
-            date('#startDate', '#endDate');
-
-            // Set dropzone
-
-            var $fileUpload = $('#fileupload')
-            var $uploadBlock = $fileUpload.parents('.uploadContainer');
-            $fileUpload.fileupload({
-                dataType: 'json',
-                start: function(e) {
-                  $uploadBlock.addClass('blockLoading');
-                },
-                stop: function(e) {
-                  $uploadBlock.removeClass('blockLoading');
-                },
-                done: function(e,data) {
-                  var r = data.result;
-                  console.log(r);
-                  if(r.saved) {
-                    var link =
-                        "<p class='checked'> <a href=" + r.fundingSourceFileURL + " target='_blank'>" + r.fileFileName
-                            + "</a> </p>";
-                    $uploadBlock.find('.textMessage').html(link);
-                    // Set file ID
-                    fileID = r.fileID;
-
-                  }
-                },
-                progressall: function(e,data) {
-                  var progress = parseInt(data.loaded / data.total * 100, 10);
-                }
-            });
-
-            // Search initial projects
-            getData('');
-          }
+        // Search initial projects
+        getData('');
+      }
 
       addProject = function(composedName,projectId,budget,type,typeId,institutionSelected,selectedYear) {
         dialog.dialog("close");
