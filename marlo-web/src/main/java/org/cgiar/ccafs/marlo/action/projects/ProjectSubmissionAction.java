@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -119,6 +120,17 @@ public class ProjectSubmissionAction extends BaseAction {
   }
 
 
+  public String getFileName() {
+    StringBuffer fileName = new StringBuffer();
+    fileName.append("Full_Project_Report-");
+    fileName.append(loggedCrp.getName() + "-");
+    fileName.append("P" + projectID + "-");
+    fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
+    fileName.append(".pdf");
+    return fileName.toString();
+
+  }
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -127,14 +139,15 @@ public class ProjectSubmissionAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
-
   public boolean isComplete() {
     return complete;
   }
+
 
   @Override
   public boolean isCompleteProject(long projectID) {
@@ -195,7 +208,6 @@ public class ProjectSubmissionAction extends BaseAction {
     cycleName = APConstants.PLANNING;
 
   }
-
 
   private void sendNotficationEmail() {
     // Building the email message
@@ -274,7 +286,7 @@ public class ProjectSubmissionAction extends BaseAction {
       // Getting the file data.
       Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
       buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
-      fileName = fileProperties.get("filename") != null ? (String) fileProperties.get("filename") : null;
+      fileName = this.getFileName();
       contentType = fileProperties.get("mime_type") != null ? (String) fileProperties.get("mime_type") : null;
     } catch (MalformedURLException e) {
       // Do nothing.
@@ -296,10 +308,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
   }
 
+
   public void setComplete(boolean complete) {
     this.complete = complete;
   }
-
 
   public void setCycleName(String cycleName) {
     this.cycleName = cycleName;
@@ -313,10 +325,10 @@ public class ProjectSubmissionAction extends BaseAction {
     this.project = project;
   }
 
+
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
-
 
   private void submitProject() {
     Submission submission = new Submission();

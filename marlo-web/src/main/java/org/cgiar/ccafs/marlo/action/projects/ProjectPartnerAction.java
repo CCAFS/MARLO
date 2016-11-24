@@ -455,8 +455,9 @@ public class ProjectPartnerAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.project.assigned",
-      new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(), project.getTitle()}));
+    message
+      .append(this.getText("email.project.assigned", new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
@@ -473,6 +474,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.project.assigned.subject",
         new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
@@ -498,8 +500,9 @@ public class ProjectPartnerAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
-    message.append(this.getText("email.project.unAssigned",
-      new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(), project.getTitle()}));
+    message
+      .append(this.getText("email.project.unAssigned", new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
+        project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + " - " + project.getTitle()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
@@ -516,6 +519,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.project.unAssigned.subject",
         new String[] {projectRole, loggedCrp.getAcronym().toUpperCase(),
