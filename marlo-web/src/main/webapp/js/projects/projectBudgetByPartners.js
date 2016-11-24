@@ -4,6 +4,8 @@ $(document).ready(init);
 
 function init() {
 
+  $('a[data-toggle="tab"]').ready(showHelpText(), setViewMore());
+
   countFundingSources = parseInt($('#budgetIndex').text());
   addProject = addFundingSource;
 
@@ -194,4 +196,9 @@ function calculateGenderBudget(type,partner) {
   $(partner).find('.percentageLabel.type-' + type).text(setPercentageFormat(percentage));
 
   $(partner).find('.percentageAmount.type-' + type + ' span').text(setCurrencyFormat(genderAmount));
+}
+
+function showHelpText() {
+  $('.helpMessage').show();
+  $('.helpMessage').addClass('animated flipInX');
 }

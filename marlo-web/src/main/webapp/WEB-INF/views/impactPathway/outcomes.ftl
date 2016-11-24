@@ -18,7 +18,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 <div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
+  <div style="display:none;" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [@s.text name="outcomes.help" /] </p>
   </div> 
