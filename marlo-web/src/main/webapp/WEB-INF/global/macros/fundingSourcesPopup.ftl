@@ -69,6 +69,7 @@
             <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
             <div class="uploadContainer"> 
               <input id="fileupload" class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do">
+              <p class="textMessage"></p>
             </div>  
           </div>
           
