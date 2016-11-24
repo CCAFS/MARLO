@@ -67,6 +67,7 @@ public class FundingSourceAddAction extends BaseAction {
   private static String TYPE = "budgetType";
   private static String BUDGETS = "budgets";
   private static String STATUS = "status";
+  private static String FILE = "file";
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
   private LiaisonUserManager liaisonUserManager;
