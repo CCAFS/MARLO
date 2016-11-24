@@ -44,7 +44,7 @@ function init() {
   $(".keyOutputInput").on("change keyup", changeTitle);
 
 // verify contributions
-  $("form .keyOutputContribution").on("change keyup", function() {
+  $(".keyOutputContribution").on("change keyup", function() {
     var list = $(this).parents(".keyOutputsItems-list");
     var total = 0;
     $(this).parents(".keyOutputItem").find(".koContribution-percentage").html($(this).val() + "%");

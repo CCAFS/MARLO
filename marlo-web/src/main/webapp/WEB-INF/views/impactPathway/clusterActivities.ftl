@@ -199,7 +199,7 @@
     [#-- Partner Title --]
     <div class="blockTitle closed">
        <span title="${(element.keyOutput)!}" class="koTitle col-md-9">[#if element.keyOutput?has_content][@utils.wordCutter string=(element.keyOutput) maxPos=70 substr=" "/][#else]New Key output[/#if]</span>
-      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution)!}%</span></span>
+      <span class="pull-right koContribution-title"><span><b>Contribution:</b></span> <span class="koContribution-percentage">${(element.contribution?string["0.##"])!}%</span></span>
     <div class="clearfix"></div>
     </div>
     
@@ -212,7 +212,7 @@
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">
-          [@customForm.input name="${customName}.contribution" i18nkey="Contribution" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
             
       [#-- Outcomes list --]
