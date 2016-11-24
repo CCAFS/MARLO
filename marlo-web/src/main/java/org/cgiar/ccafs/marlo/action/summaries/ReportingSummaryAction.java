@@ -195,7 +195,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           .collect(Collectors.toList())) {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
-        // TODO: get Regions related to the project sorted by acronym
+
         List<CrpParameter> hasRegionsList = new ArrayList<>();
         Boolean hasRegions = false;
         for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
@@ -214,7 +214,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         List<CrpProgram> regions = new ArrayList<>();
         // If has regions, add the regions to regionsArrayList
-
+        // Get Regions related to the project sorted by acronym
         if (hasRegions != false) {
           for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
             .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
@@ -395,6 +395,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class},
       0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     if (!project.getActivities().isEmpty()) {
       for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
@@ -403,6 +404,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String institution = null;
         String activity_leader = null;
         String status = null;
+        String start_date = formatter.format(activity.getStartDate());
+        String end_date = formatter.format(activity.getEndDate());
 
         if (activity.getProjectPartnerPerson() != null) {
           institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
@@ -412,8 +415,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
 
-        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(),
-          activity.getStartDate(), activity.getEndDate(), institution, activity_leader, status});
+        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
+          end_date, institution, activity_leader, status});
       }
     }
 
@@ -487,7 +490,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getBudgetsbyCoasTableModel(int year) {
-    DecimalFormat df = new DecimalFormat("#.##");
+    DecimalFormat df = new DecimalFormat("###,###.00");
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"description", "year", "w1w2", "w3", "bilateral", "center", "w1w2GenderPer", "w3GenderPer",
@@ -557,21 +560,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Get ppaPartners of project
     for (ProjectPartner pp : project.getProjectPartners()) {
       if (this.isPPA(pp.getInstitution())) {
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 
-        String w1w2Budget = this.getTotalAmount(pp.getInstitution().getId(), year, 1);
-        String w3Budget = this.getTotalAmount(pp.getInstitution().getId(), year, 2);
-        String bilateralBudget = this.getTotalAmount(pp.getInstitution().getId(), year, 3);
-        String centerBudget = this.getTotalAmount(pp.getInstitution().getId(), year, 4);
+        String w1w2Budget =
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 1)));
+        String w3Budget =
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 2)));
+        String bilateralBudget =
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 3)));
+        String centerBudget =
+          myFormatter.format(Double.parseDouble(this.getTotalAmount(pp.getInstitution().getId(), year, 4)));
 
-        String w1w2Gender = df.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1));
-        String w3Gender = df.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2));
-        String bilateralGender = df.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3));
-        String centerGender = df.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4));
-        String w1w2GAmount = df.format(this.getTotalGender(pp.getInstitution().getId(), year, 1));
-        String w3GAmount = df.format(this.getTotalGender(pp.getInstitution().getId(), year, 2));
-        String bilateralGAmount = df.format(this.getTotalGender(pp.getInstitution().getId(), year, 3));
-        String centerGAmount = df.format(this.getTotalGender(pp.getInstitution().getId(), year, 4));
+        String w1w2Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 1));
+        String w3Gender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 2));
+        String bilateralGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 3));
+        String centerGender = myFormatter.format(this.getTotalGenderPer(pp.getInstitution().getId(), year, 4));
+        String w1w2GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 1));
+        String w3GAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 2));
+        String bilateralGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 3));
+        String centerGAmount = myFormatter.format(this.getTotalGender(pp.getInstitution().getId(), year, 4));
 
 
         model.addRow(new Object[] {year, pp.getInstitution().getComposedName(), w1w2Budget, w3Budget, bilateralBudget,
@@ -585,16 +592,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getBudgetSummaryTableModel(int year) {
     TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
-      new Class[] {Integer.class, Long.class, Long.class, Long.class, Long.class}, 0);
-    long w1w2 = 0;
-    long w3 = 0;
-    long bilateral = 0;
-    long centerfunds = 0;
+      new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
+    String w1w2 = null;
+    String w3 = null;
+    String bilateral = null;
+    String centerfunds = null;
+    // Decimal format
+    DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 
-    w1w2 = this.getTotalYear(year, 1);
-    w3 = this.getTotalYear(year, 2);
-    bilateral = this.getTotalYear(year, 3);
-    centerfunds = this.getTotalYear(year, 4);
+
+    w1w2 = myFormatter.format(this.getTotalYear(year, 1));
+    w3 = myFormatter.format(this.getTotalYear(year, 2));
+    bilateral = myFormatter.format(this.getTotalYear(year, 3));
+    centerfunds = myFormatter.format(this.getTotalYear(year, 4));
 
     model.addRow(new Object[] {year, w1w2, w3, bilateral, centerfunds});
 
@@ -747,13 +757,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         "summary", "cycle", "analysis", "cross-cutting", "hasRegions"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class});
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+
 
     String org_leader = null;
     String ml = null;
     String ml_contact = null;
     String title = project.getTitle();
-    Date start_date = project.getStartDate();
-    Date end_date = project.getEndDate();
+    String start_date = formatter.format(project.getStartDate());
+    String end_date = formatter.format(project.getEndDate());
     if (project.getLiaisonUser() != null) {
       ml = project.getLiaisonUser().getLiaisonInstitution().getAcronym();
       ml_contact =
