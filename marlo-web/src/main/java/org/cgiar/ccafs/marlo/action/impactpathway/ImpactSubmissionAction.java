@@ -148,10 +148,10 @@ public class ImpactSubmissionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[3];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = crpProgram.getCrp().getAcronym().toUpperCase() + " Impact Pathway for " + crpProgram.getName();
+    values[1] = "<b>" + crpProgram.getCrp().getAcronym().toUpperCase() + " Impact Pathway</b> for the Flagship: <b>"
+      + crpProgram.getAcronym().toUpperCase() + " - " + crpProgram.getName() + "</b>";
 
     String subject = null;
-
 
     message.append(this.getText("impact.submit.email.message", values));
     message.append(this.getText("email.support"));
@@ -187,7 +187,6 @@ public class ImpactSubmissionAction extends BaseAction {
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
-
 
     /*
      * // Get the PDF from the Project report url.
