@@ -52,19 +52,25 @@
   <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
 </div>
 
-[#-- Status and year expected selects --] 
-  <div class="col-md-6">
+[#-- Status and year expected selects --]
+<div class="form-group">
+  <div class="col-md-4">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
   </div>
-  <div class="col-md-6 form-group">
-    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" editable=editable/]
-    [#if !editable]${(deliverable.year)!}[/#if]
+  <div class="col-md-4 form-group">
+    [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
+    [#assign canEditYear = editable && ((action.isDeliverableNew(deliverable.id)) || ((deliverable.year??) && (deliverable.year == currentCycleYear))) /]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" editable=canEditYear/]
+    [#if !canEditYear]${(deliverable.year)!}[/#if]
   </div>
+</div>
 
 [#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
-<div class="col-md-12 form-group justificationContent" >
-  <div>[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
+<div class="form-group">
+  <div class="col-md-12  justificationContent" >
+    <div>[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
+  </div>
 </div>
 [/#if]
 

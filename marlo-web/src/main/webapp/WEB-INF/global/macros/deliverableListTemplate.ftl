@@ -18,13 +18,15 @@
     <tbody>
     [#if deliverables?has_content]
       [#list deliverables as deliverable]
+        [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]
         <tr>
         [#-- ID --]
         <td class="deliverableId">
           <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">D${deliverable.id}</a>
         </td>
           [#-- Deliverable Title --]
-          <td class="left"> 
+          <td class="left">
+            [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
             [#if deliverable.title?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
                 [#if deliverable.title?length < 120] ${deliverable.title}</a> [#else] [@utilities.wordCutter string=deliverable.title maxPos=120 /]...</a> [/#if]
@@ -80,7 +82,7 @@
           </td>
           [#-- Delete Deliverable--]
           <td class="text-center">
-            [#if action.isDeliverableNew(deliverable.id)]
+            [#if isDeliverableNew]
               <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
