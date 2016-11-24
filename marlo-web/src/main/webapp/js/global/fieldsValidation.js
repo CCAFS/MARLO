@@ -1,4 +1,5 @@
 $(document).ready(init);
+var errorList = $("li#message");
 
 function init() {
   startIntro();
@@ -10,10 +11,8 @@ function init() {
 // var intro = introJs();
 function startIntro() {
 
-  var errorList = $("li#message");
   missingFields(errorList);
   // intro.addHints();
-
 }
 
 // test3
@@ -100,6 +99,11 @@ function getInputElement(fieldName,message) {
 // EVENT TO ERROR TAG
 
 $(".errorTag").on("click", function() {
+  var $this = $(this).parents(".expandableBlock").find(".blockTitle");
+  console.log($this);
+  $($this).next().slideToggle('slow', function() {
+    $($this).find('textarea').autoGrow();
+  });
   $(this).fadeOut("slow", function() {
     $(this).remove();
   });
@@ -107,18 +111,20 @@ $(".errorTag").on("click", function() {
 
 // VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
 function verifyMissingFields(element) {
-  if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
-      || $(element).find(".missingSelect").exists()) {
-    // Tag with message
-    var tagElement = $("#test").clone(true).removeAttr("id");
-    tagElement.attr("title", "Missing fields inside this block!");
-    $(element).append(tagElement);
-    var left = $(element).outerWidth();
-    tagElement.offset({
-        top: 0,
-        left: left
-    });
-    tagElement.fadeIn(2000);
+  if(errorList.length != 0) {
+    if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
+        || $(element).find(".missingSelect").exists()) {
+      // Tag with message
+      var tagElement = $("#test").clone(true).removeAttr("id");
+      tagElement.attr("title", "Missing fields inside this block!");
+      $(element).append(tagElement);
+      var left = $(element).outerWidth();
+      tagElement.offset({
+          top: 0,
+          left: left
+      });
+      tagElement.fadeIn(2000);
+    }
   }
 
 }
