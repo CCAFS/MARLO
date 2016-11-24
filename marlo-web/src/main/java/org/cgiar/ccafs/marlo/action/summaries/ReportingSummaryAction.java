@@ -593,9 +593,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getDeliverablesTableModel(int year) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
-        "key_output", "keyOutputcrpAcry", "leader", "institution", "funding_sources", "cross_cutting"},
+        "key_output", "leader", "institution", "funding_sources", "cross_cutting"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     if (!project.getDeliverables().isEmpty()) {
       for (Deliverable deliverable : project.getDeliverables().stream()
@@ -606,7 +606,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String deliv_status = deliverable.getStatusName();
         String deliv_year = null;
         String key_output = null;
-        String keyOutputcrpAcry = null;
         String leader = null;
         String institution = null;
         String funding_sources = "";
@@ -623,11 +622,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           deliv_year = "" + deliverable.getYear();
         }
         if (deliverable.getCrpClusterKeyOutput() != null) {
-          key_output = deliverable.getCrpClusterKeyOutput().getKeyOutput();
+
           if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
-            keyOutputcrpAcry =
-              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym();
+            key_output +=
+              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
           }
+          key_output += deliverable.getCrpClusterKeyOutput().getKeyOutput();
         }
 
         // Get partner responsible and institution
@@ -639,7 +639,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
 
             leader =
-              responsibleppp.getUser().getComposedName() + "\n&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+              responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
             if (responsibleppp.getInstitution() != null) {
               institution = responsibleppp.getInstitution().getComposedName();
             }
@@ -649,13 +649,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          funding_sources += "&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
+          funding_sources += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
         }
         if (funding_sources.isEmpty()) {
           funding_sources = null;
         }
 
-        // TODO: Get cross_cutting dimension
+        // Get cross_cutting dimension
         String cross_cutting = "";
         if (deliverable.getCrossCuttingNa() != null) {
           if (deliverable.getCrossCuttingNa() == true) {
@@ -697,7 +697,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
 
         model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
-          deliv_status, deliv_year, key_output, keyOutputcrpAcry, leader, institution, funding_sources, cross_cutting});
+          deliv_status, deliv_year, key_output, leader, institution, funding_sources, cross_cutting});
       }
     }
     return model;
@@ -781,9 +781,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     if (project.getCrossCuttingGender() != null) {
       if (project.getCrossCuttingGender() == false) {
         if (project.getDimension() == null || project.getDimension().isEmpty()) {
-          cross_cutting += "<br><br>" + "<b>No gender dimension because: </b> &lt;Not Defined&gt;";
+          cross_cutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b> &lt;Not Defined&gt;";
         } else {
-          cross_cutting += "<br><br>" + "<b>No gender dimension because: </b>" + project.getDimension();
+          cross_cutting += "<br><br>" + "<b>Reason for not addressing gender dimension: </b>" + project.getDimension();
         }
       }
     }
@@ -1008,16 +1008,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"exp_value", "exp_unit", "narrative", "outcome_id", "out_fl", "out_year", "out_value",
-        "out_statement", "out_unit", "cross_cutting"},
-      new Class[] {Long.class, String.class, String.class, Long.class, String.class, String.class, String.class,
-        String.class, String.class, String.class},
+      new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
+        "out_unit", "cross_cutting"},
+      new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
       0);
 
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome project_outcome : project.getProjectOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
-        String exp_unit = null;
+        String exp_value = null;
         String out_fl = null;
         String out_year = null;
         String out_value = null;
@@ -1037,12 +1037,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             out_fl = project_outcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
           }
         }
+
+        exp_value = project_outcome.getExpectedValue() + " ";
         if (out_unit == null) {
           if (project_outcome.getExpectedUnit() != null) {
-            exp_unit = project_outcome.getExpectedUnit().getName();
+            exp_value += project_outcome.getExpectedUnit().getName();
           }
         } else {
-          exp_unit = out_unit;
+          exp_value += out_unit;
         }
 
         if (project_outcome.getGenderDimenssion() != null && !project_outcome.getGenderDimenssion().isEmpty()) {
@@ -1059,8 +1061,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           cross_cutting = null;
         }
 
-        model.addRow(new Object[] {project_outcome.getExpectedValue(), exp_unit, project_outcome.getNarrativeTarget(),
-          project_outcome.getId(), out_fl, out_year, out_value, out_statement, out_unit, cross_cutting});
+        model.addRow(new Object[] {exp_value, project_outcome.getNarrativeTarget(), project_outcome.getId(), out_fl,
+          out_year, out_value, out_statement, out_unit, cross_cutting});
       }
     }
 
@@ -1094,8 +1096,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       new TypedTableModel(new String[] {"year", "lesson"}, new Class[] {Integer.class, String.class}, 0);
     if (!cycle.equals("")) {
       for (ProjectComponentLesson pcl : project.getProjectComponentLessons().stream()
-        .sorted((p1, p2) -> p1.getYear() - p2.getYear())
-        .filter(c -> c.isActive() && c.getComponentName().equals("partners") && c.getCycle().equals(cycle))
+        .sorted((p1, p2) -> p1.getYear() - p2.getYear()).filter(c -> c.isActive()
+          && c.getComponentName().equals("partners") && c.getCycle().equals(cycle) && c.getYear() == this.getYear())
         .collect(Collectors.toList())) {
         model.addRow(new Object[] {pcl.getYear(), pcl.getLessons()});
       }
