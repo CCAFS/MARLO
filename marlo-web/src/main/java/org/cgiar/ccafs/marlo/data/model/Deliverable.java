@@ -58,6 +58,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
+  private int newExpectedYear;
+
+  @Expose
   private Integer status;
 
 

@@ -28,6 +28,9 @@
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
+		  <property name="newExpectedYear" type="int">
+      <column name="new_expected_year" not-null="true" />
+    </property>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>
