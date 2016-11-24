@@ -146,7 +146,10 @@ function init() {
 }
 
 function openDialog() {
-  $("#dialog").dialog();
+  $("#dialog").dialog({
+      width: '980',
+      modal: true
+  });
 }
 
 // Add a new fundingSource element

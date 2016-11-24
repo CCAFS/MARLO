@@ -3726,9 +3726,11 @@ table#deliverableTypes, #deliverableTypes th, #deliverableTypes td {
    border: 1px solid #b6b6b6;
    height: 20px;
    vertical-align:middle;
+   text-align: center;
 }
 #deliverableTypes td {
   text-align: left;
+  padding: 5px 10px;
 }
 .BudgetByYear {
   float: left;

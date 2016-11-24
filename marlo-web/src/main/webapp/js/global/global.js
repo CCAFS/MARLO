@@ -391,11 +391,11 @@ $('input').on("keypress", function(event) {
 
 function setViewMore() {
   var element = $('.helpText');
-  if($(element).height() < 75) {
+  if($(element).height() < 100) {
     $(element).find('.viewMore').hide();
   } else {
     $(element).css({
-      "height": 75
+      "height": 65
     })
     $(element).find('.viewMore').html('View More');
     $(element).find('.viewMore').show();

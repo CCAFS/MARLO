@@ -16,7 +16,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
+  <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
     <p class="col-md-10"> [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]</p>
   </div> 

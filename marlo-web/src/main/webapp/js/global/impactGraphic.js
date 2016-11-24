@@ -441,6 +441,8 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
+    showHelpText();
+    setViewMore();
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
@@ -520,4 +522,9 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 
     createGraphic(m.elements, contentGraph, panningEnable, inPopUp, 'breadthfirst', tooltip);
   });
+}
+
+function showHelpText() {
+  $('.helpMessage').show();
+  $('.helpMessage').addClass('animated flipInX');
 }

@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -162,6 +163,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       if (this.getCycle() != null) {
         cycle = this.getCycle();
       }
+
       // General list to store parameters of Subreports
       List<Object> args = new LinkedList<>();
       // Verify if the project was found
@@ -193,15 +195,36 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           .collect(Collectors.toList())) {
           flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
         }
-        // get Regions related to the project sorted by acronym
-        List<CrpProgram> regions = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        // TODO: get Regions related to the project sorted by acronym
+        List<CrpParameter> hasRegionsList = new ArrayList<>();
+        Boolean hasRegions = false;
+        for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
+          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
           .collect(Collectors.toList())) {
-          regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
+          hasRegionsList.add(hasRegionsParam);
         }
+
+        if (!hasRegionsList.isEmpty()) {
+          if (hasRegionsList.size() > 1) {
+            LOG.warn("There is for than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+          }
+          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
+        }
+
+
+        List<CrpProgram> regions = new ArrayList<>();
+        // If has regions, add the regions to regionsArrayList
+
+        if (hasRegions != false) {
+          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
+            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
+            .filter(
+              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+            .collect(Collectors.toList())) {
+            regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
+          }
+        }
+
         // Set Main_Query
         CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
         TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
@@ -214,16 +237,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Subreport Description
         args.add(projectLeader);
         args.add(cycle);
+        args.add(hasRegions);
         this.fillSubreport((SubReport) hm.get("description"), "description", args);
         // Description Flagships
         args.clear();
         args.add(flagships);
         this.fillSubreport((SubReport) hm.get("Flagships"), "description_flagships", args);
         // Description Regions
-        args.clear();
-        args.add(regions);
-        this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
 
+        if (hasRegions != false) {
+          args.clear();
+          args.add(regions);
+          this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
+        }
         // Description CoAs
         args.clear();
         this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
@@ -301,9 +327,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     switch (query) {
       case "description":
         if (args.get(0) instanceof ProjectPartner) {
-          model = this.getDescTableModel((ProjectPartner) args.get(0), (String) args.get(1));
+          model = this.getDescTableModel((ProjectPartner) args.get(0), (String) args.get(1), (Boolean) args.get(2));
         } else {
-          model = this.getDescTableModel(new ProjectPartner(), (String) args.get(1));
+          model = this.getDescTableModel(new ProjectPartner(), (String) args.get(1), (Boolean) args.get(2));
         }
         break;
       case "description_flagships":
@@ -715,12 +741,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getDescTableModel(ProjectPartner projectLeader, String cycle) {
+  private TypedTableModel getDescTableModel(ProjectPartner projectLeader, String cycle, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "start_date", "end_date", "ml", "ml_contact", "type", "status", "org_leader", "leader",
-        "summary", "cycle", "analysis", "cross-cutting"},
+        "summary", "cycle", "analysis", "cross-cutting", "hasRegions"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class});
+        String.class, String.class, String.class, String.class, String.class, String.class, Boolean.class});
 
     String org_leader = null;
     String ml = null;
@@ -791,9 +817,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       cross_cutting = null;
     }
 
-
     model.addRow(new Object[] {title, start_date, end_date, ml, ml_contact, type, status, org_leader, leader, summary,
-      cycle, analysis, cross_cutting});
+      cycle, analysis, cross_cutting, hasRegions});
     return model;
   }
 
