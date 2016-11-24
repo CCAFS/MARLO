@@ -34,7 +34,9 @@ function selectSummariesSection(e) {
 
   // Uncheck from formOptions the option selected
   $('input[name=formOptions]').attr('checked', false);
-
+  $(".summariesFiles").removeClass("selected");
+  $(".extraOptions").fadeOut();
+  $('.extraOptions').find('select, input').attr('disabled', true);
   // Clean URL
   setUrl('#');
 }
