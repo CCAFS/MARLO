@@ -2,7 +2,7 @@ var dialog, notyDialog;
 var timeoutID;
 var $elementSelected, $dialogContent, $searchInput;
 var openSearchDialog, addProject, addUserMessage;
-var institutionSelected, selectedPartnerTitle, selectedYear;
+var institutionSelected, selectedPartnerTitle, selectedYear, fileID;
 var canAddFunding;
 
 Dropzone.autoDiscover = false;
@@ -20,6 +20,8 @@ $(document).ready(
           modal: true,
           dialogClass: 'dialog-searchUsers',
           open: function(event,ui) {
+            // Reset
+            fileID = -1;
             $dialogContent.find("form")[0].reset();
             // $dialogContent.find("#search-users").trigger('click');
             $dialogContent.find(".tickBox-toggle").hide();
@@ -112,6 +114,7 @@ $(document).ready(
             project.description = $dialogContent.find("#description").val().trim();
             project.title = $dialogContent.find("#title").val().trim();
             project.startDate = $dialogContent.find("#startDate").val().trim();
+            project.fileID = fileID;
             project.endDate = $dialogContent.find("#endDate").val().trim();
             project.financeCode = $dialogContent.find("#financeCode").val().trim();
             project.status = $dialogContent.find("#status").val().trim();
@@ -131,11 +134,7 @@ $(document).ready(
             });
             project.budgets = JSON.stringify(project.budgets);
 
-            /*
-             * var form_data = new FormData(); for( var key in project) { form_data.append(key, project[key]); }
-             * console.log(project); console.log(form_data);
-             */
-
+            // Object for validate
             var projectValidate = {};
             projectValidate.description = project.description;
             projectValidate.startDate = project.startDate;
@@ -153,6 +152,11 @@ $(document).ready(
                 invalidFields.push('Select an option');
               }
             });
+
+            // Validate fileID
+            if(project.fileID == -1) {
+              invalidFields.push('Upload a contract proposal');
+            }
 
             // Validate Email
             var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -222,32 +226,37 @@ $(document).ready(
 
         // Set dropzone
 
-        var $fileUpload = $('#fileupload')
-        var $uploadBlock = $fileUpload.parents('.uploadContainer');
+        var $uploadBlock = $('.fileUploadContainer');
+        var $fileUpload = $uploadBlock.find('.upload')
         $fileUpload.fileupload({
             dataType: 'json',
+            start: function(e) {
+              $uploadBlock.addClass('blockLoading');
+            },
+            stop: function(e) {
+              $uploadBlock.removeClass('blockLoading');
+            },
             done: function(e,data) {
-              $.each(data.result.files, function(index,file) {
-                $uploadBlock.find('.textMessage').text("Uploaded - " + file.name);
-              });
+              var r = data.result;
+              console.log(r);
+              if(r.saved) {
+                $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
+                $uploadBlock.find('.textMessage').show();
+                $uploadBlock.find('.fileUpload').hide();
+                // Set file ID
+                fileID = r.fileID;
+              }
             },
             progressall: function(e,data) {
               var progress = parseInt(data.loaded / data.total * 100, 10);
-              if(progress == 100) {
-                $uploadBlock.removeClass('blockLoading');
-              }
-            },
-            drop: function(e,data) {
-              $.each(data.files, function(index,file) {
-                console.log('Dropped file: ' + file.name);
-              });
-            },
-            change: function(e,data) {
-              $.each(data.files, function(index,file) {
-                console.log('Selected file: ' + file.name);
-                $uploadBlock.addClass('blockLoading');
-              });
             }
+        });
+
+        $uploadBlock.find('.removeIcon').on('click', function() {
+          $uploadBlock.find('.textMessage .contentResult').html("");
+          $uploadBlock.find('.textMessage').hide();
+          $uploadBlock.find('.fileUpload').show();
+          fileID = -1;
         });
 
         // Search initial projects

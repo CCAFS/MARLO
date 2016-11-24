@@ -83,8 +83,8 @@ a.addLink {
 
 .button {
     background: #E6E6E6;
-    padding: 5px 0;
-    width: 20%;
+    padding: 5px 8px;
+    /* width: 20%; */
     border-radius: 4px;
     cursor: pointer;
     text-align: center;
@@ -429,6 +429,11 @@ textarea#justification {
   word-wrap: break-word;
   color: #828282;
   margin: 0;
+}
+
+.fileUploaded {
+  border: 1px dashed #ccc;
+  position: relative;
 }
 
 input[type="radio"] {

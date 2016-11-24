@@ -58,13 +58,14 @@
            <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
+      
       [#-- Upload bilateral contract --]
-      <div class="form-group fileUpload bilateralContract">
+      <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        <div class="uploadContainer">
-          <input type="file" name="file" />
-          [#--  [@customForm.inputFile name="file" fileUrl="${(fundingSourceContractURL)!}" fileName="fundingSource.contractName.fileName" editable=editable /] --]
-        </div>  
+        [#-- Input File --]
+        <div class="fileUpload"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+        [#-- Uploaded File --]
+        <p class="fileUploaded textMessage checked" style="display:none"><span class="contentResult">{{contentResult}}</span> <span class="removeIcon"> </span> </p>
       </div>
        
       [#-- Agreement status and total budget --]
