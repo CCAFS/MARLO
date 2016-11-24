@@ -36,31 +36,47 @@ import com.google.gson.annotations.Expose;
 public class Project implements java.io.Serializable, IAuditLog {
 
 
-  private static final long serialVersionUID = -5737088425960023585L;
-
-
-  public static final int STANDAR_IDENTIFIER = 1;
-
-  public static final int PDF_IDENTIFIER_REPORT = 2;
+  public static final int EMAIL_SUBJECT_IDENTIFIER = 4;
 
 
   public static final int EXCEL_IDENTIFIER_REPORT = 3;
 
-  public static final int EMAIL_SUBJECT_IDENTIFIER = 4;
+  public static final int PDF_IDENTIFIER_REPORT = 2;
+
+
+  private static final long serialVersionUID = -5737088425960023585L;
+
+  public static final int STANDAR_IDENTIFIER = 1;
 
   @Expose
-  private Long id;
-
-
-  @Expose
-  private Crp crp;
-
-  @Expose
-  private LiaisonInstitution liaisonInstitution;
+  private boolean active;
 
 
   @Expose
-  private boolean projectEditLeader;
+  private Date activeSince;
+
+  private Set<Activity> activities = new HashSet<Activity>(0);
+
+
+  @Expose
+  private FileDB annualReportToDonnor;
+
+
+  @Expose
+  private FileDB bilateralContractName;
+
+
+  private List<ProjectBudget> budgets;
+
+  private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
+
+
+  private List<Activity> closedProjectActivities;
+
+  private List<ProjectClusterActivity> clusterActivities;
+
+  @Expose
+  private boolean cofinancing;
 
 
   @Expose
@@ -68,154 +84,138 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private Date presetDate;
-
-  @Expose
-  private LiaisonUser liaisonUser;
-
-
-  @Expose
   private User createdBy;
 
   @Expose
-  private User modifiedBy;
+  private Boolean crossCuttingCapacity;
 
   @Expose
-  private Long status;
+  private Boolean crossCuttingGender;
+  @Expose
+  private Boolean crossCuttingNa;
+  @Expose
+  private Boolean crossCuttingYouth;
+
+  @Expose
+  private Crp crp;
+
+
+  private List<CrpClusterOfActivity> crpActivities;
+
+
+  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
 
   @Expose
-  private String title;
-
-
-  @Expose
-  private String summary;
-
-  @Expose
-  private Date startDate;
-
+  private String dimension;
   @Expose
   private Date endDate;
+  private List<CrpProgram> flagships;
+  private String flagshipValue;
   @Expose
-  private String type;
-  @Expose
-  private int scale;
+  private String genderAnalysis;
+
 
   @Expose
-  private boolean cofinancing;
+  private Long id;
 
 
   @Expose
   private String leaderResponsabilities;
 
+  @Expose
+  private LiaisonInstitution liaisonInstitution;
 
   @Expose
-  private Boolean requiresWorkplanUpload;
-
-
-  @Expose
-  private FileDB annualReportToDonnor;
-  @Expose
-  private FileDB bilateralContractName;
-  @Expose
-  private FileDB workplan;
-  @Expose
-  private boolean active;
-  @Expose
-  private Boolean noRegional;
-
-
-  @Expose
-  private Date activeSince;
-
-
-  @Expose
-  private String modificationJustification;
+  private LiaisonUser liaisonUser;
 
   @Expose
   private boolean locationGlobal;
 
-  private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
+  private List<ProjectLocation> locations;
+  private List<CountryLocationLevel> locationsData;
+  @Expose
+  private String modificationJustification;
+  @Expose
+  private User modifiedBy;
 
-  private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+  @Expose
+  private Boolean noRegional;
 
-  private Set<Submission> submissions = new HashSet<Submission>(0);
-  private List<CrpProgram> flagships;
-  private String flagshipValue;
-  private List<CrpProgram> regions;
+  private List<ProjectOutcome> outcomes;
+  private String overall;
 
-  private String regionsValue;
-
-  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
-  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
-
-  private Set<ProjectScope> projectScopes = new HashSet<ProjectScope>(0);
+  private List<ProjectPartner> partners;
 
 
-  private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
+  @Expose
+  private Date presetDate;
 
-  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+  private List<Activity> projectActivities;
+
+
+  private Set<ProjectBudget> projectBudgetCofinances = new HashSet<ProjectBudget>(0);
+
+
+  private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
+
+  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
 
 
   private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
 
 
-  private Set<ProjectCrpContribution> projectCrpContributions = new HashSet<ProjectCrpContribution>(0);
-
-
-  private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
-
-
-  private Set<Activity> activities = new HashSet<Activity>(0);
-
-
-  private List<CrpClusterOfActivity> crpActivities;
-  private Set<ProjectBudget> projectBudgetCofinances = new HashSet<ProjectBudget>(0);
-  private Set<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities = new HashSet<ProjectBudgetsCluserActvity>(0);
-  private List<ProjectBudgetsCluserActvity> budgetsCluserActvities;
-
-  private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
-  private List<ProjectBudget> budgets;
-
-
-  private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
-  private List<ProjectClusterActivity> clusterActivities;
-  private List<CountryLocationLevel> locationsData;
-
   private ProjectComponentLesson projectComponentLesson;
   private ProjectComponentLesson projectComponentLessonPreview;
-
-
-  private String overall;
-
-
-  private List<ProjectPartner> partners;
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+  private Set<ProjectCrpContribution> projectCrpContributions = new HashSet<ProjectCrpContribution>(0);
 
   private List<Deliverable> projectDeliverables;
-  private List<ProjectOutcome> outcomes;
-  private List<ProjectLocation> locations;
+  @Expose
+  private boolean projectEditLeader;
 
-  @Expose
-  private String genderAnalysis;
-  @Expose
-  private Boolean crossCuttingGender;
-  @Expose
-  private Boolean crossCuttingYouth;
-  @Expose
-  private Boolean crossCuttingCapacity;
-  @Expose
-  private Boolean crossCuttingNa;
 
-  @Expose
-  private String dimension;
+  private Set<ProjectFocus> projectFocuses = new HashSet<ProjectFocus>(0);
+  private Set<ProjectLocationElementType> projectLocationElementTypes = new HashSet<ProjectLocationElementType>(0);
+  private Set<ProjectLocation> projectLocations = new HashSet<ProjectLocation>(0);
 
+  private Set<ProjectOutcome> projectOutcomes = new HashSet<ProjectOutcome>(0);
+  private Set<ProjectPartner> projectPartners = new HashSet<ProjectPartner>(0);
+
+
+  private Set<ProjectScope> projectScopes = new HashSet<ProjectScope>(0);
+
+
+  private List<CrpProgram> regions;
+
+  private String regionsValue;
+  @Expose
+  private Boolean requiresWorkplanUpload;
+  @Expose
+  private int scale;
 
   private List<ProjectScope> scopes;
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+  @Expose
+  private Date startDate;
+  @Expose
+  private Long status;
+  private Set<Submission> submissions = new HashSet<Submission>(0);
 
-  private List<Activity> projectActivities;
+  @Expose
+  private String summary;
 
 
-  private List<Activity> closedProjectActivities;
+  @Expose
+  private String title;
+
+  @Expose
+  private String type;
+
+
+  @Expose
+  private FileDB workplan;
 
 
   public Project() {
@@ -492,7 +492,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) && person.isActive()) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) ) {
             return partner;
           }
         }
