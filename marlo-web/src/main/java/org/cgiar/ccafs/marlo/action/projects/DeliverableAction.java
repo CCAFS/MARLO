@@ -558,7 +558,19 @@ public class DeliverableAction extends BaseAction {
       status = new HashMap<>();
       List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
       for (ProjectStatusEnum projectStatusEnum : list) {
+
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
+      if (this.isPlanningActive()) {
+        if (this.isDeliverableNew(deliverableID)) {
+          status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+          status.remove(ProjectStatusEnum.Complete.getStatusId());
+        } else {
+          // if (deliverable.getyea) {
+
+          // }
+        }
       }
 
       genderLevels = new HashMap<>();
