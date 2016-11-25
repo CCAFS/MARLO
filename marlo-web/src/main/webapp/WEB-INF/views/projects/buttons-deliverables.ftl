@@ -13,6 +13,14 @@
 
 <div class="clearfix"></div>
 <div class="buttons">
+  [#if !action.isDeliverableNew(deliverableID)]
+    [#if editable]
+    <div class="form-group">
+      [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+    </div>
+    [/#if]
+  [/#if]
+  
   <div class="buttons-content">
     [#-- History Log --]
     [#if recordsList?has_content]

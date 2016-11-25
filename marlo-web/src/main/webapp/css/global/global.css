@@ -6293,3 +6293,7 @@ span#lastUpdateMessage {
     height: 18px;
     background: green;
 }
+
+#mainMenu .menuContent ul li.disabled a {
+    color: #c7c7c7;
+}

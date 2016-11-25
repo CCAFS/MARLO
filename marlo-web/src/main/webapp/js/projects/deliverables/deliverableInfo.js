@@ -323,10 +323,10 @@ function validateCurrentDate() {
 
 function justificationByStatus(statusId) {
   if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
-    $statusDescription.show(400);
+    $statusDescription.hide().show(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
   } else {
-    $statusDescription.hide(400);
+    $statusDescription.show().hide(400);
   }
   $statusDescription.find('textarea').val('');
 }

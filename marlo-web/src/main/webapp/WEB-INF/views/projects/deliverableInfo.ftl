@@ -62,8 +62,8 @@
   <div class="col-md-4 form-group">
     [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
     [#assign canEditYear = editable && ((action.isDeliverableNew(deliverable.id)) || ((deliverable.year??) && (deliverable.year != currentCycleYear))) /]
-    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" editable=canEditYear/]
-    [#if !canEditYear]${(deliverable.year)!}[/#if]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" disabled=!canEditYear editable=editable/]
+    [#if !editable]${(deliverable.year)!}[/#if]
   </div>
   [#-- New Expected Year - Extended = 4 --]
   [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
@@ -72,17 +72,18 @@
   </div> 
   <div class="clearfix"></div>
 </div>
-[#-- Status justification textArea   Ongoing("2", "On-going"), Complete("3", "Complete"), Extended("4", "Extended"), Cancelled("5", "Cancelled"); --]
+
+[#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
   [#assign justificationRequired = (deliverable.year??) && ((deliverable.status == 4)  || (deliverable.status == 5)) ]
   <div class="form-group">
     <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
       [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]
       <div id="statusesLabels" style="display:none">
-        <div id="status-2">[@s.text name="deliverable.statusJustification.status2" /]:<span class="red">*</span></div>
-        <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>
-        <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>
-        <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>
+        <div id="status-2">[@s.text name="deliverable.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
+        <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
+        <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
+        <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
       </div>
     </div>
   </div>
