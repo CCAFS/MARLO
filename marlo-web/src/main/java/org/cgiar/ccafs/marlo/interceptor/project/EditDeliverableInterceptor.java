@@ -131,10 +131,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
 
       }
-
-      if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-        canEdit = false;
+      if (deliverable.getStatus() != null) {
+        if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          canEdit = false;
+        }
       }
+
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
