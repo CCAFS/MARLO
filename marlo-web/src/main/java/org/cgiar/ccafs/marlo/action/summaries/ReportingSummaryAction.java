@@ -404,8 +404,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String institution = null;
         String activity_leader = null;
         String status = null;
-        String start_date = formatter.format(activity.getStartDate());
-        String end_date = formatter.format(activity.getEndDate());
+        String start_date = null;
+        String end_date = null;
+
+        if (activity.getStartDate() != null) {
+          start_date = formatter.format(activity.getStartDate());
+        }
+
+        if (activity.getEndDate() != null) {
+          end_date = formatter.format(activity.getEndDate());
+        }
 
         if (activity.getProjectPartnerPerson() != null) {
           institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
@@ -764,8 +772,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String ml = null;
     String ml_contact = null;
     String title = project.getTitle();
-    String start_date = formatter.format(project.getStartDate());
-    String end_date = formatter.format(project.getEndDate());
+    String start_date = null;
+    String end_date = null;
+    if (project.getStartDate() != null) {
+      start_date = formatter.format(project.getStartDate());
+    }
+    if (project.getEndDate() != null) {
+      end_date = formatter.format(project.getEndDate());
+    }
+
     if (project.getLiaisonUser() != null) {
       ml = project.getLiaisonUser().getLiaisonInstitution().getAcronym();
       ml_contact =

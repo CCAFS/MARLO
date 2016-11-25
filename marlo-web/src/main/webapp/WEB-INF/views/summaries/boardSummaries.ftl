@@ -45,7 +45,7 @@
         <div id="projects-contentOptions">
           
           [#-- Gender Contribution Project Level Summary --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
           <span title="[@s.text name="summaries.board.report.genderContributionSummary.description" /]" class="info-file fa fa-info-circle"></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
@@ -55,7 +55,7 @@
           </div>
           
           [#-- List of all projects and their leading institution --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.projectPartnersSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectPartnersSummary" value="leadProjectPartnersSummary"/>
@@ -65,7 +65,7 @@
           </div>
           
           [#-- Impact Pathways Contributions --] 
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.impactPathwayContributionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="impactPathwayContributionsSummary"/>
@@ -73,12 +73,11 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
               <div class="extraOptions" style="display:none"> 
-              <input type="hidden" name="year" value="${currentCycleYear}" />
             </div>
           </div>
           
           [#-- List of all Submmited Projects --] 
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.submmitedProjects.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="submmitedProjects" value="submmitedProjects"/>
@@ -86,7 +85,6 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
             <div class="extraOptions" style="display:none"> 
-              <input type="hidden" name="year" value="${currentCycleYear}" />
             </div>
           </div>
           
@@ -109,7 +107,7 @@
         [#-- -- -- Partners reports -- -- --]
         <div id="partners-contentOptions" style="display:none">
           [#-- Partners and lead projects --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.leadProjectInstitutionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="leadProjectInstitutionsSummary"/>
@@ -118,7 +116,7 @@
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
           [#-- Partners and projects they relate --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.partnersWorkingWithProjects.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="projectPartnersSummary" value="projectPartnersSummary"/>
@@ -132,7 +130,7 @@
         [#-- Deliverables reports --]
         <div id="deliverables-contentOptions" style="display:none">
           [#-- Expected deliverables --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.expectedDeliverables.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="expectedDeliverables" value="expectedDeliverables"/>
@@ -153,7 +151,7 @@
         [#-- -- -- Budget reports -- -- --]
         <div id="budget-contentOptions" style="display:none">
           [#-- Budget Summary per Partners --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
           <span title="[@s.text name="summaries.board.report.powb.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="budgetPerPartnersSummary" value="budgetPerPartnersSummary"/>
@@ -161,11 +159,10 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
             <div class="extraOptions" style="display:none"> 
-              <input type="hidden" name="year" value="${currentCycleYear}" />
             </div>
           </div>
           [#-- Budget Summary by MOGs --]
-          <div class="summariesFiles borderBox col-md-3">
+          <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.powbMOG.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="budgetByMOGsSummary" value="budgetByMOGsSummary"/>
@@ -173,7 +170,6 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
             <div class="extraOptions" style="display:none"> 
-              <input type="hidden" name="year" value="${currentCycleYear}" />
             </div>
           </div>
           
@@ -181,7 +177,7 @@
         </div>
       </div>
       <br />
-      <a id="generateReport" target="_blank" class="addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+      <a id="generateReport" style="display:none;" target="_blank" class="addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
       </form>
     </div> 
   </article>
