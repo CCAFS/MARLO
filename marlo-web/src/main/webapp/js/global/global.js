@@ -422,3 +422,21 @@ function expandViewMoreBlock() {
   }
 
 }
+
+/* Justification Status Functions */
+
+function isStatusCancelled(statusId) {
+  return(statusId == "5")
+}
+
+function isStatusComplete(statusId) {
+  return(statusId == "3")
+}
+
+function isStatusExtended(statusId) {
+  return(statusId == "4")
+}
+
+function isStatusOnGoing(statusId) {
+  return(statusId == "2")
+}

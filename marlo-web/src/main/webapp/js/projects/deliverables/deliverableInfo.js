@@ -1,6 +1,12 @@
+var $statuses, $statusDescription;
+
 $(document).ready(init);
 
 function init() {
+
+  $statuses = $('select.status');
+  $statusDescription = $('#statusDescription');
+
   /* Init Select2 plugin */
   $('form select').select2({
     width: '100%'
@@ -66,9 +72,8 @@ function init() {
   });
 
   // CHANGE STATUS
-  $(".status").on("change", function() {
-    var option = $(this).find("option:selected");
-    justificationByStatus(option.val());
+  $statuses.on("change", function() {
+    justificationByStatus($(this).val());
   });
 
   $(".yearExpected").on("change", validateCurrentDate);
@@ -316,26 +321,14 @@ function validateCurrentDate() {
   $statusSelect.trigger("change.select2");
 }
 
-function justificationByStatus(optionValue) {
-  var justification = $(".justificationContent");
-  if(optionValue == "-1" || optionValue == "3") {
-    justification.hide("slow");
+function justificationByStatus(statusId) {
+  if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
+    $statusDescription.show(400);
+    $statusDescription.find('label').html($('#status-' + statusId).html());
+  } else {
+    $statusDescription.hide(400);
   }
-  if(optionValue == "2") {
-    justification.find("label").html(
-        "Describe overall deliverable or progress made during this cycle:" + "<span class='red'>*</span>");
-    justification.show("slow");
-  }
-  if(optionValue == "4") {
-    justification.find("label").html(
-        "Please provide a justification and new expected date of completion:" + "<span class='red'>*</span>");
-    justification.show("slow");
-  }
-  if(optionValue == "5") {
-    justification.find("label").html(
-        "Please provide a justification for cancelling the deliverable:" + "<span class='red'>*</span>");
-    justification.show("slow");
-  }
+  $statusDescription.find('textarea').val('');
 }
 
 // Add a new person element

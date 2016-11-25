@@ -46,15 +46,16 @@
       <p>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</p>
     </div>
   </div>  
+  <div class="clearfix"></div>
 </div>
 [#-- Description textArea --] 
 <div class="form-group" style="display:none;">
   <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
+  <div class="clearfix"></div>
 </div>
 
 [#-- Status and year expected selects --]
 <div class="form-group">
-
   <div class="col-md-4">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
   </div>
@@ -64,22 +65,27 @@
     [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" editable=canEditYear/]
     [#if !canEditYear]${(deliverable.year)!}[/#if]
   </div>
-  
-  [#-- Extended = 4 --]
+  [#-- New Expected Year - Extended = 4 --]
   [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
     New Expected year
-  </div>
-
+  </div> 
+  <div class="clearfix"></div>
 </div>
-
-[#-- Status justification textArea --]
+[#-- Status justification textArea   Ongoing("2", "On-going"), Complete("3", "Complete"), Extended("4", "Extended"), Cancelled("5", "Cancelled"); --]
 [#if !action.isDeliverableNew(deliverable.id)]
-<div class="form-group">
-  <div class="col-md-12  justificationContent" >
-    <div>[@customForm.textArea  name="deliverable.statusDescription" i18nkey="Status justification" required=true className="limitWords-150" editable=editable /]</div>
+  [#assign justificationRequired = (deliverable.year??) && ((deliverable.status == 4)  || (deliverable.status == 5)) ]
+  <div class="form-group">
+    <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
+      [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]
+      <div id="statusesLabels" style="display:none">
+        <div id="status-2">[@s.text name="deliverable.statusJustification.status2" /]:<span class="red">*</span></div>
+        <div id="status-3">[@s.text name="deliverable.statusJustification.status3" /]:<span class="red">*</span></div>
+        <div id="status-4">[@s.text name="deliverable.statusJustification.status4" /]:<span class="red">*</span></div>
+        <div id="status-5">[@s.text name="deliverable.statusJustification.status5" /]:<span class="red">*</span></div>
+      </div>
+    </div>
   </div>
-</div>
 [/#if]
 
 [#-- CoA Outputs select --] 
