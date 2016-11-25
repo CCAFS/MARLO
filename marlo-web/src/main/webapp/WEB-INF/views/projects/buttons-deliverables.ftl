@@ -42,13 +42,13 @@
       <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
     [/#if]
   </div>
+  <div class="clearfix"></div>
 </div>
 
 [#-- Last update message --]
 [#if recordsList?has_content]
 [#assign lastRecord = recordsList[0] /]
-<div class="clearfix"></div>
-<span id="lastUpdateMessage" class="pull-right"> 
+<div id="lastUpdateMessage" class="text-right"> 
   Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
-</span>
+</div>
 [/#if]
