@@ -28,6 +28,7 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
+        [#assign isProjectNew = action.isProjectNew(project.id) /]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
         <tr>
         [#-- ID --]
@@ -35,7 +36,8 @@
           <a href="${projectUrl}"> P${project.id}</a>
         </td>
           [#-- Project Title --]
-          <td class="left">  
+          <td class="left">
+            [#if isProjectNew]<span class="label label-info">New</span>[/#if]
             [#if project.title?has_content]
               <a href="${projectUrl}" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
@@ -138,7 +140,7 @@
           </td>
           [#-- Delete Project--]
           <td>
-            [#if canEdit && action.isProjectNew(project.id) && action.deletePermission(project.id) ]
+            [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
               <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectsList.deleteProject" /]" /> 
               </a>

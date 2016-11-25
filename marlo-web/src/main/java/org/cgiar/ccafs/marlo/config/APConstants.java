@@ -69,6 +69,7 @@ public final class APConstants {
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
+  public static final String DELIVERABLE_ID = "deliverableId";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";

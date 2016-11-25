@@ -562,14 +562,20 @@ public class DeliverableAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
       if (this.isPlanningActive()) {
+        status.remove(ProjectStatusEnum.Complete.getStatusId());
         if (this.isDeliverableNew(deliverableID)) {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
+
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
-          // if (deliverable.getyea) {
-
-          // }
+          if (deliverable.getYear() >= this.getCurrentCycleYear()) {
+            status.remove(ProjectStatusEnum.Cancelled.getStatusId());
+            status.remove(ProjectStatusEnum.Extended.getStatusId());
+          } else {
+            status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+          }
         }
       }
 
