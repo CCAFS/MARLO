@@ -562,7 +562,12 @@ public class DeliverableAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
       if (this.isPlanningActive()) {
-        status.remove(ProjectStatusEnum.Complete.getStatusId());
+
+        if (deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          status.remove(ProjectStatusEnum.Complete.getStatusId());
+        }
+
+
         if (this.isDeliverableNew(deliverableID)) {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
           status.remove(ProjectStatusEnum.Extended.getStatusId());
@@ -570,10 +575,10 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Extended.getStatusId());
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
-          if (deliverable.getYear() >= this.getCurrentCycleYear()) {
-            status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-            status.remove(ProjectStatusEnum.Extended.getStatusId());
-          } else {
+
+
+          if (deliverable.getYear() < this.getCurrentCycleYear()) {
+
             status.remove(ProjectStatusEnum.Ongoing.getStatusId());
           }
         }
@@ -639,6 +644,14 @@ public class DeliverableAction extends BaseAction {
       hs.addAll(this.fundingSources);
       this.fundingSources.clear();
       this.fundingSources.addAll(hs);
+      this.fundingSources.sort((o1, o2) -> {
+        int cmp = o1.getBudgetType().getId().compareTo(o2.getBudgetType().getId());
+        if (cmp == 0) {
+          cmp = o1.getTitle().compareTo(o2.getTitle());
+        }
+
+        return cmp;
+      });
 
     }
 
