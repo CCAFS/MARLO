@@ -17,7 +17,14 @@
 
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
-
+  <action name="deliverableStatus"
+      class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
     <action name="uploadFundingSource" 
     class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
       <interceptor-ref name="defaultStack" />
@@ -181,6 +188,10 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		
+		
+  
 
 		<action name="programOutcomeList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProgramOutcomeListAction">
