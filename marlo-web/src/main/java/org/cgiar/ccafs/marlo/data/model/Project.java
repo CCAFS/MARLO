@@ -329,15 +329,34 @@ public class Project implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+  public List<Integer> getAllYears(int year) {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+      Calendar calendarStart = Calendar.getInstance();
+      calendarStart.setTime(startDate);
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (year <= calendarEnd.get(Calendar.YEAR)) {
+        // Adding the year to the list.
+        allYears.add(calendarStart.get(Calendar.YEAR));
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
+    }
+
+    return allYears;
+  }
+
 
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;
   }
 
 
-  public long getBilateralBudget(int year) {
+  public double getBilateralBudget(int year) {
 
-    long total = 0;
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getYear() == year)
       .collect(Collectors.toList())) {
@@ -409,9 +428,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
-  public long getCoreBudget(int year) {
+  public double getCoreBudget(int year) {
 
-    long total = 0;
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 1 && c.getYear() == year)
       .collect(Collectors.toList())) {
@@ -492,7 +511,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) ) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
             return partner;
           }
         }
@@ -767,8 +786,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.type;
   }
 
-  public long getW3Budget(int year) {
-    long total = 0;
+  public double getW3Budget(int year) {
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 2 && c.getYear() == year)
       .collect(Collectors.toList())) {

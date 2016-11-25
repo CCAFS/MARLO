@@ -470,7 +470,7 @@ public class ProjectActivitiesAction extends BaseAction {
       for (ProjectStatusEnum projectStatusEnum : list) {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
-
+      status.remove(ProjectStatusEnum.Extended.getStatusId());
       if (project.getDeliverables() != null) {
         if (project.getDeliverables().isEmpty()) {
           project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
@@ -581,7 +581,8 @@ public class ProjectActivitiesAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
     } else {
       return NOT_AUTHORIZED;

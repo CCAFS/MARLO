@@ -261,8 +261,8 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   }
 
 
-  public long getTotalYearPartners(int year, long type) {
-    long total = 0;
+  public double getTotalYearPartners(int year, long type) {
+    double total = 0;
     Project projectBD = projectManager.getProjectById(projectID);
 
 

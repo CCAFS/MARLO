@@ -204,7 +204,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         projectBudget.setInstitution(institutionManager.getInstitutionById(institutionId));
         projectBudget.setYear(year);
         projectBudget.setBudgetType(budgetTypeManager.getBudgetTypeById(type));
-        projectBudget.setAmount(new Long(0));
+        projectBudget.setAmount(new Double(0));
         projectBudget.setGenderPercentage(new Double(0));
         projectBudget.setGenderValue(new Double(0));
 
@@ -344,7 +344,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        long amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
         double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
 
         totalGender = totalGender + (amount * (gender / 100));
@@ -370,8 +370,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public long getTotalYear(int year, long type) {
-    long total = 0;
+  public double getTotalYear(int year, long type) {
+    double total = 0;
     if (project.getBudgets() != null) {
 
       for (ProjectBudget projectBudget : project.getBudgets()) {
@@ -632,7 +632,8 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
     } else {
       return NOT_AUTHORIZED;

@@ -6,6 +6,7 @@ function init() {
 }
 
 function attachEvents() {
+  $(".notAvailable").attr("title", "Not available for this moment");
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
   $('select[name=projectID], input[name=q]').on('change', updateUrl);
   $('#generateReport').on('click', generateReport);
@@ -65,10 +66,11 @@ function updateUrl(element) {
   var formOption = $formOptions.val() || 0;
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
   if(formOption != 0) {
-    generateUrl = baseURL + "/summaries/" + formOption + ".do";
+    generateUrl = baseURL + "/projects/" + formOption + ".do";
     if(extraOptions != 0) {
       generateUrl += '?' + extraOptions;
     }
+    generateUrl += '&year=' + currentCycleYear;
     setUrl(generateUrl);
   } else {
     setUrl('#');

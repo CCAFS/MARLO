@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -129,6 +130,10 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       if (baseAction.isSubmit(deliverable.getProject().getId())) {
         canEdit = false;
 
+      }
+
+      if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+        canEdit = false;
       }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

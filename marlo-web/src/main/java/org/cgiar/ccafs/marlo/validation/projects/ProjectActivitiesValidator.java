@@ -164,17 +164,18 @@ public class ProjectActivitiesValidator extends BaseValidator {
       action.getInvalidFields().put("input-project." + listName + "[" + index + "].status",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    if (activity.getDeliverables() != null) {
-      if (activity.getDeliverables().size() == 0) {
-        this.addMessage(action.getText("activity.deliverable", params));
-        action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
-      }
-    } else {
-      this.addMessage(action.getText("activity.deliverable", params));
-      action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
-    }
+    /*
+     * if (activity.getDeliverables() != null) {
+     * if (activity.getDeliverables().size() == 0) {
+     * this.addMessage(action.getText("activity.deliverable", params));
+     * action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
+     * }
+     * } else {
+     * this.addMessage(action.getText("activity.deliverable", params));
+     * action.getInvalidFields().put("list-project." + listName + "[" + index + "].deliverables",
+     * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Deliverables"}));
+     * }
+     */
   }
 }

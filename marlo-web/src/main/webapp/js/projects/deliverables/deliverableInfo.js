@@ -9,7 +9,7 @@ function init() {
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState
-  })
+  });
 
   $('.helpMessage3').on("click", openDialog);
 
@@ -176,7 +176,7 @@ function addFundingSource(option) {
   }
 
   // Set funding source parameters
-  $item.find(".name").attr("title", $(option).text()).tooltip();
+  $item.find(".name").attr("title", $(option).text());
   $item.find(".name").html(v);
   $item.find(".fId").val(option.val());
   $list.append($item);
