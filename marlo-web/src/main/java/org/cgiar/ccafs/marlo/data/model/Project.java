@@ -329,6 +329,25 @@ public class Project implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
+  public List<Integer> getAllYears(int year) {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+      Calendar calendarStart = Calendar.getInstance();
+      calendarStart.setTime(startDate);
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (year <= calendarEnd.get(Calendar.YEAR)) {
+        // Adding the year to the list.
+        allYears.add(calendarStart.get(Calendar.YEAR));
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
+    }
+
+    return allYears;
+  }
+
 
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;
@@ -492,7 +511,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (partners != null) {
       for (ProjectPartner partner : partners) {
         for (ProjectPartnerPerson person : partner.getPartnerPersons()) {
-          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL) ) {
+          if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PL)) {
             return partner;
           }
         }

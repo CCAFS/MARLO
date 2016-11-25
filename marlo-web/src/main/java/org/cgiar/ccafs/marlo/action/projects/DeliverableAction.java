@@ -909,6 +909,7 @@ public class DeliverableAction extends BaseAction {
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());
+      deliverable.setModificationJustification(this.getJustification());
       deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
