@@ -567,6 +567,8 @@ public class DeliverableAction extends BaseAction {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
           status.remove(ProjectStatusEnum.Extended.getStatusId());
 
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
+          status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           if (deliverable.getYear() >= this.getCurrentCycleYear()) {
             status.remove(ProjectStatusEnum.Cancelled.getStatusId());
