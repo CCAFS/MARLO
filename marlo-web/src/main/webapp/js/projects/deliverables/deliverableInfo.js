@@ -9,7 +9,7 @@ function init() {
   $(".fundingSource").select2({
       templateResult: formatState,
       templateSelection: formatState
-  })
+  });
 
   $('.helpMessage3').on("click", openDialog);
 

@@ -53,14 +53,14 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   private Crp crp;
 
   @Expose
-  private FileDB file;
-
-  @Expose
   private String description;
-
 
   @Expose
   private Date endDate;
+
+
+  @Expose
+  private FileDB file;
 
   @Expose
   private String financeCode;
@@ -173,10 +173,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   public String getComposedName() {
-    if (this.getLeader() == null) {
-      return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title;
-    }
-    return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title + " (" + this.getLeader().getAcronym() + ")";
+    return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title;
   }
 
   public String getContactPersonEmail() {
