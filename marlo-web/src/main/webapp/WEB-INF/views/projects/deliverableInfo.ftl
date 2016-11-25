@@ -61,13 +61,13 @@
   <div class="col-md-4 form-group">
     [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
     [#assign canEditYear = editable && ((action.isDeliverableNew(deliverable.id)) || ((deliverable.year??) && (deliverable.year != currentCycleYear))) /]
-    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears"   multiple=false required=true  className="yearExpected" editable=canEditYear/]
+    [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" editable=canEditYear/]
     [#if !canEditYear]${(deliverable.year)!}[/#if]
   </div>
   
   [#-- Extended = 4 --]
-  [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status == 4) /]
-  <div class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
+  [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
+  <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
     New Expected year
   </div>
 

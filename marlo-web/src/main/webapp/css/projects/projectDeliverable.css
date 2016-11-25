@@ -46,14 +46,17 @@ ul.nav li a {
 .fair span {
     background: #999;
     border-radius: 3px;
-    padding: 0px 4px;
+    padding: 1px 4px;
     margin-right: 0px;
     margin-bottom: 4px;
-    font-size: 0.9em;
+    font-size: 0.85em;
     cursor: pointer;
     opacity: 0.9;
     color: white;
     margin-left: 1px;
+    width: 15px;
+    display: inline-block;
+    text-align: center;
 }
 
 #deliverable-partnership {
@@ -69,6 +72,7 @@ span#achieved {
     padding: 0px 8px;
     border-radius: 20px;
     margin-right: 5px;
+    display: inline;
 }
 
 span#notAchieved {
@@ -76,6 +80,7 @@ span#notAchieved {
     padding: 0px 8px;
     border-radius: 20px;
     margin-right: 5px;
+    display: inline;
 }
 
 span#notDefined {
@@ -83,6 +88,7 @@ span#notDefined {
     padding: 0px 8px;
     border-radius: 20px;
     margin-right: 5px;
+    display: inline;
 }
 
 .legendContent {
@@ -142,4 +148,12 @@ div#fundingSourceList {
 a#opener {
     width: 100%;
     cursor: pointer;
+}
+
+th#deliverableTitles {
+    width: 40%;
+}
+
+th#deliverableFC {
+    width: 11%;
 }

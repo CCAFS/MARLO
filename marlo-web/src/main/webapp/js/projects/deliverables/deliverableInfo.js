@@ -278,24 +278,42 @@ function updateGenderLevels($list) {
 }
 
 function validateCurrentDate() {
-  if(reportingActive) {
-    var yearSelect = $(".yearExpected");
-    var statusSelect = $("form .status");
-    var option = $(yearSelect).find("option:selected");
-    if(option.val() <= currentCycleYear) {
-      if($(statusSelect).val() === "2") {
-        console.log("holi");
-        statusSelect.val("-1");
-        statusSelect.trigger("change.select2");
-        justificationByStatus("-1");
-      }
-      statusSelect.find("option[value='2']").remove();
-
-    } else {
-      $(statusSelect).find("option[value='2']").remove();
-      $(statusSelect).append("<option value='2'>On-going</option>")
-    }
+  var $statusSelect = $("form select.status");
+  var $yearSelect = $(".yearExpected");
+  var status = function() {
+    return $statusSelect.val();
   }
+  var year = function() {
+    return $yearSelect.val();
+  };
+
+  // Ajax
+  $.ajax({
+      url: baseURL + '/deliverableStatus.do',
+      data: {
+          deliverableId: $('input[name=deliverableID]').val(),
+          year: year()
+      },
+      beforeSend: function() {
+        $statusSelect.empty();
+      },
+      success: function(data) {
+        $.each(data.status, function(val,name) {
+          $statusSelect.addOption(val, name);
+        });
+        $statusSelect.trigger("change.select2");
+
+        // Check year and status
+        if((year() < currentCycleYear) && (status() == 4)) {
+          $('#newExpectedYear').show();
+        } else {
+          $('#newExpectedYear').hide();
+        }
+
+      }
+  });
+
+  $statusSelect.trigger("change.select2");
 }
 
 function justificationByStatus(optionValue) {
@@ -439,7 +457,6 @@ function notify(text) {
 }
 
 function formatState(state) {
-  console.log(state.text);
   var $state = $("<span>" + state.text + "</span>");
   return $state;
 

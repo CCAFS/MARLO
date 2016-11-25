@@ -20,7 +20,7 @@ $(document).ready(function() {
           {
               bSortable: false,
               aTargets: [
-                  -1, -2, -3,
+                  -1, -2, -4,
               ]
           }, {
               sType: "natural",
