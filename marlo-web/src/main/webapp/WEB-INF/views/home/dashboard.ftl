@@ -13,13 +13,14 @@
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
-  {"id":"1", "startDate":"11/23/2016", "endDate":"11/25/2016","what":"MARLO opens for impact pathway and project pre-setting (Mgmt Liaisons and CPs)","who":"MARLO Team, Finance, MLs & CPs"},
+  {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"}
+  
+]/]
+[#--  --
   {"id":"2", "startDate":"11/28/2016", "endDate":"12/9/2016","what":"MARLO opens for planning (Project Leaders)","who":"Project Leaders"},
   {"id":"3", "startDate":"12/12/2016 ", "endDate":"12/14/2016","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"MLs"},
   {"id":"4", "startDate":"12/15/2016", "endDate":"12/21/2016","what":"PLs to make changes accordingly and resubmit the project","who":"PLs"},
-  {"id":"5", "startDate":"12/22/2016", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
-]/]
-
+  {"id":"5", "startDate":"12/22/2016", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"} --]
 
 
 <section class="marlo-content">
