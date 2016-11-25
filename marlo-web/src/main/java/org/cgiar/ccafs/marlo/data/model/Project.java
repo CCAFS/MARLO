@@ -354,9 +354,9 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getBilateralBudget(int year) {
+  public double getBilateralBudget(int year) {
 
-    long total = 0;
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 3 && c.getYear() == year)
       .collect(Collectors.toList())) {
@@ -428,9 +428,9 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectCoordinators;
   }
 
-  public long getCoreBudget(int year) {
+  public double getCoreBudget(int year) {
 
-    long total = 0;
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 1 && c.getYear() == year)
       .collect(Collectors.toList())) {
@@ -786,8 +786,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.type;
   }
 
-  public long getW3Budget(int year) {
-    long total = 0;
+  public double getW3Budget(int year) {
+    double total = 0;
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getBudgetType().getId() == 2 && c.getYear() == year)
       .collect(Collectors.toList())) {

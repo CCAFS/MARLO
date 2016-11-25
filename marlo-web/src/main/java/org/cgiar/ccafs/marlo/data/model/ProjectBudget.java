@@ -46,7 +46,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
   @Expose
-  private Long amount;
+  private Double amount;
   @Expose
   private BudgetType budgetType;
   @Expose
@@ -92,7 +92,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-  public Long getAmount() {
+  public Double getAmount() {
     return amount;
   }
 
@@ -133,6 +133,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -173,7 +174,7 @@ public class ProjectBudget implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
   }
 
-  public void setAmount(Long amount) {
+  public void setAmount(Double amount) {
     this.amount = amount;
   }
 

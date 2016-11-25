@@ -93,36 +93,35 @@ public class ProjectBudgetsValidator extends BaseValidator {
           this.addMissingField("draft");
         }
       }
-      if ((project.isCoreProject() || project.isCoFundedProject())) {
-        if (project.getBudgets() != null && project.getBudgets().size() > 0) {
-          long total = 0;
-          for (ProjectBudget projectBudget : project.getBudgets()) {
-            if (projectBudget != null) {
-              if (projectBudget.getAmount() != null) {
-                total = total + projectBudget.getAmount().longValue();
-              }
-
+      action.getFieldErrors().clear();
+      if (project.getBudgets() != null && project.getBudgets().size() > 0) {
+        long total = 0;
+        for (ProjectBudget projectBudget : project.getBudgets()) {
+          if (projectBudget != null) {
+            if (projectBudget.getAmount() != null) {
+              total = total + projectBudget.getAmount().longValue();
             }
 
           }
-          if (total == 0) {
-            this.addMessage(action.getText("projectBudgets.amount"));
-            int i = 0;
-            for (ProjectBudget projectBudget : project.getBudgets()) {
-              action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
-                InvalidFieldsMessages.EMPTYFIELD);
-              i++;
-            }
-          }
-        } else {
-          this.addMessage(action.getText("projectBudgets"));
-          action.getInvalidFields().put("list-project.budgets",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
+
         }
-
+        if (total == 0) {
+          this.addMessage(action.getText("projectBudgets.amount"));
+          int i = 0;
+          for (ProjectBudget projectBudget : project.getBudgets()) {
+            action.getInvalidFields().put("input-project.budgets[" + i + "].amount", InvalidFieldsMessages.EMPTYFIELD);
+            i++;
+          }
+        }
+      } else {
+        this.addMessage(action.getText("projectBudgets"));
+        action.getInvalidFields().put("list-project.budgets",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Budgets"}));
       }
 
+
       if (!action.getFieldErrors().isEmpty()) {
+        System.out.println(action.getFieldErrors());
         hasErros = true;
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {

@@ -892,7 +892,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getLocationsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
       new Class[] {String.class, Double.class, Double.class, String.class}, 0);
-    // Set<ProjectLocationElementType> letype = project.getProjectLocationElementTypes();
+      // Set<ProjectLocationElementType> letype = project.getProjectLocationElementTypes();
 
     // TODO: get all selected and show it without consuming to much space
     /*
@@ -1220,7 +1220,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     double totalGender = 0;
     if (budgets != null) {
       for (ProjectBudget projectBudget : budgets) {
-        long amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
         double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
 
         totalGender = totalGender + (amount * (gender / 100));
@@ -1260,8 +1260,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
    * @param type budget type (W1W2/Bilateral/W3/Center funds)
    * @return total budget in the year and type passed as parameters
    */
-  public long getTotalYear(int year, long type) {
-    long total = 0;
+  public double getTotalYear(int year, long type) {
+    double total = 0;
 
     for (ProjectBudget pb : project.getProjectBudgets().stream()
       .filter(

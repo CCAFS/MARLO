@@ -26,8 +26,8 @@
         <many-to-one name="fundingSource" class="org.cgiar.ccafs.marlo.data.model.FundingSource" fetch="select">
             <column name="funding_source_id" not-null="true" />
         </many-to-one>
-        <property name="amount" type="java.lang.Long">
-            <column name="amount" />
+        <property name="amount" type="java.lang.Double">
+            <column name="amount"  precision="30" scale="0" />
         </property>
        
        <many-to-one name="budgetType" class="org.cgiar.ccafs.marlo.data.model.BudgetType" fetch="select">
@@ -37,7 +37,7 @@
             <column name="year" not-null="true" />
         </property>
         <property name="genderPercentage" type="java.lang.Double">
-            <column name="gender_percentage" precision="22" scale="0" />
+            <column name="gender_percentage" precision="10" scale="0" />
         </property>
        
         <property name="active" type="boolean">
