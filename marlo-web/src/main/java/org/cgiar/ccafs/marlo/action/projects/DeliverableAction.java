@@ -564,7 +564,7 @@ public class DeliverableAction extends BaseAction {
       if (this.isPlanningActive()) {
         if (this.isDeliverableNew(deliverableID)) {
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+          status.remove(ProjectStatusEnum.Extended.getStatusId());
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
           // if (deliverable.getyea) {
@@ -772,10 +772,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
