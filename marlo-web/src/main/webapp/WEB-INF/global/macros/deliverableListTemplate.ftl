@@ -7,7 +7,7 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
         <th id="deliverableTitles" >[@s.text name="project.deliverableList.deliverableName" /]</th>
-        <th id="deliverableType">[@s.text name="project.deliverableList.type" /]</th>
+        <th id="deliverableType">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY" title="[@s.text name="project.deliverableList.expectedYear" /]">Year</th>
         <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
