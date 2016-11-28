@@ -48,7 +48,7 @@
 [#-- Last update message --]
 [#if recordsList?has_content]
 [#assign lastRecord = recordsList[0] /]
-<div id="lastUpdateMessage" class="text-right"> 
+<span id="lastUpdateMessage" class="pull-right"> 
   Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
-</div>
+</span>
 [/#if]
