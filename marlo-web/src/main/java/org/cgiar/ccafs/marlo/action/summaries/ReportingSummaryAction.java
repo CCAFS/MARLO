@@ -862,7 +862,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("Full_Project_Report-");
-    fileName.append(loggedCrp.getName() + "-");
+    fileName.append(project.getCrp().getName() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
