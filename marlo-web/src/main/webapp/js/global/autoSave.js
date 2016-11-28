@@ -107,6 +107,10 @@ function changeDetected(e) {
 
 function validateThisSection() {
   var $sectionMenu = $('#secondaryMenu .currentSection');
+  if(!$sectionMenu.exists()) {
+    return;
+  }
+
   var sectionName = ($sectionMenu.attr('id')).split("-")[1];
 
   var validateService = "";

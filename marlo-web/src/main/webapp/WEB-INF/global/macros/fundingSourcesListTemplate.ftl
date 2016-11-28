@@ -23,15 +23,15 @@
         <tr>
         [#-- ID --]
         <td class="projectId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">F${project.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">F${project.id}</a>
         </td>
           [#-- Funding source Title --]
           <td class="left"> 
             [#if project.title?has_content]
-              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
+              <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${project.title}">
               [#if project.title?length < 120] ${project.title}</a> [#else] [@utilities.wordCutter string=project.title maxPos=120 /]...</a> [/#if]
             [#else]
-              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
+              <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='fundingSourceID']${project.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">
                 [@s.text name="projectsList.title.none" /]
               </a>
             [/#if]

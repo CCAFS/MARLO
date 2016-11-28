@@ -23,7 +23,7 @@
 [/#if]
 
 [#-- Privileges Message --]
-[#if !canEdit && !transaction?? && !submission?? ]
+[#if !canEdit && !(transaction??) && !(submission?has_content) ]
   <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if] 
 
