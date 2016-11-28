@@ -787,16 +787,16 @@ public class Project implements java.io.Serializable, IAuditLog {
   public List<Integer> getYears(int year) {
     List<Integer> allYears = new ArrayList<>();
     if (startDate != null && endDate != null) {
-      Calendar calendarStart = Calendar.getInstance();
-      calendarStart.setTime(startDate);
+
       Calendar calendarEnd = Calendar.getInstance();
       calendarEnd.setTime(endDate);
 
-      while (year <= calendarEnd.get(Calendar.YEAR)) {
+      while (year < calendarEnd.get(Calendar.YEAR)) {
+        year++;
         // Adding the year to the list.
-        allYears.add(calendarStart.get(Calendar.YEAR));
+        allYears.add(year);
         // Adding a year (365 days) to the start date.
-        calendarStart.add(Calendar.YEAR, 1);
+
       }
     }
 
