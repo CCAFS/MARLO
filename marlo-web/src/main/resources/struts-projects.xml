@@ -17,52 +17,88 @@
 				<param name="cancel">true</param>
 			</result>
 		</action>
+
+
+		<action name="reportingSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
 		
-		
-		  <action name="reportingSummary"
-      class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
+		<action name="leadProjectInstitutionsSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersSummaryAction">
       <result name="success" type="stream">
-         <param name="inputName">inputStream</param>
-          <param name="contentType">${contentType}</param>
-          <param name="contentDisposition">filename="${fileName}"</param>
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
       </result>
     </action>
-		
-		
-		
+    
+    <action name="projectPartnersSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+    <action name="expectedDeliverablesSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.ExpectedDeliverablesSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+    <action name="budgetPerPartnersSummary"
+      class="org.cgiar.ccafs.marlo.action.summaries.BudgetPerPartnersSummaryAction">
+      <result name="success" type="stream">
+        <param name="inputName">inputStream</param>             
+        <param name="contentType">${contentType}</param>               
+        <param name="contentDisposition">filename="${fileName}"</param>
+      </result>
+    </action>
+    
+
 		<action name="{crp}/addNewCoreProject" method="addCoreProject"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
-      <interceptor-ref name="projectListStack" />
-      <result name="input">/WEB-INF/views/projects/projectsList.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/description</param>
-        <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
-      </result>
-      
-    </action>
-    
-    
-     <action name="{crp}/deleteProject" method="delete" class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
-       <interceptor-ref name="projectListStack" />
-      <result name="input">/WEB-INF/views/projects/projectsList.ftl
-      </result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/projectsList</param>
-      </result>
-    </action>
-    
-    <action name="{crp}/addNewBilateralProject" method="addBilateralProject"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
-      <interceptor-ref name="projectListStack" />
-      <result name="input">/WEB-INF/views/projects/projectsList.ftl
-      </result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/description</param>
-        <param name="projectID">${projectID}</param>
-        <param name="edit">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+			<interceptor-ref name="projectListStack" />
+			<result name="input">/WEB-INF/views/projects/projectsList.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/description</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+
+		</action>
+
+
+		<action name="{crp}/deleteProject" method="delete"
+			class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+			<interceptor-ref name="projectListStack" />
+			<result name="input">/WEB-INF/views/projects/projectsList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/projectsList</param>
+			</result>
+		</action>
+
+		<action name="{crp}/addNewBilateralProject" method="addBilateralProject"
+			class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+			<interceptor-ref name="projectListStack" />
+			<result name="input">/WEB-INF/views/projects/projectsList.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/description</param>
+				<param name="projectID">${projectID}</param>
+				<param name="edit">true</param>
+			</result>
+		</action>
 
 		<action name="{crp}/description"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
@@ -81,10 +117,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/partners"
@@ -104,10 +140,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/locations"
@@ -127,10 +163,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/contributionsCrpList"
@@ -139,10 +175,10 @@
 			<result name="input">/WEB-INF/views/projects/projectContributionsCrpList.ftl
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 
@@ -169,16 +205,17 @@
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
 		</action>
-		
-		<action name="{crp}/partnerSave" class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
-      <result name="input">/WEB-INF/global/pages/partnersSave.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/partnerSave</param>
-        <param name="projectID">${projectID}</param>
-        <param name="messageSent">${messageSent}</param>
-      </result>
-    </action>
-		
+
+		<action name="{crp}/partnerSave"
+			class="org.cgiar.ccafs.marlo.action.projects.PartnersSaveAction">
+			<result name="input">/WEB-INF/global/pages/partnersSave.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/partnerSave</param>
+				<param name="projectID">${projectID}</param>
+				<param name="messageSent">${messageSent}</param>
+			</result>
+		</action>
+
 
 		<action name="{crp}/contributionCrp"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomeAction">
@@ -200,10 +237,10 @@
 				<param name="projectOutcomeID">${projectOutcomeID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/otherContributions"
@@ -223,10 +260,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/deliverableList"
@@ -235,10 +272,10 @@
 			<result name="input">/WEB-INF/views/projects/deliverableList.ftl
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/addNewDeliverable" method="add"
@@ -252,10 +289,10 @@
 				<param name="edit">true</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/deleteDeliverable" method="delete"
@@ -268,10 +305,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/deliverable"
@@ -287,10 +324,10 @@
 				<param name="edit">true</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 			<!-- <result name="next" type="redirectAction"> <param name="actionName">impactPathway</param> 
 				<param name="deliverableID">${deliverable.id}</param> </result> <result name="cancel" 
 				type="redirectAction"> <param name="actionName">deliverable</param> <param 
@@ -315,10 +352,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/budgetByCoAs"
@@ -338,10 +375,10 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-      </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
 		<action name="{crp}/activities"
@@ -361,21 +398,23 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 			<result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="projectID">${projectID}</param>
-		  </result>
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+				<param name="projectID">${projectID}</param>
+			</result>
 		</action>
 
-    <action name="{crp}/submit" class="org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction">
-      <result name="input">/WEB-INF/views/projects/projectSubmission.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/submit</param>
-        <param name="projectID">${projectID}</param>        
-      </result>
-    </action>
-    
-    
+		<action name="{crp}/submit"
+			class="org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction">
+			<result name="input">/WEB-INF/views/projects/projectSubmission.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">${crpSession}/submit</param>
+				<param name="projectID">${projectID}</param>
+			</result>
+		</action>
+
+
 
 	</package>
 </struts>

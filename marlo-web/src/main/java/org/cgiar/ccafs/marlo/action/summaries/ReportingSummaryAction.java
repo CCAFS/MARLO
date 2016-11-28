@@ -183,7 +183,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
-        System.out.println("Pentaho SubReports: " + hm);
+        // Uncomment to see which Subreports are detecting the method getAllSubreports
+        // System.out.println("Pentaho SubReports: " + hm);
 
         // get project leader
         ProjectPartner projectLeader = project.getLeader();
