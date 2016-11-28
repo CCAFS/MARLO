@@ -68,8 +68,7 @@
   [#-- New Expected Year - Extended = 4 --]
   [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
-    ${project.getYears(deliverable.year)}
-    [@customForm.select name="deliverable.newExpectedYear" label=""  listName="project.getAllYears()" header=false  multiple=false required=true  className="yearExpected" editable=editable/]
+    [@customForm.select name="deliverable.newExpectedYear" label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearExpected" editable=editable/]
   </div> 
   <div class="clearfix"></div>
 </div>
