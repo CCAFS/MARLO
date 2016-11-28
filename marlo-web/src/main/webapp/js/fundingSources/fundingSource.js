@@ -1,13 +1,15 @@
 $(document).ready(init);
 
 function init() {
-// Setting Currency Inputs
+
+  // Setting Currency Inputs
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
   $('form select').select2({
     width: "100%"
   });
-// When select center as Funding Window----------
+
+  // When select center as Funding Window----------
   var lastDonor = -1;
   $(".type").on("change", function() {
     var option = $(this).find("option:selected");
@@ -32,6 +34,40 @@ function init() {
         institutionSelect.trigger('change.select2');
       }
     }
+  });
+
+  // Set file upload (blueimp-tmpl)
+  var $uploadBlock = $('.fileUploadContainer');
+  var $fileUpload = $uploadBlock.find('.upload')
+  $fileUpload.fileupload({
+      dataType: 'json',
+      start: function(e) {
+        $uploadBlock.addClass('blockLoading');
+      },
+      stop: function(e) {
+        $uploadBlock.removeClass('blockLoading');
+      },
+      done: function(e,data) {
+        var r = data.result;
+        console.log(r);
+        if(r.saved) {
+          $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
+          $uploadBlock.find('.textMessage').show();
+          $uploadBlock.find('.fileUpload').hide();
+          // Set file ID
+          $('input#fileID').val(r.fileID);
+        }
+      },
+      progressall: function(e,data) {
+        var progress = parseInt(data.loaded / data.total * 100, 10);
+      }
+  });
+
+  $uploadBlock.find('.removeIcon').on('click', function() {
+    $uploadBlock.find('.textMessage .contentResult').html("");
+    $uploadBlock.find('.textMessage').hide();
+    $uploadBlock.find('.fileUpload').show();
+    $('input#fileID').val('');
   });
 }
 

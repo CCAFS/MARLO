@@ -64,6 +64,9 @@
           <td>
             [#attempt]
               ${(deliverable.statusName)!'none'}
+              [#if deliverable.status?? && deliverable.status==4 && deliverable.newExpectedYear??]
+               to ${deliverable.newExpectedYear}
+              [/#if]
             [#recover]
               none
             [/#attempt]

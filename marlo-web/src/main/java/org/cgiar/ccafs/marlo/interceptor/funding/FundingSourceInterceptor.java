@@ -41,7 +41,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
-  private long projectId = 0;
+  private long fundingSourceID = 0;
 
   private CrpManager crpManager;
   private FundingSourceManager fundingSourceManager;
@@ -77,9 +77,9 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
     String projectParameter = ((String[]) parameters.get(APConstants.FUNDING_SOURCE_REQUEST_ID))[0];
 
-    projectId = Long.parseLong(projectParameter);
+    fundingSourceID = Long.parseLong(projectParameter);
 
-    FundingSource project = fundingSourceManager.getFundingSourceById(projectId);
+    FundingSource project = fundingSourceManager.getFundingSourceById(fundingSourceID);
 
     if (project != null) {
       String params[] = {crp.getAcronym(), project.getId() + ""};

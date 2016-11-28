@@ -128,7 +128,7 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro userItem element index name userRole template=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
@@ -148,7 +148,7 @@
 [/#macro]
 
 [#macro programItem element index name template=false]
-  [#assign customName = "${name}[${index}]" /]
+  [#local customName = "${name}[${index}]" /]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]

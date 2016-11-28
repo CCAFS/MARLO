@@ -13,14 +13,14 @@
 [#import "/WEB-INF/global/macros/projectsListTemplate.ftl" as projectList /]
 
 [#assign timeline = [
-  {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"}
-  
+  {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
+  {"id":"2", "startDate":"12/01/2016", "endDate":"12/02/2016","what":"Create new projects according to new budget distribution; Assign W1/W2 budget to all projects.","who":"Finance Manager"},
+  {"id":"3", "startDate":"12/01/2016 ", "endDate":"12/06/2016","what":"Pre-set projects portfolio","who":"Flagship Leaders and Regional Program Leaders"},
+  {"id":"4", "startDate":"12/07/2016 ", "endDate":"01/16/2017","what":"MARLO opens for planning (Project Leaders) ","who":"Project Leaders"},
+  {"id":"5", "startDate":"12/19/2016", "endDate":"01/10/2017","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"Flagship Leaders and Regional Program Leaders"},
+  {"id":"6", "startDate":"01/11/2017", "endDate":"01/13/2017","what":"PLs to make changes accordingly and submit the project","who":"Project Leaders"},
+  {"id":"5", "startDate":"01/16/2017", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
 ]/]
-[#--  --
-  {"id":"2", "startDate":"11/28/2016", "endDate":"12/9/2016","what":"MARLO opens for planning (Project Leaders)","who":"Project Leaders"},
-  {"id":"3", "startDate":"12/12/2016 ", "endDate":"12/14/2016","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"MLs"},
-  {"id":"4", "startDate":"12/15/2016", "endDate":"12/21/2016","what":"PLs to make changes accordingly and resubmit the project","who":"PLs"},
-  {"id":"5", "startDate":"12/22/2016", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"} --]
 
 
 <section class="marlo-content">
