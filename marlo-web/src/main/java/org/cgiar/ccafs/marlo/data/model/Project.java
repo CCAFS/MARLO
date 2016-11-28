@@ -329,26 +329,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return allYears;
   }
 
-  public List<Integer> getAllYears(int year) {
-    List<Integer> allYears = new ArrayList<>();
-    if (startDate != null && endDate != null) {
-      Calendar calendarStart = Calendar.getInstance();
-      calendarStart.setTime(startDate);
-      Calendar calendarEnd = Calendar.getInstance();
-      calendarEnd.setTime(endDate);
-
-      while (year <= calendarEnd.get(Calendar.YEAR)) {
-        // Adding the year to the list.
-        allYears.add(calendarStart.get(Calendar.YEAR));
-        // Adding a year (365 days) to the start date.
-        calendarStart.add(Calendar.YEAR, 1);
-      }
-    }
-
-    return allYears;
-  }
-
-
   public FileDB getAnnualReportToDonnor() {
     return annualReportToDonnor;
   }
@@ -368,23 +348,24 @@ public class Project implements java.io.Serializable, IAuditLog {
     return total;
   }
 
+
   public FileDB getBilateralContractName() {
     return bilateralContractName;
   }
-
 
   public List<ProjectBudget> getBudgets() {
     return budgets;
   }
 
+
   public List<ProjectBudgetsCluserActvity> getBudgetsCluserActvities() {
     return budgetsCluserActvities;
   }
 
-
   public List<Activity> getClosedProjectActivities() {
     return closedProjectActivities;
   }
+
 
   public List<ProjectClusterActivity> getClusterActivities() {
     return clusterActivities;
@@ -442,10 +423,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return total;
   }
 
-
   public Date getCreateDate() {
     return createDate;
   }
+
 
   public User getCreatedBy() {
     return this.createdBy;
@@ -471,10 +452,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return crp;
   }
 
-
   public List<CrpClusterOfActivity> getCrpActivities() {
     return crpActivities;
   }
+
 
   public Set<Deliverable> getDeliverables() {
     return deliverables;
@@ -488,10 +469,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.endDate;
   }
 
-
   public List<CrpProgram> getFlagships() {
     return flagships;
   }
+
 
   public String getFlagshipValue() {
     return flagshipValue;
@@ -592,7 +573,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     return locationsData;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -609,11 +589,11 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return this.modifiedBy;
   }
-
 
   public Boolean getNoRegional() {
     return noRegional;
@@ -634,19 +614,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return partners;
   }
 
+
   public Date getPresetDate() {
     return presetDate;
   }
-
 
   public List<Activity> getProjectActivities() {
     return projectActivities;
   }
 
+
   public Set<ProjectBudget> getProjectBudgetCofinances() {
     return projectBudgetCofinances;
   }
-
 
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
@@ -662,19 +642,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectClusterActivities;
   }
 
+
   public ProjectComponentLesson getProjectComponentLesson() {
     return projectComponentLesson;
   }
-
 
   public ProjectComponentLesson getProjectComponentLessonPreview() {
     return projectComponentLessonPreview;
   }
 
+
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
-
 
   public Set<ProjectCrpContribution> getProjectCrpContributions() {
     return projectCrpContributions;
@@ -685,10 +665,10 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectDeliverables;
   }
 
+
   public Set<ProjectFocus> getProjectFocuses() {
     return this.projectFocuses;
   }
-
 
   public Set<ProjectLocationElementType> getProjectLocationElementTypes() {
     return projectLocationElementTypes;
@@ -699,28 +679,28 @@ public class Project implements java.io.Serializable, IAuditLog {
     return projectLocations;
   }
 
+
   public Set<ProjectOutcome> getProjectOutcomes() {
     return projectOutcomes;
   }
-
 
   public Set<ProjectPartner> getProjectPartners() {
     return projectPartners;
   }
 
+
   public Set<ProjectScope> getProjectScopes() {
     return projectScopes;
   }
-
 
   public List<CrpProgram> getRegions() {
     return regions;
   }
 
+
   public String getRegionsValue() {
     return regionsValue;
   }
-
 
   public Boolean getRequiresWorkplanUpload() {
     return this.requiresWorkplanUpload;
@@ -741,6 +721,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return sectionStatuses;
   }
 
+
   public String getStandardIdentifier(int typeCodification) {
     StringBuilder result = new StringBuilder();
 
@@ -760,19 +741,19 @@ public class Project implements java.io.Serializable, IAuditLog {
     return result.toString();
   }
 
-
   public Date getStartDate() {
     return this.startDate;
   }
+
 
   public Long getStatus() {
     return status;
   }
 
-
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getSummary() {
     return this.summary;
@@ -801,6 +782,25 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   public FileDB getWorkplan() {
     return workplan;
+  }
+
+  public List<Integer> getYears(int year) {
+    List<Integer> allYears = new ArrayList<>();
+    if (startDate != null && endDate != null) {
+      Calendar calendarStart = Calendar.getInstance();
+      calendarStart.setTime(startDate);
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(endDate);
+
+      while (year <= calendarEnd.get(Calendar.YEAR)) {
+        // Adding the year to the list.
+        allYears.add(calendarStart.get(Calendar.YEAR));
+        // Adding a year (365 days) to the start date.
+        calendarStart.add(Calendar.YEAR, 1);
+      }
+    }
+
+    return allYears;
   }
 
 
