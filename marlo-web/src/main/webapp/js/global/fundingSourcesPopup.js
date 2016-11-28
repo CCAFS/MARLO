@@ -224,7 +224,7 @@ $(document).ready(
         // Set dates
         date('#startDate', '#endDate');
 
-        // Set dropzone
+        // Set file upload (blueimp-tmpl)
 
         var $uploadBlock = $('.fileUploadContainer');
         var $fileUpload = $uploadBlock.find('.upload')

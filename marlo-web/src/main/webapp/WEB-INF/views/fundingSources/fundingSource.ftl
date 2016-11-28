@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = ["${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
@@ -62,10 +62,16 @@
       [#-- Upload bilateral contract --]
       <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
+        [#assign hasFile = fundingSource.file?? /]
+        <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.file.id)!}" />
         [#-- Input File --]
-        <div class="fileUpload"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
         [#-- Uploaded File --]
-        <p class="fileUploaded textMessage checked" style="display:none"><span class="contentResult">{{contentResult}}</span> <span class="removeIcon"> </span> </p>
+        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+          <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!(fundingSource.file.id +' - No file name')} [/#if]</span> 
+          <span class="removeIcon"> </span> 
+        </p>
+        
       </div>
        
       [#-- Agreement status and total budget --]

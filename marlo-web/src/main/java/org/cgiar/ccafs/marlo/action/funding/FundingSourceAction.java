@@ -84,7 +84,7 @@ public class FundingSourceAction extends BaseAction {
   private String fileFileName;
 
 
-  private long projectID;
+  private long fundingSourceID;
 
 
   private FundingSource fundingSource;
@@ -215,6 +215,10 @@ public class FundingSourceAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
   }
 
+  public long getFundingSourceID() {
+    return fundingSourceID;
+  }
+
   private String getFundingSourceRelativePath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
@@ -243,10 +247,6 @@ public class FundingSourceAction extends BaseAction {
     return loggedCrp;
   }
 
-  public long getProjectID() {
-    return projectID;
-  }
-
   public Map<String, String> getStatus() {
     return status;
   }
@@ -260,7 +260,8 @@ public class FundingSourceAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
-    projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
+    fundingSourceID =
+      Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
 
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -277,7 +278,7 @@ public class FundingSourceAction extends BaseAction {
       }
 
     } else {
-      fundingSource = fundingSourceManager.getFundingSourceById(projectID);
+      fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     }
 
 
@@ -304,7 +305,7 @@ public class FundingSourceAction extends BaseAction {
         reader.close();
 
         this.setDraft(true);
-        FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(projectID);
+        FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
         fundingSource.setProjectBudgetsList(
           fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
 
@@ -489,6 +490,10 @@ public class FundingSourceAction extends BaseAction {
   }
 
 
+  public void setFundingSourceID(long fundingSourceID) {
+    this.fundingSourceID = fundingSourceID;
+  }
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
@@ -499,10 +504,6 @@ public class FundingSourceAction extends BaseAction {
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-  public void setProjectID(long projectID) {
-    this.projectID = projectID;
   }
 
   public void setStatus(Map<String, String> status) {

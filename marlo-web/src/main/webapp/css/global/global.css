@@ -2196,7 +2196,7 @@ h3.contentSubTitle {
 
 .buttons {
   margin: 30px 0 0px 0;
-  height: 33px;
+  /* height: 33px; */
 }
 
 .borderBox .buttons, .simpleBox .buttons{
