@@ -1,0 +1,1 @@
+update loc_element_types set is_active=0 where id=12;

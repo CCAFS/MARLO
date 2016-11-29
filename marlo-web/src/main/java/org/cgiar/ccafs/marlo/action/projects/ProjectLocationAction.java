@@ -398,6 +398,8 @@ public class ProjectLocationAction extends BaseAction {
       if (project.getLocationsData() != null) {
         project.getLocationsData().clear();
       }
+
+      project.setLocationGlobal(false);
     }
 
   }
@@ -654,7 +656,8 @@ public class ProjectLocationAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        return REDIRECT;
       }
     }
     return SUCCESS;
