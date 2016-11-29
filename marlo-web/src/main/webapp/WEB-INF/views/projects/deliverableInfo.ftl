@@ -62,6 +62,7 @@
   <div class="col-md-4 form-group">
     [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
     [#assign canNotEditYear = ( ((deliverable.year??) && (deliverable.year == currentCycleYear)) || (deliverable.status == 4)  || (deliverable.status == 5) ) /]
+    [#if canNotEditYear] <input type="hidden" name="deliverable.year" value="${(deliverable.year)!}"/>  [/#if]
     [@customForm.select name="deliverable.year" label=""  i18nkey="project.deliverable.generalInformation.year" listName="project.allYears" header=false  multiple=false required=true  className="yearExpected" disabled=canNotEditYear editable=editable/]
     [#if !editable]${(deliverable.year)!}[/#if]
   </div>
