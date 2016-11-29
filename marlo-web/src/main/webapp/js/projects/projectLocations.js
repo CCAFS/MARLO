@@ -337,7 +337,7 @@ function addLocationForm(parent,latitude,longitude,name) {
           $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
           countryName = getResultByType(data.results[0], 'country').long_name;
           // ADD country into countries list
-          countries.push(countryName);
+          // countries.push(countryName);
         } else {
           console.log(data.status);
         }
@@ -768,33 +768,35 @@ function notify(text) {
 
 function mappingCountries() {
   var query = "";
+  if(countries.length > 0) {
 
-  $.each(countries, function(i,c) {
-    console.log(countries);
-    if(i == countries.length - 1) {
-      query = query + "'" + c + "'";
-    } else {
-      query = query + "'" + c + "',";
-    }
-  });
+    $.each(countries, function(i,c) {
+      console.log(countries);
+      if(i == countries.length - 1) {
+        query = query + "'" + c + "'";
+      } else {
+        query = query + "'" + c + "',";
+      }
+    });
 
-  console.log(query);
-  var FT_Options = {
-      suppressInfoWindows: true,
-      query: {
-          select: 'kml_4326',
-          from: 420419,
-          where: "'name_0' IN (" + query + ") "
-      },
-      styles: [
-        {
-          polygonOptions: {
-              fillColor: "#2E2EFE",
-              fillOpacity: 0.35
+    console.log(query);
+    var FT_Options = {
+        suppressInfoWindows: true,
+        query: {
+            select: 'kml_4326',
+            from: 420419,
+            where: "'name_0' IN (" + query + ") "
+        },
+        styles: [
+          {
+            polygonOptions: {
+                fillColor: "#2E2EFE",
+                fillOpacity: 0.35
+            }
           }
-        }
-      ]
-  };
-  layer = new google.maps.FusionTablesLayer(FT_Options);
-  layer.setMap(map);
+        ]
+    };
+    layer = new google.maps.FusionTablesLayer(FT_Options);
+    layer.setMap(map);
+  }
 }
