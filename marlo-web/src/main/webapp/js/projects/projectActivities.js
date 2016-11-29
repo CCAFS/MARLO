@@ -7,6 +7,12 @@ function init() {
     width: "100%"
   });
 
+  $(".deliverableList").select2({
+      templateResult: formatState,
+      templateSelection: formatState,
+      width: "100%"
+  });
+
   // Ids for inputs date
   $("form input.startDate").each(function(index,item) {
     $(item).attr("id", "startDate-" + index);
@@ -127,7 +133,7 @@ function addDeliverable() {
   }
 
   // Set deliverable parameters
-  $item.find(".name").attr("title", $(option).text()).tooltip();
+  $item.find(".name").attr("title", $(option).text());
   $item.find(".name").html(v);
   $item.find(".id").val(option.val());
   $list.append($item);
@@ -218,3 +224,9 @@ function checkItems(block) {
     $(block).parent().find('p.inf').fadeOut();
   }
 }
+
+function formatState(state) {
+  var $state = $("<span>" + state.text + "</span>");
+  return $state;
+
+};
