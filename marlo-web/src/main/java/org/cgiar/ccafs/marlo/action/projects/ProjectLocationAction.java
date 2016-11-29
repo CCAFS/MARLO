@@ -382,6 +382,7 @@ public class ProjectLocationAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setProjectLocations(projectDb.getProjectLocations());
+        project.setLocationsData(this.getProjectLocationsData());
         reader.close();
         this.setDraft(true);
       } else {
