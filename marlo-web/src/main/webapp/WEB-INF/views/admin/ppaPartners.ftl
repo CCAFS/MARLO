@@ -80,8 +80,11 @@
 		<span class="title col-md-11">${(ppaPartners.institution.composedName)!'Null'} </span>
 		<input class="institutionId" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].institution.id" value="${(ppaPartners.institution.id)!'null'}"/>
 		<input class="id" type="hidden" name="loggedCrp.crpInstitutionsPartners[${index}].id" value="${(ppaPartners.id)!}"/>
-		[#if editable]
+		[#if editable && ppaPartners?hasContent && action.canBeDeleted(ppaPartners.id,ppaPartners.class.name) ]
 		<span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
+		[/#if]
+		[#if  !ppaPartners?hasContent]
+		  <span class="delete col-md-1 glyphicon glyphicon-remove red" ></span>
 		[/#if]
 	</div>
 [/#macro]
