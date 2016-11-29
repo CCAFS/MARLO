@@ -19,8 +19,9 @@
 		</action>
 
 
-		<action name="reportingSummary"
+		<action name="{crp}/reportingSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
+			 <interceptor-ref name="homeStack"/>
 			<result name="success" type="stream">
 				<param name="inputName">inputStream</param>
 				<param name="contentType">${contentType}</param>
@@ -28,8 +29,9 @@
 			</result>
 		</action>
 		
-		<action name="leadProjectInstitutionsSummary"
+		<action name="{crp}/leadProjectInstitutionsSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersSummaryAction">
+         <interceptor-ref name="homeStack"/>
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
@@ -37,8 +39,9 @@
       </result>
     </action>
     
-    <action name="projectPartnersSummary"
+    <action name="{crp}/projectPartnersSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsSummaryAction">
+         <interceptor-ref name="homeStack"/>
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
@@ -46,8 +49,9 @@
       </result>
     </action>
     
-    <action name="expectedDeliverablesSummary"
+    <action name="{crp}/expectedDeliverablesSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.ExpectedDeliverablesSummaryAction">
+         <interceptor-ref name="homeStack"/>
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
@@ -55,8 +59,9 @@
       </result>
     </action>
     
-    <action name="budgetPerPartnersSummary"
+    <action name="{crp}/budgetPerPartnersSummary"
       class="org.cgiar.ccafs.marlo.action.summaries.BudgetPerPartnersSummaryAction">
+         <interceptor-ref name="homeStack"/>
       <result name="success" type="stream">
         <param name="inputName">inputStream</param>             
         <param name="contentType">${contentType}</param>               
