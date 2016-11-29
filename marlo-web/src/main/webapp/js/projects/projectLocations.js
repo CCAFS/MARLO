@@ -33,16 +33,19 @@ function init() {
   })
 
   // validate if regions list is empty
-  if($(".selectWrapper").find(".locationLevel").length > 0) {
-    $(".map").show('slow', function() {
-    });
-  } else {
-    $(".map").hide();
-  }
+  /*
+   * if($(".selectWrapper").find(".locationLevel").length > 0) { $(".map").show('slow', function() { }); } else {
+   * $(".map").hide(); }
+   */
 
   /* Declaring Events */
   attachEvents();
-  calculateWidthSelect();
+
+  /* Array countries */
+  $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
+    countries.push($(e).find(".locElementName").val());
+  });
+  // calculateWidthSelect();
 }
 
 function attachEvents() {
@@ -50,12 +53,10 @@ function attachEvents() {
 // ADD a location level element-Event
   $('.selectLocationLevel').on('change', function() {
 
-    if($(".selectWrapper").find(".locationLevel").length <= 0) {
-      var mapDiv = document.getElementById('map');
-      $(".map").show("slow", function() {
-        initMap();
-      });
-    }
+    /*
+     * if($(".selectWrapper").find(".locationLevel").length <= 0) { var mapDiv = document.getElementById('map');
+     * $(".map").show("slow", function() { initMap(); }); }
+     */
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
       if($(".selectWrapper").find("input[value=" + option.val().split("-")[0] + "]").exists()) {
@@ -71,11 +72,16 @@ function attachEvents() {
 // ADD a location element by select list-Event
   $('.selectLocation').on('change', function() {
     var option = $(this).find("option:selected");
+    console.log(option);
     var content = $(this).parent().find(".optionSelect-content");
     if($(content).find("input[value=" + option.val() + "]").exists()) {
       var text = option.html() + ' already exists in this list';
       notify(text);
     } else {
+      if(option.parents(".locationLevel").find(".locationLevelName").val() == "Country") {
+        // countries.push(option.text());
+        // mappingCountries();
+      }
       addLocationList($(this).parent(), option);
     }
 
@@ -93,7 +99,7 @@ function attachEvents() {
           addLocationForm($(this).parent().parent(), latitude, longitude, name);
         }
       } else {
-        addLocationForm($(this).parent().parent(), 9, -8, name);
+        addLocationForm($(this).parent().parent(), "", "", name);
       }
     } else {
       $(this).parent().find(".name").addClass('fieldError');
@@ -111,7 +117,7 @@ function attachEvents() {
   $(".allCountries").on("change", checkboxAllCountries);
 
   // Collapsible
-  $('.locationLevel-option').on(
+  $('.locationLevel-optionSelect').on(
       'click',
       function() {
         var content = $(this).parent().parent().find('.locationLevel-optionContent');
@@ -151,8 +157,18 @@ function attachEvents() {
     var $thisLabel = $(this);
     $thisLabel.siblings().removeClass('radio-checked');
     $thisLabel.addClass('radio-checked');
-    $t.val(value);
 
+  });
+
+  $("input[name='project.locationGlobal']").on("change", function() {
+    var $this = $(this);
+    if($this.val() == "true") {
+      $this.removeAttr("checked");
+      $this.val("false");
+    } else {
+      $this.attr("checked", true);
+      $this.val("true");
+    }
   });
 
 }
@@ -197,14 +213,8 @@ function calculateWidthSelect() {
 
 function checkboxAllCountries() {
   $(this).val(true);
-  var parent = $(this).parent().parent();
+  var parent = $(this).parents(".locationLevel");
   if($(this).is(":checked") == true) {
-    /*
-     * $.each(countries, function(i,c) { console.log(c); // Draw country in the map }); var FT_Options = {
-     * suppressInfoWindows: true, query: { from: FT_TableID, select: 'kml_4326', where: "'name_0' = '" + "Colombia" +
-     * "';" }, styles: [ { polygonOptions: { fillColor: "#FF0000", fillOpacity: 0.35 } } ] }; layer = new
-     * google.maps.FusionTablesLayer(FT_Options); layer.setMap(map);
-     */
 
     parent.find(".selectLocation").attr("disabled", true);
     parent.find("input.form-control").attr("disabled", true);
@@ -311,6 +321,10 @@ function addLocationForm(parent,latitude,longitude,name) {
   var $list = parent.find(".optionSelect-content");
   var $item = $('#location-template').clone(true).removeAttr("id");
   countID++;
+  if(latitude == "" && longitude == "") {
+    latitude = map.getCenter().lat();
+    longitude = map.getCenter().lng();
+  }
   // Ajax for country name
   $.ajax({
       'url': 'https://maps.googleapis.com/maps/api/geocode/json',
@@ -330,10 +344,9 @@ function addLocationForm(parent,latitude,longitude,name) {
       },
       complete: function(data) {
         $item.attr("id", "location-" + (countID));
-        $item.find('.locationName')
-            .html(
-                '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude + ', ' + longitude
-                    + ' )</span> ');
+        $item.find('.locationName').html(
+            '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude.toFixed(4) + ', '
+                + longitude.toFixed(4) + ' )</span> ');
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
         $item.find('.locElementName').val(name);
@@ -376,10 +389,9 @@ function removeLocationLevelItem() {
     updateIndex();
     calculateWidthSelect();
   });
-  if($(".selectWrapper").find(".locationLevel").length <= 1) {
-    $(".map").hide('slow');
-    deleteMarkers();
-  }
+  /*
+   * if($(".selectWrapper").find(".locationLevel").length <= 1) { $(".map").hide('slow'); deleteMarkers(); }
+   */
 }
 
 // Remove a location element-Function
@@ -461,7 +473,7 @@ function loadScript() {
               if(data.status == 'OK') {
                 countryName = getResultByType(data.results[0], 'country').long_name;
                 // ADD country into countries list
-                countries.push(countryName);
+                // countries.push(countryName);
               } else {
                 console.log(data.status);
               }
@@ -579,6 +591,8 @@ function initMap() {
     console.log(markers[markers.length - 1].getPosition());
   }
 
+  mappingCountries();
+
 }
 
 // Map events
@@ -586,7 +600,7 @@ function initMap() {
 function addMarker(map,idMarker,latitude,longitude,sites,isList) {
   // Close info window
   infoWindow.close();
-
+  console.log(latitude);
   var drag;
   if(editable && isList == "false") {
     drag = true;
@@ -625,8 +639,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
     var longitude = markerLatLng.lng();
     $item.find("input.geoLongitude").val(longitude);
     $item.find("input.geoLatitude").val(latitude);
-    $item.find("span.lPos").html(
-        " (" + latitude.toString().substring(0, 7) + ", " + longitude.toString().substring(0, 7) + ")");
+    $item.find("span.lPos").html(" (" + latitude.toFixed(4) + ", " + longitude.toFixed(4) + ")");
     $item.find(".locations").addClass("selected");
   });
 
@@ -751,4 +764,37 @@ function notify(text) {
   notyOptions.text = text;
   notyOptions.type = 'alert';
   noty(notyOptions);
+}
+
+function mappingCountries() {
+  var query = "";
+
+  $.each(countries, function(i,c) {
+    console.log(countries);
+    if(i == countries.length - 1) {
+      query = query + "'" + c + "'";
+    } else {
+      query = query + "'" + c + "',";
+    }
+  });
+
+  console.log(query);
+  var FT_Options = {
+      suppressInfoWindows: true,
+      query: {
+          select: 'kml_4326',
+          from: 420419,
+          where: "'name_0' IN (" + query + ") "
+      },
+      styles: [
+        {
+          polygonOptions: {
+              fillColor: "#2E2EFE",
+              fillOpacity: 0.35
+          }
+        }
+      ]
+  };
+  layer = new google.maps.FusionTablesLayer(FT_Options);
+  layer.setMap(map);
 }

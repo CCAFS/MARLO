@@ -28,8 +28,9 @@
 }
 
 .checkBox {
+    text-align: center;
     font-size: 0.94em;
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
 }
 
 .optionContent {
@@ -70,7 +71,7 @@
 .selectWrapper {
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: 300px;
+    /* max-height: 300px; */
 }
 
 #map {
@@ -100,17 +101,17 @@
 .latitudeWrapper {
     width: 17%;
     float: left;
-    margin-right: 1%;
+    margin-left: 1%;
 }
 
 .longitudeWrapper {
     width: 17%;
     float: left;
-    margin-right: 4%;
+    margin-left: 1%;
 }
 
 .nameWrapper {
-    width: 49%;
+    width: 43%;
     float: left;
 }
 
@@ -155,7 +156,7 @@ span.select2.select2-container.select2-container--default {
 }
 
 .onoffswitch {
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 
 .view {
@@ -164,4 +165,53 @@ span.select2.select2-container.select2-container--default {
     cursor: pointer;
     float: right;
     padding: 2px 3px;
+}
+
+.isGlobal {
+    text-align: right;
+}
+
+div#selectsContent {
+    margin-bottom: 25px;
+}
+
+.locationLevel-optionSelect {
+    cursor: pointer;
+}
+
+.addLocation {
+    height: 25px;
+}
+
+.coordinates-inputs {
+    margin-top: 10px;
+}
+
+.checkboxFour {
+  width: 26px;
+  height: 26px;
+  background: #ddd;
+  /* margin: 20px 90px; */
+  border-radius: 100%;
+  position: relative;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.checkboxFour label {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 100px;
+  transition: all .5s ease;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  z-index: 1;
+  background: #333;
+  box-shadow:inset 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.checkboxFour input[type=checkbox]:checked + label {
+  background: #26ca28;
 }
