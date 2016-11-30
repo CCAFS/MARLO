@@ -257,11 +257,14 @@
       <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.getRemaining(selectedYear))!0)?number?string(",##0.00")}</span>) </small>
     </p> 
     
+    [#if !isTemplate]
     <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 
-       
+    [/#if]
       <p> <span class="title">${(element.fundingSource.title)!}</span> </p>
+    [#if !isTemplate]
     </a>
-
+    [/#if]
+    
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>

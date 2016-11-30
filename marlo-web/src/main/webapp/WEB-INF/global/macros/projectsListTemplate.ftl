@@ -118,7 +118,7 @@
               <p>Pre-setting</p>
             [#else]
               [#if !submission]
-                <p>Ready for project leader completion</p>
+                <p title="Ready for project leader completion">Ready for PL</p>
               [/#if]
             [/#if]
             
