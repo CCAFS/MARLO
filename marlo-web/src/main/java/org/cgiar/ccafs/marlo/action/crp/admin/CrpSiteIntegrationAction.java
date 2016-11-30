@@ -229,7 +229,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
       String bbcEmails = this.config.getEmailNotification();
       // Send pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual.pdf";
+      String fileName = "MARLO_UserManual_V1.0.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
