@@ -143,11 +143,14 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public boolean canEditInstitution() {
     return (this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
 
+  }
+
+  public boolean canEditType() {
+    return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
   }
 
 
