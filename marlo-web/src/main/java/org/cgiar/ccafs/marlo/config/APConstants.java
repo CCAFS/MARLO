@@ -70,6 +70,7 @@ public final class APConstants {
   public static final String ELEMENT_TYPE_ID = "parentId";
   public static final String DELIVERABLE_TYPE_ID = "deliverableTypeId";
   public static final String DELIVERABLE_ID = "deliverableId";
+  public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
 
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
