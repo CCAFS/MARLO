@@ -69,7 +69,7 @@
   [#-- New Expected Year - Extended = 4 --]
   [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
-    [@customForm.select name="deliverable.newExpectedYear" label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearExpected" editable=editable/]
+    [@customForm.select name="deliverable.newExpectedYear" label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
   </div> 
   <div class="clearfix"></div>
 </div>
@@ -130,19 +130,6 @@
     [/#if] 
   </div>
 </div>
-
-
-[#-- Funding Source list template --]
-<ul style="display:none">
-  <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
-    <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
-    <input class="id" type="hidden" name="deliverable.fundingSources[-1].id" value="" />
-    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSource.id" value="" />
-    <span class="name"></span>
-    <div class="clearfix"></div>
-  </li>
-</ul>
-
 
 
 [#-- Does this deliverable have a cross-cutting dimension --]

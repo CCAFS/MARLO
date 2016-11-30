@@ -94,6 +94,17 @@
     </div>  
 </section>
 
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="fsourceTemplate" class="fundingSources clearfix" style="display:none;">
+    <div class="removeFundingSource removeIcon" title="Remove funding source"></div>
+    <input class="id" type="hidden" name="deliverable.fundingSources[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.fundingSources[-1].fundingSource.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
+
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
   
