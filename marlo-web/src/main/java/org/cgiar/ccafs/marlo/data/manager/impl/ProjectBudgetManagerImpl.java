@@ -80,7 +80,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
     String amount = projectBudgetDAO.amountByFundingSource(fundingSourceID, year);
     if (amount != null) {
       double dAmount = Double.parseDouble(amount);
-      return dAmount - budget;
+      return budget - dAmount;
     }
     return 0;
   }
