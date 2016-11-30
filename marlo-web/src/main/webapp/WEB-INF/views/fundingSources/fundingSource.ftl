@@ -105,6 +105,16 @@
             [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
           </div>
         </div>
+        
+        [#-- Request partner adition --]
+        [#if editable]
+        <p id="addPartnerText" class="helpMessage">
+          [@s.text name="projectPartners.addPartnerMessage.first" /]
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
+            [@s.text name="projectPartners.addPartnerMessage.second" /]
+          </a>
+        </p> 
+        [/#if]
       </div>
       
     </div>

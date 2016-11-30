@@ -536,13 +536,16 @@ public class DeliverableAction extends BaseAction {
 
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
-        for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
-          if (fundingSource != null && fundingSource.getFundingSource() != null) {
-            fundingSource
-              .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
-          }
+        if (deliverable.getFundingSources() != null) {
+          for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
+            if (fundingSource != null && fundingSource.getFundingSource() != null) {
+              fundingSource
+                .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+            }
 
+          }
         }
+
         this.setDraft(true);
       } else {
         deliverable.setResponsiblePartner(this.responsiblePartner());
