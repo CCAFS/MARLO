@@ -111,11 +111,6 @@ function addFundingSource(fs) {
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
 
-  var url = baseURL + "/fundingSources/" + currentCrpSession;
-  url += "/fundingSource.do?fundingSourceID=" + fs.id + "&edit=true";
-
-  console.log(url);
-
   // Setting parameters
   $item.find('.title').text(fs.composedName);
   $item.find('.titleId').text(fs.id);

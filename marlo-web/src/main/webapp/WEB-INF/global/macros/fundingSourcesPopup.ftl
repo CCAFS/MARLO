@@ -140,8 +140,9 @@
           </div>
           <div class="col-md-9">
             <small><span class="red noBudgetMessage pull-left glyphicon glyphicon-exclamation-sign" style="display:none" title="Insufficient funds for {year}"></span></small>
-            <span class="contact name">{composedName}</span>  
-            <span class="currentBudget">{budget}</span>  
+            <span class="contact name">{composedName}</span>
+            <span class="glyphicon glyphicon-new-window linkIcon"></span>
+            <span class="currentBudget">{budget}</span>
           </div>
           <div class="col-md-2">
             <span class="listButton select">[@s.text name="form.buttons.select" /]</span>

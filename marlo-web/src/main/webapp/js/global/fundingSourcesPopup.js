@@ -86,9 +86,13 @@ $(document).ready(
       });
 
       // Event to redirect to funding source section
-      $dialogContent.find("span.name").on("click", function() {
+      $dialogContent.find("span.linkIcon").on("click", function() {
         var $parent = $(this).parent().parent();
-        var projectId = $parent.find(".contactId").text();
+        var id = $parent.find(".contactId").text();
+
+        var url = baseURL + "/fundingSources/" + currentCrpSession;
+        url += "/fundingSource.do?fundingSourceID=" + id + "&edit=true";
+        window.open(url, '_blank');
 
       });
 
