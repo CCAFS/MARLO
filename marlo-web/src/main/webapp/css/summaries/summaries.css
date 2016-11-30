@@ -118,6 +118,7 @@ vertical-align: middle;}
 
 .title-file {
     text-align: center;
+    font-size: 1.2em;
 }
 
 .title-file span {
@@ -150,6 +151,31 @@ vertical-align: middle;}
 	margin: 10px 4%;
 	cursor: no-drop;
 	opacity: 0.4;
+}
+
+#projectsPopUp{
+	overflow-y: auto;
+}
+
+#selectProject{
+	cursor:pointer;
+	opacity: 0.55;
+	border: 1px solid;
+}
+
+#projectsPopUp li{
+	list-style-type: none;
+	padding: 10px;
+	margin-bottom: 5px;
+	margin-left: -18px;
+	/* background-color: #f1f1f1; */
+	cursor: pointer;
+	/* border-radius: 8px; */
+	border-bottom: 1px solid #c1c1c1;
+}
+
+#projectsPopUp li:hover{
+	background-color: #f1f1f1;
 }
 
 /* INFO ANIMATION */
