@@ -326,6 +326,14 @@ function addLocationList(parent,option) {
         addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), option.html(), "true");
       }
     });
+
+    /** Mapping if is country * */
+    var locLevelName = $(option).parents(".locationLevel").find(".locationLevelName").val();
+    if(locLevelName == "Country") {
+      layer.setMap(null);
+      countries.push(option.html());
+      mappingCountries();
+    }
     $item.attr("id", "location-" + (countID));
     $item.find('.locationName').html(option.html());
     $item.find('.locElementId').val(option.val());
@@ -393,17 +401,23 @@ function addLocationForm(parent,latitude,longitude,name) {
 function removeLocationLevelItem() {
   var $item = $(this).parents('.locationLevel');
   if(markers != []) {
-    console.log("primer if");
     // REMOVE all item of this element
     $item.find(".locElement").each(function(index,item) {
       if($(item).find(".geoLatitude").val() != "" && $(item).find(".geoLongitude").val() != "") {
-        console.log("2 if");
         var optionValue = $(item).attr("id").split('-');
         var id = optionValue[1];
         if(markers[id] != undefined) {
           removeMarker(id);
         }
       }
+      layer.setMap(null);
+      /* Remove of countries array */
+
+      var i = countries.indexOf($(item).find(".locElementName").val());
+      if(i > -1) {
+        countries.splice(i, 1);
+      }
+      mappingCountries();
     });
   }
 
@@ -424,7 +438,6 @@ function removeLocationItem() {
   if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
     var optionValue = $item.attr("id").split('-');
     var id = optionValue[1];
-    console.log(markers[id]);
     if(markers[id] == undefined) {
 
     } else {
@@ -435,7 +448,14 @@ function removeLocationItem() {
     $item.remove();
     updateIndex();
   });
+  layer.setMap(null);
+  /* Remove of countries array */
 
+  var index = countries.indexOf($item.find(".locElementName").val());
+  if(index > -1) {
+    countries.splice(index, 1);
+  }
+  mappingCountries();
 }
 
 // Update indexes
@@ -483,7 +503,7 @@ function loadScript() {
         var isList = $(locItem).parent().parent().parent().find(".isList").val();
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
-        if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0 && isList != "true") {
+        if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
           addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site, isList);
         }
         // ADD country into countries list
@@ -612,7 +632,7 @@ function initMap() {
 
   if(markers.length > 0) {
     map.setCenter(markers[markers.length - 1].getPosition());
-    console.log(markers[markers.length - 1].getPosition());
+    // console.log(markers[markers.length - 1].getPosition());
   }
 
   mappingCountries();
@@ -624,7 +644,6 @@ function initMap() {
 function addMarker(map,idMarker,latitude,longitude,sites,isList) {
   // Close info window
   infoWindow.close();
-  console.log(latitude);
   var drag;
   if(editable && isList == "false") {
     drag = true;
@@ -645,7 +664,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
       animation: google.maps.Animation.DROP
   });
   markers[idMarker] = marker;
-  console.log(markers);
+  // console.log(markers);
 // To add the marker to the map, call setMap();
   marker.setMap(map);
   map.setCenter(marker.getPosition());
@@ -726,7 +745,7 @@ function showMarkers() {
 // Open info window for change the country name
 function openInfoWindow(marker,isList) {
   var content;
-  if(editable && !isList) {
+  if(editable && isList == "false") {
     content =
         '<div id="infoContent"><label for="nameMapMarker">Change the location name:</label><input placeholder="'
             + marker.name
@@ -796,7 +815,6 @@ function mappingCountries() {
   if(countries.length > 0) {
 
     $.each(countries, function(i,c) {
-      console.log(countries);
       if(i == countries.length - 1) {
         query = query + "'" + c + "'";
       } else {
@@ -809,8 +827,8 @@ function mappingCountries() {
         suppressInfoWindows: true,
         query: {
             select: 'kml_4326',
-            from: 420419,
-            where: "'name_0' IN (" + query + ") "
+            from: 1576681,
+            where: "'Country Name' IN (" + query + ") "
         },
         styles: [
           {
