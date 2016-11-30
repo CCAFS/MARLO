@@ -72,7 +72,6 @@ function attachEvents() {
 // ADD a location element by select list-Event
   $('.selectLocation').on('change', function() {
     var option = $(this).find("option:selected");
-    console.log(option);
     var content = $(this).parent().find(".optionSelect-content");
     if($(content).find("input[value=" + option.val() + "]").exists()) {
       var text = option.html() + ' already exists in this list';
@@ -300,10 +299,33 @@ function addLocationLevel(option) {
 
 // Add a location by select list
 function addLocationList(parent,option) {
+  var latitude = "";
+  var longitude = "";
+  /* GET COORDINATES */
+  var url = baseURL + "/geopositionByElement.do";
+  var data = {
+    "locElementID": option.val()
+  };
+
   if(option.val() != "-1") {
     countID++;
     var $list = parent.find(".optionSelect-content");
     var $item = $('#location-template').clone(true).removeAttr("id");
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: "json",
+        data: data
+    }).done(function(m) {
+      if(m.geopositions.length != 0) {
+        console.log(m);
+        latitude = m.geopositions[0].latitude;
+        longitude = m.geopositions[0].longitude;
+        $item.find('.geoLatitude').val(latitude);
+        $item.find('.geoLongitude').val(longitude);
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), option.html(), "true");
+      }
+    });
     $item.attr("id", "location-" + (countID));
     $item.find('.locationName').html(option.html());
     $item.find('.locElementId').val(option.val());
@@ -371,9 +393,11 @@ function addLocationForm(parent,latitude,longitude,name) {
 function removeLocationLevelItem() {
   var $item = $(this).parents('.locationLevel');
   if(markers != []) {
+    console.log("primer if");
     // REMOVE all item of this element
     $item.find(".locElement").each(function(index,item) {
       if($(item).find(".geoLatitude").val() != "" && $(item).find(".geoLongitude").val() != "") {
+        console.log("2 if");
         var optionValue = $(item).attr("id").split('-');
         var id = optionValue[1];
         if(markers[id] != undefined) {
@@ -621,6 +645,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
       animation: google.maps.Animation.DROP
   });
   markers[idMarker] = marker;
+  console.log(markers);
 // To add the marker to the map, call setMap();
   marker.setMap(map);
   map.setCenter(marker.getPosition());
@@ -628,7 +653,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
   // MARKER EVENTS
   marker.addListener('click', function() {
     $(".locations").removeClass("selected");
-    openInfoWindow(marker);
+    openInfoWindow(marker, isList);
     $item.find(".locations").addClass("selected");
   });
 
@@ -699,9 +724,9 @@ function showMarkers() {
 }
 
 // Open info window for change the country name
-function openInfoWindow(marker) {
+function openInfoWindow(marker,isList) {
   var content;
-  if(editable) {
+  if(editable && !isList) {
     content =
         '<div id="infoContent"><label for="nameMapMarker">Change the location name:</label><input placeholder="'
             + marker.name
