@@ -99,6 +99,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   private List<Institution> institutions;
+  private List<Institution> institutionsDonors;
 
 
   private String transaction;
@@ -150,6 +151,9 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+  public boolean canEditType() {
+    return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
+  }
 
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -188,10 +192,10 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
-
   public File getFile() {
     return file;
   }
+
 
   public String getFileContentType() {
     return fileContentType;
@@ -202,14 +206,15 @@ public class FundingSourceAction extends BaseAction {
     return fileFileName;
   }
 
-
   public Integer getFileID() {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
+
 
   private String getFundingSourceFilePath() {
     String upload = config.getUploadsBaseFolder();
@@ -242,6 +247,10 @@ public class FundingSourceAction extends BaseAction {
 
   public List<Institution> getInstitutions() {
     return institutions;
+  }
+
+  public List<Institution> getInstitutionsDonors() {
+    return institutionsDonors;
   }
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
@@ -333,8 +342,12 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll().stream().filter(c -> c.getInstitutionType().getId().intValue() == 3)
-        .collect(Collectors.toList());;
+      institutions = institutionManager.findAll().stream()
+        .filter(c -> c.getHeadquarter() == null && c.getInstitutionType().getId().intValue() == 3)
+        .collect(Collectors.toList());
+      institutionsDonors = institutionManager.findAll();
+      institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+      institutionsDonors.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
       liaisonInstitutions = new ArrayList<>();
 
@@ -482,7 +495,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -491,6 +503,7 @@ public class FundingSourceAction extends BaseAction {
   public void setFile(File file) {
     this.file = file;
   }
+
 
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
@@ -508,13 +521,17 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSource = fundingSource;
   }
 
-
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  public void setInstitutionsDonors(List<Institution> institutionsDonors) {
+    this.institutionsDonors = institutionsDonors;
   }
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
