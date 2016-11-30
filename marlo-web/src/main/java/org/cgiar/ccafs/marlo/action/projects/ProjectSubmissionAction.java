@@ -279,15 +279,15 @@ public class ProjectSubmissionAction extends BaseAction {
       // Making the URL to get the report.
 
       // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      URL pdfURL = new URL(config.getBaseUrl() + "/projects/" + this.getCrpSession() + "/reportingSummary.do?"
-        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
-        + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle());
+      URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "="
+        + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
+        + this.getCurrentCycle());
 
       // Getting the file data.
       Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
       buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
       fileName = this.getFileName();
-      contentType = fileProperties.get("mime_type") != null ? (String) fileProperties.get("mime_type") : null;
+      contentType = "application/pdf";
     } catch (MalformedURLException e) {
       // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
@@ -299,10 +299,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     if (buffer != null && fileName != null && contentType != null) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-        true);
+      sendMail.send(toEmail, ccEmail, "a.valencia@cgiar.org", subject, message.toString(), buffer.array(), contentType,
+        fileName, true);
     } else {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, "a.valencia@cgiar.org", subject, message.toString(), null, null, null, true);
     }
 
 
