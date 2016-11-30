@@ -501,6 +501,7 @@ function loadScript() {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
         var isList = $(locItem).parent().parent().parent().find(".isList").val();
+        console.log(isList);
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
@@ -661,7 +662,8 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
       },
       icon: baseURL + '/images/global/otherSite-marker.png',
       name: sites,
-      animation: google.maps.Animation.DROP
+      animation: google.maps.Animation.DROP,
+      list: isList
   });
   markers[idMarker] = marker;
   // console.log(markers);
@@ -672,7 +674,7 @@ function addMarker(map,idMarker,latitude,longitude,sites,isList) {
   // MARKER EVENTS
   marker.addListener('click', function() {
     $(".locations").removeClass("selected");
-    openInfoWindow(marker, isList);
+    openInfoWindow(marker);
     $item.find(".locations").addClass("selected");
   });
 
@@ -743,9 +745,9 @@ function showMarkers() {
 }
 
 // Open info window for change the country name
-function openInfoWindow(marker,isList) {
+function openInfoWindow(marker) {
   var content;
-  if(editable && isList == "false") {
+  if(editable && marker.list == "false") {
     content =
         '<div id="infoContent"><label for="nameMapMarker">Change the location name:</label><input placeholder="'
             + marker.name
