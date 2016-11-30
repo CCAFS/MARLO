@@ -676,13 +676,6 @@ public class DeliverableAction extends BaseAction {
         projectOutcome.clear();
       }
 
-      if (status != null) {
-        status.clear();
-      }
-
-      if (keyOutputs != null) {
-        keyOutputs.clear();
-      }
 
       if (deliverable.getOtherPartners() != null) {
         deliverable.getOtherPartners().clear();
