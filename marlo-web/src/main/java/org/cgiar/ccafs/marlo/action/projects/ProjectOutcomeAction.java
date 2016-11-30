@@ -491,7 +491,9 @@ public class ProjectOutcomeAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
       }
     } else
 

@@ -423,6 +423,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
       }
       return SUCCESS;
     } else {
+
       return NOT_AUTHORIZED;
     }
 

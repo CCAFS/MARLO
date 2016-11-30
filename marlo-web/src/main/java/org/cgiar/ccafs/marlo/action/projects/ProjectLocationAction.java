@@ -666,6 +666,7 @@ public class ProjectLocationAction extends BaseAction {
         return SUCCESS;
       } else {
         this.addActionMessage("");
+        this.setActionMessages(null);
         return REDIRECT;
       }
     }
