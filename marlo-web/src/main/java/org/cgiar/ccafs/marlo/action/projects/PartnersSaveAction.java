@@ -135,6 +135,8 @@ public class PartnersSaveAction extends BaseAction {
     this.institutionTypesList = institutionManager.findAll();
     institutions = institutionsManager.findAll().stream().filter(c -> c.getHeadquarter() == null && c.isActive())
       .collect(Collectors.toList());
+
+    institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
   }
 
 

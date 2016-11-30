@@ -8,7 +8,9 @@
 [#assign currentStage = "activities" /]
 
 [#assign breadCrumb = [
-  {"label":"activities", "nameSpace":"/projects", "action":"${(crpSession)!}/activities"}]/]
+  {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"label":"activities", "nameSpace":"/projects", "action":""}
+] /]
 
 
 [#include "/WEB-INF/global/pages/header.ftl" /]

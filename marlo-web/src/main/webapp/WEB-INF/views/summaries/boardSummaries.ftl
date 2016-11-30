@@ -92,12 +92,14 @@
           <div class="summariesFiles borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.projectPortfolio.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
-              <input type="radio" name="formOptions" id="projectPortfolio" value="project" class="hidden"/>
+              <input type="radio" name="formOptions" id="projectPortfolio" value="reportingSummary" class="hidden"/>
               <label for="">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
             </div>
             <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
-            <div class="extraOptions" style="display:none"> 
-              [@customForm.select name="projectID" label="" i18nkey="" listName="allProjects" keyFieldName="id" displayFieldName="composedName" className="" disabled=true/]
+            <div class="extraOptions" style="display:none">
+            <label for="selectProject">Select a project</label>
+            <div id="selectProject" class="col-md-12" readonly>Click over me</div>
+            <input  class="hidden" type="text" name="projectID" value="" >
             </div>
           </div>
           
@@ -107,7 +109,7 @@
         [#-- -- -- Partners reports -- -- --]
         <div id="partners-contentOptions" style="display:none">
           [#-- Partners and lead projects --]
-          <div class="notAvailable borderBox col-md-3">
+          <div class="summariesFiles borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.leadProjectInstitutionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="leadProjectInstitutionsSummary" value="leadProjectInstitutionsSummary"/>
@@ -116,7 +118,7 @@
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
           [#-- Partners and projects they relate --]
-          <div class="notAvailable borderBox col-md-3">
+          <div class="summariesFiles borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.partnersWorkingWithProjects.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="projectPartnersSummary" value="projectPartnersSummary"/>
@@ -130,10 +132,10 @@
         [#-- Deliverables reports --]
         <div id="deliverables-contentOptions" style="display:none">
           [#-- Expected deliverables --]
-          <div class="notAvailable borderBox col-md-3">
+          <div class="summariesFiles borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.expectedDeliverables.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="expectedDeliverables" value="expectedDeliverables"/>
+              <input class="hidden" type="radio" name="formOptions" id="expectedDeliverables" value="expectedDeliverablesSummary"/>
               <label for="">[@s.text name="summaries.board.report.expectedDeliverables" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
@@ -151,7 +153,7 @@
         [#-- -- -- Budget reports -- -- --]
         <div id="budget-contentOptions" style="display:none">
           [#-- Budget Summary per Partners --]
-          <div class="notAvailable borderBox col-md-3">
+          <div class="summariesFiles borderBox col-md-3">
           <span title="[@s.text name="summaries.board.report.powb.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="budgetPerPartnersSummary" value="budgetPerPartnersSummary"/>
@@ -165,7 +167,7 @@
           <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.powbMOG.description" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="budgetByMOGsSummary" value="budgetByMOGsSummary"/>
+              <input class="hidden" type="radio" name="formOptions" id="budgetByMOGsSummary" value=""/>
               <label for="budgetByMOGsSummary">[@s.text name="summaries.board.report.powbMOG" /] <span>XLSx</span></label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
@@ -182,4 +184,16 @@
     </div> 
   </article>
 </section>
+
+[#-- POPUP TO SELECT PROJECT --]
+<div id="projectsPopUp"  style="display:none;" >
+  <ul class="row">
+  [#if allProjects?hasContent]
+    [#list allProjects as project]
+      <li class="col-md-12 project" id="${project.id}">${project.composedName}</li>
+    [/#list]
+  [/#if]
+  </ul>
+</div>
+
 [#include "/WEB-INF/global/pages/footer.ftl"]

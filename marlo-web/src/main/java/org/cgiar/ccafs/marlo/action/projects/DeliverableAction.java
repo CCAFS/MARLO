@@ -536,13 +536,16 @@ public class DeliverableAction extends BaseAction {
 
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
-        for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
-          if (fundingSource != null && fundingSource.getFundingSource() != null) {
-            fundingSource
-              .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
-          }
+        if (deliverable.getFundingSources() != null) {
+          for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
+            if (fundingSource != null && fundingSource.getFundingSource() != null) {
+              fundingSource
+                .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+            }
 
+          }
         }
+
         this.setDraft(true);
       } else {
         deliverable.setResponsiblePartner(this.responsiblePartner());
@@ -571,16 +574,13 @@ public class DeliverableAction extends BaseAction {
 
 
         if (this.isDeliverableNew(deliverableID)) {
+          // NEW Deliverable
           status.remove(ProjectStatusEnum.Cancelled.getStatusId());
-          status.remove(ProjectStatusEnum.Extended.getStatusId());
-
           status.remove(ProjectStatusEnum.Extended.getStatusId());
           status.remove(ProjectStatusEnum.Complete.getStatusId());
         } else {
-
-
-          if (deliverable.getYear() < this.getCurrentCycleYear()) {
-
+          // OLD Deliverable
+          if (deliverable.getYear() < this.getReportingYear()) {
             status.remove(ProjectStatusEnum.Ongoing.getStatusId());
           }
         }
@@ -676,13 +676,6 @@ public class DeliverableAction extends BaseAction {
         projectOutcome.clear();
       }
 
-      if (status != null) {
-        status.clear();
-      }
-
-      if (keyOutputs != null) {
-        keyOutputs.clear();
-      }
 
       if (deliverable.getOtherPartners() != null) {
         deliverable.getOtherPartners().clear();
@@ -779,9 +772,6 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setCrpClusterKeyOutput(keyOutput);
 
-      FundingSource fundingSource = fundingSourceManager.getFundingSourceById(deliverable.getFundingSource().getId());
-
-      deliverablePrew.setFundingSource(fundingSource);
 
       DeliverablePartnership partnershipResponsible = null;
       ProjectPartnerPerson partnerPerson = null;
@@ -793,10 +783,9 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible =
-            deliverablePrew.getDeliverablePartnerships().stream()
-              .filter(dp -> dp.isActive()
-                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
+            .filter(
+              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;

@@ -2,6 +2,9 @@ $(document).ready(init);
 
 function init() {
 
+  // Popup
+  popups();
+
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");

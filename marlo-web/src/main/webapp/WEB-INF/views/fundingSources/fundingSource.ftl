@@ -65,11 +65,13 @@
         [#assign hasFile = fundingSource.file?? /]
         <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.file.id)!}" />
         [#-- Input File --]
+        [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+        [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
           <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!(fundingSource.file.id +' - No file name')} [/#if]</span> 
-          <span class="removeIcon"> </span> 
+          [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
         
       </div>
@@ -78,7 +80,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-6">[@customForm.select name="fundingSource.status" i18nkey="projectCofunded.agreementStatus"  listName="status" keyFieldName=""  displayFieldName="" header=false editable=editable /] </div>
-          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type" className="type" listName="budgetTypes" header=false required=true editable=editable /]</div>
+          <div class="col-md-6">[@customForm.select name="fundingSource.budgetType.id"   i18nkey="projectCofunded.type"  className="type" listName="budgetTypes" header=false required=true editable=editable&&action.canEditType() /]</div>
         </div>
       </div>
       [#-- CGIAR lead center --]
@@ -100,9 +102,19 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutions" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
+            [@customForm.select name="fundingSource.institution.id" i18nkey="projectCofunded.donor" className="donor"  listName="institutionsDonors" keyFieldName="id"  displayFieldName="ComposedName" required=true editable=editable /]
           </div>
         </div>
+        
+        [#-- Request partner adition --]
+        [#if editable]
+        <p id="addPartnerText" class="helpMessage">
+          [@s.text name="projectPartners.addPartnerMessage.first" /]
+          <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='fundingSourceID']${fundingSource.id?c}[/@s.param][/@s.url]">
+            [@s.text name="projectPartners.addPartnerMessage.second" /]
+          </a>
+        </p> 
+        [/#if]
       </div>
       
     </div>

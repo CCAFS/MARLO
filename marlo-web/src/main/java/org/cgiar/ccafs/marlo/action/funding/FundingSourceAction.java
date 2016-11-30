@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -78,7 +80,7 @@ public class FundingSourceAction extends BaseAction {
   private AuditLogManager auditLogManager;
 
   private FileDBManager fileDBManager;
-
+  private UserManager userManager;
   private Crp loggedCrp;
 
   private File file;
@@ -99,6 +101,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   private List<Institution> institutions;
+  private List<Institution> institutionsDonors;
 
 
   private String transaction;
@@ -108,12 +111,13 @@ public class FundingSourceAction extends BaseAction {
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
-    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager) {
+    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
+    this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
     this.fileDBManager = fileDBManager;
@@ -145,11 +149,16 @@ public class FundingSourceAction extends BaseAction {
 
 
   public boolean canEditInstitution() {
-    return (this.hasPermissionNoBase(
-      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
+    User user = userManager.getUser(this.getCurrentUser().getId());
+    return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
+      .isEmpty();
+
 
   }
 
+  public boolean canEditType() {
+    return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
+  }
 
   private Path getAutoSaveFilePath() {
     String composedClassName = fundingSource.getClass().getSimpleName();
@@ -188,10 +197,10 @@ public class FundingSourceAction extends BaseAction {
     return budgetTypes;
   }
 
-
   public File getFile() {
     return file;
   }
+
 
   public String getFileContentType() {
     return fileContentType;
@@ -202,14 +211,15 @@ public class FundingSourceAction extends BaseAction {
     return fileFileName;
   }
 
-
   public Integer getFileID() {
     return fileID;
   }
 
+
   public FundingSource getFundingSource() {
     return fundingSource;
   }
+
 
   private String getFundingSourceFilePath() {
     String upload = config.getUploadsBaseFolder();
@@ -242,6 +252,10 @@ public class FundingSourceAction extends BaseAction {
 
   public List<Institution> getInstitutions() {
     return institutions;
+  }
+
+  public List<Institution> getInstitutionsDonors() {
+    return institutionsDonors;
   }
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
@@ -313,9 +327,12 @@ public class FundingSourceAction extends BaseAction {
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
         fundingSource.setProjectBudgetsList(
           fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
-        if (fundingSource.getFile().getId() != null) {
-          fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+        if (fundingSource.getFile() != null) {
+          if (fundingSource.getFile().getId() != null) {
+            fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+          }
         }
+
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
@@ -333,8 +350,12 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll().stream().filter(c -> c.getInstitutionType().getId().intValue() == 3)
-        .collect(Collectors.toList());;
+      institutions = institutionManager.findAll().stream()
+        .filter(c -> c.getHeadquarter() == null && c.getInstitutionType().getId().intValue() == 3)
+        .collect(Collectors.toList());
+      institutionsDonors = institutionManager.findAll();
+      institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+      institutionsDonors.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
       liaisonInstitutions = new ArrayList<>();
 
@@ -482,7 +503,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   public void setBudgetTypes(Map<String, String> budgetTypes) {
     this.budgetTypes = budgetTypes;
   }
@@ -491,6 +511,7 @@ public class FundingSourceAction extends BaseAction {
   public void setFile(File file) {
     this.file = file;
   }
+
 
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
@@ -508,13 +529,17 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSource = fundingSource;
   }
 
-
   public void setFundingSourceID(long fundingSourceID) {
     this.fundingSourceID = fundingSourceID;
   }
 
+
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
+  }
+
+  public void setInstitutionsDonors(List<Institution> institutionsDonors) {
+    this.institutionsDonors = institutionsDonors;
   }
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {

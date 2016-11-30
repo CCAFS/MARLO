@@ -82,10 +82,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private FundingSource fundingSource;
-
-
-  @Expose
   private User modifiedBy;
 
   @Expose
@@ -273,11 +269,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public FundingSource getFundingSource() {
-    return fundingSource;
-  }
-
-
   public List<DeliverableFundingSource> getFundingSources() {
     return fundingSources;
   }
@@ -443,9 +434,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableType = deliverableType;
   }
 
-  public void setFundingSource(FundingSource fundingSource) {
-    this.fundingSource = fundingSource;
-  }
 
   public void setFundingSources(List<DeliverableFundingSource> fundingSources) {
     this.fundingSources = fundingSources;

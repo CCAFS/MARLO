@@ -87,10 +87,12 @@
 
 [#-- Open for Project Leaders --]
 [#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) ]
+  [#if !submission?has_content]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
   <br />
+  [/#if]
 [#else]
   [#if !project.projectEditLeader]
     <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>

@@ -28,12 +28,12 @@
     [#-- What do you want to do --]
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">
-      [#--  <a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">--]
-        <div id="newProject" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
-      [#--  </a> --]
-      [#-- <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'/]"> --]
-        <div id="updatePlanning" class="option disabled" title="This link is disabled" ><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
-      [#-- </a> --]
+     <a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">
+        <div id="newProject" class="option" ><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
+       </a> 
+       <a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'/]"> 
+        <div id="updatePlanning" class="option" ><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
+      </a>
       <div id="reportProject" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p></div>
       <div class="clearfix"></div>
     </div>

@@ -6,21 +6,57 @@ function init() {
 }
 
 function attachEvents() {
-  $(".notAvailable").attr("title", "Not available for this moment");
+  $(".notAvailable").attr("title", "Not available at the moment");
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  $('select[name=projectID], input[name=q]').on('change', updateUrl);
   $('#generateReport').on('click', generateReport);
 
-  $(".summariesFiles").on("click", function() {
+  $(".title-file , .pdfIcon , .excelIcon").on("click", function() {
+    $("input[name='projectID']").val("");
+    $("#selectProject").html("Click over me");
+    var $this = $(this).parents(".summariesFiles");
+    console.log("holi");
     $(".summariesFiles").removeClass("selected");
     $(".extraOptions").fadeOut();
     $('.extraOptions').find('select, input').attr('disabled', true);
-    if($(this).find("#projectPortfolio").val() == "project") {
-      $(this).find('.extraOptions').fadeIn();
-      $(this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
+    if($($this).find("#projectPortfolio").val() == "reportingSummary") {
+      $($this).find('.extraOptions').fadeIn();
+      $($this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
     }
-    $(this).addClass("selected");
-    updateUrl(this);
+    $($this).addClass("selected");
+    updateUrl($this);
+  });
+
+  /** Select a project * */
+  $('#selectProject').on('click', function() {
+    var $this = $(this).parents(".summariesFiles");
+    $("#projectsPopUp").dialog({
+        resizable: false,
+        width: '40%',
+        title: 'Projects',
+        modal: true,
+        height: $(window).height() * 0.50,
+        show: {
+            effect: "blind",
+            duration: 500
+        },
+        hide: {
+            effect: "fadeOut",
+            duration: 500
+        },
+        open: function(event,ui) {
+        }
+    });
+  });
+
+  $(".project").on("click", function() {
+    var report = $("#selectProject").parents(".summariesFiles");
+    console.log(report);
+    $("input[name='projectID']").val($(this).attr("id"));
+    var v = $(this).text().length > 16 ? $(this).text().substr(0, 16) + ' ... ' : $(this).text();
+    $("#selectProject").attr("title", $(this).html());
+    $("#selectProject").html(v);
+    $('#projectsPopUp').dialog('close');
+    updateUrl(report);
   });
 }
 
@@ -34,6 +70,8 @@ function selectSummariesSection(e) {
   $content.fadeIn();
 
   // Uncheck from formOptions the option selected
+  $("input[name='projectID']").val("");
+  $("#selectProject").html("Click over me");
   $('input[name=formOptions]').attr('checked', false);
   $(".summariesFiles").removeClass("selected");
   $(".extraOptions").fadeOut();
@@ -66,7 +104,7 @@ function updateUrl(element) {
   var formOption = $formOptions.val() || 0;
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
   if(formOption != 0) {
-    generateUrl = baseURL + "/projects/" + formOption + ".do";
+    generateUrl = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
     if(extraOptions != 0) {
       generateUrl += '?' + extraOptions;
     }
@@ -87,9 +125,8 @@ function setUrl(url) {
 
 // Activate the select plugin.
 function addSelect2() {
-  $("form select#projectID").select2({
-      search_contains: true,
-      width: '100%'
+  $('form select').select2({
+    width: '100%'
   });
   $("#genderKeywords").select2({
     tags: [
