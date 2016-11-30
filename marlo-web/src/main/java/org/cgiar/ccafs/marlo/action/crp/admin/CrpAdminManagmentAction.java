@@ -230,7 +230,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       // Send pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual.pdf";
+      String fileName = "MARLO_UserManual_V1.0.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
@@ -253,13 +253,14 @@ public class CrpAdminManagmentAction extends BaseAction {
           }
         }
       }
+      String bbcEmails = this.config.getEmailNotification();
 
       if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
+        sendMail.send(user.getEmail(), null, bbcEmails,
           this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), buffer,
           contentType, fileName, true);
       } else {
-        sendMail.send(user.getEmail(), null, this.config.getEmailNotification(),
+        sendMail.send(user.getEmail(), null, bbcEmails,
           this.getText("email.newUser.subject", new String[] {user.getComposedName()}), message.toString(), null, null,
           null, true);
       }
@@ -274,6 +275,7 @@ public class CrpAdminManagmentAction extends BaseAction {
    * @param crpProgram is the Flagship where is assigned
    */
   private void notifyRoleFlagshipAssigned(User userAssigned, Role role, CrpProgram crpProgram) {
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
     String flasgshipRole = this.getText("programManagement.flagship.role");
     String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
 
@@ -281,7 +283,8 @@ public class CrpAdminManagmentAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     // Building the Email message:
     message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
-    message.append(this.getText("email.flagship.assigned", new String[] {flasgshipRole, loggedCrp.getName()}));
+    message.append(this.getText("email.flagship.assigned",
+      new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym(), loggedCrp.getName()}));
     message.append(this.getText("email.flagship.responsabilities"));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
@@ -289,7 +292,12 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Email send to the user assigned
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
-    String ccEmail = this.getCurrentUser().getEmail();
+    String ccEmail = this.getCurrentUser().getEmail() + ";";
+    // TODO: CC will be also the others FL already assigned to the Flagship
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+      .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+      ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+    }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
@@ -299,23 +307,29 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   }
 
-  private void notifyRoleFlagshipUnassigned(User userAssigned, Role role, CrpProgram crpProgram) {
+  private void notifyRoleFlagshipUnassigned(User userRemoved, Role role, CrpProgram crpProgram) {
+    crpProgram = crpProgramManager.getCrpProgramById(crpProgram.getId());
     String flasgshipRole = this.getText("programManagement.flagship.role");
     String flasgshipRoleAcronym = this.getText("programManagement.flagship.role.acronym");
 
-    userAssigned = userManager.getUser(userAssigned.getId());
+    userRemoved = userManager.getUser(userRemoved.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagship.unassigned",
       new String[] {flasgshipRole, crpProgram.getName(), crpProgram.getAcronym(), loggedCrp.getName()}));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
     // Email send to the user assigned
-    String toEmail = userAssigned.getEmail();
+    String toEmail = userRemoved.getEmail();
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail();
+    // CC will be also the others FL already assigned to the Flagship
+    for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+      .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+      ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+    }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
     sendMail.send(toEmail, ccEmail, bbcEmails,
@@ -354,7 +368,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     String bbcEmails = this.config.getEmailNotification();
 
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.assigned.subject",
-      new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
+      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
 
@@ -378,15 +392,22 @@ public class CrpAdminManagmentAction extends BaseAction {
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
 
-    // Email send to the user assigned
-    String toEmail = userAssigned.getEmail();
-    // CC will be the user who is making the modification.
-    String ccEmail = this.getCurrentUser().getEmail();
+    // Email send to nobody
+    String toEmail = null;
+    // CC will be the CRP Admins.
+    String ccEmail = "";
+    Long crpAdminRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
+    Role roleCrpAdmin = roleManager.getRoleById(crpAdminRole);
+    for (UserRole userRole : roleCrpAdmin.getUserRoles().stream().filter(ur -> ur.getUser().isActive())
+      .collect(Collectors.toList())) {
+      ccEmail += userRole.getUser().getEmail() + ";";
+    }
+
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
     sendMail.send(toEmail, ccEmail, bbcEmails, this.getText("email.programManagement.unassigned.subject",
-      new String[] {managementRoleAcronym, loggedCrp.getName()}), message.toString(), null, null, null, true);
+      new String[] {loggedCrp.getName(), managementRoleAcronym}), message.toString(), null, null, null, true);
 
   }
 

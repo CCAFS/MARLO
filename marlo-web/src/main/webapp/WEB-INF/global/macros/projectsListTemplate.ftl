@@ -117,12 +117,12 @@
             [#if !project.projectEditLeader]
               <p>Pre-setting</p>
             [#else]
-               
+              [#if !submission]
+                <p>Ready for project leader completion</p>
+              [/#if]
             [/#if]
             
-            [#if !submission && (!canEdit || !canSubmit) && project.projectEditLeader ]
-              <p title="The project can be submitted by Management liaisons and Contact points">Not Submitted</p>
-            [/#if]
+            
           </td>
           [#-- Track completition of entry --]
           [#if isPlanning]
