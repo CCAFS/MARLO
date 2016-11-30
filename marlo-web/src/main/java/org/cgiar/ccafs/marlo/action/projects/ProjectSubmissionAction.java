@@ -299,10 +299,10 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
     if (buffer != null && fileName != null && contentType != null) {
-      sendMail.send(toEmail, ccEmail, "a.valencia@cgiar.org", subject, message.toString(), buffer.array(), contentType,
-        fileName, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+        true);
     } else {
-      sendMail.send(toEmail, ccEmail, "a.valencia@cgiar.org", subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
 
 
