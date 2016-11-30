@@ -40,30 +40,6 @@
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
           <div style="display:none">
-            <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
-              [#if project.partners?has_content]
-                [#list project.partners as projectPartner]
-                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
-                [/#list]
-              [#else]
-                [#if !editable]
-                  <p class="center">[@s.text name="projectPartners.empty" /]
-                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
-                  </p>
-                [/#if]
-              [/#if] 
-              [#if (editable && canEdit)]
-                <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
-              [/#if]
-            </div> 
-            
-            <p id="addPartnerText" class="helpMessage">
-              [@s.text name="projectPartners.addPartnerMessage.first" /]
-              <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
-                [@s.text name="projectPartners.addPartnerMessage.second" /]
-              </a>
-            </p>
-            
             [#-- Other fields --]
             [#if project.projectEditLeader]
             <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')}">
@@ -81,7 +57,7 @@
                   [#-- Lessons learnt from last planning/reporting cycle --]
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
-                    <h6>[@customForm.text name="project.projectComponentLessonPreview" i18nkey="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
+                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
                     <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
@@ -96,7 +72,36 @@
               [/#if]
             </div>
             [/#if]
-              
+          
+          
+            [#-- Partners list --]
+            <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
+              [#if project.partners?has_content]
+                [#list project.partners as projectPartner]
+                  [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index /]
+                [/#list]
+              [#else]
+                [#if !editable]
+                  <p class="center">[@s.text name="projectPartners.empty" /]
+                  <a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.clickHere" /]</a> [@s.text name="projectPartners.switchEditingMode" /]
+                  </p>
+                [/#if]
+              [/#if] 
+              [#if (editable && canEdit)]
+                <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
+              [/#if]
+            </div> 
+            
+            [#-- Request partner adition --]
+            [#if editable]
+            <p id="addPartnerText" class="helpMessage">
+              [@s.text name="projectPartners.addPartnerMessage.first" /]
+              <a class="popup" href="[@s.url action='${crpSession}/partnerSave'][@s.param name='projectID']${project.id?c}[/@s.param][/@s.url]">
+                [@s.text name="projectPartners.addPartnerMessage.second" /]
+              </a>
+            </p> 
+            [/#if]
+            
           </div>
            
           [#-- Section Buttons & hidden inputs--]

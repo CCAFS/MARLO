@@ -325,6 +325,13 @@ function justificationByStatus(statusId) {
   if(isStatusCancelled(statusId) || isStatusExtended(statusId)) {
     $statusDescription.hide().show(400);
     $statusDescription.find('label').html($('#status-' + statusId).html());
+
+    if(isStatusExtended(statusId)) {
+      $('#newExpectedYear').show();
+    } else {
+      $('#newExpectedYear').hide();
+    }
+
   } else {
     $statusDescription.show().hide(400);
   }

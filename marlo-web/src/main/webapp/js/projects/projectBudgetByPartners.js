@@ -106,24 +106,30 @@ function validateFundingSource() {
 }
 
 // Add funding source function
-function addFundingSource(composedName,projectId,budget,type,typeId,institutionSelected,selectedYear) {
+function addFundingSource(fs) {
   dialog.dialog("close");
   var $item = $('#projectW3bilateralFund-template').clone(true).removeAttr('id');
   var $list = $elementSelected.parents(".projectPartner").find(".projectW3bilateralFund-list");
+
+  var url = baseURL + "/fundingSources/" + currentCrpSession;
+  url += "/fundingSource.do?fundingSourceID=" + fs.id + "&edit=true";
+
+  console.log(url);
+
   // Setting parameters
-  $item.find('.title').text(composedName);
-  $item.find('.titleId').text(projectId);
-  $item.find('.projectAmount').text(setCurrencyFormat(budget));
-  $item.find('.institutionId').val(institutionSelected);
+  $item.find('.title').text(fs.composedName);
+  $item.find('.titleId').text(fs.id);
+  $item.find('.projectAmount').text(setCurrencyFormat(fs.budget));
+  $item.find('.institutionId').val(fs.institutionSelected);
   $item.find('.selectedYear').val($('.tab-pane.active').attr('id').split('-')[1]);
-  $item.find('.projectId').val(projectId);
-  $item.find('.projectId').addClass("institution-" + institutionSelected + " " + "year-" + selectedYear);
+  $item.find('.projectId').val(fs.id);
+  $item.find('.projectId').addClass("institution-" + fs.institutionSelected + " " + "year-" + fs.selectedYear);
   // Set type as default
-  $item.find('.budgetTypeName').text(type);
-  $item.find('.budgetTypeId').val(typeId);
+  $item.find('.budgetTypeName').text(fs.type);
+  $item.find('.budgetTypeId').val(fs.typeId);
 
   // Set type
-  $item.find('input:text').removeClass('type-none').addClass('type-' + typeId)
+  $item.find('input:text').removeClass('type-none').addClass('type-' + fs.typeId)
 
   // Setting Currency Inputs
   $item.find('input.currencyInput').currencyInput();
