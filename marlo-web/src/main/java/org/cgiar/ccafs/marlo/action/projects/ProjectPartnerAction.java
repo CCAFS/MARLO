@@ -986,6 +986,7 @@ public class ProjectPartnerAction extends BaseAction {
         return SUCCESS;
       } else {
         this.addActionMessage("");
+        this.setActionMessages(null);
         return REDIRECT;
       }
     }

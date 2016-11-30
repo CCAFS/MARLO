@@ -468,6 +468,7 @@ public class OutcomesAction extends BaseAction {
       }
     } else {
       this.setActionMessages(null);
+      this.setActionMessages(null);
       return NOT_AUTHORIZED;
     }
 
