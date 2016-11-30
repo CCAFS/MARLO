@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -78,7 +80,7 @@ public class FundingSourceAction extends BaseAction {
   private AuditLogManager auditLogManager;
 
   private FileDBManager fileDBManager;
-
+  private UserManager userManager;
   private Crp loggedCrp;
 
   private File file;
@@ -109,12 +111,13 @@ public class FundingSourceAction extends BaseAction {
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
-    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager) {
+    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
+    this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
     this.fileDBManager = fileDBManager;
@@ -146,8 +149,10 @@ public class FundingSourceAction extends BaseAction {
 
 
   public boolean canEditInstitution() {
-    return (this.hasPermissionNoBase(
-      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
+    User user = userManager.getUser(this.getCurrentUser().getId());
+    return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
+      .isEmpty();
+
 
   }
 
