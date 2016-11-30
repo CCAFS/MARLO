@@ -322,9 +322,12 @@ public class FundingSourceAction extends BaseAction {
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
         fundingSource.setProjectBudgetsList(
           fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
-        if (fundingSource.getFile().getId() != null) {
-          fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+        if (fundingSource.getFile() != null) {
+          if (fundingSource.getFile().getId() != null) {
+            fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+          }
         }
+
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
