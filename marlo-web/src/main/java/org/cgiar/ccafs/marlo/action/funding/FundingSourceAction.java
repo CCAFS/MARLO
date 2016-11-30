@@ -36,7 +36,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -71,22 +70,22 @@ public class FundingSourceAction extends BaseAction {
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
 
+  private Integer fileID;
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
+
 
   private AuditLogManager auditLogManager;
 
   private FileDBManager fileDBManager;
+
   private Crp loggedCrp;
 
   private File file;
   private String fileContentType;
+
   private String fileFileName;
-
-
   private long fundingSourceID;
-
-
   private FundingSource fundingSource;
 
 
@@ -100,6 +99,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   private List<Institution> institutions;
+
 
   private String transaction;
 
@@ -119,7 +119,6 @@ public class FundingSourceAction extends BaseAction {
     this.fileDBManager = fileDBManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
-
 
   @Override
   public String cancel() {
@@ -144,6 +143,7 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public boolean canEditInstitution() {
     return (this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym())));
@@ -158,7 +158,6 @@ public class FundingSourceAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public FundingSourceBudget getBudget(int year) {
 
@@ -184,6 +183,7 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
+
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
   }
@@ -193,13 +193,18 @@ public class FundingSourceAction extends BaseAction {
     return file;
   }
 
-
   public String getFileContentType() {
     return fileContentType;
   }
 
+
   public String getFileFileName() {
     return fileFileName;
+  }
+
+
+  public Integer getFileID() {
+    return fileID;
   }
 
   public FundingSource getFundingSource() {
@@ -308,7 +313,9 @@ public class FundingSourceAction extends BaseAction {
         FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
         fundingSource.setProjectBudgetsList(
           fundingSourceDB.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
-
+        if (fundingSource.getFile().getId() != null) {
+          fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+        }
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
@@ -326,7 +333,8 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll();
+      institutions = institutionManager.findAll().stream().filter(c -> c.getInstitutionType().getId().intValue() == 3)
+        .collect(Collectors.toList());;
 
       liaisonInstitutions = new ArrayList<>();
 
@@ -369,7 +377,6 @@ public class FundingSourceAction extends BaseAction {
     }
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -400,19 +407,26 @@ public class FundingSourceAction extends BaseAction {
       fundingSourceDB.setCenterType(fundingSource.getCenterType());
       fundingSourceDB.setDescription(fundingSource.getDescription());
 
-      if (file != null) {
 
-
-        fundingSourceDB
-          .setFile(this.getFileDB(fundingSourceDB.getFile(), file, fileFileName, this.getFundingSourceFilePath()));
-        FileManager.copyFile(file, this.getFundingSourceFilePath() + fundingSourceDB.getFile().getFileName());
-
-
-      }
-      if (fundingSourceDB.getFile().getFileName().isEmpty()) {
+      if (fundingSource.getFile().getId() == null) {
         fundingSourceDB.setFile(null);
+      } else {
+        fundingSourceDB.setFile(fundingSource.getFile());
       }
 
+      /*
+       * if (file != null) {
+       * fundingSourceDB
+       * .setFile(this.getFileDB(fundingSourceDB.getFile(), file, fileFileName, this.getFundingSourceFilePath()));
+       * FileManager.copyFile(file, this.getFundingSourceFilePath() + fundingSourceDB.getFile().getFileName());
+       * }
+       * try {
+       * if (fundingSourceDB.getFile().getFileName().isEmpty()) {
+       * fundingSourceDB.setFile(null);
+       * }
+       * } catch (Exception e) {
+       * }
+       */
 
       if (fundingSource.getBudgets() != null) {
         for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
@@ -473,6 +487,7 @@ public class FundingSourceAction extends BaseAction {
     this.budgetTypes = budgetTypes;
   }
 
+
   public void setFile(File file) {
     this.file = file;
   }
@@ -483,6 +498,10 @@ public class FundingSourceAction extends BaseAction {
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
+  }
+
+  public void setFileID(Integer fileID) {
+    this.fileID = fileID;
   }
 
   public void setFundingSource(FundingSource fundingSource) {

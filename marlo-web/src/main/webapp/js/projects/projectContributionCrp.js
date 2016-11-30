@@ -182,7 +182,6 @@ function updateNextUsers() {
 }
 
 function formatState(state) {
-  console.log(state.text);
   if(state.id != "-1") {
     var text = state.text.split(/-(.+)?/);
     var $state = $("<span><strong> Milestone for " + text[0] + "-</strong> " + text[1] + "</span>");

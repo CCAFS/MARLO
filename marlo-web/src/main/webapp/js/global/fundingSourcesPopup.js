@@ -69,25 +69,31 @@ $(document).ready(
       });
 
       // Event when the user select the contact person
-      $dialogContent.find("span.select").on("click", function() {
+      $dialogContent.find("span.name, span.select").on("click", function() {
         var $parent = $(this).parent().parent();
-        var projectId = $parent.find(".contactId").text();
-        var composedName = $parent.find(".name").text();
-        var budget = $parent.find(".budget").text();
-        var type = $parent.find(".budgetTypeName").text();
-        var typeId = $parent.find(".budgetTypeId").text();
 
         // Add Funding source
-        addProject(composedName, projectId, budget, type, typeId, institutionSelected, selectedYear);
+        addProject({
+            composedName: $parent.find(".name").text(),
+            id: $parent.find(".contactId").text(),
+            budget: $parent.find(".budget").text(),
+            type: $parent.find(".budgetTypeName").text(),
+            typeId: $parent.find(".budgetTypeId").text(),
+            institutionSelected: institutionSelected,
+            selectedYear: selectedYear
+        });
+
       });
 
       // Event to redirect to funding source section
-      $dialogContent.find("span.name").on("click", function() {
+      $dialogContent.find("span.linkIcon").on("click", function() {
         var $parent = $(this).parent().parent();
-        var projectId = $parent.find(".contactId").text();
+        var id = $parent.find(".contactId").text();
+
         var url = baseURL + "/fundingSources/" + currentCrpSession;
-        url += "/fundingSource.do?fundingSourceID=" + projectId + "&edit=true";
+        url += "/fundingSource.do?fundingSourceID=" + id + "&edit=true";
         window.open(url, '_blank');
+
       });
 
       // Event to find an user according to search field
@@ -103,95 +109,100 @@ $(document).ready(
         $dialogContent.find("#create-user").trigger('click');
       });
 
-      // Event to Create an user clicking in the button
-      $dialogContent.find(".create-button").on(
-          "click",
-          function() {
-            $dialogContent.find('.warning-info').empty().hide();
-            var invalidFields = [];
-            var project = {};
-            project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
-            project.description = $dialogContent.find("#description").val().trim();
-            project.title = $dialogContent.find("#title").val().trim();
-            project.startDate = $dialogContent.find("#startDate").val().trim();
-            project.fileID = fileID;
-            project.endDate = $dialogContent.find("#endDate").val().trim();
-            project.financeCode = $dialogContent.find("#financeCode").val().trim();
-            project.status = $dialogContent.find("#status").val().trim();
-            project.budgetType = $dialogContent.find("#budgetType").val().trim();
-            project.fileName = $dialogContent.find('input[name="file"]').val();
-            project.liaisonInstitution = institutionSelected;
-            project.institution = $dialogContent.find("#institution").val().trim();
-            project.contactName = $dialogContent.find("#contactName").val().trim();
-            project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
-            project.selectedYear = selectedYear;
-            project.budgets = [];
-            $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
-              project.budgets.push({
-                  year: $(e).attr('id').split('-')[1],
-                  budget: removeCurrencyFormat($(e).find('input').val())
-              });
-            });
-            project.budgets = JSON.stringify(project.budgets);
-
-            // Object for validate
-            var projectValidate = {};
-            projectValidate.description = project.description;
-            projectValidate.startDate = project.startDate;
-            projectValidate.endDate = project.endDate;
-            projectValidate.status = project.status;
-            projectValidate.contactName = project.contactName;
-            projectValidate.contactEmail = project.contactEmail;
-            projectValidate.institution = project.institution;
-
-            // Validate if fields are filled
-            $.each(projectValidate, function(key,value) {
-              if(value.length < 1) {
-                invalidFields.push($('label[for="' + key + '"]').text().trim().replace(':', ''));
-              } else if(value == -1) {
-                invalidFields.push('Select an option');
-              }
-            });
-
-            // Validate fileID
-            if(project.fileID == -1) {
-              invalidFields.push('Upload a contract proposal');
-            }
-
-            // Validate Email
-            var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-            if(!emailReg.test(project.contactEmail)) {
-              invalidFields.push('valid contact email');
-            }
-
-            if(invalidFields.length > 0) {
-              var msj = "You must fill " + invalidFields.join(', ');
-              $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
-            } else {
-
-              $.ajax({
-                  'url': baseURL + '/fundingSourceAdd.do',
-                  method: 'POST',
-                  data: project,
-                  beforeSend: function() {
-                    $dialogContent.find('.loading').show();
-                  },
-                  success: function(data) {
-                    if(data.status == "OK") {
-                      console.log(data);
-                      addProject(data.title, data.id, data.ammount, data.type, data.typeID, institutionSelected,
-                          selectedYear);
-                    } else {
-                      $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
-                    }
-                  },
-                  complete: function(data) {
-                    $dialogContent.find('.loading').fadeOut();
-                  }
-              });
-            }
-
+      // Event to Create a funding source clicking in the button
+      $dialogContent.find(".create-button").on("click", function() {
+        $dialogContent.find('.warning-info').empty().hide();
+        var invalidFields = [];
+        var project = {};
+        project.cofundedMode = $dialogContent.find("input[name='cofundedMode']").val().trim();
+        project.description = $dialogContent.find("#description").val().trim();
+        project.title = $dialogContent.find("#title").val().trim();
+        project.startDate = $dialogContent.find("#startDate").val().trim();
+        project.fileID = fileID;
+        project.endDate = $dialogContent.find("#endDate").val().trim();
+        project.financeCode = $dialogContent.find("#financeCode").val().trim();
+        project.status = $dialogContent.find("#status").val().trim();
+        project.budgetType = $dialogContent.find("#budgetType").val().trim();
+        project.fileName = $dialogContent.find('input[name="file"]').val();
+        project.liaisonInstitution = institutionSelected;
+        project.institution = $dialogContent.find("#institution").val().trim();
+        project.contactName = $dialogContent.find("#contactName").val().trim();
+        project.contactEmail = $dialogContent.find("#contactEmail").val().trim();
+        project.selectedYear = selectedYear;
+        project.budgets = [];
+        $('.budgetByYears .tab-content .tab-pane').each(function(i,e) {
+          project.budgets.push({
+              year: $(e).attr('id').split('-')[1],
+              budget: removeCurrencyFormat($(e).find('input').val())
           });
+        });
+        project.budgets = JSON.stringify(project.budgets);
+
+        // Object for validate
+        var projectValidate = {};
+        projectValidate.description = project.description;
+        projectValidate.startDate = project.startDate;
+        projectValidate.endDate = project.endDate;
+        projectValidate.status = project.status;
+        projectValidate.contactName = project.contactName;
+        projectValidate.contactEmail = project.contactEmail;
+        projectValidate.institution = project.institution;
+
+        // Validate if fields are filled
+        $.each(projectValidate, function(key,value) {
+          if(value.length < 1) {
+            invalidFields.push($('label[for="' + key + '"]').text().trim().replace(':', ''));
+          } else if(value == -1) {
+            invalidFields.push('Select an option');
+          }
+        });
+
+        // Validate fileID
+        if(project.fileID == -1) {
+          invalidFields.push('Upload a contract proposal');
+        }
+
+        // Validate Email
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        if(!emailReg.test(project.contactEmail)) {
+          invalidFields.push('valid contact email');
+        }
+
+        if(invalidFields.length > 0) {
+          var msj = "You must fill " + invalidFields.join(', ');
+          $dialogContent.find('.warning-info').text(msj).fadeIn('slow');
+        } else {
+
+          $.ajax({
+              'url': baseURL + '/fundingSourceAdd.do',
+              method: 'POST',
+              data: project,
+              beforeSend: function() {
+                $dialogContent.find('.loading').show();
+              },
+              success: function(data) {
+                if(data.status == "OK") {
+                  console.log(data);
+                  addProject({
+                      composedName: data.title,
+                      id: data.id,
+                      budget: data.ammount,
+                      type: data.type,
+                      typeId: data.typeID,
+                      institutionSelected: institutionSelected,
+                      selectedYear: selectedYear
+                  });
+                } else {
+                  $dialogContent.find('.warning-info').text(data.message).fadeIn('slow');
+                }
+              },
+              complete: function(data) {
+                $dialogContent.find('.loading').fadeOut();
+              }
+          });
+        }
+
+      });
 
       $dialogContent.find("form").on("submit", function(e) {
         event.preventDefault();
@@ -263,7 +274,7 @@ $(document).ready(
         getData('');
       }
 
-      addProject = function(composedName,projectId,budget,type,typeId,institutionSelected,selectedYear) {
+      addProject = function(fundingSource) {
         dialog.dialog("close");
       }
 

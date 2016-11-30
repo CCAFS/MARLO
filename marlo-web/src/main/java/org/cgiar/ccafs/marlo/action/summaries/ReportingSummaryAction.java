@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
@@ -43,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
+import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
@@ -114,25 +116,24 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
   private ProjectManager projectManager;
-
   private CrpProgramManager programManager;
-
   private InstitutionManager institutionManager;
-
   private ProjectBudgetManager projectBudgetManager;
+  private LocElementManager locElementManager;
   // Project from DB
   private Project project;
 
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
-    CrpProgramManager programManager, InstitutionManager institutionManager,
-    ProjectBudgetManager projectBudgetManager) {
+    CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
+    LocElementManager locElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
     this.programManager = programManager;
     this.institutionManager = institutionManager;
     this.projectBudgetManager = projectBudgetManager;
+    this.locElementManager = locElementManager;
   }
 
   @Override
@@ -182,7 +183,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
-        System.out.println("Pentaho SubReports: " + hm);
+        // Uncomment to see which Subreports are detecting the method getAllSubreports
+        // System.out.println("Pentaho SubReports: " + hm);
 
         // get project leader
         ProjectPartner projectLeader = project.getLeader();
@@ -861,7 +863,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
     fileName.append("Full_Project_Report-");
-    fileName.append(loggedCrp.getName() + "-");
+    fileName.append(project.getCrp().getName() + "-");
     fileName.append("P" + projectID + "-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".pdf");
@@ -905,38 +907,35 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getLocationsTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
-      new Class[] {String.class, Double.class, Double.class, String.class}, 0);
-      // Set<ProjectLocationElementType> letype = project.getProjectLocationElementTypes();
-
-    // TODO: get all selected and show it without consuming to much space
-    /*
-     * for (ProjectLocationElementType locType : project.getProjectLocationElementTypes().stream()
-     * .filter(plt -> plt.getIsGlobal()).collect(Collectors.toList())) {
-     * for (ProjectLocation pl : project.getProjectLocations().stream()
-     * .filter(pl -> pl.isActive() && pl.getLocElement().getLocElementType().getId() == locType.getId())
-     * .collect(Collectors.toList())) {
-     * LocElement le = pl.getLocElement();
-     * String locTypeName = null;
-     * Double locLat = null;
-     * Double locLong = null;
-     * String locName = null;
-     * if (le != null) {
-     * if (le.getLocElementType() != null) {
-     * locTypeName = le.getLocElementType().getName();
-     * }
-     * if (le.getLocGeoposition() != null) {
-     * locLat = le.getLocGeoposition().getLatitude();
-     * locLong = le.getLocGeoposition().getLongitude();
-     * }
-     * locName = le.getName();
-     * }
-     * model.addRow(new Object[] {locTypeName, locLat, locLong, locName});
-     * }
-     * }
-     */
+    TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name", "global"},
+      new Class[] {String.class, Double.class, Double.class, String.class, Boolean.class}, 0);
 
     if (!project.getProjectLocations().isEmpty()) {
+      // Get all selected and show it without consuming too much space
+      List<LocElement> locElementsAll = locElementManager.findAll();
+      for (ProjectLocationElementType projectLocType : project.getProjectLocationElementTypes().stream()
+        .filter(plt -> plt.getIsGlobal() && plt.getLocElementType().isActive()).collect(Collectors.toList())) {
+        String locTypeName = projectLocType.getLocElementType().getName();
+        String locNames = "";
+        int i = 0;
+
+        for (LocElement locElement : locElementsAll.stream()
+          .filter(le -> le.isActive() && le.getLocElementType() != null
+            && le.getLocElementType().getId() == projectLocType.getLocElementType().getId())
+          .collect(Collectors.toList())) {
+
+          if (locElement != null) {
+            if (i == 0) {
+              locNames += locElement.getName();
+            } else {
+              locNames += ", " + locElement.getName();
+            }
+            i++;
+          }
+        }
+        model.addRow(new Object[] {locTypeName, null, null, locNames, true});
+      }
+
       for (ProjectLocation pl : project.getProjectLocations().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
         LocElement le = pl.getLocElement();
@@ -954,8 +953,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
           locName = le.getName();
         }
-        model.addRow(new Object[] {locTypeName, locLat, locLong, locName});
+        model.addRow(new Object[] {locTypeName, locLat, locLong, locName, false});
       }
+
+
     }
     return model;
   }

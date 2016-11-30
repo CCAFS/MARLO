@@ -35,7 +35,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
-import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
@@ -103,7 +102,6 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
 
   private List<CrpClusterOfActivity> clusterofActivites;
-  private List<LocElementType> locScopeElements;
 
 
   private Map<String, String> projectStauses;
@@ -276,11 +274,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
-  }
-
-
-  public List<LocElementType> getLocScopeElements() {
-    return locScopeElements;
   }
 
 
@@ -532,8 +525,7 @@ public class ProjectDescriptionAction extends BaseAction {
      * .filter(c -> c.isActive() && c.getCrpProgram().getCrp().getId().equals(loggedCrp.getId()))
      * .collect(Collectors.toList());
      */
-    locScopeElements =
-      locationTypeManager.findAll().stream().filter(c -> c.isActive() && c.isScope()).collect(Collectors.toList());
+
 
     regionFlagships.addAll(loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
@@ -825,6 +817,7 @@ public class ProjectDescriptionAction extends BaseAction {
         return SUCCESS;
       } else {
         this.addActionMessage("");
+        this.setActionMessages(null);
         return REDIRECT;
       }
 
@@ -873,11 +866,6 @@ public class ProjectDescriptionAction extends BaseAction {
 
   public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
-  }
-
-
-  public void setLocScopeElementsType(List<LocElementType> locScopeElements) {
-    this.locScopeElements = locScopeElements;
   }
 
 

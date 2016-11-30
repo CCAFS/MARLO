@@ -117,12 +117,12 @@
             [#if !project.projectEditLeader]
               <p>Pre-setting</p>
             [#else]
-               
+              [#if !submission]
+                <p title="Ready for project leader completion">Ready for PL</p>
+              [/#if]
             [/#if]
             
-            [#if !submission && (!canEdit || !canSubmit) && project.projectEditLeader ]
-              <p title="The project can be submitted by Management liaisons and Contact points">Not Submitted</p>
-            [/#if]
+            
           </td>
           [#-- Track completition of entry --]
           [#if isPlanning]
@@ -131,7 +131,7 @@
           [#-- Summary PDF download --]
           <td>
             [#if false]
-            <a href="[@s.url namespace="/projects" action='reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
+            <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
               <img src="${baseUrl}/images/global/download-summary.png" height="25" title="[@s.text name="project.downloadPDf" /]" />
             </a>
             [#else]

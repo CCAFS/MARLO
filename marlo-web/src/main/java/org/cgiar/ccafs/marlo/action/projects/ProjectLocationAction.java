@@ -382,6 +382,15 @@ public class ProjectLocationAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setProjectLocations(projectDb.getProjectLocations());
+
+        for (CountryLocationLevel level : project.getLocationsData()) {
+          LocElementType elementType = locElementTypeManager.getLocElementTypeById(level.getId());
+          if (elementType.getId() == 2 || elementType.getCrp() != null) {
+            level.setAllElements(
+              elementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()));
+          }
+        }
+
         reader.close();
         this.setDraft(true);
       } else {
@@ -398,6 +407,8 @@ public class ProjectLocationAction extends BaseAction {
       if (project.getLocationsData() != null) {
         project.getLocationsData().clear();
       }
+
+      project.setLocationGlobal(false);
     }
 
   }
@@ -654,7 +665,9 @@ public class ProjectLocationAction extends BaseAction {
         }
         return SUCCESS;
       } else {
-           this.addActionMessage(""); return REDIRECT;
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
       }
     }
     return SUCCESS;

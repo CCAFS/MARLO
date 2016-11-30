@@ -153,7 +153,7 @@
       </div>
       [#if editable]
       <div class="form-group">
-        [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="title"  multiple=false required=true  className=" deliverableList" disabled=!editable/]
+        [@customForm.select name="" label=""  i18nkey="project.activities.deliverableSelect" listName="project.projectDeliverables" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=false  className=" deliverableList" disabled=!editable/]
       </div>
       [/#if]
     </div>
@@ -168,7 +168,7 @@
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
     <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.title" value="${(element.deliverable.title)!'null'}" />
-    <span class="name">${(element.deliverable.title)!'null'}</span>
+    <span class="name">${(element.deliverable.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

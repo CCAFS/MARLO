@@ -948,6 +948,7 @@ public class DeliverableAction extends BaseAction {
         return SUCCESS;
       } else {
         this.addActionMessage("");
+        this.setActionMessages(null);
         return REDIRECT;
       }
 

@@ -173,7 +173,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   public String getComposedName() {
-    return "<b>" + this.getBudgetType().getName() + "</b> - " + this.title;
+    return "<b> (F"+this.id+") " + this.getBudgetType().getName() + "</b> - " + this.title;
   }
 
   public String getContactPersonEmail() {

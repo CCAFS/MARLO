@@ -143,6 +143,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Deliverable() {
   }
 
+
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification, CrpClusterKeyOutput crpClusterKeyOutput, CrpProgramOutcome crpProgramOutcome,
@@ -167,7 +168,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createDate = createDate;
   }
 
-
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification) {
     this.project = project;
@@ -178,6 +178,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.modifiedBy = modifiedBy;
     this.modificationJustification = modificationJustification;
   }
+
 
   @Override
   public boolean equals(Object obj) {
@@ -203,6 +204,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return this.activeSince;
+  }
+
+  public String getComposedName() {
+    return "<b> (D" + this.id + ") " + this.deliverableType.getDescription() + "</b> - " + this.title;
   }
 
   public Date getCreateDate() {

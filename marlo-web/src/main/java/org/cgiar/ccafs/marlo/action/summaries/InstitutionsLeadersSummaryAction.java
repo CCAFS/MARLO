@@ -39,7 +39,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class InstitutionsLeadersAction extends BaseAction implements Summary {
+public class InstitutionsLeadersSummaryAction extends BaseAction implements Summary {
 
   /**
    * 
@@ -57,7 +57,7 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
   InputStream inputStream;
 
   @Inject
-  public InstitutionsLeadersAction(APConfig config, CrpManager crpManager) {
+  public InstitutionsLeadersSummaryAction(APConfig config, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
@@ -140,9 +140,7 @@ public class InstitutionsLeadersAction extends BaseAction implements Summary {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
-
     }
-
 
   }
 

@@ -287,7 +287,7 @@ public class ProjectSubmissionAction extends BaseAction {
       Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
       buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
       fileName = this.getFileName();
-      contentType = fileProperties.get("mime_type") != null ? (String) fileProperties.get("mime_type") : null;
+      contentType = "application/pdf";
     } catch (MalformedURLException e) {
       // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());

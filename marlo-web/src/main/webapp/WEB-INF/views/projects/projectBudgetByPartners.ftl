@@ -249,7 +249,7 @@
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
-    [#if (editable && isYearEditable(selectedYear)) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
+    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding((element.fundingSource.budgetType.id)!-1) ) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
     
     <p class="checked">
@@ -257,11 +257,14 @@
       <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.getRemaining(selectedYear))!0)?number?string(",##0.00")}</span>) </small>
     </p> 
     
+    [#if !isTemplate]
     <a href="[@s.url namespace="/fundingSources" action="${crpSession}/fundingSource"][@s.param name="fundingSourceID" value="${(element.fundingSource.id)!}" /][/@s.url]" class="" target="_BLANK"> 
-       
+    [/#if]
       <p> <span class="title">${(element.fundingSource.title)!}</span> </p>
+    [#if !isTemplate]
     </a>
-
+    [/#if]
+    
     <input type="hidden" class="id " name="${customName}.id" value="${(element.id)!}"/>
     <input type="hidden" class="institutionId" name="${customName}.institution.id" value="${(element.institution.id)!}"/>
     <input type="hidden" class="selectedYear" name="${customName}.year" value="${(selectedYear)!}"/>
@@ -281,7 +284,7 @@
           <div class="row"><strong>Amount:</strong></div>
         </div>
         <div class="row col-md-9">
-        [#if (editable && isYearEditable(selectedYear)) || isTemplate]
+        [#if (editable && isYearEditable(selectedYear) && action.canEditFunding((element.fundingSource.budgetType.id)!-1)) || isTemplate]
           [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>

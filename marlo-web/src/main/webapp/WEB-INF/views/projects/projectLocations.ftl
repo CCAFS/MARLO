@@ -40,37 +40,47 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
-          <h3 class="headTitle">[@s.text name="projectLocations.title" /]</h3>  
+          
+          <div class="row">
+          <h3 class="headTitle col-md-7">[@s.text name="projectLocations.title" /]</h3>  
+              <div class="col-md-5 isGlobal">
+              <br />
+              [#if editable]
+              <label class="col-md-10" for="">[@s.text name="projectLocations.isGlobal" /]</label>
+              <div class="checkboxFour col-md-2">
+              <input id="checkboxFourInput" class="hidden" type="checkbox" name="project.locationGlobal" value=[#if project.locationGlobal]"true" checked[#else]"false"[/#if]/>
+              <label for="checkboxFourInput"></label>
+              </div>
+              [#else]
+              <h4 style="text-align:center; display: inline-block">
+                [#if (project.locationGlobal?has_content)?string('true','false')=="true"]
+                  <label for="">[@s.text name="projectLocations.isGlobalYes" /]</label>
+                [#else]
+                  <label>[@s.text name="projectLocations.isGlobalNo" /]</label>
+                [/#if]
+              </h4>
+              [/#if]
+            </div>
+            [#--  
+            <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
+            <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
+            --]
+          </div>
           <div id="" class="borderBox projectLocationsWrapper">
             [#-- Content--]
-              <div class="row">
-              <div class="col-md-5">
-                [#if editable]
-                  [@customForm.yesNoInput name="project.locationGlobal" label="projectLocations.isGlobal"  inverse=false value="${(project.locationGlobal?has_content)?string('true','false')}" cssClass="text-left " /]              
-                [#else]
-                <h4 style="text-align:center; display: inline-block">
-                  [#if (project.locationGlobal?has_content)?string('true','false')=="true"]
-                    <label for="">[@s.text name="projectLocations.isGlobalYes" /]</label>
-                  [#else]
-                    <label>[@s.text name="projectLocations.isGlobalNo" /]</label>
-                  [/#if]
-                </h4>
-                [/#if]
-              </div>
-              <div id="view2" title="view 2" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon2.png" alt="Layout2" /></div>
-              <div id="view1" title="view 1" class="btn-primary  view" ><img src="${baseUrl}/images/global/layout-icon.png" alt="Layout1" /></div>
-              </div>
-              [#if editable]
+              
+              [#-- [#if editable]
               <div class="text-center col-md-12  alert alert-info"><span> [@s.text name="projectLocations.selectLocations" /] </span></div>
               [/#if]
+               --]
               
               <div  class="col-md-12 map">
                 <div id="map" class="col-md-12"></div>
               </div>
               
-              <div id="selectsContent" class="col-md-12 selectWrapper-horizontal simpleBox " listname="project.locationsData">
+              <div id="selectsContent" class="col-md-12 simpleBox " listname="project.locationsData">
                 [#-- Content collapsible--]
-                <div class="selectWrapper select-horizontal row">
+                <div class="selectWrapper row">
                 [#if project.locationsData?has_content]
                   [#list project.locationsData as locationLevels]
                     [@locationLevel element=locationLevels name="${locationLevelName}" index=locationLevels_index list=locationLevels.list?? && locationLevels.list /]
@@ -82,7 +92,8 @@
               
             [#if editable]
             [#-- locations level Select --]
-            <select name="" id="" class="selectLocationLevel select " >
+            <label for="locLevelSelect">Select to add a location level:</label>
+            <select name="" id="locLevelSelect" class="selectLocationLevel select " >
             <option value="-1" >Select an option...</option>
               [#list locationsLevels as locLevels]
                 [#list locLevels.locations as locations]
@@ -116,22 +127,27 @@
 [#macro locationLevel element  name index template=false list=false]
   [#local customName = "${name}[${index}]" /]
   [#-- Content collapsible--]
-  <div id="locationLevel-${template?string('template',index)}" class="locationLevel locationLevel-horizontal" style="display:${template?string('none','block')}">
+  <div id="locationLevel-${template?string('template',index)}" class="locationLevel col-md-12" style="display:${template?string('none','block')}">
     [#-- header element --]
     <div class="col-md-12 locationName-content borderBox closed">
-      <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
-      <div class="locationLevel-option">${(element.name)!}</div>
+      <div class="col-md-8 locationLevel-optionSelect">
+        <div class="glyphicon glyphicon-chevron-up collapsible" ></div>
+        <div class="locationLevel-option">${(element.name)!}</div>
+      </div>
+      <div class="col-md-4">
+        [#if editable]
+        <div class="checkBox" style="display:${list?string('block','none')}">
+          <span class="">[@s.text name="projectLocations.selectAllSites" /] </span>
+          <input  name="${customName}.allCountries" class=" allCountries" type="checkbox" [#if (element.allCountries?has_content)?string == "false"]value="false" [#else]value="true" checked[/#if]   />
+        </div>
+        [/#if]
+      </div>
       [#if editable]
       <div class="removeLocationLevel removeElement" title="Remove Location level"></div>
       [/#if]
     </div>
     <div class="col-md-12 locationLevel-optionContent " listname="${customName}.locElements">
-      [#if editable]
-      <div class="col-md-12 checkBox" style="display:${list?string('block','none')}">
-        <span class="col-md-10">[@s.text name="projectLocations.selectAllSites" /]</span>
-        <input  name="${customName}.allCountries" class="col-md-1 allCountries" type="checkbox" [#if (element.allCountries?has_content)?string == "false"]value="false" [#else]value="true" checked[/#if]   />
-      </div>
-      [/#if]
+      
       [#-- Content of locations--]
       <div class="optionSelect-content row">
         [#if element.locElements?has_content]
@@ -149,11 +165,11 @@
         [/#list]
         [/#if]
       </select>
-        <div class="col-md-12 coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
+        <div class=" coordinates-inputs" style="display:${(element.list?? && !element.list)?string('block','none')}">
+          <div class="nameWrapper"><input placeholder="name (Required)" class="name form-control" type="text" /></div>
           <div class="latitudeWrapper"><input placeholder="Latitude" class="latitude form-control" type="text" /></div>
           <div class="longitudeWrapper"><input placeholder="Longitude" class="longitude form-control " type="text" /></div>
-          <div class="nameWrapper"><input placeholder="name (Required)" class="name form-control" type="text" /></div>
-          <span class="addLocation glyphicon glyphicon-plus-sign button-green"></span>
+          <div class="buttonBlock addLocation text-right"><div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addLocation"/]</div></div>
         </div>
         [/#if]
     </div>
@@ -167,7 +183,7 @@
   [#local customName = "${name}[${index}]" /]
   [#assign countID = countID+1/]
   [#-- Content collapsible--]
-  <div id="location-${template?string('template',countID)}" class="col-md-12 locElement" style="display:${template?string('none','block')}">
+  <div id="location-${template?string('template',countID)}" class="col-md-6 locElement" style="display:${template?string('none','block')}">
     <div class="locations col-md-12">
       <div class="locationName"><span class="lName">${(element.name)!}</span> [#if element.locGeoposition?? && element.locGeoposition.latitude?? && element.locGeoposition.longitude?? && element.locGeoposition.latitude!=0 && element.locGeoposition.longitude!=0] <span class="lPos">[#if isList!=true](${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})[/#if]</span> [/#if] </div>
       [#if editable]

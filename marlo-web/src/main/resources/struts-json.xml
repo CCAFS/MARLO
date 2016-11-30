@@ -36,18 +36,7 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
-
-		<action name="institutionsLeader"
-			class="org.cgiar.ccafs.marlo.action.summaries.InstitutionsLeadersAction">
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				     
-				<param name="contentType">text/xls</param>
-				       
-				<param name="contentDisposition">attachment;filename="${fileName}"</param>
-			</result>
-		</action>
-
+    
 		<action name="searchUsers"
 			class="org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction"
 			method="search">
@@ -243,6 +232,14 @@
 		
 		<action name="institutionsByTypeAndCountry"
       class="org.cgiar.ccafs.marlo.action.json.project.InstitutionsByTypeAndCountryAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="geopositionByElement"
+      class="org.cgiar.ccafs.marlo.action.json.project.GeopositionByLocElementAction">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
