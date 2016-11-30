@@ -1123,7 +1123,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .panel span.listButton, .budget span.listButton {
-  float:right;
+  /* float:right; */
   padding: 0px 8px;
   cursor: pointer;
 }
