@@ -65,11 +65,13 @@
         [#assign hasFile = fundingSource.file?? /]
         <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.file.id)!}" />
         [#-- Input File --]
+        [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+        [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
           <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!(fundingSource.file.id +' - No file name')} [/#if]</span> 
-          <span class="removeIcon"> </span> 
+          [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
         
       </div>
