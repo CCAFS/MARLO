@@ -333,7 +333,8 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll();
+      institutions = institutionManager.findAll().stream().filter(c -> c.getInstitutionType().getId().intValue() == 3)
+        .collect(Collectors.toList());;
 
       liaisonInstitutions = new ArrayList<>();
 
