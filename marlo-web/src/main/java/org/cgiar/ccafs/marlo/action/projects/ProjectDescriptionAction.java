@@ -385,7 +385,6 @@ public class ProjectDescriptionAction extends BaseAction {
         }
         if (project.getAnnualReportToDonnor() != null) {
           project.setAnnualReportToDonnor(fileDBManager.getFileDBById(project.getAnnualReportToDonnor().getId()));
-
         }
 
 
@@ -599,11 +598,6 @@ public class ProjectDescriptionAction extends BaseAction {
             this.getBilateralContractAbsolutePath()));
           FileManager.copyFile(file,
             this.getBilateralContractAbsolutePath() + project.getBilateralContractName().getFileName());
-
-
-        }
-        if (project.getBilateralContractName().getFileName().isEmpty()) {
-          project.setBilateralContractName(null);
         }
 
 
