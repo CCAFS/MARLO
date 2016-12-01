@@ -148,8 +148,9 @@ public class ImpactSubmissionAction extends BaseAction {
     StringBuilder message = new StringBuilder();
     String[] values = new String[3];
     values[0] = this.getCurrentUser().getComposedCompleteName();
-    values[1] = "<b>" + crpProgram.getCrp().getAcronym().toUpperCase() + " Impact Pathway</b> for the Flagship: <b>"
+    values[1] = "<b>" + crpProgram.getCrp().getAcronym().toUpperCase() + " impact pathway</b> for <b>"
       + crpProgram.getAcronym().toUpperCase() + " - " + crpProgram.getName() + "</b>";
+    values[2] = crpProgram.getAcronym().toUpperCase();
 
     String subject = null;
 
@@ -178,7 +179,7 @@ public class ImpactSubmissionAction extends BaseAction {
       User user = crpProgramLeader.getUser();
       if (user.getId() != this.getCurrentUser().getId()) {
         ccEmails.append(user.getEmail());
-        ccEmails.append(" ");
+        ccEmails.append(";");
       }
     }
     // CC will be the other MLs.
