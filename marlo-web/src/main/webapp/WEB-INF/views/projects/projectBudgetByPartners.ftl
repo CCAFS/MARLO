@@ -249,7 +249,9 @@
   <div id="projectW3bilateralFund-${isTemplate?string('template', index )}" class="projectW3bilateralFund expandableBlock grayBox" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]" /]
     [#-- Remove --]
-    [#if (editable && isYearEditable(selectedYear) && action.canEditFunding((element.fundingSource.budgetType.id)!-1) ) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
+    [#if (editable && isYearEditable(selectedYear) && 
+
+action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) ) || isTemplate]<div class="removeIcon removeW3bilateralFund" title="Remove"></div>[/#if]
     [#-- Project Title --]
     
     <p class="checked">
@@ -284,7 +286,7 @@
           <div class="row"><strong>Amount:</strong></div>
         </div>
         <div class="row col-md-9">
-        [#if (editable && isYearEditable(selectedYear) && action.canEditFunding((element.fundingSource.budgetType.id)!-1)) || isTemplate]
+        [#if (editable && isYearEditable(selectedYear) && action.canEditFunding(((element.fundingSource.budgetType.id)!-1),(element.institution.id)!-1) )|| isTemplate]
           [@customForm.input name="${customName}.amount" i18nkey="budget.amount" showTitle=false className="currencyInput fundInput type-${(element.fundingSource.budgetType.id)!'none'}" required=true /]
         [#else]
           <div class="input"><p>US$ <span>${((element.amount)!0)?number?string(",##0.00")}</span></p></div>
