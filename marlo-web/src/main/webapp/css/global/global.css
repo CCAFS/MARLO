@@ -105,6 +105,7 @@ a.addLink {
   margin: 0 7px;
   cursor: pointer;
   border-radius: 4px;
+  display: block;
 }
 
 .bigAddButton:hover {
