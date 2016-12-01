@@ -411,6 +411,8 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getLeader().getId().longValue() != -1) {
         fundingSourceDB.setLeader(fundingSource.getLeader());
       }
+
+      fundingSourceDB.setTitle(fundingSource.getTitle());
       fundingSourceDB.setStatus(fundingSource.getStatus());
       fundingSourceDB.setStartDate(fundingSource.getStartDate());
       fundingSourceDB.setEndDate(fundingSource.getEndDate());
