@@ -1118,7 +1118,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
+    return false;
 
   }
 
@@ -1174,7 +1174,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
+    return true;
 
   }
 
