@@ -155,6 +155,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.validateProjectDeliverables();
           break;
 
+
         case OUTCOMES:
           this.validateProjectOutcomes();
           break;
