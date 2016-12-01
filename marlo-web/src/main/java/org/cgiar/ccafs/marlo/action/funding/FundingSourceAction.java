@@ -389,17 +389,7 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (institutions != null) {
-        institutions.clear();
-      }
-
-      if (liaisonInstitutions != null) {
-        liaisonInstitutions.clear();
-      }
-
-      if (status != null) {
-        status.clear();
-      }
+      fundingSource.setFile(null);
     }
   }
 

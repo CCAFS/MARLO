@@ -18,14 +18,18 @@ package org.cgiar.ccafs.marlo.validation.fundingSource;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -34,6 +38,9 @@ public class FundingSourceValidator extends BaseValidator {
   BaseAction action;
   @Inject
   private CrpManager crpManager;
+
+  @Inject
+  private FundingSourceManager fundingSourceManager;
 
   private Path getAutoSaveFilePath(FundingSource fundingSource, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
@@ -90,12 +97,33 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.contactPersonEmail", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    double totalYear = 0;
+    FundingSource fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSource.getId());
+
+    for (ProjectBudget projectBudget : fundingSourceDB.getProjectBudgets().stream()
+      .filter(c -> c.isActive() && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList())) {
+      totalYear = totalYear + projectBudget.getAmount().doubleValue();
+    }
+
+    if (fundingSource.getBudgets() != null) {
+      int i = 0;
+      for (FundingSourceBudget budget : fundingSource.getBudgets()) {
+        if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
+          double total = budget.getBudget().doubleValue() - totalYear;
+          if (total < 0) {
+            action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
+          }
+        }
+        i++;
+      }
+    }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
     }
+
 
   }
 
