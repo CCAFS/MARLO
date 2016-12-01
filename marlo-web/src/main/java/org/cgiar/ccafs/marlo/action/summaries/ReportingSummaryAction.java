@@ -58,7 +58,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -651,7 +650,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String deliv_sub_type = null;
         String deliv_status = deliverable.getStatusName();
         String deliv_year = null;
-        String key_output = null;
+        String key_output = "";
         String leader = null;
         String institution = null;
         String funding_sources = "";
@@ -695,7 +694,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          funding_sources += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
+          funding_sources += "&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
         }
         if (funding_sources.isEmpty()) {
           funding_sources = null;
@@ -740,6 +739,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         if (cross_cutting.isEmpty()) {
           cross_cutting = null;
+        }
+
+        if (key_output.isEmpty()) {
+          key_output = null;
         }
 
         model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
@@ -907,33 +910,34 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getLocationsTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name", "global"},
-      new Class[] {String.class, Double.class, Double.class, String.class, Boolean.class}, 0);
+    TypedTableModel model = new TypedTableModel(new String[] {"level", "lat", "long", "name"},
+      new Class[] {String.class, Double.class, Double.class, String.class}, 0);
 
     if (!project.getProjectLocations().isEmpty()) {
-      // Get all selected and show it without consuming too much space
+      // Get all selected and show it
       List<LocElement> locElementsAll = locElementManager.findAll();
       for (ProjectLocationElementType projectLocType : project.getProjectLocationElementTypes().stream()
         .filter(plt -> plt.getIsGlobal() && plt.getLocElementType().isActive()).collect(Collectors.toList())) {
         String locTypeName = projectLocType.getLocElementType().getName();
-        String locNames = "";
-        int i = 0;
 
         for (LocElement locElement : locElementsAll.stream()
           .filter(le -> le.isActive() && le.getLocElementType() != null
             && le.getLocElementType().getId() == projectLocType.getLocElementType().getId())
           .collect(Collectors.toList())) {
-
+          Double locLat = null;
+          Double locLong = null;
+          String locName = null;
           if (locElement != null) {
-            if (i == 0) {
-              locNames += locElement.getName();
-            } else {
-              locNames += ", " + locElement.getName();
+
+            if (locElement.getLocGeoposition() != null) {
+              locLat = locElement.getLocGeoposition().getLatitude();
+              locLong = locElement.getLocGeoposition().getLongitude();
             }
-            i++;
+            locName = locElement.getName();
           }
+
+          model.addRow(new Object[] {locTypeName, locLat, locLong, locName});
         }
-        model.addRow(new Object[] {locTypeName, null, null, locNames, true});
       }
 
       for (ProjectLocation pl : project.getProjectLocations().stream().filter(c -> c.isActive())
@@ -953,12 +957,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
           locName = le.getName();
         }
-        model.addRow(new Object[] {locTypeName, locLat, locLong, locName, false});
+        model.addRow(new Object[] {locTypeName, locLat, locLong, locName});
       }
 
 
     }
     return model;
+
   }
 
   public Crp getLoggedCrp() {
@@ -968,9 +973,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader, String cycle, int year) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"title", "center", "current_date", "project_submission", "exist"},
-        new Class[] {String.class, String.class, String.class, String.class, Integer.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew"},
+      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -997,10 +1002,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     title += "P" + Long.toString(projectID);
 
-    // Get UTC datetime
-    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm 'UTC'");
-    String current_date = utc.format(format);
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String current_date = timezone.format(format) + this.getTimeZone();
 
     // Filling submission
     List<Submission> submissions = new ArrayList<>();
@@ -1017,7 +1022,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         LOG.error("More than one submission was found, the report will retrieve the first one");
       }
       Submission fisrtSubmission = submissions.get(0);
-      String submissionDate = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm 'UTC'").format(fisrtSubmission.getDateTime());
+      String submissionDate = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm").format(fisrtSubmission.getDateTime());
+
       submission = "Submitted on " + submissionDate + " (" + fisrtSubmission.getCycle() + " cycle "
         + fisrtSubmission.getYear() + ")";
     } else {
@@ -1031,16 +1037,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     String centerAcry = "";
     centerAcry = project.getCrp().getName();
-
-    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1});
+    Boolean isNew = this.isProjectNew(projectID);
+    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew});
     return model;
   }
 
   private TypedTableModel getNullMasterTableModel(String cycle, int year) {
     // Initialization of Model
     TypedTableModel model =
-      new TypedTableModel(new String[] {"title", "center", "current_date", "project_submission", "exist"},
-        new Class[] {String.class, String.class, String.class, String.class, Integer.class});
+      new TypedTableModel(new String[] {"title", "center", "current_date", "project_submission", "exist", "isNew"},
+        new Class[] {String.class, String.class, String.class, String.class, Integer.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -1050,27 +1056,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       title = "P" + Long.toString(projectID);
     }
 
-    // Get UTC datetime
-    ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm 'UTC'");
-    String current_date = utc.format(format);
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String current_date = timezone.format(format) + timezone.getZone();
 
-    model.addRow(new Object[] {title, "404", current_date, "", 0});
+    model.addRow(new Object[] {title, "404", current_date, "", 0, false});
     return model;
   }
 
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
-        "out_unit", "cross_cutting"},
+        "out_unit", "cross_cutting", "exp_unit"},
       new Class[] {Long.class, String.class, Long.class, String.class, String.class, String.class, String.class,
-        String.class, String.class},
+        String.class, String.class, String.class},
       0);
 
     if (!project.getProjectOutcomes().isEmpty()) {
       for (ProjectOutcome project_outcome : project.getProjectOutcomes().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
         String exp_value = null;
+        String exp_unit = null;
         String out_fl = null;
         String out_year = null;
         String out_value = null;
@@ -1091,13 +1098,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           }
         }
 
-        exp_value = project_outcome.getExpectedValue() + " ";
+        exp_value = project_outcome.getExpectedValue() + "";
         if (out_unit == null) {
           if (project_outcome.getExpectedUnit() != null) {
-            exp_value += project_outcome.getExpectedUnit().getName();
+            exp_unit = project_outcome.getExpectedUnit().getName();
           }
         } else {
-          exp_value += out_unit;
+          exp_unit = out_unit;
         }
 
         if (project_outcome.getGenderDimenssion() != null && !project_outcome.getGenderDimenssion().isEmpty()) {
@@ -1115,7 +1122,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
 
         model.addRow(new Object[] {exp_value, project_outcome.getNarrativeTarget(), project_outcome.getId(), out_fl,
-          out_year, out_value, out_statement, out_unit, cross_cutting});
+          out_year, out_value, out_statement, out_unit, cross_cutting, exp_unit});
       }
     }
 

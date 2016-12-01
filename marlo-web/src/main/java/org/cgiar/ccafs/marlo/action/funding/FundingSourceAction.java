@@ -243,12 +243,15 @@ public class FundingSourceAction extends BaseAction {
 
   public int getIndexBugets(int year) {
     int i = 0;
-    for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
-      if (fundingSourceBudget.getYear().intValue() == year) {
-        return i;
+    if (fundingSource.getBudgets() != null) {
+      for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
+        if (fundingSourceBudget.getYear().intValue() == year) {
+          return i;
+        }
+        i++;
       }
-      i++;
     }
+
     return -1;
 
   }
@@ -411,6 +414,8 @@ public class FundingSourceAction extends BaseAction {
       if (fundingSource.getLeader().getId().longValue() != -1) {
         fundingSourceDB.setLeader(fundingSource.getLeader());
       }
+
+      fundingSourceDB.setTitle(fundingSource.getTitle());
       fundingSourceDB.setStatus(fundingSource.getStatus());
       fundingSourceDB.setStartDate(fundingSource.getStartDate());
       fundingSourceDB.setEndDate(fundingSource.getEndDate());

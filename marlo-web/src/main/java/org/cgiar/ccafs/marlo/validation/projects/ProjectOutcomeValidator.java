@@ -121,6 +121,10 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+          if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
 
@@ -191,7 +195,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
         crpProgramOutcomeManager.getCrpProgramOutcomeById(projectOutcome.getCrpProgramOutcome().getId()));
       if (!(projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() == null
         || projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getId() == -1)) {
-        if (projectOutcome.getExpectedValue() == 0) {
+
+        if (projectOutcome.getExpectedValue() == null || projectOutcome.getExpectedValue().longValue() < 0) {
           this.addMessage(action.getText("projectOutcome.expectedValue"));
           action.getInvalidFields().put("input-projectOutcome.expectedValue", InvalidFieldsMessages.EMPTYFIELD);
         }
