@@ -29,7 +29,7 @@
     { 'title': 'Outputs',
       'items': [
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
-      { 'slug': '',  'name': 'Project Highlights',  'action': '',  'active': false ,'show': reportingActive }
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
     { 'title': 'Activities',
