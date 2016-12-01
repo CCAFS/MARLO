@@ -293,7 +293,7 @@ public class CrpAdminManagmentAction extends BaseAction {
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
     String ccEmail = this.getCurrentUser().getEmail() + ";";
-    // TODO: CC will be also the others FL already assigned to the Flagship
+    // CC will be also the others FL already assigned to the Flagship
     for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
       .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
       ccEmail += crpProgramLeader.getUser().getEmail() + ";";
