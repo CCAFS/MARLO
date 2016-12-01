@@ -121,6 +121,10 @@ public class ProjectOutcomeValidator extends BaseValidator {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
               InvalidFieldsMessages.EMPTYFIELD);
           }
+          if (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() < 0) {
+            action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
 
