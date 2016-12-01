@@ -94,7 +94,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
     if (action.isReportingActive()) {
-      this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getPlanningYear(),
+      this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
         ProjectSectionStatusEnum.OUTCOMES.getStatus());
     } else {
       this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),

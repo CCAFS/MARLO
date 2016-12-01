@@ -149,7 +149,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
           .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
       }
       if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
+        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
           ProjectSectionStatusEnum.BUDGETBYCOA.getStatus());
       } else {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),

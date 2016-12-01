@@ -72,7 +72,7 @@ public class ProjectLocationValidator extends BaseValidator {
     }
 
     if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getPlanningYear(),
+      this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
         ProjectSectionStatusEnum.LOCATIONS.getStatus());
     } else {
       this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
