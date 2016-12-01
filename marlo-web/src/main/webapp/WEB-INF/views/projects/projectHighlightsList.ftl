@@ -1,15 +1,15 @@
 [#ftl]
 [#assign title = "Project Highlights" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectHiglights.js","${baseUrl}/js/global/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrl}/css/projects/projectContributionsCrpList.css"] /]
+[#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectHighlightsList.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
-  {"label":"projectContributionsCrpList", "nameSpace":"/projects", "action":""}
+  {"label":"projectHighlights", "nameSpace":"/projects", "action":""}
 ] /]
 
 
@@ -36,23 +36,36 @@
         <h3 class="headTitle">[@s.text name="projectHighlights.title" /]</h3> 
         <div id="" class="clearfix">
            
-          <div class="highlights-block borderBox">
+          <div class="highlights-block simpleBox">
             [#-- Project Highlights list --]
+            
+            [#assign projectHighlights = [
+              { "id": "1",
+                "title": "Succesful communications on the Projected Shifts in Coffea arabica Suitability among Major Global Producing Regions Due to Climate Change",
+                "author":"Ovalle-Rivera O, Läderach P, Bunn C, Obersteiner M, Schroth G",
+                "year":"2015",
+                "subject":"Coffea arabica, climate change, productivity",
+                "":"",
+                "":"",
+                "":""
+              }  
+            ] /]
+            
             <div class="highlights-list">
-              [@highlightsList highlights=(project.highlights)![]  /]
+              [@highlightsList highlights=(projectHighlights)![]  /]
             </div>
-            [#if !project.highlights?has_content]
+            [#--  --if !project.highlights?has_content]
               <p class="textMessage text-center">[@s.text name="projectHighlights.empty" /]</p>
-            [/#if] 
-          </div>
+            [/#if--] 
             [#-- Add a new highlight --]
-            [#if true] 
-            <div class="text-center"> 
-              <a class="bigAddButton" href="[@s.url action='addNewhighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addHighlight" /]
-              </a>
-            </div>
-            [/#if]
+          </div>
+          [#if true] 
+          <div class="text-right"> 
+            <a class="button-blue" href="[@s.url action='addNewhighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addHighlight" /]
+            </a>
+          </div>
+          [/#if]
            
         </div>     
       </div>
@@ -81,13 +94,13 @@
       <tbody>
   [#if highlights?has_content]
       [#list highlights as hl]
-        [#assign dlurl][@s.url namespace=namespace action='highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#assign]
+        [#assign dlurl][@s.url namespace=namespace action='${crpSession}/highlight' ][@s.param name='highlightID']${hl.id}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url][/#assign]
         <tr>
           <td class="id" ><a href="${dlurl}">${hl.id}</a></td> 
           <td class="name"><a href="${dlurl}">[#if hl.title?trim?has_content]${hl.title}[#else]Untitled[/#if]</a></td>
           <td class="type">[#if hl.title?trim?has_content]${hl.author}[#else]Not defined[/#if]</td>
           <td class="year">[#if hl.title?trim?has_content]${hl.year}[#else]Not defined[/#if]</td>
-          <td class="removeHighlight-row">
+          <td class="removeHighlight-row text-center">
             [#if canEdit && action.hasPermission("removeHighlight", project.id) && (hl.year gte  action.getCurrentReportingYear()) ]
               <a id="removeHighlight-${hl.id}" class="removeHighlight" href="highlightID${hl.id}" title="" >
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 

@@ -2386,15 +2386,17 @@ p.projectSubmitted {
   /* margin-top: 3px; */
   text-align: center;
   background: #668fda;
-  border-bottom: 1px solid #5f81c1;
+  border-bottom: 2px solid #5f81c1;
   color: #fff;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   display: inline-block;
 }
 
-.button-blue a{
+a.button-blue,
+a.button-blue:hover{
   color:#fff;
+  text-decoration:none;
 }
 
 .button-blue:hover { 
