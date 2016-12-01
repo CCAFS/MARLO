@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.fundingSource.FundingSourceValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -89,6 +90,7 @@ public class FundingSourceAction extends BaseAction {
   private String fileFileName;
   private long fundingSourceID;
   private FundingSource fundingSource;
+  private FundingSourceValidator validator;
 
 
   private Map<String, String> status;
@@ -106,17 +108,18 @@ public class FundingSourceAction extends BaseAction {
 
   private String transaction;
 
-
   @Inject
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
-    BudgetTypeManager budgetTypeManager, FileDBManager fileDBManager, UserManager userManager) {
+    BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, FileDBManager fileDBManager,
+    UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
+    this.validator = validator;
     this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
@@ -147,7 +150,6 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
     return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
@@ -155,6 +157,7 @@ public class FundingSourceAction extends BaseAction {
 
 
   }
+
 
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
@@ -192,15 +195,14 @@ public class FundingSourceAction extends BaseAction {
 
   }
 
-
   public Map<String, String> getBudgetTypes() {
     return budgetTypes;
   }
 
+
   public File getFile() {
     return file;
   }
-
 
   public String getFileContentType() {
     return fileContentType;
@@ -211,10 +213,10 @@ public class FundingSourceAction extends BaseAction {
     return fileFileName;
   }
 
+
   public Integer getFileID() {
     return fileID;
   }
-
 
   public FundingSource getFundingSource() {
     return fundingSource;
@@ -225,6 +227,7 @@ public class FundingSourceAction extends BaseAction {
     String upload = config.getUploadsBaseFolder();
     return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
   }
+
 
   public String getFundingSourceFileURL() {
     return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
@@ -330,6 +333,8 @@ public class FundingSourceAction extends BaseAction {
         if (fundingSource.getFile() != null) {
           if (fundingSource.getFile().getId() != null) {
             fundingSource.setFile(fileDBManager.getFileDBById(fundingSource.getFile().getId()));
+          } else {
+            fundingSource.setFile(null);
           }
         }
 
@@ -384,17 +389,7 @@ public class FundingSourceAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (institutions != null) {
-        institutions.clear();
-      }
-
-      if (liaisonInstitutions != null) {
-        liaisonInstitutions.clear();
-      }
-
-      if (status != null) {
-        status.clear();
-      }
+      fundingSource.setFile(null);
     }
   }
 
@@ -484,7 +479,7 @@ public class FundingSourceAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
-      this.setInvalidFields(new HashMap<>());
+
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -507,7 +502,6 @@ public class FundingSourceAction extends BaseAction {
     this.budgetTypes = budgetTypes;
   }
 
-
   public void setFile(File file) {
     this.file = file;
   }
@@ -516,6 +510,7 @@ public class FundingSourceAction extends BaseAction {
   public void setFileContentType(String fileContentType) {
     this.fileContentType = fileContentType;
   }
+
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
@@ -533,10 +528,10 @@ public class FundingSourceAction extends BaseAction {
     this.fundingSourceID = fundingSourceID;
   }
 
-
   public void setInstitutions(List<Institution> institutions) {
     this.institutions = institutions;
   }
+
 
   public void setInstitutionsDonors(List<Institution> institutionsDonors) {
     this.institutionsDonors = institutionsDonors;
@@ -556,6 +551,13 @@ public class FundingSourceAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, fundingSource, true);
+    }
   }
 
 }

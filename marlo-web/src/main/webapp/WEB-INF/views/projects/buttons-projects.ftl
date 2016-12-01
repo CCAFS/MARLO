@@ -48,7 +48,7 @@
 [#assign lastRecord = recordsList[0] /]
 <div class="clearfix"></div>
 <span id="lastUpdateMessage" class="pull-right"> 
-  Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
+  Last edit was made on <span class="datetime">${(lastRecord.createdDate)?datetime} ${(timeZone)!}</span> by <span class="modifiedBy">${lastRecord.user.composedCompleteName}</span>  
 </span>
 [/#if]
 
