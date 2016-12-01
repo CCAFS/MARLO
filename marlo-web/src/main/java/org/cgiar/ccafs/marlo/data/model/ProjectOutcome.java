@@ -34,7 +34,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   private User createdBy;
   @Expose
-  private long expectedValue;
+  private Long expectedValue;
   @Expose
   private SrfTargetUnit expectedUnit;
   @Expose
@@ -157,7 +157,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public long getExpectedValue() {
+  public Long getExpectedValue() {
     return expectedValue;
   }
 
@@ -304,7 +304,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setExpectedValue(long expectedValue) {
+  public void setExpectedValue(Long expectedValue) {
     this.expectedValue = expectedValue;
   }
 
