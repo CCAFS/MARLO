@@ -35,7 +35,11 @@ import com.google.inject.Inject;
 
 public class FundingSourceValidator extends BaseValidator {
 
+  private boolean hasErros;
+
   BaseAction action;
+
+
   @Inject
   private CrpManager crpManager;
 
@@ -50,6 +54,14 @@ public class FundingSourceValidator extends BaseValidator {
       fundingSource.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public boolean isHasErros() {
+    return hasErros;
+  }
+
+  public void setHasErros(boolean hasErros) {
+    this.hasErros = hasErros;
   }
 
   public void validate(BaseAction action, FundingSource fundingSource, boolean saving) {
@@ -118,7 +130,11 @@ public class FundingSourceValidator extends BaseValidator {
       }
     }
     if (!action.getFieldErrors().isEmpty()) {
+      hasErros = true;
       action.addActionError(action.getText("saving.fields.required"));
+      action.setCanEdit(true);
+      action.setEditable(true);
+
     } else if (validationMessage.length() > 0) {
       action
         .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
