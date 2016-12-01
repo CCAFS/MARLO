@@ -2,7 +2,7 @@
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
-[#assign customJS = ["${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
+[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
 
@@ -62,7 +62,7 @@
       [#-- Upload bilateral contract --]
       <div class="form-group fileUploadContainer">
         <label>[@customForm.text name="fundingSource.uploadContract" readText=!editable /]:</label>
-        [#assign hasFile = fundingSource.file?? /]
+        [#assign hasFile = fundingSource.file?? && fundingSource.file.id?? /]
         <input id="fileID" type="hidden" name="fundingSource.file.id" value="${(fundingSource.file.id)!}" />
         [#-- Input File --]
         [#if editable]
@@ -70,7 +70,7 @@
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!(fundingSource.file.id +' - No file name')} [/#if]</span> 
+          <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!('No file name')} [/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
         

@@ -1,0 +1,1 @@
+UPDATE `budget_types` SET `id`='1', `name`='W1/W2' WHERE (`id`='1');

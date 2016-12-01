@@ -158,16 +158,19 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
 
-  public boolean canEditFunding(long type) {
+  public boolean canEditFunding(long type, long institutionID) {
     if (type == 1) {
       boolean permission = this.hasPermissionNoBase(
         this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
       return permission;
     }
     if (type == 2 || type == 3) {
-      boolean permission =
-        this.hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
-          loggedCrp.getAcronym(), projectID + ""));
+      boolean permission = this
+        .hasPermissionNoBase(this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION,
+          loggedCrp.getAcronym(), projectID + ""))
+        || this.hasPermissionNoBase(
+          this.generatePermission(Permission.PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION,
+            loggedCrp.getAcronym(), projectID + "", institutionID + ""));
       return permission;
     }
     return true;

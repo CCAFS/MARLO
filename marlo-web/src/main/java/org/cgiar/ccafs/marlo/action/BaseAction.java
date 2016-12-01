@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -139,31 +140,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   @Inject
-  private CrpProgramLeaderManager crpProgramLeaderManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
 
+  @Inject
+  private CrpProgramLeaderManager crpProgramLeaderManager;
   @Inject
   private CrpProgramManager crpProgramManager;
   // Variables
   private String crpSession;
+
+
   private Crp currentCrp;
 
-
   protected boolean dataSaved;
-
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
+
+
   private boolean draft;
-
-
   @Inject
   private FileDBManager fileDBManager;
   private boolean fullEditable; // If user is able to edit all the form.
-  @Inject
-  private FundingSourceManager fundingSourceManager;
 
   @Inject
-  private CrpPpaPartnerManager crpPpaPartnerManager;
+  private FundingSourceManager fundingSourceManager;
 
   private HashMap<String, String> invalidFields;
   // User actions
@@ -698,11 +699,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return 0;
   }
 
-
   public Map<String, Object> getParameters() {
     parameters = ActionContext.getContext().getParameters();
     return parameters;
   }
+
 
   public String getParameterValue(String param) {
     Object paramObj = this.getParameters().get(param);
@@ -751,7 +752,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
-            APConstants.PLANNING, this.getCurrentCycleYear(), section);
+            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
           if (sectionStatus == null) {
             return false;
           }
@@ -779,8 +780,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
         for (Deliverable deliverable : openA) {
-          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), APConstants.PLANNING,
-            this.getCurrentCycleYear(), section);
+          sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
           if (sectionStatus == null) {
             return false;
           }
@@ -809,7 +810,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
 
-        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
           this.getCurrentCycleYear(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
@@ -825,7 +826,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return false;
         }
 
-        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
           this.getCurrentCycleYear(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
@@ -858,10 +859,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
-
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
+
 
   public Map<String, Object> getSession() {
     return session;
@@ -869,6 +870,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Submission getSubmission() {
     return submission;
+  }
+
+  public String getTimeZone() {
+    TimeZone timeZone = TimeZone.getDefault();
+    String display = timeZone.getDisplayName();
+    return display;
   }
 
 

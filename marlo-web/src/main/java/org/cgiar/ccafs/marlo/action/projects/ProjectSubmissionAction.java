@@ -20,12 +20,15 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -68,6 +71,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
   private String cycleName;
+  private RoleManager roleManager;
 
 
   private boolean complete;
@@ -80,13 +84,14 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMail sendMail, LiaisonUserManager liasonUserManager) {
+    CrpManager crpManager, SendMail sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.sendMail = sendMail;
     this.liasonUserManager = liasonUserManager;
+    this.roleManager = roleManager;
   }
 
   @Override
@@ -212,13 +217,14 @@ public class ProjectSubmissionAction extends BaseAction {
   private void sendNotficationEmail() {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[4];
+    String[] values = new String[5];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = loggedCrp.getName();
     values[2] = project.getTitle();
+    values[3] = String.valueOf(this.getCurrentCycleYear());
+    values[4] = this.getCurrentCycle().toLowerCase();
 
     String subject = null;
-    values[3] = String.valueOf(this.getCurrentCycleYear());
     message.append(this.getText("submit.email.message", values));
     message.append(this.getText("email.support"));
     message.append(this.getText("email.bye"));
@@ -229,42 +235,55 @@ public class ProjectSubmissionAction extends BaseAction {
     String toEmail = null;
     String ccEmail = null;
 
-    if (config.isProduction()) {
-      // Send email to the user that is submitting the project.
-      // TO
-      toEmail = this.getCurrentUser().getEmail();
+    // Send email to the user that is submitting the project.
+    // TO
+    toEmail = this.getCurrentUser().getEmail();
 
-      // Get MLs associated to the Project Liaison institution
-      List<LiaisonUser> liasonUsers =
-        liasonUserManager.getLiasonUsersByInstitutionId(project.getLiaisonInstitution().getId());
+    StringBuilder ccEmails = new StringBuilder();
 
-      StringBuilder ccEmails = new StringBuilder();
-
-      for (LiaisonUser liasonUser : liasonUsers) {
-        // Verify currentUser for avoid duplicate addition
-        if (liasonUser.getUser().getId() != this.getCurrentUser().getId()) {
-          ccEmails.append(liasonUser.getUser().getEmail());
-          ccEmails.append(" ");
+    // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
+    Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
+    Role roleCrpPmu = roleManager.getRoleById(crpPmuRole);
+    // If Managment liason is PMU
+    if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
+      ccEmails.append(project.getLiaisonUser().getUser().getEmail());
+      ccEmails.append(";");
+    } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+      // If Managment liason is FL
+      List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
+        .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
+        .collect(Collectors.toList());
+      if (crpPrograms != null) {
+        if (crpPrograms.size() > 1) {
+          LOG.warn("Crp programs should be 1");
+        }
+        CrpProgram crpProgram = crpPrograms.get(0);
+        for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+          ccEmails.append(crpProgramLeader.getUser().getEmail());
+          ccEmails.append(";");
         }
       }
-
-      // Add project leader
-      if (project.getLeaderPerson() != null
-        && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
-        ccEmails.append(project.getLeaderPerson().getUser().getEmail());
-        ccEmails.append(" ");
-      }
-      // Add project coordinator(s)
-      for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
-        if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
-          ccEmails.append(projectPartnerPerson.getUser().getEmail());
-          ccEmails.append(" ");
-        }
-      }
-
-      // CC will be the other MLs.
-      ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     }
+
+
+    // Add project leader
+    if (project.getLeaderPerson() != null
+      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
+      ccEmails.append(project.getLeaderPerson().getUser().getEmail());
+      ccEmails.append(";");
+    }
+    // Add project coordinator(s)
+    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
+      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
+        ccEmails.append(projectPartnerPerson.getUser().getEmail());
+        ccEmails.append(";");
+      }
+    }
+
+    // CC will be the other MLs.
+    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+
 
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
@@ -296,7 +315,6 @@ public class ProjectSubmissionAction extends BaseAction {
       LOG.error(
         "There was a problem trying to download the PDF file for the projectID=" + projectID + " : " + e.getMessage());
     }
-
 
     if (buffer != null && fileName != null && contentType != null) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
