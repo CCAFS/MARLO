@@ -327,7 +327,6 @@ function updateProjectPPAPartnersLists(e) {
     // Collecting partners institutions
     projectInstitutions.push(parseInt(partner.institutionId));
     // Validating if the partners is PPA Partner
-    console.log(partner);
     if(partner.isPPA()) {
       partner.hidePPAs();
       // Collecting list CCAFS partners from all project partners
@@ -720,12 +719,15 @@ function PartnerObject(partner) {
   };
   this.isPPA = function() {
     var instID = parseInt($(partner).find('.institutionsList').val());
-    if(instID == -1){
+    if(instID == -1) {
+      $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
       return false;
     }
     if(allPPAInstitutions.indexOf(instID) != -1) {
+      $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing / PPA Partner');
       return true;
     } else {
+      $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
       return false;
     }
   };
@@ -775,11 +777,11 @@ function PartnerObject(partner) {
     });
   };
   this.showPPAs = function() {
-    $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
+
     $(this.ppaPartnersList).slideDown();
   };
   this.hidePPAs = function() {
-    $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing / PPA Partner');
+
     $(this.ppaPartnersList).slideUp();
   };
   this.startLoader = function() {
