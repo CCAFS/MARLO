@@ -15,7 +15,7 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -72,7 +72,7 @@ public class UnhandledExceptionAction extends BaseAction {
     message.append("The exception message was: </br></br>");
     message.append(writer.toString());
 
-    SendMail sendMail = new SendMail(this.config);
+    SendMailS sendMail = new SendMailS(this.config);
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
     LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.",

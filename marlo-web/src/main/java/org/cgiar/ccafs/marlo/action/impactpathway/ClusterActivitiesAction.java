@@ -46,7 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.io.BufferedReader;
@@ -94,7 +94,7 @@ public class ClusterActivitiesAction extends BaseAction {
   private RoleManager roleManager;
   private CrpProgram selectedProgram;
   // Util
-  private SendMail sendMail;
+  private SendMailS sendMail;
 
   private String transaction;
 
@@ -108,7 +108,7 @@ public class ClusterActivitiesAction extends BaseAction {
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
-    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMail sendMail,
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMailS sendMail,
     CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager) {
     super(config);

@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -33,18 +34,13 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
-import org.cgiar.ccafs.marlo.utils.URLFileDownloader;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -67,7 +63,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private SubmissionManager submissionManager;
   private ProjectManager projectManager;
   private CrpManager crpManager;
-  private SendMail sendMail;
+  private SendMailS sendMail;
   private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
   private String cycleName;
@@ -83,8 +79,11 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
   @Inject
+  ReportingSummaryAction reportingSummaryAction;
+
+  @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMail sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -120,10 +119,10 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+
   public String getCycleName() {
     return cycleName;
   }
-
 
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -140,14 +139,15 @@ public class ProjectSubmissionAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public boolean isComplete() {
     return complete;
@@ -185,7 +185,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
     return true;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -247,7 +246,7 @@ public class ProjectSubmissionAction extends BaseAction {
     // If Managment liason is PMU
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
-      ccEmails.append("; ");
+      ccEmails.append(", ");
     } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
@@ -261,7 +260,7 @@ public class ProjectSubmissionAction extends BaseAction {
         for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
           .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
           ccEmails.append(crpProgramLeader.getUser().getEmail());
-          ccEmails.append("; ");
+          ccEmails.append(", ");
         }
       }
     }
@@ -271,20 +270,20 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLeaderPerson() != null
       && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
       ccEmails.append(project.getLeaderPerson().getUser().getEmail());
-      ccEmails.append("; ");
+      ccEmails.append(", ");
     }
     // Add project coordinator(s)
     for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
       if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
         ccEmails.append(projectPartnerPerson.getUser().getEmail());
-        ccEmails.append("; ");
+        ccEmails.append(", ");
       }
     }
 
     // CC will be the other MLs.
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
@@ -302,24 +301,27 @@ public class ProjectSubmissionAction extends BaseAction {
       // Making the URL to get the report.
 
       // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "="
-        + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
-        + this.getCurrentCycle());
+      /*
+       * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID +
+       * "="
+       * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
+       * + this.getCurrentCycle());
+       */
+      reportingSummaryAction.setSession(this.getSession());
+      reportingSummaryAction.setYear(this.getCurrentCycleYear());
 
+      reportingSummaryAction.setCycle(this.getCurrentCycle());
+      reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.execute();
       // Getting the file data.
-      Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
-      buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
+
+      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
       fileName = this.getFileName();
       contentType = "application/pdf";
-    } catch (MalformedURLException e) {
+    } catch (Exception e) {
       // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
-    } catch (IOException e) {
-      // Do nothing
-      LOG.error(
-        "There was a problem trying to download the PDF file for the projectID=" + projectID + " : " + e.getMessage());
     }
-
     if (buffer != null && fileName != null && contentType != null) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
         true);

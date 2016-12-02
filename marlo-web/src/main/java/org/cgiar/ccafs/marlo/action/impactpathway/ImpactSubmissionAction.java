@@ -28,7 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Date;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ImpactSubmissionAction extends BaseAction {
   private Submission submission;
 
   private boolean alreadySubmitted;
-  private SendMail sendMail;
+  private SendMailS sendMail;
 
   private CrpProgramManager crpProgramManager;
 
@@ -66,7 +66,7 @@ public class ImpactSubmissionAction extends BaseAction {
 
   @Inject
   public ImpactSubmissionAction(APConfig config, CrpProgramManager crpProgramManager,
-    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager, SendMail sendMail) {
+    SectionStatusManager sectionStatusManager, SubmissionManager submissionManager, SendMailS sendMail) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -179,13 +179,13 @@ public class ImpactSubmissionAction extends BaseAction {
       User user = crpProgramLeader.getUser();
       if (user.getId() != this.getCurrentUser().getId()) {
         ccEmails.append(user.getEmail());
-        ccEmails.append("; ");
+        ccEmails.append(", ");
       }
     }
     // CC will be the other MLs.
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 

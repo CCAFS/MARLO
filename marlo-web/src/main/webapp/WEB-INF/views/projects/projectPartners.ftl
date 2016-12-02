@@ -32,9 +32,10 @@
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+        [#include "/WEB-INF/views/projects/messages-projects.ftl" /] 
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+           
            
           <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
           [#-- Listing Partners  --]
@@ -135,8 +136,9 @@
 [#-- allPPAInstitutions --]
 <input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
 
+
 [#-- Can update PPA Partners --]
-<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || project.bilateralProject)?string}"/>
+<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectEditLeader)?string}"/>
 
 [#-- Project PPA Partners --]
 <select id="projectPPAPartners" style="display:none">
@@ -217,23 +219,25 @@
       <hr />
       <input id="id" class="partnerId" type="hidden" name="${name}.id" value="${(element.id)!}" />
       
-      [#-- Filters --]
+      [#-- Filters  
       [#if ((editable && isTemplate) || (editable && !element.institution??) || (editable && element.institution.id?number == -1))]
         <div class="filters-link"> <span class="glyphicon glyphicon-filter"></span> <span>[@s.text name="projectPartners.filters" /]</span></div>
         <div class="filters-content">
-          [#-- Partner type list --]
+          [#-- Partner type list  
           <div class="col-md-6 partnerTypeName chosen">
-            [#-- Name attribute is not needed, we just need to load the value, not save it it. --]
+            [#-- Name attribute is not needed, we just need to load the value, not save it it.  
             [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.partnerType" listName="intitutionTypes" keyFieldName="id"  displayFieldName="name" className="partnerTypes" value="${(element.institution.type.id)!}" /]
           </div>
-          [#-- Country list --]
+          --]
+          [#-- Country list  
           <div class="col-md-6 countryListBlock chosen">
-            [#-- Name attribute is not needed, we just need to load the value, not save it it. --]
+            [#-- Name attribute is not needed, we just need to load the value, not save it it. 
             [@customForm.select name="" label="" disabled=!editable i18nkey="projectPartners.country" listName="countries" keyFieldName="id"  displayFieldName="name" className="countryList" value="'${(element.institution.country.id)!}'" /]
-          </div>
+          </div> 
           <div class="clearfix"></div>
         </div> 
       [/#if]
+      --]
       
       [#-- Institution / Organization --]
       <div class="form-group partnerName">

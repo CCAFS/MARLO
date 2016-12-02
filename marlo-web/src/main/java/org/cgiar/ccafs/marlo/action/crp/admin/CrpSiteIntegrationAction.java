@@ -36,7 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -93,12 +93,12 @@ public class CrpSiteIntegrationAction extends BaseAction {
   private Role slRole;
 
   // Util
-  private SendMail sendMail;
+  private SendMailS sendMail;
 
   @Inject
   public CrpSiteIntegrationAction(APConfig config, CrpManager crpManager, LocElementManager locElementManager,
     CrpsSiteIntegrationManager crpsSiteIntegrationManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager, SendMail sendMail,
+    RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager, SendMailS sendMail,
     CrpUserManager crpUserManager) {
     super(config);
     this.crpManager = crpManager;
