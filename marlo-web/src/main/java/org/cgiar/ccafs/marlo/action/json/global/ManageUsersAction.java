@@ -20,7 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import org.cgiar.ciat.auth.LDAPService;
 import org.cgiar.ciat.auth.LDAPUser;
@@ -57,7 +57,7 @@ public class ManageUsersAction extends BaseAction {
   private static String PARAM_EMAIL = "email";
   private static String PARAM_IS_ACTIVE = "isActive";
   private UserManager userManager;
-  private SendMail sendMail;
+  private SendMailS sendMail;
   private String actionName;
 
   private String queryParameter;
@@ -67,7 +67,7 @@ public class ManageUsersAction extends BaseAction {
   private String message;
 
   @Inject
-  public ManageUsersAction(APConfig config, UserManager userManager, SendMail sendMail) {
+  public ManageUsersAction(APConfig config, UserManager userManager, SendMailS sendMail) {
     super(config);
     this.userManager = userManager;
     this.sendMail = sendMail;

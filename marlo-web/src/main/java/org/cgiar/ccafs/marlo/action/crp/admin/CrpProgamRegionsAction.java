@@ -51,7 +51,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -126,14 +126,14 @@ public class CrpProgamRegionsAction extends BaseAction {
 
 
   // Util
-  private SendMail sendMail;
+  private SendMailS sendMail;
 
   @Inject
   public CrpProgamRegionsAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpProgramManager crpProgramManager, CrpManager crpManager, CrpParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, LocElementManager locElementManger,
     CrpProgramCountryManager crpProgramCountryManager, CrpSitesLeaderManager crpSitesLeaderManager,
-    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMail sendMail, LiaisonUserManager liaisonUserManager,
+    CrpsSiteIntegrationManager crpsSiteIntegrationManager, SendMailS sendMail, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;

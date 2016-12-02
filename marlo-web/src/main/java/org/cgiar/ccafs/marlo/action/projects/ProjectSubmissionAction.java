@@ -34,7 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -63,7 +63,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private SubmissionManager submissionManager;
   private ProjectManager projectManager;
   private CrpManager crpManager;
-  private SendMail sendMail;
+  private SendMailS sendMail;
   private LiaisonUserManager liasonUserManager;
   private Crp loggedCrp;
   private String cycleName;
@@ -83,7 +83,7 @@ public class ProjectSubmissionAction extends BaseAction {
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
-    CrpManager crpManager, SendMail sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
+    CrpManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -246,7 +246,7 @@ public class ProjectSubmissionAction extends BaseAction {
     // If Managment liason is PMU
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
-      ccEmails.append("; ");
+      ccEmails.append(", ");
     } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
@@ -260,7 +260,7 @@ public class ProjectSubmissionAction extends BaseAction {
         for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
           .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
           ccEmails.append(crpProgramLeader.getUser().getEmail());
-          ccEmails.append("; ");
+          ccEmails.append(", ");
         }
       }
     }
@@ -270,20 +270,20 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLeaderPerson() != null
       && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
       ccEmails.append(project.getLeaderPerson().getUser().getEmail());
-      ccEmails.append("; ");
+      ccEmails.append(", ");
     }
     // Add project coordinator(s)
     for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons()) {
       if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
         ccEmails.append(projectPartnerPerson.getUser().getEmail());
-        ccEmails.append("; ");
+        ccEmails.append(", ");
       }
     }
 
     // CC will be the other MLs.
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
-    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 

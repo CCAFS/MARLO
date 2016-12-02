@@ -29,7 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SendMail;
+import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
 import java.util.List;
@@ -223,7 +223,7 @@ public class PartnersSaveAction extends BaseAction {
     message.append(".</br>");
     message.append("</br>");
     try {
-      SendMail sendMail = new SendMail(this.config);
+      SendMailS sendMail = new SendMailS(this.config);
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
         null, null, null, true);
     } catch (Exception e) {
