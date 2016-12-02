@@ -79,7 +79,7 @@
                       <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
                     </div>
                   </div>
-                
+                  
                   [#if projectPPAPartners?has_content]
                     [#list projectPPAPartners as projectPartner]
                       [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
