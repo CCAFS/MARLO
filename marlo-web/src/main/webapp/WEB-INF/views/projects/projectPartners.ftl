@@ -36,6 +36,7 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
+           
           <h3 class="headTitle">[@s.text name="projectPartners.title" /]</h3>
           [#-- Listing Partners  --]
           <div class="loadingBlock"></div>
@@ -135,8 +136,9 @@
 [#-- allPPAInstitutions --]
 <input type="hidden" id="allPPAInstitutions" value="[[#if allPPAInstitutions??][#list allPPAInstitutions as item]${item.id}[#if item_has_next],[/#if][/#list][/#if]]"/>
 
+
 [#-- Can update PPA Partners --]
-<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa"))?string}"/>
+<input type="hidden" id="canUpdatePPAPartners" value="${(action.hasPermission("ppa") || !project.projectEditLeader)?string}"/>
 
 [#-- Project PPA Partners --]
 <select id="projectPPAPartners" style="display:none">
