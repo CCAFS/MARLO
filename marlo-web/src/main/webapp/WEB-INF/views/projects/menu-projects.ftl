@@ -41,7 +41,7 @@
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true  },
       { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id), 'active': true  },
-      { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false, 'show': reportingActive }
+      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive }
       ]
     }
     
