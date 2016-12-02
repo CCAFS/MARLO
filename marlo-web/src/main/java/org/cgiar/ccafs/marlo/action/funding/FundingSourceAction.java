@@ -245,9 +245,15 @@ public class FundingSourceAction extends BaseAction {
     int i = 0;
     if (fundingSource.getBudgets() != null) {
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getBudgets()) {
-        if (fundingSourceBudget.getYear().intValue() == year) {
-          return i;
+        if (fundingSourceBudget != null) {
+          if (fundingSourceBudget.getYear() != null) {
+            if (fundingSourceBudget.getYear().intValue() == year) {
+              return i;
+            }
+          }
+
         }
+
         i++;
       }
     }
