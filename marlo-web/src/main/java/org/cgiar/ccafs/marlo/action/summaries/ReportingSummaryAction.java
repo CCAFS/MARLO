@@ -620,10 +620,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  public byte[] getBytesPDF() {
+    return bytesPDF;
+  }
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
   }
+
 
   @Override
   public String getContentType() {
@@ -1165,7 +1170,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getPartnersOtherTableModel(ProjectPartner projectLeader) {
     TypedTableModel model = new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count"},
       new Class[] {String.class, Long.class, Integer.class}, 0);
@@ -1191,6 +1195,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"count"}, new Class[] {Integer.class}, 0);
     int partnersSize = 0;
@@ -1202,10 +1207,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
@@ -1226,7 +1231,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getTotalAmount(long institutionId, int year, long budgetType) {
     return projectBudgetManager.amountByBudgetType(institutionId, year, budgetType, projectID);
   }
-
 
   /**
    * Get gender amount per institution, year and budet type
@@ -1252,6 +1256,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return totalGender;
   }
+
 
   /**
    * Get total gender percentaje per institution, year and type
@@ -1347,6 +1352,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       return null;
     }
 
+  }
+
+  public void setBytesPDF(byte[] bytesPDF) {
+    this.bytesPDF = bytesPDF;
   }
 
 

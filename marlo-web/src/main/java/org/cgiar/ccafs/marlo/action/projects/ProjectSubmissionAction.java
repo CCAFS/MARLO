@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -34,17 +35,12 @@ import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMail;
-import org.cgiar.ccafs.marlo.utils.URLFileDownloader;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -81,6 +77,9 @@ public class ProjectSubmissionAction extends BaseAction {
 
   private Project project;
 
+
+  @Inject
+  ReportingSummaryAction reportingSummaryAction;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
@@ -120,10 +119,10 @@ public class ProjectSubmissionAction extends BaseAction {
     }
   }
 
+
   public String getCycleName() {
     return cycleName;
   }
-
 
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -140,14 +139,15 @@ public class ProjectSubmissionAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public boolean isComplete() {
     return complete;
@@ -185,7 +185,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
     return true;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -302,24 +301,27 @@ public class ProjectSubmissionAction extends BaseAction {
       // Making the URL to get the report.
 
       // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID + "="
-        + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
-        + this.getCurrentCycle());
+      /*
+       * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID +
+       * "="
+       * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
+       * + this.getCurrentCycle());
+       */
+      reportingSummaryAction.setSession(this.getSession());
+      reportingSummaryAction.setYear(this.getCurrentCycleYear());
 
+      reportingSummaryAction.setCycle(this.getCurrentCycle());
+      reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.execute();
       // Getting the file data.
-      Map<String, Object> fileProperties = URLFileDownloader.getAsByteArray(pdfURL);
-      buffer = fileProperties.get("byte_array") != null ? (ByteBuffer) fileProperties.get("byte_array") : null;
+
+      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
       fileName = this.getFileName();
       contentType = "application/pdf";
-    } catch (MalformedURLException e) {
+    } catch (Exception e) {
       // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
-    } catch (IOException e) {
-      // Do nothing
-      LOG.error(
-        "There was a problem trying to download the PDF file for the projectID=" + projectID + " : " + e.getMessage());
     }
-
     if (buffer != null && fileName != null && contentType != null) {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
         true);
