@@ -99,7 +99,7 @@ public class SendMail {
         // Set the Test Header to list the emails that will send in production
         StringBuilder testingHeader = new StringBuilder();
         testingHeader.append("To: " + toEmail + "<br>");
-        testingHeader.append("CC: " + ccEmail.substring(0, ccEmail.length() - 1) + "<br>");
+        testingHeader.append("CC: " + ccEmail + "<br>");
         testingHeader.append("BBC: " + bbcEmail + "<br>");
         testingHeader.append("----------------------------------------------------<br><br>");
         subject = "TEST " + subject;
@@ -114,9 +114,6 @@ public class SendMail {
           LOG.info("   - TO: " + toEmail);
         }
         if (ccEmail != null) {
-          if (ccEmail.endsWith(";")) {
-            ccEmail = ccEmail.substring(0, ccEmail.length() - 1);
-          }
           msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccEmail, false));
           LOG.info("   - CC: " + ccEmail);
         }
