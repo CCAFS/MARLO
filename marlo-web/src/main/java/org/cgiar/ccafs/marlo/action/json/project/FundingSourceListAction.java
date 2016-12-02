@@ -31,8 +31,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -87,6 +89,14 @@ public class FundingSourceListAction extends BaseAction {
 
       fundingSources
         .addAll(fundingSourceManager.searchFundingSources(queryParameter, year, this.getCrpID().longValue()));
+
+
+      // add elements to al, including duplicates
+      Set<FundingSource> hs = new HashSet<>();
+      hs.addAll(fundingSources);
+      fundingSources.clear();
+      fundingSources.addAll(hs);
+
     }
 
     for (FundingSource fundingSource : fundingSources) {

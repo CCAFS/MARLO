@@ -473,13 +473,13 @@ public class ProjectPartnerAction extends BaseAction {
     message.append(this.getText("email.bye"));
 
     String toEmail = null;
-    String ccEmail = null;
+    String ccEmail = "";
 
     // TO will be the new user
     toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
     if (this.getCurrentUser() != null) {
-      ccEmail = this.getCurrentUser().getEmail() + ";";
+      ccEmail = this.getCurrentUser().getEmail() + "; ";
     }
     // CC for leaders
     if (role.getId() == plRole.getId()) {
@@ -489,7 +489,7 @@ public class ProjectPartnerAction extends BaseAction {
       // If Managment liason is PMU
       if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
         if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-          ccEmail += project.getLiaisonUser().getUser().getEmail();
+          ccEmail += project.getLiaisonUser().getUser().getEmail() + "; ";
         } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
           // If Managment liason is FL
           List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
@@ -502,7 +502,7 @@ public class ProjectPartnerAction extends BaseAction {
             CrpProgram crpProgram = crpPrograms.get(0);
             for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
               .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-              ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+              ccEmail += crpProgramLeader.getUser().getEmail() + "; ";
             }
           }
         }
@@ -511,8 +511,12 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       // CC for coordinators
       if (project.getLeaderPerson() != null) {
-        ccEmail += project.getLeaderPerson().getUser().getEmail();
+        ccEmail += project.getLeaderPerson().getUser().getEmail() + "; ";
       }
+    }
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
 
@@ -565,7 +569,7 @@ public class ProjectPartnerAction extends BaseAction {
     toEmail = userUnassigned.getEmail();
     // CC will be the user who is making the modification.
     if (this.getCurrentUser() != null) {
-      ccEmail = this.getCurrentUser().getEmail() + ";";
+      ccEmail = this.getCurrentUser().getEmail() + "; ";
     }
     // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
@@ -576,7 +580,7 @@ public class ProjectPartnerAction extends BaseAction {
       // If Managment liason is PMU
       if (project.getLiaisonInstitution() != null && project.getLiaisonUser() != null) {
         if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
-          ccEmail += project.getLiaisonUser().getUser().getEmail();
+          ccEmail += project.getLiaisonUser().getUser().getEmail() + "; ";
         } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
           // If Managment liason is FL
           List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
@@ -589,7 +593,7 @@ public class ProjectPartnerAction extends BaseAction {
             CrpProgram crpProgram = crpPrograms.get(0);
             for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
               .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-              ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+              ccEmail += crpProgramLeader.getUser().getEmail() + "; ";
             }
           }
         }
@@ -597,8 +601,13 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       // CC for coordinators
       if (project.getLeaderPerson() != null) {
-        ccEmail += project.getLeaderPerson().getUser().getEmail();
+        ccEmail += project.getLeaderPerson().getUser().getEmail() + "; ";
       }
+    }
+
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
 
