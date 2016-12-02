@@ -94,7 +94,7 @@
   <br />
   [/#if]
 [#else]
-  [#if !project.projectEditLeader]
+  [#if !((project.projectEditLeader)!false)]
     <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
   [/#if]
 [/#if]
