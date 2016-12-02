@@ -435,6 +435,13 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/leverages"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectLeverages.ftl
+      </result>
+    </action>
 
 		<action name="{crp}/submit"
 			class="org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction">
