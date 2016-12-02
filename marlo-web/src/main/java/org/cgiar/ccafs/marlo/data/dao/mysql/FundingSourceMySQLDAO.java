@@ -106,13 +106,12 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     StringBuilder q = new StringBuilder();
     q.append("from " + FundingSource.class.getName());
     q.append(" where crp_id=" + crpID + " and description like '%" + query + "%' ");
-    q.append("OR id like '%" + query + "%' and is_active=1  and institution_id is null and type=1");
+    q.append(
+      "OR id like '%" + query + "%' and is_active=1 and crp_id=" + crpID + " and (institution_id is null or type=1)");
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream()
-      .filter(c -> c.isActive() && c.getLeader() == null && c.getEndDate() != null
-        && c.getCrp().getId().longValue() == crpID && year <= Integer.parseInt(df.format(c.getEndDate())))
+    return fundingSources.stream().filter(c -> year <= Integer.parseInt(df.format(c.getEndDate())))
       .collect(Collectors.toList());
   }
 
