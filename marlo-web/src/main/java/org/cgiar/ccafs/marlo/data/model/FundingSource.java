@@ -173,7 +173,7 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
 
   public String getComposedName() {
-    return "<b> (F"+this.id+") " + this.getBudgetType().getName() + "</b> - " + this.title;
+    return "<b> (F" + this.id + ") " + this.getBudgetType().getName() + "</b> - " + this.title;
   }
 
   public String getContactPersonEmail() {
@@ -267,7 +267,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     double used = 0;
     double total = 0;
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
-      .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList())) {
+      .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year)
+      .collect(Collectors.toList())) {
       total = total + fundingSourceBudget.getBudget().doubleValue();
     }
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
