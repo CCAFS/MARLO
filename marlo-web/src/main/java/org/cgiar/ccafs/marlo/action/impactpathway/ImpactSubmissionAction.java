@@ -179,11 +179,15 @@ public class ImpactSubmissionAction extends BaseAction {
       User user = crpProgramLeader.getUser();
       if (user.getId() != this.getCurrentUser().getId()) {
         ccEmails.append(user.getEmail());
-        ccEmails.append(";");
+        ccEmails.append("; ");
       }
     }
     // CC will be the other MLs.
     ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
+    }
 
 
     // BBC will be our gmail notification email.

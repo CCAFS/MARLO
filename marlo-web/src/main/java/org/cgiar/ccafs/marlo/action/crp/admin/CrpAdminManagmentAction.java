@@ -292,14 +292,23 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Email send to the user assigned
     String toEmail = userAssigned.getEmail();
     // CC will be the user who is making the modification.
-    String ccEmail = this.getCurrentUser().getEmail() + ";";
+
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail() + "; ";
+    }
     // CC will be also the others FL already assigned to the Flagship
     for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
       .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-      ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+      ccEmail += crpProgramLeader.getUser().getEmail() + "; ";
+    }
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
+
 
     sendMail.send(toEmail, ccEmail, bbcEmails,
       this.getText("email.flagship.assigned.subject", new String[] {crpProgram.getAcronym(), loggedCrp.getName()}),
@@ -324,11 +333,18 @@ public class CrpAdminManagmentAction extends BaseAction {
     // Email send to the user assigned
     String toEmail = userRemoved.getEmail();
     // CC will be the user who is making the modification.
-    String ccEmail = this.getCurrentUser().getEmail();
+    String ccEmail = "";
+    if (this.getCurrentUser() != null) {
+      ccEmail = this.getCurrentUser().getEmail() + "; ";
+    }
     // CC will be also the others FL already assigned to the Flagship
     for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
       .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-      ccEmail += crpProgramLeader.getUser().getEmail() + ";";
+      ccEmail += crpProgramLeader.getUser().getEmail() + "; ";
+    }
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
@@ -400,7 +416,11 @@ public class CrpAdminManagmentAction extends BaseAction {
     Role roleCrpAdmin = roleManager.getRoleById(crpAdminRole);
     for (UserRole userRole : roleCrpAdmin.getUserRoles().stream().filter(ur -> ur.getUser().isActive())
       .collect(Collectors.toList())) {
-      ccEmail += userRole.getUser().getEmail() + ";";
+      ccEmail += userRole.getUser().getEmail() + "; ";
+    }
+    // Detect if a last ; was added to CC and remove it
+    if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ';') {
+      ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
     // BBC will be our gmail notification email.
