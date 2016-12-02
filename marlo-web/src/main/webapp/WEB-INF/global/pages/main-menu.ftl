@@ -42,7 +42,12 @@
         <p class="userId" style="display:none">${(currentUser.id)!}</p> 
         <p class="name">${(currentUser.firstName)!} ${(currentUser.lastName)!}</p>  
         <p class="institution">${(currentUser.email)!}</p>
-        <p class="roles">${(securityContext.roles)!}
+        <p class="roles">
+          [#--  --if currentUser.userRoles?has_content]
+            [#list currentUser.userRoles as role]
+              ${role} - 
+            [/#list]
+          [/#if--]
          [#if currentUser.liaisonInstitution??][#list currentUser.liaisonInstitution as liaison]${(liaison.acronym)!}[#if liaison_has_next], [/#if][/#list] [/#if]
         </p>
       </div>
