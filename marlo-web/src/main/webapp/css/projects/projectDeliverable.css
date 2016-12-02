@@ -167,3 +167,7 @@ h3.contentTitle {
     font-weight: lighter;
     font-family: 'Open Sans', sans-serif;
 }
+
+fieldset.rating {
+    margin-bottom: 0px;
+}

@@ -75,12 +75,13 @@
               </div>
               
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade">
-                <h3 class="headTitle">Dissemination & Metadata</h3>  
+                <h3 class="contentTitle">Dissemination & Metadata</h3>  
                 [#-- Deliverable disseminationMetadata --] 
+                [#include "/WEB-INF/views/projects/deliverableDissemination.ftl" /]
               </div>
               
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade">
-              <h3 class="headTitle">Deliverable Data Sharing</h3>  
+              <h3 class="contentTitle">Deliverable Data Sharing</h3>  
                 [#-- Deliverable dataSharing --] 
               </div>
             </div>
