@@ -719,7 +719,11 @@ function PartnerObject(partner) {
     return result;
   };
   this.isPPA = function() {
-    if(allPPAInstitutions.indexOf(parseInt($(partner).find('.institutionsList').val())) != -1) {
+    var instID = parseInt($(partner).find('.institutionsList').val());
+    if(instID == -1){
+      return false;
+    }
+    if(allPPAInstitutions.indexOf(instID) != -1) {
       return true;
     } else {
       return false;
