@@ -157,3 +157,13 @@ th#deliverableTitles {
 th#deliverableFC {
     width: 11%;
 }
+
+h3.contentTitle {
+    border-bottom: 1px solid #884809;
+    color: #663300;
+    font-size: 1.7em;
+    padding-bottom: 3px;
+    margin: 5px 0px 10px 0;
+    font-weight: lighter;
+    font-family: 'Open Sans', sans-serif;
+}
