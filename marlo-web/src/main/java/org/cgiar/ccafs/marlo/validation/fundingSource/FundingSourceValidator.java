@@ -120,12 +120,18 @@ public class FundingSourceValidator extends BaseValidator {
     if (fundingSource.getBudgets() != null) {
       int i = 0;
       for (FundingSourceBudget budget : fundingSource.getBudgets()) {
-        if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
-          double total = budget.getBudget().doubleValue() - totalYear;
-          if (total < 0) {
-            action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
+        if (budget != null) {
+          if (budget.getYear() != null) {
+            if (budget.getYear().intValue() == action.getCurrentCycleYear()) {
+              double total = budget.getBudget().doubleValue() - totalYear;
+              if (total < 0) {
+                action.addFieldError("fundingSource.budgets[" + i + "].budget", "Invalid Budget Value");
+              }
+            }
           }
+
         }
+
         i++;
       }
     }
