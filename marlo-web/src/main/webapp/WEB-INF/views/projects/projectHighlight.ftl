@@ -136,11 +136,11 @@
               <div class="row">
                 [#-- Start Date --]
                 <div class="col-md-6">
-                  [@customForm.input name="highlight.startDateText" className="startDate" type="text" i18nkey="highlight.startDate" editable=editable/]
+                  [@customForm.input name="highlight.startDate" className="startDate" type="text" i18nkey="highlight.startDate" editable=editable/]
                 </div> 
                 [#-- End Date --]
                 <div class="col-md-6">
-                  [@customForm.input name="highlight.endDateText" className="endDate" type="text" i18nkey="highlight.endDate" editable=editable/]
+                  [@customForm.input name="highlight.endDate" className="endDate" type="text" i18nkey="highlight.endDate" editable=editable/]
                 </div>
               </div>
             </div>
