@@ -1,0 +1,2 @@
+ALTER TABLE `project_highligths`
+MODIFY COLUMN `id`  bigint(11) NOT NULL AUTO_INCREMENT FIRST ;
