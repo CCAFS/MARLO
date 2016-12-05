@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthDAO;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
@@ -34,15 +34,15 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
 
   @Override
   public boolean deleteProjectHighligth(long projectHighligthId) {
-    ProjectHighligth projectHighligth = this.find(projectHighligthId);
-    projectHighligth.setActive(false);
-    return this.save(projectHighligth) > 0;
+    ProjectHighlight projectHighlight = this.find(projectHighligthId);
+    projectHighlight.setActive(false);
+    return this.save(projectHighlight) > 0;
   }
 
   @Override
   public boolean existProjectHighligth(long projectHighligthID) {
-    ProjectHighligth projectHighligth = this.find(projectHighligthID);
-    if (projectHighligth == null) {
+    ProjectHighlight projectHighlight = this.find(projectHighligthID);
+    if (projectHighlight == null) {
       return false;
     }
     return true;
@@ -50,15 +50,15 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
   }
 
   @Override
-  public ProjectHighligth find(long id) {
-    return dao.find(ProjectHighligth.class, id);
+  public ProjectHighlight find(long id) {
+    return dao.find(ProjectHighlight.class, id);
 
   }
 
   @Override
-  public List<ProjectHighligth> findAll() {
-    String query = "from " + ProjectHighligth.class.getName() + " where is_active=1";
-    List<ProjectHighligth> list = dao.findAll(query);
+  public List<ProjectHighlight> findAll() {
+    String query = "from " + ProjectHighlight.class.getName() + " where is_active=1";
+    List<ProjectHighlight> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectHighligthMySQLDAO implements ProjectHighligthDAO {
   }
 
   @Override
-  public long save(ProjectHighligth projectHighligth) {
-    if (projectHighligth.getId() == null) {
-      dao.save(projectHighligth);
+  public long save(ProjectHighlight projectHighlight) {
+    if (projectHighlight.getId() == null) {
+      dao.save(projectHighlight);
     } else {
-      dao.update(projectHighligth);
+      dao.update(projectHighlight);
     }
 
 
-    return projectHighligth.getId();
+    return projectHighlight.getId();
   }
 
 

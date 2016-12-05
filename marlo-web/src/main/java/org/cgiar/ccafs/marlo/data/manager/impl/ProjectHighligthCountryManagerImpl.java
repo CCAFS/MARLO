@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthCountryDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthCountryManager;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 
 import java.util.List;
 
@@ -53,22 +53,22 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   }
 
   @Override
-  public List<ProjectHighligthCountry> findAll() {
+  public List<ProjectHighlightCountry> findAll() {
 
     return projectHighligthCountryDAO.findAll();
 
   }
 
   @Override
-  public ProjectHighligthCountry getProjectHighligthCountryById(long projectHighligthCountryID) {
+  public ProjectHighlightCountry getProjectHighligthCountryById(long projectHighligthCountryID) {
 
     return projectHighligthCountryDAO.find(projectHighligthCountryID);
   }
 
   @Override
-  public long saveProjectHighligthCountry(ProjectHighligthCountry projectHighligthCountry) {
+  public long saveProjectHighligthCountry(ProjectHighlightCountry projectHighlightCountry) {
 
-    return projectHighligthCountryDAO.save(projectHighligthCountry);
+    return projectHighligthCountryDAO.save(projectHighlightCountry);
   }
 
 

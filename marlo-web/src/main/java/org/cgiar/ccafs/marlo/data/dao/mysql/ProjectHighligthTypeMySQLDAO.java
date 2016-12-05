@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthTypeDAO;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 
 import java.util.List;
 
@@ -34,15 +34,15 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
 
   @Override
   public boolean deleteProjectHighligthType(long projectHighligthTypeId) {
-    ProjectHighligthType projectHighligthType = this.find(projectHighligthTypeId);
+    ProjectHighlightType projectHighlightType = this.find(projectHighligthTypeId);
 
-    return this.dao.delete(projectHighligthType);
+    return this.dao.delete(projectHighlightType);
   }
 
   @Override
   public boolean existProjectHighligthType(long projectHighligthTypeID) {
-    ProjectHighligthType projectHighligthType = this.find(projectHighligthTypeID);
-    if (projectHighligthType == null) {
+    ProjectHighlightType projectHighlightType = this.find(projectHighligthTypeID);
+    if (projectHighlightType == null) {
       return false;
     }
     return true;
@@ -50,15 +50,15 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
   }
 
   @Override
-  public ProjectHighligthType find(long id) {
-    return dao.find(ProjectHighligthType.class, id);
+  public ProjectHighlightType find(long id) {
+    return dao.find(ProjectHighlightType.class, id);
 
   }
 
   @Override
-  public List<ProjectHighligthType> findAll() {
-    String query = "from " + ProjectHighligthType.class.getName() + " where is_active=1";
-    List<ProjectHighligthType> list = dao.findAll(query);
+  public List<ProjectHighlightType> findAll() {
+    String query = "from " + ProjectHighlightType.class.getName() + " where is_active=1";
+    List<ProjectHighlightType> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
   }
 
   @Override
-  public long save(ProjectHighligthType projectHighligthType) {
-    if (projectHighligthType.getId() == null) {
-      dao.save(projectHighligthType);
+  public long save(ProjectHighlightType projectHighlightType) {
+    if (projectHighlightType.getId() == null) {
+      dao.save(projectHighlightType);
     } else {
-      dao.update(projectHighligthType);
+      dao.update(projectHighlightType);
     }
 
 
-    return projectHighligthType.getId();
+    return projectHighlightType.getId();
   }
 
 

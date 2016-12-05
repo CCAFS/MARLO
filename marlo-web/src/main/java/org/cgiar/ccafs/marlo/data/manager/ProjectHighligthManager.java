@@ -15,7 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.ProjectHighligthManagerImpl;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
@@ -49,28 +49,28 @@ public interface ProjectHighligthManager {
   /**
    * This method gets a list of projectHighligth that are active
    * 
-   * @return a list from ProjectHighligth null if no exist records
+   * @return a list from ProjectHighlight null if no exist records
    */
-  public List<ProjectHighligth> findAll();
+  public List<ProjectHighlight> findAll();
 
 
   /**
    * This method gets a projectHighligth object by a given projectHighligth identifier.
    * 
    * @param projectHighligthID is the projectHighligth identifier.
-   * @return a ProjectHighligth object.
+   * @return a ProjectHighlight object.
    */
-  public ProjectHighligth getProjectHighligthById(long projectHighligthID);
+  public ProjectHighlight getProjectHighligthById(long projectHighligthID);
 
   /**
    * This method saves the information of the given projectHighligth
    * 
-   * @param projectHighligth - is the projectHighligth object with the new information to be added/updated.
+   * @param projectHighlight - is the projectHighligth object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectHighligth was
    *         updated
    *         or -1 is some error occurred.
    */
-  public long saveProjectHighligth(ProjectHighligth projectHighligth);
+  public long saveProjectHighligth(ProjectHighlight projectHighlight);
 
 
 }

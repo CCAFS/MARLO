@@ -164,9 +164,9 @@ public class Project implements java.io.Serializable, IAuditLog {
 
 
   private Set<ProjectClusterActivity> projectClusterActivities = new HashSet<ProjectClusterActivity>(0);
-  private Set<ProjectHighligth> projectHighligths = new HashSet<ProjectHighligth>(0);
+  private Set<ProjectHighlight> projectHighlights = new HashSet<ProjectHighlight>(0);
 
-  private List<ProjectHighligth> highligths;
+  private List<ProjectHighlight> highligths;
 
 
   private ProjectComponentLesson projectComponentLesson;
@@ -487,7 +487,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     return genderAnalysis;
   }
 
-  public List<ProjectHighligth> getHighligths() {
+  public List<ProjectHighlight> getHighligths() {
     return highligths;
   }
 
@@ -678,8 +678,8 @@ public class Project implements java.io.Serializable, IAuditLog {
     return this.projectFocuses;
   }
 
-  public Set<ProjectHighligth> getProjectHighligths() {
-    return projectHighligths;
+  public Set<ProjectHighlight> getProjectHighligths() {
+    return projectHighlights;
   }
 
 
@@ -976,7 +976,7 @@ public class Project implements java.io.Serializable, IAuditLog {
     this.genderAnalysis = genderAnalysis;
   }
 
-  public void setHighligths(List<ProjectHighligth> highligths) {
+  public void setHighligths(List<ProjectHighlight> highligths) {
     this.highligths = highligths;
   }
 
@@ -1096,8 +1096,8 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setProjectHighligths(Set<ProjectHighligth> projectHighligths) {
-    this.projectHighligths = projectHighligths;
+  public void setProjectHighligths(Set<ProjectHighlight> projectHighlights) {
+    this.projectHighlights = projectHighlights;
   }
 
 

@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectHighligthCountryMySQLDAO;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 
 import java.util.List;
 
@@ -46,25 +46,25 @@ public interface ProjectHighligthCountryDAO {
    * This method gets a projectHighligthCountry object by a given projectHighligthCountry identifier.
    * 
    * @param projectHighligthCountryID is the projectHighligthCountry identifier.
-   * @return a ProjectHighligthCountry object.
+   * @return a ProjectHighlightCountry object.
    */
-  public ProjectHighligthCountry find(long id);
+  public ProjectHighlightCountry find(long id);
 
   /**
    * This method gets a list of projectHighligthCountry that are active
    * 
-   * @return a list from ProjectHighligthCountry null if no exist records
+   * @return a list from ProjectHighlightCountry null if no exist records
    */
-  public List<ProjectHighligthCountry> findAll();
+  public List<ProjectHighlightCountry> findAll();
 
 
   /**
    * This method saves the information of the given projectHighligthCountry
    * 
-   * @param projectHighligthCountry - is the projectHighligthCountry object with the new information to be added/updated.
+   * @param projectHighlightCountry - is the projectHighligthCountry object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectHighligthCountry was
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectHighligthCountry projectHighligthCountry);
+  public long save(ProjectHighlightCountry projectHighlightCountry);
 }

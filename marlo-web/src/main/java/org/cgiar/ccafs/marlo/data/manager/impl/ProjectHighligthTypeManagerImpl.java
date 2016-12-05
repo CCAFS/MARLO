@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthTypeManager;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 
 import java.util.List;
 
@@ -53,22 +53,22 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
   }
 
   @Override
-  public List<ProjectHighligthType> findAll() {
+  public List<ProjectHighlightType> findAll() {
 
     return projectHighligthTypeDAO.findAll();
 
   }
 
   @Override
-  public ProjectHighligthType getProjectHighligthTypeById(long projectHighligthTypeID) {
+  public ProjectHighlightType getProjectHighligthTypeById(long projectHighligthTypeID) {
 
     return projectHighligthTypeDAO.find(projectHighligthTypeID);
   }
 
   @Override
-  public long saveProjectHighligthType(ProjectHighligthType projectHighligthType) {
+  public long saveProjectHighligthType(ProjectHighlightType projectHighlightType) {
 
-    return projectHighligthTypeDAO.save(projectHighligthType);
+    return projectHighligthTypeDAO.save(projectHighlightType);
   }
 
 

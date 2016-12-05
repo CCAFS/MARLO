@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthCountryDAO;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
 
 import java.util.List;
 
@@ -34,15 +34,15 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
 
   @Override
   public boolean deleteProjectHighligthCountry(long projectHighligthCountryId) {
-    ProjectHighligthCountry projectHighligthCountry = this.find(projectHighligthCountryId);
+    ProjectHighlightCountry projectHighlightCountry = this.find(projectHighligthCountryId);
 
-    return this.dao.delete(projectHighligthCountry);
+    return this.dao.delete(projectHighlightCountry);
   }
 
   @Override
   public boolean existProjectHighligthCountry(long projectHighligthCountryID) {
-    ProjectHighligthCountry projectHighligthCountry = this.find(projectHighligthCountryID);
-    if (projectHighligthCountry == null) {
+    ProjectHighlightCountry projectHighlightCountry = this.find(projectHighligthCountryID);
+    if (projectHighlightCountry == null) {
       return false;
     }
     return true;
@@ -50,15 +50,15 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
   }
 
   @Override
-  public ProjectHighligthCountry find(long id) {
-    return dao.find(ProjectHighligthCountry.class, id);
+  public ProjectHighlightCountry find(long id) {
+    return dao.find(ProjectHighlightCountry.class, id);
 
   }
 
   @Override
-  public List<ProjectHighligthCountry> findAll() {
-    String query = "from " + ProjectHighligthCountry.class.getName() + " where is_active=1";
-    List<ProjectHighligthCountry> list = dao.findAll(query);
+  public List<ProjectHighlightCountry> findAll() {
+    String query = "from " + ProjectHighlightCountry.class.getName() + " where is_active=1";
+    List<ProjectHighlightCountry> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -67,15 +67,15 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
   }
 
   @Override
-  public long save(ProjectHighligthCountry projectHighligthCountry) {
-    if (projectHighligthCountry.getId() == null) {
-      dao.save(projectHighligthCountry);
+  public long save(ProjectHighlightCountry projectHighlightCountry) {
+    if (projectHighlightCountry.getId() == null) {
+      dao.save(projectHighlightCountry);
     } else {
-      dao.update(projectHighligthCountry);
+      dao.update(projectHighlightCountry);
     }
 
 
-    return projectHighligthCountry.getId();
+    return projectHighlightCountry.getId();
   }
 
 

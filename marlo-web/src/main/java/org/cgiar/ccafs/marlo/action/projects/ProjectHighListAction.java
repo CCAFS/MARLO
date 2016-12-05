@@ -19,7 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -61,37 +61,37 @@ public class ProjectHighListAction extends BaseAction {
 
   @Override
   public String add() {
-    ProjectHighligth projectHighligth = new ProjectHighligth();
+    ProjectHighlight projectHighlight = new ProjectHighlight();
     // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
-    projectHighligth.setYear(new Long(this.getCurrentCycleYear()));
+    projectHighlight.setYear(new Long(this.getCurrentCycleYear()));
 
-    projectHighligth.setActiveSince(new Date());
-    projectHighligth.setAuthor("");
+    projectHighlight.setActiveSince(new Date());
+    projectHighlight.setAuthor("");
     // newDeliverable.setContributor("");
     // newDeliverable.setCoverage("");
-    projectHighligth.setCreatedBy(this.getCurrentUser());
-    projectHighligth.setDescription("");
-    projectHighligth.setEndDate(new Date());
+    projectHighlight.setCreatedBy(this.getCurrentUser());
+    projectHighlight.setDescription("");
+    projectHighlight.setEndDate(new Date());
 
-    projectHighligth.setActive(true);
+    projectHighlight.setActive(true);
     // newDeliverable.setIsGlobal(false);
-    projectHighligth.setKeywords("");
+    projectHighlight.setKeywords("");
     // newDeliverable.setLeader(0);
-    projectHighligth.setLinks("");
+    projectHighlight.setLinks("");
     // newDeliverable.setObjectives("");
-    projectHighligth.setPartners("");
-    projectHighligth.setProject(project);
+    projectHighlight.setPartners("");
+    projectHighlight.setProject(project);
     // newDeliverable.setPublisher("");
     // newDeliverable.setRelation("");
-    projectHighligth.setResults("");
+    projectHighlight.setResults("");
     // newDeliverable.setRights("");
-    projectHighligth.setStartDate(new Date());
-    projectHighligth.setStatus(new Long(1));
-    projectHighligth.setSubject("");
-    projectHighligth.setTitle("");
-    projectHighligth.setModificationJustification("");
+    projectHighlight.setStartDate(new Date());
+    projectHighlight.setStatus(new Long(1));
+    projectHighlight.setSubject("");
+    projectHighlight.setTitle("");
+    projectHighlight.setModificationJustification("");
 
-    higlightID = projectHighligthManager.saveProjectHighligth(projectHighligth);
+    higlightID = projectHighligthManager.saveProjectHighligth(projectHighlight);
 
     if (higlightID > 0) {
       return SUCCESS;
@@ -103,9 +103,9 @@ public class ProjectHighListAction extends BaseAction {
   @Override
   public String delete() {
     // Deleting deliverable.
-    for (ProjectHighligth projectHighligth : project.getHighligths()) {
-      if (projectHighligth.getId() == higlightID) {
-        boolean deleted = projectHighligthManager.deleteProjectHighligth(projectHighligth.getId());
+    for (ProjectHighlight projectHighlight : project.getHighligths()) {
+      if (projectHighlight.getId() == higlightID) {
+        boolean deleted = projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
 
         if (deleted) {
           this.addActionMessage(
@@ -166,7 +166,7 @@ public class ProjectHighListAction extends BaseAction {
 
     // Getting the List of Expected Deliverables
 
-    List<ProjectHighligth> hightLihglihts =
+    List<ProjectHighlight> hightLihglihts =
       project.getProjectHighligths().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setHighligths(hightLihglihts);
 

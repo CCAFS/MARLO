@@ -22,7 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -89,20 +89,20 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
     highLightId = Long.parseLong(projectParameter);
 
-    ProjectHighligth projectHighligth = projectHighligthManager.getProjectHighligthById(highLightId);
+    ProjectHighlight projectHighlight = projectHighligthManager.getProjectHighligthById(highLightId);
 
-    if (projectHighligth != null && projectHighligth.isActive()) {
+    if (projectHighlight != null && projectHighlight.isActive()) {
 
-      String params[] = {crp.getAcronym(), projectHighligth.getProject().getId() + ""};
+      String params[] = {crp.getAcronym(), projectHighlight.getProject().getId() + ""};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        if (!baseAction.isSubmit(projectHighligth.getProject().getId())) {
+        if (!baseAction.isSubmit(projectHighlight.getProject().getId())) {
           canEdit = true;
           canSwitchProject = true;
         }
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
-        if (projects.contains(projectHighligth.getProject()) && baseAction
+        if (projects.contains(projectHighlight.getProject()) && baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_HIGH_LIGHTS_EDIT_PERMISSION, params))) {
           canEdit = true;
         }
@@ -127,12 +127,12 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
         canSwitchProject = true;
       }
 
-      if (baseAction.isSubmit(projectHighligth.getProject().getId())) {
+      if (baseAction.isSubmit(projectHighlight.getProject().getId())) {
         canEdit = false;
 
       }
-      if (projectHighligth.getStatus() != null) {
-        if (projectHighligth.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (projectHighlight.getStatus() != null) {
+        if (projectHighlight.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
         }
       }
