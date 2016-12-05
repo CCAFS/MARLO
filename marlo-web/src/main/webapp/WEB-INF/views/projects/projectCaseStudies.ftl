@@ -64,7 +64,7 @@
           [#-- Add a new highlight --]
           [#if canEdit] 
           <div class="text-right"> 
-            <a class="button-blue" href="[@s.url action='addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+            <a class="button-blue" href="[@s.url action='${crpSession}/addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="projectCaseStudies.addCaseStudy" /]
             </a>
           </div>

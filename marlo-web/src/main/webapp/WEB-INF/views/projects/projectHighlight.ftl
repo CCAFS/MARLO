@@ -1,20 +1,4 @@
-[#ftl]
-[#assign highlight = 
-              { "id": "1",
-                "title": "Succesful communications on the Projected Shifts in Coffea arabica Suitability among Major Global Producing Regions Due to Climate Change",
-                "author":"Ovalle-Rivera O, Läderach P, Bunn C, Obersteiner M, Schroth G",
-                "year":"2015",
-                "subject":"Coffea arabica, climate change, productivity",
-                "":"",
-                "":"",
-                "":""
-              }  
-             /]
-             
-
-[#assign canEdit = true /]
-[#assign editable = true /]
-            
+[#ftl] 
 [#assign title = "Project Highlight" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
 [#assign pageLibs = [ "select2" ] /]
