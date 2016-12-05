@@ -7,7 +7,7 @@ function init() {
     width: "100%"
   });
 
-  $(".deliverableList").select2({
+  $("form .deliverableList").select2({
       templateResult: formatState,
       templateSelection: formatState,
       width: "100%"
@@ -85,7 +85,9 @@ function addActivity() {
   $item.show('slow', function() {
     $item.find("textarea").autoGrow();
     $item.find("select").select2({
-      width: "100%"
+        templateResult: formatState,
+        templateSelection: formatState,
+        width: "100%"
     });
     date("#startDate-" + countID, "#endDate-" + countID);
   });

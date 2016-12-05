@@ -527,13 +527,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         reader.close();
-        for (ProjectBudget projectBudget : project.getBudgets()) {
-          if (projectBudget != null && projectBudget.getFundingSource() != null) {
-            projectBudget
-              .setFundingSource(fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId()));
-          }
 
+        if (project.getBudgets() != null) {
+          for (ProjectBudget projectBudget : project.getBudgets()) {
+            if (projectBudget != null && projectBudget.getFundingSource() != null) {
+              projectBudget
+                .setFundingSource(fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId()));
+            }
+
+          }
         }
+
         this.setDraft(true);
       } else {
         this.setDraft(false);
@@ -578,11 +582,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       }
     }
 
-    if (project.getBudgets().size() == 0) {
-      budgetIndex = 0;
+
+    if (project.getBudgets() != null) {
+      if (project.getBudgets().size() == 0) {
+        budgetIndex = 0;
+      } else {
+        budgetIndex = project.getBudgets().size() - 1;
+      }
     } else {
-      budgetIndex = project.getBudgets().size() - 1;
+      budgetIndex = 0;
     }
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
