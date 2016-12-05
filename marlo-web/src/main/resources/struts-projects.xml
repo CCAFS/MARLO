@@ -123,7 +123,7 @@
 
 
  <action name="{crp}/highlights" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
-      <result name="input">/WEB-INF/projects/projectHighlightsList.ftl</result>
+      <result name="input">/WEB-INF/views/projects/projectHighlightsList.ftl</result>
     </action>
     
  <action name="{crp}/highlight" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighlightAction">
@@ -133,7 +133,7 @@
       <interceptor-ref name="defaultStack">
         <param name="fileUpload.allowedTypes">image/bmp,image/gif,image/jpeg,image/png</param>
       </interceptor-ref>
-      <result name="input">/WEB-INF/projects/projectHighlight.ftl</result>
+       <result name="input">/WEB-INF/views/projects/projectHighlight.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">highlight</param>
         <param name="highlightID">${highlight.id}</param>
@@ -427,31 +427,7 @@
 				name="deliverableID">${deliverable.id}</param> </result> -->
 		</action>
 		
-		<!-- ProjectHighListAction -->
-		<action name="{crp}/highlights" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
-      <interceptor-ref name="editProjectsStack" />
-      <result name="input">/WEB-INF/views/projects/projectHighlightsList.ftl</result>
-    </action>
-    
-    <!-- projects.ProjectHighlightAction -->
-    <action name="{crp}/highlight" class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
-      <!-- interceptor-ref name="projectStackHighlights" /-->
-      <interceptor-ref name="editProjectsStack" />
-      <interceptor-ref name="defaultStack">
-        <param name="fileUpload.allowedTypes">image/bmp,image/gif,image/jpeg,image/png</param>
-      </interceptor-ref>
-      <result name="input">/WEB-INF/views/projects/projectHighlight.ftl</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">${crpSession}/highlight</param>
-        <param name="highlightID">${highlight.id}</param>
-        <param name="edit">true</param>
-      </result>
-      <result name="redirect" type="redirectAction">
-        <param name="actionName">${url}</param>
-        <param name="edit">true</param>
-        <param name="highlightID">${highlight.id}</param>
-      </result> 
-    </action>
+		
 
 		<action name="{crp}/budgetByPartners" class="org.cgiar.ccafs.marlo.action.projects.ProjectBudgetByPartnersAction">
 			<interceptor-ref name="editProjectsStack" />

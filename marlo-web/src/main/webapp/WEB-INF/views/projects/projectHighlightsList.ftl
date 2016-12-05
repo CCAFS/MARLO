@@ -43,18 +43,10 @@
            
           <div class="highlights-block simpleBox">
             [#-- Project Highlights list --]
-            
-            [#assign projectHighlights = [
-              { "id": "1",
-                "title": "Succesful communications on the Projected Shifts in Coffea arabica Suitability among Major Global Producing Regions Due to Climate Change",
-                "author":"Ovalle-Rivera O, Läderach P, Bunn C, Obersteiner M, Schroth G",
-                "year": 2015,
-                "subject":"Coffea arabica, climate change, productivity"
-              }  
-            ] /]
+          
             
             <div class="highlights-list">
-              [@highlightsList highlights=(projectHighlights)![]  /]
+              [@highlightsList highlights=(project.highligths)![]  /]
             </div>
             [#--  --if !project.highlights?has_content]
               <p class="textMessage text-center">[@s.text name="projectHighlights.empty" /]</p>
