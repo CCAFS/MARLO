@@ -11,18 +11,21 @@
               }  
              /]
              
-[#assign projectID = 2 /]
+
+[#assign canEdit = true /]
+[#assign editable = true /]
             
 [#assign title = "Project Highlight" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
-[#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectHighlightsList.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign pageLibs = [ "select2" ] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectHighlight.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
+  {"label":"projectHighlights", "nameSpace":"/projects", "action":"${(crpSession)!}/highlights", "param" : "projectID=${projectID}"},
   {"label":"projectHighlights", "nameSpace":"/projects", "action":""}
 ] /]
 
@@ -35,7 +38,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectContributionsCrpList.help" /] </p>
+    <p class="col-md-10"> [@s.text name="projectHighlight.help" /] </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -60,29 +63,29 @@
             
             [#-- Title --]
             <div class="fullBlock">
-              [@customForm.input name="highlight.title" type="text" i18nkey="projectHighlight.title" editable=editable required=true  /]
+              [@customForm.input name="highlight.title" type="text" i18nkey="highlight.title" editable=editable required=true  /]
             </div> 
             
             <div class="fullPartBlock">
               [#-- Author --]
               <div class="halfPartBlock" >
-                [@customForm.input name="highlight.author" type="text" i18nkey="projectHighlight.author" editable=editable  required=true  /]
+                [@customForm.input name="highlight.author" type="text" i18nkey="highlight.author" editable=editable  required=true  /]
               </div>
             
               [#-- Subject --]
               <div class="halfPartBlock" >
-                [@customForm.input name="highlight.subject"  type="text" i18nkey="projectHighlight.subject" help="projectHighlight.subject.help" editable=editable /] 
+                [@customForm.input name="highlight.subject"  type="text" i18nkey="highlight.subject" help="highlight.subject.help" editable=editable /] 
               </div> 
             </div>
       
             <div class="fullPartBlock">
               [#-- Publisher --]
               <div class="halfPartBlock" >
-                [@customForm.input name="highlight.publisher" type="text" i18nkey="projectHighlight.publisher" help="projectHighlight.publisher.help" editable=editable /]   
+                [@customForm.input name="highlight.publisher" type="text" i18nkey="highlight.publisher" help="highlight.publisher.help" editable=editable /]   
               </div>
               [#-- Year --]
               <div class="halfPartBlock">
-                [@customForm.select name="highlight.year" value="${(highlight.year)!currentReportingYear}" i18nkey="projectHighlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
+                [@customForm.select name="highlight.year" value="${(highlight.year)!currentReportingYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
                 [#if !editable]${(highlight.year)!}[/#if]
               </div>
             </div>
@@ -91,7 +94,7 @@
             <div class="fullBlock">
               [#-- Types --]
               <div class="halfPartBlock highlightsTypes">
-                <h6><label for="highlight.types">[@s.text name="projectHighlight.types" /]<span class="red">*</span></label></h6>
+                <label for="highlight.types">[@s.text name="highlight.types" /]<span class="red">*</span></label>
                 <div class="checkboxGroup">
                 [#if editable]
                   [@s.fielderror cssClass="fieldError" fieldName="highlight.typesIds"/]
@@ -108,7 +111,7 @@
               
               [#-- Image --]
               <div class="halfPartBlock imageBlock">
-                <h6><label for="highlight.image">[@customForm.text name="projectHighlight.image" readText=!editable /]:</label></h6>
+                <label for="highlight.image">[@customForm.text name="highlight.image" readText=!editable /]:</label>
                 <div class="browseInput fileUpload">
                   [#if editable]
                     [#if highlight.photo?has_content]
@@ -137,28 +140,28 @@
             <div class="fullPartBlock">
               [#-- Start Date --]
               <div class="halfPartBlock">
-                [@customForm.input name="highlight.startDateText" className="startDate" type="text" i18nkey="projectHighlight.startDate" editable=editable/]
+                [@customForm.input name="highlight.startDateText" className="startDate" type="text" i18nkey="highlight.startDate" editable=editable/]
               </div>
         
               [#-- End Date --]
               <div class="halfPartBlock">
-                [@customForm.input name="highlight.endDateText" className="endDate" type="text" i18nkey="projectHighlight.endDate" editable=editable/]
+                [@customForm.input name="highlight.endDateText" className="endDate" type="text" i18nkey="highlight.endDate" editable=editable/]
               </div>
             </div>
             
             [#-- Is global --]
             <div class="fullBlock">
               <div class="halfPartBlock">
-                [@customForm.checkbox  name="highlight.isGlobal" className="isGlobal" i18nkey="projectHighlight.isGlobal" checked=(highlight.isGlobal)!false value="true" editable=editable/]
+                [@customForm.checkbox  name="highlight.isGlobal" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.isGlobal)!false value="true" editable=editable/]
               </div>
             </div>
             
             [#-- Countries --]
             <div class="fullBlock countriesBlock chosen" style="display:${((highlight.isGlobal)!false)?string('none','block')}">
               [#if editable]
-                [@customForm.select name="highlight.countriesIds" label="" i18nkey="projectHighlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
+                [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
               [#else]
-                <label>[@s.text name="projectHighlight.countries" /]:</label>
+                <label>[@s.text name="highlight.countries" /]:</label>
                 <div class="select">
                 [#if highlight.countries?has_content]
                   [#list highlight.countries as element]
@@ -173,32 +176,32 @@
       
             [#-- Keywords --]
             <div class="fullBlock">
-              [@customForm.input name="highlight.keywords" type="text" i18nkey="projectHighlight.keywords" help="projectHighlight.keywords.help" editable=editable/]
+              [@customForm.input name="highlight.keywords" type="text" i18nkey="highlight.keywords" help="highlight.keywords.help" editable=editable/]
             </div>
       
             [#-- Description --]
             <div class="fullBlock">
-              [@customForm.textArea name="highlight.description" className="limitWords-300" i18nkey="projectHighlight.descripition" editable=editable/]
+              [@customForm.textArea name="highlight.description" className="limitWords-300" i18nkey="highlight.descripition" editable=editable/]
             </div>
       
             [#-- Objectives --]
             <div class="fullBlock">
-              [@customForm.textArea name="highlight.objectives" className="limitWords-100" i18nkey="projectHighlight.objectives" editable=editable/]
+              [@customForm.textArea name="highlight.objectives" className="limitWords-100" i18nkey="highlight.objectives" editable=editable/]
             </div>
       
             [#-- Result --]
             <div class="fullBlock">
-              [@customForm.textArea name="highlight.results" className="limitWords-300" i18nkey="projectHighlight.results" editable=editable/]
+              [@customForm.textArea name="highlight.results" className="limitWords-300" i18nkey="highlight.results" editable=editable/]
             </div>
       
             [#-- Partners --]
             <div class="fullBlock">
-              [@customForm.textArea name="highlight.partners" className="limitWords-300" i18nkey="projectHighlight.partners" editable=editable/]
+              [@customForm.textArea name="highlight.partners" className="limitWords-300" i18nkey="highlight.partners" editable=editable/]
             </div>
       
             [#-- Links / resources --]
             <div class="fullBlock">
-              [@customForm.textArea name="highlight.links" i18nkey="projectHighlight.links" editable=editable/]
+              [@customForm.textArea name="highlight.links" i18nkey="highlight.links" editable=editable/]
             </div>
             
           </div>
@@ -216,6 +219,3 @@
 [@customForm.inputFile name="file" template=true /] 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-
-
