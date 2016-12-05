@@ -65,6 +65,9 @@
 			<interceptor name="editDeliverable"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
+    <interceptor name="editHighlight"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
+
 			<interceptor name="editFunding"
 				class="org.cgiar.ccafs.marlo.interceptor.funding.FundingSourceInterceptor" />
 

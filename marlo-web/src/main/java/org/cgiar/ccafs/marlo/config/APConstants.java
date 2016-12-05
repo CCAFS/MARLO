@@ -105,6 +105,7 @@ public final class APConstants {
   public static final String INSTITUTION_REQUEST_ID = "institutionID";
   public static final String PROJECT_DELIVERABLE_REQUEST_ID = "deliverableID";
   public static final String LOC_ELEMENT_ID = "locElementID";
+  public static final String HIGHLIGHT_REQUEST_ID = "highlightID";
   public static final String CYCLE = "cycle";
 
   public static final String ID = "id";
@@ -185,6 +186,13 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
+
+  public static final String PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighligth.projectHighligthsTypes)";
+
+  public static final String PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighligth.projectHighligthCountries)";
+
 
   public static final String PROJECT_DELIVERABLE_FUNDING_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableFundingSources)";

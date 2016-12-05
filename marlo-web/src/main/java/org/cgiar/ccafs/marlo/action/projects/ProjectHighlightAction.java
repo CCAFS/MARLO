@@ -16,28 +16,43 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighligthType;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,27 +68,37 @@ public class ProjectHighlightAction extends BaseAction {
 
   // LOG
   private static Logger LOG = LoggerFactory.getLogger(ProjectHighlightAction.class);
+  private CrpManager crpManager;
+
+
+  private Crp loggedCrp;
+
+
+  private String transaction;
+
+
+  private AuditLogManager auditLogManager;
+
 
   // Manager
   private ProjectManager projectManager;
+
+
   private ProjectHighligthManager projectHighLightManager;
+
+  private FileDBManager fileDBManager;
   private LocElementManager locElementManager;
   private String highlightsImagesUrl;
   private File file;
   // private ProjectHighLightValidator validator;
   private String fileFileName;
   private String contentType;
-
-
   // Model for the back-end
   private ProjectHighligth highlight;
-
-
   private Project project;
-
-
   // Model for the front-end
-  private int highlightID;
+  private long highlightID;
+  private long projectID;
 
 
   private Map<String, String> highlightsTypes;
@@ -85,31 +110,69 @@ public class ProjectHighlightAction extends BaseAction {
   private List<Integer> allYears;
 
   private List<LocElement> countries;
-  private List<ProjectHighlightsType> previewTypes;
+  private List<ProjectHighligthType> previewTypes;
+
 
   private List<ProjectHighligthCountry> previewCountries;
 
 
   @Inject
   public ProjectHighlightAction(APConfig config, ProjectManager projectManager,
-    ProjectHighligthManager highLightManager, LocElementManager locElementManager) {
+    ProjectHighligthManager highLightManager, LocElementManager locElementManager, CrpManager crpManager,
+    AuditLogManager auditLogManager, FileDBManager fileDBManager) {
     super(config);
     this.projectManager = projectManager;
     this.projectHighLightManager = highLightManager;
     this.locElementManager = locElementManager;
+    this.auditLogManager = auditLogManager;
+    this.crpManager = crpManager;
+    this.fileDBManager = fileDBManager;
 
 
   }
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
 
   public List<Integer> getAllYears() {
     return allYears;
   }
 
   private String getAnualReportRelativePath() {
-    return config.getProjectsBaseFolder() + File.separator + project.getId() + File.separator + "hightlihts"
-      + File.separator;
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "hightlihts" + File.separator;
   }
+
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = highlight.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = highlight.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
 
   public String getContentType() {
     return contentType;
@@ -124,6 +187,7 @@ public class ProjectHighlightAction extends BaseAction {
     return Integer.parseInt(dateFormat.format(project.getEndDate()));
   }
 
+
   public File getFile() {
     return file;
   }
@@ -137,22 +201,44 @@ public class ProjectHighlightAction extends BaseAction {
     return highlight;
   }
 
+  public long getHighlightID() {
+    return highlightID;
+  }
+
+
   public String getHighlightsImagesUrl() {
     return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
   }
 
 
   public String getHighlightsImagesUrlPath() {
-    return config.getProjectsBaseFolder() + File.separator + project.getId() + File.separator + "hightlightsImage"
-      + File.separator;
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "hightlightsImage" + File.separator;
   }
+
 
   public Map<String, String> getHighlightsTypes() {
     return highlightsTypes;
   }
 
+
   private String getHightlightImagePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getHighlightsImagesUrlPath() + File.separator;
+  }
+
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
+  public List<ProjectHighligthCountry> getPreviewCountries() {
+    return previewCountries;
+  }
+
+
+  public List<ProjectHighligthType> getPreviewTypes() {
+    return previewTypes;
   }
 
 
@@ -160,35 +246,106 @@ public class ProjectHighlightAction extends BaseAction {
     return project;
   }
 
-  public int getStartYear() {
-    return config.getStartYear();
+
+  public long getProjectID() {
+    return projectID;
   }
+
 
   public Map<String, String> getStatuses() {
     return statuses;
   }
 
-  public boolean isNewProject() {
-    return project.isNew(config.getCurrentPlanningStartDate());
+
+  public String getTransaction() {
+    return transaction;
   }
+
 
   @Override
   public String next() {
     return SUCCESS;
   }
 
+
   @Override
   public void prepare() throws Exception {
+
     super.prepare();
     previewTypes = new ArrayList<>();
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     highlightID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.HIGHLIGHT_REQUEST_ID)));
-    ProjectHighligth higligth = projectHighLightManager.getHighLightById(highlightID);
-    project = projectManager.getProject(Integer.parseInt(higligth.getProjectId() + ""));
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      ProjectHighligth history = (ProjectHighligth) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        highlight = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      this.highlight = projectHighLightManager.getProjectHighligthById(highlightID);
+    }
+
+
+    if (highlight != null) {
+
+      project = projectManager.getProjectById(highlight.getProject().getId());
+      projectID = project.getId();
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        highlight = (ProjectHighligth) autoSaveReader.readFromJson(jReader);
+        if (highlight.getCountries() != null) {
+          for (ProjectHighligthCountry projectHighligthCountry : highlight.getCountries()) {
+            projectHighligthCountry
+              .setLocElement(locElementManager.getLocElementById(projectHighligthCountry.getLocElement().getId()));
+          }
+        }
+        if (highlight.getFile() != null) {
+          if (highlight.getFile().getId() != null) {
+            highlight.setFile(fileDBManager.getFileDBById(highlight.getFile().getId()));
+          } else {
+            highlight.setFile(null);
+          }
+        }
+        this.setDraft(true);
+      } else {
+
+        highlight.setCountries(
+          highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        highlight.setTypes(
+          highlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        this.setDraft(false);
+      }
+
+    }
+
 
     // Getting highlights Types
     highlightsTypes = new HashMap<>();
-    List<ProjectHighlightsType> list = Arrays.asList(ProjectHighlightsType.values());
-    for (ProjectHighlightsType ProjectHighlightsType : list) {
+    List<ProjectHighlightsTypeEnum> list = Arrays.asList(ProjectHighlightsTypeEnum.values());
+    for (ProjectHighlightsTypeEnum ProjectHighlightsType : list) {
       highlightsTypes.put(ProjectHighlightsType.getId(), ProjectHighlightsType.getDescription());
     }
 
@@ -203,7 +360,7 @@ public class ProjectHighlightAction extends BaseAction {
     allYears = project.getAllYears();
     List<Integer> listYears = new ArrayList<Integer>();
     for (int i = 0; i < allYears.size(); i++) {
-      if ((allYears.get(i) <= this.getCurrentReportingYear())) {
+      if ((allYears.get(i) <= this.getCurrentCycleYear())) {
         listYears.add(allYears.get(i));
       }
     }
@@ -211,115 +368,89 @@ public class ProjectHighlightAction extends BaseAction {
     allYears.addAll(listYears);
 
     // Getting countries list
-    countries = locationManager.getAllCountries();
+    countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
+      .collect(Collectors.toList());
 
-    // Getting the highlight information.
-    highlight = projectHighLightManager.getHighLightById(highlightID);
+    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
-    DateFormat dateformatter = new SimpleDateFormat(APConstants.DATE_FORMAT);
-    // highlight.setStartDate(dateformatter.parse(dateformatter.format(highlight.getStartDate())));
-    highlight.setStartDateText(dateformatter.format(highlight.getStartDate()));
-    highlight.setEndDateText(dateformatter.format(highlight.getEndDate()));
-    Iterator<ProjectHighligthType> iteratorTypes = higligth.getProjectHighligthTypeses().iterator();
-    List<ProjectHighlightsType> typesids = new ArrayList<>();
-    List<String> ids = new ArrayList<>();
-    while (iteratorTypes.hasNext()) {
-      ProjectHighligthType projectHighligthsTypes = iteratorTypes.next();
-      typesids.add(ProjectHighlightsType.value(projectHighligthsTypes.getIdType() + ""));
-      ids.add(projectHighligthsTypes.getIdType() + "");
-    }
-    Iterator<ProjectHighligthCountry> iteratorCountry = higligth.getProjectHighligthCountries().iterator();
-    List<Country> countrys = new ArrayList<>();
-    List<Integer> countryids = new ArrayList<>();
-    while (iteratorCountry.hasNext()) {
-      ProjectHighligthCountry projectHighligthsCountry = iteratorCountry.next();
-      Country country = new Country();
-      country.setId(projectHighligthsCountry.getIdCountry());
-      int indexCountry = this.countries.indexOf(country);
-      if (indexCountry > 0) {
-        country.setName(this.countries.get(indexCountry).getName());
-        countryids.add(projectHighligthsCountry.getIdCountry());
-        countrys.add(country);
-      } else {
-        country = locationManager.getCountry(projectHighligthsCountry.getIdCountry());
-        if (country != null) {
-          countryids.add(projectHighligthsCountry.getIdCountry());
-          countrys.add(country);
-        }
+
+    if (this.isHttpPost()) {
+      if (highlight.getTypes() != null) {
+        highlight.getTypes().clear();
       }
 
+
+      if (highlight.getCountries() != null) {
+        highlight.getCountries().clear();
+
+      }
+
+
     }
 
-    highlight.setYear(higligth.getYear());
-    highlight.setCountriesIds(countryids);
-    highlight.setCountries(countrys);
-    highlight.setTypesIds(typesids);
-    previewTypes.addAll(typesids);
-    highlight.setTypesids(ids);
-
-    super.setHistory(historyManager.getProjectHighLights(project.getId()));
-
-    // Initializing Section Statuses:
-    this.initializeProjectSectionStatuses(project, this.getCycleName());
   }
+
 
   @Override
   public String save() {
 
-    if (this.hasProjectPermission("update", project.getId())) {
+    if (this.hasPermission("canEdit")) {
+
       DateFormat dateformatter = new SimpleDateFormat(APConstants.DATE_FORMAT);
-      // highlight.setStartDate(dateformatter.parse(dateformatter.format(highlight.getStartDate())));
 
-      try {
-        highlight.setStartDate(dateformatter.parse(highlight.getStartDateText()));
-        highlight.setEndDate(dateformatter.parse(highlight.getEndDateText()));
-      } catch (ParseException e) {
-        LOG.error(e.getMessage());
-      }
-      List<ProjectHighligthType> actualTypes = new ArrayList<>();
-      for (String type : highlight.getTypesids()) {
-        ProjectHighligthType typeHigh = new ProjectHighligthType();
-        typeHigh.setIdType(Integer.parseInt(type));
-        typeHigh.setProjectHighligth(highlight);
-        actualTypes.add(typeHigh);
+      Path path = this.getAutoSaveFilePath();
 
-
-      }
-      List<ProjectHighligthCountry> actualcountries = new ArrayList<>();
-      for (Integer countries : highlight.getCountriesIds()) {
-        ProjectHighligthCountry countryHigh = new ProjectHighligthCountry();
-        countryHigh.setIdCountry(countries);
-        countryHigh.setProjectHighligth(highlight);
-        actualcountries.add(countryHigh);
-      }
-
-
-      if (file != null) {
-        FileManager.deleteFile(this.getHightlightImagePath() + highlight.getPhoto());
-        FileManager.copyFile(file, this.getHightlightImagePath() + fileFileName);
-        highlight.setPhoto(fileFileName);
-      }
-      if (highlight.getPhoto().equals("-1")) {
-        highlight.setPhoto(null);
-      }
-
-
-      highlight.setProjectId(new Long(project.getId() + ""));
-      highlight.setProjectHighligthTypeses(new HashSet<>(actualTypes));
-      highlight.setProjectHighligthCountries(new HashSet<>(actualcountries));
-      projectHighLightManager.saveHighLight(project.getId(), highlight, this.getCurrentUser(), this.getJustification());
-      // Get the validation messages and append them to the save message
-      Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
-        this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
+      if (highlight.getFile().getId() == null) {
+        highlight.setFile(null);
       } else {
-        this.addActionMessage(this.getText("saving.saved"));
+        highlight.setFile(highlight.getFile());
       }
-      return SUCCESS;
+      highlight.setProject(project);
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+      ProjectHighligth highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
+      highlight.setActiveSince(new Date());
+      highlight.setModifiedBy(this.getCurrentUser());
+      highlight.setModificationJustification(this.getJustification());
+      highlight.setCreatedBy(highlightDB.getCreatedBy());
+
+      projectHighLightManager.saveProjectHighligth(highlight);
+
+      // Get the validation messages and append them to the save message
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
+      }
     }
     return NOT_AUTHORIZED;
+  }
+
+
+  public void setAllYears(List<Integer> allYears) {
+    this.allYears = allYears;
   }
 
   public void setContentType(String contentType) {
@@ -327,17 +458,65 @@ public class ProjectHighlightAction extends BaseAction {
   }
 
 
+  public void setCountries(List<LocElement> countries) {
+    this.countries = countries;
+  }
+
   public void setFile(File file) {
     this.file = file;
   }
-
 
   public void setFileFileName(String fileFileName) {
     this.fileFileName = fileFileName;
   }
 
+
+  public void setHighlight(ProjectHighligth highlight) {
+    this.highlight = highlight;
+  }
+
+  public void setHighlightID(long highlightID) {
+    this.highlightID = highlightID;
+  }
+
   public void setHighlightsImagesUrl(String highlightsImagesUrl) {
     this.highlightsImagesUrl = highlightsImagesUrl;
+  }
+
+
+  public void setHighlightsTypes(Map<String, String> highlightsTypes) {
+    this.highlightsTypes = highlightsTypes;
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+  public void setPreviewCountries(List<ProjectHighligthCountry> previewCountries) {
+    this.previewCountries = previewCountries;
+  }
+
+
+  public void setPreviewTypes(List<ProjectHighligthType> previewTypes) {
+    this.previewTypes = previewTypes;
+  }
+
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
+  }
+
+  public void setStatuses(Map<String, String> statuses) {
+    this.statuses = statuses;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
 
