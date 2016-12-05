@@ -98,11 +98,11 @@
                 <label for="highlight.image">[@customForm.text name="highlight.image" readText=!editable /]:</label>
                 <div class="browseInput fileUpload">
                   [#if editable]
-                    [#if highlight.photo?has_content]
+                    [#if highlight.file?has_content]
                       <p> 
                         [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                        <a href="${(highlightsImagesUrl)!baseUrl}${(highlight.photo)!'images/global/defaultImage.png'}">${(highlight.photo)!}</a>  
-                        <input type="hidden" name="highlight.photo" value="${highlight.photo}" /> 
+                        <a href="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}">${(highlight.file.fileName)!}</a>  
+                        <input type="hidden" name="highlight.photo" value="${highlight.file.fileName}" /> 
                       </p>
                     [#else]
                       [@customForm.inputFile name="file" /]
