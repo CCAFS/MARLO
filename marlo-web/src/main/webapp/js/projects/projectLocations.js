@@ -6,6 +6,7 @@ var markers = [];
 var countID;
 var FT_TableID = "19lLpgsKdJRHL2O4fNmJ406ri9JtpIIk8a-AchA";
 var countries = [];
+var layer;
 
 function init() {
 
@@ -814,6 +815,7 @@ function notify(text) {
 
 function mappingCountries() {
   var query = "";
+  layer = new google.maps.FusionTablesLayer();
   if(countries.length > 0) {
 
     $.each(countries, function(i,c) {
@@ -844,4 +846,5 @@ function mappingCountries() {
     layer = new google.maps.FusionTablesLayer(FT_Options);
     layer.setMap(map);
   }
+
 }
