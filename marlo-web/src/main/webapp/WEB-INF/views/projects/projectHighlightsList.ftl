@@ -1,9 +1,4 @@
 [#ftl]
-
-[#assign canEdit = true /]
-[#assign editable = true /]
-
-
 [#assign title = "Project Highlights" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
@@ -43,20 +38,15 @@
            
           <div class="highlights-block simpleBox">
             [#-- Project Highlights list --]
-          
-            
             <div class="highlights-list">
               [@highlightsList highlights=(project.highligths)![]  /]
             </div>
-            [#--  --if !project.highlights?has_content]
-              <p class="textMessage text-center">[@s.text name="projectHighlights.empty" /]</p>
-            [/#if--] 
           </div>
           
           [#-- Add a new highlight --]
           [#if canEdit] 
           <div class="text-right"> 
-            <a class="button-blue" href="[@s.url action='addNewhighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+            <a class="button-blue" href="[@s.url action='${crpSession}/addNewHighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addHighlight" /]
             </a>
           </div>
@@ -69,7 +59,7 @@
     </div>  
 </section>
   
-[@customForm.confirmJustification action="deleteHighLight" namespace="/reporting/projects" nameId="deliverableID" projectID="${projectID}" title="Remove project highlights" /]
+[@customForm.confirmJustification action="${crpSession}/deleteHighLight" namespace="/reporting/projects" nameId="highlightID" projectID="${projectID}" title="Remove project highlights" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
