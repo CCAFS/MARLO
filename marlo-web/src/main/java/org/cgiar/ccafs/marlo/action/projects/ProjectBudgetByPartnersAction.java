@@ -582,11 +582,17 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       }
     }
 
-    if (project.getBudgets().size() == 0) {
-      budgetIndex = 0;
+
+    if (project.getBudgets() != null) {
+      if (project.getBudgets().size() == 0) {
+        budgetIndex = 0;
+      } else {
+        budgetIndex = project.getBudgets().size() - 1;
+      }
     } else {
-      budgetIndex = project.getBudgets().size() - 1;
+      budgetIndex = 0;
     }
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_BUDGET_BASE_PERMISSION, params));
