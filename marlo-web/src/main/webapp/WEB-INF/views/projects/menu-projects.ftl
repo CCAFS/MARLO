@@ -22,8 +22,8 @@
     { 'title': 'Outcomes',
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true  },
-      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': false, 'show': reportingActive  },
-      { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false, 'show': reportingActive }
+      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': true, 'show': reportingActive  },
+      { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': true, 'show': reportingActive }
       ]
     },
     { 'title': 'Outputs',
@@ -49,11 +49,19 @@
 [/#if]
 
 
-[#assign submission = (action.isProjectSubmitted(projectID))! /]
-[#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-[#assign completed = (action.isCompleteProject(projectID))!false /]
-[#assign sectionsForChecking = [] /]
+  
+[#attempt]
+  [#assign submission = (action.isProjectSubmitted(projectID))! /]
+  [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
+  [#assign completed = (action.isCompleteProject(projectID))!false /]
+[#recover]
+  [#assign submission = false /]
+  [#assign canSubmit = false /]
+  [#assign completed = false /]
+[/#attempt]
 
+
+[#assign sectionsForChecking = [] /]
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -63,7 +71,11 @@
     <li>
       <ul><p class="menuTitle">${menu.title}</p>
         [#list menu.items as item]
-          [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+          [#attempt]
+            [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+          [#recover]
+            [#assign submitStatus = false /]
+          [/#attempt]
           [#if (item.show)!true ]
             <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
               <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
