@@ -40,6 +40,12 @@
          
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /]
  
+          [#-- Back --]
+          <small class="pull-right">
+            <a href="[@s.url action='${crpSession}/highlights'][@s.param name="projectID" value=project.id /][/@s.url]">
+              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project highlights
+            </a>
+          </small>
           
           [#--  Highlight Information --]
           <h3 class="headTitle">[@s.text name="projectHighlight.information" /]</h3> 

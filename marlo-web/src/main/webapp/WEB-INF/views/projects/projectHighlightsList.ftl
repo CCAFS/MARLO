@@ -46,7 +46,7 @@
           [#-- Add a new highlight --]
           [#if canEdit] 
           <div class="text-right"> 
-            <a class="button-blue" href="[@s.url action='${crpSession}/addNewhighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
+            <a class="button-blue" href="[@s.url action='${crpSession}/addNewHighlight'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="form.buttons.addHighlight" /]
             </a>
           </div>

@@ -5,7 +5,7 @@
 
 [#assign title = "Project Outcome Case Studies" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = [ "select2", "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectCaseStudies.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
