@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -52,6 +53,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -104,7 +106,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpClusterOfActivity> clusterofActivites;
 
 
-  private Map<String, String> projectStauses;
+  private Map<String, String> projectStatuses;
 
 
   private List<LiaisonUser> allOwners;
@@ -301,8 +303,8 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public Map<String, String> getProjectStauses() {
-    return projectStauses;
+  public Map<String, String> getProjectStatuses() {
+    return projectStatuses;
   }
 
 
@@ -530,6 +532,14 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
+
+    // Project Statuses
+    projectStatuses = new HashMap<>();
+    List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+    for (ProjectStatusEnum projectStatusEnum : list) {
+
+      projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+    }
 
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
@@ -888,8 +898,8 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public void setProjectStauses(Map<String, String> projectStauses) {
-    this.projectStauses = projectStauses;
+  public void setProjectStatuses(Map<String, String> projectStatuses) {
+    this.projectStatuses = projectStatuses;
   }
 
 

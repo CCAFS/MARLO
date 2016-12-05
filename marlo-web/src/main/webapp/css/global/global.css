@@ -3375,7 +3375,6 @@ padding: 0 4px 0 6px;width: 100px;}
 }
 
 #projectWorking {
-    border: 1px dotted #ccc;
     /* padding-bottom: 15px; */
     border-radius: 3px;
 }
@@ -6336,3 +6335,7 @@ span#lastUpdateMessage {
 .rating > input:checked ~ label:hover,
 .rating > label:hover ~ input:checked ~ label, /* lighten current selection */
 .rating > input:checked ~ label:hover ~ label { color: #FFED85;  } 
+
+.dottedBox {
+    border: 1px dotted #ccc;
+}

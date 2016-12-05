@@ -47,7 +47,6 @@
          
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
             
-           
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudiestitle" /]</h3>
           [#assign projectCaseStudies = [
               { "id": "1",
@@ -61,7 +60,6 @@
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(projectCaseStudies)![]  /]
           </div>
-          
           
           [#-- Add a new highlight --]
           [#if canEdit] 

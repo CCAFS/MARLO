@@ -50,7 +50,6 @@
               </div>
               [#--  Project Owner Contact Person --]
               <div class="col-md-6">
-                
                 [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
                 <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
               </div> 
@@ -72,44 +71,34 @@
               </div>
               --]
             </div> 
-    
-            [#-- Project upload work plan 
-            [#if !((project.bilateralProject)!false)]
-            <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
-              [#if action.hasPermission("workplan") ]
-                [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable  && action.hasPermission("workplan") /]
-              [/#if]
-              <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
-                <div class="halfPartBlock fileUpload projectWorkplan">
-                  [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable && action.hasPermission("workplan") /]
-                </div> 
-              </div>  
-            </div>
-            [/#if]--]
-            
-            
             
             [#-- Project Summary --]
             <div class="form-group">
               [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable && action.hasPermission("summary") /]
             </div>
             
-            [#-- -- -- REPORTING BLOCK -- -- --]
-            [#if reportingActive]
-              [#-- Project upload annual report to donor--]
-              [#if (project.bilateralProject)!false]
-              <div class="fullBlock fileUpload annualreportDonor">
-                <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
-                <div class="uploadContainer">
-                  [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable && action.hasPermission("bilateralContract") /]
-                </div>  
+            [#-- Project status --]
+            [#if reportingActive ]
+            <div class="form-group">
+              <br />
+              <div class="dottedBox">
+                <div class="row">
+                  <div class="col-md-6">
+                    [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" listName="projectStatuses" header=false editable=editable /]
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=editable  /]
+                  </div>
+                </div>
               </div>
-              [/#if]
+            </div>
             [/#if]
             
             [#--  Regions/global and Flagships that the project is working on --]
             <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
-            <div id="projectWorking" class="fullBlock clearfix">
+            <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="">
