@@ -123,6 +123,7 @@
 
 
  <action name="{crp}/highlights" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
+          <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectHighlightsList.ftl</result>
     </action>
     
