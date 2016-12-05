@@ -135,6 +135,8 @@
           [#assign budget = action.getBudget(year) /]
           [#assign budgetIndex = action.getIndexBugets(year) /]
           
+          <small class="grayLabel pull-right"> (Remaining budget US$ <span class="projectAmount">${((fundingSource.getRemaining(year))!0)?number?string(",##0.00")}</span>) </small>
+          
           <h5 class="sectionSubTitle">Budget Amount</h5>
           <div class="budgetsYear">
             <div class="col-md-4">
