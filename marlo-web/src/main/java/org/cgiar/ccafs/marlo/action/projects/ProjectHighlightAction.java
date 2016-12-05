@@ -292,6 +292,7 @@ public class ProjectHighlightAction extends BaseAction {
 
     } else {
       this.highlight = projectHighLightManager.getProjectHighligthById(highlightID);
+      System.out.println(highlight.getFile().getFileName());
     }
 
 
@@ -331,7 +332,7 @@ public class ProjectHighlightAction extends BaseAction {
         }
         this.setDraft(true);
       } else {
-
+        highlight.setFile(fileDBManager.getFileDBById(highlight.getFile().getId()));
         highlight.setCountries(
           highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         highlight.setTypes(
@@ -374,7 +375,7 @@ public class ProjectHighlightAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
-
+    System.out.println(highlight.getFile().getFileName());
     if (this.isHttpPost()) {
       if (highlight.getTypes() != null) {
         highlight.getTypes().clear();

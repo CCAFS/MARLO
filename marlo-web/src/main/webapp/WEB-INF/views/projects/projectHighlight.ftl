@@ -92,6 +92,7 @@
            
             <br />
             <div class="fullBlock">
+            
               [#-- Types --]
               <div class="halfPartBlock highlightsTypes">
                 <label for="highlight.types">[@s.text name="highlight.types" /]<span class="red">*</span></label>
@@ -118,7 +119,7 @@
                       <p> 
                         [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
                         <a href="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}">${(highlight.file.fileName)!}</a>  
-                        <input type="hidden" name="highlight.photo" value="${highlight.file.fileName}" /> 
+                        <input type="hidden" name="highlight.file.id" value="${highlight.file.id}" /> 
                       </p>
                     [#else]
                       [@customForm.inputFile name="file" /]
@@ -126,10 +127,10 @@
                   [/#if]  
                 </div>
                 <div id="highlight.image" class="image">
-                 [#if highlight.photo?has_content]
-                   <img src="${(highlightsImagesUrl)!baseUrl}${(highlight.photo)!'images/global/defaultImage.png'}" width="100%">
+                 [#if highlight.file?has_content]
+                   <img src="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [#else]
-                   <img src="${baseUrl}/${(highlight.photo)!'images/global/defaultImage.png'}" width="100%">
+                   <img src="${baseUrl}/${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [/#if]
                 </div>
                 <div class="clear"></div>
@@ -140,19 +141,19 @@
             <div class="fullPartBlock">
               [#-- Start Date --]
               <div class="halfPartBlock">
-                [@customForm.input name="highlight.startDateText" className="startDate" type="text" i18nkey="highlight.startDate" editable=editable/]
+                [@customForm.input name="highlight.startDate" className="startDate" type="text" i18nkey="highlight.startDate" editable=editable/]
               </div>
         
               [#-- End Date --]
               <div class="halfPartBlock">
-                [@customForm.input name="highlight.endDateText" className="endDate" type="text" i18nkey="highlight.endDate" editable=editable/]
+                [@customForm.input name="highlight.endDate" className="endDate" type="text" i18nkey="highlight.endDate" editable=editable/]
               </div>
             </div>
             
             [#-- Is global --]
             <div class="fullBlock">
               <div class="halfPartBlock">
-                [@customForm.checkbox  name="highlight.isGlobal" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.isGlobal)!false value="true" editable=editable/]
+                [@customForm.checkbox  name="highlight.global" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.isGlobal)!false value="true" editable=editable/]
               </div>
             </div>
             
