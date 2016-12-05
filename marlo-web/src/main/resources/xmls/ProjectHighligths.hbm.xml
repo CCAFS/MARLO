@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Dec 5, 2016 8:43:31 AM by Hibernate Tools 4.3.1.Final -->
 <hibernate-mapping>
-    <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighligth" table="project_highligths" catalog="ccafs_marlo" optimistic-lock="version">
+    <class name="org.cgiar.ccafs.marlo.data.model.ProjectHighligth" table="project_highligths"  optimistic-lock="version">
         <id name="id" type="java.lang.Long">
             <column name="id" />
             <generator class="identity" />
@@ -74,5 +74,17 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="65535" not-null="true" />
         </property>
+        <set name="projectHighligthsTypes" table="project_highligths_types" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighligthType" />
+        </set>
+        <set name="projectHighligthCountries" table="project_highligths_country" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_highlights_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry" />
+        </set>
     </class>
 </hibernate-mapping>

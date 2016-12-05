@@ -5,6 +5,9 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.google.gson.annotations.Expose;
 
@@ -64,6 +67,12 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+  private Set<ProjectHighligthType> projectHighligthsTypes = new HashSet<ProjectHighligthType>(0);
+  private Set<ProjectHighligthCountry> projectHighligthCountries = new HashSet<ProjectHighligthCountry>(0);
+  private List<ProjectHighligthType> types;
+
+  private List<ProjectHighligthCountry> countries;
+
 
   public ProjectHighligth() {
   }
@@ -105,6 +114,11 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
 
   public String getAuthor() {
     return author;
+  }
+
+
+  public List<ProjectHighligthCountry> getCountries() {
+    return countries;
   }
 
 
@@ -179,6 +193,16 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<ProjectHighligthCountry> getProjectHighligthCountries() {
+    return projectHighligthCountries;
+  }
+
+
+  public Set<ProjectHighligthType> getProjectHighligthsTypes() {
+    return projectHighligthsTypes;
+  }
+
+
   public String getPublisher() {
     return publisher;
   }
@@ -206,6 +230,11 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
 
   public String getTitle() {
     return title;
+  }
+
+
+  public List<ProjectHighligthType> getTypes() {
+    return types;
   }
 
 
@@ -237,6 +266,11 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
 
   public void setAuthor(String author) {
     this.author = author;
+  }
+
+
+  public void setCountries(List<ProjectHighligthCountry> countries) {
+    this.countries = countries;
   }
 
 
@@ -305,6 +339,16 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setProjectHighligthCountries(Set<ProjectHighligthCountry> projectHighligthCountries) {
+    this.projectHighligthCountries = projectHighligthCountries;
+  }
+
+
+  public void setProjectHighligthsTypes(Set<ProjectHighligthType> projectHighligthsTypes) {
+    this.projectHighligthsTypes = projectHighligthsTypes;
+  }
+
+
   public void setPublisher(String publisher) {
     this.publisher = publisher;
   }
@@ -332,6 +376,11 @@ public class ProjectHighligth implements java.io.Serializable, IAuditLog {
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+
+  public void setTypes(List<ProjectHighligthType> types) {
+    this.types = types;
   }
 
 
