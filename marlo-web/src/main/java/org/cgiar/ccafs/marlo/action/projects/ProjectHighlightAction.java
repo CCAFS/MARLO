@@ -25,10 +25,10 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlightsTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthCountry;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -94,7 +94,7 @@ public class ProjectHighlightAction extends BaseAction {
   private String fileFileName;
   private String contentType;
   // Model for the back-end
-  private ProjectHighligth highlight;
+  private ProjectHighlight highlight;
   private Project project;
   // Model for the front-end
   private long highlightID;
@@ -110,10 +110,10 @@ public class ProjectHighlightAction extends BaseAction {
   private List<Integer> allYears;
 
   private List<LocElement> countries;
-  private List<ProjectHighligthType> previewTypes;
+  private List<ProjectHighlightType> previewTypes;
 
 
-  private List<ProjectHighligthCountry> previewCountries;
+  private List<ProjectHighlightCountry> previewCountries;
 
 
   @Inject
@@ -197,7 +197,7 @@ public class ProjectHighlightAction extends BaseAction {
     return fileFileName;
   }
 
-  public ProjectHighligth getHighlight() {
+  public ProjectHighlight getHighlight() {
     return highlight;
   }
 
@@ -232,12 +232,12 @@ public class ProjectHighlightAction extends BaseAction {
   }
 
 
-  public List<ProjectHighligthCountry> getPreviewCountries() {
+  public List<ProjectHighlightCountry> getPreviewCountries() {
     return previewCountries;
   }
 
 
-  public List<ProjectHighligthType> getPreviewTypes() {
+  public List<ProjectHighlightType> getPreviewTypes() {
     return previewTypes;
   }
 
@@ -280,7 +280,7 @@ public class ProjectHighlightAction extends BaseAction {
 
 
       transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      ProjectHighligth history = (ProjectHighligth) auditLogManager.getHistory(transaction);
+      ProjectHighlight history = (ProjectHighlight) auditLogManager.getHistory(transaction);
 
       if (history != null) {
         highlight = history;
@@ -315,11 +315,11 @@ public class ProjectHighlightAction extends BaseAction {
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-        highlight = (ProjectHighligth) autoSaveReader.readFromJson(jReader);
+        highlight = (ProjectHighlight) autoSaveReader.readFromJson(jReader);
         if (highlight.getCountries() != null) {
-          for (ProjectHighligthCountry projectHighligthCountry : highlight.getCountries()) {
-            projectHighligthCountry
-              .setLocElement(locElementManager.getLocElementById(projectHighligthCountry.getLocElement().getId()));
+          for (ProjectHighlightCountry projectHighlightCountry : highlight.getCountries()) {
+            projectHighlightCountry
+              .setLocElement(locElementManager.getLocElementById(projectHighlightCountry.getLocElement().getId()));
           }
         }
         if (highlight.getFile() != null) {
@@ -344,8 +344,8 @@ public class ProjectHighlightAction extends BaseAction {
 
     // Getting highlights Types
     highlightsTypes = new HashMap<>();
-    List<ProjectHighlightsTypeEnum> list = Arrays.asList(ProjectHighlightsTypeEnum.values());
-    for (ProjectHighlightsTypeEnum ProjectHighlightsType : list) {
+    List<ProjectHighligthsTypeEnum> list = Arrays.asList(ProjectHighligthsTypeEnum.values());
+    for (ProjectHighligthsTypeEnum ProjectHighlightsType : list) {
       highlightsTypes.put(ProjectHighlightsType.getId(), ProjectHighlightsType.getDescription());
     }
 
@@ -409,9 +409,9 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setProject(project);
 
       List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
-      ProjectHighligth highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
+      relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION);
+      relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION);
+      ProjectHighlight highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
       highlight.setActiveSince(new Date());
       highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
@@ -471,7 +471,7 @@ public class ProjectHighlightAction extends BaseAction {
   }
 
 
-  public void setHighlight(ProjectHighligth highlight) {
+  public void setHighlight(ProjectHighlight highlight) {
     this.highlight = highlight;
   }
 
@@ -492,12 +492,12 @@ public class ProjectHighlightAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-  public void setPreviewCountries(List<ProjectHighligthCountry> previewCountries) {
+  public void setPreviewCountries(List<ProjectHighlightCountry> previewCountries) {
     this.previewCountries = previewCountries;
   }
 
 
-  public void setPreviewTypes(List<ProjectHighligthType> previewTypes) {
+  public void setPreviewTypes(List<ProjectHighlightType> previewTypes) {
     this.previewTypes = previewTypes;
   }
 

@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.model;
 
 
-public enum ProjectHighlightsTypeEnum {
+public enum ProjectHighligthsTypeEnum {
 
   Gender_and_social_inclusion("1", "Gender and social inclusion"),
   Innovative_non_research_partnerships("2", "Innovative non-research partnerships"),
@@ -26,8 +26,8 @@ public enum ProjectHighlightsTypeEnum {
   Breakthrough_science("6", "Breakthrough science"), Inter_center_collaboration("7", "Inter-center collaboration"),
   Policy_engagement("8", "Policy engagement"), Food_security("9", "Food security");
 
-  public static ProjectHighlightsTypeEnum getEnum(String value) {
-    for (ProjectHighlightsTypeEnum v : values()) {
+  public static ProjectHighligthsTypeEnum getEnum(String value) {
+    for (ProjectHighligthsTypeEnum v : values()) {
       if (v.getId().equalsIgnoreCase(value)) {
         return v;
       }
@@ -35,10 +35,10 @@ public enum ProjectHighlightsTypeEnum {
     throw new IllegalArgumentException();
   }
 
-  public static ProjectHighlightsTypeEnum value(String id) {
+  public static ProjectHighligthsTypeEnum value(String id) {
 
-    ProjectHighlightsTypeEnum[] types = ProjectHighlightsTypeEnum.values();
-    for (ProjectHighlightsTypeEnum projectHighlightsType : types) {
+    ProjectHighligthsTypeEnum[] types = ProjectHighligthsTypeEnum.values();
+    for (ProjectHighligthsTypeEnum projectHighlightsType : types) {
       if (projectHighlightsType.getId().equals(id)) {
         return projectHighlightsType;
       }
@@ -52,7 +52,7 @@ public enum ProjectHighlightsTypeEnum {
 
   private String id;
 
-  private ProjectHighlightsTypeEnum(String id, String description) {
+  private ProjectHighligthsTypeEnum(String id, String description) {
     this.description = description;
     this.id = id;
   }

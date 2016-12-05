@@ -17,7 +17,7 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.ProjectHighligthTypeMySQLDAO;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligthType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 
 import java.util.List;
 
@@ -46,25 +46,25 @@ public interface ProjectHighligthTypeDAO {
    * This method gets a projectHighligthType object by a given projectHighligthType identifier.
    * 
    * @param projectHighligthTypeID is the projectHighligthType identifier.
-   * @return a ProjectHighligthType object.
+   * @return a ProjectHighlightType object.
    */
-  public ProjectHighligthType find(long id);
+  public ProjectHighlightType find(long id);
 
   /**
    * This method gets a list of projectHighligthType that are active
    * 
-   * @return a list from ProjectHighligthType null if no exist records
+   * @return a list from ProjectHighlightType null if no exist records
    */
-  public List<ProjectHighligthType> findAll();
+  public List<ProjectHighlightType> findAll();
 
 
   /**
    * This method saves the information of the given projectHighligthType
    * 
-   * @param projectHighligthType - is the projectHighligthType object with the new information to be added/updated.
+   * @param projectHighlightType - is the projectHighligthType object with the new information to be added/updated.
    * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectHighligthType was
    *         updated
    *         or -1 is some error occurred.
    */
-  public long save(ProjectHighligthType projectHighligthType);
+  public long save(ProjectHighlightType projectHighlightType);
 }

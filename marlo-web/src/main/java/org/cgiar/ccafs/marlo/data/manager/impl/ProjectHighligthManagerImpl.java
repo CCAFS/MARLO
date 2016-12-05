@@ -17,7 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectHighligthDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectHighligthManager;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighligth;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 
 import java.util.List;
 
@@ -53,22 +53,22 @@ public class ProjectHighligthManagerImpl implements ProjectHighligthManager {
   }
 
   @Override
-  public List<ProjectHighligth> findAll() {
+  public List<ProjectHighlight> findAll() {
 
     return projectHighligthDAO.findAll();
 
   }
 
   @Override
-  public ProjectHighligth getProjectHighligthById(long projectHighligthID) {
+  public ProjectHighlight getProjectHighligthById(long projectHighligthID) {
 
     return projectHighligthDAO.find(projectHighligthID);
   }
 
   @Override
-  public long saveProjectHighligth(ProjectHighligth projectHighligth) {
+  public long saveProjectHighligth(ProjectHighlight projectHighlight) {
 
-    return projectHighligthDAO.save(projectHighligth);
+    return projectHighligthDAO.save(projectHighlight);
   }
 
 
