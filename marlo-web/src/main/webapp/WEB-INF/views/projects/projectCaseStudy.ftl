@@ -6,7 +6,7 @@
 [#assign title = "Project Outcome Case Studies" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = [ "select2" ] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectCaseStudies.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectCaseStudy.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "caseStudies" /]

@@ -2,7 +2,7 @@
 [#assign title = "Project Highlight" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
 [#assign pageLibs = [ "select2" ] /]
-[#assign customJS = ["${baseUrl}/js/projects/projectHighlight.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/projectHighlight.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
@@ -77,7 +77,7 @@
                 </div>
                 [#-- Year --]
                 <div class="col-md-6">
-                  [@customForm.select name="highlight.year" value="${(highlight.year)!currentReportingYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
+                  [@customForm.select name="highlight.year" value="${(highlight.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
                   [#if !editable]${(highlight.year)!}[/#if]
                 </div>
               </div>
