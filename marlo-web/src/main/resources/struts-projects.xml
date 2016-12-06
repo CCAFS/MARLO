@@ -136,13 +136,15 @@
       </interceptor-ref>
        <result name="input">/WEB-INF/views/projects/projectHighlight.ftl</result>
       <result name="success" type="redirectAction">
-        <param name="actionName">highlight</param>
+        <param name="actionName">${crpSession}/highlight</param>
         <param name="highlightID">${highlight.id}</param>
+        <param name="projectID">${projectID}</param>
         <param name="edit">true</param>
       </result>
       <result name="cancel" type="redirectAction">
-        <param name="actionName">highlight</param>
+        <param name="actionName">${crpSession}/highlight</param>
         <param name="highlightID">${highlight.id}</param>
+        <param name="projectID">${projectID}</param>
       </result>
       <result name="redirect" type="redirectAction">
         <param name="actionName">${url}</param>

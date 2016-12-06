@@ -337,11 +337,28 @@ public class ProjectHighlightAction extends BaseAction {
           highlight.setFile(fileDBManager.getFileDBById(highlight.getFile().getId()));
         }
 
+        if (highlight.getProjectHighligthCountries() == null) {
+          highlight.setCountries(new ArrayList<>());
+        } else {
+          highlight.setCountries(
+            highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-        highlight.setCountries(
-          highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-        highlight.setTypes(
-          highlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        }
+
+        if (highlight.getProjectHighligthCountries() == null) {
+          highlight.setCountries(new ArrayList<>());
+        } else {
+          highlight.setCountries(
+            highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        }
+        if (highlight.getProjectHighligthsTypes() == null) {
+          highlight.setTypes(new ArrayList<>());
+        } else {
+          highlight.setTypes(
+            highlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        }
         this.setDraft(false);
       }
 
@@ -380,7 +397,7 @@ public class ProjectHighlightAction extends BaseAction {
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
-    System.out.println(highlight.getFile().getFileName());
+
     if (this.isHttpPost()) {
       if (highlight.getTypes() != null) {
         highlight.getTypes().clear();
@@ -407,11 +424,14 @@ public class ProjectHighlightAction extends BaseAction {
 
       Path path = this.getAutoSaveFilePath();
 
-      if (highlight.getFile().getId() == null) {
-        highlight.setFile(null);
-      } else {
-        highlight.setFile(highlight.getFile());
+      if (highlight.getFile() != null) {
+        if (highlight.getFile().getId() == null) {
+          highlight.setFile(null);
+        } else {
+          highlight.setFile(highlight.getFile());
+        }
       }
+
       highlight.setProject(project);
 
       List<String> relationsName = new ArrayList<>();
@@ -423,7 +443,7 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setModificationJustification(this.getJustification());
       highlight.setCreatedBy(highlightDB.getCreatedBy());
 
-      projectHighLightManager.saveProjectHighligth(highlight);
+      projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName);
 
       // Get the validation messages and append them to the save message
 
