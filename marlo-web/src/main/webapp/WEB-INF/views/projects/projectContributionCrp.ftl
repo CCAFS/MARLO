@@ -154,7 +154,7 @@
               [/#if]
             </div>
             [#-- Select a milestone  --]
-            [#if editable]
+            [#if editable && !reportingActive]
             <div class="milestonesYearSelect"> 
               <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
               <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
@@ -304,7 +304,7 @@
         
         <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
           <div class="col-md-4">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.expectedValue" type="text"  placeholder="" className="targetValue" required=isYearRequired(year) editable=editable && !reportingActive /]
           </div>
           <div class="col-md-4">
             <div class="select">
@@ -324,7 +324,7 @@
         </div>
         
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-50" editable=editable /]
+          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative" required=isYearRequired(year) className="limitWords-50" editable=editable && !reportingActive /]
         </div>
         [#--
         <div class="form-group">
@@ -363,17 +363,37 @@
     <div class="form-group">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable /]
+        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable && !reportingActive /]
       </div>
       [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-50" editable=editable /]
+        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
       </div>
       [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable /]
+        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
       </div>
     </div>
+    
+    [#-- Reporting --]
+    [#if reportingActive]
+      <br /> 
+      [#-- Tabs --]
+      <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
+        [#list startYear .. endYear as year]
+          <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
+        [/#list]
+      </ul> 
+      [#-- Tabs Content --]
+      <div class="tab-content projectOutcomeYear-content">
+        [#list startYear .. endYear as year]
+          <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+            In progress...
+            <div class="clearfix"></div>
+          </div>
+        [/#list]
+      </div>
+    [/#if]
   </div>
 [/#macro]
 
