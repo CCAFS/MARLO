@@ -149,7 +149,7 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setCreatedBy(this.getCurrentUser());
     fundingSource.setModificationJustification("");
     fundingSource.setModifiedBy(this.getCurrentUser());
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
     if (user != null) {
       try {
         LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
