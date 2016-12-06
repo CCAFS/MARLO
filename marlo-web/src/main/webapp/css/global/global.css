@@ -3999,7 +3999,7 @@ font-style: italic;
 /***  Project case studies ***/
 
 #caseStudiesBlock .caseStudy {
-  padding-top: 35px;
+  /* padding-top: 35px; */
 }
 
 .caseStudyIndicators {}

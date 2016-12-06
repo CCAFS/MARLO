@@ -1,7 +1,7 @@
 [#ftl]
 [#-- Project identifier --]
 <input name="projectID" type="hidden" value="${project.id}" />
-<input name="highlightID" type="hidden" value="${highlight.id}" />
+<input name="highlightID" type="hidden" value="${highlightID}" />
 <input type="hidden"  name="className" value="${(highlight.class.name)!}"/>
 <input type="hidden"  name="id" value="${(highlight.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
@@ -25,7 +25,7 @@
     [#-- History Log --]
     [#if recordsList?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=recordsList itemName="highlightID" itemId=highlight.id /]
+      [@logHistory.logList list=recordsList itemName="highlightID" itemId=highlightID /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
@@ -39,7 +39,7 @@
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /] [/@s.submit]
     [#elseif canEdit]
       [#-- Edit Button --]
-      <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
+      <a href="[@s.url][@s.param name="highlightID" value=highlightID /][@s.param name="edit" value="true"/][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
     [/#if]
   </div>
   <div class="clearfix"></div>
