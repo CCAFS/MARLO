@@ -27,7 +27,11 @@
 
 [#-- Privileges Message --]
 [#if !canEdit && !(transaction??) && !(submission)]
-  <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [#if project.projectEditLeader]
+    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [#else]
+    <p class="readPrivileges">This project is being preset by Management Liaison, it will be able for editing by the project leader soon...</p>
+  [/#if]
 [/#if]
 
 
