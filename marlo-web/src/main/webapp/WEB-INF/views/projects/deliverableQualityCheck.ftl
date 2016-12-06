@@ -20,6 +20,7 @@
   [#-- Question1 --]
   <div class="question borderBox">
     <h5>Have you had a process of data quality assurance in place?</h5>
+    <hr />
     <br />
     <div class="col-md-4">
     <div class="radio">
@@ -51,7 +52,8 @@
   </div>
   [#-- Question2 --]
   <div class="question borderBox">
-    <h5>Do you have a data dictionary??</h5>
+    <h5>Do you have a data dictionary?</h5>
+    <hr />
     <br />
     <div class="col-md-4">
     <div class="radio">
@@ -84,6 +86,7 @@
   [#-- Question3 --]
   <div class="question borderBox">
     <h5>Are the tools used for data collection available (e.g. surveys, data analysis scripts, training materials, etc.)?</h5>
+    <hr />
     <br />
     <div class="col-md-4">
     <div class="radio">
