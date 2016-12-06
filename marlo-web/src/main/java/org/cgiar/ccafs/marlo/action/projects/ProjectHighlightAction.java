@@ -337,13 +337,6 @@ public class ProjectHighlightAction extends BaseAction {
           highlight.setFile(fileDBManager.getFileDBById(highlight.getFile().getId()));
         }
 
-        if (highlight.getProjectHighligthCountries() == null) {
-          highlight.setCountries(new ArrayList<>());
-        } else {
-          highlight.setCountries(
-            highlight.getProjectHighligthCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-        }
 
         if (highlight.getProjectHighligthCountries() == null) {
           highlight.setCountries(new ArrayList<>());
