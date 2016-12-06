@@ -40,3 +40,43 @@ span.icon-20 {
     padding: 5px 10px;
     border-top: none;
 }
+
+/*Tabs*/
+
+.tab-content.projectOutcomeYear-content {
+    border: 1px solid #d1d1d1;
+    padding: 10px 2em;
+    border-radius: 0px 4px 4px 4px;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs {
+    border: 0;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs li a{
+    background-color: #f5f5f5;
+    line-height: 1em;
+    padding: 5px 15px;
+    height: 29px;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a, 
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:focus, 
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active>a:hover {
+    background-color: #fff;
+    line-height: 1em;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li {
+    /* border-bottom: 1px solid #dddddd; */
+    margin-bottom: -1px;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li.active {
+    border-bottom: 1px solid #fff;
+    z-index: 10;
+}
+
+ul.nav.nav-tabs.projectOutcomeYear-tabs>li>a:hover {
+    border-color: #eee #eee #fff;
+}
