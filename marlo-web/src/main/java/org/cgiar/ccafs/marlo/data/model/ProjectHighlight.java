@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +71,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   private Set<ProjectHighlightType> projectHighligthsTypes = new HashSet<ProjectHighlightType>(0);
   private Set<ProjectHighlightCountry> projectHighlightCountries = new HashSet<ProjectHighlightCountry>(0);
   private List<ProjectHighlightType> types;
+  private List<Integer> countriesIds = new ArrayList<>();
+  private List<ProjectHighligthsTypeEnum> TypesIds = new ArrayList<>();
+
+  private List<String> typesids = new ArrayList<>();
+
 
   private List<ProjectHighlightCountry> countries;
 
@@ -111,7 +117,6 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getAuthor() {
     return author;
   }
@@ -119,6 +124,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public List<ProjectHighlightCountry> getCountries() {
     return countries;
+  }
+
+
+  public List<Integer> getCountriesIds() {
+    return countriesIds;
   }
 
 
@@ -238,6 +248,16 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   }
 
 
+  public List<String> getTypesids() {
+    return typesids;
+  }
+
+
+  public List<ProjectHighligthsTypeEnum> getTypesIds() {
+    return TypesIds;
+  }
+
+
   public Long getYear() {
     return year;
   }
@@ -271,6 +291,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setCountries(List<ProjectHighlightCountry> countries) {
     this.countries = countries;
+  }
+
+
+  public void setCountriesIds(List<Integer> countriesIds) {
+    this.countriesIds = countriesIds;
   }
 
 
@@ -381,6 +406,16 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setTypes(List<ProjectHighlightType> types) {
     this.types = types;
+  }
+
+
+  public void setTypesids(List<String> typesids) {
+    this.typesids = typesids;
+  }
+
+
+  public void setTypesIds(List<ProjectHighligthsTypeEnum> typesIds) {
+    TypesIds = typesIds;
   }
 
 
