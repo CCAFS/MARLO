@@ -51,7 +51,7 @@ public class ProjectHighligthTypeMySQLDAO implements ProjectHighligthTypeDAO {
 
   @Override
   public ProjectHighlightType find(long id) {
-    return dao.find(ProjectHighlightType.class, id);
+    return dao.find(ProjectHighlightType.class, Integer.parseInt(String.valueOf(id)));
 
   }
 

@@ -74,6 +74,12 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   private List<Integer> countriesIds = new ArrayList<>();
   private List<ProjectHighligthsTypeEnum> TypesIds = new ArrayList<>();
 
+
+  private String typesidsText;
+
+  private String countriesIdsText;
+
+
   private List<String> typesids = new ArrayList<>();
 
 
@@ -112,10 +118,10 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   public String getAuthor() {
     return author;
@@ -131,6 +137,10 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
     return countriesIds;
   }
 
+
+  public String getCountriesIdsText() {
+    return countriesIdsText;
+  }
 
   public User getCreatedBy() {
     return createdBy;
@@ -258,6 +268,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   }
 
 
+  public String getTypesidsText() {
+    return typesidsText;
+  }
+
+
   public Long getYear() {
     return year;
   }
@@ -296,6 +311,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setCountriesIds(List<Integer> countriesIds) {
     this.countriesIds = countriesIds;
+  }
+
+
+  public void setCountriesIdsText(String countriesIdsText) {
+    this.countriesIdsText = countriesIdsText;
   }
 
 
@@ -416,6 +436,11 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
 
   public void setTypesIds(List<ProjectHighligthsTypeEnum> typesIds) {
     TypesIds = typesIds;
+  }
+
+
+  public void setTypesidsText(String typesidsText) {
+    this.typesidsText = typesidsText;
   }
 
 

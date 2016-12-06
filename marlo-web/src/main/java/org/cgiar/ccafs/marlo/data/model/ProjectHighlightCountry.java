@@ -15,6 +15,7 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
    * 
    */
   private static final long serialVersionUID = 3040210263258419226L;
+
   @Expose
   private Integer id;
 
@@ -28,6 +29,28 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
   public ProjectHighlightCountry(ProjectHighlight projectHighlight, LocElement locElement) {
     this.projectHighlight = projectHighlight;
     this.locElement = locElement;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectHighlightCountry other = (ProjectHighlightCountry) obj;
+    if (locElement == null) {
+      if (other.locElement != null) {
+        return false;
+      }
+    } else if (!locElement.getId().equals(other.locElement.getId())) {
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -55,7 +78,6 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
@@ -66,6 +88,15 @@ public class ProjectHighlightCountry implements java.io.Serializable, IAuditLog 
 
   public ProjectHighlight getProjectHighligth() {
     return projectHighlight;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    return result;
   }
 
 

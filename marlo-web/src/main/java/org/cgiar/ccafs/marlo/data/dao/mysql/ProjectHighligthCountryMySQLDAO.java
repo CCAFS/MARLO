@@ -51,7 +51,7 @@ public class ProjectHighligthCountryMySQLDAO implements ProjectHighligthCountryD
 
   @Override
   public ProjectHighlightCountry find(long id) {
-    return dao.find(ProjectHighlightCountry.class, id);
+    return dao.find(ProjectHighlightCountry.class, Integer.parseInt(String.valueOf(id)));
 
   }
 
