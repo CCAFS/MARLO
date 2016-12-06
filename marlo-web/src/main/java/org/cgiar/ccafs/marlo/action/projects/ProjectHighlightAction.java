@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -358,6 +359,19 @@ public class ProjectHighlightAction extends BaseAction {
     }
 
 
+    if (highlight.getCountries() != null) {
+      for (ProjectHighlightCountry country : highlight.getCountries()) {
+        highlight.getCountriesIds().add(country.getLocElement().getId().intValue());
+      }
+    }
+
+    if (highlight.getTypes() != null) {
+      for (ProjectHighlightType projectHighligthsType : highlight.getTypes()) {
+        highlight.getTypesIds().add(ProjectHighligthsTypeEnum.value(projectHighligthsType.getIdType() + ""));
+        highlight.getTypesids().add(projectHighligthsType.getIdType() + "");
+      }
+    }
+
     // Getting highlights Types
     highlightsTypes = new HashMap<>();
     List<ProjectHighligthsTypeEnum> list = Arrays.asList(ProjectHighligthsTypeEnum.values());
@@ -425,7 +439,27 @@ public class ProjectHighlightAction extends BaseAction {
         }
       }
 
+
+      List<ProjectHighlightType> actualTypes = new ArrayList<>();
+      for (String type : highlight.getTypesids()) {
+        ProjectHighlightType typeHigh = new ProjectHighlightType();
+        typeHigh.setIdType(Integer.parseInt(type));
+        typeHigh.setProjectHighligth(highlight);
+        actualTypes.add(typeHigh);
+
+
+      }
+      List<ProjectHighlightCountry> actualcountries = new ArrayList<>();
+      for (Integer countries : highlight.getCountriesIds()) {
+        ProjectHighlightCountry countryHigh = new ProjectHighlightCountry();
+        countryHigh.setLocElement(locElementManager.getLocElementById(countries));
+        countryHigh.setProjectHighligth(highlight);
+        actualcountries.add(countryHigh);
+      }
+
+
       highlight.setProject(project);
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION);
@@ -435,7 +469,8 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
       highlight.setCreatedBy(highlightDB.getCreatedBy());
-
+      highlight.setProjectHighligthsTypes(new HashSet<>(actualTypes));
+      highlight.setProjectHighligthCountries(new HashSet<>(actualcountries));
       projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName);
 
       // Get the validation messages and append them to the save message

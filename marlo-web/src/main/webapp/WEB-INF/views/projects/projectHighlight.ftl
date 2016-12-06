@@ -157,6 +157,7 @@
             [#-- Countries --]
             <div class="form-group countriesBlock chosen" style="display:${((highlight.global)!false)?string('none','block')}">
               [#if editable]
+              ${(highlight.countriesIds)!-1}
                 [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
               [#else]
                 <label>[@s.text name="highlight.countries" /]:</label>
