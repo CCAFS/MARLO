@@ -469,8 +469,8 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
       highlight.setCreatedBy(highlightDB.getCreatedBy());
-      highlight.setProjectHighligthsTypes(new HashSet<>(actualTypes));
-      highlight.setProjectHighligthCountries(new HashSet<>(actualcountries));
+   //   highlight.setProjectHighligthsTypes(new HashSet<>(actualTypes));
+    //  highlight.setProjectHighligthCountries(new HashSet<>(actualcountries));
       projectHighLightManager.saveProjectHighligth(highlight, this.getActionName(), relationsName);
 
       // Get the validation messages and append them to the save message
