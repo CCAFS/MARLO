@@ -163,7 +163,7 @@
                 <div class="select">
                 [#if highlight.countries?has_content]
                   [#list highlight.countries as element]
-                   <p class="checked">${(element.name)!'No Name'}</p>
+                   <p class="checked">${element.locElement.name}</p>
                   [/#list]
                 [#else]
                   <p>Field is empty</p>
