@@ -34,12 +34,6 @@
           
           <h3 class="headTitle">[@s.text name="projectOtherContributions.title" /]</h3>  
           <div id="projectOtherContributions" class="borderBox">
-            [#-- How are contributing to other CCAFS IP 
-            <div class="fullBlock">
-              [@customForm.textArea name="project.ipOtherContribution.contribution" className="contribution limitWords-100" i18nkey="projectOtherContributions.contribution" editable=editable && action.hasPermission("contribution") /]  
-            </div>
-            --]
-            
             
             [#-- Collaborating with other CRPs --]
             [#assign crpsName= "project.ipOtherContribution.crps"/]
