@@ -71,7 +71,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   private Set<ProjectHighlightType> projectHighligthsTypes = new HashSet<ProjectHighlightType>(0);
   private Set<ProjectHighlightCountry> projectHighlightCountries = new HashSet<ProjectHighlightCountry>(0);
   private List<ProjectHighlightType> types;
-  private List<Integer> countriesIds = new ArrayList<>();
+  private List<Long> countriesIds = new ArrayList<>();
   private List<ProjectHighligthsTypeEnum> TypesIds = new ArrayList<>();
 
 
@@ -133,7 +133,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   }
 
 
-  public List<Integer> getCountriesIds() {
+  public List<Long> getCountriesIds() {
     return countriesIds;
   }
 
@@ -309,7 +309,7 @@ public class ProjectHighlight implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCountriesIds(List<Integer> countriesIds) {
+  public void setCountriesIds(List<Long> countriesIds) {
     this.countriesIds = countriesIds;
   }
 

@@ -340,9 +340,9 @@ public class ProjectHighlightAction extends BaseAction {
         }
         if (highlight.getCountriesIdsText() != null) {
           String[] countriesText = highlight.getCountriesIdsText().replace("[", "").replace("]", "").split(",");
-          List<Integer> countries = new ArrayList<>();
+          List<Long> countries = new ArrayList<>();
           for (String value : Arrays.asList(countriesText)) {
-            countries.add(Integer.parseInt(value.trim()));
+            countries.add(Long.parseLong(value.trim()));
           }
           highlight.setCountriesIds(countries);
         }
@@ -387,7 +387,7 @@ public class ProjectHighlightAction extends BaseAction {
     if (!this.isDraft()) {
       if (highlight.getCountries() != null) {
         for (ProjectHighlightCountry country : highlight.getCountries()) {
-          highlight.getCountriesIds().add(country.getLocElement().getId().intValue());
+          highlight.getCountriesIds().add(country.getLocElement().getId());
         }
       }
 
@@ -480,7 +480,7 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setModificationJustification(this.getJustification());
       highlight.setCreatedBy(highlightDB.getCreatedBy());
 
-
+      highlight.setActive(true);
       for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
         .collect(Collectors.toList())) {
         if (!highlight.getTypesids().contains(String.valueOf(projectHighlightType.getIdType()))) {
@@ -509,7 +509,7 @@ public class ProjectHighlightAction extends BaseAction {
 
       }
 
-      for (Integer countries : highlight.getCountriesIds()) {
+      for (Long countries : highlight.getCountriesIds()) {
         ProjectHighlightCountry countryHigh = new ProjectHighlightCountry();
         countryHigh.setLocElement(locElementManager.getLocElementById(countries));
         countryHigh.setProjectHighligth(highlight);
