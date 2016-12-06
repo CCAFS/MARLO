@@ -34,27 +34,6 @@
           
           <h3 class="headTitle">[@s.text name="projectOtherContributions.title" /]</h3>  
           <div id="projectOtherContributions" class="borderBox">
-            [#-- How are contributing to other CCAFS IP --]
-            <div class="fullBlock">
-              [@customForm.textArea name="project.ipOtherContribution.contribution" className="contribution limitWords-100" i18nkey="projectOtherContributions.contribution" editable=editable && action.hasPermission("contribution") /]  
-            </div>
-            
-            [#-- -- -- REPORTING BLOCK -- -- --]
-            [#-- Others impact pathways contributions --]
-            [#if reportingActive]
-              <div id="otherContributionsBlock">
-                [#if project.otherContributions?has_content]
-                  [#list project.otherContributions as element]
-                    [@otherContribution index=element_index /] 
-                  [/#list]
-                [#else]
-                  <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div>
-                [/#if]
-              </div>
-              [#if editable]<div id="addOtherContribution"><a href="" class="addLink">[@s.text name="projectOtherContributions.addOtherContribution"/]</a></div>[/#if]
-              <div class="clearfix"></div>
-              <br />
-            [/#if]
             
             [#-- Collaborating with other CRPs --]
             [#assign crpsName= "project.ipOtherContribution.crps"/]

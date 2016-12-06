@@ -2,7 +2,7 @@
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
 [#assign pageLibs = ["select2","font-awesome"] /]
-[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableInfo.js","${baseUrl}/js/projects/deliverables/deliverableDissemination.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
@@ -57,7 +57,7 @@
                 [#if reportingActive]
                 <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class=""><a href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
-                <li role="presentation" class=""><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
+                <li role="presentation" class="dataSharing" style="display:none;"><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
                 [/#if]
             </ul>
             
@@ -109,5 +109,25 @@
 
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
+[@authorMacro element={} index=-1 name="author"  isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+[#macro authorMacro element index name  isTemplate=false]
+  [#assign customName = "${name}[${index}]" /]
+  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox"  style="display:${isTemplate?string('none','block')}">
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
+      </div>
+    [/#if]
+      [#-- Contribution --]
+      <div class="lastName col-md-6">
+          [@customForm.input name="${customName}.contribution" showTitle=false value="" className="lastNameInput" placeholder="Last name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+      <div class="firstName col-md-6">
+          [@customForm.input name="${customName}.contribution" showTitle=false value="" className="firstNameInput" placeholder="First Name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+      <div class="clearfix"></div>
+  </div>
+[/#macro]

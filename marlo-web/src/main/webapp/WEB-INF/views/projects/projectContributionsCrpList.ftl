@@ -16,6 +16,8 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
+[#assign startYear = (project.startDate?string.yyyy)?number /]
+[#assign endYear = (project.endDate?string.yyyy)?number /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -72,23 +74,66 @@
             
             [#-- Add a new Outcomes --]
             [#if canEdit]
-            <div class="addNewOutcome">
-              <div class="outcomesListBlock">
-                <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
-                [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" /]
+              [#if !reportingActive]
+              <div class="addNewOutcome">
+                <div class="outcomesListBlock">
+                  <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>  
+                  [@customForm.select name="outcomeId" label="" disabled=!canEdit i18nkey="projectContributionsCrpList.selectOutcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" className="" /]
+                </div>
+                <div class="addOutcomeBlock">
+                  <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
+                    <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
+                  </a>
+                </div>
               </div>
-              <div class="addOutcomeBlock">
-                <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1">
-                  <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
-                </a>
-              </div>
-            </div>
-            [/#if]
-            
+              [/#if]
+            [/#if] 
           </div> 
-         
-          [#-- Hidden parameters --]
-          <input type="hidden" name="projectID" value="${projectID}"/>
+           
+          [#-- Further Flagship Contributions  --]
+          [#if reportingActive]  
+            <h3 class="headTitle">[@customForm.text name="projectContributionsCrpList.flagshipContribution" /] </h3>
+            [#-- Tabs --]
+            <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
+              [#list startYear .. endYear as year]
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
+              [/#list]
+            </ul> 
+            [#-- Tabs Content --]
+            <div class="tab-content projectOutcomeYear-content">
+              [#list startYear .. endYear as year]
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+                  [#-- Contribution(s) to other flagships outcomes --]
+                  [@customForm.text name="projectContributionsCrpList.projectContributedOtherFlagships" readText=!editable /]
+                  [#-- Others impact pathways contributions --]
+                  <div id="otherContributionsBlock">
+                    [#if project.otherContributions?has_content]
+                      [#list project.otherContributions as element]
+                        [@otherContributionMacro element=element name="" index=element_index /] 
+                      [/#list]
+                    [#else]
+                      [@otherContributionMacro element={} name="" index=0 /] 
+                      [#-- <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div> --]
+                    [/#if]
+                  </div>
+                  [#-- Add contribution button --]
+                  [#if editable] 
+                    <div class="addOtherContribution bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="projectOtherContributions.addOtherContribution"/]</div>
+                  [/#if]
+                  <div class="clearfix"></div> 
+                </div>
+              [/#list]
+            </div>
+          [/#if]
+          
+          [#if reportingActive]  
+            [#-- Section Buttons & hidden inputs--]
+            [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
+          [#else]
+            [#-- Hidden parameters --]
+            <input type="hidden" name="projectID" value="${projectID}"/>
+          [/#if]
+          
         [/@s.form] 
       </div>
     </div>  
@@ -107,19 +152,14 @@
       [#-- Contribution Status --]
       <td class="text-center">
         [#if action.getProjectOutcomeStatus(projectOutcome.id)??]
-         
-              [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
-                <span class="icon-20 icon-check" title="Complete"></span>
-              
-              [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
-              [/#if]
-            [#else]
-                <span class="icon-20 icon-uncheck" title=""></span>
-            [/#if]
-          
-        
-        
+          [#if !((action.getProjectOutcomeStatus(projectOutcome.id)).missingFields)?has_content]
+            <span class="icon-20 icon-check" title="Complete"></span>
+          [#else]
+            <span class="icon-20 icon-uncheck" title=""></span> 
+          [/#if]
+        [#else]
+            <span class="icon-20 icon-uncheck" title=""></span>
+        [/#if]
       </td>
       [#-- Remove Contribution--]
       <td class="text-center">
@@ -133,3 +173,55 @@
       </td>
   </tr>
 [/#macro]
+
+[#macro otherContributionMacro element name index template=false ]
+  [#assign customName = "${name}[${template?string('-1',index)}]" /]
+  [#assign contribution = (element)!{} /]
+  <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
+    <div class="loading" style="display:none"></div>
+    [#-- Edit/Back/remove buttons --]
+    [#if editable]<div class="removeElement" title="[@s.text name="projectOtherContributions.removeOtherContribution" /]"></div>[/#if]
+    [#-- Other Contribution ID --]
+    <input type="hidden" name="${customName}.id" class="otherContributionId" value="${(contribution.id)!-1}"/>
+    [#-- Indicator --]
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-12">
+          [@customForm.select name="${customName}.outcome" className="otherContributionIndicator" label="" i18nkey="projectOtherContribution.outcome" listName="otherOutcomes" required=true editable=editable /]
+        </div>
+      </div>
+    </div>
+    [#-- Describe how you are contributing to the selected outcome --]
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-12">
+        <label>[@customForm.text name="projectOtherContribution.description" param="${currentCycleYear}" readText=!editable /]:[@customForm.req required=editable /]</label>
+        [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100"  i18nkey="" showTitle=false required=true editable=editable  /]
+        </div>
+      </div>
+    </div>
+    [#-- Target contribution --]
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-5">
+          <label>[@customForm.text name="projectOtherContribution.target" readText=!editable /]:</label>
+          [@customForm.input name="${customName}.target" className="otherContributionTarget" i18nkey="" showTitle=false editable=editable  /]
+        </div>
+      </div>
+    </div>
+  </div> 
+[/#macro]
+
+[#-- Get if the year is required--]
+[#function isYearRequired year]
+  [#if project.endDate??]
+    [#assign endDate = (project.endDate?string.yyyy)?number]
+    [#if reportingActive]
+      [#return  (year == currentCycleYear)  && (endDate gte year) ]
+    [#else]
+      [#return  (year == currentCycleYear) && (endDate gte year) ]
+    [/#if]
+  [#else]
+    [#return false]
+  [/#if]
+[/#function]
