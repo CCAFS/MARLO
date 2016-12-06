@@ -33,6 +33,9 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+      
         <h3 class="headTitle">[@s.text name="projectHighlights.title" /]</h3> 
         <div id="" class="clearfix">
            
