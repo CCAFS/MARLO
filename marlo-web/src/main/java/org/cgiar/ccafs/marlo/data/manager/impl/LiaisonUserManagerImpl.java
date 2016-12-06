@@ -66,8 +66,8 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   }
 
   @Override
-  public LiaisonUser getLiaisonUserByUserId(long userID) {
-    return liaisonUserDAO.findByUser(userID);
+  public LiaisonUser getLiaisonUserByUserId(long userID, long crpID) {
+    return liaisonUserDAO.findByUser(userID, crpID);
   }
 
   @Override

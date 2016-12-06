@@ -91,7 +91,8 @@ public class ProjectListAction extends BaseAction {
       return INPUT;
     } else {
 
-      LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+      LiaisonUser liaisonUser =
+        liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
 
       if (liaisonUser != null && this.canAddBilateralProject()) {
         LiaisonInstitution liaisonInstitution =
@@ -119,7 +120,8 @@ public class ProjectListAction extends BaseAction {
       return INPUT;
     } else {
 
-      LiaisonUser liaisonUser = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+      LiaisonUser liaisonUser =
+        liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
 
       if (liaisonUser != null && this.canAddCoreProject()) {
         long liId = liaisonUser.getLiaisonInstitution().getId();

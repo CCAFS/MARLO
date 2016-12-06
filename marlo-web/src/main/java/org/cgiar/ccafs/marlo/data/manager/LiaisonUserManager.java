@@ -68,7 +68,7 @@ public interface LiaisonUserManager {
    * @param userID is the user identifier.
    * @return a LiaisonUser object.
    */
-  public LiaisonUser getLiaisonUserByUserId(long userID);
+  public LiaisonUser getLiaisonUserByUserId(long userID, long crpID);
 
   /**
    * This method gets a list of liaisonUser by a given Institution identifier.
