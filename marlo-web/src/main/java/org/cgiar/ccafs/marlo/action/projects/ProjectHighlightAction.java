@@ -347,10 +347,14 @@ public class ProjectHighlightAction extends BaseAction {
           highlight.setCountriesIds(countries);
         }
         if (highlight.getTypesidsText() != null) {
-          String[] countriesText = highlight.getTypesidsText().replace("[", "").replace("]", "").split(",");
+          String[] countriesText = highlight.getTypesidsText().trim().replace("[", "").replace("]", "").split(",");
 
-
-          highlight.setTypesids(Arrays.asList(countriesText));
+          List<String> countries = new ArrayList<>();
+          for (String value : Arrays.asList(countriesText)) {
+            countries.add((value.trim()));
+            highlight.getTypesIds().add(ProjectHighligthsTypeEnum.value(value.trim() + ""));
+          }
+          highlight.setTypesids(countries);
         }
         this.setDraft(true);
       } else {
@@ -437,16 +441,6 @@ public class ProjectHighlightAction extends BaseAction {
 
       if (highlight.getCountries() != null) {
         highlight.getCountries().clear();
-
-      }
-
-      if (highlight.getCountriesIds() != null) {
-        highlight.getCountriesIds().clear();
-
-      }
-
-      if (highlight.getTypesids() != null) {
-        highlight.getTypesids().clear();
 
       }
 
