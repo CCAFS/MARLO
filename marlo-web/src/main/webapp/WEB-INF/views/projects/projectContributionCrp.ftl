@@ -98,10 +98,8 @@
             [#if showAchievedTarget]
             <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
-              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}>
-                <div class="col-md-5">
-                  [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]
-                </div>
+              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
+                <div class="col-md-5">[@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue" required=true editable=editable /]</div>
                 <div class="col-md-7">
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
@@ -114,9 +112,6 @@
               </div>
               <div class="form-group">
                 [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100" editable=editable /]
-              </div>
-              <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeGenderAchieved" required=true className="limitWords-100" editable=editable /]
               </div>
             </div>
             [/#if]
@@ -154,7 +149,7 @@
               [/#if]
             </div>
             [#-- Select a milestone  --]
-            [#if editable && !reportingActive]
+            [#if editable]
             <div class="milestonesYearSelect"> 
               <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
               <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
@@ -373,6 +368,14 @@
       <div class="form-group">
         [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-50" editable=editable && !reportingActive /]
       </div>
+      [#-- Status (Active, Inactive) --]
+      <div class="form-group">
+        <label for="${customName}.status">Status:</label>
+        <select name="${customName}.status" id="${customName}.status">
+          <option value="1">Active</option>
+          <option value="0">Inactive</option>
+        </select>
+      </div>
     </div>
     
     [#-- Reporting --]
@@ -388,7 +391,15 @@
       <div class="tab-content projectOutcomeYear-content">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
-            In progress...
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200" editable=editable /]
+            </div>
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100" editable=editable /]
+            </div>
+            <div class="form-group">
+              [@customForm.textArea name="${customName}.reportedDeliverables" i18nkey="projectOutcomeNextUser.reportedDeliverables" help="projectOutcomeNextUser.reportedDeliverables.help" required=true className="limitWords-100" editable=editable /]
+            </div>
             <div class="clearfix"></div>
           </div>
         [/#list]
