@@ -447,6 +447,9 @@ public class ProjectHighlightAction extends BaseAction {
 
       }
       highlight.setGlobal(false);
+      if (highlight.getFile() != null) {
+        highlight.getFile().setId(null);
+      }
     }
 
   }
@@ -534,7 +537,7 @@ public class ProjectHighlightAction extends BaseAction {
         path.toFile().delete();
       }
 
-      this.setInvalidFields(new HashMap<>());
+
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
