@@ -90,6 +90,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         if (projects.contains(project) && baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))) {
           canEdit = true;
+          hasPermissionToEdit = true;
         }
       }
 
