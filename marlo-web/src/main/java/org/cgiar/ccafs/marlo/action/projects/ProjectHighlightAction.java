@@ -477,9 +477,12 @@ public class ProjectHighlightAction extends BaseAction {
         FileManager.copyFile(file, this.getHightlightImagePath() + fileFileName);
 
       }
-      if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
-        project.setAnnualReportToDonnor(null);
+      if (highlight.getFile() != null) {
+        if (highlight.getFile().getFileName().isEmpty()) {
+          highlight.setFile(null);
+        }
       }
+
       highlight.setActive(true);
       for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
         .collect(Collectors.toList())) {
