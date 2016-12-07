@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -76,7 +77,7 @@ public class ProjectHighlightAction extends BaseAction {
 
   private Crp loggedCrp;
 
-
+  private ProjectHighLightValidator highLightValidator;
   private String transaction;
 
 
@@ -126,7 +127,7 @@ public class ProjectHighlightAction extends BaseAction {
     ProjectHighligthManager highLightManager, LocElementManager locElementManager, CrpManager crpManager,
     AuditLogManager auditLogManager, FileDBManager fileDBManager,
     ProjectHighligthCountryManager projectHighligthCountryManager,
-    ProjectHighligthTypeManager projectHighligthTypeManager) {
+    ProjectHighligthTypeManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator) {
     super(config);
     this.projectManager = projectManager;
     this.projectHighLightManager = highLightManager;
@@ -134,6 +135,7 @@ public class ProjectHighlightAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
+    this.highLightValidator = highLightValidator;
     this.projectHighligthCountryManager = projectHighligthCountryManager;
     this.projectHighligthTypeManager = projectHighligthTypeManager;
 
@@ -632,7 +634,7 @@ public class ProjectHighlightAction extends BaseAction {
   public void validate() {
 
     if (save) {
-      // validator.validate(this, project, highlight, this.getCycleName());
+      highLightValidator.validate(this, project, highlight, true);
     }
   }
 }
