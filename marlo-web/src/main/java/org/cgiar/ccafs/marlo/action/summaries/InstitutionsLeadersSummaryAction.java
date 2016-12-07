@@ -26,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.google.inject.Inject;
@@ -77,8 +79,13 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String current_date = timezone.format(format) + timezone.getZone();
 
     masterReport.getParameterValues().put("crp_id", idParam);
+    masterReport.getParameterValues().put("date", current_date);
 
 
     ExcelReportUtil.createXLS(masterReport, os);

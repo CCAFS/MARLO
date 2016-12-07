@@ -59,7 +59,10 @@ public class UserManagerImp implements UserManager {
     List<Map<String, Object>> view = userDAO.getPermission(userId, crpId);
     if (view != null) {
       for (Map<String, Object> map : view) {
-        permissions.add(map.get("permission").toString());
+        if (map.get("permission") != null) {
+          permissions.add(map.get("permission").toString());
+        }
+
       }
     }
 

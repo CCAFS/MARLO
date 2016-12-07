@@ -26,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.google.inject.Inject;
@@ -82,9 +84,14 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
     Number idParam = loggedCrp.getId();
     year = this.getCurrentCycleYear();
+    // Get datetime
+    ZonedDateTime timezone = ZonedDateTime.now();
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    String current_date = timezone.format(format) + timezone.getZone();
 
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("year", year);
+    masterReport.getParameterValues().put("date", current_date);
 
     ExcelReportUtil.createXLS(masterReport, os);
     bytesXLS = os.toByteArray();
