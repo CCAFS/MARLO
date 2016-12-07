@@ -478,7 +478,7 @@ public class ProjectHighlightAction extends BaseAction {
 
       }
       if (highlight.getFile() != null) {
-        if (highlight.getFile().getFileName().isEmpty()) {
+        if (highlight.getFile().getId() == null) {
           highlight.setFile(null);
         }
       }
