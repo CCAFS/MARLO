@@ -90,17 +90,23 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
         if (projects.contains(project) && baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params))) {
           canEdit = true;
-          hasPermissionToEdit = true;
+
         }
       }
 
-      // TODO Validate is the project is new
+
       if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
         String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
         editParameter = stringEditable.equals("true");
         if (!editParameter) {
           baseAction.setEditableParameter(hasPermissionToEdit);
         }
+      }
+
+      // Check the permission if user want to edit or save the form
+      if (editParameter || parameters.get("save") != null) {
+        hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_FUNDING_SOURCE_BASE_PERMISSION, params));
       }
 
 
