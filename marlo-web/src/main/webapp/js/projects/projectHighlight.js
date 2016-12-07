@@ -73,8 +73,10 @@ function isGlobalChange(e) {
   if($(e.target).is(':checked')) {
     $('div.countriesBlock').hide(500);
     $("div.countriesBlock select").select2("val", "");
+    $(this).val(true);
   } else {
     $('div.countriesBlock').show(500);
+    $(this).val(false);
   }
 }
 
