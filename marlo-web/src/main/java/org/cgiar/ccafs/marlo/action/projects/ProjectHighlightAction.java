@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -458,14 +459,6 @@ public class ProjectHighlightAction extends BaseAction {
 
       Path path = this.getAutoSaveFilePath();
 
-      if (highlight.getFile() != null) {
-        if (highlight.getFile().getId() == null) {
-          highlight.setFile(null);
-        } else {
-          highlight.setFile(highlight.getFile());
-        }
-      }
-
 
       highlight.setProject(project);
 
@@ -478,7 +471,15 @@ public class ProjectHighlightAction extends BaseAction {
       highlight.setModifiedBy(this.getCurrentUser());
       highlight.setModificationJustification(this.getJustification());
       highlight.setCreatedBy(highlightDB.getCreatedBy());
+      if (file != null) {
+        highlight.setFile(this.getFileDB(highlightDB.getFile(), file, fileFileName, this.getHightlightImagePath()));
 
+        FileManager.copyFile(file, this.getHightlightImagePath() + fileFileName);
+
+      }
+      if (project.getAnnualReportToDonnor().getFileName().isEmpty()) {
+        project.setAnnualReportToDonnor(null);
+      }
       highlight.setActive(true);
       for (ProjectHighlightType projectHighlightType : highlightDB.getProjectHighligthsTypes().stream()
         .collect(Collectors.toList())) {
