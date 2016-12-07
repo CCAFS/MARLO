@@ -91,7 +91,8 @@
           </div> 
            
           [#-- Further Flagship Contributions  --]
-          [#if reportingActive]  
+          [#if reportingActive]
+            <br />
             <h3 class="headTitle">[@customForm.text name="projectContributionsCrpList.flagshipContribution" /] </h3>
             [#-- Tabs --]
             <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
