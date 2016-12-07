@@ -1447,9 +1447,9 @@ a#userLogOut {
   margin: 0;
 }
 
-#mainMenu .menuContent ul a{ 
+#mainMenu .menuContent ul a{
  text-decoration: none;
- padding: 0px 24px;
+ padding: 0px 22px;
  color: #fff;
 } 
 

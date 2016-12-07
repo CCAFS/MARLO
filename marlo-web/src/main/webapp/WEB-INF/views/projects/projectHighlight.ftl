@@ -1,7 +1,7 @@
 [#ftl] 
 [#assign title = "Project Highlight" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${highlight.id}" /]
-[#assign pageLibs = [ "select2" ] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectHighlight.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
@@ -107,29 +107,32 @@
               
               [#-- Image --]
               <div class="col-md-6 imageBlock">
-                <label for="highlight.image">[@customForm.text name="highlight.image" readText=!editable /]:</label>
-                <div class="browseInput fileUpload">
+                [#-- Upload highlight image --]
+                <div class="form-group fileUploadContainer">
+                  <label for="highlight.image">[@customForm.text name="highlight.image" readText=!editable /]:</label>
+                  [#assign hasFile = highlight.file?? && highlight.file.id?? /]
+                  <input id="fileID" type="hidden" name="highlight.file.id" value="${(highlight.file.id)!}" />
+                  [#-- Input File --]
                   [#if editable]
-                    [#if highlight.file?has_content]
-                      <p> 
-                        [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                        <a href="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}">${(highlight.file.fileName)!}</a>  
-                        <input type="hidden" name="highlight.photo" value="${highlight.file.fileName}" /> 
-                      </p>
-                    [#else]
-                      [@customForm.inputFile name="file" /]
-                    [/#if] 
-                  [/#if]  
+                  <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+                  [/#if]
+                  [#-- Uploaded File --]
+                  <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+                    <span class="contentResult">[#if highlight.file??]${(highlight.file.fileName)!('No file name')} [/#if]</span> 
+                    [#if editable]<span class="removeIcon"> </span> [/#if]
+                  </p>
                 </div>
+                [#-- Show highlight image --]
                 <div id="highlight.image" class="image">
-                 [#if highlight.photo?has_content]
-                   <img src="${(highlightsImagesUrl)!baseUrl}${(highlight.photo)!'images/global/defaultImage.png'}" width="100%">
+                 [#if hasFile]
+                   <img src="${(highlightsImagesUrl)!baseUrl}${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [#else]
-                   <img src="${baseUrl}/${(highlight.photo)!'images/global/defaultImage.png'}" width="100%">
+                   <img src="${baseUrl}/${(highlight.file.fileName)!'images/global/defaultImage.png'}" width="100%">
                  [/#if]
                 </div>
                 <div class="clear"></div>
               </div>
+              
             </div>
           </div>
           <br />
@@ -159,7 +162,6 @@
           [#-- Countries --]
           <div class="form-group countriesBlock chosen" style="display:${((highlight.global)!false)?string('none','block')}">
             [#if editable]
-
               [@customForm.select name="highlight.countriesIds" label="" i18nkey="highlight.countries" listName="countries" keyFieldName="id"  displayFieldName="name" value="highlight.countriesIds" multiple=true disabled="${(highlight.global?string(1, 0))!0}"/]              
             [#else]
               <label>[@s.text name="highlight.countries" /]:</label>

@@ -73,7 +73,6 @@
           <span class="contentResult">[#if fundingSource.file??]${(fundingSource.file.fileName)!('No file name')} [/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
-        
       </div>
        
       [#-- Agreement status and total budget --]
