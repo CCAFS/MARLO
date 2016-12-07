@@ -100,12 +100,13 @@ public class FundingSourceListAction extends BaseAction {
     }
 
     for (FundingSource fundingSource : fundingSources) {
-      if (fundingSource.isActive()) {
+      if (fundingSource.isActive() && fundingSource.getCenterType() != null) {
         source = new HashMap<>();
         source.put("id", fundingSource.getId());
         source.put("name", fundingSource.getTitle());
         source.put("type", fundingSource.getBudgetType().getName());
         source.put("typeId", fundingSource.getBudgetType().getId());
+
         if (fundingSource.getCenterType().intValue() == 2) {
 
           String permission =
@@ -118,6 +119,7 @@ public class FundingSourceListAction extends BaseAction {
             source.put("canSelect", true);
           }
         }
+
 
         FundingSourceBudget fundingSourceBudget =
           fundingSourceBudgetManager.getByFundingSourceAndYear(fundingSource.getId(), year);
