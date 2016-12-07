@@ -151,7 +151,8 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6">
-                [@customForm.checkbox  name="highlight.isGlobal" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.global)!false value="true" editable=editable/]
+          
+                [@customForm.checkbox  name="highlight.global" className="isGlobal" i18nkey="highlight.isGlobal" checked=(highlight.global)!false value="true" editable=editable/]
               </div>
             </div>
           </div>

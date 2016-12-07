@@ -443,8 +443,7 @@ public class ProjectHighlightAction extends BaseAction {
         highlight.getCountries().clear();
 
       }
-
-
+      highlight.setGlobal(false);
     }
 
   }
