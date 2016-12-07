@@ -1395,7 +1395,7 @@ a#userLogOut {
 
 /************* 3. MAIN MENU ***************/
 #mainMenu{
-  height: 63px
+  height: 65px;
 }
 
 #mainMenu .menuContent{
@@ -1437,7 +1437,7 @@ a#userLogOut {
 }
 
 #mainMenu .menuContent.positionFixedTop ul li ul.subMenu {
-  top:43px !important;
+  top: 36px !important;
 }
 
 
@@ -1449,12 +1449,12 @@ a#userLogOut {
 
 #mainMenu .menuContent ul a{
  text-decoration: none;
- padding: 0px 22px;
+ padding: 0px 18px;
  color: #fff;
 } 
 
 #mainMenu .menuContent ul li{
-  padding: 19px 0px 19px 0px;
+  padding: 20px 0px 20px 0px;
   color: #FFFFFF;
   position: relative;
   display: inline-block;
@@ -1484,8 +1484,8 @@ a#userLogOut {
    padding: 6px 5px;
    margin: 0 2px;
    font-weight: normal;
-   font-size: 0.86em;
-   border-top: 1px solid #267898;
+   font-size: 0.76em;
+   border-top: 1px solid #1b6d8c;
 }
 
 #mainMenu .menuContent ul li ul.subMenu li a{

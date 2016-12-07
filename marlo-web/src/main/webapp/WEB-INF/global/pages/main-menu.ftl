@@ -6,6 +6,13 @@
   { 'slug': 'impactPathway',  'name': 'menu.impactPathway', 'namespace': '/impactPathway',  'action': '${(crpSession)!}/outcomes',                          'visible': action.canAcessImpactPathway(), 'active': true },
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': action.canAcessFunding(), 'active': action.canAcessFunding() },
+  { 'slug': 'synthesis', 'name': 'menu.synthesis',      'namespace': '/synthesis',       'action': '${(crpSession)!}/',    'visible': logged, 'active': action.canAcessCrpAdmin(),
+    'subItems' : [
+      { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrpAdmin() },
+      { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesis',  'visible': logged, 'active': action.canAcessCrpAdmin() },
+      { 'slug': 'coasSynthesis', 'name': 'menu.synthesis.coasSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/coasSynthesis',  'visible': logged, 'active': action.canAcessCrpAdmin() }
+    ]
+  },
   { 'slug': 'summaries', 'name': 'menu.summaries',      'namespace': '/summaries',       'action': '${(crpSession)!}/summaries',    'visible': logged, 'active': action.canAcessCrpAdmin() }
 ]/]
 
@@ -17,6 +24,18 @@
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
       </a>
+      [#if item.subItems?has_content]
+        <ul class="subMenu">
+          [#list item.subItems as subItem]
+            <li>
+              <a href="[@s.url namespace=subItem.namespace action='${subItem.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
+                [#if subItem.icon?has_content]<span class="glyphicon glyphicon-${subItem.icon}"></span> [/#if]
+                [@s.text name=subItem.name ][/@s.text]
+              </a>
+            </li>
+          [/#list]
+        </ul>
+      [/#if]
     </li>
     [/#if]
   [/#list]

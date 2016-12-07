@@ -65,7 +65,7 @@
 			<interceptor name="editDeliverable"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
-    <interceptor name="editHighlight"
+      <interceptor name="editHighlight"
         class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
 
 			<interceptor name="editFunding"
@@ -220,5 +220,6 @@
 	<include file="struts-projects.xml" />
 	<include file="struts-fundingSources.xml" />
 	<include file="struts-summaries.xml" />
-
+  <include file="struts-synthesis.xml" />
+  
 </struts>

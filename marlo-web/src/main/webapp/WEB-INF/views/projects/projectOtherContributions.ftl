@@ -44,22 +44,7 @@
                   <ul id="contributionsBlock" class="list">
                   [#if project.ipOtherContribution?? && project.ipOtherContribution.crpContributions?has_content]  
                     [#list project.ipOtherContribution.crpContributions as crp]
-                      <li class="clearfix [#if !crp_has_next]last[/#if]">
-                        <input class="id" type="hidden" name="project.ipOtherContribution.crpContributions[${crp_index}].crp.id" value="${crp.crp.id}" />
-                        [#-- CRP Title --]
-                        <div class="fullPartBlock clearfix">
-                           [#if (project.ipOtherContribution.crpContributions[crp_index]?has_content)!false]
-                            <span class="name crpName">${project.ipOtherContribution.crpContributions[crp_index].crp.name!}</span>
-                           [/#if]
-                        </div>
-                        [#-- CRP Collaboration nature --]
-                        [@customForm.input name="project.ipOtherContribution.crpContributions[${crp_index}].id" display=false className="crpContributionId" showTitle=false /]
-                        <div class="fullPartBlock">
-                          [@customForm.textArea name="project.ipOtherContribution.crpContributions[${crp_index}].natureCollaboration" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
-                        </div>
-                        
-                        [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
-                      </li>
+                      [@crpContribution element=crp name="" index=crp_index /]
                     [/#list] 
                   [#else]
                     <p class="emptyText"> [@s.text name="projectOtherContributions.crpsEmpty" /] </p>  
@@ -83,5 +68,27 @@
       </div>
     </div>  
 </section>
-  
+
+[#-- CRP Contribution template --]
+[@crpContribution element={} name="" index=-1 isTemplate=true /]
+        
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
+[#macro crpContribution element name index isTemplate=false]
+<li id="crpOtherContribution-${isTemplate?string('template', index)}" class="crpOtherContribution clearfix" style="display:${isTemplate?string('none','block')}">
+  [#local customName = "${name}[${index}]" /]
+  <input class="id" type="hidden" name="${customName}.crp.id" value="${(crp.crp.id)!}" />
+  [#-- CRP Title --]
+  <div class="fullPartBlock clearfix">
+      <span class="name crpName">${(element.crp.name)!}</span>
+  </div>
+  [#-- CRP Collaboration nature --]
+  [@customForm.input name="${customName}.id" display=false className="crpContributionId" showTitle=false /]
+  <div class="fullPartBlock">
+    [@customForm.textArea name="${customName}.natureCollaboration" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
+  </div>
+  
+  [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
+</li>
+[/#macro]
