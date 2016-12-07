@@ -150,11 +150,6 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
-  public boolean canEditCenterType() {
-    return this.hasPermissionNoBase(
-      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()));
-  }
-
 
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());

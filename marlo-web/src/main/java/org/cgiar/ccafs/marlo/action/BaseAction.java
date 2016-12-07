@@ -104,31 +104,31 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String CANCEL = "cancel";
 
-
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
-
   public static final String NEXT = "next";
 
+
   public static final String NOT_AUTHORIZED = "403";
+
   public static final String NOT_FOUND = "404";
-
   public static final String NOT_LOGGED = "401";
-
 
   public static final String REDIRECT = "redirect";
 
-  public static final String SAVED_STATUS = "savedStatus";
-  private static final long serialVersionUID = -740360140511380630L;
 
+  public static final String SAVED_STATUS = "savedStatus";
+
+  private static final long serialVersionUID = -740360140511380630L;
   protected boolean add;
+
   @Inject
   private AuditLogManager auditLogManager;
   private String basePermission;
   protected boolean cancel;
-
   private boolean canEdit; // If user is able to edit the form.
+
   private boolean canSwitchProject; // If user is able to Switch Project. (generally is a project leader)
   protected APConfig config;
   @Inject
@@ -137,80 +137,78 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Managers
   @Inject
   private CrpManager crpManager;
-
-
   @Inject
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
+
   @Inject
   private CrpProgramLeaderManager crpProgramLeaderManager;
+
   @Inject
   private CrpProgramManager crpProgramManager;
   // Variables
   private String crpSession;
-
-
   private Crp currentCrp;
 
+
   protected boolean dataSaved;
+
   protected boolean delete;
   @Inject
   private DeliverableManager deliverableManager;
-
-
   private boolean draft;
+
+
   @Inject
   private FileDBManager fileDBManager;
   private boolean fullEditable; // If user is able to edit all the form.
-
   @Inject
   private FundingSourceManager fundingSourceManager;
 
   private HashMap<String, String> invalidFields;
+
   // User actions
   private boolean isEditable; // If user is able to edit the form.
   // Justification of the changes
   private String justification;
-
   private boolean lessonsActive;
+
   @Inject
   private LiaisonUserManager liaisonUserManager;
   protected boolean next;
   private Map<String, Object> parameters;
   private boolean planningActive;
-
   private int planningYear;
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
-
   @Inject
   private ProjectManager projectManager;
+
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
-
   private boolean reportingActive;
+
   private int reportingYear;
-
   private HttpServletRequest request;
-
 
   // button actions
   protected boolean save;
+
 
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
   @Inject
   private SectionStatusManager sectionStatusManager;
+
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
   private Map<String, Object> session;
-
   private Submission submission;
+
   protected boolean submit;
   private String url;
-
-
   @Inject
   private UserRoleManager userRoleManager;
 
@@ -239,6 +237,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void addActionWarning(String message) {
     this.addActionMessage("--warn--" + message);
   }
+
 
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
@@ -403,6 +402,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
+  }
+
+  public boolean canEditCenterType() {
+    return this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
 
   public boolean canProjectSubmited(long projectID) {
