@@ -14,19 +14,19 @@
 
 
 [#assign glossaryContent= [ 
-  [ "accountability", "mutualAccountability", "activities", "adoption", "appraisal", "attribution", "audit"],
-  [ "baseline", "behavioralIndependence", "beneficiaries", "budget"],
-  [ "clusterOfActivities", "clients", "comparativeAdvantage", "costEffectiveness", "counterfactual"],
+  [ "accountability", "activities", "adoption", "appraisal", "attribution", "audit"],
+  [ "baseline", "behavioralIndependence", "behIndependence", "beneficiaries", "budget"],
+  [ "clients","clusterOfActivities",  "comparativeAdvantage", "costEffectiveness", "counterfactual"],
   [ "deliverables"],
-  [ "endUsers", "effectiveness", "efficiency", "evaluation", "evidence", "formativeEvaluation", "summativeEvaluation", "evaluationCriteria", "evaluationReference"],
+  [  "effectiveness", "efficiency","endUsers", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "formativeEvaluation" ],
   [ "globalPublicGoods"],
-  [ "impact", "impactAssesment", "impactEvaluation", "impactPathway", "impartiality", "independence", "orgIndependence", "behIndependence", "indicator", "inputs", "ido", "internationalPublicGoods"],
+  [ "impact", "impactAssesment", "impactEvaluation", "impactPathway", "impartiality", "independence", "indicator", "inputs", "ido", "internationalPublicGoods"],
   [ "legitimacy"],
-  [ "mog", "managementLiason", "monitoring", "nextUsers"],
+  [ "managementLiason","mog",  "monitoring","mutualAccountability", "nextUsers"],
   [ "orgIndependence", "outcome", "outcomestatement", "outcomestory", "outputs"],
   [ "partners", "peerReview", "performanceManagement", "performanceMeasureement", "project", "projectLeader", "projectOutcome", "projectOutcomeStory", "projectPartner"],
   [ "relevance", "researchOutcomes", "results", "resultsBaseManagement", "review"],
-  [ "scaling", "stakeholders", "sustainability", "systemLevelOutcomes"],
+  [ "scaling", "stakeholders", "summativeEvaluation", "sustainability", "systemLevelOutcomes"],
   [ "targetGroup", "targetnarrative", "targetvalue", "toc", "transactionCost", "triangulation"],
   [ "update" , "use"]
 ] /]
