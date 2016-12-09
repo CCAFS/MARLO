@@ -269,7 +269,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     for (FundingSourceBudget fundingSourceBudget : this.getFundingSourceBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() != null && c.getYear().intValue() == year)
       .collect(Collectors.toList())) {
-      total = total + fundingSourceBudget.getBudget().doubleValue();
+      if (fundingSourceBudget.getBudget() != null) {
+        total = total + fundingSourceBudget.getBudget().doubleValue();
+      }
+
     }
     for (ProjectBudget projectBudget : this.getProjectBudgets().stream()
       .filter(c -> c.isActive() && c.getYear() == year).collect(Collectors.toList())) {
