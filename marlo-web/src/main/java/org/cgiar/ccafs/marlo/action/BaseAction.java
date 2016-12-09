@@ -751,9 +751,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         project.setOutcomes(projectOutcomes);
-        if (project.getOutcomes().isEmpty()) {
-          return false;
+
+        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          if (project.getOutcomes().isEmpty()) {
+            return false;
+          }
+        } else {
+          return true;
         }
+
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -1032,19 +1038,74 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     Project project = projectManager.getProjectById(projectID);
     List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    int totalSections = 0;
+    int deliverableSection = 0;
+    int budgetCoASection = 0;
+    int outcomeSection = 0;
 
     for (SectionStatus sectionStatus : sections) {
-      if (sectionStatus.getMissingFields().length() > 0) {
-        return false;
+      if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+        && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
       }
+
     }
     if (sections.size() == 0) {
       return false;
     }
-    if (sections.size() < 8) {
-      return false;
+    if (this.isPlanningActive()) {
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+
+            case DESCRIPTION:
+            case PARTNERS:
+            case LOCATIONS:
+            case BUDGET:
+            case ACTIVITIES:
+              totalSections++;
+              break;
+            case DELIVERABLES:
+              if (deliverableSection == 0) {
+                deliverableSection = 1;
+                totalSections++;
+              }
+              break;
+
+            case OUTCOMES:
+              if (outcomeSection == 0) {
+                outcomeSection = 1;
+                totalSections++;
+              }
+
+            case BUDGETBYCOA:
+              if (budgetCoASection == 0) {
+                budgetCoASection = 1;
+                totalSections++;
+              }
+              break;
+          }
+
+        }
+      }
+      if (budgetCoASection == 1) {
+        return totalSections == 8;
+      } else {
+
+        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          return totalSections == 7;
+        } else {
+          return totalSections == 6;
+        }
+
+      }
     }
     return true;
+
+
   }
 
 

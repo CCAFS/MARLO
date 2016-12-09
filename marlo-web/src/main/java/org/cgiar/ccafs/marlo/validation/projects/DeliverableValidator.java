@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -40,6 +42,8 @@ public class DeliverableValidator extends BaseValidator {
 
   @Inject
   private CrpManager crpManager;
+  @Inject
+  private ProjectManager projectManager;
 
   @Inject
   public DeliverableValidator() {
@@ -59,6 +63,7 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
+    Project project = projectManager.getProjectById(deliverable.getProject().getId());
     this.action = action;
     if (!saving) {
       Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
@@ -120,15 +125,18 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (deliverable.getCrpClusterKeyOutput() != null) {
-        if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
+      if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        if (deliverable.getCrpClusterKeyOutput() != null) {
+          if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
+            this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+            action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
           action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
         }
-      } else {
-        this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-        action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
       }
+
 
       if (deliverable.getResponsiblePartner() != null) {
         if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
