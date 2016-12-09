@@ -79,7 +79,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
       manager.createDirectly(this.getClass().getResource("/pentaho/search_terms.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
-
+    Class class2 = Class.forName("org.pentaho.plugin.jfreereport.reportcharts.BarChartExpression");
+    System.out.println(class2);
     // String center = loggedCrp.getName();
     // Get datetime
     // ZonedDateTime timezone = ZonedDateTime.now();

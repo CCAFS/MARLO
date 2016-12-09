@@ -400,12 +400,11 @@
 		</dependency>
 
 
-<!-- https://mvnrepository.com/artifact/jfreechart/jfreechart -->
-<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+<!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
 <dependency>
-    <groupId>org.jfree</groupId>
+    <groupId>jfree</groupId>
     <artifactId>jfreechart</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.13</version>
 </dependency>
 
 
@@ -415,7 +414,7 @@
 <dependency>
     <groupId>jfree</groupId>
     <artifactId>jcommon</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.16</version>
 </dependency>
 
 
