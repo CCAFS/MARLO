@@ -6,7 +6,7 @@
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
-  {"label":"summaries", "nameSpace":"summaries", "action":"board"}
+  {"label":"summaries", "nameSpace":"summaries", "action":"summaries"}
 ]/]
 
 
