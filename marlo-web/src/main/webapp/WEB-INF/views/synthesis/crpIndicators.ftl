@@ -46,8 +46,6 @@
 ] /]
 
 
-
-
 [#assign title = "CRP Indicators" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
@@ -62,7 +60,6 @@
 ]/]
 
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities /]
-
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 

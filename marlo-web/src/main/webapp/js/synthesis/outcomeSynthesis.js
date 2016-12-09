@@ -2,11 +2,11 @@ $(document).ready(init);
 
 function init() {
   // List all blocks and removing buttons that have a height too small
-  setViewMore()
+  setViewMore();
+
   // Attaching events
   attachEvents();
-  // Set word limits to inputs that contains class limitWords-value, for example : <input class="limitWords-100" />
-  setWordCounterToInputs('limitWords');
+
   // Adding DataTable plugin
   $(".regionalContributions, .projectContributions").dataTable({
       "bPaginate": false, // This option enable the table pagination
@@ -55,7 +55,8 @@ function colapseViewMoreBlock() {
 }
 
 function setViewMore() {
-  $('.viewMore-block').each(function(i,element) {
+  $('.viewMoreSynthesis-block').each(function(i,element) {
+    console.log($(element).height());
     if($(element).height() < 225) {
       $(element).find('.viewMore').remove();
     } else {
