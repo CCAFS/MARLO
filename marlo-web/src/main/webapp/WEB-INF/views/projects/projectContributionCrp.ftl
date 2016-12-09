@@ -99,7 +99,7 @@
             <h5 class="sectionSubTitle">Achieved Target</h5>
             <div class="form-group">
               <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
-                <div class="col-md-5">[@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue fieldFocus" required=true editable=editable /]</div>
+                <div class="col-md-5">[@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]</div>
                 <div class="col-md-7">
                   <div class="select">
                     <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
@@ -111,7 +111,7 @@
                 </div>
               </div>
               <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100 fieldFocus" editable=editable /]
+                [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
               </div>
             </div>
             [/#if]
@@ -181,11 +181,11 @@
                         [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(year) className="limitWords-100 fieldFocus" editable=editable /]
                       </div>
                       <div class="form-group">
-                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100 fieldFocus" editable=editable /]
+                        [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].analysisCommunication" i18nkey="projectOutcome.analysisCommunication" className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
                       </div>
                     </div>
                     <br />
-                    <div class="fileUpload fieldFocus">
+                    <div class="fileUpload ${reportingActive?string('fieldFocus','')}">
                       <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
                       <div class="uploadContainer">
                         [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
@@ -216,7 +216,7 @@
           
           [#-- Lessons and progress --]
           [#if !action.isProjectNew(project.id)]
-          <div id="lessons" class="borderBox fieldFocus">
+          <div id="lessons" class="borderBox ${reportingActive?string('fieldFocus','')}">
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
@@ -314,7 +314,7 @@
           [#-- REPORTING BLOCK --]
           [#if reportingActive]
           <div class="col-md-4">
-            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" fieldFocus" required=isYearRequired(year) editable=editable /]
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(year) editable=editable /]
           </div>
           [/#if]
         </div>
@@ -325,7 +325,7 @@
         [#-- REPORTING BLOCK --]
         [#if reportingActive]
         <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 fieldFocus" editable=editable /]
+          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(year) className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
         </div>
         [/#if]
       </div>
@@ -379,7 +379,7 @@
         [/#list]
       </ul> 
       [#-- Tabs Content --]
-      <div class="tab-content projectOutcomeYear-content fieldFocus">
+      <div class="tab-content projectOutcomeYear-content ${reportingActive?string('fieldFocus','')}">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
             <div class="form-group">

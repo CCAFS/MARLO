@@ -133,7 +133,7 @@
         [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
       
-      <div class="row fieldFocus">
+      <div class="row ${reportingActive?string('fieldFocus','')}">
       [#-- Activity status --]
       <div class="col-md-12 form-group">
         [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="project.activities.inputStatus" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]

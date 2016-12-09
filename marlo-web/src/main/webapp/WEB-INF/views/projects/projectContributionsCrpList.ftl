@@ -101,7 +101,7 @@
               [/#list]
             </ul> 
             [#-- Tabs Content --]
-            <div class="tab-content projectOutcomeYear-content fieldFocus">
+            <div class="tab-content projectOutcomeYear-content ${reportingActive?string('fieldFocus','')}">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   [#-- Contribution(s) to other flagships outcomes --]
