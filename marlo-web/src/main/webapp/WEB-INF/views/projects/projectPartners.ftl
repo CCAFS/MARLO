@@ -43,7 +43,7 @@
           <div style="display:none">
             [#-- Other fields --]
             [#if project.projectEditLeader]
-            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')}">
+            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <br />

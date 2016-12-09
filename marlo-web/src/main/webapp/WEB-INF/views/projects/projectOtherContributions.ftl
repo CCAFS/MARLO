@@ -33,7 +33,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">[@s.text name="projectOtherContributions.title" /]</h3>  
-          <div id="projectOtherContributions" class="borderBox">
+          <div id="projectOtherContributions" class="borderBox fieldFocus">
             
             [#-- Collaborating with other CRPs --]
             [#assign crpsName= "project.ipOtherContribution.crps"/]

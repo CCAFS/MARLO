@@ -63,25 +63,25 @@
             
             <div class="tab-content col-md-12">
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active row">
-                <h3 class="contentTitle col-md-12">[@s.text name="project.deliverable.generalInformation.sectionTitle" /]</h3>  
+                
                 [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
               
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade">
-                <h3 class="contentTitle">Deliverable quality check</h3>  
+               
                 [#-- Deliverable qualityCheck --]
                 [#include "/WEB-INF/views/projects/deliverableQualityCheck.ftl" /]
               </div>
               
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade">
-                <h3 class="contentTitle">Dissemination & Metadata</h3>  
+                
                 [#-- Deliverable disseminationMetadata --] 
                 [#include "/WEB-INF/views/projects/deliverableDissemination.ftl" /]
               </div>
               
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade">
-              <h3 class="contentTitle">Deliverable Data Sharing</h3>  
+              
                 [#-- Deliverable dataSharing --] 
               </div>
             </div>

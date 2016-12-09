@@ -38,12 +38,13 @@
         [/#if]  
       </table>
     </div> <!-- End dialog-->
-    <div id="popup" class="helpMessage3">
-      <p><a  id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
-    </div>
+    
   <div class="fullBlock">
     <div class="note left">
-      <p>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</p>
+      <div id="popup" class="helpMessage3">
+        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
+      </div>
+      <p><small>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</small></p>
     </div>
   </div>  
   <div class="clearfix"></div>
@@ -53,8 +54,9 @@
   <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
   <div class="clearfix"></div>
 </div>
-
+<div class="clearfix"></div>
 [#-- Status and year expected selects --]
+<div class="${reportingActive?string('fieldFocus','')}">
 <div class="form-group">
   <div class="col-md-4">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
@@ -88,21 +90,15 @@
       </div>
     </div>
   </div>
+  <div class="clearfix"></div>
 [/#if]
+</div>
 
-[#-- CoA Outputs select --] 
+[#-- Key Outputs select --] 
 <div class="col-md-12 form-group">
   [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
 </div>
-[#if editable && !(keyOutputs?has_content)]
-  <div class="partnerListMsj note col-md-12">
-    [@s.text name="project.deliverable.generalInformation.keyOutputNotList1" /]
-    <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/description'] [@s.param name="projectID"]${projectID}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]#projectsList"> 
-      [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
-    </a>
-    [@s.text name="project.deliverable.generalInformation.keyOutputNotList2" /]
-  </div>
-[/#if]
+
 
 [#-- Funding Source --]
 <div class="panel tertiary col-md-12">

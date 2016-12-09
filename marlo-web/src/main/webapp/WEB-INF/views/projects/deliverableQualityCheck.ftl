@@ -1,20 +1,8 @@
 [#ftl]
-[#-- Ranking --]
-<div class="fullBlock">
-<h4 class="headTitle">Ranking</h4>
-  <table id="rankingTable" class="default">
-    <tbody>
-      <tr>
-        <td class="key">[@s.text name="to be defined" /]</td> 
-        <td class="value">[@customForm.rank name="1" editable=editable/]</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
 [#-- Compliance check (Data products only) --]
 <h4 class="headTitle">Compliance check (Data products only)</h4>
 
-<div class="fullBlock simpleBox" > 
+<div class="fullBlock" > 
 <div class="col-md-12 note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</div>
 <div class="clearfix"></div>
   [#-- Question1 --]

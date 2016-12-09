@@ -81,7 +81,7 @@
             [#if reportingActive ]
             <div class="form-group">
               <br />
-              <div class="dottedBox">
+              <div class="dottedBox fieldFocus">
                 <div class="row">
                   <div class="col-md-6">
                     [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" listName="projectStatuses" header=false editable=editable /]
