@@ -92,7 +92,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("date", current_date);
 
 
-    ExcelReportUtil.createXLS(masterReport, os);
+    ExcelReportUtil.createXLSX(masterReport, os);
     bytesXLS = os.toByteArray();
     os.close();
     return SUCCESS;

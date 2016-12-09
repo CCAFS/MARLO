@@ -93,7 +93,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("year", year);
     masterReport.getParameterValues().put("date", current_date);
 
-    ExcelReportUtil.createXLS(masterReport, os);
+    ExcelReportUtil.createXLSX(masterReport, os);
     bytesXLS = os.toByteArray();
     os.close();
     return SUCCESS;
