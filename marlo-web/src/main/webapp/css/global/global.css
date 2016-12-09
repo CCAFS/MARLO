@@ -1467,7 +1467,7 @@ a#userLogOut {
 #mainMenu .menuContent ul li.currentSection {
   /* background-image: url("../../images/global/mainMenuMarker.png"); */
   font-weight: bold;
-  color: #fff; 
+  color: #fff;
   background: rgba(0, 0, 0, 0.1);
   box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
 }
