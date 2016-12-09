@@ -18,14 +18,15 @@
 ] /]
 
 [#assign outcomeMilestones = [
-  { 'id': 1, 'description': 'Diagnosis on subnational policy and institutional frameworks analysis focusing on different options that can support the adoption of preferred CSA practices'}
+  { 'id': 1, 'year': '2017', 'description': 'Diagnosis on subnational policy and institutional frameworks analysis focusing on different options that can support the adoption of preferred CSA practices'},
+  { 'id': 2, 'year': '2017', 'srfTargetUnit': {'id':1, 'name':'Country profiles'}, 'description': '10 country profiles in SSA and South Asia developped strategic engagement with subnational government, capacity building and training plan co-developed with ACSAA workshops on climate smart local development planning.'}
 ] /]
 
 [#assign projectMilestoneContributions = [
   { 'id': 1, 'projectId': '56', 'target': '2', 'achieved': '2', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 2, 'projectId': '22', 'target': '14', 'achieved': '11', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
+  { 'id': 2, 'projectId': '22', 'target': '5', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
   { 'id': 3, 'projectId': '1', 'target': '1', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 4, 'projectId': '16', 'target': '', 'achieved': '', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
+  { 'id': 4, 'projectId': '16',  'target': '3', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
   { 'id': 5, 'projectId': '23', 'target': '8', 'achieved': '2', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'}
 ] /]
 
@@ -52,8 +53,11 @@
     <div class="col-md-12">
       [@s.form action="outcomeSynthesis" method="POST" enctype="multipart/form-data" cssClass="pure-form"]
       
+      [#-- Title --]
+      <h3 class="headTitle text-center">[@s.text name="synthesis.outcomeSynthesis.title" ][@s.param]${(currentLiaisonInstitution.name)!}[/@s.param][/@s.text]</h3>
+       
       [#-- Program (Regions and Flagships) --]
-      <ul id="liaisonInstitutions" class="horizontalSubMenu">
+      <ul id="liaisonInstitutions" class="horizontalSubMenu text-center">
         [#list liaisonInstitutions as institution]
           [#assign isActive = (institution.id == liaisonInstitutionID)/]
           [#assign isCompleted = false /]
@@ -64,52 +68,55 @@
           </li>
         [/#list]
       </ul>
-       
-      [#-- Title --]
-      <h3 class="headTitle">[@s.text name="synthesis.outcomeSynthesis.title" ][@s.param]${(currentLiaisonInstitution.acronym)!}[/@s.param][/@s.text]</h3>
       
       [#-- Outcomes 2019 --]
       <div id="outcomeSynthesisBlock" class="">
         [#list midOutcomes as midOutcome]
-        <div class="borderBox"> 
-          <div class="fullPartBlock">
-            <h6 class="title">${(currentLiaisonInstitution.acronym)!} - ${midOutcome.composedId} <span class="ipElementId">ID ${midOutcome.id}</span></h6>
-            <p>${midOutcome.description}</p>
-          </div>
-          
+        <div class="outcomeSynthesis borderBox"> 
+          [#-- Outcome title --]
+          <h6 class="title">${(currentLiaisonInstitution.acronym)!} - ${midOutcome.composedId} <span class="ipElementId">ID ${midOutcome.id}</span></h6>
+          <p>${midOutcome.description}</p>
+           
           [#-- Milestones --]
-          <div class="fullPartBlock">
-            <h4 class="subHeadTitle">Milestones:</h4> 
-            
+          <div class="col-md-12"> 
             [#-- Outcome Miliestones --]
-            [#list outcomeMilestones as indicator]
-              [#assign flagshipIndicator = (indicator.parent)!indicator /]
+            [#list outcomeMilestones as milestone]
+              [#assign flagshipIndicator = (indicator.parent)!milestone /]
               [#assign index = (action.getIndex(flagshipIndicator.id,midOutcome.id,program.id))!-1 /]
            
-              <div class="simpleBox">
-                <div class="fullPartBlock"><p>${flagshipIndicator.description}</p></div>
+              <div class="form-group simpleBox">
+                [#-- Milestone title --]
+                <div class="grayBox">
+                  <h4 class="subHeadTitle"> Milestone for ${milestone.year}:</h4> 
+                  <p>${milestone.description}</p>
+                </div>
+               
                 [#-- Achieved target in current reporting period --]
-                <div class="fullPartBlock">
-                  <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]</div>
-                  <div class="thirdPartBlock"></div>
-                  <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedExpectedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]</div>
+                [#assign showMilestoneValue = milestone.srfTargetUnit??  && milestone.srfTargetUnit.id?? && (milestone.srfTargetUnit.id != -1) /]
+                <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
+                  <div class="col-md-4">
+                    [@customForm.input name="synthesis[${index}].achievedExpectedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]
+                  </div>
+                  <div class="col-md-4">
+                    <div class="select">
+                      <label for="">[@s.text name="projectOutcomeMilestone.expectedUnit" /]:</label>
+                      <div class="selectList"><p class="crpMilestoneTargetUnit">${(milestone.srfTargetUnit.name)!}</p></div> 
+                    </div>
+                  </div> 
+                  <div class="col-md-4">
+                    [@customForm.input name="synthesis[${index}].achievedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]
+                  </div>
                 </div>
                 
-                [#-- Synthesis of annual progress towards this indicator --]
+                [#-- Synthesis of annual progress towards this milestone --]
                 <div class="fullPartBlock">
                   [@customForm.textArea name="synthesis[${index}].synthesisAnual" i18nkey="synthesis.outcomeSynthesis.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
                 </div>
                 
-                [#-- Synthesis of annual progress gender and social inclusion contribution towards this indicator --]
-                <div class="fullPartBlock">
-                  [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesis.outcomeSynthesis.genderProgressIndicator" className="genderProgressIndicator limitWords-200" required=canEdit editable=editable /]
-                </div>
-                
                 [#-- Project Contributions --]
                 <label>[@s.text name="synthesis.outcomeSynthesis.projectContributions" /]:</label> 
-                [#-- Project milestone contributions --> action.getProjectIndicators(reportingYear, flagshipIndicator.id,midOutcome.id)--]
                 [#if (projectMilestoneContributions)?has_content]
-                <div class="fullPartBlock synthesisContributions-block viewMoreSynthesis-block">
+                <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
                   <table class="projectContributions">
                     <thead>
                       <tr class="header">
@@ -122,19 +129,20 @@
                   	<tbody>
                     [#list projectMilestoneContributions as projectIndicator]
                       <tr>
-                      	<td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/reporting/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
+                      	<td class="center"><a href="[@s.url action="${crpSession}/contributionsCrpList" namespace="/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
                       	<td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
-                      	<td class="center" title="${(projectIndicator.archived)!''}" >[@utilities.wordCutter string=(projectIndicator.archived)!'Prefilled when available' maxPos=25 /]</td>
+                      	<td class="center" title="${(projectIndicator.achieved)!''}" >[@utilities.wordCutter string=(projectIndicator.achieved)!'Prefilled when available' maxPos=25 /]</td>
                         <td class="">${(projectIndicator.narrativeTargets)!'Prefilled when available'} </td> 
                       </tr>
                     [/#list]
                   	</tbody>
                   </table>
-                  <div class="viewMore"></div>
+                  <div class="viewMoreSyntesis closed"></div>
                 </div>
                 [#else]
-                  <p>There is not project contributing to this indicator</p>
+                  <p>There is not project contributing to this milestone</p>
                 [/#if]
+                <br />
               </div>
             [/#list]
           </div>

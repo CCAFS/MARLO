@@ -1,14 +1,9 @@
 $(document).ready(init);
 
 function init() {
-  // List all blocks and removing buttons that have a height too small
-  setViewMore();
-
-  // Attaching events
-  attachEvents();
 
   // Adding DataTable plugin
-  $(".regionalContributions, .projectContributions").dataTable({
+  $(".projectContributions").dataTable({
       "bPaginate": false, // This option enable the table pagination
       "bLengthChange": false, // This option disables the select table size option
       "bFilter": false, // This option enable the search
@@ -24,13 +19,20 @@ function init() {
         }
       ]
   });
+  $(".projectContributions").on('draw.dt', function() {
+    // List all blocks and removing buttons that have a height too small
+    setViewMore();
+  });
+
+  // Attaching events
+  attachEvents();
 }
 
 function attachEvents() {
   // Validating numeric value
   $('.isNumeric').on("keydown", isNumber);
 
-  $('.viewMore').toggle(expandViewMoreBlock, colapseViewMoreBlock);
+  $('.viewMoreSyntesis').on('click', expandViewMoreSyntesisBlock);
 
   // urlify
   $('table tbody td').each(function(i,e) {
@@ -40,30 +42,33 @@ function attachEvents() {
 
 }
 
-function expandViewMoreBlock() {
-  $(this).parent().css({
-    height: $(this).parent().find('.dataTables_wrapper').height() + $(this).height() + 40
-  });
-  $(this).html('View less');
-}
-
-function colapseViewMoreBlock() {
-  $(this).parent().css({
-    height: 225
-  });
-  $(this).html('View More');
+function expandViewMoreSyntesisBlock() {
+  if($(this).hasClass("closed")) {
+    $(this).parent().css({
+      height: $(this).parent().find('.dataTables_wrapper').height() + $(this).height() + 5
+    });
+    $(this).html('View less');
+    $(this).addClass("opened");
+    $(this).removeClass("closed");
+  } else if($(this).hasClass("opened")) {
+    $(this).parent().css({
+      height: 255
+    });
+    $(this).html('View More');
+    $(this).addClass("closed");
+    $(this).removeClass("opened");
+  }
 }
 
 function setViewMore() {
-  $('.viewMoreSynthesis-block').each(function(i,element) {
-    console.log($(element).height());
+  $('.viewMoreSyntesis-block').each(function(i,element) {
     if($(element).height() < 225) {
-      $(element).find('.viewMore').remove();
+      $(element).find('.viewMoreSyntesis').remove();
     } else {
       $(element).css({
         "height": 225
       })
-      $(element).find('.viewMore').html('View More');
+      $(element).find('.viewMoreSyntesis').html('View More');
     }
   });
 }

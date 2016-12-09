@@ -4740,18 +4740,18 @@ a.showIndicatorDesc img{
 }
 
 .synthesisContributions-block table th.col-projectId{
-  width: 5%;
+  width: 1%;
 }
 .synthesisContributions-block table th.col-regionId{
   width: 5%;
 }
 
 .synthesisContributions-block table th.col-expected{
-  width: 9%;
+  width: 1%;
   padding: 6px 0;
 }
 .synthesisContributions-block table th.col-achieved{
-  width: 9%;
+  width: 1%;
   padding: 6px 0;
 }
 
@@ -4772,9 +4772,10 @@ table.regionalContributions thead{background-color: #07C39F !important;}
 span.ipElementId {
   border-radius: 5px;
   border: 1px solid #B0D8E6;
+  background: #fff;
   padding: 0 5px 1px 5px;
   margin: 5px;
-  font-size: 0.75em;
+  font-size: 0.70em;
   color: #9EC3D0;
 }
 
