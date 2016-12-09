@@ -128,6 +128,7 @@ vertical-align: middle;}
 .summariesFiles {
     margin: 10px 4%;
     cursor: pointer;
+    min-height: 154px;
 }
 
 .excelIcon {
@@ -151,6 +152,7 @@ vertical-align: middle;}
 	margin: 10px 4%;
 	cursor: no-drop;
 	opacity: 0.4;
+	min-height: 154px;
 }
 
 #projectsPopUp{
