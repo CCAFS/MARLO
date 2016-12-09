@@ -47,7 +47,7 @@
           [#-- Participating Center, CRP Lead Center --]
           <div class="pull-right">
             <label for="cofundedMode-1"><input type="radio" name="cofundedMode" id="cofundedMode-1" value="1" checked="checked"/> [@s.text name="projectCofunded.participatingCenter" /] </label>  
-            <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" /> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
+            <label for="cofundedMode-2"><input type="radio" name="cofundedMode" id="cofundedMode-2" value="2" [#if !action.canEditCenterType()]disabled="disabled"[/#if]/> [@s.text name="projectCofunded.crpLeadCenter" /] </label>
           </div>
           
           [#-- Title --]
