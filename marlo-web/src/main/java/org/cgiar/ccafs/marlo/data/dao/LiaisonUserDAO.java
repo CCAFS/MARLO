@@ -72,7 +72,7 @@ public interface LiaisonUserDAO {
    * @param id is the user identifier.
    * @return a LiaisonUser object.
    */
-  public LiaisonUser findByUser(long id);
+  public LiaisonUser findByUser(long id, long crpID);
 
   /**
    * This method saves the information of the given liaisonUser

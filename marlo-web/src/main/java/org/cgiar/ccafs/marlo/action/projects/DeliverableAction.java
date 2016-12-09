@@ -415,18 +415,20 @@ public class DeliverableAction extends BaseAction {
           ProjectPartnerPerson partnerPerson = projectPartnerPersonManager
             .getProjectPartnerPersonById(deliverablePartnership.getProjectPartnerPerson().getId());
 
+          if (partnerPerson != null) {
+            DeliverablePartnership partnership = new DeliverablePartnership();
+            partnership.setProjectPartnerPerson(partnerPerson);
+            partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+            partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+            partnership.setActive(true);
+            partnership.setCreatedBy(this.getCurrentUser());
+            partnership.setModifiedBy(this.getCurrentUser());
+            partnership.setModificationJustification("");
+            partnership.setActiveSince(new Date());
 
-          DeliverablePartnership partnership = new DeliverablePartnership();
-          partnership.setProjectPartnerPerson(partnerPerson);
-          partnership.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-          partnership.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          partnership.setActive(true);
-          partnership.setCreatedBy(this.getCurrentUser());
-          partnership.setModifiedBy(this.getCurrentUser());
-          partnership.setModificationJustification("");
-          partnership.setActiveSince(new Date());
+            deliverablePartnershipManager.saveDeliverablePartnership(partnership);
 
-          deliverablePartnershipManager.saveDeliverablePartnership(partnership);
+          }
 
 
         } else {
@@ -783,9 +785,10 @@ public class DeliverableAction extends BaseAction {
         && deliverablePrew.getDeliverablePartnerships().size() > 0) {
 
         try {
-          partnershipResponsible = deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(
-              dp -> dp.isActive() && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+          partnershipResponsible =
+            deliverablePrew.getDeliverablePartnerships().stream()
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;

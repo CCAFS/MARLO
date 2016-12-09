@@ -28,11 +28,11 @@
       <div class="headerBlock">
         <h5 class="col-md-3">[@s.text name="summaries.board.projectResearchCycle" /]</h5>
         <div class="summariesOption col-md-3">
-          <input type="radio" name="cycle" id="planning" value="planning"/>
+          <input type="radio" name="cycle" id="planning" value="planning" checked="checked"/>
           <label for="planning">[@s.text name="summaries.board.projectResearchCycle.planning" /]</label>
         </div>
         <div class="summariesOption col-md-3">
-          <input type="radio" name="cycle" id="reporting" value="Reporting"  checked="checked" />
+          <input type="radio" name="cycle" id="reporting" value="Reporting"  disabled />
           <label for="reporting">[@s.text name="summaries.board.projectResearchCycle.reporting" /]</label>
         </div>
         <div class="clearfix"></div>
@@ -43,6 +43,21 @@
       <div class="summariesOptions col-md-12">
         [#-- -- -- Projects reports -- -- --]
         <div id="projects-contentOptions">
+        
+        [#-- Full Project Report (PDF) --]
+          <div class="summariesFiles borderBox col-md-3">
+            <span title="[@s.text name="summaries.board.report.projectPortfolio.description" /]" class="info-file fa fa-info-circle "></span>
+            <div class="col-md-12 title-file">
+              <input type="radio" name="formOptions" id="projectPortfolio" value="reportingSummary" class="hidden"/>
+              <label for="">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
+            </div>
+            <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
+            <div class="extraOptions" style="display:none">
+            <label for="selectProject">Select a project</label>
+            <div id="selectProject" class="col-md-12" readonly>Click over me</div>
+            <input  class="hidden" type="text" name="projectID" value="" >
+            </div>
+          </div>
           
           [#-- Gender Contribution Project Level Summary --]
           <div class="notAvailable borderBox col-md-3">
@@ -50,16 +65,6 @@
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>
               <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
-            </div>
-            <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
-          </div>
-          
-          [#-- List of all projects and their leading institution --]
-          <div class="notAvailable borderBox col-md-3">
-            <span title="[@s.text name="summaries.board.report.projectPartnersSummary.description" /]" class="info-file fa fa-info-circle "></span>
-            <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="leadProjectPartnersSummary" value="leadProjectPartnersSummary"/>
-              <label for="">[@s.text name="summaries.board.report.projectPartnersSummary" /]  </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
@@ -87,23 +92,6 @@
             <div class="extraOptions" style="display:none"> 
             </div>
           </div>
-          
-          [#-- Full Project Report (PDF) --]
-          <div class="summariesFiles borderBox col-md-3">
-            <span title="[@s.text name="summaries.board.report.projectPortfolio.description" /]" class="info-file fa fa-info-circle "></span>
-            <div class="col-md-12 title-file">
-              <input type="radio" name="formOptions" id="projectPortfolio" value="reportingSummary" class="hidden"/>
-              <label for="">[@s.text name="summaries.board.report.projectPortfolio" /] </label>
-            </div>
-            <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
-            <div class="extraOptions" style="display:none">
-            <label for="selectProject">Select a project</label>
-            <div id="selectProject" class="col-md-12" readonly>Click over me</div>
-            <input  class="hidden" type="text" name="projectID" value="" >
-            </div>
-          </div>
-          
-          
           
         </div>
         [#-- -- -- Partners reports -- -- --]

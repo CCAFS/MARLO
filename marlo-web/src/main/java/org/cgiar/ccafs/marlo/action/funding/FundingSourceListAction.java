@@ -90,7 +90,7 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setActive(true);
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId());
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
     if (user != null) {
       LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
       try {

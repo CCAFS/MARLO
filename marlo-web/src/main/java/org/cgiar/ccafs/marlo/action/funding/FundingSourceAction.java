@@ -150,6 +150,7 @@ public class FundingSourceAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public boolean canEditInstitution() {
     User user = userManager.getUser(this.getCurrentUser().getId());
     return user.getUserRoles().stream().filter(c -> c.getRole().getAcronym().equals("CP")).collect(Collectors.toList())
