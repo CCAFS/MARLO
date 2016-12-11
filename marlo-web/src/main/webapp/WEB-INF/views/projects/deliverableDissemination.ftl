@@ -79,7 +79,7 @@
 
 <h3 class="headTitle">[@s.text name="Publication Metadata" /]</h3>
 
-<div class="borderBox">
+<div class="borderBox row">
   <label for="">Indicators for journal articles:</label>
   <div class="col-md-12 form-group">
     <input type="checkbox" />Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)  
@@ -92,18 +92,19 @@
   </div>
   <div class="clearfix"></div>
   <br />
-  <div class=" row form-group simpleBox">
+  <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false cssClass="acknowledge text-center" /] 
-    </div>  
+    </div> 
   </div>
   
   
-  <div class="col-md-12 simpleBox">
-  <div class="col-md-12">
-    <label for="">Is this publication contributing to any other flagships?</label>
+  <div class="row">
+    <label class="col-md-12" for="">Is this publication contributing to any other flagships?</label>
   </div>
+  <div class="clearfix"></div>
+  <div class="row simpleBox">
     <div class="col-md-6">
       <input type="checkbox" /> Select relevant CRPs
     </div>
@@ -122,7 +123,7 @@
   </div>
   
   [#-- Deliverable type computer software --]
-  <div class="simpleBox licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:none;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="MIT"/> MIT License
     </div>
@@ -133,7 +134,7 @@
   </div>
   
   [#-- Deliverable type data --]
-  <div class="simpleBox licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:none;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="No"/> CC licenses version 4.0
 
@@ -149,7 +150,7 @@
   </div>
   
   [#-- Deliverable type other research types --]
-  <div class="simpleBox licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:none;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="No"/> CC-BY (allow modifications and commercial use)
     </div>
@@ -172,7 +173,7 @@
   </div>
   <br />
   [#-- Other --]
-  <div class="simpleBox">
+  <div class="row">
   
     <div class="col-md-6 form-group">
       <div class="col-md-4">

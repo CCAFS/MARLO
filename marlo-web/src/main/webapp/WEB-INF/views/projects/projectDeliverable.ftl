@@ -83,6 +83,7 @@
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade">
               
                 [#-- Deliverable dataSharing --] 
+                [#include "/WEB-INF/views/projects/deliverableDataSharing.ftl" /]
               </div>
             </div>
            </div>
