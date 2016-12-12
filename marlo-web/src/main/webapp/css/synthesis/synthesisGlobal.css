@@ -245,3 +245,15 @@ span#notDefined {
 td.fair {
     width: 60px;
 }
+
+.indicator {
+    padding: 2px 15px 5px 15px;
+    border: 1px dotted #C3D4E7;
+    margin: 2px 0px;
+    background: #FFFFFF;
+    border-radius: 2px;
+}
+
+h6.title {
+    margin: 8px 0px;
+}

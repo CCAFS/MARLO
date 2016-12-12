@@ -86,8 +86,10 @@
         [#list clusterActivities as clusterActivity]
         <div class="synthesisByCoAs borderBox"> 
           [#-- Outcome title --]
-          <h6 class="title">${(currentLiaisonInstitution.acronym)!} - ${clusterActivity.composedId} <span class="ipElementId">ID ${clusterActivity.id}</span></h6>
-          <p>${clusterActivity.description}</p>
+          <h6 class="title">
+           ${(currentLiaisonInstitution.acronym)!} - ${clusterActivity.composedId} -  ${clusterActivity.description} 
+           <span class="ipElementId">ID ${clusterActivity.id}</span>
+          </h6>
            
           [#-- keyOutputs --]
           <div class="col-md-12"> 
@@ -99,7 +101,19 @@
               <div class="form-group simpleBox">
                 [#-- keyOutput title --]
                 <div class="form-group grayBox">
-                  <p><strong>Key Output: </strong>${keyOutput.description}</p>
+                  <h4 class="subHeadTitle"> Key Output:</h4> 
+                  
+                  
+                  <div class="row">
+                    <div class="col-md-7">
+                      <p>${keyOutput.description}</p>
+                    </div>
+                    <div class="indicators col-md-5">
+                      <div class="indicator"><strong>5</strong> projects working on this key output </div>
+                      <div class="indicator"><strong>${deliverablesCompleted?size}</strong> deliverables completed in ${reportingYear}</div>
+                      <div class="indicator"><strong>${activities?size}</strong> envolved activities ${reportingYear}</div>
+                    </div>
+                  </div>
                 </div>
                
                 [#-- Achieved target in current reporting period --]
