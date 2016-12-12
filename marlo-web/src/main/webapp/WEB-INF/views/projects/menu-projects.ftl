@@ -48,7 +48,6 @@
   ]/]
 [/#if]
 
-
   
 [#attempt]
   [#assign submission = (action.isProjectSubmitted(projectID))! /]
