@@ -508,9 +508,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         String.class, String.class, String.class},
       0);
 
-    for (ProjectClusterActivity clusterActivity : project.getProjectClusterActivities().stream()
-      .filter(c -> c.isActive()).collect(Collectors.toList())) {
-      String description = clusterActivity.getCrpClusterOfActivity().getComposedName();
+    List<ProjectClusterActivity> coAs = new ArrayList<>();
+    coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    if (coAs.size() == 1) {
+      String description = coAs.get(0).getCrpClusterOfActivity().getComposedName();
       String w1w2 = null;
       String w1w2GenderPer = null;
       String w3 = null;
@@ -520,39 +521,78 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       String center = null;
       String centerGenderPer = null;
 
-
-      ProjectBudgetsCluserActvity w1w2pb =
-        this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
-      ProjectBudgetsCluserActvity w3pb =
-        this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 2);
-      ProjectBudgetsCluserActvity bilateralpb =
-        this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 3);
-      ProjectBudgetsCluserActvity centerpb =
-        this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 4);
-
-
-      if (w1w2pb != null) {
-        w1w2 = df.format(w1w2pb.getAmount());
-        w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
-      }
-
-      if (w3pb != null) {
-        w3 = df.format(w3pb.getAmount());
-        w3GenderPer = df.format(w3pb.getGenderPercentage());
-      }
-
-      if (bilateralpb != null) {
-        bilateral = df.format(bilateralpb.getAmount());
-        bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
-      }
-      if (centerpb != null) {
-        center = df.format(centerpb.getAmount());
-        centerGenderPer = df.format(centerpb.getGenderPercentage());
+      // Get types of funding sources
+      for (ProjectBudget pb : project.getProjectBudgets().stream()
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
+        .collect(Collectors.toList())) {
+        if (pb.getBudgetType().getId() == 1) {
+          w1w2 = "100";
+          w1w2GenderPer = "100";
+        }
+        if (pb.getBudgetType().getId() == 2) {
+          w3 = "100";
+          w3GenderPer = "100";
+        }
+        if (pb.getBudgetType().getId() == 3) {
+          bilateral = "100";
+          bilateralGenderPer = "100";
+        }
+        if (pb.getBudgetType().getId() == 4) {
+          center = "100";
+          centerGenderPer = "100";
+        }
       }
 
 
       model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
         bilateralGenderPer, centerGenderPer});
+    } else {
+
+      for (ProjectClusterActivity clusterActivity : coAs) {
+        String description = clusterActivity.getCrpClusterOfActivity().getComposedName();
+        String w1w2 = null;
+        String w1w2GenderPer = null;
+        String w3 = null;
+        String w3GenderPer = null;
+        String bilateral = null;
+        String bilateralGenderPer = null;
+        String center = null;
+        String centerGenderPer = null;
+
+
+        ProjectBudgetsCluserActvity w1w2pb =
+          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 1);
+        ProjectBudgetsCluserActvity w3pb =
+          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 2);
+        ProjectBudgetsCluserActvity bilateralpb =
+          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 3);
+        ProjectBudgetsCluserActvity centerpb =
+          this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), year, 4);
+
+
+        if (w1w2pb != null) {
+          w1w2 = df.format(w1w2pb.getAmount());
+          w1w2GenderPer = df.format(w1w2pb.getGenderPercentage());
+        }
+
+        if (w3pb != null) {
+          w3 = df.format(w3pb.getAmount());
+          w3GenderPer = df.format(w3pb.getGenderPercentage());
+        }
+
+        if (bilateralpb != null) {
+          bilateral = df.format(bilateralpb.getAmount());
+          bilateralGenderPer = df.format(bilateralpb.getGenderPercentage());
+        }
+        if (centerpb != null) {
+          center = df.format(centerpb.getAmount());
+          centerGenderPer = df.format(centerpb.getGenderPercentage());
+        }
+
+
+        model.addRow(new Object[] {description, year, w1w2, w3, bilateral, center, w1w2GenderPer, w3GenderPer,
+          bilateralGenderPer, centerGenderPer});
+      }
     }
     return model;
   }

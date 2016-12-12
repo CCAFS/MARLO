@@ -237,7 +237,13 @@ public class ManageUsersAction extends BaseAction {
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
    */
   private User validateOutlookUser(String email) {
-    LDAPUser user = new LDAPService().searchUserByEmail(email);
+    LDAPService service = new LDAPService();
+    if (config.isProduction()) {
+      service.setInternalConnection(false);
+    } else {
+      service.setInternalConnection(true);
+    }
+    LDAPUser user = service.searchUserByEmail(email);
     if (user != null) {
       newUser.setFirstName(user.getFirstName());
       newUser.setLastName(user.getLastName());

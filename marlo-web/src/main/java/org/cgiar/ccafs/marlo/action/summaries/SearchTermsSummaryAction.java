@@ -26,14 +26,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import com.google.inject.Inject;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 
@@ -41,7 +40,7 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
 
-public class InstitutionsSummaryAction extends BaseAction implements Summary {
+public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
   /**
    * 
@@ -53,17 +52,20 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
 
   private CrpManager crpManager;
-  // XLSX bytes
-  private byte[] bytesXLSX;
+
+
+  // XLS bytes
+  private byte[] bytesXLS;
+
+
   // Streams
   InputStream inputStream;
 
   @Inject
-  public InstitutionsSummaryAction(APConfig config, CrpManager crpManager) {
+  public SearchTermsSummaryAction(APConfig config, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
-
 
   @Override
   public String execute() throws Exception {
@@ -74,22 +76,29 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     manager.registerDefaults();
 
     Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/institutions.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/search_terms.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
-
-    Number idParam = loggedCrp.getId();
+    Class class2 = Class.forName("org.pentaho.plugin.jfreereport.reportcharts.BarChartExpression");
+    System.out.println(class2);
+    // String center = loggedCrp.getName();
     // Get datetime
-    ZonedDateTime timezone = ZonedDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    // ZonedDateTime timezone = ZonedDateTime.now();
+    // DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+    // String current_date = timezone.format(format) + timezone.getZone();
 
-    masterReport.getParameterValues().put("crp_id", idParam);
-    masterReport.getParameterValues().put("date", current_date);
+    // Set Main_Query
+    // CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+    // TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+    // TypedTableModel model = this.getMasterTableModel(center, current_date);
+    // sdf.addTable(masterQueryName, model);
+    // masterReport.setDataFactory(cdf);
 
+    // masterReport.getParameterValues().put("center", center);
+    // masterReport.getParameterValues().put("date", current_date);
 
     ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
+    bytesXLS = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -97,7 +106,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public int getContentLength() {
-    return bytesXLSX.length;
+    return bytesXLS.length;
   }
 
   @Override
@@ -105,14 +114,11 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
+
   private File getFile(String fileName) {
-
-
     // Get file from resources folder
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource(fileName).getFile());
-
-
     return file;
 
   }
@@ -120,16 +126,18 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("ProjectPartners-");
+    fileName.append("SearchTermsSummary-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
     fileName.append(".xlsx");
+
     return fileName.toString();
+
   }
 
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLSX);
+      inputStream = new ByteArrayInputStream(bytesXLS);
     }
     return inputStream;
   }
@@ -138,6 +146,14 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
+  private TypedTableModel getMasterTableModel(String center, String date) {
+    // Initialization of Model
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"title", "center"}, new Class[] {String.class, String.class});
+
+    model.addRow(new Object[] {center, date});
+    return model;
+  }
 
   @Override
   public void prepare() {
@@ -146,13 +162,10 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
     }
-
   }
-
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
   }
-
 
 }

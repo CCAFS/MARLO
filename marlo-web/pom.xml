@@ -214,11 +214,6 @@
 			<artifactId>hibernate-c3p0</artifactId>
 			<version>${hibbernate-core-version}</version>
 		</dependency>
-<dependency>
-   <groupId>bsf</groupId>
-   <artifactId>bsf</artifactId>
-   <version>2.4.0</version>
-</dependency>
 
 		<dependency>
 			<groupId>javassist</groupId>
@@ -372,12 +367,12 @@
 			<version>1.3.0</version>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>bsf</groupId>
-			<artifactId>bsf</artifactId>
-			<version>2.4.0</version>
-			<optional>true</optional>
-		</dependency>
+		<!-- https://mvnrepository.com/artifact/bsf/bsf -->
+<dependency>
+    <groupId>bsf</groupId>
+    <artifactId>bsf</artifactId>
+    <version>2.4.0</version>
+</dependency>
 		<dependency>
 			<groupId>pentaho-library</groupId>
 			<artifactId>libsparkline</artifactId>
@@ -400,12 +395,11 @@
 		</dependency>
 
 
-<!-- https://mvnrepository.com/artifact/jfreechart/jfreechart -->
-<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+<!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
 <dependency>
-    <groupId>org.jfree</groupId>
+    <groupId>jfree</groupId>
     <artifactId>jfreechart</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.13</version>
 </dependency>
 
 
@@ -415,7 +409,7 @@
 <dependency>
     <groupId>jfree</groupId>
     <artifactId>jcommon</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.16</version>
 </dependency>
 
 
