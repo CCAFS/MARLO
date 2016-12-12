@@ -93,11 +93,10 @@
             'userName' : '${(currentUser.username)!"No User name"}',
             'userId': '${(currentUser.id)!"No ID"}',
             'composedId': '${(currentUser.composedID)!"No Composed ID"}',
-            'roles': '${(roles)!"No Roles"}',
-            'liaisonInstitutions': '${(liasons)!"No Liaisons Institutions"}'
+            'userTags': '[${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]'
             
         }, function(error) {
-          console.log("Error:"+ error);
+           
         });
         Tawk_API.addTags(['MARLO', '${config.production?string('Production','Development')}', '${(crpSession)!}'], function(error){});
       };

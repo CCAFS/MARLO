@@ -42,7 +42,7 @@
         <p class="userId" style="display:none">${(currentUser.id)!}</p> 
         <p class="name">${(currentUser.firstName)!} ${(currentUser.lastName)!}</p>  
         <p class="institution">${(currentUser.email)!}</p>
-        <p class="roles"> [${(roles)!}${(roles?has_content)?string(',','')}${(liasons)!}]</p>
+        <p class="roles"> [${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]</p>
       </div>
   	[/#if]
   </div>
