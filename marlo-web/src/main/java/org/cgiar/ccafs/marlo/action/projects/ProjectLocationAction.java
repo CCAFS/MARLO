@@ -382,14 +382,17 @@ public class ProjectLocationAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setProjectLocations(projectDb.getProjectLocations());
-
-        for (CountryLocationLevel level : project.getLocationsData()) {
-          LocElementType elementType = locElementTypeManager.getLocElementTypeById(level.getId());
-          if (elementType.getId() == 2 || elementType.getCrp() != null) {
-            level.setAllElements(
-              elementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()));
+        if (project.getLocationsData() != null) {
+          for (CountryLocationLevel level : project.getLocationsData()) {
+            LocElementType elementType = locElementTypeManager.getLocElementTypeById(level.getId());
+            if (elementType.getId() == 2 || elementType.getCrp() != null) {
+              level.setAllElements(
+                elementType.getLocElements().stream().filter(le -> le.isActive()).collect(Collectors.toList()));
+            }
           }
+
         }
+
 
         reader.close();
         this.setDraft(true);
