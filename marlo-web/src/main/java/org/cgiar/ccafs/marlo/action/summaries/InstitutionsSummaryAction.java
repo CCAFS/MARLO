@@ -53,8 +53,8 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
 
   private CrpManager crpManager;
-  // XLS bytes
-  private byte[] bytesXLS;
+  // XLSX bytes
+  private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
@@ -89,7 +89,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
 
     ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLS = os.toByteArray();
+    bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -97,7 +97,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public int getContentLength() {
-    return bytesXLS.length;
+    return bytesXLSX.length;
   }
 
   @Override
@@ -129,7 +129,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLS);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }

@@ -54,7 +54,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   private CrpManager crpManager;
   // XLS bytes
-  private byte[] bytesXLS;
+  private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
@@ -93,7 +93,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
 
     ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLS = os.toByteArray();
+    bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -101,7 +101,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   @Override
   public int getContentLength() {
-    return bytesXLS.length;
+    return bytesXLSX.length;
   }
 
   @Override
@@ -135,7 +135,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLS);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }
