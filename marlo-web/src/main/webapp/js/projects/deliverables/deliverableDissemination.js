@@ -5,7 +5,9 @@ function init() {
   $('form select').select2({
     width: '100%'
   });
-
+  $(".accessible .no-button-label").addClass("radio-checked");
+  $(".findable .yes-button-label").addClass("radio-checked");
+  $(".license .yes-button-label").addClass("radio-checked");
   // Validations
 
   // accessible
