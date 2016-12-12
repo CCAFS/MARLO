@@ -111,7 +111,8 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
 
     List<FundingSource> fundingSources = dao.findAll(q.toString());
     SimpleDateFormat df = new SimpleDateFormat("yyyy");
-    return fundingSources.stream().filter(c -> year <= Integer.parseInt(df.format(c.getEndDate())))
+    return fundingSources.stream()
+      .filter(c -> c.getEndDate() != null && year <= Integer.parseInt(df.format(c.getEndDate())))
       .collect(Collectors.toList());
   }
 

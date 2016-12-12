@@ -438,8 +438,12 @@ public class ProjectDescriptionAction extends BaseAction {
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
-            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-            programs.add(program);
+            try {
+              CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+              programs.add(program);
+            } catch (Exception e) {
+
+            }
           }
         }
 
@@ -447,8 +451,12 @@ public class ProjectDescriptionAction extends BaseAction {
         List<CrpProgram> regions = new ArrayList<>();
         if (project.getRegionsValue() != null) {
           for (String programID : project.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
-            CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
-            regions.add(program);
+            try {
+              CrpProgram program = programManager.getCrpProgramById(Long.parseLong(programID.trim()));
+              regions.add(program);
+            } catch (Exception e) {
+
+            }
           }
         }
         project.setFlagships(programs);

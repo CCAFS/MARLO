@@ -53,8 +53,8 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
 
 
   private CrpManager crpManager;
-  // XLS bytes
-  private byte[] bytesXLS;
+  // XLSX bytes
+  private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
@@ -88,8 +88,8 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     masterReport.getParameterValues().put("date", current_date);
 
 
-    ExcelReportUtil.createXLS(masterReport, os);
-    bytesXLS = os.toByteArray();
+    ExcelReportUtil.createXLSX(masterReport, os);
+    bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -97,12 +97,12 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
 
   @Override
   public int getContentLength() {
-    return bytesXLS.length;
+    return bytesXLSX.length;
   }
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -122,7 +122,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectLeadingInstitutions-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 
@@ -131,7 +131,7 @@ public class InstitutionsLeadersSummaryAction extends BaseAction implements Summ
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLS);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }

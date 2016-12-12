@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
@@ -158,6 +159,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private DeliverableManager deliverableManager;
   private boolean draft;
 
+  @Inject
+  private UserManager userManager;
 
   @Inject
   private FileDBManager fileDBManager;
@@ -180,23 +183,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean planningActive;
   private int planningYear;
 
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
+
   private boolean reportingActive;
-
   private int reportingYear;
-  private HttpServletRequest request;
 
+  private HttpServletRequest request;
   // button actions
   protected boolean save;
 
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
 
   @Inject
   private SectionStatusManager sectionStatusManager;
@@ -204,14 +208,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
+
   private Map<String, Object> session;
   private Submission submission;
-
   protected boolean submit;
+
   private String url;
   @Inject
   private UserRoleManager userRoleManager;
-
 
   @Inject
   public BaseAction(APConfig config) {
@@ -242,6 +246,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
+
 
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -450,7 +455,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -464,6 +468,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   public APConfig getConfig() {
     return config;
@@ -496,7 +501,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpID;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -505,6 +509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -608,7 +613,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -651,6 +655,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -665,9 +670,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return invalidFields;
   }
 
-
   public String getJustification() {
     return justification;
+  }
+
+
+  public String getLiasons() {
+    String liasonsUsers = "";
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (LiaisonUser liaisonUser : u.getLiasonsUsers().stream()
+      .filter(c -> c.isActive() && c.getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
+      if (liasonsUsers.isEmpty()) {
+        liasonsUsers = liaisonUser.getLiaisonInstitution().getAcronym();
+      } else {
+        liasonsUsers = liasonsUsers + "," + liaisonUser.getLiaisonInstitution().getAcronym();
+      }
+    }
+    return liasonsUsers;
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
@@ -751,9 +771,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         project.setOutcomes(projectOutcomes);
-        if (project.getOutcomes().isEmpty()) {
-          return false;
+
+        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          if (project.getOutcomes().isEmpty()) {
+            return false;
+          }
+        } else {
+          return true;
         }
+
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           sectionStatus = sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
             this.getCurrentCycle(), this.getCurrentCycleYear(), section);
@@ -863,10 +889,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
+  public String getRoles() {
+    String roles = "";
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (UserRole userRole : u.getUserRoles().stream()
+      .filter(c -> c.getRole().getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
+      if (roles.isEmpty()) {
+        roles = userRole.getRole().getAcronym();
+      } else {
+        roles = roles + "," + userRole.getRole().getAcronym();
+      }
+    }
+    return roles;
+  }
+
+
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
@@ -876,17 +917,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
+
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
   }
 
-
   public String getUrl() {
     return url;
   }
-
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
@@ -1032,19 +1072,74 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     Project project = projectManager.getProjectById(projectID);
     List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+    int totalSections = 0;
+    int deliverableSection = 0;
+    int budgetCoASection = 0;
+    int outcomeSection = 0;
 
     for (SectionStatus sectionStatus : sections) {
-      if (sectionStatus.getMissingFields().length() > 0) {
-        return false;
+      if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+        && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+        if (sectionStatus.getMissingFields().length() > 0) {
+          return false;
+        }
       }
+
     }
     if (sections.size() == 0) {
       return false;
     }
-    if (sections.size() < 8) {
-      return false;
+    if (this.isPlanningActive()) {
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+
+            case DESCRIPTION:
+            case PARTNERS:
+            case LOCATIONS:
+            case BUDGET:
+            case ACTIVITIES:
+              totalSections++;
+              break;
+            case DELIVERABLES:
+              if (deliverableSection == 0) {
+                deliverableSection = 1;
+                totalSections++;
+              }
+              break;
+
+            case OUTCOMES:
+              if (outcomeSection == 0) {
+                outcomeSection = 1;
+                totalSections++;
+              }
+
+            case BUDGETBYCOA:
+              if (budgetCoASection == 0) {
+                budgetCoASection = 1;
+                totalSections++;
+              }
+              break;
+          }
+
+        }
+      }
+      if (budgetCoASection == 1) {
+        return totalSections == 8;
+      } else {
+
+        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          return totalSections == 7;
+        } else {
+          return totalSections == 6;
+        }
+
+      }
     }
     return true;
+
+
   }
 
 

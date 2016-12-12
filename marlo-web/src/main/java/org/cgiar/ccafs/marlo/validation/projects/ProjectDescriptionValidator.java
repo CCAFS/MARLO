@@ -156,16 +156,18 @@ public class ProjectDescriptionValidator extends BaseValidator
     }
 
 
-    if (project.getClusterActivities() != null) {
-      if (project.getClusterActivities().size() == 0) {
+    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+      if (project.getClusterActivities() != null) {
+        if (project.getClusterActivities().size() == 0) {
+          this.addMessage(action.getText("projectDescription.clusterActivities"));
+          action.getInvalidFields().put("list-project.clusterActivities",
+            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
+        }
+      } else {
         this.addMessage(action.getText("projectDescription.clusterActivities"));
         action.getInvalidFields().put("list-project.clusterActivities",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
       }
-    } else {
-      this.addMessage(action.getText("projectDescription.clusterActivities"));
-      action.getInvalidFields().put("list-project.clusterActivities",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
     }
 
 

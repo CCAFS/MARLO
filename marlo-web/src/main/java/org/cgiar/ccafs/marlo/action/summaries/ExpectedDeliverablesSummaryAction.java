@@ -54,7 +54,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   private CrpManager crpManager;
   // XLS bytes
-  private byte[] bytesXLS;
+  private byte[] bytesXLSX;
   // Streams
   InputStream inputStream;
 
@@ -92,8 +92,8 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     masterReport.getParameterValues().put("date", current_date);
 
 
-    ExcelReportUtil.createXLS(masterReport, os);
-    bytesXLS = os.toByteArray();
+    ExcelReportUtil.createXLSX(masterReport, os);
+    bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -101,12 +101,12 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   @Override
   public int getContentLength() {
-    return bytesXLS.length;
+    return bytesXLSX.length;
   }
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -126,7 +126,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     StringBuffer fileName = new StringBuffer();
     fileName.append("Expected-deliverables-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 
@@ -135,7 +135,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLS);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }

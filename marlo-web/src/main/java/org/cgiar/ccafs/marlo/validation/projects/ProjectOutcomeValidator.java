@@ -85,21 +85,35 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
     }
 
-    this.validateProjectOutcome(action, projectOutcome);
-    if (!action.getFieldErrors().isEmpty()) {
-      action.addActionError(action.getText("saving.fields.required"));
-    } else if (validationMessage.length() > 0) {
-      action
-        .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+    Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
+    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+      this.validateProjectOutcome(action, projectOutcome);
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (validationMessage.length() > 0) {
+        action
+          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      }
+
+      if (action.isReportingActive()) {
+        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
+          ProjectSectionStatusEnum.OUTCOMES.getStatus());
+      } else {
+        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
+          ProjectSectionStatusEnum.OUTCOMES.getStatus());
+      }
+    } else {
+      this.addMissingField("");
+      if (action.isReportingActive()) {
+        this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
+          ProjectSectionStatusEnum.OUTCOMES.getStatus());
+      } else {
+        this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
+          ProjectSectionStatusEnum.OUTCOMES.getStatus());
+      }
     }
 
-    if (action.isReportingActive()) {
-      this.saveMissingFields(projectOutcome, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.OUTCOMES.getStatus());
-    } else {
-      this.saveMissingFields(projectOutcome, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.OUTCOMES.getStatus());
-    }
+
   }
 
 

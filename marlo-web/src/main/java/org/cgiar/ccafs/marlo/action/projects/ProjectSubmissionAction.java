@@ -28,9 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
-import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
-import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -39,7 +37,6 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -155,38 +152,6 @@ public class ProjectSubmissionAction extends BaseAction {
 
 
   @Override
-  public boolean isCompleteProject(long projectID) {
-
-    Project project = projectManager.getProjectById(projectID);
-    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
-
-    for (SectionStatus sectionStatus : sections) {
-      if (sectionStatus.getMissingFields().length() > 0) {
-        return false;
-      }
-    }
-    if (sections.size() == 0) {
-      return false;
-    }
-
-    HashSet<String> sectionsString = new HashSet<>();
-    for (SectionStatus sectionStatus : sections) {
-      sectionsString.add(sectionStatus.getSectionName());
-    }
-    if (!sectionsString.contains(ProjectSectionStatusEnum.BUDGETBYCOA)) {
-      if (sectionsString.size() < 7) {
-        return false;
-      }
-    } else {
-      if (sectionsString.size() < 8) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  @Override
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -247,7 +212,8 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+    } else if (project.getLiaisonInstitution().getCrpProgram() != null
+      && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
