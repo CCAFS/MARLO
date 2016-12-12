@@ -280,6 +280,11 @@ textarea.fieldError, input.fieldError,textarea.fieldError:focus, input.fieldErro
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
 }
 
+div.fieldFocus{
+  padding:10px 15px !important;
+  margin:20px 0 !important;
+}
+
 /* Table default style*/
 table.default {
     margin: 0px 0 !important;

@@ -101,7 +101,7 @@
               [/#list]
             </ul> 
             [#-- Tabs Content --]
-            <div class="tab-content projectOutcomeYear-content ${reportingActive?string('fieldFocus','')}">
+            <div class="tab-content projectOutcomeYear-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                   [#-- Contribution(s) to other flagships outcomes --]
@@ -185,7 +185,7 @@
     [#-- Other Contribution ID --]
     <input type="hidden" name="${customName}.id" class="otherContributionId" value="${(contribution.id)!-1}"/>
     [#-- Indicator --]
-    <div class="form-group">
+    <div class="form-group ${reportingActive?string('fieldFocus','')}">
       <div class="row">
         <div class="col-md-12">
           [@customForm.select name="${customName}.outcome" className="otherContributionIndicator" label="" i18nkey="projectOtherContribution.outcome" listName="otherOutcomes" required=true editable=editable /]
@@ -197,7 +197,7 @@
       <div class="row">
         <div class="col-md-12">
         <label>[@customForm.text name="projectOtherContribution.description" param="${currentCycleYear}" readText=!editable /]:[@customForm.req required=editable /]</label>
-        [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100"  i18nkey="" showTitle=false required=true editable=editable  /]
+        [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100 ${reportingActive?string('fieldFocus','')}"  i18nkey="" showTitle=false required=true editable=editable  /]
         </div>
       </div>
     </div>
@@ -206,7 +206,7 @@
       <div class="row">
         <div class="col-md-5">
           <label>[@customForm.text name="projectOtherContribution.target" readText=!editable /]:</label>
-          [@customForm.input name="${customName}.target" className="otherContributionTarget" i18nkey="" showTitle=false editable=editable  /]
+          [@customForm.input name="${customName}.target" className="otherContributionTarget ${reportingActive?string('fieldFocus','')}" i18nkey="" showTitle=false editable=editable  /]
         </div>
       </div>
     </div>

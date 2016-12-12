@@ -185,11 +185,14 @@
                       </div>
                     </div>
                     <br />
-                    <div class="fileUpload ${reportingActive?string('fieldFocus','')}">
-                      <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
-                      <div class="uploadContainer">
-                        [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
-                      </div>  
+                    <div class="form-group">
+                      <div class="fileUpload col-md-6 ${reportingActive?string('fieldFocus','')}">
+                        <label>[@customForm.text name="projectOutcome.uploadSummary" readText=!editable /]:</label>
+                        <div class="uploadContainer">
+                          [@customForm.inputFile name="projectOutcome.communications[${comunicationIndex}].file" fileUrl="${(summaryURL)!}" fileName="projectOutcome.communications[${comunicationIndex}].summary.fileName" editable=editable /]
+                        </div>  
+                      </div>
+                      <div class="clearfix"></div>
                     </div>
                 </div>
               [/#list]
@@ -216,12 +219,12 @@
           
           [#-- Lessons and progress --]
           [#if !action.isProjectNew(project.id)]
-          <div id="lessons" class="borderBox ${reportingActive?string('fieldFocus','')}">
+          <div id="lessons" class="borderBox">
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
-              <h6>[@customForm.text name="projectOutcome.projectComponentLessonPreview" i18nkey="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</h6>
-              <div class="textArea "><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
+              <label>[@customForm.text name="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
+              <div class="textArea"><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
             [#-- Planning/Reporting lessons --]
@@ -229,7 +232,7 @@
               <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
               <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" required=true editable=editable /]
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
             </div>
           </div>
           [/#if]
@@ -361,11 +364,15 @@
       </div>
       [#-- Status (Active, Inactive) --]
       <div class="form-group">
-        <label for="${customName}.status">Status:</label>
-        <select name="${customName}.status" id="${customName}.status">
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
-        </select>
+        <div class="row">
+          <div class="col-md-6">
+            <label for="${customName}.status">Status:</label>
+            <select name="${customName}.status" id="${customName}.status">
+              <option value="1">Active</option>
+              <option value="0">Inactive</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -379,14 +386,14 @@
         [/#list]
       </ul> 
       [#-- Tabs Content --]
-      <div class="tab-content projectOutcomeYear-content ${reportingActive?string('fieldFocus','')}">
+      <div class="tab-content projectOutcomeYear-content">
         [#list startYear .. endYear as year]
           <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
             <div class="form-group">
-              [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200" editable=editable /]
+              [@customForm.textArea name="${customName}.reportOnProgress" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
             </div>
             <div class="form-group">
-              [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100" editable=editable /]
+              [@customForm.textArea name="${customName}.strategiesEncourage" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
             </div> 
             <div class="clearfix"></div>
           </div>

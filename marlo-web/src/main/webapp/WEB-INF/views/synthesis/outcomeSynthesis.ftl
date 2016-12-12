@@ -51,7 +51,7 @@
 <section class="container">
   <div class="row"> 
     <div class="col-md-12">
-      [@s.form action="outcomeSynthesis" method="POST" enctype="multipart/form-data" cssClass="pure-form"]
+      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
       
       [#-- Title --]
       <h3 class="headTitle text-center">[@s.text name="synthesis.outcomeSynthesis.title" ][@s.param]${(currentLiaisonInstitution.name)!}[/@s.param][/@s.text]</h3>
