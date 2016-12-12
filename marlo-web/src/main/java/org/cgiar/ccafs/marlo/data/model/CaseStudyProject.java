@@ -28,6 +28,7 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
     this.project = project;
   }
 
+
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
@@ -76,9 +77,11 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
+
 
   public void setId(Long id) {
     this.id = id;

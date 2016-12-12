@@ -256,11 +256,10 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
         </set>
-         <set name="caseStudyProjects" table="case_study_projects" order-by="id" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="project_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CaseStudyProject" />
-        </set>
+        
+        
+        
+        
+        
 	</class>
 </hibernate-mapping>
