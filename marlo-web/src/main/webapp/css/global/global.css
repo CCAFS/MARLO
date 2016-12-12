@@ -1471,6 +1471,7 @@ a#userLogOut {
   color: #FFFFFF;
   position: relative;
   display: inline-block;
+  font-size: 0.95em;
 }
 
 #mainMenu .menuContent ul li:hover {

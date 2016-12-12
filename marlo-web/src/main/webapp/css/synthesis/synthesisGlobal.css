@@ -185,3 +185,63 @@ table.dataTable a {
   color:#999;
   text-decoration:underline;
 }
+
+td.col-title {
+    width: 16%;
+}
+
+
+
+/* FAIR  */
+
+.fair span {
+    background: #999;
+    border-radius: 3px;
+    padding: 0px 1px;
+    margin-right: 0px;
+    margin-bottom: 2px;
+    font-size: 0.85em;
+    cursor: pointer;
+    opacity: 0.9;
+    color: white;
+    margin-left: 0px;
+    width: 12px;
+    display: inline-block;
+    text-align: center;
+}
+
+#deliverable-partnership {
+    margin-top: 20px;
+}
+
+.addDeliverable a {
+    text-decoration: initial;
+}
+
+span#achieved {
+    background-color: green;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+    display: inline;
+}
+
+span#notAchieved {
+    background-color: #ca1010;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+    display: inline;
+}
+
+span#notDefined {
+    background-color: #a3a3a3;
+    padding: 0px 8px;
+    border-radius: 20px;
+    margin-right: 5px;
+    display: inline;
+}
+
+td.fair {
+    width: 60px;
+}

@@ -33,7 +33,11 @@
  ] /]
 
 [#assign activities = [
-   { 'id': 1, 'projectId': '56', 'title': '  ' }
+   { 'id': 29, 'projectId': '2', 'title': 'Influencing gender-inclusive climate change policies for Latin American countries.' },
+   { 'id': 30, 'projectId': '2', 'title': 'Promoting the development of a High Andes-oriented agricultural NAMA in Peru' },
+   { 'id': 403, 'projectId': '2', 'title': '(BILATERAL): Sustainable development and land use-based alternatives to enhance mitigation and adaptation capacities in Amazon.' },
+   { 'id': 6, 'projectId': '2', 'title': 'Support development and implementation of the coffee and livestock  NAMA in Costa Rica' },
+   { 'id': 25, 'projectId': '2', 'title': 'Preparation training of Latin American agricultural COP delegates' }
 ] /]
 
 
@@ -127,11 +131,11 @@
                   <table class="projectContributions greenTableHead">
                     <thead>
                       <tr class="header">
-                        <th class="col-projectId">Project ID</th>
-                        <th class="col-expected">Deliverable ID</th>
-                        <th class="col-achieved">Sub Type</th>
-                        <th class="col-achieved">Title</th>
-                        <th class="col-achieved">FAIR</th>
+                        <th class="">Project ID</th>
+                        <th class="">Deliverable ID</th>
+                        <th class="">Sub Type</th>
+                        <th class="">Title</th>
+                        <th class="">FAIR</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -140,8 +144,13 @@
                         <td class="center"><a href="[@s.url action="${crpSession}/description" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(deliverable.projectId)!}</a></td>
                         <td class="center"><a href="[@s.url action="${crpSession}/deliverable" namespace="/projects"][@s.param name='projectID']${(deliverable.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][@s.param name='deliverableID']${(deliverable.id)!}[/@s.param][/@s.url]">D${(deliverable.id)!}</a></td>
                         <td class="center">${deliverable.subType}</td>
-                        <td class="center">${deliverable.title}</td>
-                        <td class=""> F A I R </td> 
+                        <td class="">${deliverable.title}</td>
+                        <td class="fair">
+                        <span class=" ">F</span>
+                        <span class=" ">A</span>
+                        <span class=" ">I</span>
+                        <span class=" ">R</span>
+                      </td>
                       </tr>
                     [/#list]
                     </tbody>
@@ -160,9 +169,9 @@
                   <table class="projectContributions">
                     <thead>
                       <tr class="header">
-                        <th class="col-projectId">Project ID</th>
-                        <th class="col-expected">Activity ID</th>
-                        <th class="col-achieved">Title</th>
+                        <th class="">Project ID</th>
+                        <th class="">Activity ID</th>
+                        <th class="">Title</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -170,7 +179,7 @@
                       <tr>
                         <td class="center"><a href="[@s.url action="${crpSession}/activities" namespace="/projects"][@s.param name='projectID']${(activity.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(activity.projectId)!}</a></td>
                         <td class="center">A${(activity.id)!}</td>
-                        <td class="center">[@utilities.wordCutter string=(activity.title)!'Prefilled when available' maxPos=25 /]</td>
+                        <td class="">${(activity.title)!}</td>
                       </tr>
                     [/#list]
                     </tbody>
