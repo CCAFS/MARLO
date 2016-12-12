@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
@@ -158,6 +159,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private DeliverableManager deliverableManager;
   private boolean draft;
 
+  @Inject
+  private UserManager userManager;
 
   @Inject
   private FileDBManager fileDBManager;
@@ -180,23 +183,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean planningActive;
   private int planningYear;
 
+
   @Inject
   private ProjectComponentLessonManager projectComponentLessonManager;
+
   @Inject
   private ProjectManager projectManager;
-
   @Inject
   private ProjectOutcomeManager projectOutcomeManager;
+
   private boolean reportingActive;
-
   private int reportingYear;
-  private HttpServletRequest request;
 
+  private HttpServletRequest request;
   // button actions
   protected boolean save;
 
-
   private boolean saveable; // If user is able to see the save, cancel, delete buttons
+
 
   @Inject
   private SectionStatusManager sectionStatusManager;
@@ -204,14 +208,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
+
   private Map<String, Object> session;
   private Submission submission;
-
   protected boolean submit;
+
   private String url;
   @Inject
   private UserRoleManager userRoleManager;
-
 
   @Inject
   public BaseAction(APConfig config) {
@@ -242,6 +246,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
+
 
   public boolean canAcessCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -450,7 +455,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public String getActionName() {
     return ServletActionContext.getActionMapping().getName();
   }
@@ -464,6 +468,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getBaseUrl() {
     return config.getBaseUrl();
   }
+
 
   public APConfig getConfig() {
     return config;
@@ -496,7 +501,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.crpID;
   }
 
-
   /**
    * Get the Crp List
    * 
@@ -505,6 +509,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public List<Crp> getCrpList() {
     return crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList());
   }
+
 
   /**
    * Get the crp that is currently save in the session, if the user access to the platform whit a diferent url, get the
@@ -608,7 +613,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return null;
   }
 
-
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -651,6 +655,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -665,9 +670,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return invalidFields;
   }
 
-
   public String getJustification() {
     return justification;
+  }
+
+
+  public String getLiasons() {
+    String liasonsUsers = "";
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (LiaisonUser liaisonUser : u.getLiasonsUsers()) {
+      if (liasonsUsers.isEmpty()) {
+        liasonsUsers = liaisonUser.getLiaisonInstitution().getAcronym();
+      } else {
+        liasonsUsers = liasonsUsers + "," + liaisonUser.getLiaisonInstitution().getAcronym();
+      }
+    }
+    return liasonsUsers;
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
@@ -893,6 +911,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return url;
   }
 
+  public String getUserRoles() {
+    String roles = "";
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (UserRole userRole : u.getUserRoles()) {
+      if (roles.isEmpty()) {
+        roles = userRole.getRole().getAcronym();
+      } else {
+        roles = roles + "," + userRole.getRole().getAcronym();
+      }
+    }
+    return roles;
+  }
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
