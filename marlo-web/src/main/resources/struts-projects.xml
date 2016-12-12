@@ -500,9 +500,25 @@
 		</action>
 		
 		<action name="{crp}/leverages"
-      class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectLeveragesAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectLeverages.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/leverages</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/leverages</param>
+        <param name="edit">true</param>
+        <param name="cancel">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
       </result>
     </action>
 

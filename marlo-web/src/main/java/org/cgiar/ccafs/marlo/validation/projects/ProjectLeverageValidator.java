@@ -20,11 +20,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
-import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
-import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,25 +35,22 @@ import com.google.inject.Inject;
  * @author Christian David Garcia Oviedo. - CIAT/CCAFS
  */
 
-public class ProjectHighLightValidator extends BaseValidator {
-
-  private ProjectValidator projectValidator;
-  private boolean fields = false;
+public class ProjectLeverageValidator extends BaseValidator {
 
 
   @Inject
   private CrpManager crpManager;
 
   @Inject
-  public ProjectHighLightValidator(ProjectValidator projectValidator) {
+  public ProjectLeverageValidator() {
     super();
-    this.projectValidator = projectValidator;
+
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
-    String actionFile = ProjectSectionStatusEnum.DESCRIPTION.getStatus().replace("/", "_");
+    String actionFile = ProjectSectionStatusEnum.LEVERAGES.getStatus().replace("/", "_");
     String autoSaveFile =
       project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
@@ -63,7 +58,7 @@ public class ProjectHighLightValidator extends BaseValidator {
   }
 
 
-  public void validate(BaseAction action, Project project, ProjectHighlight highLigths, boolean saving) {
+  public void validate(BaseAction action, Project project, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
     if (!saving) {
@@ -73,18 +68,23 @@ public class ProjectHighLightValidator extends BaseValidator {
         this.addMissingField("draft");
       }
     }
+    if (project != null) {
+      // Does the project have any nextUser?
+      if (project.getLeverages() != null && !project.getLeverages().isEmpty()) {
 
 
-    // If project is CORE or CO-FUNDED
+        for (int c = 0; c < project.getLeverages().size(); c++) {
 
-    // this.validateProjectJustification(action, project);
-    // this.validateLessonsLearn(action, project, "highlights");
-    this.ValidateHightLigth(action, highLigths);
-    this.ValidateHightAuthor(action, highLigths);
-    this.ValidateHightTitle(action, highLigths);
-    this.ValidateYear(action, highLigths);
+          this.validateTitleLeverage(action, project.getLeverages().get(c).getTitle(), c);
+          this.validatePartner(action, project.getLeverages().get(c).getInstitution().getId(), c);
+          this.validateFlagship(action, project.getLeverages().get(c).getCrpProgram().getId(), c);
+          this.validateBudget(action, project.getLeverages().get(c).getBudget(), c);
 
 
+        }
+      }
+
+    }
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
@@ -94,51 +94,50 @@ public class ProjectHighLightValidator extends BaseValidator {
 
     if (action.isReportingActive()) {
       this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
+        ProjectSectionStatusEnum.LEVERAGES.getStatus());
     } else {
       this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
-    }
-
-  }
-
-  private void ValidateHightAuthor(BaseAction action, ProjectHighlight higligth) {
-
-    if (!this.isValidString(higligth.getAuthor())) {
-      this.addMessage("Author");
-      this.addMissingField("reporting.projectHighligth.author");
-      action.getInvalidFields().put("input-highlight.author", InvalidFieldsMessages.EMPTYFIELD);
-    }
-  }
-
-  private void ValidateHightLigth(BaseAction action, ProjectHighlight higligth) {
-
-    if (higligth.getTypesids().size() == 0) {
-      this.addMessage(action.getText("reporting.projectHighligth.types").toLowerCase());
-      this.addMissingField("reporting.projectHighligth.types");
-      action.getInvalidFields().put("input-highlight.typesids", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
-  }
-
-  private void ValidateHightTitle(BaseAction action, ProjectHighlight higligth) {
-
-    if (!this.isValidString(higligth.getTitle())) {
-      this.addMessage(action.getText("Title"));
-      this.addMissingField("reporting.projectHighligth.title");
-      action.getInvalidFields().put("input-highlight.title", InvalidFieldsMessages.EMPTYFIELD);
+        ProjectSectionStatusEnum.LEVERAGES.getStatus());
     }
   }
 
 
-  private void ValidateYear(BaseAction action, ProjectHighlight higligth) {
-
-    if (!(higligth.getYear() > 0)) {
-      this.addMessage("Year");
-      this.addMissingField("reporting.projectHighligth.year");
-      action.getInvalidFields().put("input-highlight.year", InvalidFieldsMessages.EMPTYFIELD);
-
+  public void validateBudget(BaseAction action, Double budget, int c) {
+    if (budget == null || budget < 0) {
+      this.addMessage("Leverage #" + (c + 1) + ": Budget");
+      this.addMissingField("project.leverages[" + c + ".budget");
+      action.getInvalidFields().put("input-project.leverages[" + c + "].budget", InvalidFieldsMessages.EMPTYFIELD);
     }
   }
+
+
+  public void validateFlagship(BaseAction action, Long flagship, int c) {
+    if (flagship.longValue() == -1 || flagship == null) {
+      this.addMessage("Leverage #" + (c + 1) + ": FlagShip");
+      this.addMissingField("project.leverages[" + c + ".flagship");
+      action.getInvalidFields().put("input-project.leverages[" + c + "].crpProgram.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+
+  public void validatePartner(BaseAction action, Long partner, int c) {
+    if (partner.intValue() == -1 || partner == null) {
+      this.addMessage("Leverage #" + (c + 1) + ": Partner");
+      this.addMissingField("project.leverages[" + c + "].Partner");
+      action.getInvalidFields().put("input-project.leverages[" + c + "].institution.id",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+
+  public void validateTitleLeverage(BaseAction action, String title, int c) {
+    if (!(this.isValidString(title) && this.wordCount(title) <= 15)) {
+      this.addMessage("Leverage #" + (c + 1) + ": Title");
+      this.addMissingField("project.leverages[" + c + "].Title");
+      action.getInvalidFields().put("input-project.leverages[" + c + "].title", InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+
 }

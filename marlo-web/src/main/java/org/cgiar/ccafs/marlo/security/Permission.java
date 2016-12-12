@@ -55,6 +55,8 @@ public class Permission {
   public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =
     "crp:{0}:project:{1}:deliverableList:removeOldDeliverables";
   public static final String PROJECT_DELIVERABLE_BASE_PERMISSION = "crp:{0}:project:{1}:deliverable";
+
+  public static final String PROJECT_LEVERAGES_BASE_PERMISSION = "crp:{0}:project:{1}:leverages";
   public static final String PROJECT_HIGHLIGHT_BASE_PERMISSION = "crp:{0}:project:{1}:highlights";
   public static final String PROJECT_DELIVERABLE_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";
   public static final String PROJECT_HIGH_LIGHTS_EDIT_PERMISSION = "crp:{0}:project:{1}:highlights:canEdit";

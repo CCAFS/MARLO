@@ -328,6 +328,8 @@ public class ProjectHighlightAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         highlight = (ProjectHighlight) autoSaveReader.readFromJson(jReader);
+        reader.close();
+
         if (highlight.getCountries() != null) {
           for (ProjectHighlightCountry projectHighlightCountry : highlight.getCountries()) {
             projectHighlightCountry
@@ -433,7 +435,7 @@ public class ProjectHighlightAction extends BaseAction {
       .collect(Collectors.toList());
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_HIGHLIGHT_BASE_PERMISSION, params));
 
 
     if (this.isHttpPost()) {

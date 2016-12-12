@@ -12,10 +12,7 @@
   {"label":"leverage", "nameSpace":"/projects", "action":""}
 ] /]
 
-[#assign leverages = [
-  {"title":"Promoting climate resilient agriculture in Nepal", "budget":"1500000"},
-  {"title":"Crop germplasm collection and application of climate analogue in South Asia", "budget":"1500000"}
-] /]
+
 
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -46,12 +43,12 @@
           <h3 class="headTitle">[@s.text name="Leverage" /]</h3>
           
           <div class="leverage-list simpleBox" listname="project.openProjectActivities">
-          [#if leverages?has_content]
-            [#list leverages as leverage]
-              [@leverageMacro leverage=leverage name="project.projectLeverages"  index=leverage_index  /]
+          [#if project.leverages?has_content]
+            [#list project.leverages as leverage]
+              [@leverageMacro leverage=leverage name="project.leverages"  index=leverage_index  /]
             [/#list]
           [#else]
-            [@leverageMacro leverage={} name="project.projectLeverages"  index=0  /]
+            [@leverageMacro leverage={} name="project.leverages"  index=0  /]
           [/#if]
           </div>
           
@@ -68,7 +65,7 @@
 </section>
 
 [#-- Activity Template --]
-[@leverageMacro leverage={} name="project.projectLeverages"  index=-1 template=true/]
+[@leverageMacro leverage={} name="project.leverages"  index=-1 template=true/]
 
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -93,17 +90,17 @@
   
   [#-- Partner name --]
   <div class="col-md-12">
-  [@customForm.select name="${leverageCustomName}.partner.name" label=""  i18nkey="Partner name" listName="" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="partnerSelect form-control input-sm " editable=editable/]
+  [@customForm.select name="${leverageCustomName}.institution.id" label=""  i18nkey="Partner name" listName="allInstitutions"  multiple=false required=true  className="partnerSelect form-control input-sm " editable=editable/]
   </div>  
   
   [#-- Type select --]
   <div class="col-md-6">
-  [@customForm.select name="${leverageCustomName}.nextuserType.nextuserType.id" label=""  i18nkey="Flagship" listName="" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className="flagshipSelect form-control input-sm " editable=editable/]
+  [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=editable/]
   </div>   
 
   [#-- SubType select --]
   <div class="col-md-6">
-  [@customForm.input name="${leverageCustomName}.nextuserType.id" value="${(leverage.budget)!}"  i18nkey="Budget"  required=true  className="buudgetInput form-control input-sm " editable=editable/]
+  [@customForm.input name="${leverageCustomName}.budget" value="${(leverage.budget)!}"  i18nkey="Budget"  required=true  className="buudgetInput form-control input-sm " editable=editable/]
   </div>
   
   <div class="clearfix"></div>

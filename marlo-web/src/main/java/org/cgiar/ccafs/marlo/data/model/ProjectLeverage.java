@@ -18,16 +18,20 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -484039148686829274L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private CrpProgram crpProgram;
   @Expose
   private Institution institution;
-
   private Project project;
   @Expose
   private User createdBy;
+
   @Expose
   private User modifiedBy;
   @Expose
@@ -46,7 +50,6 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   public ProjectLeverage() {
   }
 
-
   public ProjectLeverage(CrpProgram crpProgram, Institution institution, Project project, User usersByCreatedBy,
     User usersByModifiedBy, String title, Integer year, Double budget, boolean isActive, Date activeSince,
     String modificationJustification) {
@@ -63,7 +66,6 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
     this.modificationJustification = modificationJustification;
   }
 
-
   public ProjectLeverage(Project project, User usersByCreatedBy, User usersByModifiedBy, String title, boolean isActive,
     Date activeSince, String modificationJustification) {
     this.project = project;
@@ -73,6 +75,29 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    ProjectLeverage other = (ProjectLeverage) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -142,6 +167,15 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
   public Integer getYear() {
     return year;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

@@ -1175,7 +1175,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     Project project = projectManager.getProjectById(projectID);
     List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == this.getCurrentCycleYear())
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
@@ -1197,7 +1197,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Project project = projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
     List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == year)
+      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == year)
       .collect(Collectors.toList());
 
     if (submissions.isEmpty()) {

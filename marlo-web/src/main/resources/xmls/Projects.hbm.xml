@@ -240,13 +240,13 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
 		</set>
-		  <set name="projectHighligths" table="project_highligths" inverse="true" lazy="true" fetch="select">
+		  <set name="projectHighligths" order-by="id" table="project_highligths" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="project_id" not-null="true" />
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" />
         </set>
-         <set name="projectLeverages" table="project_leverage" inverse="true" lazy="true" fetch="select">
+         <set name="projectLeverages" table="project_leverage" order-by="id" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="project_id" not-null="true" />
             </key>
