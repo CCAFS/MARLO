@@ -9,7 +9,7 @@
   </div>
 <div class="clearfix"></div>
 
-  <div class="col-md-9 openAccessOptions" style="display: none;">
+  <div class="col-md-9 openAccessOptions" style="display: block;">
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
@@ -40,7 +40,7 @@
     </div>  
   </div>
   
-  <div class="findableOptions" style="display:none;">
+  <div class="findableOptions" style="display:block;">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     [@customForm.select name="" label=""  i18nkey="Select a dissemination channel:" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
@@ -123,7 +123,7 @@
   </div>
   
   [#-- Deliverable type computer software --]
-  <div class=" licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="MIT"/> MIT License
     </div>
@@ -134,7 +134,7 @@
   </div>
   
   [#-- Deliverable type data --]
-  <div class=" licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="No"/> CC licenses version 4.0
 
@@ -150,7 +150,7 @@
   </div>
   
   [#-- Deliverable type other research types --]
-  <div class=" licenseOptions" style="display:none;">
+  <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="No"/> CC-BY (allow modifications and commercial use)
     </div>
