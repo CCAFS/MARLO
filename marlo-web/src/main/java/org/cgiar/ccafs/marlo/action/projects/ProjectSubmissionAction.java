@@ -212,7 +212,8 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+    } else if (project.getLiaisonInstitution().getCrpProgram() != null
+      && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
