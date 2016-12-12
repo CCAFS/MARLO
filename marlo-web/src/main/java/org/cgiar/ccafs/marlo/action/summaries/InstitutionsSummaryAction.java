@@ -102,7 +102,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -122,7 +122,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectPartners-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
     return fileName.toString();
   }
 

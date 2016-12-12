@@ -106,7 +106,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -126,7 +126,7 @@ public class ExpectedDeliverablesSummaryAction extends BaseAction implements Sum
     StringBuffer fileName = new StringBuffer();
     fileName.append("Expected-deliverables-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 

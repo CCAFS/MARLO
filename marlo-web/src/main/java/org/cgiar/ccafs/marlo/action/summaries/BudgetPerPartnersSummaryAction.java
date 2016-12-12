@@ -108,7 +108,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -128,7 +128,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 
