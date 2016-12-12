@@ -56,8 +56,8 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   private CrpManager crpManager;
 
 
-  // XLS bytes
-  private byte[] bytesXLS;
+  // XLSX bytes
+  private byte[] bytesXLSX;
 
 
   // Streams
@@ -94,7 +94,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     masterReport.getParameterValues().put("date", current_date);
 
     ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLS = os.toByteArray();
+    bytesXLSX = os.toByteArray();
     os.close();
     return SUCCESS;
 
@@ -102,13 +102,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
 
   @Override
   public int getContentLength() {
-    return bytesXLS.length;
+    return bytesXLSX.length;
   }
 
 
   @Override
   public String getContentType() {
-    return "application/xls";
+    return "application/xlsx";
   }
 
   private File getFile(String fileName) {
@@ -128,7 +128,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     StringBuffer fileName = new StringBuffer();
     fileName.append("BudgetPerPartnersSummary-");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xls");
+    fileName.append(".xlsx");
 
     return fileName.toString();
 
@@ -137,7 +137,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLS);
+      inputStream = new ByteArrayInputStream(bytesXLSX);
     }
     return inputStream;
   }
