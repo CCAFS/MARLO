@@ -48,7 +48,7 @@
   ]/]
 [/#if]
 
-  
+
 [#attempt]
   [#assign submission = (action.isProjectSubmitted(projectID))! /]
   [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]

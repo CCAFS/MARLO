@@ -107,7 +107,7 @@
                   [#-- Contribution(s) to other flagships outcomes --]
                   [@customForm.text name="projectContributionsCrpList.projectContributedOtherFlagships" readText=!editable /]
                   [#-- Others impact pathways contributions --]
-                  <div id="otherContributionsBlock">
+                  <div class="otherContributionsBlock">
                     [#if project.otherContributions?has_content]
                       [#list project.otherContributions as element]
                         [@otherContributionMacro element=element name="" index=element_index /] 
@@ -139,7 +139,10 @@
       </div>
     </div>  
 </section>
-  
+
+[#-- Other contribution template --]
+[@otherContributionMacro element={} name="name" index=-1 template=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro outcomeContributionMacro projectOutcome name index isTemplate=false ]
@@ -188,7 +191,7 @@
     <div class="form-group ${reportingActive?string('fieldFocus','')}">
       <div class="row">
         <div class="col-md-12">
-          [@customForm.select name="${customName}.outcome" className="otherContributionIndicator" label="" i18nkey="projectOtherContribution.outcome" listName="otherOutcomes" required=true editable=editable /]
+          [@customForm.select name="${customName}.outcome" className="otherContributionIndicator" label="" i18nkey="projectOtherContribution.outcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
         </div>
       </div>
     </div>

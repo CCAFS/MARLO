@@ -39,6 +39,8 @@ $(document).ready(function() {
 
   });
 
+  /* Reporting events */
+  attachReportingEvents();
 });
 
 function addNewOutcome() {
@@ -57,5 +59,33 @@ function formatState(state) {
     var $state = $("<span>" + state.text + "</span>");
     return $state;
   }
-
 };
+
+/** Reporting functions * */
+
+function attachReportingEvents() {
+
+  $('.addOtherContribution').on('click', addOtherContribution);
+
+  $('.removeElement').on('click', removeOtherContribution);
+}
+
+function addOtherContribution() {
+  var $item = $('#otherContribution-template').clone(true).removeAttr('id');
+  var $list = $(this).parents('.tab-pane').find('.otherContributionsBlock');
+  console.log('asdasd');
+
+  $list.append($item);
+
+  $item.show('slow');
+
+}
+
+function removeOtherContribution() {
+  var $parent = $(this).parent();
+  $parent.hide('slow', function() {
+
+    $parent.remove();
+
+  });
+}
