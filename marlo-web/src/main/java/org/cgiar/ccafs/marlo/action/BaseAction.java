@@ -678,7 +678,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getLiasons() {
     String liasonsUsers = "";
     User u = userManager.getUser(this.getCurrentUser().getId());
-    for (LiaisonUser liaisonUser : u.getLiasonsUsers()) {
+    for (LiaisonUser liaisonUser : u.getLiasonsUsers().stream()
+      .filter(c -> c.isActive() && c.getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
       if (liasonsUsers.isEmpty()) {
         liasonsUsers = liaisonUser.getLiaisonInstitution().getAcronym();
       } else {
@@ -887,10 +889,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return request;
   }
 
+  public String getRoles() {
+    String roles = "";
+    User u = userManager.getUser(this.getCurrentUser().getId());
+    for (UserRole userRole : u.getUserRoles().stream()
+      .filter(c -> c.getRole().getCrp().getId().intValue() == this.getCrpID().intValue())
+      .collect(Collectors.toList())) {
+      if (roles.isEmpty()) {
+        roles = userRole.getRole().getAcronym();
+      } else {
+        roles = roles + "," + userRole.getRole().getAcronym();
+      }
+    }
+    return roles;
+  }
+
+
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
-
 
   public Map<String, Object> getSession() {
     return session;
@@ -900,28 +917,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return submission;
   }
 
+
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
     String display = timeZone.getDisplayName();
     return display;
   }
 
-
   public String getUrl() {
     return url;
-  }
-
-  public String getUserRoles() {
-    String roles = "";
-    User u = userManager.getUser(this.getCurrentUser().getId());
-    for (UserRole userRole : u.getUserRoles()) {
-      if (roles.isEmpty()) {
-        roles = userRole.getRole().getAcronym();
-      } else {
-        roles = roles + "," + userRole.getRole().getAcronym();
-      }
-    }
-    return roles;
   }
 
   public List<UserToken> getUsersOnline() {
