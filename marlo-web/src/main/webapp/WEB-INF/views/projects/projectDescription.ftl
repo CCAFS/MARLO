@@ -138,7 +138,10 @@
                       <label for="projectNoRegional" class="checkboxLabel"> <i>[@s.text name="project.noRegional" /]</i> </label>
                       [@s.checkboxlist name="project.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
                     [#else]
-                      [#if (project.isNoRegional())!false ]<p class="checked"> [@s.text name="project.noRegional" /]</p>[/#if]
+                      [#if (project.isNoRegional())!false ]
+                        <input type="hidden" name="project.noRegional" value="true" />
+                        <p class="checked"> [@s.text name="project.noRegional" /]</p>
+                      [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                       [#if project.regions?has_content]
                         [#list project.regions as element]<p class="checked">${element.composedName}</p>[/#list]
