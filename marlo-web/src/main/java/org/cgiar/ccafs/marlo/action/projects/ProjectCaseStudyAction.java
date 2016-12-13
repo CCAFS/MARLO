@@ -300,7 +300,7 @@ public class ProjectCaseStudyAction extends BaseAction {
         if (caseStudy.getFile() != null) {
           caseStudy.setFile(fileDBManager.getFileDBById(caseStudy.getFile().getId()));
         }
-
+        caseStudy.setProjects(caseStudy.getCaseStudyProjects().stream().collect(Collectors.toList()));
 
         this.setDraft(false);
       }

@@ -53,7 +53,7 @@
 
           [@caseStudyMacro element=caseStudy name="caseStudy" index=0 /]
            
-          ]
+          
           </div> 
          
         [/@s.form]
@@ -186,10 +186,11 @@
                 [#-- Remove button --]
                 [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
                 [#-- Hidden inputs --]
-                <input class="id" type="hidden" name="deliverable.genderLevels[${project_index}].id" value="${(projectLink.id)!}" />
-                <input class="projectId" type="hidden" name="caseStudy.genderLevels[${project_index}].projectLink" value="${(projectLink.project)!}" />
+                <input class="id" type="hidden" name="caseStudy.projects[${projectLink_index}].id" value="${(projectLink.id)!}" />
+                <input class="projectId" type="hidden" name="caseStudy.projects[${projectLink_index}].project.id" value="${(projectLink.project.id)!}" />
                 [#-- title --]
-                <span title="${(project.title)!'undefined'}" class="name">[@utils.wordCutter string=(project.title)!"undefined" maxPos=100 substr=" "/]</span>
+                
+                <span title="${(projectLink.project.title)!'undefined'}" class="name">${(projectLink.project.composedName)!'undefined'}</span>
                 <div class="clearfix"></div>
               </li>
             [/#list]
@@ -198,7 +199,7 @@
           [/#if]  
           </ul>
           [#if editable ]
-            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="projectsList"   required=true  className="" editable=editable/]
+            [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="" editable=editable/]
           [/#if] 
         </div>
       </div>
