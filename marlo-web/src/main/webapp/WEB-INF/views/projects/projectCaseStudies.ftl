@@ -48,17 +48,11 @@
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
             
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudiestitle" /]</h3>
-          [#assign projectCaseStudies = [
-              { "id": "1",
-                "title": "Creating Geographical Software and Building Capacity for its Use Strengthens Climate Change Analysis in Agriculture",
-                "owner":"You",
-                "year": 2015
-              }  
-            ] /]
+   
           
           [#-- Outcome case studies list --]
           <div id="caseStudiesBlock" class="simpleBox">
-            [@tableList list=(projectCaseStudies)![]  /]
+            [@tableList list=(project.caseStudies)![]  /]
           </div>
           
           [#-- Add a new highlight --]
@@ -104,10 +98,10 @@
           <tr>
             <td class="id" ><a href="${dlurl}">${item.id}</a></td> 
             <td class="name"><a href="${dlurl}">[#if item.title?trim?has_content]${item.title}[#else]Untitled[/#if]</a></td>
-            <td class="owner">[#if item.owner?trim?has_content]${item.owner}[#else]Not defined[/#if]</td>
+            <td class="owner">[#if item.owner?trim?has_content]P${item.owner.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if item.year?trim?has_content]${item.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
-              [#if canEdit && action.hasPermission("removeCaseStudy") && (item.year gte  currentCycleYear) ]
+              [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${item.id}" class="removeHighlight" href="highlightID${item.id}" title="" >
                   <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectCaseStudies.removeCaseStudy" /]" /> 
                 </a>

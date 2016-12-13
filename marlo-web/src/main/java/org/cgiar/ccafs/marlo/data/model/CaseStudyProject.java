@@ -19,15 +19,17 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
   private CaseStudy caseStudy;
   @Expose
   private Project project;
+  @Expose
+  private boolean created;
 
   public CaseStudyProject() {
   }
+
 
   public CaseStudyProject(CaseStudy caseStudy, Project project) {
     this.caseStudy = caseStudy;
     this.project = project;
   }
-
 
   public CaseStudy getCaseStudy() {
     return caseStudy;
@@ -78,8 +80,18 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
   }
 
 
+  public boolean isCreated() {
+    return created;
+  }
+
+
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
+  }
+
+
+  public void setCreated(boolean created) {
+    this.created = created;
   }
 
 

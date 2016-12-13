@@ -105,7 +105,6 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getActivities() {
     return activities;
   }
@@ -187,6 +186,16 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public String getOutputUsers() {
     return outputUsers;
+  }
+
+
+  public Project getOwner() {
+    for (CaseStudyProject caseStudyProject : caseStudyProjects) {
+      if (caseStudyProject.isCreated()) {
+        return caseStudyProject.getProject();
+      }
+    }
+    return null;
   }
 
 

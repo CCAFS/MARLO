@@ -177,7 +177,7 @@ public class Project implements java.io.Serializable, IAuditLog {
 
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
   private Set<CaseStudyProject> caseStudyProjects = new HashSet<CaseStudyProject>(0);
-  private List<CaseStudyProject> caseStudies;
+  private List<CaseStudy> caseStudies;
 
 
   private Set<ProjectCrpContribution> projectCrpContributions = new HashSet<ProjectCrpContribution>(0);
@@ -389,7 +389,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public List<CaseStudyProject> getCaseStudies() {
+  public List<CaseStudy> getCaseStudies() {
     return caseStudies;
   }
 
@@ -953,7 +953,7 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCaseStudies(List<CaseStudyProject> caseStudies) {
+  public void setCaseStudies(List<CaseStudy> caseStudies) {
     this.caseStudies = caseStudies;
   }
 

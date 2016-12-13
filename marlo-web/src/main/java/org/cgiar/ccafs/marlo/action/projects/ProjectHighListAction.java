@@ -105,15 +105,9 @@ public class ProjectHighListAction extends BaseAction {
     // Deleting deliverable.
     for (ProjectHighlight projectHighlight : project.getHighligths()) {
       if (projectHighlight.getId() == higlightID) {
-        boolean deleted = projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
+        projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
 
-        if (deleted) {
-          this.addActionMessage(
-            this.getText("deleting.success", new String[] {this.getText("planning.projectDeliverable").toLowerCase()}));
-        } else {
-          this.addActionError(
-            this.getText("deleting.problem", new String[] {this.getText("planning.projectDeliverable").toLowerCase()}));
-        }
+
       }
     }
     return SUCCESS;

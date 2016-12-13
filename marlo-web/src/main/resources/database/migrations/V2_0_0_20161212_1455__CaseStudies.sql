@@ -132,7 +132,7 @@ UPDATE cases_studies set file_id= (select  id from files where file_name=file li
 ALTER TABLE `cases_studies`
 DROP COLUMN `file`;
 
-
+DROP TABLE IF EXISTS `case_study_projects`;
 CREATE TABLE `case_study_projects` (
 `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 `project_id`  bigint(20) NOT NULL ,
@@ -143,7 +143,7 @@ FOREIGN KEY (`case_study_id`) REFERENCES `cases_studies` (`id`)
 )
 ;
 insert into case_study_projects(project_id,case_study_id)
-select project_id,id  from case_study_projects;
+select project_id,id  from cases_studies;
 
 
 ALTER TABLE `cases_studies` DROP FOREIGN KEY `cases_studies_ibfk_1`;
