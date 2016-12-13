@@ -86,6 +86,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private LocElementTypeManager locationTypeManager;
   private String transaction;
   private LiaisonInstitutionManager liaisonInstitutionManager;
+  private LiaisonUserManager liaisonUserManager;
   /*
    * private LiaisonInstitutionManager liaisonInstitutionManager;
    * private LiaisonUserManager liaisonUserManager;
@@ -147,6 +148,7 @@ public class ProjectDescriptionAction extends BaseAction {
     this.projectClusterActivityManager = projectClusterActivityManager;
     this.fileDBManager = fileDBManager;
     // this.liaisonUserManager = liaisonUserManager;
+    this.liaisonUserManager = liaisonUserManager;
     this.projectScopeManager = projectLocationManager;
     this.locationTypeManager = locationManager;
   }
@@ -433,6 +435,16 @@ public class ProjectDescriptionAction extends BaseAction {
               .setLocElementType(locationTypeManager.getLocElementTypeById(projectScope.getLocElementType().getId()));
           }
         }
+
+        if (project.getLiaisonUser() != null) {
+          project.setLiaisonUser(liaisonUserManager.getLiaisonUserById(project.getLiaisonUser().getId()));
+        }
+        if (project.getLiaisonInstitution() != null) {
+          project.setLiaisonInstitution(
+            liaisonInstitutionManager.getLiaisonInstitutionById(project.getLiaisonInstitution().getId()));
+        }
+
+
         List<CrpProgram> programs = new ArrayList<>();
         if (project.getFlagshipValue() != null) {
           for (String programID : project.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
@@ -463,12 +475,20 @@ public class ProjectDescriptionAction extends BaseAction {
         this.setDraft(true);
       } else {
         this.setDraft(false);
+        project.setFlagshipValue("");
+        project.setRegionsValue("");
         List<CrpProgram> programs = new ArrayList<>();
         for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
           .filter(
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           programs.add(projectFocuses.getCrpProgram());
+          if (project.getFlagshipValue().isEmpty()) {
+            project.setFlagshipValue(projectFocuses.getCrpProgram().getId().toString());
+          } else {
+            project
+              .setFlagshipValue(project.getFlagshipValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+          }
         }
 
         List<CrpProgram> regions = new ArrayList<>();
@@ -477,6 +497,12 @@ public class ProjectDescriptionAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
           .collect(Collectors.toList())) {
           regions.add(projectFocuses.getCrpProgram());
+          if (project.getRegionsValue().isEmpty()) {
+            project.setRegionsValue(projectFocuses.getCrpProgram().getId().toString());
+          } else {
+            project
+              .setRegionsValue(project.getRegionsValue() + "," + projectFocuses.getCrpProgram().getId().toString());
+          }
         }
 
         List<ProjectClusterActivity> projectClusterActivities = new ArrayList<>();
