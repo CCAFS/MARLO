@@ -127,13 +127,13 @@ function removeItemList($item) {
 
 function addItemList($option) {
   var $select = $option.parent();
-  var $li = $("#crpTemplate").clone(true).removeAttr("id");
+  var $li = $("#crpOtherContribution-template").clone(true).removeAttr("id");
   $li.find('.id').val($option.val());
   $li.find('.name').html($option.text());
   $li.appendTo($contributionsBlock).hide().show('slow');
   $option.remove();
   $select.trigger("liszt:updated");
-  setIndexes();
+  // setIndexes();
   $contributionsBlock.find('.emptyText').fadeOut();
 }
 
