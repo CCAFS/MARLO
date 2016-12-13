@@ -207,7 +207,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         if (!hasRegionsList.isEmpty()) {
           if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
+            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
           }
           hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
         }
@@ -839,8 +839,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String type = project.getType();
     String status = ProjectStatusEnum.getValue(project.getStatus().intValue()).getStatus();
     if (projectLeader.getInstitution() != null) {
-      org_leader = projectLeader.getInstitution().getComposedName() + " - "
-        + projectLeader.getInstitution().getLocElement().getName();
+      org_leader = projectLeader.getInstitution().getComposedName();
+      if (projectLeader.getInstitution().getLocElement() != null) {
+        org_leader += " - " + projectLeader.getInstitution().getLocElement().getName();
+      }
     }
     String leader = null;
     if (project.getLeaderPerson() != null) {
