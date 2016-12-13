@@ -68,6 +68,10 @@
       <interceptor name="editHighlight"
         class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
 
+    <interceptor name="editCaseStudy"
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditCaseStudyInterceptor" />
+
+
 			<interceptor name="editFunding"
 				class="org.cgiar.ccafs.marlo.interceptor.funding.FundingSourceInterceptor" />
 

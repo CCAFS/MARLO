@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -63,6 +64,8 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   @Expose
   private String modificationJustification;
   private Set<CaseStudyProject> caseStudyProjects = new HashSet<CaseStudyProject>(0);
+  private List<CaseStudyProject> projects;
+
 
   public CaseStudy() {
   }
@@ -72,6 +75,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.activeSince = activeSince;
   }
+
 
   public CaseStudy(FileDB file, User usersByCreatedBy, User usersByModifiedBy, String comment, String title,
     String outcomeStatement, String researchOutputs, String researchPatern, String activities,
@@ -101,6 +105,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     this.caseStudyProjects = caseStudyProjectses;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
@@ -109,11 +114,9 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return activities;
   }
 
-
   public Set<CaseStudyProject> getCaseStudyProjects() {
     return caseStudyProjects;
   }
-
 
   public String getComment() {
     return comment;
@@ -196,6 +199,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
       }
     }
     return null;
+  }
+
+
+  public List<CaseStudyProject> getProjects() {
+    return projects;
   }
 
 
@@ -312,6 +320,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public void setOutputUsers(String outputUsers) {
     this.outputUsers = outputUsers;
+  }
+
+
+  public void setProjects(List<CaseStudyProject> projects) {
+    this.projects = projects;
   }
 
 
