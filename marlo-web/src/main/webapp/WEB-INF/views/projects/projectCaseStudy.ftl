@@ -1,10 +1,6 @@
 [#ftl]
-[#assign canEdit = true /]
-[#assign editable = true /]
-
-
 [#assign title = "Project Outcome Case Studies" /]
-[#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
+[#assign currentSectionString = "project-${actionName?replace('/','-')}-${caseStudyID}" /]
 [#assign pageLibs = [ "select2" ] /]
 [#assign customJS = ["${baseUrl}/js/projects/projectCaseStudy.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectCaseStudies.css"] /]
@@ -50,28 +46,14 @@
             
            
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudyInformation" /]</h3>
-          [#assign projectCaseStudies = [
-              { "id": "1",
-                "title": "Succesful communications on the Projected Shifts in Coffea arabica Suitability among Major Global Producing Regions Due to Climate Change",
-                "author":"Ovalle-Rivera O, Läderach P, Bunn C, Obersteiner M, Schroth G",
-                "year":"2015",
-                "subject":"Coffea arabica, climate change, productivity"
-              }  
-            ] /]
+   
           
           [#-- Outcome case studies list --]
           <div id="caseStudiesBlock" class="">
-          [#if projectCaseStudies?has_content ]
-            [#list projectCaseStudies as item] 
-              [@caseStudy element=item name="${params.caseStudies.name}" index=item_index /]
-            [/#list]
-          [#else]
-              <p class="message center">There is not an Outcome Case Study added. 
-              [#if !editable]
-                <div class="editButton"><a href="[@s.url][@s.param name ="projectID"]${project.id}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]">[@s.text name="form.buttons.edit" /]</a></div></a>
-              [/#if]
-              </p>
-          [/#if]
+
+          [@caseStudyMacro element=caseStudy name="caseStudy" index=0 /]
+           
+          ]
           </div> 
          
         [/@s.form]
@@ -88,21 +70,20 @@
 [#-- File upload Template--] 
 [@customForm.inputFile name="annexesFile" className="annexesFile"  template=true /]
 
-[#-- Case Study template --]
-[@caseStudy element={} name="${params.caseStudies.name}" template=true /]
+
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#-- -- MACROS -- --]
 
-[#macro caseStudy element name index=-1 template=false]
-  [#local customName = "${name}[${template?string('-1',index)}]"/]
-  [#local study = (element)!{} /]
+[#macro caseStudyMacro element name index=-1 template=false]
+  [#local customName = "${name}"/]
+  
   [#local customId = "caseStudy-${template?string('template',index)}" /] 
   <div id="${customId}" class="caseStudy" style="display:${template?string('none','block')}">
     <div class="borderBox">
       [#-- Case study ID --]
-      <input type="hidden" name="${customName}.id" class="caseStudyID" value="${(study.id)!-1}"/>
+      <input type="hidden" name="${customName}.id" class="caseStudyID" value="${(element.id)!}"/>
       [#-- 1. Title --]
       <div class="form-group">
         [@customForm.input name="${customName}.title" i18nkey="caseStudy.title" help="caseStudy.title.help" className="caseStudyTitle limitWords-15" required=true editable=editable /]
@@ -152,8 +133,8 @@
             [@s.fielderror cssClass="fieldError" fieldName="${customName}.caseStudyIndicatorsIds"/]
             [@s.checkboxlist name="${customName}.caseStudyIndicatorsIds" list="caseStudyIndicators" value="${customName}.caseStudyIndicatorsIds" itemKey="id"    cssClass="caseStudyIndicators checkbox" /]
           [#else]
-            [#if (study.caseStudyIndicators?has_content)!false]
-              [#list study.caseStudyIndicators as element]<p class="checked">${element.description}</p>[/#list]
+            [#if (element.caseStudyIndicators?has_content)!false]
+              [#list element.caseStudyIndicators as element]<p class="checked">${element.description}</p>[/#list]
             [#else]
               <div class="select"><p>Field is empty</p></div>
             [/#if]
@@ -168,17 +149,17 @@
         <div class="col-md-6">
           <div class="select">
             <label>[@s.text name="caseStudy.caseStudyYear" /]:</label>
-            <div class="selectList"><p>${(study.year)!currentCycleYear}</p></div>
-            <input type="hidden" name="${customName}.year" class="caseStudyYear" value="${(study.year)!currentCycleYear}" />
+            <div class="selectList"><p>${(element.year)!currentCycleYear}</p></div>
+            <input type="hidden" name="${customName}.year" class="caseStudyYear" value="${(element.year)!currentCycleYear}" />
           </div>  
         </div>
         [#-- Upload Annexes --]
         <div class="col-md-6 fileUpload uploadAnnexes">
           <label>[@customForm.text name="caseStudy.uploadAnnexes" readText=!editable /]:[@customForm.req required=editable /]</label>
           <div class="uploadContainer">
-            [#if (study.file?has_content)!false]
+            [#if (element.file?has_content)!false]
               [#if editable]<span id="remove-annexesFile" class="remove"></span>[/#if] 
-              <p><a href="${CaseStudyURL}${study.file}">${study.file}</a><input type="hidden" name="${customName}.file" value="${study.file}" /> </p>
+              <p><a href="${(CaseStudyURL)!}${element.file}">${element.file.fileName}</a><input type="hidden" name="${customName}.file" value="${element.file}" /> </p>
             [#else]
               [#if editable]
                 [@customForm.inputFile name="${customName}.myFile" className="annexesFile"  /]
@@ -199,8 +180,8 @@
        <div class="panel-head"><label for=""> This outcome study is done jointly with the following project(s), please select below: </label></div>
         <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
           <ul class="list">
-          [#if study.projects?has_content]
-            [#list study.projects as projectLink]
+          [#if element.projects?has_content]
+            [#list element.projects as projectLink]
               <li class="genderLevel clearfix">
                 [#-- Remove button --]
                 [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
