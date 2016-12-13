@@ -257,7 +257,12 @@
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
         </set>
         
-        
+        <set name="caseStudyProjects" order-by="id" table="case_study_projects" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CaseStudyProject" />
+        </set>
         
         
         

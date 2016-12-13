@@ -105,6 +105,8 @@
 	  <mapping resource="xmls/ProjectHighligthsCountry.hbm.xml" />
 	  <mapping resource="xmls/ProjectHighligthsTypes.hbm.xml" />
 	  <mapping resource="xmls/ProjectLeverage.hbm.xml" /> 
+    <mapping resource="xmls/CasesStudies.hbm.xml" /> 
+    <mapping resource="xmls/CaseStudyProjects.hbm.xml" /> 
 
 	</session-factory>
 </hibernate-configuration>
