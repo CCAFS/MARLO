@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -55,7 +57,7 @@ public class ProjectOutcomeListAction extends BaseAction {
   private CrpManager crpManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
   private ProjectOutcomeManager projectOutcomeManager;
-
+  private SectionStatusManager sectionStatusManager;
 
   // Front-end
   private long projectID;
@@ -67,10 +69,11 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager, ProjectOutcomeManager projectOutcomeManager) {
+    CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
+    ProjectOutcomeManager projectOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
-
+    this.sectionStatusManager = sectionStatusManager;
     this.crpManager = crpManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.projectOutcomeManager = projectOutcomeManager;
@@ -92,7 +95,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
-      
+
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -102,6 +105,11 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public String deleteProjectOutcome() {
     if (this.hasPermission("delete")) {
+      ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(outcomeId);
+      for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
+        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+      }
+
       projectOutcomeManager.deleteProjectOutcome(outcomeId);
       return SUCCESS;
     } else {

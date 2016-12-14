@@ -1028,26 +1028,9 @@ public class ProjectPartnerAction extends BaseAction {
         this.notifyNewUserCreated(leader.getUser());
       }
       this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
-      ProjectPartnerPerson previousCoordinator = null;
-      if (previousProject.getCoordinatorPersons().size() > 0) {
-        previousCoordinator = previousProject.getCoordinatorPersons().get(0);
-      }
-      ProjectPartnerPerson coordinator = null;
-      if (project.getCoordinatorPersons() != null) {
-        if (project.getCoordinatorPersons().size() > 0) {
-          coordinator = project.getCoordinatorPersons().get(0);
-        }
-      }
-
-      if (coordinator != null) {
-
-        this.notifyNewUserCreated(coordinator.getUser());
 
 
-      }
-
-
-      this.updateRoles(previousCoordinator, coordinator, pcRole);
+      this.updateRoles(previousProject.getCoordinatorPersons(), project.getCoordinatorPersons(), pcRole);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModificationJustification(this.getJustification());
@@ -1149,6 +1132,115 @@ public class ProjectPartnerAction extends BaseAction {
    * @param partnerPerson the current leader/coordinator associated to the project.
    * @param role is the new role assignated (leader/coordinator).
    */
+  private void updateRoles(List<ProjectPartnerPerson> previousPartnerPerson, List<ProjectPartnerPerson> partnerPerson,
+    Role role) {
+    long roleId = role.getId();
+
+    String roleAcronym = role.getAcronym();
+    if (previousPartnerPerson != null && partnerPerson != null) {
+      for (ProjectPartnerPerson projectPartnerPerson : partnerPerson) {
+        if (!previousPartnerPerson.contains(projectPartnerPerson)) {
+          UserRole userRole = new UserRole();
+          userRole.setRole(role);
+          userRole.setUser(projectPartnerPerson.getUser());
+
+          role = roleManager.getRoleById(role.getId());
+          if (!role.getUserRoles().contains(userRole)) {
+            userRoleManager.saveUserRole(userRole);
+            this.addCrpUser(projectPartnerPerson.getUser());
+          }
+
+
+          // Notifying user is assigned as Project Leader/Coordinator.
+          this.notifyRoleAssigned(projectPartnerPerson.getUser(), role);
+        }
+      }
+
+      for (ProjectPartnerPerson projectPartnerPerson : previousPartnerPerson) {
+        if (!partnerPerson.contains(projectPartnerPerson)) {
+          List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(projectPartnerPerson.getUser().getId());
+          if (rolesUser != null) {
+            rolesUser =
+              rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+            if (!rolesUser.isEmpty()) {
+              if (projectPartnerPerson.getUser().getProjectPartnerPersons().stream()
+                .filter(
+                  c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
+                    .getId().longValue() != projectPartnerPerson.getProjectPartner().getProject().getId().longValue())
+                .collect(Collectors.toList()).size() == 0) {
+                userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+                this.checkCrpUserByRole(projectPartnerPerson.getUser());
+              }
+            }
+          }
+          // Notifying user that is not the project leader anymore
+          this.notifyRoleUnassigned(projectPartnerPerson.getUser(), role);
+        }
+      }
+
+    }
+    /*
+     * else if (previousPartnerPerson != null && partnerPerson == null) {
+     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
+     * if (rolesUser != null) {
+     * rolesUser =
+     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+     * if (!rolesUser.isEmpty()) {
+     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
+     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
+     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
+     * .collect(Collectors.toList()).size() == 0) {
+     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
+     * }
+     * }
+     * }
+     * // Notifying user that is not the project leader anymore
+     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
+     * } else if (previousPartnerPerson != null && partnerPerson != null) {
+     * if (!partnerPerson.getUser().getId().equals(previousPartnerPerson.getUser().getId())) {
+     * UserRole userRole = new UserRole();
+     * userRole.setRole(role);
+     * userRole.setUser(partnerPerson.getUser());
+     * role = roleManager.getRoleById(role.getId());
+     * if (!role.getUserRoles().contains(userRole)) {
+     * userRoleManager.saveUserRole(userRole);
+     * this.addCrpUser(partnerPerson.getUser());
+     * }
+     * // Notifying user is assigned as Project Leader/Coordinator.
+     * this.notifyRoleAssigned(partnerPerson.getUser(), role);
+     * // Deleting role.
+     * List<UserRole> rolesUser = userRoleManager.getUserRolesByUserId(previousPartnerPerson.getUser().getId());
+     * if (rolesUser != null) {
+     * rolesUser =
+     * rolesUser.stream().filter(c -> c.getRole().getId().longValue() == roleId).collect(Collectors.toList());
+     * if (!rolesUser.isEmpty()) {
+     * if (previousPartnerPerson.getUser().getProjectPartnerPersons().stream()
+     * .filter(c -> c.isActive() && c.getContactType().equals(roleAcronym) && c.getProjectPartner().getProject()
+     * .getId().longValue() != previousPartnerPerson.getProjectPartner().getProject().getId().longValue())
+     * .collect(Collectors.toList()).size() == 0) {
+     * userRoleManager.deleteUserRole(rolesUser.get(0).getId());
+     * this.checkCrpUserByRole(previousPartnerPerson.getUser());
+     * }
+     * }
+     * }
+     * // Notifying user that is not the project leader anymore
+     * this.notifyRoleUnassigned(previousPartnerPerson.getUser(), role);
+     * }
+     * }
+     */
+    // this.clearPermissionsCache();
+  }
+
+
+  /**
+   * This method updates the role for each user (Leader/Coordinator) into the database, and notifies by email what has
+   * been done.
+   * 
+   * @param previousPartnerPerson is the previous leader/coordinator that has assigned the project before.
+   * @param partnerPerson the current leader/coordinator associated to the project.
+   * @param role is the new role assignated (leader/coordinator).
+   */
   private void updateRoles(ProjectPartnerPerson previousPartnerPerson, ProjectPartnerPerson partnerPerson, Role role) {
     long roleId = role.getId();
 
@@ -1223,6 +1315,7 @@ public class ProjectPartnerAction extends BaseAction {
     }
     // this.clearPermissionsCache();
   }
+
 
   @Override
   public void validate() {

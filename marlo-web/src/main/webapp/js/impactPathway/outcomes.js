@@ -89,6 +89,7 @@ function attachEvents() {
     $("#subIDOs-graphic").dialog({
         autoOpen: false,
         resizable: false,
+        closeText: "",
         width: '85%',
         modal: true,
         height: $(window).height() * 0.90,
@@ -238,7 +239,6 @@ function updateTotalContribution(list,text) {
   // Removing classes
   $(text).removeClass('fieldError fieldChecked');
   $(list).removeClass('fieldError');
-
 
   // Set percentage and classes
   $(text).find('.value').text(setPercentageFormat(total));

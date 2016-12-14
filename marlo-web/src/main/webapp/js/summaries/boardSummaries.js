@@ -31,6 +31,7 @@ function attachEvents() {
     var $this = $(this).parents(".summariesFiles");
     $("#projectsPopUp").dialog({
         resizable: false,
+        closeText: "",
         width: '40%',
         title: 'Projects',
         modal: true,

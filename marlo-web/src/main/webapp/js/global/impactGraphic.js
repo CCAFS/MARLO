@@ -391,6 +391,7 @@ $("#overlay .btn").on("click", function() {
   $("#impactGraphic-content").dialog({
       resizable: false,
       width: '90%',
+      closeText: "",
       modal: true,
       height: $(window).height() * 0.80,
       show: {

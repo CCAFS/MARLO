@@ -207,12 +207,12 @@
       <hr />
       [#-- Statement --]
       <div class="form-group col-md-9">
-        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="Key Output" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
+        [@customForm.textArea  name="${customName}.keyOutput" i18nkey="cluster.keyOutput.statement" value="${(element.keyOutput)!}" required=true className="limitWords-30 keyOutputInput" editable=editable /]
         <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       </div>
       [#-- Contribution --]
       <div class="form-group col-md-3">
-          [@customForm.input name="${customName}.contribution" i18nkey="Contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.contribution" i18nkey="cluster.keyOutput.contribution" value="${(element.contribution?string['0.##'])!}" className="keyOutputContribution" type="text" disabled=!editable  required=true editable=editable /]
       </div>
             
       [#-- Outcomes list --]
