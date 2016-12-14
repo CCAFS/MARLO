@@ -2401,7 +2401,7 @@ p.projectSubmitted {
   text-align: center;
   background: #668fda;
   border-bottom: 2px solid #5f81c1;
-  color: #fff;
+  color: #fff !important;
   border-radius: 3px;
   cursor: pointer;
   display: inline-block;
@@ -2409,7 +2409,7 @@ p.projectSubmitted {
 
 a.button-blue,
 a.button-blue:hover{
-  color:#fff;
+  color: #fff !important;
   text-decoration:none;
 }
 

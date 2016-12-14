@@ -40,7 +40,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
            
           
-          <h3 class="headTitle">[@s.text name="Leverage" /]</h3>
+          <h3 class="headTitle">[@s.text name="Leverages" /]</h3>
           
           <div class="leverage-list simpleBox" listname="project.openProjectActivities">
           [#if project.leverages?has_content]
@@ -82,28 +82,29 @@
     <div class="removeLeverage removeIcon" title="Remove leverage"></div>
     [/#if]
     <input type="hidden" class="leverageId" name="${leverageCustomName}.id" value="${(leverage.id)!}"/>
-  
-  [#-- title --]
-  <div class="col-md-12">
+  <div class="form-group">
+    [#-- title --] 
     [@customForm.input name="${leverageCustomName}.title" value="${(leverage.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-15" required=true editable=editable /]
-  </div>  
-  
-  [#-- Partner name --]
-  <div class="col-md-12">
-  [@customForm.select name="${leverageCustomName}.institution.id" label=""  i18nkey="Partner name" listName="allInstitutions"  multiple=false required=true  className="partnerSelect form-control input-sm " editable=editable/]
-  </div>  
-  
-  [#-- Type select --]
-  <div class="col-md-6">
-  [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=editable/]
-  </div>   
-
-  [#-- SubType select --]
-  <div class="col-md-6">
-  [@customForm.input name="${leverageCustomName}.budget" value="${(leverage.budget)!}"  i18nkey="Budget"  required=true  className="buudgetInput form-control input-sm " editable=editable/]
+  </div>
+   
+  <div class="form-group">
+    [#-- Partner name --]
+    [@customForm.select name="${leverageCustomName}.institution.id" label=""  i18nkey="Partner name" listName="allInstitutions"  multiple=false required=true  className="partnerSelect form-control input-sm " editable=editable/]
   </div>
   
-  <div class="clearfix"></div>
+  <div class="form-group">
+  <div class="row">  
+    [#-- Type select --]
+    <div class="col-md-6">
+    [@customForm.select name="${leverageCustomName}.crpProgram.id" label=""  i18nkey="Flagship" listName="flagships"   multiple=false required=true  className="flagshipSelect form-control input-sm " editable=editable/]
+    </div> 
+    [#-- SubType select --]
+    <div class="col-md-6">
+    [@customForm.input name="${leverageCustomName}.budget" value="${(leverage.budget)!}"  i18nkey="Budget"  required=true  className="buudgetInput form-control input-sm " editable=editable/]
+    </div>
+  </div>
+  </div>
+   
   </div>
 [/#macro]
 
