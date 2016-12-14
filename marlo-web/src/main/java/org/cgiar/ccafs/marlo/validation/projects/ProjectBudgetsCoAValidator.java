@@ -180,11 +180,11 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
 
     }
 
-    if (amount < 100) {
+    if (amount != 100) {
       action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
       this.addMessage(action.getText("project.budget.coa.amount", params));
     }
-    if (gender < 100) {
+    if (gender != 100) {
 
       action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
       this.addMessage(action.getText("project.budget.coa.gender", params));

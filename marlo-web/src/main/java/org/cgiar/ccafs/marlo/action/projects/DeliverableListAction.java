@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -56,6 +58,7 @@ public class DeliverableListAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableManager deliverableManager;
 
+  private SectionStatusManager sectionStatusManager;
   private CrpManager crpManager;
 
 
@@ -71,9 +74,11 @@ public class DeliverableListAction extends BaseAction {
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
-    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager) {
+    DeliverableTypeManager deliverableTypeManager, DeliverableManager deliverableManager,
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.projectManager = projectManager;
+    this.sectionStatusManager = sectionStatusManager;
     this.crpManager = crpManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.deliverableManager = deliverableManager;
@@ -92,6 +97,8 @@ public class DeliverableListAction extends BaseAction {
     deliverable.setActiveSince(new Date());
     deliverable.setProject(project);
     deliverable.setCreateDate(new Date());
+
+
     deliverableID = deliverableManager.saveDeliverable(deliverable);
 
     if (deliverableID > 0) {
@@ -121,6 +128,10 @@ public class DeliverableListAction extends BaseAction {
 
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    for (SectionStatus sectionStatus : deliverable.getSectionStatuses()) {
+      sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+    }
 
     projectID = deliverable.getProject().getId();
 
