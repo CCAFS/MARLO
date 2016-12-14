@@ -66,6 +66,7 @@ function initGraph(programID){
 		  width: $(window).width()*0.95,
 		  height: $(window).height()*0.95,
 	      modal: true,
+	      closeText: "",
 	      draggable: false,
 	      resizable: false,
 	      buttons: {

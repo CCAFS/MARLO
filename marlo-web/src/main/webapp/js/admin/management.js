@@ -213,6 +213,7 @@ function yesnoEventLocations(value,item) {
     $("#dialog-confirm").dialog({
         resizable: false,
         height: 120,
+        closeText: "",
         modal: true,
         buttons: {
             "Yes": function() {

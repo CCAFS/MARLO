@@ -41,6 +41,7 @@ function setCompletionDates() {
 function workflowModal() {
   $("#showPandRWorkflowDialog").dialog({
       modal: true,
+      closeText: "",
       width: 700,
       height: 770,
       buttons: {
@@ -95,7 +96,7 @@ function initSlidr() {
 function timeline() {
   var today = new Date();
   var dd = today.getDate();
-  var mm = today.getMonth(); 
+  var mm = today.getMonth();
   var yyyy = today.getFullYear();
 
   if(dd < 10) {
@@ -224,6 +225,7 @@ $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function(e) {
 $("#fullscreen").on("click", function() {
   $("#impactGraphic-content").dialog({
       resizable: false,
+      closeText: "",
       width: '90%',
       modal: true,
       height: $(window).height() * 0.80,

@@ -153,7 +153,8 @@ function init() {
 function openDialog() {
   $("#dialog").dialog({
       width: '980',
-      modal: true
+      modal: true,
+      closeText: ""
   });
 }
 

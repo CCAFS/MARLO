@@ -242,9 +242,11 @@ $(document)
 
           // History log pop up
           $('.button-history').on('click', function() {
+
             $('#log-history').dialog({
                 modal: true,
-                maxWidth: '500px',
+                maxWidth: 500,
+                closeText: "",
                 width: '70%',
                 buttons: {
                   Cancel: function() {
@@ -252,6 +254,7 @@ $(document)
                   }
                 }
             });
+
           });
 
           // Cancel button
