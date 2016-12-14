@@ -203,6 +203,7 @@ function changePersonEmail(e) {
     $("#contactChange-dialog").find('.messages').append(messages);
     $("#contactChange-dialog").dialog({
         modal: true,
+        closeText: "",
         width: 500,
         buttons: {
           Close: function() {
@@ -220,6 +221,7 @@ function showPersonRelations(e) {
   var $relations = $(this).next().html();
   $('#relations-dialog').dialog({
       modal: true,
+      closeText: "",
       width: 500,
       buttons: {
         Close: function() {
@@ -258,6 +260,7 @@ function changePartnerPersonType(e) {
       $("#contactChangeType-dialog").find('.messages').append(messages);
       $("#contactChangeType-dialog").dialog({
           modal: true,
+          closeText: "",
           width: 500,
           buttons: {
             Close: function() {

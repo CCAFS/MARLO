@@ -192,6 +192,7 @@ $(document).ready(function() {
     if($(e.target).hasClass('popUpValidation')) {
       $("#removeContribution-dialog").dialog({
           modal: true,
+          closeText: "",
           width: 500,
           buttons: {
               "Confirm": function() {

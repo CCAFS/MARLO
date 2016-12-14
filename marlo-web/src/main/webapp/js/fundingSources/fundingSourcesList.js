@@ -50,6 +50,7 @@ function addJustificationPopUp() {
   // Initializing justification dialog
   dialog = $dialogContent.dialog({
       autoOpen: false,
+      closeText: "",
       height: 200,
       width: 400,
       modal: true,
