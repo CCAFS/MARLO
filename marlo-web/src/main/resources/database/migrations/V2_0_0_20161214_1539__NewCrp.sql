@@ -1,0 +1,2 @@
+INSERT INTO `crps` (`id`, `name`, `acronym`, `is_active`, `created_by`, `modified_by`, `modification_justification`, `is_marlo`) VALUES ('21', 'Wheat', 'wheat', '1', '3', '3', ' ', '1');
+INSERT INTO `crps` (`id`, `name`, `acronym`, `is_active`, `created_by`, `modified_by`, `modification_justification`, `is_marlo`) VALUES ('22', 'Maize', 'maize', '1', '3', '3', ' ', '1');
