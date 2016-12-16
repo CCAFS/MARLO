@@ -72,7 +72,10 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       .collect(Collectors.toList());
 
     for (ProjectBudget projectBudget : budgets) {
-      gender = projectBudget.getGenderValue().doubleValue() + gender;
+      if (projectBudget != null && projectBudget.getGenderValue() != null) {
+        gender = projectBudget.getGenderValue().doubleValue() + gender;
+      }
+
     }
     return gender;
   }
