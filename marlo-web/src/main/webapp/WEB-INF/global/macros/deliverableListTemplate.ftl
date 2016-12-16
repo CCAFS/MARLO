@@ -116,7 +116,6 @@
     <input class="element" type="hidden" name="${dp_name}[${dp_index}].id" value="${(dp.id)!-1}">
     [/#if]
     [#if template]
-      
       [#-- Partner Name --]
       <div class="fullPartBlock partnerName chosen col-md-12"> 
         [@customForm.select name="" value="-1"  i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','Partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"   className="${isResponsable?string('responsible','partner')}  id" editable=editable required=isResponsable /]
@@ -128,7 +127,7 @@
         [@customForm.select name="${customName}.id" value="${(dp.projectPartnerPerson.id)!-1}"  label="" i18nkey="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"     className="${isResponsable?string('responsible','partner')} id " editable=editable required=isResponsable/]
       [#else]
       <label class="form-group" for="">[@customForm.text name="${isResponsable?string('project.deliverable.indicateResponsablePartner','project.deliverable.partner')}" readText=!editable/] :</label>
-      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span><span>${(dp.projectPartnerPerson.composedName)?html}</span></div>
+      <div class="personRead-content"><span class="glyphicon glyphicon-user" ></span> <span>${((dp.projectPartnerPerson.composedName)!'Contact Person')?html}</span></div>
       [/#if]
       </div>
     [/#if] 

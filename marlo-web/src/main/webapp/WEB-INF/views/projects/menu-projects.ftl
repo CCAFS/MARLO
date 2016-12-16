@@ -50,9 +50,13 @@
 
 
 
-[#assign submission = (action.isProjectSubmitted(projectID))! /]
+[#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
+[#-- TODO --]
+[#assign canUnSubmit = (action.hasPersmissionSubmit(projectID))!false /]
+
+
 [#assign sectionsForChecking = [] /]
 
 
@@ -88,7 +92,7 @@
 
 [#-- Open for Project Leaders --]
 [#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) ]
-  [#if !submission?has_content]
+  [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
@@ -104,12 +108,12 @@
 [#if ((project.projectEditLeader)!false)]
 
   [#-- Submition message --]
-  [#if !submission?has_content && completed && !canSubmit]
+  [#if !submission && completed && !canSubmit]
     <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
   [/#if]
   
   [#-- Check button --]
-  [#if canEdit && !completed && !submission?has_content]
+  [#if canEdit && !completed && !submission]
     <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
     <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
@@ -117,9 +121,16 @@
   
   [#-- Submit button --]
   [#if canEdit]
-    [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+    [#assign showSubmit=(canSubmit && !submission && completed)]
     <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
       [@s.text name="form.buttons.submit" /]
+    </a>
+  [/#if]
+  
+  [#-- Unsubmit button --]
+  [#if canUnSubmit && submission ]
+    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+      [@s.text name="form.buttons.unsubmit" /]
     </a>
   [/#if]
   
