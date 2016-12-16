@@ -63,6 +63,20 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     this.budgetTypeManager = budgetTypeManager;
   }
 
+  public double calculateGender(Long type, int year, long projectID) {
+    double gender = 0;
+    Project projectBD = projectManager.getProjectById(projectID);
+    List<ProjectBudget> budgets = projectBD.getProjectBudgets()
+      .stream().filter(c -> c.isActive() && c.getYear() == year
+        && c.getBudgetType().getId().longValue() == type.longValue() && (c.getAmount() != null && c.getAmount() > 0))
+      .collect(Collectors.toList());
+
+    for (ProjectBudget projectBudget : budgets) {
+      gender = projectBudget.getGenderValue().doubleValue() + gender;
+    }
+    return gender;
+  }
+
   private Path getAutoSaveFilePath(Project project, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
@@ -96,6 +110,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     }
   }
 
+
   public void setHasErros(boolean hasErros) {
     this.hasErros = hasErros;
   }
@@ -121,20 +136,28 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         }
         if (!project.getBudgetsCluserActvities().isEmpty()) {
           if (this.hasBudgets(new Long(1), action.getCurrentCycleYear(), project.getId())) {
-            this.validateBudgets(action, project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 1).collect(Collectors.toList()), new Long(1));
+            this.validateBudgets(action,
+              project.getBudgetsCluserActvities().stream().filter(c -> c.getBudgetType().getId().longValue() == 1)
+                .collect(Collectors.toList()),
+              new Long(1), this.calculateGender(new Long(1), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(2), action.getCurrentCycleYear(), project.getId())) {
-            this.validateBudgets(action, project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 2).collect(Collectors.toList()), new Long(2));
+            this.validateBudgets(action,
+              project.getBudgetsCluserActvities().stream().filter(c -> c.getBudgetType().getId().longValue() == 2)
+                .collect(Collectors.toList()),
+              new Long(2), this.calculateGender(new Long(2), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(3), action.getCurrentCycleYear(), project.getId())) {
-            this.validateBudgets(action, project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 3).collect(Collectors.toList()), new Long(3));
+            this.validateBudgets(action,
+              project.getBudgetsCluserActvities().stream().filter(c -> c.getBudgetType().getId().longValue() == 3)
+                .collect(Collectors.toList()),
+              new Long(3), this.calculateGender(new Long(3), action.getCurrentCycleYear(), project.getId()));
           }
           if (this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId())) {
-            this.validateBudgets(action, project.getBudgetsCluserActvities().stream()
-              .filter(c -> c.getBudgetType().getId().longValue() == 4).collect(Collectors.toList()), new Long(4));
+            this.validateBudgets(action,
+              project.getBudgetsCluserActvities().stream().filter(c -> c.getBudgetType().getId().longValue() == 4)
+                .collect(Collectors.toList()),
+              new Long(4), this.calculateGender(new Long(4), action.getCurrentCycleYear(), project.getId()));
           }
         } else {
           this.addMessage(action.getText("project.budgets"));
@@ -160,9 +183,8 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     }
   }
 
-
   public void validateBudgets(BaseAction action, List<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities,
-    long type) {
+    long type, double genderTotal) {
     List<String> params = new ArrayList<String>();
     params.add(budgetTypeManager.getBudgetTypeById(type).getName());
     double amount = 0;
@@ -184,12 +206,14 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
       action.getInvalidFields().put("project.budget.coa.amount", "project.budget.coa.amount");
       this.addMessage(action.getText("project.budget.coa.amount", params));
     }
-    if (gender != 100) {
+    if (genderTotal > 0) {
+      if (gender != 100) {
 
-      action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
-      this.addMessage(action.getText("project.budget.coa.gender", params));
+        action.getInvalidFields().put("project.budget.coa.gender", "project.budget.coa.gender");
+        this.addMessage(action.getText("project.budget.coa.gender", params));
+      }
     }
+
+
   }
-
-
 }
