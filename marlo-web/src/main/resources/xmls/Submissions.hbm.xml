@@ -17,6 +17,10 @@
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="user_id" not-null="true" />
         </many-to-one>
+                <many-to-one name="unSubmitUser" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="unsubmit_user_id" />
+        </many-to-one>
+        
         <property name="dateTime" type="timestamp">
             <column name="date_time" length="19" not-null="true">
                 <comment>The date time when the report was made.</comment>
@@ -25,6 +29,13 @@
         <property name="modificationJustification" type="string">
             <column name="modification_justification" length="16777215" />
         </property>
+            <property name="unSubmitJustification" type="string">
+            <column name="unsubmit_justification" length="16777215" />
+        </property>
+        
+            <property name="unSubmit" type="boolean">
+      <column name="unsubmit" />
+    </property>
         <property name="cycle" type="string">
             <column name="cycle" length="100">
                 <comment>Cycling period type.</comment>
