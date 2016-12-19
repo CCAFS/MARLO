@@ -46,7 +46,7 @@
               <div class="col-md-5 isGlobal">
               <br />
               [#if editable]
-              <label class="col-md-10" for="">[@s.text name="projectLocations.isGlobal" /]</label>
+              <label class="col-md-10" for=""><span id="globalText">[@s.text name="projectLocations.isGlobal" /]</span><span id="globalHelp">(If the project is global, check the next button)</span></label>
               <div class="checkboxFour col-md-2">
               <input id="checkboxFourInput" class="hidden" type="checkbox" name="project.locationGlobal" value=[#if project.locationGlobal]"true" checked[#else]"false"[/#if]/>
               <label for="checkboxFourInput"></label>
