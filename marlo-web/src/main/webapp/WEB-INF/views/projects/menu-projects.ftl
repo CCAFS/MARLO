@@ -139,6 +139,15 @@
 
 [/#if]
 
+ [#-- Justification --]
+<div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
+  <div class="dialog-content"> 
+      [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+  </div>  
+</div>
+
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
