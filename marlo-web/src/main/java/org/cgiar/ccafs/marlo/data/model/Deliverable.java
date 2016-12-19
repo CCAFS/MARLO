@@ -203,7 +203,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public String getComposedName() {
-    return "<b> (D" + this.id + ") " + this.deliverableType.getDescription() + "</b> - " + this.title;
+    return "<b> (D" + this.id + ") " + this.getDeliverableType().getDescription() + "</b> - " + this.title;
   }
 
   public Date getCreateDate() {
