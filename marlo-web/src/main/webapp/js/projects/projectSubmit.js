@@ -292,7 +292,7 @@ function unSubmitButtonEvent(e) {
               }).done(
                   function(m) {
                     window.location.href =
-                        baseURL + "/projects/" + currentCrpSession + "description.do?projectID=" + projectId
+                        baseURL + "/projects/" + currentCrpSession + "/description.do?projectID=" + projectId
                             + "&edit=true";
                   });
             } else {

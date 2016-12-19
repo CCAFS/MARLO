@@ -520,8 +520,11 @@ public class ValidateProjectSectionAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsCluserActvities(
       project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    if (!(project.getProjectBudgetsCluserActvities().isEmpty()
+      || project.getProjectBudgetsCluserActvities().size() == 1)) {
+      projectBudgetsCoAValidator.validate(this, project, false);
+    }
 
-    projectBudgetsCoAValidator.validate(this, project, false);
   }
 
   public void validateProjectDeliverables() {
