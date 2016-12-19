@@ -175,6 +175,8 @@ public class UnsubmitProjectAction extends BaseAction {
 
     StringBuilder ccEmails = new StringBuilder();
 
+    ccEmails.append(this.getCurrentUser().getEmail());
+    ccEmails.append(", ");
 
     // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
     Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
