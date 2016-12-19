@@ -277,8 +277,9 @@ function unSubmitButtonEvent(e) {
             var $justification = $dialogContent.find("#justification");
             if($justification.val().length > 0) {
               var url = baseURL + "/unsubmitProject.do";
+              var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
               var data = {
-                  projectID: $(".projectUnSubmitButton").attr("id").split("-")[1],
+                  projectID: projectId,
                   justification: $justification.val()
               }
               console.log(data);
@@ -291,8 +292,8 @@ function unSubmitButtonEvent(e) {
               }).done(
                   function(m) {
                     window.location.href =
-                        baseURL + "/projects/" + currentCrpSession + "description.do?projectID="
-                            + $("input[name='id']").val() + "&edit=true";
+                        baseURL + "/projects/" + currentCrpSession + "description.do?projectID=" + projectId
+                            + "&edit=true";
                   });
             } else {
               $justification.addClass('fieldError');
