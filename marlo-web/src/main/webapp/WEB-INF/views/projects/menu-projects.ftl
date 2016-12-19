@@ -142,7 +142,7 @@
  [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
   <div class="dialog-content"> 
-      [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
+      [@customForm.textArea name="justification-unSubmit" i18nkey="saving.justification" required=true className="justification"/]
   </div>  
 </div>
 
