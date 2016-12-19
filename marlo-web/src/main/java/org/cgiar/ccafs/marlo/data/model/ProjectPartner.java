@@ -257,12 +257,16 @@ public class ProjectPartner implements java.io.Serializable, IAuditLog {
    * @return true if this project partner is coordinating the project. false otherwise.
    */
   public boolean isCoordinator() {
-    for (ProjectPartnerPerson person : partnerPersons) {
-      if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
-        return true;
+    try {
+      for (ProjectPartnerPerson person : partnerPersons) {
+        if (person.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+          return true;
+        }
       }
+      return false;
+    } catch (Exception e) {
+      return false;
     }
-    return false;
   }
 
   /**
