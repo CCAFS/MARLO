@@ -89,12 +89,16 @@ public class UnsubmitProjectAction extends BaseAction {
       mStatus.put("status", "ok");
       mStatus.put("message", "project unsubmitted");
 
+      message.add(mStatus);
+
       this.sendNotficationEmail(project);
 
     } else {
 
       mStatus.put("status", "error");
       mStatus.put("message", "project has not submits");
+
+      message.add(mStatus);
 
     }
 
