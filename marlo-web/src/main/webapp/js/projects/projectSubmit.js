@@ -278,18 +278,22 @@ function unSubmitButtonEvent(e) {
             if($justification.val().length > 0) {
               var url = baseURL + "/unsubmitProject.do";
               var data = {
-                  projectID: $("input[name='id']").val(),
+                  projectID: $(".projectUnSubmitButton").attr("id").split("-")[1],
                   justification: $justification.val()
               }
+              console.log(data);
               $justification.removeClass('fieldError');
               $.ajax({
                   url: url,
                   type: 'GET',
                   dataType: "json",
                   data: data
-              }).done(function(m) {
-                console.log(m);
-              });
+              }).done(
+                  function(m) {
+                    window.location.href =
+                        baseURL + "/projects/" + currentCrpSession + "description.do?projectID="
+                            + $("input[name='id']").val() + "&edit=true";
+                  });
             } else {
               $justification.addClass('fieldError');
             }
