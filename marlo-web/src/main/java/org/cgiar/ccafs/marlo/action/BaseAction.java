@@ -828,13 +828,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case ACTIVITIES:
         project = projectManager.getProjectById(projectID);
 
-        project
-          .setProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-              .collect(Collectors.toList())));
+        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getActivityStatus() != null
+            && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          .collect(Collectors.toList())));
 
         if (project.getProjectActivities().isEmpty()) {
           return false;
