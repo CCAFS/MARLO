@@ -67,6 +67,7 @@ public class UnsubmitProjectAction extends BaseAction {
     this.projectManager = projectManager;
     this.submissionManager = submissionManager;
     this.roleManager = roleManager;
+    this.sendMail = sendMail;
   }
 
   @Override
@@ -128,7 +129,7 @@ public class UnsubmitProjectAction extends BaseAction {
   private void sendNotficationEmail(Project project) {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[5];
+    String[] values = new String[6];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = project.getCrp().getName();
     values[2] = project.getTitle();
