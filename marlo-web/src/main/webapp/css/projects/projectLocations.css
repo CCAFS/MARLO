@@ -215,3 +215,12 @@ div#selectsContent {
 .checkboxFour input[type=checkbox]:checked + label {
   background: #26ca28;
 }
+
+span#globalText {
+    display: block;
+    text-align: center;
+}
+
+span#globalHelp {
+    font-size: 0.7em;
+}
