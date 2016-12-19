@@ -33,7 +33,7 @@
             <column name="unsubmit_justification" length="16777215" />
         </property>
         
-            <property name="unSubmit" type="boolean">
+            <property name="unSubmit" type="java.lang.Boolean">
       <column name="unsubmit" />
     </property>
         <property name="cycle" type="string">

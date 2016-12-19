@@ -42,7 +42,7 @@ public class Submission implements java.io.Serializable {
   private Short year;
   private Project project;
   private User unSubmitUser;
-  private boolean unSubmit;
+  private Boolean unSubmit;
   private String unSubmitJustification;
 
 
@@ -112,7 +112,7 @@ public class Submission implements java.io.Serializable {
     return this.year;
   }
 
-  public boolean isUnSubmit() {
+  public Boolean isUnSubmit() {
     return unSubmit;
   }
 
@@ -140,7 +140,7 @@ public class Submission implements java.io.Serializable {
     this.project = project;
   }
 
-  public void setUnSubmit(boolean unSubmit) {
+  public void setUnSubmit(Boolean unSubmit) {
     this.unSubmit = unSubmit;
   }
 
