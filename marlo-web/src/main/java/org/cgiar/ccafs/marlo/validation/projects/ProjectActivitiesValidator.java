@@ -75,7 +75,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
       int i = 0;
       for (Activity activity : project.getProjectActivities()) {
 
-        if (activity != null) {
+        if (activity != null && activity.getActivityStatus() != null) {
           if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
             this.validateActivity(activity, i, "projectActivities");
