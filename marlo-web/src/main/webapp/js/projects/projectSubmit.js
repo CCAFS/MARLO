@@ -75,6 +75,9 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
+// Click on submit button
+  $('.projectUnSubmitButton').on('click', unSubmitButtonEvent);
+
   /* Validate justification for old projects */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
@@ -257,4 +260,40 @@ function processTasks(tasks,id,button) {
   }
   // Start first Ajax call
   nextTask();
+}
+
+function unSubmitButtonEvent(e) {
+  e.preventDefault();
+  var $dialogContent = $("#unSubmit-justification");
+  $dialogContent.dialog({
+      width: '30%',
+      modal: true,
+      closeText: "",
+      buttons: {
+          Cancel: function() {
+            $(this).dialog("close");
+          },
+          unSubmit: function() {
+            var $justification = $dialogContent.find("#justification");
+            if($justification.val().length > 0) {
+              var url = baseURL + "/unsubmitProject.do";
+              var data = {
+                  projectID: $("input[name='id']").val(),
+                  justification: $justification.val()
+              }
+              $justification.removeClass('fieldError');
+              $.ajax({
+                  url: url,
+                  type: 'GET',
+                  dataType: "json",
+                  data: data
+              }).done(function(m) {
+                console.log(m);
+              });
+            } else {
+              $justification.addClass('fieldError');
+            }
+          }
+      }
+  });
 }
