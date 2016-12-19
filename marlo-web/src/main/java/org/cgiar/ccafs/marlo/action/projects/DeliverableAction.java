@@ -471,9 +471,12 @@ public class DeliverableAction extends BaseAction {
 
 
       for (DeliverablePartnership deliverablePartnership : partnerShipsPrew) {
-        if (!deliverable.getOtherPartners().contains(deliverablePartnership)) {
-          deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+        if (deliverable.getOtherPartners() != null) {
+          if (!deliverable.getOtherPartners().contains(deliverablePartnership)) {
+            deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
+          }
         }
+
       }
     }
   }
