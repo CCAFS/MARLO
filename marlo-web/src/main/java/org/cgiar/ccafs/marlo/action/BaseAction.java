@@ -828,16 +828,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       case ACTIVITIES:
         project = projectManager.getProjectById(projectID);
 
-        project
-          .setProjectActivities(
-            new ArrayList<Activity>(project.getActivities().stream()
-              .filter(a -> a.isActive()
-                && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                  || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
-              .collect(Collectors.toList())));
+        project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
+          .filter(a -> a.isActive() && a.getActivityStatus() != null
+            && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+          .collect(Collectors.toList())));
 
         if (project.getProjectActivities().isEmpty()) {
-          return false;
+          return true;
         }
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
@@ -978,6 +976,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean hasPersmissionSubmitImpact() {
 
     return this.hasPermission("submit");
+  }
+
+  public boolean hasPersmissionUnSubmit(long projectId) {
+    String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
+      this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
+    boolean permissions = this.securityContext.hasPermission(permission);
+    return permissions;
   }
 
   public boolean hasProgramnsRegions() {
@@ -1292,8 +1297,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
-    List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == year)
+    List<Submission> submissions =
+      project
+        .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+          && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
 
     if (submissions.isEmpty()) {

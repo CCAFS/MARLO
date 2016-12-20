@@ -75,6 +75,9 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
+// Click on submit button
+  $('.projectUnSubmitButton').on('click', unSubmitButtonEvent);
+
   /* Validate justification for old projects */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
@@ -257,4 +260,45 @@ function processTasks(tasks,id,button) {
   }
   // Start first Ajax call
   nextTask();
+}
+
+function unSubmitButtonEvent(e) {
+  e.preventDefault();
+  var $dialogContent = $("#unSubmit-justification");
+  $dialogContent.dialog({
+      width: '30%',
+      modal: true,
+      closeText: "",
+      buttons: {
+          Cancel: function() {
+            $(this).dialog("close");
+          },
+          unSubmit: function() {
+            var $justification = $dialogContent.find("#justification-unSubmit");
+            if($justification.val().length > 0) {
+              var url = baseURL + "/unsubmitProject.do";
+              var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
+              var data = {
+                  projectID: projectId,
+                  justification: $justification.val()
+              }
+              console.log(data);
+              $justification.removeClass('fieldError');
+              $.ajax({
+                  url: url,
+                  type: 'GET',
+                  dataType: "json",
+                  data: data
+              }).done(
+                  function(m) {
+                    window.location.href =
+                        baseURL + "/projects/" + currentCrpSession + "/description.do?projectID=" + projectId
+                            + "&edit=true";
+                  });
+            } else {
+              $justification.addClass('fieldError');
+            }
+          }
+      }
+  });
 }

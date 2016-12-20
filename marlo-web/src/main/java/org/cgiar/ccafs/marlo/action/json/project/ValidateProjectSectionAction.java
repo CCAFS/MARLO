@@ -477,8 +477,9 @@ public class ValidateProjectSectionAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
 
     project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-      .filter(a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
+      .filter(a -> a.isActive() && a.getActivityStatus() != null
+        && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
       .collect(Collectors.toList())));
 
 
@@ -490,8 +491,9 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
 
     project.setClosedProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-      .filter(a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-        || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
+      .filter(a -> a.isActive() && a.getActivityStatus() != null
+        && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())))))
       .collect(Collectors.toList())));
 
     if (project.getClosedProjectActivities() != null) {
@@ -520,8 +522,11 @@ public class ValidateProjectSectionAction extends BaseAction {
     Project project = projectManager.getProjectById(projectID);
     project.setBudgetsCluserActvities(
       project.getProjectBudgetsCluserActvities().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    if (!(project.getProjectBudgetsCluserActvities().isEmpty()
+      || project.getProjectBudgetsCluserActvities().size() == 1)) {
+      projectBudgetsCoAValidator.validate(this, project, false);
+    }
 
-    projectBudgetsCoAValidator.validate(this, project, false);
   }
 
   public void validateProjectDeliverables() {

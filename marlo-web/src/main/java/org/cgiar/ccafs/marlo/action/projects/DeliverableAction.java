@@ -444,17 +444,21 @@ public class DeliverableAction extends BaseAction {
 
             deliverablePartnershipManager.deleteDeliverablePartnership(deliverablePartnership.getId());
 
-            DeliverablePartnership partnershipNew = new DeliverablePartnership();
-            partnershipNew.setProjectPartnerPerson(partnerPerson);
-            partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
-            partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            partnershipNew.setActive(true);
-            partnershipNew.setCreatedBy(this.getCurrentUser());
-            partnershipNew.setModifiedBy(this.getCurrentUser());
-            partnershipNew.setModificationJustification("");
-            partnershipNew.setActiveSince(new Date());
+            if (partnerPerson != null) {
 
-            deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+              DeliverablePartnership partnershipNew = new DeliverablePartnership();
+              partnershipNew.setProjectPartnerPerson(partnerPerson);
+              partnershipNew.setPartnerType(DeliverablePartnershipTypeEnum.OTHER.getValue());
+              partnershipNew.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+              partnershipNew.setActive(true);
+              partnershipNew.setCreatedBy(this.getCurrentUser());
+              partnershipNew.setModifiedBy(this.getCurrentUser());
+              partnershipNew.setModificationJustification("");
+              partnershipNew.setActiveSince(new Date());
+
+              deliverablePartnershipManager.saveDeliverablePartnership(partnershipNew);
+            }
+
 
           }
         }

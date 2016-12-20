@@ -95,9 +95,9 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions().stream()
-          .filter(
-            c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+        List<Submission> submissions = project.getSubmissions()
+          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
         if (submissions.isEmpty()) {

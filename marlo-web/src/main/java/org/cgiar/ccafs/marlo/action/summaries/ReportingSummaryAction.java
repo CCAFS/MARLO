@@ -776,8 +776,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             } else {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
-                cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
-                  + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                if (dgl.getGenderLevel() != 0.0) {
+                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
+                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                }
               }
             }
           }
