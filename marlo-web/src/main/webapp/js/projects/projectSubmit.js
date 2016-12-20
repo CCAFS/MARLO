@@ -275,7 +275,7 @@ function unSubmitButtonEvent(e) {
           },
           unSubmit: function() {
             var $justification = $dialogContent.find("#justification-unSubmit");
-            if($justification.val().length > 0) {
+            if($justification.val().length > 0 && valida($justification) == true) {
               var url = baseURL + "/unsubmitProject.do";
               var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
               var data = {
@@ -301,4 +301,12 @@ function unSubmitButtonEvent(e) {
           }
       }
   });
+}
+
+function valida(F) {
+  if(/^\s+|\s+$/.test(F.val())) {
+    return false
+  } else {
+    return true;
+  }
 }
