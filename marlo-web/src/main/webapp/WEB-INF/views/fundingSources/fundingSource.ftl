@@ -86,7 +86,7 @@
       <div class="form-group">
         <div class="row">
           <div class="col-md-12">
-            [@customForm.select name="fundingSource.leader.id" i18nkey="CGIAR lead center" className="institution"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
+            [@customForm.select name="fundingSource.leader.id" i18nkey="fundingSource.leadPartner" className="institution"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
           </div>
         </div>
       </div>
