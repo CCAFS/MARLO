@@ -181,12 +181,17 @@ public class ProjectSubmissionAction extends BaseAction {
   private void sendNotficationEmail() {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[5];
+    String[] values = new String[6];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = loggedCrp.getName();
     values[2] = project.getTitle();
     values[3] = String.valueOf(this.getCurrentCycleYear());
     values[4] = this.getCurrentCycle().toLowerCase();
+    // Message to download the pdf
+    values[5] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+      + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
+      + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
+
 
     String subject = null;
     message.append(this.getText("submit.email.message", values));
@@ -262,7 +267,7 @@ public class ProjectSubmissionAction extends BaseAction {
     ByteBuffer buffer = null;
     String fileName = null;
     String contentType = null;
-    //
+
     // try {
     // // Making the URL to get the report.
     //
