@@ -81,10 +81,40 @@ public class ProjectListAction extends BaseAction {
   }
 
 
+  public String addAdminProject() {
+
+    if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
+
+      if (this.createProject(APConstants.PROJECT_CORE, null, null, true)) {
+        this.clearPermissionsCache();
+        return SUCCESS;
+      }
+      return INPUT;
+    } else {
+
+      LiaisonUser liaisonUser =
+        liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+
+      if (liaisonUser != null && this.canAddCoreProject()) {
+        long liId = liaisonUser.getLiaisonInstitution().getId();
+        LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liId);
+        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution, true)) {
+
+          this.clearPermissionsCache();
+          return SUCCESS;
+        }
+        return INPUT;
+      } else {
+        return NOT_AUTHORIZED;
+      }
+    }
+  }
+
+
   public String addBilateralProject() {
     if (this.canAccessSuperAdmin()) {
 
-      if (this.createProject(APConstants.PROJECT_BILATERAL, null, null)) {
+      if (this.createProject(APConstants.PROJECT_BILATERAL, null, null, false)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -97,7 +127,7 @@ public class ProjectListAction extends BaseAction {
       if (liaisonUser != null && this.canAddBilateralProject()) {
         LiaisonInstitution liaisonInstitution =
           liaisonInstitutionManager.getLiaisonInstitutionById(liaisonUser.getLiaisonInstitution().getId());
-        if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser, liaisonInstitution)) {
+        if (this.createProject(APConstants.PROJECT_BILATERAL, liaisonUser, liaisonInstitution, false)) {
           this.clearPermissionsCache();
           return SUCCESS;
         }
@@ -113,7 +143,7 @@ public class ProjectListAction extends BaseAction {
 
     if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
 
-      if (this.createProject(APConstants.PROJECT_CORE, null, null)) {
+      if (this.createProject(APConstants.PROJECT_CORE, null, null, false)) {
         this.clearPermissionsCache();
         return SUCCESS;
       }
@@ -126,7 +156,7 @@ public class ProjectListAction extends BaseAction {
       if (liaisonUser != null && this.canAddCoreProject()) {
         long liId = liaisonUser.getLiaisonInstitution().getId();
         LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(liId);
-        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution)) {
+        if (this.createProject(APConstants.PROJECT_CORE, liaisonUser, liaisonInstitution, false)) {
 
           this.clearPermissionsCache();
           return SUCCESS;
@@ -137,7 +167,6 @@ public class ProjectListAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * This method validates if a project can be deleted or not.
@@ -169,7 +198,8 @@ public class ProjectListAction extends BaseAction {
     return false;
   }
 
-  public boolean createProject(String type, LiaisonUser liaisonUser, LiaisonInstitution liaisonInstitution) {
+  public boolean createProject(String type, LiaisonUser liaisonUser, LiaisonInstitution liaisonInstitution,
+    boolean admin) {
 
     if (liaisonUser != null) {
 
@@ -189,7 +219,7 @@ public class ProjectListAction extends BaseAction {
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-
+      project.setAdministrative(new Boolean(admin));
       projectID = projectManager.saveProject(project);
       SectionStatus status = null;
       if (status == null) {
@@ -225,7 +255,7 @@ public class ProjectListAction extends BaseAction {
       project.setProjectEditLeader(false);
       project.setPresetDate(new Date());
       project.setStatus(Long.parseLong(ProjectStatusEnum.Ongoing.getStatusId()));
-
+      project.setAdministrative(new Boolean(admin));
 
       projectID = projectManager.saveProject(project);
       SectionStatus status = null;
