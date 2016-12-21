@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
-[#assign pageLibs = ["select2","font-awesome"] /]
+[#assign pageLibs = ["select2","font-awesome","jsUri"] /]
 [#assign customJS = ["${baseUrl}/js/global/utils.js", "${baseUrl}/js/summaries/boardSummaries.js"] /]
 [#assign customCSS = ["${baseUrl}/css/summaries/summaries.css"] /]
 [#assign currentSection = "summaries" /]
@@ -28,7 +28,7 @@
       <div class="headerBlock">
         <h5 class="col-md-3">[@s.text name="summaries.board.projectResearchCycle" /]</h5>
         <div class="summariesOption col-md-3">
-          <input type="radio" name="cycle" id="planning" value="planning" checked="checked"/>
+          <input type="radio" name="cycle" id="planning" value="Planning" checked="checked"/>
           <label for="planning">[@s.text name="summaries.board.projectResearchCycle.planning" /]</label>
         </div>
         <div class="summariesOption col-md-3">
@@ -44,6 +44,7 @@
         [#-- -- -- Projects reports -- -- --]
         <div id="projects-contentOptions">
         
+        <div class="row">
         [#-- Full Project Report (PDF) --]
           <div class="summariesFiles borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.projectPortfolio.description" /]" class="info-file fa fa-info-circle "></span>
@@ -53,9 +54,9 @@
             </div>
             <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
             <div class="extraOptions" style="display:none">
-            <label for="selectProject">Select a project</label>
-            <div id="selectProject" class="col-md-12" readonly>Click over me</div>
-            <input  class="hidden" type="text" name="projectID" value="" >
+              <label for="selectProject">Select a project</label>
+              <div id="selectProject" class="col-md-12" readonly>Click over me</div>
+              <input  class="data" style="display:none;" type="text" name="projectID" value="-1" >
             </div>
           </div>
           
@@ -67,6 +68,11 @@
               <label for="">[@s.text name="summaries.board.report.genderContributionSummary" /] </label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
+            <div class="extraOptions" style="display:none">
+              <label for="includeTerms">Include terms</label>
+              <div id="includeTerms" class="col-md-12" readonly>Click over me</div>
+              <input  class="data" style="display:none;" type="text" name="terms" value="" >
+            </div>
           </div>
           
           [#-- Impact Pathways Contributions --] 
@@ -80,7 +86,9 @@
               <div class="extraOptions" style="display:none"> 
             </div>
           </div>
-          
+        </div>
+        
+        <div class="row">
           [#-- List of all Submmited Projects --] 
           <div class="notAvailable borderBox col-md-3">
             <span title="[@s.text name="summaries.board.report.submmitedProjects.description" /]" class="info-file fa fa-info-circle "></span>
@@ -114,6 +122,7 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
+        </div>
         </div>
         
         
@@ -182,6 +191,28 @@
     [/#list]
   [/#if]
   </ul>
+</div>
+
+[#-- POPUP TO include terms --]
+<div id="termsPopUp"  style="display:none;" >
+  <div class="simpleBox wordContent">
+    
+  </div>
+  <label for="">Write the term:</label>
+  <div class="row">
+    <div class="col-md-10">
+      <input class="form-control" type="text"  />
+    </div>
+    <div class="">
+      <div class="button-green addTerm"><span class="glyphicon glyphicon-plus-sign"></span>Add</div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+</div>
+
+[#--  terms template--]
+<div id="term" class="terms" style="display:none;">
+  <span class="text"></span><span class="removeTerm glyphicon glyphicon-remove"></span>
 </div>
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
