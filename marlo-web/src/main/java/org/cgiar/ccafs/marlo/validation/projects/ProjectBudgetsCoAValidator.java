@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -192,7 +193,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     params.add(budgetTypeManager.getBudgetTypeById(type).getName());
     double amount = 0;
     double gender = 0;
-
+    DecimalFormat df = new DecimalFormat("0.00");
     for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : projectBudgetsCluserActvities) {
       if (projectBudgetsCluserActvity.getAmount() == null) {
         projectBudgetsCluserActvity.setAmount(new Double(0));
@@ -201,7 +202,9 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         projectBudgetsCluserActvity.setGenderPercentage(new Double(0));
       }
       amount = amount + projectBudgetsCluserActvity.getAmount().doubleValue();
+      amount = Double.parseDouble(df.format(amount));
       gender = gender + projectBudgetsCluserActvity.getGenderPercentage().doubleValue();
+      gender = Double.parseDouble(df.format(gender));
 
     }
 

@@ -201,7 +201,9 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
           if (projectBudgetsCluserActvity.getAmount() != null) {
             String formate = df.format(projectBudgetsCluserActvity.getAmount().doubleValue());
             double finalValue = (Double) df.parse(formate);
+            System.out.println(remaining + " - " + finalValue);
             remaining = remaining - finalValue;
+            remaining = Double.parseDouble(df.format(remaining));
           }
         }
       }
@@ -222,6 +224,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
             String formate = df.format(projectBudgetsCluserActvity.getGenderPercentage().doubleValue());
             double finalValue = (Double) df.parse(formate);
             remaining = remaining - finalValue;
+            remaining = Double.parseDouble(df.format(remaining));
           }
         }
       }
