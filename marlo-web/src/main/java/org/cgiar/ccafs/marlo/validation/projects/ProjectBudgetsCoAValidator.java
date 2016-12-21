@@ -29,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import org.cgiar.ccafs.marlo.validation.model.ProjectValidator;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -115,10 +117,20 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
   }
 
 
+  public double round(double value, int places) {
+    if (places < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    BigDecimal bd = new BigDecimal(value);
+    bd = bd.setScale(places, RoundingMode.HALF_UP);
+    return bd.doubleValue();
+  }
+
+
   public void setHasErros(boolean hasErros) {
     this.hasErros = hasErros;
   }
-
 
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
@@ -187,6 +199,7 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
     }
   }
 
+
   public void validateBudgets(BaseAction action, List<ProjectBudgetsCluserActvity> projectBudgetsCluserActvities,
     long type, double genderTotal) {
     List<String> params = new ArrayList<String>();
@@ -202,9 +215,9 @@ public class ProjectBudgetsCoAValidator extends BaseValidator {
         projectBudgetsCluserActvity.setGenderPercentage(new Double(0));
       }
       amount = amount + projectBudgetsCluserActvity.getAmount().doubleValue();
-      amount = Double.parseDouble(df.format(amount));
+      amount = this.round(amount, 2);
       gender = gender + projectBudgetsCluserActvity.getGenderPercentage().doubleValue();
-      gender = Double.parseDouble(df.format(gender));
+      gender = this.round(gender, 2);
 
     }
 
