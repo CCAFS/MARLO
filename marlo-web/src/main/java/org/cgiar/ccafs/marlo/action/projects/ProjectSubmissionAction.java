@@ -305,9 +305,11 @@ public class ProjectSubmissionAction extends BaseAction {
         true);
       // } else {
 
+    } else {
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+
   }
 
 
