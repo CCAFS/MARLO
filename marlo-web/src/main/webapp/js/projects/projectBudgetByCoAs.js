@@ -69,6 +69,7 @@ function calculateBudgetRemaining(context,type) {
   var total = 0
   $('.tab-pane.active input.percentageInput.context-' + context + '.type-' + type + ':enabled').each(function(i,e) {
     total = total + parseFloat(removePercentageFormat($(e).val() || "0"));
+    total = Number((total).toFixed(2));
   });
   return total;
 }
