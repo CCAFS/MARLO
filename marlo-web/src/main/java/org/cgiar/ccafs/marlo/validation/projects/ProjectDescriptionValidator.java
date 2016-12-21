@@ -126,35 +126,38 @@ public class ProjectDescriptionValidator extends BaseValidator
       action.getInvalidFields().put("input-project.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
 
-    if (project.getFlagships() != null) {
-      if (project.getFlagships().size() == 0) {
-        if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
+      if (project.getFlagships() != null) {
+        if (project.getFlagships().size() == 0) {
+          if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
+            this.addMessage(action.getText("projectDescription.flagships"));
+            action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+        }
+      } else {
+        if (project.getFlagshipValue().length() == 0) {
           this.addMessage(action.getText("projectDescription.flagships"));
           action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
         }
 
       }
-    } else {
-      if (project.getFlagshipValue().length() == 0) {
-        this.addMessage(action.getText("projectDescription.flagships"));
-        action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
     }
 
+    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
 
-    if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
-      && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
-      if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
-        && (project.getNoRegional() == null || project.getNoRegional().booleanValue() == false)) {
-        this.addMessage(action.getText("projectDescription.regions"));
-        action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+      if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
+        && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
+        if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
+          && (project.getNoRegional() == null || project.getNoRegional().booleanValue() == false)) {
+          this.addMessage(action.getText("projectDescription.regions"));
+          action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
 
 
+        }
       }
     }
-
 
     if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
       if (project.getClusterActivities() != null) {
