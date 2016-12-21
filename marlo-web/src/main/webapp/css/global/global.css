@@ -6312,3 +6312,12 @@ span#lastUpdateMessage {
 #mainMenu .menuContent ul li.disabled a {
     color: #c7c7c7;
 }
+
+#fundingID-quote {
+    background-image: url(../../images/global/fundingSources-icon.png);
+}
+
+#fundingID-quote  p{
+  line-height: 29px;
+  margin: 0;
+}

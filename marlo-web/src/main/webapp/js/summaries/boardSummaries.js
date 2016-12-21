@@ -172,7 +172,8 @@ function generateReport(e) {
       console.log(termsString);
       var $formOptions = $($selected).find('input[name=formOptions]');
       var formOption = $formOptions.val() || 0;
-      var url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsString;
+      var url =
+          baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
       console.log(url);
       setUrl(url);
     }
