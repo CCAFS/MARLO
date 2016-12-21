@@ -43,6 +43,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -189,14 +191,17 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   }
 
 
-  public double getRemaining(Long type, int year) {
+  public double getRemaining(Long type, int year) throws ParseException {
     double remaining = 100;
+    DecimalFormat df = new DecimalFormat("0.00");
     if (project.getBudgetsCluserActvities() != null) {
       for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
         if (projectBudgetsCluserActvity.getYear() == year
           && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
           if (projectBudgetsCluserActvity.getAmount() != null) {
-            remaining = remaining - projectBudgetsCluserActvity.getAmount().doubleValue();
+            String formate = df.format(projectBudgetsCluserActvity.getAmount().doubleValue());
+            double finalValue = (Double) df.parse(formate);
+            remaining = remaining - finalValue;
           }
         }
       }
@@ -206,14 +211,17 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   }
 
 
-  public double getRemainingGender(Long type, int year) {
+  public double getRemainingGender(Long type, int year) throws ParseException {
     double remaining = 100;
+    DecimalFormat df = new DecimalFormat("0.00");
     if (project.getBudgetsCluserActvities() != null) {
       for (ProjectBudgetsCluserActvity projectBudgetsCluserActvity : project.getBudgetsCluserActvities()) {
         if (projectBudgetsCluserActvity.getYear() == year
           && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
           if (projectBudgetsCluserActvity.getGenderPercentage() != null) {
-            remaining = remaining - projectBudgetsCluserActvity.getGenderPercentage().doubleValue();
+            String formate = df.format(projectBudgetsCluserActvity.getGenderPercentage().doubleValue());
+            double finalValue = (Double) df.parse(formate);
+            remaining = remaining - finalValue;
           }
         }
       }
@@ -225,20 +233,30 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
   public Long getTotalAmount(Long type, int year) {
 
     long totalAmount = 0;
-    double porcentage = Math.abs(this.getRemaining(type, year) - 100);
+    double porcentage;
+    try {
+      porcentage = Math.abs(this.getRemaining(type, year) - 100);
+      totalAmount = (long) (this.getTotalYearPartners(year, type) * (porcentage / 100));
+      return totalAmount;
+    } catch (ParseException e) {
+      return new Long(0);
+    }
 
-    totalAmount = (long) (this.getTotalYearPartners(year, type) * (porcentage / 100));
-    return totalAmount;
 
   }
 
   public Long getTotalGender(Long type, int year) {
 
     long totalAmount = 0;
-    double porcentage = Math.abs(this.getRemainingGender(type, year) - 100);
+    double porcentage;
+    try {
+      porcentage = Math.abs(this.getRemainingGender(type, year) - 100);
+      totalAmount = (long) (this.getTotalGenderPartners(year, type) * (porcentage / 100));
+      return totalAmount;
+    } catch (ParseException e) {
+      return new Long(0);
+    }
 
-    totalAmount = (long) (this.getTotalGenderPartners(year, type) * (porcentage / 100));
-    return totalAmount;
 
   }
 
