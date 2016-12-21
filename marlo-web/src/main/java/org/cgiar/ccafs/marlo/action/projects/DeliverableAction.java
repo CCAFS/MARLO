@@ -776,10 +776,12 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setDeliverableType(deliverableType);
 
-      CrpClusterKeyOutput keyOutput =
-        crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
+      if (deliverable.getCrpClusterKeyOutput() != null) {
+        CrpClusterKeyOutput keyOutput =
+          crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
 
-      deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+        deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+      }
 
 
       DeliverablePartnership partnershipResponsible = null;
