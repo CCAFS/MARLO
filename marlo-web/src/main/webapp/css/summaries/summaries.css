@@ -188,6 +188,8 @@ vertical-align: middle;}
 
 .wordContent{
 	min-height:90px;
+	max-height: 90px;
+	overflow-y: auto;
 }
 
 .terms{

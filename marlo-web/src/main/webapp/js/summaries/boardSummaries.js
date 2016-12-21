@@ -15,7 +15,10 @@ function attachEvents() {
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
   $('#generateReport').on('click', generateReport);
 
+  // Clicking other report
   $(".title-file , .pdfIcon , .excelIcon").on("click", function() {
+    $('.wordContent').empty();
+    termsArray = [];
     $("input[name='projectID']").val("-1");
     $("#selectProject").html("Click over me");
     var $this = $(this).parents(".summariesFiles");
@@ -98,9 +101,9 @@ function addTerm() {
     $list.append($item);
     $item.show('slow');
     termsArray.push(input.val());
+    input.val("");
   } else {
     input.addClass("fieldError");
-    console.log("holi2");
   }
 
 }
