@@ -102,6 +102,7 @@
           </div>
           
         </div>
+        </div>
         [#-- -- -- Partners reports -- -- --]
         <div id="partners-contentOptions" style="display:none">
           [#-- Partners and lead projects --]
@@ -122,7 +123,6 @@
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
           </div>
-        </div>
         </div>
         
         
