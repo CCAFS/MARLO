@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -217,8 +218,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram() != null
-      && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+    } else if (project.getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
@@ -234,12 +234,17 @@ public class ProjectSubmissionAction extends BaseAction {
           ccEmails.append(", ");
         }
       }
+    } else {
+      for (LiaisonUser liaisonUser : project.getLiaisonInstitution().getLiaisonUsers()) {
+        ccEmails.append(liaisonUser.getUser().getEmail());
+        ccEmails.append(", ");
+      }
     }
 
 
     // Add project leader
     if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
+      && project.getLeaderPerson().getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
       ccEmails.append(project.getLeaderPerson().getUser().getEmail());
       ccEmails.append(", ");
     }
