@@ -199,7 +199,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         if (projectBudgetsCluserActvity.getYear() == year
           && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
           if (projectBudgetsCluserActvity.getAmount() != null) {
-            String formate = df.format(projectBudgetsCluserActvity.getAmount().doubleValue());
+            String formate = df.format(projectBudgetsCluserActvity.getAmount().longValue());
             double finalValue = (Double) df.parse(formate);
             System.out.println(remaining + " - " + finalValue);
             remaining = remaining - finalValue;
@@ -221,7 +221,7 @@ public class ProjectBudgetByClusterOfActivitiesAction extends BaseAction {
         if (projectBudgetsCluserActvity.getYear() == year
           && projectBudgetsCluserActvity.getBudgetType().getId().longValue() == type.longValue()) {
           if (projectBudgetsCluserActvity.getGenderPercentage() != null) {
-            String formate = df.format(projectBudgetsCluserActvity.getGenderPercentage().doubleValue());
+            String formate = df.format(projectBudgetsCluserActvity.getGenderPercentage().longValue());
             double finalValue = (Double) df.parse(formate);
             remaining = remaining - finalValue;
             remaining = Double.parseDouble(df.format(remaining));
