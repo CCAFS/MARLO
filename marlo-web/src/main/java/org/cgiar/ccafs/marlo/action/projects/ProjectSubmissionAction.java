@@ -268,42 +268,43 @@ public class ProjectSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
 
-    // try {
-    // // Making the URL to get the report.
-    //
-    // // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-    // /*
-    // * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID +
-    // * "="
-    // * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
-    // * + this.getCurrentCycle());
-    // */
-    // reportingSummaryAction.setSession(this.getSession());
-    // reportingSummaryAction.setYear(this.getCurrentCycleYear());
-    //
-    // reportingSummaryAction.setCycle(this.getCurrentCycle());
-    // reportingSummaryAction.setProjectID(projectID);
-    // reportingSummaryAction.execute();
-    // // Getting the file data.
-    //
-    // buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-    // fileName = this.getFileName();
-    // contentType = "application/pdf";
-    //
-    // } catch (Exception e) {
-    // // Do nothing.
-    // LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
-    // }
+    try {
+      // // Making the URL to get the report.
+      //
+      // // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
+      // /*
+      // * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID
+      // +
+      // * "="
+      // * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE +
+      // "="
+      // * + this.getCurrentCycle());
+      // */
+      reportingSummaryAction.setSession(this.getSession());
+      reportingSummaryAction.setYear(this.getCurrentCycleYear());
+      //
+      reportingSummaryAction.setCycle(this.getCurrentCycle());
+      reportingSummaryAction.setProjectID(projectID);
+      reportingSummaryAction.execute();
+      // Getting the file data.
+      //
+      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
+      fileName = this.getFileName();
+      contentType = "application/pdf";
+      //
+    } catch (Exception e) {
+      // // Do nothing.
+      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+    }
 
-    // if (buffer != null && fileName != null && contentType != null) {
-    // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
-    // true);
-    // } else {
-    sendMail.send("MARLOSupport@cgiar.org", "c.d.garcia@cgiar.org", "MARLOSupport@cgiar.org", subject,
-      message.toString(), null, null, null, true);
-    // }
+    if (buffer != null && fileName != null && contentType != null) {
+      sendMail.send("MARLOSupport@cgiar.org", "c.d.garcia@cgiar.org", "MARLOSupport@cgiar.org", subject,
+        message.toString(), buffer.array(), contentType, fileName, true);
+      // } else {
 
+    }
 
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
 
