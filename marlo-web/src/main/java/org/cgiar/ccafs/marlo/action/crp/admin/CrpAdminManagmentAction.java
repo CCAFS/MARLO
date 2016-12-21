@@ -235,7 +235,7 @@ public class CrpAdminManagmentAction extends BaseAction {
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20161118_AV_HT_AW.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
