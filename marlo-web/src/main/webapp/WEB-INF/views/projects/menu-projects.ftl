@@ -53,8 +53,7 @@
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
-[#-- TODO --]
-[#assign canUnSubmit = (action.hasPersmissionSubmit(projectID))!false /]
+[#assign canUnSubmit = (action.hasPersmissionUnSubmit(projectID))!false /]
 
 
 [#assign sectionsForChecking = [] /]
@@ -62,7 +61,7 @@
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu [#-- <br /><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /] ${project.cofinancing?string('Co-Funded','')})</small>--]</p> 
+  <p>Project Menu <br /><small> [#if project.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
       [#if menu.show]
@@ -130,7 +129,7 @@
   [/#if]
   
   [#-- Unsubmit button --]
-  [#if canUnSubmit && submission && action.hasPersmissionUnSubmit(projectID)]
+  [#if canUnSubmit && submission ]
     <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
       [@s.text name="form.buttons.unsubmit" /]
     </a>
