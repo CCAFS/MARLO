@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,26 +117,34 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     String current_date = timezone.format(format) + timezone.getZone();
-    // TODO: Get front keys
-    // Add keys for search
-    keys.add("gender");
-    keys.add("female");
-    keys.add("male");
-    keys.add("men");
-    keys.add("elderly");
-    keys.add("caste");
-    keys.add("women");
-    keys.add("equitable");
-    keys.add("inequality");
-    keys.add("equity");
-    keys.add("social");
-    keys.add("differentiation");
-    keys.add("social");
-    keys.add("inclusion");
-    keys.add("youth");
-    keys.add("social class");
-    keys.add("children");
-    keys.add("child");
+    String parameters = this.getRequest().getParameter("keys");
+    if (parameters != null) {
+      if (parameters.isEmpty()) {
+        // Add keys for search
+        keys.add("gender");
+        keys.add("female");
+        keys.add("male");
+        keys.add("men");
+        keys.add("elderly");
+        keys.add("caste");
+        keys.add("women");
+        keys.add("equitable");
+        keys.add("inequality");
+        keys.add("equity");
+        keys.add("social");
+        keys.add("differentiation");
+        keys.add("social");
+        keys.add("inclusion");
+        keys.add("youth");
+        keys.add("social class");
+        keys.add("children");
+        keys.add("child");
+      } else {
+        keys = Arrays.asList(parameters.split("~/"));
+      }
+    }
+
+
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
