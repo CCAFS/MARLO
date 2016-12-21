@@ -299,7 +299,8 @@ public class ProjectSubmissionAction extends BaseAction {
     // sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
     // true);
     // } else {
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send("MARLOSupport@cgiar.org", "c.d.garcia@cgiar.org", "MARLOSupport@cgiar.org", subject,
+      message.toString(), null, null, null, true);
     // }
 
 
