@@ -8,12 +8,16 @@ function init() {
 
 function attachEvents() {
   // ADD TERM
-  $('.addTerm').on('click', addTerm);
+  $("#termsPopUp").find("input").on("keypress", function(event) {
+    if(event.keyCode === 10 || event.keyCode === 13) {
+      addTerm();
+    }
+  });
   $('.removeTerm').on('click', removeTerm);
 
   $(".notAvailable").attr("title", "Not available at the moment");
   $('.summariesSection a, .summariesSection span').on('click', selectSummariesSection);
-  $('#generateReport').on('click', generateReport);
+  $('.generateReport').on('click', generateReport);
 
   // Clicking other report
   $(".title-file , .pdfIcon , .excelIcon").on("click", function() {
@@ -62,7 +66,7 @@ function attachEvents() {
         resizable: false,
         closeText: "",
         width: '30%',
-        height: '210',
+        height: '220',
         title: 'terms',
         modal: true,
         show: {
@@ -155,6 +159,7 @@ function selectSummariesSection(e) {
 }
 
 function generateReport(e) {
+  $("#termsPopUp").dialog("close");
   var $selected = $('.selected');
   if($selected.length == "0") {
     e.preventDefault();
@@ -170,7 +175,7 @@ function generateReport(e) {
       noty(notyOptions);
     }
     // TERMS
-    if($selected.find(".extraOptions").find("#includeTerms")) {
+    if($selected.find(".extraOptions").find("#includeTerms").length > 0) {
       var termsString = JSON.stringify(termsArray);
       console.log(termsArray);
       console.log(termsString);
@@ -208,7 +213,7 @@ function setUrl(url) {
   if(url == '#') {
     $('#generateReport').hide();
   } else {
-    $('#generateReport').attr('href', url).fadeIn();
+    $('.generateReport').attr('href', url).fadeIn();
   }
 }
 

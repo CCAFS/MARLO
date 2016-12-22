@@ -204,6 +204,14 @@ vertical-align: middle;}
 .removeTerm{
 	cursor:pointer;
 }
+
+.download{
+	    background-color: #2BA6CB;
+	    color: #fff;
+	    padding: 5px 13px;
+	    border-bottom: 3px solid #1E94B8;
+	    border-radius: 6px;
+}
 /* INFO ANIMATION */
 
 span.info-file {

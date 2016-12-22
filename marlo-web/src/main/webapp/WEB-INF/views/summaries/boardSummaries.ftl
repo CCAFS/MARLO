@@ -176,7 +176,7 @@
         </div>
       </div>
       <br />
-      <a id="generateReport" style="display:none;" target="_blank" class="addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
+      <a id="generateReport" style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
       </form>
     </div> 
   </article>
@@ -195,18 +195,22 @@
 
 [#-- POPUP TO include terms --]
 <div id="termsPopUp"  style="display:none;" >
+  <p  class="helpMessage " style="margin-bottom:5px; display:none;">
+    <span class=""> </span> You can to add terms and generate the report, or simply generate the report without add terms. <br />
+  </p>
   <div class="simpleBox wordContent">
     
   </div>
   <label for="">Write the term:</label>
   <div class="row">
-    <div class="col-md-10">
-      <input class="form-control" type="text"  />
+    <div class="col-md-9">
+      <input class="form-control" type="text" placeholder="Press enter to add a new term " />
     </div>
-    <div class="">
-      <div class="button-green addTerm"><span class="glyphicon glyphicon-plus-sign"></span>Add</div>
-    </div>
+    <div class="col-md-3">
+      <a class="generateReport" href="#" target="_blank"><span title="download" id="buttonDownload" class="download "><span class="glyphicon glyphicon-download-alt"></span></span></a>
     <div class="clearfix"></div>
+    </div>
+    
   </div>
 </div>
 
