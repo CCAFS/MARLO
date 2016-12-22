@@ -1,7 +1,7 @@
 [#ftl]
 [#if !((project.projectEditLeader)!false)]
   [#assign menus= [
-    { 'title': 'General Information',
+    { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
