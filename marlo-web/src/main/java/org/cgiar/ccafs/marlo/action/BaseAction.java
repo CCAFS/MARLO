@@ -879,6 +879,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public List<Submission> getProjectSubmissions(long projectID) {
+    Project project = projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return null;
+    }
+    return submissions;
+  }
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -886,6 +898,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public String getRoles() {
     String roles = "";
@@ -902,7 +915,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return roles;
   }
 
-
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
@@ -911,10 +923,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return session;
   }
 
+
   public Submission getSubmission() {
     return submission;
   }
-
 
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
@@ -925,6 +937,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getUrl() {
     return url;
   }
+
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
@@ -959,7 +972,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPermissionNoBase(String fieldName) {
 
     return securityContext.hasPermission(fieldName);
@@ -985,6 +997,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -992,7 +1005,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   /**
    * @param role
@@ -1073,6 +1085,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -1147,10 +1160,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isDataSaved() {
     return dataSaved;
   }
+
 
   public Boolean isDeliverableNew(long deliverableID) {
 
@@ -1195,7 +1208,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isDraft() {
     return draft;
   }
-
 
   public boolean isEditable() {
     return isEditable;
@@ -1272,7 +1284,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-
     Project project = projectManager.getProjectById(projectID);
     List<Submission> submissions = project.getSubmissions()
       .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
@@ -1285,9 +1296,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isReportingActive() {
-
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
-
   }
 
   public boolean isSaveable() {
@@ -1301,7 +1310,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
 
     if (submissions.isEmpty()) {
       return false;
