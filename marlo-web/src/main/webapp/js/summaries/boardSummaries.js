@@ -142,7 +142,6 @@ function selectSummariesSection(e) {
   $section.addClass('current');
   $content.siblings().hide();
   $content.fadeIn();
-  console.log($content);
 
   // Uncheck from formOptions the option selected
   $("input[name='projectID']").val("-1");
@@ -181,6 +180,8 @@ function generateReport(e) {
           baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
       console.log(url);
       setUrl(url);
+      $('.wordContent').empty();
+      termsArray = [];
     }
   }
 

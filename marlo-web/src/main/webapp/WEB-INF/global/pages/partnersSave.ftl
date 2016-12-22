@@ -18,26 +18,7 @@
     </div>  
     
     [#if !messageSent]
-    <div class="slideshow-container col-xs-12 form-group">
-      [#-- SLIDE 1 --]
-      <div class="mySlides fades">
-        <p  class="helpMessage ">
-          <span class="glyphicon glyphicon-hand-right"> </span> Please enter the institution as “Partner,” the legal entity. <br />
-        </p>
-      </div>
-      [#-- SLIDE 2 --]
-      <div class="mySlides fades">
-        <p  class="helpMessage">
-          <span class="glyphicon glyphicon-hand-right"> </span> The name of the institution should be in its official language. (e.g. For CIAT: Centro Internacional de Agricultura Tropical).
-        </p>
-      </div>
-      [#-- DOTS --]
-      <div class="col-xs-12" style="text-align:center">
-        <span class="dot" onclick="currentSlide(1)"></span> 
-        <span class="dot" onclick="currentSlide(2)"></span> 
-      </div>
-    </div>
-    
+        
       [@s.form action="${crpSession}/partnerSave" cssClass="pure-form "]
       <div class="clearfix"></div>
       <hr  />
