@@ -18,7 +18,15 @@
     </div>  
     
     [#if !messageSent]
-        
+    <div class="slideshow-container col-xs-12 form-group">
+      [#-- SLIDE 1 --]
+      <div class="mySlides fades">
+        <p  class="helpMessage ">
+          <span class=""> </span> Please enter the institution as “Partner,” the legal entity. <br />
+          <span class=""> </span> The name of the institution should be in its official language. (e.g. For CIAT: Centro Internacional de Agricultura Tropical).
+        </p>
+      </div>
+    
       [@s.form action="${crpSession}/partnerSave" cssClass="pure-form "]
       <div class="clearfix"></div>
       <hr  />
