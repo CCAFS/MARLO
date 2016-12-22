@@ -13,6 +13,13 @@
 			<result name="login" type="redirect">${url}</result>
 		</action>
 
+    <action name="sendMailTest" class="org.cgiar.ccafs.marlo.SendMailTest"
+     >
+     <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/dashboard</param>
+      </result>
+    </action>
+
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">
 			<result name="success">/WEB-INF/views/home/login.ftl</result>

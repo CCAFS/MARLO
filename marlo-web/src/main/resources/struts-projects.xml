@@ -102,6 +102,18 @@
 			</result>
 
 		</action>
+		
+		<action name="{crp}/addNewAdminProject" method="addAdminProject"
+      class="org.cgiar.ccafs.marlo.action.projects.ProjectListAction">
+      <interceptor-ref name="projectListStack" />
+      <result name="input">/WEB-INF/views/projects/projectsList.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/description</param>
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+
+    </action>
 
 
 		<action name="{crp}/deleteProject" method="delete"

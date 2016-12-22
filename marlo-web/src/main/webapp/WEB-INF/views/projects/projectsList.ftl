@@ -38,7 +38,9 @@
       [#if action.canAddCoreProject() || action.canAddBilateralProject()]
       <div class="buttons">
         <div class="buttons-content">
-          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addProject" /]</a>
+        
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'/]">[@s.text name="projectsList.addResearchProject" /]</a>
+          <a class="addButton" href="[@s.url action='${crpSession}/addNewAdminProject'/]">[@s.text name="projectsList.addManagementProject" /]</a>
           <div class="clearfix"></div>
         </div>
       </div>

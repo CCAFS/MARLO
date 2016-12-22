@@ -776,8 +776,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             } else {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
-                cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
-                  + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                if (dgl.getGenderLevel() != 0.0) {
+                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
+                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                }
               }
             }
           }
@@ -1021,8 +1023,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     ProjectPartner projectLeader, String cycle, int year) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew"},
-      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, Boolean.class});
+      new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew",
+        "isAdministrative"},
+      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, Boolean.class,
+        Boolean.class});
 
     // Filling title
     String title = "";
@@ -1084,8 +1088,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     String centerAcry = "";
     centerAcry = project.getCrp().getName();
+    Boolean isAdministrative = false;
+    if (project.getAdministrative() != null) {
+      isAdministrative = project.getAdministrative();
+    } else {
+      isAdministrative = false;
+    }
+
     Boolean isNew = this.isProjectNew(projectID);
-    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew});
+    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative});
     return model;
   }
 

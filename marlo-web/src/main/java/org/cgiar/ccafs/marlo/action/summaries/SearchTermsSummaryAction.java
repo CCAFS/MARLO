@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,26 +117,34 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     String current_date = timezone.format(format) + timezone.getZone();
-    // TODO: Get front keys
-    // Add keys for search
-    keys.add("gender");
-    keys.add("female");
-    keys.add("male");
-    keys.add("men");
-    keys.add("elderly");
-    keys.add("caste");
-    keys.add("women");
-    keys.add("equitable");
-    keys.add("inequality");
-    keys.add("equity");
-    keys.add("social");
-    keys.add("differentiation");
-    keys.add("social");
-    keys.add("inclusion");
-    keys.add("youth");
-    keys.add("social class");
-    keys.add("children");
-    keys.add("child");
+    String parameters = this.getRequest().getParameter("keys");
+    if (parameters != null) {
+      if (parameters.isEmpty()) {
+        // Add keys for search
+        keys.add("gender");
+        keys.add("female");
+        keys.add("male");
+        keys.add("men");
+        keys.add("elderly");
+        keys.add("caste");
+        keys.add("women");
+        keys.add("equitable");
+        keys.add("inequality");
+        keys.add("equity");
+        keys.add("social");
+        keys.add("differentiation");
+        keys.add("social");
+        keys.add("inclusion");
+        keys.add("youth");
+        keys.add("social class");
+        keys.add("children");
+        keys.add("child");
+      } else {
+        keys = Arrays.asList(parameters.split("~/"));
+      }
+    }
+
+
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
@@ -269,30 +278,16 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
               end_date = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
 
-            Set<String> matchesProjectTitle = new HashSet<>();
             if (project.getTitle() != null) {
               p_title = "<font size=2 face='Segoe UI' color='#000000'>" + project.getTitle() + "</font>";
-              // Hash set list of matches, avoiding duplicates
-
-              // Find keys in title
-              Matcher matcher = pattern.matcher(p_title);
-              // while are occurrences
-              while (matcher.find()) {
-                // add elements to matches
-                matchesProjectTitle.add(matcher.group(1));
-              }
-              for (String match : matchesProjectTitle) {
-                p_title = p_title.replaceAll("\\b" + match + "\\b",
-                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-              }
             } else {
               p_title = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
 
             String projectId =
-              "<font size=2 face='Segoe UI' color='#000000'>P" + project.getId().toString() + "</font>";
+              "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
             String project_url = project.getId().toString();
-            String act_id = "<font size=2 face='Segoe UI' color='#000000'>A" + activity.getId().toString() + "</font>";
+            String act_id = "<font size=2 face='Segoe UI' color='#0000ff'>A" + activity.getId().toString() + "</font>";
 
 
             // Set leader
@@ -437,11 +432,11 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
           if (matchesDelivTitle.size() > 0) {
             String projectId =
-              "<font size=2 face='Segoe UI' color='#000000'>P" + project.getId().toString() + "</font>";
+              "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
             String project_url = project.getId().toString();
             String title = project.getTitle();
             String dev_id =
-              "<font size=2 face='Segoe UI' color='#000000'>D" + deliverable.getId().toString() + "</font>";
+              "<font size=2 face='Segoe UI' color='#0000ff'>D" + deliverable.getId().toString() + "</font>";
             String dev_url = deliverable.getId().toString();
 
             String dev_type = "<font size=2 face='Segoe UI' color='#000000'></font>";
@@ -450,22 +445,8 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             String leader = "<font size=2 face='Segoe UI' color='#000000'></font>";
 
 
-            // count and store occurrences
-            Set<String> matchesTitle = new HashSet<>();
             if (project.getTitle() != null) {
               title = "<font size=2 face='Segoe UI' color='#000000'>" + project.getTitle() + "</font>";
-              // Hash set list of matches, avoiding duplicates
-              // Find keys in title
-              Matcher matcher = pattern.matcher(title);
-              // while are occurrences
-              while (matcher.find()) {
-                // add elements to matches
-                matchesTitle.add(matcher.group(1));
-              }
-              for (String match : matchesTitle) {
-                title = title.replaceAll("\\b" + match + "\\b",
-                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-              }
             } else {
               title = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -496,17 +477,11 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
                 }
               }
             }
-
-
             model.addRow(new Object[] {projectId, title, dev_id, dev_title, dev_type, dev_sub_type, lead_ins, leader,
               project_url, dev_url});
-
           }
-
         }
-
       }
-
     }
     return model;
   }
@@ -569,10 +544,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
     for (String key : keys) {
       if (countKeys == 0) {
-        keysString += key + " ";
+        keysString += key;
         countKeys++;
       } else {
-        keysString += "," + key + " ";
+        keysString += ", " + key;
         countKeys++;
       }
     }
@@ -584,9 +559,9 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"project_id", "title", "summary", "start_date", "end_date", "flagships", "regions", "lead_ins",
-        "leader", "w1w2", "w3", "bilateral", "center", "project_url"},
+        "leader", "w1w2_budget", "w3_budget", "bilateral_budget", "center_budget", "project_url"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, Double.class, Double.class, Double.class, Double.class, String.class},
       0);
 
     if (!keys.isEmpty()) {
@@ -608,10 +583,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
         String regions = "";
         String ins_leader = "";
         String leader = "";
-        String w1w2 = null;
-        String w3 = null;
-        String bilateral = null;
-        String center = null;
+        Double w1w2 = null;
+        Double w3 = null;
+        Double bilateral = null;
+        Double center = null;
 
         // count and store occurrences
         Set<String> matchesTitle = new HashSet<>();
@@ -715,11 +690,13 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
           // Set leader institution
           ProjectPartner projectLeader = project.getLeader();
-          if (projectLeader.getInstitution() != null) {
-            ins_leader = "<font size=2 face='Segoe UI' color='#000000'>";
-            ins_leader += projectLeader.getInstitution().getComposedName();
-            if (projectLeader.getInstitution().getLocElement() != null) {
-              ins_leader += " - " + projectLeader.getInstitution().getLocElement().getName();
+          if (projectLeader != null) {
+            if (projectLeader.getInstitution() != null) {
+              ins_leader = "<font size=2 face='Segoe UI' color='#000000'>";
+              ins_leader += projectLeader.getInstitution().getComposedName();
+              if (projectLeader.getInstitution().getLocElement() != null) {
+                ins_leader += " - " + projectLeader.getInstitution().getLocElement().getName();
+              }
             }
           }
           if (ins_leader.isEmpty()) {
@@ -743,31 +720,19 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
           int year = this.getCurrentCycleYear();
 
           if (this.getTotalYear(year, 1, project) != 0.0) {
-            w1w2 = "<font size=2 face='Segoe UI' color='#000000'>"
-              + decimalFormatter.format(this.getTotalYear(year, 1, project)) + "</font>";
-          } else {
-            w1w2 = "<font size=2 face='Segoe UI' color='#000000'>-</font>";
+            w1w2 = this.getTotalYear(year, 1, project);
           }
           if (this.getTotalYear(year, 2, project) != 0.0) {
-            w3 = "<font size=2 face='Segoe UI' color='#000000'>"
-              + decimalFormatter.format(this.getTotalYear(year, 2, project)) + "</font>";
-          } else {
-            w3 = "<font size=2 face='Segoe UI' color='#000000'>-</font>";
+            w3 = this.getTotalYear(year, 2, project);
           }
           if (this.getTotalYear(year, 3, project) != 0.0) {
-            bilateral = "<font size=2 face='Segoe UI' color='#000000'>"
-              + decimalFormatter.format(this.getTotalYear(year, 3, project)) + "</font>";
-          } else {
-            bilateral = "<font size=2 face='Segoe UI' color='#000000'>-</font>";
+            bilateral = this.getTotalYear(year, 3, project);
           }
           if (this.getTotalYear(year, 4, project) != 0.0) {
-            center = "<font size=2 face='Segoe UI' color='#000000'>"
-              + decimalFormatter.format(this.getTotalYear(year, 4, project)) + "</font>";
-          } else {
-            center = "<font size=2 face='Segoe UI' color='#000000'>-</font>";
+            center = this.getTotalYear(year, 4, project);
           }
 
-          String projectId = "<font size=2 face='Segoe UI' color='#000000'>P" + project.getId().toString() + "</font>";
+          String projectId = "<font size=2 face='Segoe UI' color='#0000ff'>P" + project.getId().toString() + "</font>";
           String project_url = project.getId().toString();
 
           model.addRow(new Object[] {projectId, title, summary, start_date, end_date, flagships, regions, ins_leader,

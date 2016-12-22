@@ -46,13 +46,13 @@ public class DeliverableStatusAction extends BaseAction {
 
 
   private Long deliverableID;
-  private int year;
-
-
   private DeliverableManager deliverableManager;
 
 
   private Map<String, String> status;
+
+
+  private int year;
 
   @Inject
   public DeliverableStatusAction(APConfig config, DeliverableManager deliverableManager) {
@@ -72,7 +72,8 @@ public class DeliverableStatusAction extends BaseAction {
       status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
     if (this.isPlanningActive()) {
-      if (deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+
+      if (deliverable.getStatus() !=null && deliverable.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         status.remove(ProjectStatusEnum.Complete.getStatusId());
       }
       if (this.isDeliverableNew(deliverableID)) {

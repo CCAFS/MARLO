@@ -41,6 +41,7 @@ public class Permission {
   public static final String PROJECT_BUDGET_CLUSTER_BASE_PERMISSION = "crp:{0}:project:{1}:budgetByCoAs";
   public static final String PROJECT_MANAGE_BASE_PERMISSION = "crp:{0}:project:{1}:manage";
   public static final String PROJECT_SUBMISSION_PERMISSION = "crp:{0}:project:{1}:manage:submitProject";
+  public static final String PROJECT_UNSUBMISSION_PERMISSION = "crp:{0}:project:{1}:unsubmitted";
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:location";
   public static final String PROJECT_DELETE_BASE_PERMISSION = "crp:{0}:project:{1}:deleteProject";
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";

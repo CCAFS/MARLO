@@ -176,10 +176,42 @@ vertical-align: middle;}
 	border-bottom: 1px solid #c1c1c1;
 }
 
+#includeTerms{
+	cursor: pointer;
+    opacity: 0.55;
+    border: 1px solid;
+}
+
 #projectsPopUp li:hover{
 	background-color: #f1f1f1;
 }
 
+.wordContent{
+	min-height:90px;
+	max-height: 90px;
+	overflow-y: auto;
+}
+
+.terms{
+	border: 1px dashed #ccc;
+	padding: 0px 8px;
+	margin: 3px;
+}
+.text{
+	margin:7px;
+}
+
+.removeTerm{
+	cursor:pointer;
+}
+
+.download{
+	    background-color: #2BA6CB;
+	    color: #fff;
+	    padding: 5px 13px;
+	    border-bottom: 3px solid #1E94B8;
+	    border-radius: 6px;
+}
 /* INFO ANIMATION */
 
 span.info-file {

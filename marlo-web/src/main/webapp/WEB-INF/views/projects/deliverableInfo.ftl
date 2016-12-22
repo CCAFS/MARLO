@@ -94,11 +94,12 @@
 [/#if]
 </div>
 
-[#-- Key Outputs select --] 
-<div class="col-md-12 form-group">
-  [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
-</div>
-
+[#-- Key Outputs select --]
+[#if !project.administrative]
+  <div class="col-md-12 form-group">
+    [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
+  </div>
+[/#if]
 
 [#-- Funding Source --]
 <div class="panel tertiary col-md-12">

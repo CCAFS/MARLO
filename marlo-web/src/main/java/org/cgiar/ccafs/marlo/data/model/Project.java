@@ -329,7 +329,10 @@ public class Project implements java.io.Serializable, IAuditLog {
   }
 
   public Boolean getAdministrative() {
-    return administrative;
+    if (administrative != null) {
+      return administrative;
+    }
+    return false;
   }
 
   /**

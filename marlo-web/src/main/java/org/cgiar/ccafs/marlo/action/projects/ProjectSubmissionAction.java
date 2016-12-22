@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -95,9 +96,9 @@ public class ProjectSubmissionAction extends BaseAction {
     complete = false;
     if (this.hasPermission("submitProject")) {
       if (this.isCompleteProject(projectID)) {
-        List<Submission> submissions = project.getSubmissions().stream()
-          .filter(
-            c -> c.getCycle().equals(APConstants.PLANNING) && c.getYear().intValue() == this.getCurrentCycleYear())
+        List<Submission> submissions = project.getSubmissions()
+          .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+            && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
           .collect(Collectors.toList());
 
         if (submissions.isEmpty()) {
@@ -181,12 +182,17 @@ public class ProjectSubmissionAction extends BaseAction {
   private void sendNotficationEmail() {
     // Building the email message
     StringBuilder message = new StringBuilder();
-    String[] values = new String[5];
+    String[] values = new String[6];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = loggedCrp.getName();
     values[2] = project.getTitle();
     values[3] = String.valueOf(this.getCurrentCycleYear());
     values[4] = this.getCurrentCycle().toLowerCase();
+    // Message to download the pdf
+    values[5] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+      + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.YEAR_REQUEST + "="
+      + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "=" + this.getCurrentCycle();
+
 
     String subject = null;
     message.append(this.getText("submit.email.message", values));
@@ -212,8 +218,7 @@ public class ProjectSubmissionAction extends BaseAction {
     if (project.getLiaisonInstitution().getAcronym().equals(roleCrpPmu.getAcronym())) {
       ccEmails.append(project.getLiaisonUser().getUser().getEmail());
       ccEmails.append(", ");
-    } else if (project.getLiaisonInstitution().getCrpProgram() != null
-      && project.getLiaisonInstitution().getCrpProgram().getProgramType() == 1) {
+    } else if (project.getLiaisonInstitution().getCrpProgram() != null) {
       // If Managment liason is FL
       List<CrpProgram> crpPrograms = project.getCrp().getCrpPrograms().stream()
         .filter(cp -> cp.getId() == project.getLiaisonInstitution().getCrpProgram().getId())
@@ -229,12 +234,17 @@ public class ProjectSubmissionAction extends BaseAction {
           ccEmails.append(", ");
         }
       }
+    } else {
+      for (LiaisonUser liaisonUser : project.getLiaisonInstitution().getLiaisonUsers()) {
+        ccEmails.append(liaisonUser.getUser().getEmail());
+        ccEmails.append(", ");
+      }
     }
 
 
     // Add project leader
     if (project.getLeaderPerson() != null
-      && project.getLeaderPerson().getUser().getId() != this.getCurrentUser().getId()) {
+      && project.getLeaderPerson().getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
       ccEmails.append(project.getLeaderPerson().getUser().getEmail());
       ccEmails.append(", ");
     }
@@ -264,33 +274,42 @@ public class ProjectSubmissionAction extends BaseAction {
     String contentType = null;
 
     try {
-      // Making the URL to get the report.
-
-      // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      /*
-       * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID +
-       * "="
-       * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE + "="
-       * + this.getCurrentCycle());
-       */
+      // // Making the URL to get the report.
+      //
+      // // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
+      // /*
+      // * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID
+      // +
+      // * "="
+      // * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE +
+      // "="
+      // * + this.getCurrentCycle());
+      // */
       reportingSummaryAction.setSession(this.getSession());
       reportingSummaryAction.setYear(this.getCurrentCycleYear());
-
+      //
       reportingSummaryAction.setCycle(this.getCurrentCycle());
       reportingSummaryAction.setProjectID(projectID);
       reportingSummaryAction.execute();
       // Getting the file data.
-
+      //
       buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
       fileName = this.getFileName();
       contentType = "application/pdf";
+      //
     } catch (Exception e) {
-      // Do nothing.
+      // // Do nothing.
       LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
     }
+
     if (buffer != null && fileName != null && contentType != null) {
+      sendMail.send("MARLOSupport@cgiar.org", "c.d.garcia@cgiar.org", "MARLOSupport@cgiar.org", subject,
+        message.toString(), buffer.array(), contentType, fileName, true);
+
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
         true);
+      // } else {
+
     } else {
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }

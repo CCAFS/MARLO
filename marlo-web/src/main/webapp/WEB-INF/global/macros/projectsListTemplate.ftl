@@ -58,11 +58,15 @@
           --]
           [#-- Flagship / Regions --]
           <td>
+          [#if !project.administrative]
             [#if project.flagships?has_content || project.regions?has_content]
               [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]
+          [#else]
+            <span class="programTag" style="border-color:#444">PMU</span>
+          [/#if]
           </td>
           [#-- Budget W1/W2 --]
           <td class="budget"> 

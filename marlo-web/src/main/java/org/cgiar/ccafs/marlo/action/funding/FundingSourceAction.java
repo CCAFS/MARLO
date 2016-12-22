@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -30,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.AgreementStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -108,12 +110,14 @@ public class FundingSourceAction extends BaseAction {
 
   private String transaction;
 
+  private CrpPpaPartnerManager crpPpaPartnerManager;
+
   @Inject
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
-    BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, FileDBManager fileDBManager,
-    UserManager userManager) {
+    BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
+    FileDBManager fileDBManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
@@ -124,8 +128,10 @@ public class FundingSourceAction extends BaseAction {
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
     this.fileDBManager = fileDBManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
+
 
   @Override
   public String cancel() {
@@ -158,7 +164,6 @@ public class FundingSourceAction extends BaseAction {
 
 
   }
-
 
   public boolean canEditType() {
     return fundingSource.getProjectBudgets().stream().filter(c -> c.isActive()).collect(Collectors.toList()).isEmpty();
@@ -365,9 +370,15 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-      institutions = institutionManager.findAll().stream()
-        .filter(c -> c.getHeadquarter() == null && c.getInstitutionType().getId().intValue() == 3)
-        .collect(Collectors.toList());
+
+      institutions = new ArrayList<>();
+      for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
+        .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+        .collect(Collectors.toList())) {
+        institutions.add(crpPpaPartner.getInstitution());
+      }
+
+
       institutionsDonors = institutionManager.findAll();
       institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
       institutionsDonors.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));

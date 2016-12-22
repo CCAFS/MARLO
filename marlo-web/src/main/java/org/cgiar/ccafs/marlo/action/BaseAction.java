@@ -801,7 +801,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<Deliverable> deliverables =
           project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
         List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive()
+          .filter(a -> a.isActive() && a.getYear() <= this.getCurrentCycleYear()
             && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                 || a.getStatus().intValue() == 0))))
@@ -829,13 +829,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         project = projectManager.getProjectById(projectID);
 
         project.setProjectActivities(new ArrayList<Activity>(project.getActivities().stream()
-          .filter(
-            a -> a.isActive() && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          .filter(a -> a.isActive() && a.getActivityStatus() != null
+            && ((a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())))))
           .collect(Collectors.toList())));
 
         if (project.getProjectActivities().isEmpty()) {
-          return false;
+          return true;
         }
 
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
@@ -879,6 +879,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public List<Submission> getProjectSubmissions(long projectID) {
+    Project project = projectManager.getProjectById(projectID);
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
+      .collect(Collectors.toList());
+    if (submissions.isEmpty()) {
+      return null;
+    }
+    return submissions;
+  }
+
   public int getReportingYear() {
     return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
   }
@@ -886,6 +898,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public HttpServletRequest getRequest() {
     return request;
   }
+
 
   public String getRoles() {
     String roles = "";
@@ -902,7 +915,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return roles;
   }
 
-
   public BaseSecurityContext getSecurityContext() {
     return securityContext;
   }
@@ -911,10 +923,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return session;
   }
 
+
   public Submission getSubmission() {
     return submission;
   }
-
 
   public String getTimeZone() {
     TimeZone timeZone = TimeZone.getDefault();
@@ -925,6 +937,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getUrl() {
     return url;
   }
+
 
   public List<UserToken> getUsersOnline() {
     return SessionCounter.users;
@@ -959,7 +972,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean hasPermissionNoBase(String fieldName) {
 
     return securityContext.hasPermission(fieldName);
@@ -978,6 +990,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.hasPermission("submit");
   }
 
+  public boolean hasPersmissionUnSubmit(long projectId) {
+    String permission = this.generatePermission(Permission.PROJECT_UNSUBMISSION_PERMISSION,
+      this.getCurrentCrp().getAcronym(), String.valueOf(projectId));
+    boolean permissions = this.securityContext.hasPermission(permission);
+    return permissions;
+  }
+
+
   public boolean hasProgramnsRegions() {
     try {
       return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
@@ -985,7 +1005,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
-
 
   /**
    * @param role
@@ -1066,6 +1085,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+
   public boolean isCompleteProject(long projectID) {
 
     Project project = projectManager.getProjectById(projectID);
@@ -1142,10 +1162,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean isDataSaved() {
     return dataSaved;
   }
+
 
   public Boolean isDeliverableNew(long deliverableID) {
 
@@ -1190,7 +1210,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isDraft() {
     return draft;
   }
-
 
   public boolean isEditable() {
     return isEditable;
@@ -1267,10 +1286,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isProjectSubmitted(long projectID) {
-
     Project project = projectManager.getProjectById(projectID);
-    List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == this.getCurrentCycleYear())
+    List<Submission> submissions = project.getSubmissions()
+      .stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+        && c.getYear().intValue() == this.getCurrentCycleYear() && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
@@ -1279,9 +1298,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isReportingActive() {
-
     return true;
-
   }
 
   public boolean isSaveable() {
@@ -1291,10 +1308,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
-    List<Submission> submissions = project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(this.getCurrentCycle()) && c.getYear().intValue() == year)
-      .collect(Collectors.toList());
-
+    List<Submission> submissions =
+      project
+        .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+          && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

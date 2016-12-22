@@ -1,7 +1,7 @@
 [#ftl]
 [#if !((project.projectEditLeader)!false)]
   [#assign menus= [
-    { 'title': 'General Information',
+    { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
@@ -10,37 +10,37 @@
     }
     
   ]/]
-[#else]
+[#else] 
   [#assign menus= [
-    { 'title': 'General Information',
+    { 'title': 'General Information', 'show': true,
       'items': [
       { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true  }
       ]
     },
-    { 'title': 'Outcomes',
+    { 'title': 'Outcomes', 'show': !project.administrative,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true  },
       { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': true, 'show': reportingActive  },
       { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': true, 'show': reportingActive }
       ]
     },
-    { 'title': 'Outputs',
+    { 'title': 'Outputs', 'show': true,
       'items': [
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
-    { 'title': 'Activities',
+    { 'title': 'Activities', 'show': true,
       'items': [
       { 'slug': 'activities',  'name': 'projects.menu.activities',  'action': 'activities',  'active': true  }
       ]
     },
-    { 'title': 'Budget',
+    { 'title': 'Budget', 'show': true,
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true  },
-      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id), 'active': true  },
+      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.administrative, 'active': true  },
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive }
       ]
     }
@@ -49,45 +49,39 @@
 [/#if]
 
 
-[#attempt]
-  [#assign submission = (action.isProjectSubmitted(projectID))! /]
-  [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
-  [#assign completed = (action.isCompleteProject(projectID))!false /]
-[#recover]
-  [#assign submission = false /]
-  [#assign canSubmit = false /]
-  [#assign completed = false /]
-[/#attempt]
 
+
+[#assign submission = (action.isProjectSubmitted(projectID))!false /]
+[#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
+[#assign completed = (action.isCompleteProject(projectID))!false /]
+[#assign canUnSubmit = (action.hasPersmissionUnSubmit(projectID))!false /]
 
 [#assign sectionsForChecking = [] /]
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
-  <p>Project Menu [#-- <br /><small>([@s.text name="project.type.${(project.type?lower_case)!'none'}" /] ${project.cofinancing?string('Co-Funded','')})</small>--]</p> 
+  <p>Project Menu <br /><small> [#if project.administrative]Program Management [#else] Research Project [/#if]</small> </p> 
   <ul>
     [#list menus as menu]
-    <li>
-      <ul><p class="menuTitle">${menu.title}</p>
-        [#list menu.items as item]
-          [#attempt]
+      [#if menu.show]
+      <li>
+        <ul><p class="menuTitle">${menu.title}</p>
+          [#list menu.items as item]
             [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
-          [#recover]
-            [#assign submitStatus = false /]
-          [/#attempt]
-          [#if (item.show)!true ]
-            <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
-              <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
-                [@s.text name=item.name/]
-              </a>
-            </li>
-            [#if item.active]
-              [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+            [#if (item.show)!true ]
+              <li id="menu-${item.action}" class="[#if item.slug == currentStage]currentSection[/#if] [#if canEdit]${submitStatus?string('submitted','toSubmit')}[/#if] ${(item.active)?string('enabled','disabled')}">
+                <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
+                  [@s.text name=item.name/]
+                </a>
+              </li>
+              [#if item.active]
+                [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
+              [/#if]
             [/#if]
-          [/#if]
-        [/#list] 
-      </ul>
-    </li>
+          [/#list] 
+        </ul>
+      </li>
+      [/#if]
     [/#list]
   </ul> 
 </nav>
@@ -99,7 +93,7 @@
 
 [#-- Open for Project Leaders --]
 [#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) ]
-  [#if !submission?has_content]
+  [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
   </div>
@@ -115,12 +109,12 @@
 [#if ((project.projectEditLeader)!false)]
 
   [#-- Submition message --]
-  [#if !submission?has_content && completed && !canSubmit]
+  [#if !submission && completed && !canSubmit]
     <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
   [/#if]
   
   [#-- Check button --]
-  [#if canEdit && !completed && !submission?has_content]
+  [#if canEdit && !completed && !submission]
     <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
     <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
     <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
@@ -128,9 +122,16 @@
   
   [#-- Submit button --]
   [#if canEdit]
-    [#assign showSubmit=(canSubmit && !submission?has_content && completed)]
+    [#assign showSubmit=(canSubmit && !submission && completed)]
     <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
       [@s.text name="form.buttons.submit" /]
+    </a>
+  [/#if]
+  
+  [#-- Unsubmit button --]
+  [#if canUnSubmit && submission ]
+    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
+      [@s.text name="form.buttons.unsubmit" /]
     </a>
   [/#if]
   
@@ -138,6 +139,13 @@
  
 
 [/#if]
+
+ [#-- Justification --]
+<div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
+  <div class="dialog-content"> 
+      [@customForm.textArea name="justification-unSubmit" i18nkey="saving.justification" required=true className="justification"/]
+  </div>  
+</div>
 
 [#-- Discard Changes Popup --]
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
