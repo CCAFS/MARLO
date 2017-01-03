@@ -614,7 +614,6 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
-      project.setStatus(projectDB.getStatus());
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
 
@@ -633,6 +632,11 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getCrossCuttingYouth() == null) {
         project.setCrossCuttingYouth(false);
       }
+
+      if (!this.isReportingActive()) {
+        project.setStatus(projectDB.getStatus());
+      }
+
       if (projectDB.isBilateralProject()) {
 
         if (file != null) {

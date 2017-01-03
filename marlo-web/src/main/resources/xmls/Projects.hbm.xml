@@ -57,7 +57,9 @@
 		<property name="cofinancing" type="boolean">
 			<column name="is_cofinancing" not-null="true" />
 		</property>
-		
+		<property name="statusJustification" type="string">
+     <column name="status_justification" length="65535" />
+     </property>
 		<property name="genderAnalysis" type="string">
      <column name="gender_analysis" length="65535" />
      </property>
