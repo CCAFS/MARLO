@@ -1,12 +1,31 @@
 $(document).ready(init);
+var genderArray =
+    [
+        "Gender", "female", "male", "men", "elderly", "caste", "women", "equitable", "inequality", "equity",
+        "social differentiation", "social inclusion", "youth", "social class", "children", "child"
+    ];
 var termsArray = [];
 function init() {
-
+  addGenderTerms();
   addSelect2();
   attachEvents();
 }
 
 function attachEvents() {
+
+  $("#gender").on("change", function() {
+
+    if($(this).hasClass("view")) {
+      $(this).addClass("notview");
+      $(this).removeClass("view");
+      $(".gender").hide();
+      removeGenderTerms();
+    } else {
+      $(this).removeClass("notview");
+      $(this).addClass("view");
+      addGenderTerms();
+    }
+  });
   // ADD TERM
   $("#termsPopUp").find("input").on("keypress", function(event) {
     if(event.keyCode === 10 || event.keyCode === 13) {
@@ -21,8 +40,7 @@ function attachEvents() {
 
   // Clicking other report
   $(".title-file , .pdfIcon , .excelIcon").on("click", function() {
-    $('.wordContent').empty();
-    termsArray = [];
+    // $('.wordContent').empty();
     $("input[name='projectID']").val("-1");
     $("#selectProject").html("Click over me");
     var $this = $(this).parents(".summariesFiles");
@@ -66,8 +84,8 @@ function attachEvents() {
         resizable: false,
         closeText: "",
         width: '30%',
-        height: '220',
-        title: 'terms',
+        height: '280',
+        title: 'Terms',
         modal: true,
         show: {
             effect: "blind",
@@ -94,17 +112,33 @@ function attachEvents() {
   });
 }
 
+function addGenderTerms() {
+  for(var i = 0; i < genderArray.length; i++) {
+    var $item = $('#term').clone(true).removeAttr("id");
+    $item.addClass("gender");
+    $item.css("display", "inline-block");
+    $item.find(".text").html(genderArray[i]);
+    $(".wordContent").append($item);
+    $item.show('slow');
+  }
+}
+
+function removeGenderTerms() {
+  $(".wordContent").find(".gender").each(function(i,e) {
+    $(e).remove();
+  });
+}
+
 function addTerm() {
-  var input = $("#termsPopUp").find("input");
+  var input = $("#termsPopUp").find(".inputTerm");
   var $list = $('.wordContent');
   var $item = $('#term').clone(true).removeAttr("id");
   if(validateInputTerms() == true) {
     $item.css("display", "inline-block");
     $item.find(".text").html(input.val());
     input.removeClass("fieldError");
-    $list.append($item);
+    $list.prepend($item);
     $item.show('slow');
-    termsArray.push(input.val());
     input.val("");
   } else {
     input.addClass("fieldError");
@@ -115,17 +149,13 @@ function addTerm() {
 function removeTerm() {
   var $list = $(this).parents('.wordContent');
   var $item = $(this).parents('.terms');
-  var index = termsArray.indexOf($item.html());
-  if(index > -1) {
-    termsArray.splice(index, 1);
-  }
   $item.hide(1000, function() {
     $item.remove();
   });
 }
 
 function validateInputTerms() {
-  var input = $("#termsPopUp").find("input");
+  var input = $("#termsPopUp").find(".inputTerm");
   if(input.val().length > 0) {
     if(/^\s+|\s+$/.test(input.val())) {
       return false
@@ -176,17 +206,28 @@ function generateReport(e) {
     }
     // TERMS
     if($selected.find(".extraOptions").find("#includeTerms").length > 0) {
-      var termsString = JSON.stringify(termsArray);
-      console.log(termsArray);
-      console.log(termsString);
+      var url = "";
       var $formOptions = $($selected).find('input[name=formOptions]');
       var formOption = $formOptions.val() || 0;
-      var url =
-          baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
-      console.log(url);
-      setUrl(url);
+      if($(".wordContent").find(".terms").length > 0) {
+        $(".wordContent").find(".terms").each(function(i,e) {
+          termsArray.push($(e).find(".text").html());
+        });
+        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
+        setUrl(url);
+      } else {
+        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
+        setUrl(url);
+      }
       $('.wordContent').empty();
+      addGenderTerms();
       termsArray = [];
+      $("#gender").prop('checked', true);
+      $("#gender").removeClass("view");
+      $("#gender").removeClass("notview");
+      $("#gender").addClass("view");
+
+      // termsArray = genderArray;
     }
   }
 
