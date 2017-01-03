@@ -157,7 +157,7 @@ function removeTerm() {
 function validateInputTerms() {
   var input = $("#termsPopUp").find(".inputTerm");
   if(input.val().length > 0) {
-    if(/^\s+|\s+$/.test(input.val())) {
+    if(/^\s+|\s+$/.test(input.val()) || /~#/g.test(input.val())) {
       return false
     } else {
       return true;
@@ -213,7 +213,7 @@ function generateReport(e) {
         $(".wordContent").find(".terms").each(function(i,e) {
           termsArray.push($(e).find(".text").html());
         });
-        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
+        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~#");
         setUrl(url);
       } else {
         url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
