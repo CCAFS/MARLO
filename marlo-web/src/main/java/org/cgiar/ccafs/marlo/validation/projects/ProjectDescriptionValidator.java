@@ -196,6 +196,19 @@ public class ProjectDescriptionValidator extends BaseValidator
      * this.addMessage(action.getText("projectDescription.scope"));
      * }
      */
+
+    if (action.isReportingActive()) {
+      if (project.getStatusJustification() != null) {
+        if (!(this.isValidString(project.getStatusJustification())
+          && this.wordCount(project.getStatusJustification()) <= 20)) {
+          this.addMessage(action.getText("project.statusJustification"));
+          action.getInvalidFields().put("input-project.statusJustification", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        this.addMessage(action.getText("project.statusJustification"));
+        action.getInvalidFields().put("input-project.statusJustification", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
   }
 
 }
