@@ -430,8 +430,9 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     if (institution.getId() != null) {
       institution = institutionManager.getInstitutionById(institution.getId());
       if (institution != null) {
-        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-          .size() > 0) {
+        if (institution.getCrpPpaPartners().stream()
+          .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
+          .collect(Collectors.toList()).size() > 0) {
           return true;
         }
       }
