@@ -107,6 +107,22 @@
 	  <mapping resource="xmls/ProjectLeverage.hbm.xml" /> 
     <mapping resource="xmls/CasesStudies.hbm.xml" /> 
     <mapping resource="xmls/CaseStudyProjects.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicatorReports.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicators.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicatorTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpElements.hbm.xml" /> 
+		<mapping resource="xmls/IpElementTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpIndicators.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramElementRelationTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramElements.hbm.xml" /> 
+		<mapping resource="xmls/IpPrograms.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectContributionOverviews.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectContributions.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectIndicators.hbm.xml" /> 
+		<mapping resource="xmls/MogSynthesis.hbm.xml" /> 
+		<mapping resource="xmls/OutcomeSynthesis.hbm.xml" /> 
+		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" /> 
 
 	</session-factory>
 </hibernate-configuration>

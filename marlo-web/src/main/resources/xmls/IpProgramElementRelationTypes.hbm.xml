@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 3, 2017 1:26:43 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.IpProgramElementRelationType" table="ip_program_element_relation_types"  optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" not-null="true">
+                <comment>This field describe the relation between the element and the program</comment>
+            </column>
+        </property>
+        <set name="ipProgramElements" table="ip_program_elements" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="relation_type_id">
+                    <comment>Foreign key to the table ip_program_element_relation_types</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProgramElement" />
+        </set>
+    </class>
+</hibernate-mapping>
