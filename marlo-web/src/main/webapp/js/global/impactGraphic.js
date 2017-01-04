@@ -57,10 +57,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'border-width': 9,
           'color': 'white'
       }).selector('edge').css({
-          'width': 2,
+          'width': 1,
           'source-arrow-shape': 'triangle',
-          'line-color': '#eee',
-          'source-arrow-color': '#eee',
+          'line-color': '#999999',
+          'source-arrow-color': '#999999',
           'curve-style': 'bezier',
           'z-index': '1'
       }).selector('.center-center').css({
@@ -86,8 +86,31 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   nodesInit.addClass('center-center');
   nodesInit.forEach(function(ele) {
     ele.css('background-color', ele.data('color'));
+
     if(ele.data('type') === 'F') {
       colorFlagship = ele.data('color');
+      ele.css({
+          'shape': 'rectangle',
+          'border-color': '#884809',
+          'color': '#884809',
+          'text-outline-width': 0
+      });
+      if(ele.children().length > 0) {
+        ele.css({
+
+        });
+        ele.addClass('bottom-center');
+      }
+    }
+
+    if(ele.data('type') === 'O') {
+      colorFlagship = ele.data('color');
+      ele.css({
+          'shape': 'rectangle',
+          'background-color': '#F5F5F5',
+          'color': '#884809',
+          'text-outline-width': 0
+      });
     }
 
     if(ele.data('type') === 'CoA') {
@@ -95,7 +118,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'shape': 'rectangle',
           'background-color': '#F5F5F5',
           'border-color': colorFlagship,
-          'color': '#884809',
+          'color': '#F5F5F5',
           'text-outline-width': 0
       });
       if(ele.children().length > 0) {
@@ -119,10 +142,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
     cy.$('node').css('background-opacity', '0.4');
     cy.$('node').css('text-opacity', '0.4');
-    cy.$('edge').css('line-opacity', '0.4');
-    cy.$('edge').css('line-color', '#eee');
-    cy.$('edge').css('source-arrow-color', '#eee');
-    cy.$('edge').css('target-arrow-color', '#eee');
+    cy.$('edge').css('line-opacity', '0.9');
+    cy.$('edge').css('line-color', '#999999');
+    cy.$('edge').css('source-arrow-color', '#999999');
+    cy.$('edge').css('target-arrow-color', '#999999');
     cy.$('edge').css('z-index', '1');
     $(".panel-body ul").empty();
     crps = [];
@@ -142,9 +165,9 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       cy.$('node').removeClass('eating');
       cy.$('node').css('background-opacity', '1');
       cy.$('node').css('text-opacity', '1');
-      cy.$('edge').css('line-color', '#999999');
-      cy.$('edge').css('source-arrow-color', '#999999');
-      cy.$('edge').css('target-arrow-color', '#999999');
+      cy.$('edge').css('line-color', '#eee');
+      cy.$('edge').css('source-arrow-color', '#eee');
+      cy.$('edge').css('target-arrow-color', '#eee');
 
     } else if(event.cyTarget.isNode()) {
 
@@ -209,10 +232,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     ele.addClass('eating');
     ele.css('background-opacity', '1');
     ele.css('text-opacity', '1');
-    ele.css('z-index', '9');
-    ele.css('line-color', '#999999');
-    ele.css('source-arrow-color', '#999999');
-    ele.css('target-arrow-color', '#999999');
+    ele.css('z-index', '99');
+    ele.css('line-color', '#eee');
+    ele.css('source-arrow-color', '#eee');
+    ele.css('target-arrow-color', '#eee');
 
     // Validate if the node exists in any array
 
