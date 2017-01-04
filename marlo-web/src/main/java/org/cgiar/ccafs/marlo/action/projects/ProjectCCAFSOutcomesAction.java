@@ -293,9 +293,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.removeOutcomesAlreadySelected();
 
     for (IpElement ipElement : midOutcomesSelected) {
-      ipElement = ipElementManager.getIpElementById(ipElement.getId());
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
       ipElement
-        .setIndicators(ipElement.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      System.out.println("test");
+
     }
   }
 

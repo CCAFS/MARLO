@@ -72,7 +72,7 @@
              
               [#list outcome.indicators as indicator]
                 <div class="simpleBox">
-                  <p class="grayBox">${indicator.title}</p>
+                  <p class="grayBox">${indicator.description}</p>
                   
                   <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
                     [#list startYear .. endYear as year]
