@@ -30,12 +30,14 @@ public final class APConstants {
   public static final String CUSTOM_LAGUAGE = "en";
   public static final String PATH_CUSTOM_FILES = "custom/";
   public static final String CUSTOM_FILE = "global";
-
+  public static final int ELEMENT_RELATION_CONTRIBUTION = 1;
+  public static final int ELEMENT_RELATION_TRANSLATION = 2;
   // Session variables
   public static final String SESSION_USER = "current_user";
   public static final String SESSION_CRP = "current_crp";
   public static final String USER_TOKEN = "user_token";
-
+  public static final int GLOBAL_PROGRAM = 11;
+  public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
   public static final String CRP_LANGUAGE = "crp_language";

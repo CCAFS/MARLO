@@ -20,6 +20,7 @@ public class IpElement implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -6191644559184410233L;
+
   @Expose
   private Long id;
   @Expose
@@ -50,7 +51,6 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   public IpElement() {
   }
 
-
   public IpElement(IpElementType ipElementType, IpProgram ipProgram, User usersByModifiedBy, User usersByCreatedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
     this.ipElementType = ipElementType;
@@ -65,6 +65,22 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  public String getComposedId() {
+    StringBuilder composedID = new StringBuilder();
+    // composedID.append("O");
+    if (this.ipProgram != null && this.ipProgram.getId() >= 5) {
+      composedID.append(this.ipProgram != null ? this.ipProgram.getAcronym().substring(3) : "p_null");
+    } else {
+      composedID.append(this.ipProgram != null ? "F" + this.ipProgram.getAcronym().substring(2) : "p_null");
+    }
+    composedID.append("-");
+    composedID.append(this.ipElementType != null ? this.ipElementType.getName() : "t_null");
+    // composedID.append(" #");
+    // composedID.append(this.id);
+    return composedID.toString();
   }
 
 

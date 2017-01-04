@@ -23,8 +23,10 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
+import org.cgiar.ccafs.marlo.data.model.IpElementType;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.IpProgramElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -81,8 +83,107 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  private void getMidOutcomesByIndicators() {
+    for (IpIndicator indicator : project.getIndicators()) {
+      IpElement midoutcome = indicator.getIpElement();
+      if (!midOutcomesSelected.contains(midoutcome)) {
+        String description = midoutcome.getIpProgram().getAcronym() + " - "
+          + this.getText("planning.activityImpactPathways.outcome2019") + ": " + midoutcome.getDescription();
+        midoutcome.setDescription(description);
+
+        midOutcomesSelected.add(midoutcome);
+      }
+    }
+  }
+
+  private void getMidOutcomesByOutputs() {
+    for (IpElement output : project.getOutputs()) {
+
+      List<IpElement> contributesTo = new ArrayList<>();
+      List<IpProgramElement> programElements = output.getIpProgramElements().stream()
+        .filter(c -> c.isActive()
+          && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+        .collect(Collectors.toList());
+      for (IpProgramElement ipProgramElement : programElements) {
+        contributesTo.add(ipProgramElement.getIpElement());
+      }
+
+      for (IpElement parent : contributesTo) {
+        IpElement midoutcome = parent;
+        if (!midOutcomesSelected.contains(midoutcome)) {
+          String description = midoutcome.getComposedId() + ": " + midoutcome.getDescription();
+          midoutcome.setDescription(description);
+
+          midOutcomesSelected.add(midoutcome);
+        }
+      }
+    }
+  }
+
+  private void getMidOutcomesByProjectFocuses() {
+    boolean isGlobalProject;
+    isGlobalProject =
+      projectFocusList.contains(new IpProgram(Long.parseLong(String.valueOf(APConstants.GLOBAL_PROGRAM))));
+
+    IpElementType midOutcomeType =
+      new IpElementType(Long.parseLong(String.valueOf(APConstants.ELEMENT_TYPE_OUTCOME2019)));
+    for (IpProgram program : projectFocusList) {
+
+      if (!isGlobalProject && program.isFlagshipProgram()) {
+        continue;
+      }
+
+      List<IpElement> elements =
+        program.getIpElements().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+      for (int i = 0; i < elements.size(); i++) {
+        IpElement midOutcome = elements.get(i);
+        if (this.isValidMidoutcome(midOutcome)) {
+          midOutcome.setDescription(midOutcome.getComposedId() + ": " + midOutcome.getDescription());
+          midOutcomes.add(midOutcome);
+        }
+
+      }
+    }
+  }
+
   public int getMidOutcomeYear() {
     return APConstants.MID_OUTCOME_YEAR;
+  }
+
+  /**
+   * The regional midOutcomes only can be selected if they are translation of
+   * an outcome that belongs to the project focuses.
+   * 
+   * @param midOutcome - The element to evaluate
+   * @return True if the midOutcome belongs to a flagship.
+   *         True if the midOutcome is regional but is translated from an
+   *         outcome that belongs to some of the project focuses.
+   *         False otherwise.
+   */
+  private boolean isValidMidoutcome(IpElement midOutcome) {
+    //
+    List<IpElement> translatedOf = new ArrayList<>();
+    List<IpProgramElement> programElements = midOutcome.getIpProgramElements().stream()
+      .filter(c -> c.isActive()
+        && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_TRANSLATION)
+      .collect(Collectors.toList());
+    for (IpProgramElement ipProgramElement : programElements) {
+      translatedOf.add(ipProgramElement.getIpElement());
+    }
+
+    if (!translatedOf.isEmpty()) {
+      for (IpElement parentElement : translatedOf) {
+        if (projectFocusList.contains(parentElement.getIpProgram())) {
+          return true;
+        }
+      }
+    } else {
+      // Is a flagship midOutcome
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -120,5 +221,24 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getIndicators().add(ipProjectIndicator.getIpIndicator());
     }
 
+
+    this.getMidOutcomesByProjectFocuses();
+
+    // Get all the midOutcomes selected
+    this.getMidOutcomesByOutputs();
+
+    // Get all the midOutcomes selected through the indicators
+    this.getMidOutcomesByIndicators();
+
+    this.removeOutcomesAlreadySelected();
+  }
+
+  private void removeOutcomesAlreadySelected() {
+    for (int i = 0; i < midOutcomes.size(); i++) {
+      if (midOutcomesSelected.contains(midOutcomes.get(i))) {
+        midOutcomes.remove(i);
+        i--;
+      }
+    }
   }
 }
