@@ -193,18 +193,31 @@
   </ul>
 </div>
 
+[#-- gender terms --]
+
+
 [#-- POPUP TO include terms --]
 <div id="termsPopUp"  style="display:none;" >
   <p  class="helpMessage " style="margin-bottom:5px; display:none;">
     <span class=""> </span> You can to add terms and generate the report, or simply generate the report without add terms. <br />
   </p>
+  [#-- predefined terms --]
+  <label for="">Predefined terms:</label>
+  <br />
+  <div class="col-md-12">
+    <label for="gender">Gender <input id="gender" type="checkbox" class="view" checked /></label>
+  </div>
+  <div class="clearfix"></div>
+  <hr />
+  [#-- content --]
   <div class="simpleBox wordContent">
     
   </div>
+  [#-- input --]
   <label for="">Write the term:</label>
   <div class="row">
     <div class="col-md-9">
-      <input class="form-control" type="text" placeholder="Press enter to add a new term " />
+      <input class="form-control inputTerm" type="text" placeholder="Press enter to add a new term " />
     </div>
     <div class="col-md-3">
       <a class="generateReport" href="#" target="_blank"><span title="download" id="buttonDownload" class="download "><span class="glyphicon glyphicon-download-alt"></span></span></a>
