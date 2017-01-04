@@ -60,6 +60,7 @@
                   <div class="tab-content projectOutcomeYear-content">
                     [#list startYear .. endYear as year]
                       <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+                        <span class="label">${year}</span>
                         [#--  1. Indicator target value --]
                         <div class="thirdPartBlock">
                           [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (projectIndicator?? && !projectIndicator.target?has_content)) /]
@@ -180,7 +181,24 @@
               [/#list]
              
               <p><strong>Mogs</strong></p>
-           
+              <div class="mogs">
+                <h6>[@s.text name="planning.projectImpactPathways.mogs" /]</h6>
+                [#if action.getMidOutcomeOutputs(outcome.id)?has_content]
+                  [#assign outputs = action.getMidOutcomeOutputs(outcome.id)]
+                  <div class="mogsBlock">
+                    [#list outputs as output]
+                      <div class="mog">
+                       [#if (project.containsOutput(output.id, midOutcome.id))!false] 
+                       <label class="checked"> ${output.program.acronym} - MOG #${action.getMOGIndex(output)}: ${output.description} </label>
+                       [/#if] 
+                      </div>
+                    [/#list]
+                  </div>
+                [/#if]
+              </div>
+              
+              
+              
             </div> 
           [/#list]
           
