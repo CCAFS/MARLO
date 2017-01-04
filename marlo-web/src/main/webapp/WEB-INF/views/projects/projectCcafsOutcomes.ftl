@@ -1,24 +1,4 @@
 [#ftl]
-
-[#assign indicators = [
-  { 'title': 'FP3 Indicator: # of low emissions plans developed that have significant mitigation potential for 2025, i.e. will contribute to at least 5% GHG reduction or reach at least 10,000 farmers, including at least 10% women.' }
-] /]
-
-[#assign mogs = [
-  { 'title': 'FP3 - MOG #1: Methods and data for quantifying low-emissions agriculture options appropriate to smallholder farmers.' },
-  { 'title': 'FP3 - MOG #2: Decision support for identifying and prioritizing low-emissions CSA options, including synergies and tradeoffs with development objectives' },
-  { 'title': 'FP3 - MOG #3: Incentives and innovations for scale-up of low-emissions practices and avoided deforestation by agricultural commodities' }
-] /]
-
-
-
-[#assign outcomes = [
-  { 'title': 'RP LAM - Outcome 2019', 'indicators': indicators, 'mogs': mogs, 'description': 'LAM-Outcome 2019: National governments formulate and implement NAMAS and LEDS based on improved data on smallholder agricultural GHG emissions and implement equitable policies to strengthen linkages among environment and agriculture in order to avoid deforestation from commodity agriculture, promote restoration to increase carbon sequestration and reduce GHG emissions from livestock and commodities. Research organizations generate improved data on smallholder agricultural GHG emissions. Local governments contribute to the development of NAMAS and LEDS action plans at local level.' }
-] /]
-
-
-
-
 [#assign title = "Project CCAFS Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
@@ -62,11 +42,8 @@
           
           [#list midOutcomesSelected as outcome]
             <div class="borderBox">
-              <h4 class="sectionSubTitle">${outcome.program.acronym} - Outcome</h4>
+              <h4 class="sectionSubTitle">${outcome.ipProgram.acronym} - Outcome 2019</h4>
               <p>${outcome.description}</p>
-              
-              
-                   
               
               <p><strong>Indicators</strong></p>
               [#list outcome.indicators as indicator]
