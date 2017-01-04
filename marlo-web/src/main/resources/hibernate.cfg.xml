@@ -123,6 +123,7 @@
 		<mapping resource="xmls/MogSynthesis.hbm.xml" /> 
 		<mapping resource="xmls/OutcomeSynthesis.hbm.xml" /> 
 		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" /> 
+		<mapping resource="xmls/ProjectFocusesPrev.hbm.xml" /> 
 
 	</session-factory>
 </hibernate-configuration>
