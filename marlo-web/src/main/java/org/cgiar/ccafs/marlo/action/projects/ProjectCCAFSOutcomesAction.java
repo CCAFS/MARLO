@@ -113,8 +113,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         String description = midoutcome.getIpProgram().getAcronym() + " - "
           + this.getText("planning.activityImpactPathways.outcome2019") + ": " + midoutcome.getDescription();
         midoutcome.setDescription(description);
+        if (midoutcome.getIpProgram() != null) {
+          midOutcomesSelected.add(midoutcome);
+        }
 
-        midOutcomesSelected.add(midoutcome);
       }
     }
   }
@@ -137,8 +139,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         if (!midOutcomesSelected.contains(midoutcome)) {
           String description = midoutcome.getComposedId() + ": " + midoutcome.getDescription();
           midoutcome.setDescription(description);
+          if (midoutcome.getIpProgram() != null) {
+            midOutcomesSelected.add(midoutcome);
+          }
 
-          midOutcomesSelected.add(midoutcome);
         }
       }
     }

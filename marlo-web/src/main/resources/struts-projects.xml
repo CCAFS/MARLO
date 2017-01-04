@@ -214,7 +214,8 @@
 		
 		 
     <action name="{crp}/ccafsOutcomes" class="org.cgiar.ccafs.marlo.action.projects.ProjectCCAFSOutcomesAction">
-      <result name="input">/WEB-INF/views/projects/projectCCAFSOutcomes.ftl</result>   
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectCcafsOutcomes.ftl</result>   
       <result name="success" type="redirectAction">   
         <param name="actionName">${crpSession}/ccafsOutcomes</param>    
         <param name="projectID">${projectID}</param>
