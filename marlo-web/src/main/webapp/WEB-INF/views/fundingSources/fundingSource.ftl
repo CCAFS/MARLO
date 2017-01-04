@@ -83,10 +83,16 @@
         </div>
       </div>
       [#-- CGIAR lead center --]
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-12">
-            [@customForm.select name="fundingSource.leader.id" i18nkey="fundingSource.leadPartner" className="institution"  listName="institutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.canEditInstitution() /]
+      <div class="row">
+        <div class="panel tertiary col-md-12">
+         <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+          <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
+            <ul class="list">
+              <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+            </ul>
+            [#if editable ]
+              [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable && action.canEditInstitution() /]
+            [/#if] 
           </div>
         </div>
       </div>
@@ -186,6 +192,17 @@
   [/@s.form] 
   </article>
 </section>
+
+[#-- Funding Source list template --]
+<ul style="display:none">
+  <li id="leadPartnerTemplate" class="leadPartners clearfix" style="display:none;">
+    <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+    <input class="id" type="hidden" name="fundingSource.leaders[-1].id" value="" />
+    <input class="fId" type="hidden" name="fundingSource.leaders[-1].leader.id" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
