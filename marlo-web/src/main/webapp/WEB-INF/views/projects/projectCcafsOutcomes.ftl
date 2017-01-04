@@ -62,13 +62,14 @@
           
           [#list midOutcomesSelected as outcome]
             <div class="borderBox">
-              <h4 class="sectionSubTitle">${outcome.program.acronym} - Outcome</h4>
+              <h4 class="sectionSubTitle">${outcome.ipProgram.acronym} - Outcome</h4>
               <p>${outcome.description}</p>
               
               
                    
               
               <p><strong>Indicators</strong></p>
+             
               [#list outcome.indicators as indicator]
                 <div class="simpleBox">
                   <p class="grayBox">${indicator.title}</p>
@@ -99,10 +100,9 @@
                   
                 </div>
               [/#list]
+             
               <p><strong>Mogs</strong></p>
-              [#list outcome.mogs as mog]
-                <p class="checked">${mog.title}</p>
-              [/#list]
+           
             </div> 
           [/#list]
           
