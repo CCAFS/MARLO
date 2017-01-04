@@ -1,5 +1,5 @@
+var initMode = true;
 $(function() { // on dom ready
-
   var url = baseURL + "/impactPathway/impactPathwayGraph.do";
   var graphicContent = "mini-graphic";
   var panningEnable = false;
@@ -465,8 +465,11 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
-    showHelpText();
-    setViewMore();
+    if(initMode == true) {
+      showHelpText();
+      setViewMore();
+      initMode = false;
+    }
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
