@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
@@ -75,19 +76,19 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
 
   private CrpManager crpManager;
-
+  private IpElementManager ipElementManager;
 
   private Crp loggedCrp;
 
 
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
-    CrpManager crpManager) {
+    IpElementManager ipElementManager, CrpManager crpManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
-
+    this.ipElementManager = ipElementManager;
   }
 
 
@@ -114,7 +115,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
           + this.getText("planning.activityImpactPathways.outcome2019") + ": " + midoutcome.getDescription();
         midoutcome.setDescription(description);
         if (midoutcome.getIpProgram() != null) {
-          midOutcomesSelected.add(midoutcome);
+          // midOutcomesSelected.add(midoutcome);
         }
 
       }
@@ -135,7 +136,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
       for (IpElement parent : contributesTo) {
-        IpElement midoutcome = parent;
+        IpElement midoutcome = ipElementManager.getIpElementById(parent.getId());
         if (!midOutcomesSelected.contains(midoutcome)) {
           String description = midoutcome.getComposedId() + ": " + midoutcome.getDescription();
           midoutcome.setDescription(description);
@@ -270,7 +271,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setOutputs(new ArrayList<>());
     for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
-      project.getOutputs().add(ipProjectContribution.getIpElementByMogId());
+      project.getOutputs().add(ipProjectContribution.getIpElementByMidOutcomeId());
     }
     List<IpProjectIndicator> ipProjectIndicators =
       project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -290,6 +291,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.getMidOutcomesByIndicators();
 
     this.removeOutcomesAlreadySelected();
+
+    for (IpElement ipElement : midOutcomesSelected) {
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
+      ipElement
+        .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      System.out.println("test");
+
+    }
   }
 
   private void removeOutcomesAlreadySelected() {
