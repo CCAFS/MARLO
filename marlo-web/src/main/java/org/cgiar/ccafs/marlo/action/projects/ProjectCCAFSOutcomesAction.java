@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -56,6 +58,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private List<IpIndicator> previousIndicators;
   private List<Integer> allYears;
 
+
   private long projectID;
   private Project project;
 
@@ -64,7 +67,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private ProjectManager projectManager;
   private CrpProgramManager crpProgramManager;
   private CrpManager crpManager;
-
 
   private Crp loggedCrp;
 
@@ -103,6 +105,19 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getProjectFocusPrevs().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (ProjectFocusPrev projectFocusPrev : focusPrevs) {
       projectFocusList.add(projectFocusPrev.getIpProgram());
+    }
+    List<IpProjectContribution> ipProjectContributions =
+      project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setOutputs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getOutputs().add(ipProjectContribution.getIpElementByMogId());
+    }
+    List<IpProjectIndicator> ipProjectIndicators =
+      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+    project.setIndicators(new ArrayList<>());
+    for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
+      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
     }
 
   }
