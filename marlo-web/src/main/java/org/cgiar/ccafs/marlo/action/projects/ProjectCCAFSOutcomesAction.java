@@ -62,15 +62,23 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
 
   private long projectID;
+
+
   private Project project;
 
 
   // Managers
   private ProjectManager projectManager;
+
+
   private CrpProgramManager crpProgramManager;
+
+
   private CrpManager crpManager;
 
+
   private Crp loggedCrp;
+
 
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
@@ -80,6 +88,21 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.projectManager = projectManager;
     this.crpManager = crpManager;
 
+  }
+
+
+  public List<Integer> getAllYears() {
+    return allYears;
+  }
+
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
+  }
+
+
+  public List<IpElement> getMidOutcomes() {
+    return midOutcomes;
   }
 
 
@@ -95,6 +118,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
+
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -119,6 +143,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
+
 
   private void getMidOutcomesByProjectFocuses() {
     boolean isGlobalProject;
@@ -147,9 +172,39 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
   }
 
+
+  public List<IpElement> getMidOutcomesSelected() {
+    return midOutcomesSelected;
+  }
+
+
   public int getMidOutcomeYear() {
     return APConstants.MID_OUTCOME_YEAR;
   }
+
+
+  public List<IpIndicator> getPreviousIndicators() {
+    return previousIndicators;
+  }
+
+
+  public List<IpElement> getPreviousOutputs() {
+    return previousOutputs;
+  }
+
+
+  public Project getProject() {
+    return project;
+  }
+
+  public List<IpProgram> getProjectFocusList() {
+    return projectFocusList;
+  }
+
+  public long getProjectID() {
+    return projectID;
+  }
+
 
   /**
    * The regional midOutcomes only can be selected if they are translation of
@@ -240,5 +295,42 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         i--;
       }
     }
+  }
+
+  public void setAllYears(List<Integer> allYears) {
+    this.allYears = allYears;
+  }
+
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setMidOutcomes(List<IpElement> midOutcomes) {
+    this.midOutcomes = midOutcomes;
+  }
+
+  public void setMidOutcomesSelected(List<IpElement> midOutcomesSelected) {
+    this.midOutcomesSelected = midOutcomesSelected;
+  }
+
+  public void setPreviousIndicators(List<IpIndicator> previousIndicators) {
+    this.previousIndicators = previousIndicators;
+  }
+
+  public void setPreviousOutputs(List<IpElement> previousOutputs) {
+    this.previousOutputs = previousOutputs;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+  public void setProjectFocusList(List<IpProgram> projectFocusList) {
+    this.projectFocusList = projectFocusList;
+  }
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
   }
 }
