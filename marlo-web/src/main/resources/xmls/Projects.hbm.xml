@@ -268,5 +268,35 @@
         
         
         
+         <set name="ipProjectContributionOverviews" order-by="id" table="ip_project_contribution_overviews" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview" />
+        </set>
+        <set name="ipProjectContributions" order-by="id" table="ip_project_contributions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true">
+                    <comment>This field is a foreign key to the table projects.</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectContribution" />
+        </set>
+        <set name="projectOtherContributions" table="project_other_contributions" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution" />
+        </set>
+        <set name="ipProjectIndicators" table="ip_project_indicators" inverse="true" order-by="id" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true">
+                    <comment>This column is a foreign key that references to the table activities</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectIndicator" />
+        </set>
+        
+        
 	</class>
 </hibernate-mapping>
