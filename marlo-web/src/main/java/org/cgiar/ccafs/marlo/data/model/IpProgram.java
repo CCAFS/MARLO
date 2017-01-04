@@ -19,10 +19,13 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -25507491163714552L;
+
   @Expose
   private Long id;
+
   @Expose
   private IpProgramType ipProgramType;
+
   @Expose
   private String name;
   @Expose
@@ -34,12 +37,38 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
 
-
   public IpProgram() {
   }
 
   public IpProgram(IpProgramType ipProgramType) {
     this.ipProgramType = ipProgramType;
+  }
+
+  public IpProgram(Long id) {
+    super();
+    this.id = id;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    IpProgram other = (IpProgram) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public String getAcronym() {
@@ -51,16 +80,13 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public Set<IpElement> getIpElements() {
     return ipElements;
   }
 
-
   public Set<IpProgramElement> getIpProgramElements() {
     return ipProgramElements;
   }
-
 
   public IpProgramType getIpProgramType() {
     return ipProgramType;
@@ -111,9 +137,36 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
 
   @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+
+  @Override
   public boolean isActive() {
 
     return true;
+  }
+
+
+  public boolean isFlagshipProgram() {
+    if (ipProgramType != null) {
+      return (this.ipProgramType.getId().intValue() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    } else {
+      return false;
+    }
+  }
+
+
+  public boolean isRegionalProgram() {
+    if (ipProgramType != null) {
+      return (this.ipProgramType.getId().intValue() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
+    } else {
+      return false;
+    }
   }
 
 

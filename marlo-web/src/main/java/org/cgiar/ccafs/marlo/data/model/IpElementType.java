@@ -23,10 +23,16 @@ public class IpElementType implements java.io.Serializable, IAuditLog {
   private Long id;
   @Expose
   private String name;
+
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
-
   public IpElementType() {
+  }
+
+
+  public IpElementType(Long id) {
+    super();
+    this.id = id;
   }
 
   public IpElementType(String name, Set<IpElement> ipElementses) {
