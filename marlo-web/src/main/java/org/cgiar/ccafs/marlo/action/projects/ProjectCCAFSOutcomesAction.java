@@ -102,10 +102,60 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
+    List<IpElement> outputs = new ArrayList<>();
+    IpElement midOutcome = ipElementManager.getIpElementById(midOutcomeID);
+
+    if (this.isRegionalOutcome(midOutcome)) {
+      List<IpElement> mogs = new ArrayList<>();
+
+      List<IpElement> translatedOf = new ArrayList<>();
+      List<IpProgramElement> programElements = midOutcome.getIpProgramElements().stream()
+        .filter(c -> c.isActive()
+          && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_TRANSLATION)
+        .collect(Collectors.toList());
+
+      for (IpProgramElement ipProgramElement : programElements) {
+        translatedOf.add(ipProgramElement.getIpElement());
+      }
+
+
+      for (IpElement fsOutcome : translatedOf) {
+
+        List<IpElement> contributesTo = new ArrayList<>();
+        List<IpProgramElement> programElementsMogs = fsOutcome.getIpProgramElements().stream()
+          .filter(c -> c.isActive()
+            && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+          .collect(Collectors.toList());
+        for (IpProgramElement ipProgramElement : programElementsMogs) {
+          contributesTo.add(ipProgramElement.getIpElement());
+        }
+
+        mogs.addAll(contributesTo);
+        for (IpElement mog : mogs) {
+          if (!outputs.contains(mog)) {
+            outputs.add(mog);
+          }
+        }
+      }
+    } else {
+
+      List<IpElement> contributesTo = new ArrayList<>();
+      List<IpProgramElement> programElementsMogs = midOutcome.getIpProgramElements().stream()
+        .filter(c -> c.isActive()
+          && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+        .collect(Collectors.toList());
+      for (IpProgramElement ipProgramElement : programElementsMogs) {
+        contributesTo.add(ipProgramElement.getIpElement());
+      }
+      outputs = contributesTo;
+    }
+    return outputs;
+  }
+
   public List<IpElement> getMidOutcomes() {
     return midOutcomes;
   }
-
 
   private void getMidOutcomesByIndicators() {
     for (IpIndicator indicator : project.getIndicators()) {
@@ -211,6 +261,20 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  public boolean isRegionalOutcome(IpElement outcome) {
+
+    List<IpElement> translatedOf = new ArrayList<>();
+    List<IpProgramElement> programElements = outcome.getIpProgramElements().stream()
+      .filter(c -> c.isActive()
+        && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_TRANSLATION)
+      .collect(Collectors.toList());
+
+    for (IpProgramElement ipProgramElement : programElements) {
+      translatedOf.add(ipProgramElement.getIpElement());
+    }
+    return !translatedOf.isEmpty();
+  }
+
   /**
    * The regional midOutcomes only can be selected if they are translation of
    * an outcome that belongs to the project focuses.
@@ -300,6 +364,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     }
   }
+
 
   private void removeOutcomesAlreadySelected() {
     for (int i = 0; i < midOutcomes.size(); i++) {
