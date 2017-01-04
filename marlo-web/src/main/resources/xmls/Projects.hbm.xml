@@ -296,7 +296,12 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectIndicator" />
         </set>
-        
+         <set name="projectFocusPrevs" table="project_focuses_prev" inverse="true" order-by="id" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev" />
+        </set>
         
 	</class>
 </hibernate-mapping>
