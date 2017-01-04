@@ -184,6 +184,13 @@ public class ProjectOutcomeListAction extends BaseAction {
   }
 
 
+  @Override
+  public String save() {
+    // TODO Auto-generated method stub
+    return super.save();
+  }
+
+
   public void setOutcomeId(long outcomeId) {
     this.outcomeId = outcomeId;
   }
@@ -192,7 +199,6 @@ public class ProjectOutcomeListAction extends BaseAction {
   public void setOutcomeId(Long outcomeId) {
     this.outcomeId = outcomeId;
   }
-
 
   public void setOutcomes(List<CrpProgramOutcome> outcomes) {
     this.outcomes = outcomes;
