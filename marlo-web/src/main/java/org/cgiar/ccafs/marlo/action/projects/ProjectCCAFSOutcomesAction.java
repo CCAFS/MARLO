@@ -150,6 +150,16 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
       outputs = contributesTo;
     }
+
+
+    List<IpElement> ipElements = outputs;
+
+    for (IpElement ipElement : ipElements) {
+      if (project.getOutputs().contains(ipElement)) {
+        outputs.remove(ipElement);
+      }
+    }
+
     return outputs;
   }
 
@@ -171,7 +181,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
-
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -227,14 +236,29 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
   }
 
-
   public List<IpElement> getMidOutcomesSelected() {
     return midOutcomesSelected;
   }
 
-
   public int getMidOutcomeYear() {
     return APConstants.MID_OUTCOME_YEAR;
+  }
+
+
+  public int getMOGIndex(IpElement mog) {
+    int index = 0;
+    List<IpElement> allMOGs = ipElementManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == mog.getIpProgram().getId().longValue()
+        && mog.getIpElementType().getId().longValue() == c.getIpElementType().getId().longValue())
+      .collect(Collectors.toList());
+
+    for (int i = 0; i < allMOGs.size(); i++) {
+      if (allMOGs.get(i).getId() == mog.getId()) {
+        return (i + 1);
+      }
+    }
+
+    return index;
   }
 
 
