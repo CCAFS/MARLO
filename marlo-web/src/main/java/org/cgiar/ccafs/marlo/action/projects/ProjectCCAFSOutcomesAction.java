@@ -233,20 +233,23 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     if (project.getProjectIndicators() != null) {
       int i = 0;
       for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
-        if (ipProjectIndicator.getIpIndicator().getIpIndicator() != null) {
-          if (ipProjectIndicator.getIpIndicator().getIpIndicator().getId().longValue() == indicatorID
-            && ipProjectIndicator.getIpIndicator().getIpElement().getId().longValue() == midOutcome
-            && year == ipProjectIndicator.getYear()) {
-            return i;
-          }
+        if (ipProjectIndicator.getIpIndicator() != null) {
+          if (ipProjectIndicator.getIpIndicator().getIpIndicator() != null) {
+            if (ipProjectIndicator.getIpIndicator().getIpIndicator().getId().longValue() == indicatorID
+              && ipProjectIndicator.getIpIndicator().getIpElement().getId().longValue() == midOutcome
+              && year == ipProjectIndicator.getYear()) {
+              return i;
+            }
 
-        } else {
-          if (ipProjectIndicator.getIpIndicator().getId().longValue() == indicatorID
-            && Long.parseLong(String.valueOf(ipProjectIndicator.getOutcomeId())) == midOutcome
-            && year == ipProjectIndicator.getYear()) {
-            return i;
+          } else {
+            if (ipProjectIndicator.getIpIndicator().getId().longValue() == indicatorID
+              && Long.parseLong(String.valueOf(ipProjectIndicator.getOutcomeId())) == midOutcome
+              && year == ipProjectIndicator.getYear()) {
+              return i;
+            }
           }
         }
+
         i++;
       }
 
@@ -506,59 +509,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     super.prepare();
+
+
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     midOutcomes = new ArrayList<>();
     midOutcomesSelected = new ArrayList<>();
     projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
     project = projectManager.getProjectById(projectID);
-
-    // Get all years
-    allYears = project.getAllYears();
-    allYears.add(this.getMidOutcomeYear());
-
-    projectFocusList = new ArrayList<>();
-
-    List<ProjectFocusPrev> focusPrevs =
-      project.getProjectFocusPrevs().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (ProjectFocusPrev projectFocusPrev : focusPrevs) {
-      projectFocusList.add(projectFocusPrev.getIpProgram());
-    }
-    List<IpProjectContribution> ipProjectContributions =
-      project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    project.setOutputs(new ArrayList<>());
-    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
-      project.getOutputs().add(ipProjectContribution.getIpElementByMidOutcomeId());
-    }
-    project.setMogs(new ArrayList<>());
-    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
-      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
-    }
-
-    List<IpProjectIndicator> ipProjectIndicators =
-      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-
-    project.setIndicators(new ArrayList<>());
-    for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
-      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
-    }
-
-    this.getMidOutcomesByProjectFocuses();
-
-    // Get all the midOutcomes selected
-    this.getMidOutcomesByOutputs();
-
-    // Get all the midOutcomes selected through the indicators
-    this.getMidOutcomesByIndicators();
-
-    this.removeOutcomesAlreadySelected();
-
-    for (IpElement ipElement : midOutcomesSelected) {
-      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
-      ipElement
-        .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
-    }
 
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
@@ -578,6 +536,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     } else {
       project = projectManager.getProjectById(projectID);
     }
+    // Get all years
+    allYears = project.getAllYears();
+    allYears.add(this.getMidOutcomeYear());
+
+    projectFocusList = new ArrayList<>();
 
 
     if (project != null) {
@@ -625,6 +588,46 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     /* logic for save */
 
+    Project projectDB = projectManager.getProjectById(projectID);
+    List<ProjectFocusPrev> focusPrevs =
+      projectDB.getProjectFocusPrevs().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    for (ProjectFocusPrev projectFocusPrev : focusPrevs) {
+      projectFocusList.add(projectFocusPrev.getIpProgram());
+    }
+    List<IpProjectContribution> ipProjectContributions =
+      projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setOutputs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getOutputs().add(ipProjectContribution.getIpElementByMidOutcomeId());
+    }
+    project.setMogs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
+    }
+
+    List<IpProjectIndicator> ipProjectIndicators =
+      projectDB.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+    project.setIndicators(new ArrayList<>());
+    for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
+      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
+    }
+    this.getMidOutcomesByProjectFocuses();
+
+    // Get all the midOutcomes selected
+    this.getMidOutcomesByOutputs();
+
+    // Get all the midOutcomes selected through the indicators
+    this.getMidOutcomesByIndicators();
+
+    this.removeOutcomesAlreadySelected();
+
+    for (IpElement ipElement : midOutcomesSelected) {
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
+      ipElement
+        .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CCFASOUTCOME_BASE_PERMISSION, params));
@@ -664,20 +667,31 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
       for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
         if (ipProjectIndicator != null) {
+          if (ipProjectIndicator.getId() == null || ipProjectIndicator.getId() == -1) {
+            ipProjectIndicator.setActive(true);
+            ipProjectIndicator.setCreatedBy(this.getCurrentUser());
+            ipProjectIndicator.setModifiedBy(this.getCurrentUser());
+            ipProjectIndicator.setModificationJustification(this.getJustification());
+            ipProjectIndicator.setActiveSince(new Date());
+            ipProjectIndicator.setYear(this.getCurrentCycleYear());
 
-          IpProjectIndicator projectIndicatorDB =
-            ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
-          ipProjectIndicator.setActive(true);
-          ipProjectIndicator.setCreatedBy(projectIndicatorDB.getCreatedBy());
-          ipProjectIndicator.setModifiedBy(this.getCurrentUser());
-          ipProjectIndicator.setModificationJustification(this.getJustification());
-          ipProjectIndicator.setYear(projectIndicatorDB.getYear());
-          ipProjectIndicator.setProject(project);
-          ipProjectIndicator.setActiveSince(projectIndicatorDB.getActiveSince());
-          ipProjectIndicator.setOutcomeId(projectIndicatorDB.getOutcomeId());
 
+            ipProjectIndicator.setProject(project);
+
+          } else {
+            IpProjectIndicator projectIndicatorDB =
+              ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
+            ipProjectIndicator.setActive(true);
+            ipProjectIndicator.setCreatedBy(projectIndicatorDB.getCreatedBy());
+            ipProjectIndicator.setModifiedBy(this.getCurrentUser());
+            ipProjectIndicator.setModificationJustification(this.getJustification());
+            ipProjectIndicator.setYear(projectIndicatorDB.getYear());
+            ipProjectIndicator.setProject(project);
+            ipProjectIndicator.setActiveSince(projectIndicatorDB.getActiveSince());
+            ipProjectIndicator.setOutcomeId(projectIndicatorDB.getOutcomeId());
+
+          }
         }
-
         ipProjectIndicatorManager.saveIpProjectIndicator(ipProjectIndicator);
       }
 
