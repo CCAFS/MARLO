@@ -619,7 +619,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     project.setIndicators(new ArrayList<>());
     for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
-      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
+      project.getIndicators().add(ipIndicatorManager.getIpIndicatorById(ipProjectIndicator.getIpIndicator().getId()));
     }
     this.getMidOutcomesByProjectFocuses();
 
@@ -635,7 +635,19 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
       ipElement
         .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      List<IpIndicator> indicators = new ArrayList<>();
+      indicators.addAll(ipElement.getIndicators());
+      ipElement.getIndicators().clear();
 
+
+      for (IpIndicator ipIndicator : indicators) {
+
+
+        if (project.getIndicators().contains(ipIndicator)
+          || project.getIndicators().contains(ipIndicator.getIpIndicator())) {
+          ipElement.getIndicators().add(ipIndicator);
+        }
+      }
 
     }
 
