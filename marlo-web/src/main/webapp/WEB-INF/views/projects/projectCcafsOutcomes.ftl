@@ -89,14 +89,14 @@
                       [/#if]
                       
                       [#-- Hidden values --]
-                      <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator && projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
+                      <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator?? && projectIndicator.id?? &&  projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
                       <input type="hidden" class="projectIndicatorYear" name="${customName}.year"  value="${year}" /> 
                       <input type="hidden" class="projectIndicatorOutcome" name="${customName}.outcome"  value="${outcome.id}" /> 
                         
                       <div class="form-group row">
                         [#--  1. Indicator target value --]
                         <div class="col-md-4">
-                          [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (!projectIndicator.target?has_content)) /]
+                          [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (!projectIndicator.target?has_content)) && !reportingActive /]
                           [#assign isTargetValueEditable = editable && (currentCycleYear lte year) && action.hasPermission("target") /]
                           <label>[@s.text name="projectCcafsOutcomes.targetValue" /]:[@customForm.req required=isTargetValueRequired /]</label>
                           [#if isTargetValueEditable]
@@ -143,7 +143,7 @@
                       <div class="row">
                         <div class="textArea form-group col-md-12">
                           <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") /]</label>
-                          [#if editable && (currentCycleYear lte year) && action.hasPermission("description")]
+                          [#if editable && (currentCycleYear lte year) && action.hasPermission("description") && !reportingActive ]
                             <textarea class="projectIndicatorDescription form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.description">${projectIndicator.description!}</textarea>
                           [#else]
                             [#if !projectIndicator.description?has_content]
@@ -180,7 +180,7 @@
                       <div class="row">
                         <div class="textArea form-group col-md-12">
                           <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") /]</label>
-                          [#if editable && (currentCycleYear lte year) && action.hasPermission("gender")]
+                          [#if editable && (currentCycleYear lte year) && action.hasPermission("gender") && !reportingActive]
                             <textarea class="projectIndicatorGender form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.gender">${(projectIndicator.gender)!}</textarea>
                           [#else]
                             [#if !projectIndicator.gender?has_content]
