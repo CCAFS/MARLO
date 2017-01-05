@@ -96,7 +96,7 @@
                         [#--  1. Indicator target value --]
                         <div class="col-md-4">
                           [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (!projectIndicator.target?has_content)) && !reportingActive /]
-                          [#assign isTargetValueEditable = editable && (currentCycleYear lte year) && action.hasPermission("target") /]
+                          [#assign isTargetValueEditable = editable && (currentCycleYear lte year) && action.hasPermission("target") && !reportingActive /]
                           <label>[@s.text name="projectCcafsOutcomes.targetValue" /]:[@customForm.req required=isTargetValueRequired /]</label>
                           [#if isTargetValueEditable]
                             <input type="text" class="projectIndicatorTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.target" value="${(projectIndicator.target)!}"/> 
