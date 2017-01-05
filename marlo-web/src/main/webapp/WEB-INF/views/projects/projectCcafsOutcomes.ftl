@@ -2,7 +2,7 @@
 [#assign title = "Project CCAFS Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = [ ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "ccafsOutcomes" /]
@@ -38,6 +38,8 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
@@ -78,6 +80,18 @@
                       [#assign customName = "project.indicators[${projectIndicatorIndex}]" /]
                     
                       <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}-${indicator.id}">
+                        
+                      [#-- Indicator ID --]
+                      [#if indicator.ipIndicator?has_content]
+                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${indicator.ipIndicator.id}"  />
+                      [#else]
+                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${indicator.id}"  />
+                      [/#if]
+                      
+                      [#-- Hidden values --]
+                      <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${projectIndicator.id}" [#if projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
+                      <input type="hidden" class="projectIndicatorYear" name="${customName}.year"  value="${year}" /> 
+                      <input type="hidden" class="projectIndicatorOutcome" name="${customName}.outcome"  value="${outcome.id}" /> 
                         
                       <div class="form-group row">
                         [#--  1. Indicator target value --]
