@@ -473,12 +473,14 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
+        SD: 0,
         F: 0,
         O: 0,
         CoA: 0,
         KO: 0,
     };
     var totalWidth = {
+        SD: 0,
         F: 0,
         O: 0,
         CoA: 0,
@@ -489,7 +491,9 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 
     // For to count and set position
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "F") {
+      if(nodes[i].data.type == "SD") {
+        count.SD++;
+      } else if(nodes[i].data.type == "F") {
         count.F++;
       } else if(nodes[i].data.type == "O") {
         count.O++;
@@ -500,12 +504,14 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       }
     }
 
+    totalWidth.SD = count.SD * (nodeWidth + nodeMargin);
     totalWidth.F = count.F * (nodeWidth + nodeMargin);
     totalWidth.O = count.O * (nodeWidth + nodeMargin);
     totalWidth.CoA = count.CoA * (nodeWidth + nodeMargin);
     totalWidth.KO = (count.KO * (nodeWidth + nodeMargin)) + totalWidth.CoA;
 
     var move = {
+        SD: -(totalWidth.SD / 2),
         F: -(totalWidth.F / 2),
         O: -(totalWidth.O / 2),
         CoA: -(totalWidth.CoA / 2),
@@ -513,7 +519,13 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     };
 
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "F") {
+      if(nodes[i].data.type == "SD") {
+        move.SD = (move.SD + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.SD,
+            y: 0
+        };
+      } else if(nodes[i].data.type == "F") {
         move.F = (move.F + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.F,
