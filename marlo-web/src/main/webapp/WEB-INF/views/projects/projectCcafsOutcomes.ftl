@@ -91,7 +91,7 @@
                       [#-- Hidden values --]
                       <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator && projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
                       <input type="hidden" class="projectIndicatorYear" name="${customName}.year"  value="${year}" /> 
-                      <input type="hidden" class="projectIndicatorOutcome" name="${customName}.outcome"  value="${outcome.id}" /> 
+                      <input type="hidden" class="projectIndicatorOutcome" name="${customName}.outcomeId"  value="${outcome.id}" /> 
                         
                       <div class="form-group row">
                         [#--  1. Indicator target value --]
