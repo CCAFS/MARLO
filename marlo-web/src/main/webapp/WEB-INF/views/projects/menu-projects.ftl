@@ -22,6 +22,7 @@
     { 'title': 'Outcomes', 'show': !project.administrative,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true  },
+      { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomes',  'active': true, 'show': reportingActive  },
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': reportingActive  },
       { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': true, 'show': reportingActive  },
       { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': true, 'show': reportingActive }
@@ -29,6 +30,7 @@
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
+      { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'overviewByMogs',  'active': true  },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
