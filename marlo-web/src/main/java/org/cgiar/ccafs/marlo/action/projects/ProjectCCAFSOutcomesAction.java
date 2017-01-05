@@ -18,9 +18,12 @@ package org.cgiar.ccafs.marlo.action.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
+import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
@@ -35,11 +38,21 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,6 +83,9 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private Project project;
 
 
+  private String transaction;
+
+  private AuditLogManager auditLogManager;
   // Managers
   private ProjectManager projectManager;
 
@@ -80,17 +96,25 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
 
+  private IpIndicatorManager ipIndicatorManager;
+
+
   private Crp loggedCrp;
+  private IpProjectIndicatorManager ipProjectIndicatorManager;
 
 
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
-    IpElementManager ipElementManager, CrpManager crpManager) {
+    IpElementManager ipElementManager, CrpManager crpManager, AuditLogManager auditLogManager,
+    IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
     this.ipElementManager = ipElementManager;
+    this.auditLogManager = auditLogManager;
+    this.ipProjectIndicatorManager = ipProjectIndicatorManager;
+    this.ipIndicatorManager = ipIndicatorManager;
   }
 
 
@@ -138,6 +162,31 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -157,6 +206,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   public List<Integer> getAllYears() {
     return allYears;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = project.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
 
@@ -197,7 +254,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     project.getProjectIndicators().add(new IpProjectIndicator());
     return project.getProjectIndicators().size() - 1;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -274,6 +330,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return midOutcomes;
   }
 
+
   private void getMidOutcomesByIndicators() {
     for (IpIndicator indicator : project.getIndicators()) {
       IpElement midoutcome = indicator.getIpElement();
@@ -288,7 +345,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
-
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -343,6 +399,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
   }
 
+
   public List<IpElement> getMidOutcomesSelected() {
     return midOutcomesSelected;
   }
@@ -374,7 +431,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return previousIndicators;
   }
 
-
   public List<IpElement> getPreviousOutputs() {
     return previousOutputs;
   }
@@ -383,14 +439,19 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return project;
   }
 
+
   public List<IpProgram> getProjectFocusList() {
     return projectFocusList;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
+  public String getTransaction() {
+    return transaction;
+  }
+
 
   public boolean isRegionalOutcome(IpElement outcome) {
 
@@ -498,9 +559,72 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
     }
+
+
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      Project history = (Project) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        project = history;
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+      project = projectManager.getProjectById(projectID);
+    }
+
+
+    if (project != null) {
+
+
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        project = (Project) autoSaveReader.readFromJson(jReader);
+        reader.close();
+
+        if (project.getProjectIndicators() == null) {
+
+          project.setProjectIndicators(new ArrayList<IpProjectIndicator>());
+        } else {
+
+          for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
+            ipProjectIndicator
+              .setIpIndicator(ipIndicatorManager.getIpIndicatorById(ipProjectIndicator.getIpIndicator().getId()));
+            IpProjectIndicator ipProjectIndicatorDB =
+              ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
+            ipProjectIndicator.setOutcomeId(ipProjectIndicatorDB.getOutcomeId());
+          }
+        }
+        this.setDraft(true);
+      } else {
+        project.setProjectIndicators(
+          project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        this.setDraft(false);
+      }
+    }
+
+
     /* logic for save */
-    project.setProjectIndicators(
-      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CCFASOUTCOME_BASE_PERMISSION, params));
@@ -514,6 +638,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   }
 
+
   private void removeOutcomesAlreadySelected() {
     for (int i = 0; i < midOutcomes.size(); i++) {
       if (midOutcomesSelected.contains(midOutcomes.get(i))) {
@@ -521,6 +646,77 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         i--;
       }
     }
+  }
+
+
+  @Override
+  public String save() {
+    if (this.hasPermission("canEdit")) {
+
+      Project projectDB = projectManager.getProjectById(project.getId());
+      project.setActive(true);
+      project.setCreatedBy(projectDB.getCreatedBy());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification(this.getJustification());
+      project.setActiveSince(projectDB.getActiveSince());
+      Path path = this.getAutoSaveFilePath();
+
+
+      for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
+        if (ipProjectIndicator != null) {
+
+          IpProjectIndicator projectIndicatorDB =
+            ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
+          ipProjectIndicator.setActive(true);
+          ipProjectIndicator.setCreatedBy(projectIndicatorDB.getCreatedBy());
+          ipProjectIndicator.setModifiedBy(this.getCurrentUser());
+          ipProjectIndicator.setModificationJustification(this.getJustification());
+          ipProjectIndicator.setYear(projectIndicatorDB.getYear());
+          ipProjectIndicator.setProject(project);
+          ipProjectIndicator.setActiveSince(projectIndicatorDB.getActiveSince());
+          ipProjectIndicator.setOutcomeId(projectIndicatorDB.getOutcomeId());
+
+        }
+
+        ipProjectIndicatorManager.saveIpProjectIndicator(ipProjectIndicator);
+      }
+
+      List<String> relationsName = new ArrayList<>();
+      relationsName.add(APConstants.PROJECT_CCFASOTUCOME_RELATION);
+      project = projectManager.getProjectById(projectID);
+      project.setActiveSince(new Date());
+      project.setModifiedBy(this.getCurrentUser());
+      project.setModificationJustification(this.getJustification());
+      projectManager.saveProject(project, this.getActionName(), relationsName);
+
+
+      if (path.toFile().exists()) {
+        path.toFile().delete();
+      }
+
+
+      if (this.getUrl() == null || this.getUrl().isEmpty()) {
+        Collection<String> messages = this.getActionMessages();
+
+        if (!this.getInvalidFields().isEmpty()) {
+          this.setActionMessages(null);
+          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+          for (String key : keys) {
+            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          }
+
+        } else {
+          this.addActionMessage("message:" + this.getText("saving.saved"));
+        }
+        return SUCCESS;
+      } else {
+        this.addActionMessage("");
+        this.setActionMessages(null);
+        return REDIRECT;
+      }
+    }
+    return NOT_AUTHORIZED;
   }
 
   public void setAllYears(List<Integer> allYears) {
@@ -531,10 +727,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
-
   public void setMidOutcomes(List<IpElement> midOutcomes) {
     this.midOutcomes = midOutcomes;
   }
+
 
   public void setMidOutcomesSelected(List<IpElement> midOutcomesSelected) {
     this.midOutcomesSelected = midOutcomesSelected;
@@ -558,5 +754,9 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 }
