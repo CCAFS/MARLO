@@ -73,7 +73,7 @@
 [#-- File upload Template--] 
 [@customForm.inputFile name="annexesFile" className="annexesFile"  template=true /]
 
-
+[@shareOutcomeCaseStudy element={} name="caseStudy.projects" index=-1 template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -181,32 +181,35 @@
       [#-- Projects shared --]
       <div id="gender-levels" class="panel tertiary col-md-12">
        <div class="panel-head"><label for=""> This outcome study is done jointly with the following project(s), please select below: </label></div>
-        <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+        <div id="myProjectsList" class="panel-body" listname="deliverable.genderLevels"> 
           <ul class="list">
           [#if element.projects?has_content]
             [#list element.projects as projectLink]
-              <li class="genderLevel clearfix">
-                [#-- Remove button --]
-                [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
-                [#-- Hidden inputs --]
-                <input class="id" type="hidden" name="caseStudy.projects[${projectLink_index}].id" value="${(projectLink.id)!}" />
-                <input class="projectId" type="hidden" name="caseStudy.projects[${projectLink_index}].project.id" value="${(projectLink.project.id)!}" />
-                [#-- title --]
-                
-                <span title="${(projectLink.project.title)!'undefined'}" class="name">${(projectLink.project.composedName)!'undefined'}</span>
-                <div class="clearfix"></div>
-              </li>
+              [@shareOutcomeCaseStudy element=projectLink name="caseStudy.projects" index=projectLink_index template=false /]
             [/#list]
           [#else]
             <p class="emptyText"> [@s.text name="caseStudy.projects.empty" /]</p> 
           [/#if]  
           </ul>
           [#if editable ]
-            [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="" editable=editable/]
+            [@customForm.select name="" label="" keyFieldName="id"  displayFieldName="composedName" showTitle=false i18nkey="" listName="myProjects"   required=true  className="projects" editable=editable/]
           [/#if] 
         </div>
       </div>
     </div>
   </div>
 [/#macro]
+
+[#macro shareOutcomeCaseStudy element name index=-1 template=false]
+<li id="myProjectsTemplate" class="shareOutcomeCaseStudy clearfix" style="display:${template?string('none','block')}">
+  [#-- Remove button --]
+  [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
+  [#-- Hidden inputs --]
+  <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
+  <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
+  [#-- title --]
   
+  <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
+  <div class="clearfix"></div>
+</li>
+[/#macro]
