@@ -20,6 +20,9 @@ $(function() { // on dom ready
 });
 
 function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tooltip) {
+
+  var SLO;
+  var IDO;
   var subIDO;
   var crps;
   var flagships;
@@ -154,6 +157,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     cy.$('edge').css('z-index', '1');
     $(".panel-body ul").empty();
 
+    SLO = [];
+    IDO = [];
     subIDO = [];
     crps = [];
     flagships = [];
@@ -210,6 +215,15 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       if(inPopUp === true) {
         // add info in Relations panel
+        SLO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>SLO:</label><li>" + ele + "</li>")
+        });
+        IDO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>IDO:</label><li>" + ele + "</li>")
+        });
+        subIDO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>subIDO:</label><li>" + ele + "</li>")
+        });
         crps.forEach(function(ele) {
           $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>")
         });
@@ -247,6 +261,30 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     // Validate if the node exists in any array
 
     // In flagships array
+    SLO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In flagships array
+    IDO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In subIDO array
+    subIDO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In flagships array
     flagships.forEach(function(array) {
       if(ele.data('description') === array[0]) {
         console.log("asd");
@@ -262,7 +300,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }
     });
 
-    // In Outcomes array
+    // In clusters array
     clusters.forEach(function(array) {
       if(ele.data('description') === array[0]) {
         console.log("asd");
@@ -270,7 +308,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }
     });
 
-    // In Outcomes array
+    // In key outputs array
     keyOutputs.forEach(function(array) {
       if(ele.data('description') === array[0]) {
         console.log("asd");
@@ -304,6 +342,18 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         data.push(ele.data('description'));
         data.push(ele.data('label'));
         keyOutputs.push(data);
+      } else if(ele.data('type') === 'SLO') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        SLO.push(data);
+      } else if(ele.data('type') === 'IDO') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        IDO.push(data);
+      } else if(ele.data('type') === 'SD') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        subIDO.push(data);
       }
     }
 
@@ -480,6 +530,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
+        SLO: 0,
         IDO: 0,
         SD: 0,
         F: 0,
@@ -488,6 +539,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
         KO: 0,
     };
     var totalWidth = {
+        SLO: 0,
         IDO: 0,
         SD: 0,
         F: 0,
@@ -500,10 +552,11 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 
     // For to count and set position
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "IDO") {
+      if(nodes[i].data.type == "SLO") {
+        count.SLO++;
+      } else if(nodes[i].data.type == "IDO") {
         count.IDO++;
-      }
-      if(nodes[i].data.type == "SD") {
+      } else if(nodes[i].data.type == "SD") {
         count.SD++;
       } else if(nodes[i].data.type == "F") {
         count.F++;
@@ -516,6 +569,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       }
     }
 
+    totalWidth.SLO = count.SLO * (nodeWidth + nodeMargin);
     totalWidth.IDO = count.IDO * (nodeWidth + nodeMargin);
     totalWidth.SD = count.SD * (nodeWidth + nodeMargin);
     totalWidth.F = count.F * (nodeWidth + nodeMargin);
@@ -524,6 +578,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     totalWidth.KO = (count.KO * (nodeWidth + nodeMargin)) + totalWidth.CoA;
 
     var move = {
+        SLO: -(totalWidth.SLO / 2),
         IDO: -(totalWidth.IDO / 2),
         SD: -(totalWidth.SD / 2),
         F: -(totalWidth.F / 2),
@@ -533,7 +588,13 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     };
 
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "IDO") {
+      if(nodes[i].data.type == "SLO") {
+        move.SLO = (move.SLO + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.SLO,
+            y: -200
+        };
+      } else if(nodes[i].data.type == "IDO") {
         move.IDO = (move.IDO + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.IDO,
