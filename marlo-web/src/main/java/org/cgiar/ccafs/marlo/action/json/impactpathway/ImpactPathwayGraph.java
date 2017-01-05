@@ -105,14 +105,12 @@ public class ImpactPathwayGraph extends BaseAction {
         dataSubIdos.put("data", dataDetaiSubIDO);
 
         HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
-        dataEdgeOutcome.put("target", "O" + crpProgramOutcome.getId());
-        dataEdgeOutcome.put("source", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+        dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
+        dataEdgeDetailOutcome.put("source", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
         dataEdges.add(dataEdgeDetailOutcome);
         jSubIdos++;
       }
 
-
-      dataEdges.add(dataEdgeOutcome);
 
       for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpProgramOutcome.getCrpClusterKeyOutputOutcomes().stream()
         .filter(koo -> koo.isActive()).collect(Collectors.toList())) {
