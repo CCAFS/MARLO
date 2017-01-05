@@ -94,6 +94,50 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  public String calculateAcumulativeTarget(int year, IpProjectIndicator id) {
+
+    int acumulative = 0;
+
+    try {
+      for (IpProjectIndicator indicators : project.getProjectIndicators()) {
+
+        if (id.getIpIndicator().getIpIndicator() != null) {
+          if (indicators.getYear() <= year && indicators.getIpIndicator().getIpIndicator().getId().longValue() == id
+            .getIpIndicator().getIpIndicator().getId().longValue()) {
+            if (indicators.getTarget() != null) {
+              if (!indicators.getTarget().equals("")) {
+                try {
+                  acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                } catch (NumberFormatException e) {
+                  return "Cannot be Calculated";
+                }
+              }
+            }
+          }
+        } else {
+          if (indicators.getYear() <= year
+            && indicators.getIpIndicator().getId().longValue() == id.getIpIndicator().getId().longValue()) {
+            if (indicators.getTarget() != null) {
+              if (!indicators.getTarget().equals("")) {
+                try {
+                  acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                } catch (NumberFormatException e) {
+                  return "Cannot be Calculated";
+                }
+              }
+            }
+          }
+        }
+
+
+      }
+    } catch (Exception e) {
+      return "Cannot be Calculated";
+    }
+    return String.valueOf(acumulative);
+  }
+
+
   public boolean containsOutput(long outputID, long outcomeID) {
     if (project.getMogs() != null) {
       for (IpElement output : project.getMogs()) {
@@ -123,7 +167,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     if (index >= 0) {
       return project.getProjectIndicators().get(index);
     }
-    return null;
+    return new IpProjectIndicator();
   }
 
   public int getIndicatorIndex(long indicatorID, long midOutcome, int year) {
@@ -150,7 +194,8 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
     }
-    return -1;
+    project.getProjectIndicators().add(new IpProjectIndicator());
+    return project.getProjectIndicators().size() - 1;
   }
 
 
