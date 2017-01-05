@@ -108,7 +108,7 @@
                         [#if (currentCycleYear lte year) && reportingActive]
                         <div class="col-md-4">
                           <label>[@s.text name="projectCcafsOutcomes.comulativeTarget" /]:</label>
-                          <div class="input"><p>${(project.calculateAcumulativeTarget(year,projectIndicator))!'Cannot be Calculated'}</p></div>
+                          <div class="input"><p>${(action.calculateAcumulativeTarget(year,projectIndicator))!'Cannot be Calculated'}</p></div>
                         </div>
                         [/#if]
                         [#-- 3. Reporting target --]
