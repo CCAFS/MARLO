@@ -19,6 +19,8 @@
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
 [#assign fieldEmpty]<div class="select"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#assign]
+[#-- List of years --]
+[#assign years= [currentCycleYear-1, currentCycleYear, currentCycleYear+1, 2019] /]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -53,13 +55,13 @@
                   <p class="grayBox">${indicator.description}</p>
                   
                   <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
-                    [#list startYear .. endYear as year]
+                    [#list years as year]
                       <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}-${indicator.id}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
                     [/#list]
                   </ul> 
                   
                   <div class="tab-content projectOutcomeYear-content">
-                    [#list startYear .. endYear as year]
+                    [#list years as year]
                       [#if indicator.parent?has_content]
                         [#assign projectIndicator = (project.getIndicator(indicator.parent.id, midOutcome.id, year))!{} /]
                       [#else]
@@ -82,7 +84,7 @@
                                 ${fieldEmpty}
                               [#else]
                                 [#if (currentCycleYear == year) && editable]
-                                  <input type="text" class="projectIndicatorTarget ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.target" value="${(projectIndicator.target)!}"/>
+                                  <input type="text" class="projectIndicatorTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.target" value="${(projectIndicator.target)!}"/>
                                 [#else]
                                   <div class="input"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>
                                 [/#if]
@@ -106,7 +108,7 @@
                           <div class="col-md-4">
                             <label title='[@s.text name="projectCcafsOutcomes.achievedTarget.help" /]'>[@s.text name="projectCcafsOutcomes.achievedTarget" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("achieved") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("achieved")]
-                              <input type="text" class="projectIndicatorAchievedTarget ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.archivedText" value="${(projectIndicator.archivedText)!}"/> 
+                              <input type="text" class="projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.archivedText" value="${(projectIndicator.archivedText)!}"/> 
                             [#else]
                               <div class="input"><p>${(projectIndicator.archived)!}</p></div>
                             [/#if]
@@ -119,7 +121,7 @@
                         <div class="textArea col-md-12">
                           <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") /]</label>
                           [#if editable && (currentCycleYear lte year) && action.hasPermission("description")]
-                            <textarea class="projectIndicatorDescription ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.description">${projectIndicator.description!}</textarea>
+                            <textarea class="projectIndicatorDescription form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.description">${projectIndicator.description!}</textarea>
                           [#else]
                             [#if projectIndicator?? && !projectIndicator.description?has_content]
                               [#if currentCycleYear lt year]${fieldEmpty}[#else]<div class="select"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>[/#if]
@@ -138,7 +140,7 @@
                           <div class="textArea col-md-12">
                             <label>[@s.text name="projectCcafsOutcomes.targetNarrativeAchieved" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("narrativeTargets") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeTargets")]
-                              <textarea class="projectIndicatorNarrativeAchieved ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
+                              <textarea class="projectIndicatorNarrativeAchieved form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
                             [#else]
                               [#if projectIndicator?? && !projectIndicator.narrativeTargets?has_content]
                                 [#if currentCycleYear lt year]${fieldEmpty}[#else]<div class="select"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>[/#if]
@@ -156,7 +158,7 @@
                         <div class="textArea col-md-12">
                           <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") /]</label>
                           [#if editable && (currentCycleYear lte year) && action.hasPermission("gender")]
-                            <textarea class="projectIndicatorGender ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.gender">${(projectIndicator.gender)!}</textarea>
+                            <textarea class="projectIndicatorGender form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.gender">${(projectIndicator.gender)!}</textarea>
                           [#else]
                             [#if projectIndicator?? && !projectIndicator.gender?has_content]
                               [#if currentCycleYear lt year]${fieldEmpty}[#else]<div class="select"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>[/#if]
@@ -175,7 +177,7 @@
                           <div class="textArea col-md-12">
                             <label>[@s.text name="projectCcafsOutcomes.targetNarrativeGenderAchieved" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("narrativeGender") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeGender")]
-                              <textarea class="projectIndicatorNarrativeGenderAchieved ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.narrativeGender" >${(projectIndicator.narrativeGender)!}</textarea>
+                              <textarea class="projectIndicatorNarrativeGenderAchieved form-control input-sm limitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="project.indicators.narrativeGender" >${(projectIndicator.narrativeGender)!}</textarea>
                             [#else]
                               [#if projectIndicator?? && !projectIndicator.narrativeGender?has_content]
                                 [#if currentCycleYear lt year]${fieldEmpty}[#else]<div class="select"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>[/#if]
