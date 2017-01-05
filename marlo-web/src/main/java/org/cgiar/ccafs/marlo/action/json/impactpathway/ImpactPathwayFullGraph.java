@@ -33,8 +33,10 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -247,6 +249,12 @@ public class ImpactPathwayFullGraph extends BaseAction {
         i1++;
       }
     }
+
+    Set<HashMap<String, Object>> foo = new HashSet<HashMap<String, Object>>(dataEdges);
+
+    dataEdges.clear();
+
+    dataEdges.addAll(foo);
     elements.put("nodes", dataNodes);
     elements.put("edges", dataEdges);
     return SUCCESS;
