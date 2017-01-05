@@ -29,6 +29,7 @@
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
+      { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'overviewByMogs',  'active': true  },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
