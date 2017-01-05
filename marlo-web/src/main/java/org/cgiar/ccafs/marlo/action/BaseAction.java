@@ -865,7 +865,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       default:
-        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, APConstants.PLANNING,
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
           this.getCurrentCycleYear(), section);
         if (sectionStatus != null) {
           if (sectionStatus.getMissingFields().length() == 0) {
