@@ -22,18 +22,20 @@ public class IpElement implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -6191644559184410233L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private IpElementType ipElementType;
-
-
   @Expose
   private IpProgram ipProgram;
 
 
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private User createdBy;
   @Expose
@@ -53,9 +55,12 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   private Set<IpIndicator> ipIndicators = new HashSet<IpIndicator>(0);
   private List<IpIndicator> indicators;
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
+  private Set<IpRelationship> ipRelationshipsForParentId = new HashSet<IpRelationship>(0);
+  private Set<IpRelationship> ipRelationshipsForChildId = new HashSet<IpRelationship>(0);
 
   public IpElement() {
   }
+
 
   public IpElement(IpElementType ipElementType, IpProgram ipProgram, User usersByModifiedBy, User usersByCreatedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -66,6 +71,12 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     this.active = isActive;
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
+  }
+
+
+  public IpElement(Long id) {
+    super();
+    this.id = id;
   }
 
 
@@ -85,7 +96,7 @@ public class IpElement implements java.io.Serializable, IAuditLog {
       if (other.id != null) {
         return false;
       }
-    } else if (!id.equals(other.id)) {
+    } else if (id.longValue() != other.getId().longValue()) {
       return false;
     }
     return true;
@@ -126,11 +137,9 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public List<IpIndicator> getIndicators() {
     return indicators;
   }
-
 
   public IpElementType getIpElementType() {
     return ipElementType;
@@ -164,6 +173,16 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public Set<IpProjectContribution> getIpProjectContributionsForMogId() {
     return ipProjectContributionsForMogId;
+  }
+
+
+  public Set<IpRelationship> getIpRelationshipsForChildId() {
+    return ipRelationshipsForChildId;
+  }
+
+
+  public Set<IpRelationship> getIpRelationshipsForParentId() {
+    return ipRelationshipsForParentId;
   }
 
 
@@ -275,6 +294,16 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public void setIpProjectContributionsForMogId(Set<IpProjectContribution> ipProjectContributionsForMogId) {
     this.ipProjectContributionsForMogId = ipProjectContributionsForMogId;
+  }
+
+
+  public void setIpRelationshipsForChildId(Set<IpRelationship> ipRelationshipsForChildId) {
+    this.ipRelationshipsForChildId = ipRelationshipsForChildId;
+  }
+
+
+  public void setIpRelationshipsForParentId(Set<IpRelationship> ipRelationshipsForParentId) {
+    this.ipRelationshipsForParentId = ipRelationshipsForParentId;
   }
 
 

@@ -188,9 +188,9 @@
                   <div class="mogsBlock">
                     [#list outputs as output]
                       <div class="mog">
-                       [#if (project.containsOutput(output.id, midOutcome.id))!false] 
-                       <label class="checked"> ${output.program.acronym} - MOG #${action.getMOGIndex(output)}: ${output.description} </label>
-                       [/#if] 
+                      
+                       <label class="checked"> ${output.ipProgram.acronym} : ${output.description} </label>
+                     
                       </div>
                     [/#list]
                   </div>

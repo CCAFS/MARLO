@@ -125,6 +125,7 @@
 		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" /> 
 		<mapping resource="xmls/ProjectFocusesPrev.hbm.xml" /> 
 		<mapping resource="xmls/ProjectFurtherContributions.hbm.xml" />
+		<mapping resource="xmls/IpRelationships.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

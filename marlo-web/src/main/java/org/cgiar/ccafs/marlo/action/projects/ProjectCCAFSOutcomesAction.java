@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProgramElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpRelationship;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -92,6 +93,23 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  public boolean containsOutput(long outputID, long outcomeID) {
+    if (project.getMogs() != null) {
+      for (IpElement output : project.getMogs()) {
+
+        IpElement outputDB = ipElementManager.getIpElementById(output.getId());
+        if (outputDB != null && outputDB.getId().longValue() == outputID) {
+
+
+          return true;
+
+        }
+      }
+    }
+    return false;
+  }
+
+
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -123,12 +141,12 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       for (IpElement fsOutcome : translatedOf) {
 
         List<IpElement> contributesTo = new ArrayList<>();
-        List<IpProgramElement> programElementsMogs = fsOutcome.getIpProgramElements().stream()
-          .filter(c -> c.isActive()
-            && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+        List<IpRelationship> programElementsMogs = fsOutcome.getIpRelationshipsForParentId().stream()
+          .filter(
+            c -> Integer.parseInt(String.valueOf(c.getRelationTypeId())) == APConstants.ELEMENT_RELATION_CONTRIBUTION)
           .collect(Collectors.toList());
-        for (IpProgramElement ipProgramElement : programElementsMogs) {
-          contributesTo.add(ipProgramElement.getIpElement());
+        for (IpRelationship ipRelationship : programElementsMogs) {
+          contributesTo.add(ipRelationship.getIpElementsByChildId());
         }
 
         mogs.addAll(contributesTo);
@@ -141,26 +159,32 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     } else {
 
       List<IpElement> contributesTo = new ArrayList<>();
-      List<IpProgramElement> programElementsMogs = midOutcome.getIpProgramElements().stream()
-        .filter(c -> c.isActive()
-          && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+
+      List<IpRelationship> programElementsMogs = midOutcome.getIpRelationshipsForParentId().stream()
+        .filter(
+          c -> Integer.parseInt(String.valueOf(c.getRelationTypeId())) == APConstants.ELEMENT_RELATION_CONTRIBUTION)
         .collect(Collectors.toList());
-      for (IpProgramElement ipProgramElement : programElementsMogs) {
-        contributesTo.add(ipProgramElement.getIpElement());
+      for (IpRelationship ipRelationship : programElementsMogs) {
+        contributesTo.add(ipRelationship.getIpElementsByChildId());
       }
+
       outputs = contributesTo;
     }
 
 
-    List<IpElement> ipElements = outputs;
+    List<IpElement> elements = new ArrayList<>();
+    elements.addAll(outputs);
+    outputs = new ArrayList<>();
+    for (IpElement ipElement : elements) {
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
+      if (this.containsOutput(ipElementDB.getId().longValue(), midOutcomeID)) {
 
-    for (IpElement ipElement : ipElements) {
-      if (project.getOutputs().contains(ipElement)) {
-        outputs.remove(ipElement);
+        outputs.add(ipElement);
       }
-    }
 
+    }
     return outputs;
+
   }
 
   public List<IpElement> getMidOutcomes() {
@@ -361,6 +385,11 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
       project.getOutputs().add(ipProjectContribution.getIpElementByMidOutcomeId());
     }
+    project.setMogs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
+    }
+
     List<IpProjectIndicator> ipProjectIndicators =
       project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
