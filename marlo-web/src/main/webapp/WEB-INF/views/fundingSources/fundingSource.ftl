@@ -88,7 +88,7 @@
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
             <ul class="list">
-              <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+              <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             </ul>
             [#if editable ]
               [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable && action.canEditInstitution() /]
@@ -195,7 +195,7 @@
 
 [#-- Funding Source list template --]
 <ul style="display:none">
-  <li id="leadPartnerTemplate" class="leadPartners clearfix" style="display:none;">
+  <li id="leadPartnerTemplate" class="leadPartners clearfix col-md-6" style="display:none;">
     <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
     <input class="id" type="hidden" name="fundingSource.leaders[-1].id" value="" />
     <input class="fId" type="hidden" name="fundingSource.leaders[-1].leader.id" value="" />
