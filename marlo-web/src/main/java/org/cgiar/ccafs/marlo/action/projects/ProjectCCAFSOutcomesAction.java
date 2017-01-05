@@ -116,7 +116,17 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
-  public int getIndex(long indicatorID, long midOutcome, int year) {
+  public IpProjectIndicator getIndicator(long indicatorID, long midOutcome, int year) {
+
+    int index = this.getIndicatorIndex(indicatorID, midOutcome, year);
+
+    if (index >= 0) {
+      return project.getProjectIndicators().get(index);
+    }
+    return null;
+  }
+
+  public int getIndicatorIndex(long indicatorID, long midOutcome, int year) {
 
 
     if (project.getProjectIndicators() != null) {
@@ -140,7 +150,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
     }
-    return 0;
+    return -1;
   }
 
 
