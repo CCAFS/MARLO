@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -52,6 +53,7 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
@@ -120,6 +122,8 @@ public class ValidateProjectSectionAction extends BaseAction {
   @Inject
   ProjectActivitiesValidator projectActivitiesValidator;
   @Inject
+  ProjectLeverageValidator projectLeverageValidator;
+  @Inject
   public CrpManager crpManager;
 
   @Inject
@@ -150,26 +154,28 @@ public class ValidateProjectSectionAction extends BaseAction {
         case BUDGETBYCOA:
           this.validateProjectBudgetsCoAs();
           break;
-
         case DELIVERABLES:
           this.validateProjectDeliverables();
           break;
-
-
         case OUTCOMES:
           this.validateProjectOutcomes();
+          break;
+        case LEVERAGES:
+          this.validateLeverage();
           break;
 
         default:
           break;
       }
     }
+
     String cycle = "";
     if (this.isPlanningActive()) {
       cycle = APConstants.PLANNING;
     } else {
       cycle = APConstants.REPORTING;
     }
+
     Project project = projectManager.getProjectById(projectID);
     switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
       case OUTCOMES:
@@ -473,6 +479,20 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  public void validateLeverage() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectLeverage> projectLeverages =
+      new ArrayList<>(project.getProjectLeverages().stream().filter(pl -> pl.isActive()).collect(Collectors.toList()));
+
+    project.setLeverages(projectLeverages);
+
+    projectLeverageValidator.validate(this, project, false);
+
+
+  }
+
   public void validateProjectActivities() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -506,6 +526,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project, false);
   }
 
+
   public void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -516,7 +537,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectBudgetsValidator.validate(this, project, false);
 
   }
-
 
   public void validateProjectBudgetsCoAs() {
     // Getting the project information.
