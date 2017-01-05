@@ -77,16 +77,15 @@
                         [#assign projectIndicatorIndex = (action.getIndicatorIndex(indicator.id, outcome.id, year))!-1 /]
                       [/#if]
                     
-                      [#assign customName = "project.indicators[${projectIndicatorIndex}]" /]
+                      [#assign customName = "project.projectIndicators[${projectIndicatorIndex}]" /]
                     
                       <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}-${indicator.id}">
                         
                       [#-- Indicator ID --]
-                      [#if indicator.ipIndicator?has_content]
-                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${(indicator.ipIndicator.id)!}"  />
-                      [#else]
-                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${(indicator.id)!}"  />
-                      [/#if]
+                     
+                       <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator.id" value="${(indicator.id)!}"  />
+                     
+                    
                       
                       [#-- Hidden values --]
                       <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator?? && projectIndicator.id?? &&  projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
@@ -131,7 +130,7 @@
                           <div class="col-md-4">
                             <label title='[@s.text name="projectCcafsOutcomes.achievedTarget.help" /]'>[@s.text name="projectCcafsOutcomes.achievedTarget" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("achieved") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("achieved")]
-                              <input type="text" class="projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.archivedText" value="${(projectIndicator.archivedText)!}"/> 
+                              <input type="text" class="projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.archived" value="${(projectIndicator.archived)!}"/> 
                             [#else]
                               <div class="input"><p>${(projectIndicator.archived)!'Prefilled if available'}</p></div>
                             [/#if]

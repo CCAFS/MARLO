@@ -47,6 +47,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -253,8 +254,13 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         i++;
       }
 
+    } else {
+      project.setProjectIndicators(new ArrayList<>());
     }
-    project.getProjectIndicators().add(new IpProjectIndicator());
+    IpProjectIndicator ipProjectIndicator = new IpProjectIndicator();
+
+
+    project.getProjectIndicators().add(ipProjectIndicator);
     return project.getProjectIndicators().size() - 1;
   }
 
@@ -544,39 +550,43 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
 
     if (project != null) {
-
-
       Path path = this.getAutoSaveFilePath();
-
       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
-
         BufferedReader reader = null;
-
         reader = new BufferedReader(new FileReader(path.toFile()));
-
         Gson gson = new GsonBuilder().create();
-
-
         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-
         AutoSaveReader autoSaveReader = new AutoSaveReader();
-
         project = (Project) autoSaveReader.readFromJson(jReader);
         reader.close();
 
+        Project projectDB = projectManager.getProjectById(projectID);
+        project.setStartDate(projectDB.getStartDate());
+        project.setEndDate(projectDB.getEndDate());
+        project.setProjectEditLeader(projectDB.isProjectEditLeader());
         if (project.getProjectIndicators() == null) {
-
           project.setProjectIndicators(new ArrayList<IpProjectIndicator>());
         } else {
-
           for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
-            ipProjectIndicator
-              .setIpIndicator(ipIndicatorManager.getIpIndicatorById(ipProjectIndicator.getIpIndicator().getId()));
-            IpProjectIndicator ipProjectIndicatorDB =
-              ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
-            ipProjectIndicator.setOutcomeId(ipProjectIndicatorDB.getOutcomeId());
+
+            try {
+              if (ipProjectIndicator != null && ipProjectIndicator.getId() != null) {
+                IpProjectIndicator ipProjectIndicatorDB =
+                  ipProjectIndicatorManager.getIpProjectIndicatorById(ipProjectIndicator.getId());
+                ipProjectIndicator.setOutcomeId(ipProjectIndicatorDB.getOutcomeId());
+                if (ipProjectIndicator.getIpIndicator() != null) {
+                  ipProjectIndicator
+                    .setIpIndicator(ipIndicatorManager.getIpIndicatorById(ipProjectIndicator.getIpIndicator().getId()));
+                }
+              }
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+
+
           }
         }
+
         this.setDraft(true);
       } else {
         project.setProjectIndicators(
@@ -584,7 +594,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         this.setDraft(false);
       }
     }
-
 
     /* logic for save */
 
@@ -627,7 +636,9 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       ipElement
         .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+
     }
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CCFASOUTCOME_BASE_PERMISSION, params));
@@ -666,6 +677,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
 
       for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
+
         if (ipProjectIndicator != null) {
           if (ipProjectIndicator.getId() == null || ipProjectIndicator.getId() == -1) {
             ipProjectIndicator.setActive(true);
@@ -673,9 +685,9 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
             ipProjectIndicator.setModifiedBy(this.getCurrentUser());
             ipProjectIndicator.setModificationJustification(this.getJustification());
             ipProjectIndicator.setActiveSince(new Date());
-            ipProjectIndicator.setYear(this.getCurrentCycleYear());
 
 
+            ipProjectIndicator.setId(null);
             ipProjectIndicator.setProject(project);
 
           } else {
@@ -685,14 +697,22 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
             ipProjectIndicator.setCreatedBy(projectIndicatorDB.getCreatedBy());
             ipProjectIndicator.setModifiedBy(this.getCurrentUser());
             ipProjectIndicator.setModificationJustification(this.getJustification());
+            ipProjectIndicator.setDescription(projectIndicatorDB.getDescription());
+            ipProjectIndicator.setGender(projectIndicatorDB.getGender());
+
             ipProjectIndicator.setYear(projectIndicatorDB.getYear());
             ipProjectIndicator.setProject(project);
             ipProjectIndicator.setActiveSince(projectIndicatorDB.getActiveSince());
-            ipProjectIndicator.setOutcomeId(projectIndicatorDB.getOutcomeId());
+            ipProjectIndicator.setIpIndicator(projectIndicatorDB.getIpIndicator());
 
           }
+
+          if (ipProjectIndicator.getIpIndicator() != null) {
+            ipProjectIndicatorManager.saveIpProjectIndicator(ipProjectIndicator);
+          }
+
         }
-        ipProjectIndicatorManager.saveIpProjectIndicator(ipProjectIndicator);
+
       }
 
       List<String> relationsName = new ArrayList<>();
@@ -709,6 +729,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
 
+      this.setInvalidFields(new HashMap<>());
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
 
