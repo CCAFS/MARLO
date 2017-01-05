@@ -429,6 +429,13 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getMogs().add(ipProjectContribution.getIpElementByMogId());
     }
 
+    List<IpProjectIndicator> ipProjectIndicators =
+      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+    project.setIndicators(new ArrayList<>());
+    for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
+      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
+    }
 
     this.getMidOutcomesByProjectFocuses();
 
@@ -445,13 +452,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       ipElement
         .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-    }
-    List<IpProjectIndicator> ipProjectIndicators =
-      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-
-    project.setIndicators(new ArrayList<>());
-    for (IpProjectIndicator ipProjectIndicator : ipProjectIndicators) {
-      project.getIndicators().add(ipProjectIndicator.getIpIndicator());
     }
     /* logic for save */
     project.setProjectIndicators(
