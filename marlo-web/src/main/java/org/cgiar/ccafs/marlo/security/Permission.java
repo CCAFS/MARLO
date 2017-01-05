@@ -44,6 +44,8 @@ public class Permission {
   public static final String PROJECT_UNSUBMISSION_PERMISSION = "crp:{0}:project:{1}:unsubmitted";
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:location";
   public static final String PROJECT_DELETE_BASE_PERMISSION = "crp:{0}:project:{1}:deleteProject";
+  public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
+
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 
 
@@ -51,6 +53,8 @@ public class Permission {
   public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";
   public static final String PROJECT_DELIVERABLE_LIST_BASE_PERMISSION = "crp:{0}:project:{1}:deliverableList";
   public static final String PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverableList:canEdit";
+  public static final String PROJECT_CCFASOUTCOME_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes:canEdit";
+
   public static final String PROJECT_DELIVERABLE_LIST_ADD_PERMISSION =
     "crp:{0}:project:{1}:deliverableList:addDeliverable";
   public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =

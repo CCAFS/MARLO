@@ -448,7 +448,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_DESCRIPTION_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_CCFASOUTCOME_BASE_PERMISSION, params));
     if (this.isHttpPost()) {
       if (project.getClusterActivities() != null) {
         project.getClusterActivities().clear();
