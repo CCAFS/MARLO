@@ -29,7 +29,7 @@
         <property name="value" type="java.lang.Integer">
             <column name="value" />
         </property>
-        <property name="active" type="java.lang.Boolean">
+        <property name="active" type="boolean">
             <column name="is_active" />
         </property>
         <property name="activeSince" type="timestamp">

@@ -413,7 +413,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
       ipElement
         .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      System.out.println("test");
+      System.out.println(ipElementDB.getComposedId() + "- " + ipElementDB.getId());
 
     }
   }

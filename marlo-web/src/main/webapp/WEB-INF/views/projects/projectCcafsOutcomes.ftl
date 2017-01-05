@@ -52,8 +52,12 @@
              
               [#list outcome.indicators as indicator]
                 <div class="simpleBox">
-                  <p class="grayBox">${indicator.description}</p>
-                  
+                   [#if indicator.ipIndicator?has_content]
+                   
+                  <p class="grayBox">${indicator.ipIndicator.description}</p>
+                   [#else]
+                     <p class="grayBox">${indicator.description}</p>
+                   [/#if]
                   <ul class="nav nav-tabs projectOutcomeYear-tabs" role="tablist">
                     [#list years as year]
                       <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}-${indicator.id}" aria-controls="settings" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) /] </a></li>
