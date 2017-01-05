@@ -105,6 +105,27 @@
             <p class="simpleBox center">[@s.text name="projectOutcomes.message.dateUndefined" /]</p>
           [/#if]
           
+          
+          [#-- Lessons learnt --]
+          [#if !newProject]
+          <div id="lessons" class="borderBox">
+            [#-- Lessons learnt from last planning/reporting cycle --]
+            [#if (projectLessonsPreview.lessons?has_content)!false]
+            <div class="fullBlock">
+              <h6>[@customForm.text name="${currentSection}.projectOutcomes.previousLessons" param="${currentCycleYear}" /]:</h6>
+              <div class="textArea "><p>${projectLessonsPreview.lessons}</p></div>
+            </div>
+            [/#if]
+            [#-- Planning/Reporting lessons --]
+            <div class="fullBlock">
+              <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
+              <input type="hidden" name="projectLessons.year" value=${currentCycleYear} />
+              <input type="hidden" name="projectLessons.componentName" value="${actionName}">
+              [@customForm.textArea name="projectLessons.lessons" i18nkey="projectOutcomes.lessons" editable=editable /]
+            </div>
+          </div>
+          [/#if]
+          
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
           
