@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
@@ -29,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProgramElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpRelationship;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -75,19 +77,36 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
 
   private CrpManager crpManager;
-
+  private IpElementManager ipElementManager;
 
   private Crp loggedCrp;
 
 
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
-    CrpManager crpManager) {
+    IpElementManager ipElementManager, CrpManager crpManager) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.crpManager = crpManager;
+    this.ipElementManager = ipElementManager;
+  }
 
+
+  public boolean containsOutput(long outputID, long outcomeID) {
+    if (project.getMogs() != null) {
+      for (IpElement output : project.getMogs()) {
+
+        IpElement outputDB = ipElementManager.getIpElementById(output.getId());
+        if (outputDB != null && outputDB.getId().longValue() == outputID) {
+
+
+          return true;
+
+        }
+      }
+    }
+    return false;
   }
 
 
@@ -101,10 +120,76 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   }
 
 
+  public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
+    List<IpElement> outputs = new ArrayList<>();
+    IpElement midOutcome = ipElementManager.getIpElementById(midOutcomeID);
+
+    if (this.isRegionalOutcome(midOutcome)) {
+      List<IpElement> mogs = new ArrayList<>();
+
+      List<IpElement> translatedOf = new ArrayList<>();
+      List<IpProgramElement> programElements = midOutcome.getIpProgramElements().stream()
+        .filter(c -> c.isActive()
+          && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_TRANSLATION)
+        .collect(Collectors.toList());
+
+      for (IpProgramElement ipProgramElement : programElements) {
+        translatedOf.add(ipProgramElement.getIpElement());
+      }
+
+
+      for (IpElement fsOutcome : translatedOf) {
+
+        List<IpElement> contributesTo = new ArrayList<>();
+        List<IpRelationship> programElementsMogs = fsOutcome.getIpRelationshipsForParentId().stream()
+          .filter(
+            c -> Integer.parseInt(String.valueOf(c.getRelationTypeId())) == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+          .collect(Collectors.toList());
+        for (IpRelationship ipRelationship : programElementsMogs) {
+          contributesTo.add(ipRelationship.getIpElementsByChildId());
+        }
+
+        mogs.addAll(contributesTo);
+        for (IpElement mog : mogs) {
+          if (!outputs.contains(mog)) {
+            outputs.add(mog);
+          }
+        }
+      }
+    } else {
+
+      List<IpElement> contributesTo = new ArrayList<>();
+
+      List<IpRelationship> programElementsMogs = midOutcome.getIpRelationshipsForParentId().stream()
+        .filter(
+          c -> Integer.parseInt(String.valueOf(c.getRelationTypeId())) == APConstants.ELEMENT_RELATION_CONTRIBUTION)
+        .collect(Collectors.toList());
+      for (IpRelationship ipRelationship : programElementsMogs) {
+        contributesTo.add(ipRelationship.getIpElementsByChildId());
+      }
+
+      outputs = contributesTo;
+    }
+
+
+    List<IpElement> elements = new ArrayList<>();
+    elements.addAll(outputs);
+    outputs = new ArrayList<>();
+    for (IpElement ipElement : elements) {
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
+      if (this.containsOutput(ipElementDB.getId().longValue(), midOutcomeID)) {
+
+        outputs.add(ipElement);
+      }
+
+    }
+    return outputs;
+
+  }
+
   public List<IpElement> getMidOutcomes() {
     return midOutcomes;
   }
-
 
   private void getMidOutcomesByIndicators() {
     for (IpIndicator indicator : project.getIndicators()) {
@@ -113,12 +198,13 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         String description = midoutcome.getIpProgram().getAcronym() + " - "
           + this.getText("planning.activityImpactPathways.outcome2019") + ": " + midoutcome.getDescription();
         midoutcome.setDescription(description);
+        if (midoutcome.getIpProgram() != null) {
+          // midOutcomesSelected.add(midoutcome);
+        }
 
-        midOutcomesSelected.add(midoutcome);
       }
     }
   }
-
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -133,12 +219,14 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
       for (IpElement parent : contributesTo) {
-        IpElement midoutcome = parent;
+        IpElement midoutcome = ipElementManager.getIpElementById(parent.getId());
         if (!midOutcomesSelected.contains(midoutcome)) {
           String description = midoutcome.getComposedId() + ": " + midoutcome.getDescription();
           midoutcome.setDescription(description);
+          if (midoutcome.getIpProgram() != null) {
+            midOutcomesSelected.add(midoutcome);
+          }
 
-          midOutcomesSelected.add(midoutcome);
         }
       }
     }
@@ -172,14 +260,29 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
   }
 
-
   public List<IpElement> getMidOutcomesSelected() {
     return midOutcomesSelected;
   }
 
-
   public int getMidOutcomeYear() {
     return APConstants.MID_OUTCOME_YEAR;
+  }
+
+
+  public int getMOGIndex(IpElement mog) {
+    int index = 0;
+    List<IpElement> allMOGs = ipElementManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == mog.getIpProgram().getId().longValue()
+        && mog.getIpElementType().getId().longValue() == c.getIpElementType().getId().longValue())
+      .collect(Collectors.toList());
+
+    for (int i = 0; i < allMOGs.size(); i++) {
+      if (allMOGs.get(i).getId() == mog.getId()) {
+        return (i + 1);
+      }
+    }
+
+    return index;
   }
 
 
@@ -205,6 +308,20 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return projectID;
   }
 
+
+  public boolean isRegionalOutcome(IpElement outcome) {
+
+    List<IpElement> translatedOf = new ArrayList<>();
+    List<IpProgramElement> programElements = outcome.getIpProgramElements().stream()
+      .filter(c -> c.isActive()
+        && c.getIpProgramElementRelationType().getId().intValue() == APConstants.ELEMENT_RELATION_TRANSLATION)
+      .collect(Collectors.toList());
+
+    for (IpProgramElement ipProgramElement : programElements) {
+      translatedOf.add(ipProgramElement.getIpElement());
+    }
+    return !translatedOf.isEmpty();
+  }
 
   /**
    * The regional midOutcomes only can be selected if they are translation of
@@ -266,8 +383,13 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     project.setOutputs(new ArrayList<>());
     for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
-      project.getOutputs().add(ipProjectContribution.getIpElementByMogId());
+      project.getOutputs().add(ipProjectContribution.getIpElementByMidOutcomeId());
     }
+    project.setMogs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
+    }
+
     List<IpProjectIndicator> ipProjectIndicators =
       project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
@@ -286,7 +408,16 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.getMidOutcomesByIndicators();
 
     this.removeOutcomesAlreadySelected();
+
+    for (IpElement ipElement : midOutcomesSelected) {
+      IpElement ipElementDB = ipElementManager.getIpElementById(ipElement.getId());
+      ipElement
+        .setIndicators(ipElementDB.getIpIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      System.out.println(ipElementDB.getComposedId() + "- " + ipElementDB.getId());
+
+    }
   }
+
 
   private void removeOutcomesAlreadySelected() {
     for (int i = 0; i < midOutcomes.size(); i++) {

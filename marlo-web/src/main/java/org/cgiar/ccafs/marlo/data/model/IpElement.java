@@ -6,6 +6,7 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -21,14 +22,20 @@ public class IpElement implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -6191644559184410233L;
 
+
   @Expose
   private Long id;
+
   @Expose
   private IpElementType ipElementType;
   @Expose
   private IpProgram ipProgram;
+
+
   @Expose
   private User modifiedBy;
+
+
   @Expose
   private User createdBy;
   @Expose
@@ -46,10 +53,14 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   private Set<IpProjectContribution> ipProjectContributionsForMidOutcomeId = new HashSet<IpProjectContribution>(0);
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
   private Set<IpIndicator> ipIndicators = new HashSet<IpIndicator>(0);
+  private List<IpIndicator> indicators;
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
+  private Set<IpRelationship> ipRelationshipsForParentId = new HashSet<IpRelationship>(0);
+  private Set<IpRelationship> ipRelationshipsForChildId = new HashSet<IpRelationship>(0);
 
   public IpElement() {
   }
+
 
   public IpElement(IpElementType ipElementType, IpProgram ipProgram, User usersByModifiedBy, User usersByCreatedBy,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -63,10 +74,38 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   }
 
 
+  public IpElement(Long id) {
+    super();
+    this.id = id;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    IpElement other = (IpElement) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (id.longValue() != other.getId().longValue()) {
+      return false;
+    }
+    return true;
+  }
+
+
   public Date getActiveSince() {
     return activeSince;
   }
-
 
   public String getComposedId() {
     StringBuilder composedID = new StringBuilder();
@@ -83,7 +122,6 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return composedID.toString();
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
@@ -99,6 +137,9 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+  public List<IpIndicator> getIndicators() {
+    return indicators;
+  }
 
   public IpElementType getIpElementType() {
     return ipElementType;
@@ -135,6 +176,16 @@ public class IpElement implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<IpRelationship> getIpRelationshipsForChildId() {
+    return ipRelationshipsForChildId;
+  }
+
+
+  public Set<IpRelationship> getIpRelationshipsForParentId() {
+    return ipRelationshipsForParentId;
+  }
+
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -166,6 +217,15 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
 
   @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+
+  @Override
   public boolean isActive() {
     return active;
   }
@@ -193,6 +253,11 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setIndicators(List<IpIndicator> indicators) {
+    this.indicators = indicators;
   }
 
 
@@ -229,6 +294,16 @@ public class IpElement implements java.io.Serializable, IAuditLog {
 
   public void setIpProjectContributionsForMogId(Set<IpProjectContribution> ipProjectContributionsForMogId) {
     this.ipProjectContributionsForMogId = ipProjectContributionsForMogId;
+  }
+
+
+  public void setIpRelationshipsForChildId(Set<IpRelationship> ipRelationshipsForChildId) {
+    this.ipRelationshipsForChildId = ipRelationshipsForChildId;
+  }
+
+
+  public void setIpRelationshipsForParentId(Set<IpRelationship> ipRelationshipsForParentId) {
+    this.ipRelationshipsForParentId = ipRelationshipsForParentId;
   }
 
 
