@@ -141,7 +141,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
         } else {
           if (ipProjectIndicator.getIpIndicator().getId().longValue() == indicatorID
-            && ipProjectIndicator.getIpIndicator().getIpElement().getId().longValue() == midOutcome
+            && Long.parseLong(String.valueOf(ipProjectIndicator.getOutcomeId())) == midOutcome
             && year == ipProjectIndicator.getYear()) {
             return i;
           }
