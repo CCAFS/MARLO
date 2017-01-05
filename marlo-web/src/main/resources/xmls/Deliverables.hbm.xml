@@ -28,9 +28,9 @@
 		<property name="year" type="int">
 			<column name="year" not-null="true" />
 		</property>
-		  <property name="newExpectedYear" type="java.lang.Integer">
-      <column name="new_expected_year" not-null="false" />
-    </property>
+		<property name="newExpectedYear" type="java.lang.Integer">
+			<column name="new_expected_year" not-null="false" />
+		</property>
 		<property name="status" type="java.lang.Integer">
 			<column name="status" />
 		</property>
@@ -44,8 +44,8 @@
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="createDate" type="timestamp">
-      <column name="create_date" length="19" not-null="true" />
-    </property>
+			<column name="create_date" length="19" not-null="true" />
+		</property>
 		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="created_by" not-null="false" />
@@ -59,18 +59,17 @@
 			<column name="key_output_id" />
 		</many-to-one>
 		<property name="crossCuttingGender" type="java.lang.Boolean">
-            <column name="cross_cutting_gender" />
-        </property>
-        <property name="crossCuttingYouth" type="java.lang.Boolean">
-            <column name="cross_cutting_youth" />
-        </property>
-        <property name="crossCuttingCapacity" type="java.lang.Boolean">
-            <column name="cross_cutting_capacity" />
-        </property>
-        
-         <property name="crossCuttingNa" type="java.lang.Boolean">
-            <column name="cross_cutting_na" />
-        </property>
+			<column name="cross_cutting_gender" />
+		</property>
+		<property name="crossCuttingYouth" type="java.lang.Boolean">
+			<column name="cross_cutting_youth" />
+		</property>
+		<property name="crossCuttingCapacity" type="java.lang.Boolean">
+			<column name="cross_cutting_capacity" />
+		</property>
+		<property name="crossCuttingNa" type="java.lang.Boolean">
+			<column name="cross_cutting_na" />
+		</property>
 		<many-to-one name="crpProgramOutcome"
 			class="org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome" fetch="select">
 			<column name="outcome_id" />
@@ -83,42 +82,71 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverablePartnership" />
 		</set>
-		<set name="deliverableActivities" table="deliverables"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_id" not-null="true" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
-    </set>
-    
-    <set name="sectionStatuses" table="section_statuses" inverse="true"
-      lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_id" />
-      </key>
-      <one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
-    </set>
-    
-     <set name="deliverableFundingSources" order-by="id" table="deliverable_funding_sources" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource" />
-        </set>
-    
+		<set name="deliverableActivities" table="deliverables" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableActivity" />
+		</set>
+		<set name="sectionStatuses" table="section_statuses" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+		</set>
+		<set name="deliverableFundingSources" order-by="id"
+			table="deliverable_funding_sources" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource" />
+		</set>
 		<property name="modificationJustification" type="string">
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
-		
-		
-		 <set name="deliverableGenderLevels" table="deliverable_gender_levels" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="deliverable_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel" />
-        </set>
-		
+		<set name="deliverableGenderLevels" table="deliverable_gender_levels"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel" />
+		</set>
+		<set name="deliverableDisseminations" table="deliverable_dissemination"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableDissemination" />
+		</set>
+		<set name="deliverableDataSharingFiles" table="deliverable_data_sharing_file"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile" />
+		</set>
+		<set name="deliverablePublicationMetadatas" table="deliverable_publication_metadata"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata" />
+		</set>
+		<set name="deliverableDataSharings" table="deliverable_data_sharing"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharing" />
+		</set>
 	</class>
 </hibernate-mapping>

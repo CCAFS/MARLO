@@ -84,6 +84,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private User modifiedBy;
 
+
   @Expose
   private String modificationJustification;
 
@@ -102,9 +103,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private Set<DeliverableGenderLevel> deliverableGenderLevels = new HashSet<DeliverableGenderLevel>(0);
 
+
   private List<DeliverableGenderLevel> genderLevels;
 
+
   private Set<DeliverablePartnership> deliverablePartnerships = new HashSet<DeliverablePartnership>(0);
+
+
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -124,17 +129,22 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean crossCuttingGender;
 
-
   @Expose
   private Boolean crossCuttingYouth;
-
-
   @Expose
   private Boolean crossCuttingCapacity;
 
-
   @Expose
   private Boolean crossCuttingNa;
+
+  private Set<DeliverableDissemination> deliverableDisseminations = new HashSet<DeliverableDissemination>(0);
+
+  private Set<DeliverableDataSharingFile> deliverableDataSharingFiles = new HashSet<DeliverableDataSharingFile>(0);
+
+  private Set<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
+    new HashSet<DeliverablePublicationMetadata>(0);
+
+  private Set<DeliverableDataSharing> deliverableDataSharings = new HashSet<DeliverableDataSharing>(0);
 
   public Deliverable() {
   }
@@ -163,6 +173,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableActivities = deliverableActivities;
     this.createDate = createDate;
   }
+
 
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification) {
@@ -228,7 +239,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crossCuttingGender;
   }
 
-
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
@@ -238,19 +248,29 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crossCuttingYouth;
   }
 
-
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
 
-
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
+  }
+
+  public Set<DeliverableDataSharingFile> getDeliverableDataSharingFiles() {
+    return deliverableDataSharingFiles;
+  }
+
+  public Set<DeliverableDataSharing> getDeliverableDataSharings() {
+    return deliverableDataSharings;
+  }
+
+
+  public Set<DeliverableDissemination> getDeliverableDisseminations() {
+    return deliverableDisseminations;
   }
 
 
@@ -269,6 +289,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<DeliverablePublicationMetadata> getDeliverablePublicationMetadatas() {
+    return deliverablePublicationMetadatas;
+  }
+
+
   public DeliverableType getDeliverableType() {
     return this.deliverableType;
   }
@@ -278,9 +303,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return fundingSources;
   }
 
+
   public List<DeliverableGenderLevel> getGenderLevels() {
     return genderLevels;
   }
+
 
   @Override
   public Long getId() {
@@ -301,16 +328,15 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.modificationJustification;
   }
 
-
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
+
 
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
@@ -335,9 +361,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.status;
   }
 
+
   public String getStatusDescription() {
     return this.statusDescription;
   }
+
 
   public String getStatusName() {
     try {
@@ -351,6 +379,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
       return "";
     }
   }
+
 
   public String getTitle() {
     return this.title;
@@ -377,7 +406,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
   public void setActive(boolean active) {
     this.active = active;
   }
@@ -393,6 +421,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
+
 
   public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
     this.crossCuttingCapacity = crossCuttingCapacity;
@@ -410,7 +439,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crossCuttingYouth = crossCuttingYouth;
   }
 
-
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
@@ -423,6 +451,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableActivities = deliverableActivities;
   }
 
+  public void setDeliverableDataSharingFiles(Set<DeliverableDataSharingFile> deliverableDataSharingFiles) {
+    this.deliverableDataSharingFiles = deliverableDataSharingFiles;
+  }
+
+
+  public void setDeliverableDataSharings(Set<DeliverableDataSharing> deliverableDataSharings) {
+    this.deliverableDataSharings = deliverableDataSharings;
+  }
+
+  public void setDeliverableDisseminations(Set<DeliverableDissemination> deliverableDisseminations) {
+    this.deliverableDisseminations = deliverableDisseminations;
+  }
+
   public void setDeliverableFundingSources(Set<DeliverableFundingSource> deliverableFundingSources) {
     this.deliverableFundingSources = deliverableFundingSources;
   }
@@ -433,6 +474,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setDeliverablePartnerships(Set<DeliverablePartnership> deliverablePartnerships) {
     this.deliverablePartnerships = deliverablePartnerships;
+  }
+
+  public void setDeliverablePublicationMetadatas(Set<DeliverablePublicationMetadata> deliverablePublicationMetadatas) {
+    this.deliverablePublicationMetadatas = deliverablePublicationMetadatas;
   }
 
   public void setDeliverableType(DeliverableType deliverableType) {

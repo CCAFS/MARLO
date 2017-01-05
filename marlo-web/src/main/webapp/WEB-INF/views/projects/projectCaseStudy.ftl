@@ -40,7 +40,7 @@
       [#-- Project Section Content --]
       <div class="col-md-9">
 
-        [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
+        [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
          
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
             
@@ -55,6 +55,9 @@
            
           
           </div> 
+          
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/views/projects/buttons-projectOutcomesCaseStudies.ftl" /]
          
         [/@s.form]
   

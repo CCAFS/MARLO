@@ -208,11 +208,7 @@
                   [#assign outputs = action.getMidOutcomeOutputs(outcome.id)]
                   <div class="mogsBlock">
                     [#list outputs as output]
-                      <div class="mog">
-                      
-                       <label class="checked"> ${output.ipProgram.acronym} : ${output.description} </label>
-                     
-                      </div>
+                       <p class="checked"> ${output.ipProgram.acronym} : ${output.description} </p>
                     [/#list]
                   </div>
                 [/#if]

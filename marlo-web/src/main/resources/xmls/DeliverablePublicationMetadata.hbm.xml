@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Jan 5, 2017 7:38:48 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata" table="deliverable_publication_metadata" optimistic-lock="version">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
+            <column name="deliverable_id" not-null="true" />
+        </many-to-one>
+        <property name="openAcessStatus" type="string">
+            <column name="open_acess_status" length="50" />
+        </property>
+        <property name="isiPublication" type="java.lang.Boolean">
+            <column name="isi_publication" />
+        </property>
+        <property name="narsCoAuthor" type="java.lang.Boolean">
+            <column name="nars_co_author" />
+        </property>
+        <property name="academicCoAuthor" type="java.lang.Boolean">
+            <column name="`academic_co-author`" />
+        </property>
+        <property name="citation" type="string">
+            <column name="citation" length="16777215" />
+        </property>
+        <property name="acknowledgeCcafs" type="java.lang.Boolean">
+            <column name="acknowledge_ccafs" />
+        </property>
+        <property name="fp1" type="java.lang.Boolean">
+            <column name="fp1" />
+        </property>
+        <property name="fp2" type="java.lang.Boolean">
+            <column name="fp2" />
+        </property>
+        <property name="fp3" type="java.lang.Boolean">
+            <column name="fp3" />
+        </property>
+        <property name="fp4" type="java.lang.Boolean">
+            <column name="fp4" />
+        </property>
+    </class>
+</hibernate-mapping>
