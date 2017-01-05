@@ -1,6 +1,6 @@
 [#ftl]
 [#-- Project identifier --]
-<input type="hidden"  name="caseStudyID" value="${caseStudy}"/>
+<input type="hidden"  name="caseStudyID" value="${caseStudyID}"/>
 <input type="hidden"  name="projectID" value="${project.id}" />
 
 <input type="hidden"  name="className" value="${(caseStudy.class.name)!}"/>
