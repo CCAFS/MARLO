@@ -92,12 +92,14 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataDetailOutcome.put("label", "Outcome #" + i);
         dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
         dataDetailOutcome.put("color", crpProgramOutcome.getCrpProgram().getColor());
+        dataDetailOutcome.put("parent", crpProgram.getAcronym());
         dataDetailOutcome.put("type", "O");
         dataOutcome.put("data", dataDetailOutcome);
-        dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
-        dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
+        // dataEdgeDetailOutcome.put("source", crpProgram.getAcronym());
+        // dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
+
         dataEdgeOutcome.put("data", dataEdgeDetailOutcome);
-        dataEdges.add(dataEdgeOutcome);
+        // dataEdges.add(dataEdgeOutcome);
 
 
         for (CrpClusterKeyOutputOutcome keyOutputOutcome : crpProgramOutcome.getCrpClusterKeyOutputOutcomes().stream()
@@ -130,6 +132,7 @@ public class ImpactPathwayFullGraph extends BaseAction {
         dataDetailOutcome.put("description", crpClusterOfActivity.getComposedName());
         dataDetailOutcome.put("color", "#c0c0c0");
         dataDetailOutcome.put("type", "CoA");
+        dataDetailOutcome.put("parent", crpProgram.getAcronym());
         dataOutcome.put("data", dataDetailOutcome);
         dataNodes.add(dataOutcome);
 
