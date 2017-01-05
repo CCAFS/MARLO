@@ -29,7 +29,6 @@ public class SectionStatus implements java.io.Serializable {
 
   private Long id;
 
-
   private CrpProgram crpProgram;
 
 
@@ -41,11 +40,15 @@ public class SectionStatus implements java.io.Serializable {
 
   private String cycle;
 
+
   private Integer year;
+
+
   private Project project;
+
   private Deliverable deliverable;
   private ProjectOutcome projectOutcome;
-
+  private CaseStudy caseStudy;
 
   public SectionStatus() {
   }
@@ -62,6 +65,10 @@ public class SectionStatus implements java.io.Serializable {
     this.sectionName = sectionName;
   }
 
+  public CaseStudy getCaseStudy() {
+    return caseStudy;
+  }
+
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
@@ -74,7 +81,6 @@ public class SectionStatus implements java.io.Serializable {
     return deliverable;
   }
 
-
   public Long getId() {
     return this.id;
   }
@@ -84,14 +90,15 @@ public class SectionStatus implements java.io.Serializable {
     return this.missingFields;
   }
 
+
   public Project getProject() {
     return project;
   }
 
-
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public String getSectionName() {
     return this.sectionName;
@@ -99,6 +106,10 @@ public class SectionStatus implements java.io.Serializable {
 
   public Integer getYear() {
     return this.year;
+  }
+
+  public void setCaseStudy(CaseStudy caseStudy) {
+    this.caseStudy = caseStudy;
   }
 
 

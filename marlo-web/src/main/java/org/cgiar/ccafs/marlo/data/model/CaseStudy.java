@@ -21,8 +21,12 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2357028162240911773L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
   private FileDB file;
   @Expose
@@ -65,11 +69,10 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   private String modificationJustification;
   private Set<CaseStudyProject> caseStudyProjects = new HashSet<CaseStudyProject>(0);
   private List<CaseStudyProject> projects;
-
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public CaseStudy() {
   }
-
 
   public CaseStudy(boolean isActive, Date activeSince) {
     this.active = isActive;
@@ -110,9 +113,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getActivities() {
     return activities;
   }
+
 
   public Set<CaseStudyProject> getCaseStudyProjects() {
     return caseStudyProjects;
@@ -122,11 +127,9 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return comment;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
-
 
   public String getEvidenceOutcome() {
     return evidenceOutcome;
@@ -224,6 +227,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public String getResearchPatern() {
     return researchPatern;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
 
@@ -345,6 +353,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public void setResearchPatern(String researchPatern) {
     this.researchPatern = researchPatern;
+  }
+
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

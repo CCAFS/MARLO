@@ -3,6 +3,7 @@ package org.cgiar.ccafs.marlo.validation;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -129,6 +130,33 @@ public class BaseValidator {
   }
 
   /**
+   * This method saves the missing fields into the database for a section at project Case Study level.
+   * 
+   * @param caseStudy is a Case Study.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(Project project, CaseStudy caseStudy, String cycle, int year, String sectionName) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByCaseStudy(caseStudy.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setCaseStudy(caseStudy);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
+  }
+
+
+  /**
    * This method saves the missing fields into the database for a section at project level.
    * 
    * @param project is a project.
@@ -152,7 +180,6 @@ public class BaseValidator {
     status.setMissingFields(this.missingFields.toString());
     sectionStatusManager.saveSectionStatus(status);
   }
-
 
   /**
    * This method saves the missing fields into the database for a section at project Outcome level.

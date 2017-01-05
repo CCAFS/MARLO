@@ -22,14 +22,17 @@ import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -125,7 +128,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       // Check the permission if user want to edit or save the form
       if (editParameter || parameters.get("save") != null) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true : baseAction
-          .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION, params));
+          .hasPermission(baseAction.generatePermission(Permission.PROJECT_CASE_STUDY_EDIT_PERMISSION, params));
       }
 
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
@@ -135,6 +138,14 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       if (baseAction.isSubmit(project.getId())) {
         canEdit = false;
 
+      }
+
+      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
+        .filter(cs -> cs.isActive() && cs.getProject().getId() == project.getId() && cs.isCreated())
+        .collect(Collectors.toList()));
+
+      if (caseStudyProjects.isEmpty()) {
+        canEdit = false;
       }
 
 

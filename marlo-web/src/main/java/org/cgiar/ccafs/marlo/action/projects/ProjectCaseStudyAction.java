@@ -31,7 +31,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectCaseStudyValidation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,7 +73,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
   private Crp loggedCrp;
 
-  private ProjectHighLightValidator highLightValidator;
+  private ProjectCaseStudyValidation caseStudyValidation;
   private String transaction;
 
 
@@ -105,7 +105,7 @@ public class ProjectCaseStudyAction extends BaseAction {
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
     CrpManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
-    CaseStudyProjectManager projectHighligthTypeManager, ProjectHighLightValidator highLightValidator) {
+    CaseStudyProjectManager projectHighligthTypeManager, ProjectCaseStudyValidation caseStudyValidation) {
     super(config);
     this.projectManager = projectManager;
     this.caseStudyManager = highLightManager;
@@ -113,7 +113,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
-    this.highLightValidator = highLightValidator;
+    this.caseStudyValidation = caseStudyValidation;
 
     this.caseStudyProjectManager = projectHighligthTypeManager;
 
@@ -318,13 +318,13 @@ public class ProjectCaseStudyAction extends BaseAction {
           loggedCrp.getProjects().stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
       } else {
         myProjects =
           projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
+            .collect(Collectors.toList());
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
@@ -349,9 +349,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
       Path path = this.getAutoSaveFilePath();
 
-
       List<String> relationsName = new ArrayList<>();
-      relationsName.add(APConstants.PROJECT_PROJECT_HIGHLIGTH_TYPE_RELATION);
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_PROJECTS_RELATION);
       CaseStudy caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
       caseStudy.setActiveSince(new Date());
@@ -404,6 +402,10 @@ public class ProjectCaseStudyAction extends BaseAction {
         } else {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+
+
+        caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
+
         return SUCCESS;
       } else {
         this.addActionMessage("");
@@ -467,7 +469,7 @@ public class ProjectCaseStudyAction extends BaseAction {
   public void validate() {
 
     if (save) {
-      // highLightValidator.validate(this, project, caseStudy, true);
+      caseStudyValidation.validate(this, project, caseStudy, true);
     }
   }
 }
