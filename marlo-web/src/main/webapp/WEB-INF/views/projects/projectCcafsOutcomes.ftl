@@ -83,13 +83,13 @@
                         
                       [#-- Indicator ID --]
                       [#if indicator.ipIndicator?has_content]
-                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${indicator.ipIndicator.id}"  />
+                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${(indicator.ipIndicator.id)!}"  />
                       [#else]
-                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${indicator.id}"  />
+                        <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator" value="${(indicator.id)!}"  />
                       [/#if]
                       
                       [#-- Hidden values --]
-                      <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${projectIndicator.id}" [#if projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
+                      <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator && projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
                       <input type="hidden" class="projectIndicatorYear" name="${customName}.year"  value="${year}" /> 
                       <input type="hidden" class="projectIndicatorOutcome" name="${customName}.outcome"  value="${outcome.id}" /> 
                         
