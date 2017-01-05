@@ -58,6 +58,9 @@
               </div>
               [#-- Annual progress --]
               [#list project.startDate?string.yyyy?number..midOutcomeYear?number-1 as year]
+              
+              <span class="label label-default">${year}</span>
+              
                 [#assign yearEditable = editable && (year gte currentCycleYear?number) && canEditStatement /]
                 [#assign yearRequired = !project.bilateralProject && ((year == currentCycleYear) || (year == currentCycleYear+1)) /]
                 <div class="fullPartBlock">
@@ -66,18 +69,18 @@
                 </div>
                 [#-- -- -- REPORTING BLOCK -- -- --]
                 [#if reportingActive && (year == currentCycleYear) ]
-                <div class="fullPartBlock">
+                <div class="fullPartBlock bs-callout bs-callout-info">
                   <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
                   [@customForm.textArea name="project.outcomes[${year?string}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
                 </div>
                 
                 [#-- Comunication and engagement activities --]
-                <div class="fullPartBlock">
+                <div class="fullPartBlock bs-callout bs-callout-info">
                   [@customForm.textArea name="project.outcomes[${year?string}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
                 </div>
                 
                 [#-- Upload summary--]
-                <div class="fullPartBlock fileUpload uploadSummary">
+                <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info">
                   <label>[@customForm.text name="projectOutcomes.uploadSummary" readText=!editable /]:</label>
                   <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
                     [#if (action.getOutcomeFile(year)?has_content)!false]
