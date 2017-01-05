@@ -20,6 +20,7 @@ $(function() { // on dom ready
 });
 
 function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tooltip) {
+  var subIDO;
   var crps;
   var flagships;
   var outcomes;
@@ -126,6 +127,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
         });
         ele.addClass('bottom-center');
+      } else {
+        ele.css({
+          'color': colorFlagship
+        });
       }
     }
   });
@@ -148,6 +153,8 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     cy.$('edge').css('target-arrow-color', '#999999');
     cy.$('edge').css('z-index', '1');
     $(".panel-body ul").empty();
+
+    subIDO = [];
     crps = [];
     flagships = [];
     outcomes = [];
@@ -473,6 +480,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
+        IDO: 0,
         SD: 0,
         F: 0,
         O: 0,
@@ -480,6 +488,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
         KO: 0,
     };
     var totalWidth = {
+        IDO: 0,
         SD: 0,
         F: 0,
         O: 0,
@@ -491,6 +500,9 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 
     // For to count and set position
     for(var i = 0; i < nodes.length; i++) {
+      if(nodes[i].data.type == "IDO") {
+        count.IDO++;
+      }
       if(nodes[i].data.type == "SD") {
         count.SD++;
       } else if(nodes[i].data.type == "F") {
@@ -504,6 +516,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       }
     }
 
+    totalWidth.IDO = count.IDO * (nodeWidth + nodeMargin);
     totalWidth.SD = count.SD * (nodeWidth + nodeMargin);
     totalWidth.F = count.F * (nodeWidth + nodeMargin);
     totalWidth.O = count.O * (nodeWidth + nodeMargin);
@@ -511,6 +524,7 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     totalWidth.KO = (count.KO * (nodeWidth + nodeMargin)) + totalWidth.CoA;
 
     var move = {
+        IDO: -(totalWidth.IDO / 2),
         SD: -(totalWidth.SD / 2),
         F: -(totalWidth.F / 2),
         O: -(totalWidth.O / 2),
@@ -519,7 +533,13 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     };
 
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "SD") {
+      if(nodes[i].data.type == "IDO") {
+        move.IDO = (move.IDO + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.IDO,
+            y: -100
+        };
+      } else if(nodes[i].data.type == "SD") {
         move.SD = (move.SD + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.SD,
