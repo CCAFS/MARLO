@@ -55,6 +55,9 @@
            
           
           </div> 
+          
+          [#-- Section Buttons & hidden inputs--]
+          [#include "/WEB-INF/views/projects/buttons-projectOutcomesCaseStudies.ftl" /]
          
         [/@s.form]
   
