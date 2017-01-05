@@ -82,8 +82,7 @@
                       <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}-${indicator.id}">
                         
                       [#-- Indicator ID --]
-                     
-                       <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator.id" value="${(indicator.id)!}"  />
+                      <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator.id" value="${(indicator.id)!}"  />
                      
                     
                       
