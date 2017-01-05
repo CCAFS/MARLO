@@ -18,6 +18,7 @@
 
 [#assign startYear = (project.startDate?string.yyyy)?number /]
 [#assign endYear = (project.endDate?string.yyyy)?number /]
+[#assign fieldEmpty]<div class="select"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#assign]
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
@@ -59,6 +60,12 @@
                   
                   <div class="tab-content projectOutcomeYear-content">
                     [#list startYear .. endYear as year]
+                      [#if indicator.parent?has_content]
+                        [#assign projectIndicator = (project.getIndicator(indicator.parent.id, midOutcome.id, year))!{} /]
+                      [#else]
+                        [#assign projectIndicator = (project.getIndicator(indicator.id, midOutcome.id,  year))!{} /]
+                      [/#if]
+                    
                       <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}-${indicator.id}">
                         
                       <div class="row">
