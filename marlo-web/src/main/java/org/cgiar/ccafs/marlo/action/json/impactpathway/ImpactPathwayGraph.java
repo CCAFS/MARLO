@@ -107,7 +107,9 @@ public class ImpactPathwayGraph extends BaseAction {
         HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
         dataEdgeDetailOutcome.put("target", "O" + crpProgramOutcome.getId());
         dataEdgeDetailOutcome.put("source", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
-        dataEdges.add(dataEdgeDetailOutcome);
+        HashMap<String, Object> dataEdgeKeyOoutput = new HashMap<>();
+        dataEdgeKeyOoutput.put("data", dataEdgeDetailOutcome);
+        dataEdges.add(dataEdgeKeyOoutput);
         jSubIdos++;
       }
 
