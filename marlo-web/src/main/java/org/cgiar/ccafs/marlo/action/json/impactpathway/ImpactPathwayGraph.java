@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
+import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -73,14 +74,16 @@ public class ImpactPathwayGraph extends BaseAction {
     dataProgram.put("type", "F");
     data.put("data", dataProgram);
     dataNodes.add(data);
-
+    int jSubIdos = 1;
     int i = 1;
     for (CrpProgramOutcome crpProgramOutcome : crpProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive())
       .collect(Collectors.toList())) {
       HashMap<String, Object> dataOutcome = new HashMap<>();
+      HashMap<String, Object> dataSubIdos = new HashMap<>();
+
       HashMap<String, Object> dataDetailOutcome = new HashMap<>();
       HashMap<String, Object> dataEdgeOutcome = new HashMap<>();
-      HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
+
       dataDetailOutcome.put("id", "O" + crpProgramOutcome.getId());
       dataDetailOutcome.put("label", "Outcome #" + i);
       dataDetailOutcome.put("description", crpProgramOutcome.getDescription());
@@ -88,6 +91,26 @@ public class ImpactPathwayGraph extends BaseAction {
       dataDetailOutcome.put("type", "O");
       dataDetailOutcome.put("parent", crpProgram.getAcronym());
       dataOutcome.put("data", dataDetailOutcome);
+
+      for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getCrpOutcomeSubIdos().stream()
+        .filter(c -> c.isActive()).collect(Collectors.toList())) {
+
+        HashMap<String, Object> dataDetaiSubIDO = new HashMap<>();
+
+        dataDetaiSubIDO.put("id", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+        dataDetaiSubIDO.put("label", "SubIDO #" + jSubIdos);
+        dataDetaiSubIDO.put("description", crpOutcomeSubIdo.getSrfSubIdo().getDescription());
+
+        dataDetaiSubIDO.put("type", "SD");
+        dataSubIdos.put("data", dataDetaiSubIDO);
+
+        HashMap<String, Object> dataEdgeDetailOutcome = new HashMap<>();
+        dataEdgeOutcome.put("target", "O" + crpProgramOutcome.getId());
+        dataEdgeOutcome.put("source", "SD" + crpOutcomeSubIdo.getSrfSubIdo().getId());
+        dataEdges.add(dataEdgeDetailOutcome);
+        jSubIdos++;
+      }
+
 
       dataEdges.add(dataEdgeOutcome);
 
@@ -107,6 +130,7 @@ public class ImpactPathwayGraph extends BaseAction {
       }
 
       dataNodes.add(dataOutcome);
+      dataNodes.add(dataSubIdos);
 
       i++;
     }
