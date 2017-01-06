@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
@@ -34,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -71,7 +73,7 @@ public class FundingSourceAction extends BaseAction {
 
   private FundingSourceManager fundingSourceManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
-
+  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
 
@@ -117,13 +119,15 @@ public class FundingSourceAction extends BaseAction {
     InstitutionManager institutionManager, LiaisonInstitutionManager liaisonInstitutionManager,
     AuditLogManager auditLogManager, FundingSourceBudgetManager fundingSourceBudgetManager,
     BudgetTypeManager budgetTypeManager, FundingSourceValidator validator, CrpPpaPartnerManager crpPpaPartnerManager,
-    FileDBManager fileDBManager, UserManager userManager) {
+    FileDBManager fileDBManager, UserManager userManager,
+    FundingSourceInstitutionManager fundingSourceInstitutionManager) {
     super(config);
     this.crpManager = crpManager;
     this.fundingSourceManager = fundingSourceManager;
     this.budgetTypeManager = budgetTypeManager;
     this.institutionManager = institutionManager;
     this.validator = validator;
+    this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.userManager = userManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
@@ -353,11 +357,22 @@ public class FundingSourceAction extends BaseAction {
           }
         }
 
+        if (fundingSource.getInstitutions() != null) {
+          for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+            if (fundingSourceInstitution != null) {
+              fundingSourceInstitution.setInstitution(
+                institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+            }
+          }
+        }
+
       } else {
         this.setDraft(false);
         fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
           .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
+        fundingSource.setInstitutions(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
+          .getFundingSourceInstitutions().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
         fundingSource.setProjectBudgetsList(
           fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
@@ -411,6 +426,7 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.setFile(null);
+      fundingSource.getInstitutions().clear();
     }
   }
 
@@ -490,6 +506,28 @@ public class FundingSourceAction extends BaseAction {
 
         }
       }
+
+
+      if (fundingSource.getInstitutions() != null) {
+
+
+        for (FundingSourceInstitution fundingSourceInstitution : fundingSourceDB.getFundingSourceInstitutions()) {
+          if (!fundingSource.getInstitutions().contains(fundingSourceInstitution)) {
+            fundingSourceInstitutionManager.deleteFundingSourceInstitution(fundingSourceInstitution.getId());
+          }
+        }
+        for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+          if (fundingSourceInstitution.getId() == null) {
+
+
+            fundingSourceInstitution.setFundingSource(fundingSource);
+
+            fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+          }
+
+        }
+      }
+
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
