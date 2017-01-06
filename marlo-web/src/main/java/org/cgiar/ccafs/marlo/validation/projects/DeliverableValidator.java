@@ -63,7 +63,7 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
-    if (deliverable.getYear() <= action.getCurrentCycleYear()) {
+    if (deliverable.getYear() >= action.getCurrentCycleYear()) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
       this.action = action;
       if (!saving) {

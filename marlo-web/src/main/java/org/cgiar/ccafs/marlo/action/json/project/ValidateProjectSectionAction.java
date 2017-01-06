@@ -543,6 +543,7 @@ public class ValidateProjectSectionAction extends BaseAction {
       .collect(Collectors.toList());
 
     for (Deliverable deliverable : openA) {
+
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
       deliverable.setGenderLevels(
