@@ -4,7 +4,7 @@
   <table class="projectsList" id="projects">
     <thead>
       <tr class="header">
-        <th colspan="6">Funding Source information</th>
+        <th colspan="5">Funding Source information</th>
         <th colspan="1">Actions</th> 
       </tr>
       <tr class="subHeader">
