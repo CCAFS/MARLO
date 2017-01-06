@@ -88,20 +88,6 @@
           </div>
         </div>
         
-        <div class="row">
-          [#-- List of all Submmited Projects --] 
-          <div class="notAvailable borderBox col-md-3">
-            <span title="[@s.text name="summaries.board.report.submmitedProjects.description" /]" class="info-file fa fa-info-circle "></span>
-            <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="submmitedProjects" value="submmitedProjects"/>
-              <label for="">[@s.text name="summaries.board.report.submmitedProjects" /]</label>
-            </div>
-            <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
-            <div class="extraOptions" style="display:none"> 
-            </div>
-          </div>
-          
-        </div>
         </div>
         [#-- -- -- Partners reports -- -- --]
         <div id="partners-contentOptions" style="display:none">
