@@ -214,7 +214,7 @@ function generateReport(e) {
           termsArray.push($(e).find(".text").html());
         });
         url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~#");
-        var replace = url.replace(/ /g, "%");
+        var replace = url.replace(/ /g, "%20");
         setUrl(replace);
       } else {
         url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
