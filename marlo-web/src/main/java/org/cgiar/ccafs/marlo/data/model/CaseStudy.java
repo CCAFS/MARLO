@@ -67,7 +67,9 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+
   private Set<CaseStudyProject> caseStudyProjects = new HashSet<CaseStudyProject>(0);
+
   private List<CaseStudyProject> projects;
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 

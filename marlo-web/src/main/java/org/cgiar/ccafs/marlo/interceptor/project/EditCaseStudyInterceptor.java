@@ -92,10 +92,18 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
     boolean canSwitchProject = false;
     baseAction.setSession(session);
     String projectParameter = ((String[]) parameters.get(APConstants.CASE_STUDY_REQUEST_ID))[0];
-    String projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
     caseStudyId = Long.parseLong(projectParameter);
-    Project project = projectManager.getProjectById(Long.parseLong(projectIDParameter));
     CaseStudy caseStudy = caseStudyManager.getCaseStudyById(caseStudyId);
+    String projectIDParameter;
+
+    try {
+      projectIDParameter = ((String[]) parameters.get(APConstants.PROJECT_REQUEST_ID))[0];
+    } catch (Exception e) {
+      projectIDParameter = String.valueOf(caseStudy.getCaseStudyProjects().stream()
+        .filter(cs -> cs.isActive() && cs.isCreated()).collect(Collectors.toList()).get(0).getProject().getId());
+    }
+
+    Project project = projectManager.getProjectById(Long.parseLong(projectIDParameter));
 
     if (caseStudy != null && caseStudy.isActive()) {
 

@@ -244,8 +244,8 @@ public class ProjectCaseStudyAction extends BaseAction {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     caseStudyID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.CASE_STUDY_REQUEST_ID)));
-    projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-    project = projectManager.getProjectById(projectID);
+
+
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
 
@@ -307,6 +307,14 @@ public class ProjectCaseStudyAction extends BaseAction {
 
     }
 
+    try {
+      projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    } catch (Exception e) {
+      projectID = caseStudy.getProjects().stream().filter(cs -> cs.isActive() && cs.isCreated())
+        .collect(Collectors.toList()).get(0).getProject().getId();
+    }
+
+    project = projectManager.getProjectById(projectID);
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_CASE_STUDY_BASE_PERMISSION, params));
@@ -383,6 +391,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
       caseStudy.setActive(true);
 
+      caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
 
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -403,8 +412,6 @@ public class ProjectCaseStudyAction extends BaseAction {
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
 
-
-        caseStudyManager.saveCaseStudy(caseStudy, this.getActionName(), relationsName);
 
         return SUCCESS;
       } else {

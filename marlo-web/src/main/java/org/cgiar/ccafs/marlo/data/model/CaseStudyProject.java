@@ -88,7 +88,7 @@ public class CaseStudyProject implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
-    return null;
+    return u;
   }
 
 
