@@ -3,6 +3,8 @@ package org.cgiar.ccafs.marlo.config;
 
 import org.cgiar.ccafs.marlo.utils.PropertiesManager;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import javax.sql.DataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.MigrationVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,33 +46,33 @@ public class FlywayContextListener implements ServletContextListener {
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    /*
-     * Flyway flyway = new Flyway();
-     * properties = new PropertiesManager();
-     * try {
-     * Statement st = this.getDataSourceNoSchema().getConnection().createStatement();
-     * st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + properties.getPropertiesAsString("mysql.database") + ";");
-     * st.close();
-     * } catch (SQLException e) {
-     * LOG.error("Error " + e.getLocalizedMessage());
-     * }
-     * flyway.setDataSource(this.getDataSource());
-     * flyway.setLocations(SQL_MIGRATIONS_PATH);
-     * this.configurePlaceholders(flyway);
-     * // DELETE ALL DB
-     * //
-     * if (flyway.info().current() == null) {
-     * LOG.info("Setting baseline version 2.0");
-     * flyway.setBaselineVersion(MigrationVersion.fromVersion("2.0"));
-     * flyway.baseline();
-     * flyway.migrate();
-     * } else {
-     * // Show the changes to be applied
-     * flyway.repair();
-     * flyway.setOutOfOrder(true);
-     * flyway.migrate();
-     * }
-     */
+
+    Flyway flyway = new Flyway();
+    properties = new PropertiesManager();
+    try {
+      Statement st = this.getDataSourceNoSchema().getConnection().createStatement();
+      st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + properties.getPropertiesAsString("mysql.database") + ";");
+      st.close();
+    } catch (SQLException e) {
+      LOG.error("Error " + e.getLocalizedMessage());
+    }
+    flyway.setDataSource(this.getDataSource());
+    flyway.setLocations(SQL_MIGRATIONS_PATH);
+    this.configurePlaceholders(flyway);
+    // DELETE ALL DB
+    //
+    if (flyway.info().current() == null) {
+      LOG.info("Setting baseline version 2.0");
+      flyway.setBaselineVersion(MigrationVersion.fromVersion("2.0"));
+      flyway.baseline();
+      flyway.migrate();
+    } else {
+      // Show the changes to be applied
+      flyway.repair();
+      flyway.setOutOfOrder(true);
+      flyway.migrate();
+    }
+
   }
 
   private DataSource getDataSource() {
