@@ -88,7 +88,19 @@
          <div class="panel-head"><label for=""> [@customForm.text name="fundingSource.leadPartner" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="leadPartnerList" class="panel-body" listname="deliverable.fundingSources"> 
             <ul class="list">
+            [#if fundingSource.institutions?has_content]
+              [#list fundingSource.institutions as institutionLead]
+                <li id="" class="leadPartners clearfix col-md-6">
+                  <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                  <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
+                  <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
+                  <span class="name">${institutionLead.institution.composedName}</span>
+                  <div class="clearfix"></div>
+                </li>
+              [/#list]
+              [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
+            [/#if]
             </ul>
             [#if editable ]
               [@customForm.select name="fundingSource.leader.id" label=""  showTitle=false  i18nkey="" listName="institutions" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="institution" editable=editable && action.canEditInstitution() /]
@@ -197,8 +209,8 @@
 <ul style="display:none">
   <li id="leadPartnerTemplate" class="leadPartners clearfix col-md-6" style="display:none;">
     <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
-    <input class="id" type="hidden" name="fundingSource.leaders[-1].id" value="" />
-    <input class="fId" type="hidden" name="fundingSource.leaders[-1].leader.id" value="" />
+    <input class="id" type="hidden" name="fundingSource.institutions[-1].id" value="" />
+    <input class="fId" type="hidden" name="fundingSource.institutions[-1].institution.id" value="" />
     <span class="name"></span>
     <div class="clearfix"></div>
   </li>
