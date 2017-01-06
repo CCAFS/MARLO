@@ -90,7 +90,7 @@ public class UnsubmitProjectAction extends BaseAction {
       Submission submission = submissions.get(0);
 
       submission.setUnSubmitUser(this.getCurrentUser());
-      submission.setUnSubmitJustification(justification);
+      submission.setUnSubmitJustification(justification.trim());
       submission.setUnSubmit(true);
 
       submissionManager.saveSubmission(submission);
