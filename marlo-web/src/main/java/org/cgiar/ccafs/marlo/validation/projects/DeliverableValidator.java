@@ -87,7 +87,7 @@ public class DeliverableValidator extends BaseValidator {
          * }
          */
         if (deliverable.getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getId() == -1) {
+          if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
             action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
           } else {
