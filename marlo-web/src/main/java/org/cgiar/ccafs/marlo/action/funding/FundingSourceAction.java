@@ -371,8 +371,8 @@ public class FundingSourceAction extends BaseAction {
         fundingSource.setBudgets(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
           .getFundingSourceBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
-        fundingSource.setInstitutions(new ArrayList<>(fundingSourceManager.getFundingSourceById(fundingSource.getId())
-          .getFundingSourceInstitutions().stream().filter(pb -> pb.isActive()).collect(Collectors.toList())));
+        fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
+          .filter(pb -> pb.isActive()).collect(Collectors.toList())));
 
         fundingSource.setProjectBudgetsList(
           fundingSource.getProjectBudgets().stream().filter(pb -> pb.isActive()).collect(Collectors.toList()));
@@ -385,7 +385,14 @@ public class FundingSourceAction extends BaseAction {
         status.put(agreementStatusEnum.getStatusId(), agreementStatusEnum.getStatus());
       }
 
-
+      if (fundingSource.getInstitutions() != null) {
+        for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+          if (fundingSourceInstitution != null) {
+            fundingSourceInstitution
+              .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getInstitution().getId()));
+          }
+        }
+      }
       institutions = new ArrayList<>();
       for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
         .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
@@ -426,6 +433,12 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.setFile(null);
+
+
+      for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+        fundingSourceInstitution
+          .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+      }
       fundingSource.getInstitutions().clear();
     }
   }
@@ -517,7 +530,7 @@ public class FundingSourceAction extends BaseAction {
           }
         }
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
-          if (fundingSourceInstitution.getId() == null ||fundingSourceInstitution.getId().longValue()==-1 ) {
+          if (fundingSourceInstitution.getId() == null || fundingSourceInstitution.getId().longValue() == -1) {
 
             fundingSourceInstitution.setId(null);
             fundingSourceInstitution.setFundingSource(fundingSource);
