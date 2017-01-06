@@ -69,50 +69,50 @@ public class FundingSourceAction extends BaseAction {
   private static final long serialVersionUID = -3919022306156272887L;
 
 
-  private CrpManager crpManager;
-
-  private FundingSourceManager fundingSourceManager;
-  private FundingSourceBudgetManager fundingSourceBudgetManager;
-  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
-  private InstitutionManager institutionManager;
-  private BudgetTypeManager budgetTypeManager;
-
-  private Integer fileID;
-
-  private LiaisonInstitutionManager liaisonInstitutionManager;
-
-
   private AuditLogManager auditLogManager;
 
-  private FileDBManager fileDBManager;
-  private UserManager userManager;
-  private Crp loggedCrp;
-
+  private BudgetTypeManager budgetTypeManager;
+  private Map<String, String> budgetTypes;
+  private CrpManager crpManager;
+  private CrpPpaPartnerManager crpPpaPartnerManager;
   private File file;
+
   private String fileContentType;
 
+  private FileDBManager fileDBManager;
+
+
   private String fileFileName;
-  private long fundingSourceID;
+
+  private Integer fileID;
   private FundingSource fundingSource;
-  private FundingSourceValidator validator;
+  private FundingSourceBudgetManager fundingSourceBudgetManager;
+
+  private long fundingSourceID;
+  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
+
+  private FundingSourceManager fundingSourceManager;
+  private InstitutionManager institutionManager;
+  private List<Institution> institutions;
+  private List<Institution> institutionsDonors;
 
 
-  private Map<String, String> status;
-
-
-  private Map<String, String> budgetTypes;
+  private LiaisonInstitutionManager liaisonInstitutionManager;
 
 
   private List<LiaisonInstitution> liaisonInstitutions;
 
 
-  private List<Institution> institutions;
-  private List<Institution> institutionsDonors;
+  private Crp loggedCrp;
 
 
+  private Map<String, String> status;
   private String transaction;
 
-  private CrpPpaPartnerManager crpPpaPartnerManager;
+
+  private UserManager userManager;
+
+  private FundingSourceValidator validator;
 
   @Inject
   public FundingSourceAction(APConfig config, CrpManager crpManager, FundingSourceManager fundingSourceManager,
@@ -517,9 +517,9 @@ public class FundingSourceAction extends BaseAction {
           }
         }
         for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
-          if (fundingSourceInstitution.getId() == null) {
+          if (fundingSourceInstitution.getId() == null ||fundingSourceInstitution.getId().longValue()==-1 ) {
 
-
+            fundingSourceInstitution.setId(null);
             fundingSourceInstitution.setFundingSource(fundingSource);
 
             fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
