@@ -177,6 +177,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     }
 
     Project project = projectManager.getProjectById(projectID);
+
     switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
       case OUTCOMES:
         section = new HashMap<String, Object>();
