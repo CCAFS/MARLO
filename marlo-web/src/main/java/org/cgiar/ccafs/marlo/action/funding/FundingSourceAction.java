@@ -531,6 +531,7 @@ public class FundingSourceAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
+      relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
       fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
