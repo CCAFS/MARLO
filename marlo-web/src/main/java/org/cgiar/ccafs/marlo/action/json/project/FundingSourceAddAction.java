@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceBudgetManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceBudget;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -72,7 +74,7 @@ public class FundingSourceAddAction extends BaseAction {
   private Crp loggedCrp;
   private FundingSourceManager fundingSourceManager;
   private LiaisonUserManager liaisonUserManager;
-
+  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private InstitutionManager institutionManager;
   private BudgetTypeManager budgetTypeManager;
   private FundingSourceBudgetManager fundingSourceBudgetManager;
@@ -86,7 +88,7 @@ public class FundingSourceAddAction extends BaseAction {
   public FundingSourceAddAction(APConfig config, FundingSourceManager fundingSourceManager,
     InstitutionManager institutionManager, BudgetTypeManager budgetTypeManager, CrpManager crpManager,
     FundingSourceBudgetManager fundingSourceBudgetManager, LiaisonUserManager liaisonUserManager,
-    FileDBManager fileDBManager) {
+    FileDBManager fileDBManager, FundingSourceInstitutionManager fundingSourceInstitutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.institutionManager = institutionManager;
@@ -94,6 +96,7 @@ public class FundingSourceAddAction extends BaseAction {
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.fundingSourceBudgetManager = fundingSourceBudgetManager;
   }
 
@@ -149,21 +152,28 @@ public class FundingSourceAddAction extends BaseAction {
     fundingSource.setCreatedBy(this.getCurrentUser());
     fundingSource.setModificationJustification("");
     fundingSource.setModifiedBy(this.getCurrentUser());
-    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
-    if (user != null) {
-      try {
-        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
-        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
-          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-          fundingSource.setLeader(institution);
-        }
-      } catch (Exception e) {
-        fundingSource.setLeader(null);
-      }
 
-    }
 
     long fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+
+
+    LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+    if (user != null) {
+      LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+      try {
+        if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+          Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
+
+          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+          fundingSourceInstitution.setFundingSource(fundingSource);
+
+          fundingSourceInstitution.setInstitution(institution);
+          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
+        }
+      } catch (Exception e) {
+
+      }
+    }
 
     fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
     double remaining = 0;

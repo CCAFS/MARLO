@@ -130,9 +130,9 @@ public class FundingSourceMySQLDAO implements FundingSourceDAO {
     for (FundingSource fundingSource : fundingSources) {
       try {
         if (fundingSource.getEndDate() != null) {
-          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate())) && fundingSource.getLeader() != null) {
-            long insID = fundingSource.getLeader().getId();
-            if (insID == institutionID) {
+          if (year <= Integer.parseInt(df.format(fundingSource.getEndDate()))) {
+
+            if (fundingSource.hasInstitution(institutionID)) {
               fundingSourcesReturn.add(fundingSource);
             }
           }
