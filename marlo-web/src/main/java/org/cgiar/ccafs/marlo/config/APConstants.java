@@ -210,6 +210,10 @@ public final class APConstants {
   public static final String PROJECT_LEVERAGES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectLeverages)";
 
+
+  public static final String PROJECT_OVERVIEWS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectContributionOverviews)";
+
   public static final String PROJECT_CCFASOTUCOME_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectIndicators)";
 
