@@ -46,7 +46,7 @@
           </td>
           [#-- Center Lead --]
           <td class=""> 
-            ${(project.leader.composedName)!'Not defined'}
+            ${(project.institution.composedName)!'Not defined'}
           </td>
            [#-- Donor --]
         
