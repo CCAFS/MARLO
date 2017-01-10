@@ -90,7 +90,7 @@
                   <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
                     [#if (outcome.file?has_content)!false]
                       [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                      <p><a href="${ProjectOutcomeURL}${((outcome.file.fileName))!}">${(outcome.file.fileName)!}</a></p>
+                      <p><a href="${action.getProjectOutcomeUrl()}${((outcome.file.fileName))!}">${(outcome.file.fileName)!}</a></p>
                        <input id="fileID" type="hidden" name="project.outcomesPandr[${indexYear}].file.id" value="${(outcome.file.id)!}" />
                     [#else]
                       [#if editable && action.hasPermission("uploadSummary")]
