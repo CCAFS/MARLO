@@ -112,11 +112,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private Set<DeliverableActivity> deliverableActivities = new HashSet<DeliverableActivity>(0);
 
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
   private DeliverablePartnership responsiblePartner;
-
 
   private Set<DeliverableFundingSource> deliverableFundingSources = new HashSet<DeliverableFundingSource>(0);
 
@@ -126,17 +126,21 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   private List<DeliverablePartnership> otherPartners;
 
+
+  private Set<DeliverableQualityCheck> deliverableQualityChecks = new HashSet<DeliverableQualityCheck>(0);
+
+
   @Expose
   private Boolean crossCuttingGender;
 
   @Expose
   private Boolean crossCuttingYouth;
+
   @Expose
   private Boolean crossCuttingCapacity;
 
   @Expose
   private Boolean crossCuttingNa;
-
   private Set<DeliverableDissemination> deliverableDisseminations = new HashSet<DeliverableDissemination>(0);
 
   private Set<DeliverableDataSharingFile> deliverableDataSharingFiles = new HashSet<DeliverableDataSharingFile>(0);
@@ -148,7 +152,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Deliverable() {
   }
-
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -173,7 +176,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableActivities = deliverableActivities;
     this.createDate = createDate;
   }
-
 
   public Deliverable(Project project, int year, boolean active, Date activeSince, User createdBy, User modifiedBy,
     String modificationJustification) {
@@ -209,9 +211,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return this.activeSince;
   }
+
 
   public String getComposedName() {
     try {
@@ -234,7 +238,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crossCuttingCapacity;
   }
 
-
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
@@ -252,6 +255,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crpClusterKeyOutput;
   }
 
+
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
@@ -268,11 +272,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableDataSharings;
   }
 
-
   public Set<DeliverableDissemination> getDeliverableDisseminations() {
     return deliverableDisseminations;
   }
-
 
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
@@ -291,6 +293,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Set<DeliverablePublicationMetadata> getDeliverablePublicationMetadatas() {
     return deliverablePublicationMetadatas;
+  }
+
+
+  public Set<DeliverableQualityCheck> getDeliverableQualityChecks() {
+    return deliverableQualityChecks;
   }
 
 
@@ -328,6 +335,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.modificationJustification;
   }
 
+
   @Override
   public User getModifiedBy() {
     return modifiedBy;
@@ -336,7 +344,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
-
 
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
@@ -357,10 +364,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sectionStatuses;
   }
 
+
   public Integer getStatus() {
     return this.status;
   }
-
 
   public String getStatusDescription() {
     return this.statusDescription;
@@ -384,6 +391,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getTitle() {
     return this.title;
   }
+
 
   public String getTypeOther() {
     return this.typeOther;
@@ -422,10 +430,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-
   public void setCrossCuttingCapacity(Boolean crossCuttingCapacity) {
     this.crossCuttingCapacity = crossCuttingCapacity;
   }
+
 
   public void setCrossCuttingGender(Boolean crossCuttingGender) {
     this.crossCuttingGender = crossCuttingGender;
@@ -455,10 +463,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.deliverableDataSharingFiles = deliverableDataSharingFiles;
   }
 
-
   public void setDeliverableDataSharings(Set<DeliverableDataSharing> deliverableDataSharings) {
     this.deliverableDataSharings = deliverableDataSharings;
   }
+
 
   public void setDeliverableDisseminations(Set<DeliverableDissemination> deliverableDisseminations) {
     this.deliverableDisseminations = deliverableDisseminations;
@@ -478,6 +486,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setDeliverablePublicationMetadatas(Set<DeliverablePublicationMetadata> deliverablePublicationMetadatas) {
     this.deliverablePublicationMetadatas = deliverablePublicationMetadatas;
+  }
+
+  public void setDeliverableQualityChecks(Set<DeliverableQualityCheck> deliverableQualityChecks) {
+    this.deliverableQualityChecks = deliverableQualityChecks;
   }
 
   public void setDeliverableType(DeliverableType deliverableType) {
