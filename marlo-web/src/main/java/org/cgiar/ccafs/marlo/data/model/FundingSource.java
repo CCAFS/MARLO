@@ -30,10 +30,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
 
   private List<FundingSourceBudget> budgets;
 
+  private List<FundingSourceInstitution> institutions;
+
+
   @Expose
   private BudgetType budgetType;
-
-
   @Expose
   private Integer centerType;
 
@@ -52,8 +53,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private Crp crp;
 
+
   @Expose
   private String description;
+
 
   @Expose
   private Date endDate;
@@ -62,30 +65,34 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   @Expose
   private FileDB file;
 
+
   @Expose
   private String financeCode;
 
-
   private Set<FundingSourceBudget> fundingSourceBudgets = new HashSet<FundingSourceBudget>(0);
+
   private Set<FundingSource> fundingSources = new HashSet<FundingSource>(0);
+
+  private Set<FundingSourceInstitution> fundingSourceInstitutions = new HashSet<FundingSourceInstitution>(0);
+
 
   @Expose
   private Long id;
 
-
   @Expose
   private Institution institution;
 
-  @Expose
-  private Institution leader;
 
   @Expose
   private String modificationJustification;
 
+
   @Expose
   private User modifiedBy;
 
+
   private Set<ProjectBudget> projectBudgets = new HashSet<ProjectBudget>(0);
+
 
   private List<ProjectBudget> projectBudgetsList;
 
@@ -157,7 +164,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public List<FundingSourceBudget> getBudgets() {
     return budgets;
   }
@@ -166,11 +172,9 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return budgetType;
   }
 
-
   public Integer getCenterType() {
     return centerType;
   }
-
 
   public String getComposedName() {
     try {
@@ -184,10 +188,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return contactPersonEmail;
   }
 
+
   public String getContactPersonName() {
     return contactPersonName;
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -203,27 +207,34 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return description;
   }
 
-
   public Date getEndDate() {
     return endDate;
   }
-
 
   public FileDB getFile() {
     return file;
   }
 
+
   public String getFinanceCode() {
     return financeCode;
   }
+
 
   public Set<FundingSourceBudget> getFundingSourceBudgets() {
     return fundingSourceBudgets;
   }
 
+
+  public Set<FundingSourceInstitution> getFundingSourceInstitutions() {
+    return fundingSourceInstitutions;
+  }
+
+
   public Set<FundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   @Override
   public Long getId() {
@@ -234,8 +245,8 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return institution;
   }
 
-  public Institution getLeader() {
-    return leader;
+  public List<FundingSourceInstitution> getInstitutions() {
+    return institutions;
   }
 
   @Override
@@ -245,22 +256,20 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
-
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
-
   public Set<ProjectBudget> getProjectBudgets() {
     return projectBudgets;
   }
-
 
   public List<ProjectBudget> getProjectBudgetsList() {
     return projectBudgetsList;
@@ -322,6 +331,18 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     return result;
   }
 
+
+  public boolean hasInstitution(long institutionID) {
+
+    for (FundingSourceInstitution fundingSourceInstitution : fundingSourceInstitutions) {
+      if (fundingSourceInstitution.getInstitution().getId().longValue() == institutionID) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   @Override
   public boolean isActive() {
     return active;
@@ -331,7 +352,6 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
-
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -357,9 +377,11 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.contactPersonEmail = contactPersonEmail;
   }
 
+
   public void setContactPersonName(String contactPersonName) {
     this.contactPersonName = contactPersonName;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
@@ -389,6 +411,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.fundingSourceBudgets = fundingSourceBudgets;
   }
 
+  public void setFundingSourceInstitutions(Set<FundingSourceInstitution> fundingSourceInstitutions) {
+    this.fundingSourceInstitutions = fundingSourceInstitutions;
+  }
+
   public void setFundingSources(Set<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
@@ -401,9 +427,10 @@ public class FundingSource implements java.io.Serializable, IAuditLog {
     this.institution = institution;
   }
 
-  public void setLeader(Institution leader) {
-    this.leader = leader;
+  public void setInstitutions(List<FundingSourceInstitution> institutions) {
+    this.institutions = institutions;
   }
+
 
   public void setModificationJustification(String modificationJustification) {
     this.modificationJustification = modificationJustification;

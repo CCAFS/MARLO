@@ -15,7 +15,6 @@
 package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.action.json.global.ManageUsersAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
@@ -92,7 +91,7 @@ import org.slf4j.LoggerFactory;
 public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
-  private static Logger LOG = LoggerFactory.getLogger(ManageUsersAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(ReportingSummaryAction.class);
 
   private CrpManager crpManager;
 
@@ -1024,9 +1023,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew",
-        "isAdministrative"},
+        "isAdministrative", "type"},
       new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, Boolean.class,
-        Boolean.class});
+        Boolean.class, String.class});
 
     // Filling title
     String title = "";
@@ -1037,17 +1036,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         title += projectLeader.getInstitution().getAcronym() + "-";
       }
     }
-    if (flagships != null) {
-      if (!flagships.isEmpty()) {
-        for (CrpProgram crpProgram : flagships) {
-          title += crpProgram.getAcronym() + "-";
+    if (project.getAdministrative() == false) {
+
+
+      if (flagships != null) {
+        if (!flagships.isEmpty()) {
+          for (CrpProgram crpProgram : flagships) {
+            title += crpProgram.getAcronym() + "-";
+          }
         }
       }
-    }
-    if (regions != null) {
-      if (!regions.isEmpty()) {
-        for (CrpProgram crpProgram : regions) {
-          title += crpProgram.getAcronym() + "-";
+      if (regions != null) {
+        if (!regions.isEmpty()) {
+          for (CrpProgram crpProgram : regions) {
+            title += crpProgram.getAcronym() + "-";
+          }
         }
       }
     }
@@ -1089,22 +1092,28 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String centerAcry = "";
     centerAcry = project.getCrp().getName();
     Boolean isAdministrative = false;
+    String type = "Research Project";
     if (project.getAdministrative() != null) {
+      if (project.getAdministrative() == true) {
+        type = "Management Project";
+      }
       isAdministrative = project.getAdministrative();
     } else {
       isAdministrative = false;
     }
 
     Boolean isNew = this.isProjectNew(projectID);
-    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative});
+
+
+    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative, type});
     return model;
   }
 
   private TypedTableModel getNullMasterTableModel(String cycle, int year) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"title", "center", "current_date", "project_submission", "exist", "isNew"},
-        new Class[] {String.class, String.class, String.class, String.class, Integer.class, Boolean.class});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"title", "center", "current_date", "project_submission", "exist", "isNew", "type"},
+      new Class[] {String.class, String.class, String.class, String.class, Integer.class, Boolean.class, String.class});
 
     // Filling title
     String title = "";
@@ -1119,7 +1128,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
     String current_date = timezone.format(format) + timezone.getZone();
 
-    model.addRow(new Object[] {title, "404", current_date, "", 0, false});
+    model.addRow(new Object[] {title, "404", current_date, "", 0, false, ""});
     return model;
   }
 

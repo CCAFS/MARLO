@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.funding;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
@@ -27,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInstitution;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -54,7 +56,7 @@ public class FundingSourceListAction extends BaseAction {
 
   private FundingSourceManager fundingSourceManager;
 
-
+  private FundingSourceInstitutionManager fundingSourceInstitutionManager;
   private CrpManager crpManager;
   private RoleManager roleManager;
   private UserManager userManager;
@@ -71,12 +73,13 @@ public class FundingSourceListAction extends BaseAction {
   @Inject
   public FundingSourceListAction(APConfig config, RoleManager roleManager, FundingSourceManager fundingSourceManager,
     CrpManager crpManager, ProjectManager projectManager, LiaisonUserManager liaisonUserManager,
-    InstitutionManager institutionManager) {
+    InstitutionManager institutionManager, FundingSourceInstitutionManager fundingSourceInstitutionManager) {
     super(config);
     this.fundingSourceManager = fundingSourceManager;
     this.crpManager = crpManager;
     this.roleManager = roleManager;
     this.liaisonUserManager = liaisonUserManager;
+    this.fundingSourceInstitutionManager = fundingSourceInstitutionManager;
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
   }
@@ -91,24 +94,32 @@ public class FundingSourceListAction extends BaseAction {
     fundingSource.setActiveSince(new Date());
     fundingSource.setCrp(loggedCrp);
     fundingSource.setCenterType(1);
+
+    // project.setCrp(loggedCrp);
+
+    fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
+
+
     LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
     if (user != null) {
       LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
       try {
         if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
           Institution institution = institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
-          fundingSource.setLeader(institution);
+
+          FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();
+          fundingSourceInstitution.setFundingSource(fundingSource);
+
+          fundingSourceInstitution.setInstitution(institution);
+          fundingSourceInstitutionManager.saveFundingSourceInstitution(fundingSourceInstitution);
         }
       } catch (Exception e) {
-        fundingSource.setLeader(null);
+
       }
-      this.clearPermissionsCache();
+
 
     }
-    // project.setCrp(loggedCrp);
-
-    fundingSourceID = fundingSourceManager.saveFundingSource(fundingSource);
-
+    this.clearPermissionsCache();
     if (fundingSourceID > 0) {
       return SUCCESS;
     }
