@@ -56,30 +56,22 @@ public class FlywayContextListener implements ServletContextListener {
     } catch (SQLException e) {
       LOG.error("Error " + e.getLocalizedMessage());
     }
-
-
     flyway.setDataSource(this.getDataSource());
     flyway.setLocations(SQL_MIGRATIONS_PATH);
-
     this.configurePlaceholders(flyway);
     // DELETE ALL DB
     //
-
     if (flyway.info().current() == null) {
       LOG.info("Setting baseline version 2.0");
-
       flyway.setBaselineVersion(MigrationVersion.fromVersion("2.0"));
       flyway.baseline();
       flyway.migrate();
-
     } else {
       // Show the changes to be applied
-
       flyway.repair();
       flyway.setOutOfOrder(true);
       flyway.migrate();
     }
-
 
   }
 

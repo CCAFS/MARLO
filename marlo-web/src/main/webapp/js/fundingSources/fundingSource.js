@@ -5,12 +5,25 @@ function init() {
   // Popup
   popups();
 
+  // Lead partner
+  $(".institution").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "-1") {
+      addLeadPartner(option);
+    }
+    // Remove option from select
+    option.remove();
+    $(this).trigger("change.select2");
+  });
+
   // Setting Currency Inputs
   $('.currencyInput').currencyInput();
   date("form #fundingSource\\.startDate", "form #fundingSource\\.endDate");
   $('form select').select2({
     width: "100%"
   });
+
+  $(".removeLeadPartner").on("click", removeLeadPartner);
 
   // When select center as Funding Window----------
   var lastDonor = -1;
@@ -72,6 +85,80 @@ function init() {
     $uploadBlock.find('.fileUpload').show();
     $('input#fileID').val('');
   });
+}
+
+// Add a new lead partner element
+function addLeadPartner(option) {
+  var canAdd = true;
+  console.log(option.val());
+  if(option.val() == "-1") {
+    canAdd = false;
+  }
+
+  var $list = $(option).parents(".select").parents("#leadPartnerList").find(".list");
+  var $item = $("#leadPartnerTemplate").clone(true).removeAttr("id");
+  var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
+
+  // Check if is already selected
+  $list.find('.leadPartners').each(function(i,e) {
+    if($(e).find('input.fId').val() == option.val()) {
+      canAdd = false;
+      return;
+    }
+  });
+  if(!canAdd) {
+    return;
+  }
+
+  // Set funding source parameters
+  $item.find(".name").attr("title", $(option).text());
+  $item.find(".name").html(v);
+  $item.find(".fId").val(option.val());
+  $item.find(".id").val(-1);
+  $list.append($item);
+  $item.show('slow');
+  updateLeadPartner($list);
+  checkLeadPartnerItems($list);
+
+  // Reset select
+  $(option).val("-1");
+  $(option).trigger('change.select2');
+
+}
+
+function removeLeadPartner() {
+  var $list = $(this).parents('.list');
+  var $item = $(this).parents('.leadPartners');
+  var value = $item.find(".fId").val();
+  var name = $item.find(".name").attr("title");
+  console.log(name + "-" + value);
+  var $select = $(".institution");
+  $item.hide(1000, function() {
+    $item.remove();
+    checkLeadPartnerItems($list);
+    updateLeadPartner($list);
+  });
+// Add funding source option again
+  $select.addOption(value, name);
+  $select.trigger("change.select2");
+}
+
+function updateLeadPartner($list) {
+  $($list).find('.leadPartners').each(function(i,e) {
+    // Set funding sources indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+function checkLeadPartnerItems(block) {
+  console.log(block);
+  var items = $(block).find('.leadPartners').length;
+  console.log(items);
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
 
 function date(start,end) {

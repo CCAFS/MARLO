@@ -63,7 +63,7 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
-    if (deliverable.getYear() <= action.getCurrentCycleYear()) {
+    if (deliverable.getYear() >= action.getCurrentCycleYear()) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
       this.action = action;
       if (!saving) {
@@ -87,7 +87,7 @@ public class DeliverableValidator extends BaseValidator {
          * }
          */
         if (deliverable.getDeliverableType() != null) {
-          if (deliverable.getDeliverableType().getId() == -1) {
+          if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
             action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
           } else {

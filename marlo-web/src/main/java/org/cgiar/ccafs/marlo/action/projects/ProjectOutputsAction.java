@@ -64,18 +64,21 @@ public class ProjectOutputsAction extends BaseAction {
   private CrpProgramManager crpProgrammManager;
   private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
   private IpElementManager ipElementManager;
+  private List<Integer> allYears;
+
 
   private long projectID;
+
+
   private Project project;
 
   private CrpManager crpManager;
-
   private Crp loggedCrp;
-
 
   private String transaction;
 
   private AuditLogManager auditLogManager;
+
 
   @Inject
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
@@ -92,7 +95,6 @@ public class ProjectOutputsAction extends BaseAction {
     this.auditLogManager = auditLogManager;
 
   }
-
 
   @Override
   public String cancel() {
@@ -116,6 +118,10 @@ public class ProjectOutputsAction extends BaseAction {
     messages = this.getActionMessages();
 
     return SUCCESS;
+  }
+
+  public List<Integer> getAllYears() {
+    return allYears;
   }
 
 
@@ -146,6 +152,7 @@ public class ProjectOutputsAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public IpProjectContributionOverview getOverview(int year, long mogID) {
     int index = this.getIndex(year, mogID);
     if (index >= 0) {
@@ -166,15 +173,14 @@ public class ProjectOutputsAction extends BaseAction {
     return projectManager;
   }
 
-
   public String getProjectRequest() {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public String next() {
@@ -185,6 +191,7 @@ public class ProjectOutputsAction extends BaseAction {
       return result;
     }
   }
+
 
   public void overViewsNewData(List<IpProjectContributionOverview> overviews) {
 
@@ -218,7 +225,6 @@ public class ProjectOutputsAction extends BaseAction {
     }
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -294,7 +300,7 @@ public class ProjectOutputsAction extends BaseAction {
 
     Project projectDB = projectManager.getProjectById(projectID);
 
-
+    allYears = projectDB.getAllYears();
     project.setMogs(new ArrayList<>());
     List<IpProjectContribution> ipProjectContributions =
       projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -317,6 +323,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -371,6 +378,10 @@ public class ProjectOutputsAction extends BaseAction {
       }
     }
     return NOT_AUTHORIZED;
+  }
+
+  public void setAllYears(List<Integer> allYears) {
+    this.allYears = allYears;
   }
 
 

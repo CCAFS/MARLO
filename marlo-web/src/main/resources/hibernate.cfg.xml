@@ -101,6 +101,7 @@
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
+
 		<mapping resource="xmls/ProjectHighligths.hbm.xml" />
 	  <mapping resource="xmls/ProjectHighligthsCountry.hbm.xml" />
 	  <mapping resource="xmls/ProjectHighligthsTypes.hbm.xml" />
@@ -130,6 +131,9 @@
 		<mapping resource="xmls/DeliverableDissemination.hbm.xml" />
 		<mapping resource="xmls/DeliverablePublicationMetadata.hbm.xml" />	
 		<mapping resource="xmls/IpRelationships.hbm.xml" />
+
+		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
+
 	</session-factory>
 </hibernate-configuration>
 

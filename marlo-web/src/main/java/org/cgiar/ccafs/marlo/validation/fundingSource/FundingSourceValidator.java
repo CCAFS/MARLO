@@ -90,10 +90,6 @@ public class FundingSourceValidator extends BaseValidator {
       action.getInvalidFields().put("input-fundingSource.endDate", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (fundingSource.getLeader() == null || fundingSource.getLeader().getId() == null) {
-      this.addMessage(action.getText("fundingSource.leader.id"));
-      action.getInvalidFields().put("input-fundingSource.leader.id", InvalidFieldsMessages.EMPTYFIELD);
-    }
 
     if (fundingSource.getInstitution() == null || fundingSource.getInstitution().getId() == null) {
       this.addMessage(action.getText("fundingSource.institution.id"));
