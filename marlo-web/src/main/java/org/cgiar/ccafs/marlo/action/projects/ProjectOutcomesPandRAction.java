@@ -250,7 +250,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
           outcomePandr.setModificationJustification(this.getJustification());
           outcomePandr.setActiveSince(new Date());
 
-
+          outcomePandr.setId(null);
           outcomePandr.setProject(project);
 
         } else {

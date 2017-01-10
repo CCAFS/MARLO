@@ -147,7 +147,14 @@ public class ProjectOutputsAction extends BaseAction {
         i++;
       }
     }
-    return -1;
+    IpProjectContributionOverview ipProjectContributionOverview = new IpProjectContributionOverview();
+    ipProjectContributionOverview.setYear(year);
+    ipProjectContributionOverview.setIpElement(ipElementManager.getIpElementById(mogID));
+    if (project.getOverviews() == null) {
+      project.setOverviews(new ArrayList<>());
+    }
+    project.getOverviews().add(ipProjectContributionOverview);
+    return project.getOverviews().size() - 1;
   }
 
 
@@ -160,6 +167,7 @@ public class ProjectOutputsAction extends BaseAction {
     int index = this.getIndex(year, mogID);
     if (index >= 0) {
       return project.getOverviews().get(index);
+
     }
     return null;
   }
@@ -207,7 +215,7 @@ public class ProjectOutputsAction extends BaseAction {
           overview.setModificationJustification(this.getJustification());
           overview.setActiveSince(new Date());
 
-
+          overview.setId(null);
           overview.setProject(project);
 
         } else {
