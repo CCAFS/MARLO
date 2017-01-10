@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -39,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -219,9 +222,10 @@ public class ProjectOutputsAction extends BaseAction {
           overview.setActiveSince(overviewDB.getActiveSince());
 
         }
+        ipProjectContributionOverviewManager.saveIpProjectContributionOverview(overview);
       }
 
-      ipProjectContributionOverviewManager.saveIpProjectContributionOverview(overview);
+
     }
 
   }
@@ -307,6 +311,11 @@ public class ProjectOutputsAction extends BaseAction {
     for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
       project.getMogs().add(ipProjectContribution.getIpElementByMogId());
     }
+    Set<IpElement> elementsMogs = new HashSet<>();
+    elementsMogs.addAll(project.getMogs());
+
+    project.getMogs().clear();
+    project.getMogs().addAll(elementsMogs);
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
