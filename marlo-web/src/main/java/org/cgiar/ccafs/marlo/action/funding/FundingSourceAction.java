@@ -482,6 +482,7 @@ public class FundingSourceAction extends BaseAction {
         fundingSourceDB.setFile(fundingSource.getFile());
       }
 
+      fundingSourceManager.saveFundingSource(fundingSourceDB);
       /*
        * if (file != null) {
        * fundingSourceDB
@@ -547,6 +548,8 @@ public class FundingSourceAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.FUNDING_SOURCES_BUDGETS_RELATION);
       relationsName.add(APConstants.FUNDING_SOURCES_INSTITUTIONS_RELATION);
+      fundingSourceDB = fundingSourceManager.getFundingSourceById(fundingSourceID);
+      fundingSourceDB.setActiveSince(new Date());
       fundingSourceManager.saveFundingSource(fundingSourceDB, this.getActionName(), relationsName);
 
       Path path = this.getAutoSaveFilePath();
