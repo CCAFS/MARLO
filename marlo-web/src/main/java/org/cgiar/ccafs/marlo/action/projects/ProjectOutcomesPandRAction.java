@@ -19,20 +19,21 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomePandrManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.IpElement;
-import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
-import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,9 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -60,13 +59,19 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   /**
    * 
    */
-  private static final long serialVersionUID = 5027543384132820515L;
+  private static final long serialVersionUID = 1256371160406383889L;
+  /**
+   * 
+   */
+
   // Manager
   private ProjectManager projectManager;
   private InstitutionManager institutionManager;
   private CrpProgramManager crpProgrammManager;
   private ProjectOutcomePandrManager projectOutcomePandrManager;
   private IpElementManager ipElementManager;
+  private FileDBManager fileDBManager;
+
   private List<Integer> allYears;
 
 
@@ -78,7 +83,14 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   private CrpManager crpManager;
   private Crp loggedCrp;
 
+
+  private File file;
+  // private ProjectHighLightValidator validator;
+  private String fileFileName;
+  private String contentType;
+
   private String transaction;
+
 
   private AuditLogManager auditLogManager;
 
@@ -86,18 +98,20 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   @Inject
   public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
-    CrpManager crpManager, ProjectOutcomePandrManager projectOutcomePandrManager, IpElementManager ipElementManager) {
+    CrpManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
+    IpElementManager ipElementManager) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.crpProgrammManager = crpProgrammManager;
     this.projectOutcomePandrManager = projectOutcomePandrManager;
     this.ipElementManager = ipElementManager;
-
+    this.fileDBManager = fileDBManager;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
 
   }
+
 
   @Override
   public String cancel() {
@@ -123,6 +137,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public List<Integer> getAllYears() {
     return allYears;
   }
@@ -136,18 +151,32 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public String getContentType() {
+    return contentType;
+  }
 
-  public int getIndex(int year, long mogID) {
-    if (project.getOverviews() != null) {
+  public File getFile() {
+    return file;
+  }
+
+
+  public String getFileFileName() {
+    return fileFileName;
+  }
+
+  public int getIndex(int year) {
+    if (project.getOutcomesPandr() != null) {
       int i = 0;
-      for (IpProjectContributionOverview overview : project.getOverviews()) {
-        if (overview.getYear() == year && overview.getIpElement().getId().longValue() == mogID) {
+      for (ProjectOutcomePandr projectOutcomePandr : project.getOutcomesPandr()) {
+        if (projectOutcomePandr.getYear() == year) {
           return i;
         }
         i++;
       }
     }
     return -1;
+
+
   }
 
 
@@ -156,17 +185,19 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   }
 
 
-  public IpProjectContributionOverview getOverview(int year, long mogID) {
-    int index = this.getIndex(year, mogID);
+  public ProjectOutcomePandr getOutcome(int year) {
+    int index = this.getIndex(year);
     if (index >= 0) {
-      return project.getOverviews().get(index);
+      return project.getOutcomesPandr().get(index);
     }
     return null;
   }
 
+
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -176,10 +207,23 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     return projectManager;
   }
 
+
+  private String getProjectOutcomePath() {
+    return config.getUploadsBaseFolder() + File.separator + this.getProjectOutcomeUrl() + File.separator;
+  }
+
+  public String getProjectOutcomeUrl() {
+    return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
+  }
+
+  public String getProjectOutcomeUrlPath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "projectOutcome" + File.separator;
+  }
+
   public String getProjectRequest() {
     return APConstants.PROJECT_REQUEST_ID;
   }
-
 
   public String getTransaction() {
     return transaction;
@@ -193,6 +237,54 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     } else {
       return result;
     }
+  }
+
+  public void ouctomesNewData(List<ProjectOutcomePandr> outcomesPandr) {
+
+    for (ProjectOutcomePandr outcomePandr : outcomesPandr) {
+      if (outcomePandr != null) {
+        if (outcomePandr.getId() == null || outcomePandr.getId() == -1) {
+          outcomePandr.setActive(true);
+          outcomePandr.setCreatedBy(this.getCurrentUser());
+          outcomePandr.setModifiedBy(this.getCurrentUser());
+          outcomePandr.setModificationJustification(this.getJustification());
+          outcomePandr.setActiveSince(new Date());
+
+
+          outcomePandr.setProject(project);
+
+        } else {
+          ProjectOutcomePandr outcomePandrDB =
+            projectOutcomePandrManager.getProjectOutcomePandrById(outcomePandr.getId());
+          outcomePandr.setActive(true);
+          outcomePandr.setCreatedBy(outcomePandrDB.getCreatedBy());
+          outcomePandr.setModifiedBy(this.getCurrentUser());
+          outcomePandr.setModificationJustification(this.getJustification());
+          outcomePandr.setYear(outcomePandrDB.getYear());
+          outcomePandr.setProject(project);
+          outcomePandr.setActiveSince(outcomePandrDB.getActiveSince());
+
+        }
+
+        if (file != null) {
+          outcomePandr
+            .setFile(this.getFileDB(outcomePandr.getFile(), file, fileFileName, this.getProjectOutcomePath()));
+
+          FileManager.copyFile(file, this.getProjectOutcomePath() + fileFileName);
+
+        }
+        if (outcomePandr.getFile() != null) {
+          if (outcomePandr.getFile().getId() == null) {
+            outcomePandr.setFile(null);
+          }
+        }
+
+        projectOutcomePandrManager.saveProjectOutcomePandr(outcomePandr);
+      }
+
+
+    }
+
   }
 
 
@@ -245,14 +337,17 @@ public class ProjectOutcomesPandRAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         reader.close();
 
-        if (project.getOverviews() == null) {
+        if (project.getOutcomesPandr() == null) {
 
-          project.setOverviews(new ArrayList<IpProjectContributionOverview>());
+          project.setOutcomesPandr(new ArrayList<ProjectOutcomePandr>());
         } else {
-          for (IpProjectContributionOverview overview : project.getOverviews()) {
+          for (ProjectOutcomePandr outcomePandr : project.getOutcomesPandr()) {
 
-            if (overview != null) {
-              overview.setIpElement(ipElementManager.getIpElementById(overview.getIpElement().getId()));
+            if (outcomePandr != null) {
+              if (outcomePandr.getFile() != null) {
+                outcomePandr.setFile(fileDBManager.getFileDBById(outcomePandr.getFile().getId()));
+              }
+
             }
 
 
@@ -260,45 +355,37 @@ public class ProjectOutcomesPandRAction extends BaseAction {
         }
         this.setDraft(true);
       } else {
-        project.setOverviews(
-          project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setOutcomesPandr(
+          project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
         this.setDraft(false);
       }
     }
 
-
     Project projectDB = projectManager.getProjectById(projectID);
+    project.setStartDate(projectDB.getStartDate());
+    project.setEndDate(projectDB.getEndDate());
 
-    allYears = projectDB.getAllYears();
-    project.setMogs(new ArrayList<>());
-    List<IpProjectContribution> ipProjectContributions =
-      projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
-      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
-    }
-    Set<IpElement> elementsMogs = new HashSet<>();
-    elementsMogs.addAll(project.getMogs());
-
-    project.getMogs().clear();
-    project.getMogs().addAll(elementsMogs);
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
 
-      if (project.getOverviews() != null) {
-        project.getOverviews().clear();
+
+      if (project.getOutcomesPandr() != null) {
+        for (ProjectOutcomePandr projectOutcomePandr : project.getOutcomesPandr()) {
+          projectOutcomePandr.setFile(null);
+        }
+        project.getOutcomesPandr().clear();
       }
 
 
     }
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
-    this.setBasePermission(this.getText(Permission.PROJECT_OVERVIEWS_BASE_PERMISSION, params));
+    this.setBasePermission(this.getText(Permission.PROJECT_OUTCOMES_PANDR_BASE_PERMISSION, params));
 
 
   }
-
 
   @Override
   public String save() {
@@ -311,7 +398,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
 
-
+      this.ouctomesNewData(project.getOutcomesPandr());
       /*
        * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
        * this.activitiesNewData(project.getClosedProjectActivities());
@@ -354,8 +441,22 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
+
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
+  }
+
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
+  }
+
+
+  public void setFile(File file) {
+    this.file = file;
+  }
+
+  public void setFileFileName(String fileFileName) {
+    this.fileFileName = fileFileName;
   }
 
 

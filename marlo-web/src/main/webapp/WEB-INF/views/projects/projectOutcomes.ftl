@@ -54,38 +54,41 @@
             <div class="fullPartBlock clearfix"> 
               [#-- Project Outcome statement --]
               <div class="fullPartBlock" id="projectOutcomeStatement">
-                [@customForm.textArea name="project.outcomes[${midOutcomeYear}].statement" required=!project.bilateralProject className="limitWords-150" i18nkey="projectOutcomes.statement" editable=(editable && canEditStatement) /]
+             [#assign index2019 = (action.getIndex(2019))!-1 /]
+                [@customForm.textArea name="project.outcomesPandr[${index2019}].statement" className="limitWords-150" i18nkey="projectOutcomes.statement" editable=(editable && canEditStatement) /]
               </div>
               [#-- Annual progress --]
-              [#list project.startDate?string.yyyy?number..midOutcomeYear?number-1 as year]
+              [#list project.startDate?string.yyyy?number..2019?number-1 as year]
               
               <span class="label label-default">${year}</span>
-              
+               [#assign indexYear = (action.getIndex(year))!-1 /]
+               [#assign outcome = (action.getOutcome(year))!{} /]
                 [#assign yearEditable = editable && (year gte currentCycleYear?number) && canEditStatement /]
                 [#assign yearRequired = !project.bilateralProject && ((year == currentCycleYear) || (year == currentCycleYear+1)) /]
                 <div class="fullPartBlock">
                   <label>[@customForm.text name="projectOutcomes.annualProgress" readText=!editable param="${year}" /]:[@customForm.req required=yearRequired && editable /]</label>
-                  [@customForm.textArea name="project.outcomes[${year?string}].statement" required=yearRequired && editable className="limitWords-150" showTitle=false editable=yearEditable /]
+                  [@customForm.textArea name="project.outcomesPandr[${indexYear}].statement" required=yearRequired && editable className="limitWords-150" showTitle=false editable=yearEditable /]
                 </div>
                 [#-- -- -- REPORTING BLOCK -- -- --]
                 [#if reportingActive && (year == currentCycleYear) ]
                 <div class="fullPartBlock bs-callout bs-callout-info">
                   <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
-                  [@customForm.textArea name="project.outcomes[${year?string}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
+                  [@customForm.textArea name="project.outcomesPandr[${indexYear}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
                 </div>
                 
                 [#-- Comunication and engagement activities --]
                 <div class="fullPartBlock bs-callout bs-callout-info">
-                  [@customForm.textArea name="project.outcomes[${year?string}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
+                  [@customForm.textArea name="project.outcomesPandr[${indexYear}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
                 </div>
                 
                 [#-- Upload summary--]
                 <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info">
                   <label>[@customForm.text name="projectOutcomes.uploadSummary" readText=!editable /]:</label>
                   <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
-                    [#if (action.getOutcomeFile(year)?has_content)!false]
+                    [#if (outcome.file?has_content)!false]
                       [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                      <p><a href="${ProjectOutcomeURL}${(action.outcomeFile(year))!}">${(action.getOutcomeFile(year))!}</a></p>
+                      <p><a href="${ProjectOutcomeURL}${((outcome.file.fileName))!}">${(outcome.file.fileName)!}</a></p>
+                       <input id="fileID" type="hidden" name="project.outcomesPandr[${indexYear}].file.id" value="${(outcome.file.id)!}" />
                     [#else]
                       [#if editable && action.hasPermission("uploadSummary")]
                         [@customForm.inputFile name="file"  /]
@@ -98,7 +101,7 @@
                 
                 [/#if]
               [/#list]
-              [#-- <input name="project.outcome[midOutcomeYear].id" type="hidden" value="${project.outcomes[midOutcomeYear+""].id?c}" /> --]
+             <input name="project.outcomesPandr[${indexYear}].id" type="hidden" value="${project.outcomesPandr[indexYear].id?c}" />
             </div>
           </div>
           [#else]
