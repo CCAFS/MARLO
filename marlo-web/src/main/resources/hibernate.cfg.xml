@@ -131,7 +131,7 @@
 		<mapping resource="xmls/DeliverableDissemination.hbm.xml" />
 		<mapping resource="xmls/DeliverablePublicationMetadata.hbm.xml" />	
 		<mapping resource="xmls/IpRelationships.hbm.xml" />
-
+    <mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
 		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
 
 	</session-factory>
