@@ -14,6 +14,9 @@
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" not-null="true" />
         </many-to-one>
+          <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_id" />
+        </many-to-one>
         <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="modified_by" not-null="true" />
         </many-to-one>
@@ -29,10 +32,8 @@
         <property name="comunication" type="string">
             <column name="comunication" length="65535" />
         </property>
-        <property name="file" type="string">
-            <column name="file" length="200" />
-        </property>
-        <property name="isActive" type="boolean">
+      
+        <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
         <property name="activeSince" type="timestamp">

@@ -34,7 +34,7 @@ public class ProjectOutcomePandr implements java.io.Serializable, IAuditLog {
   @Expose
   private String comunication;
   @Expose
-  private String file;
+  private FileDB file;
   @Expose
   private boolean active;
   @Expose
@@ -89,7 +89,7 @@ public class ProjectOutcomePandr implements java.io.Serializable, IAuditLog {
   }
 
 
-  public String getFile() {
+  public FileDB getFile() {
     return file;
   }
 
@@ -178,7 +178,7 @@ public class ProjectOutcomePandr implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setFile(String file) {
+  public void setFile(FileDB file) {
     this.file = file;
   }
 
