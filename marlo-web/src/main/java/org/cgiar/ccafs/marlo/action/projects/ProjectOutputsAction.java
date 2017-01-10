@@ -306,7 +306,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
-
+    project.setProjectEditLeader(projectDB.isProjectEditLeader());
     allYears = projectDB.getAllYears();
     project.setMogs(new ArrayList<>());
     List<IpProjectContribution> ipProjectContributions =

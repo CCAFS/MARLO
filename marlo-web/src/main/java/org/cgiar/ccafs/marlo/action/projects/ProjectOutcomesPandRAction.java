@@ -372,7 +372,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     Project projectDB = projectManager.getProjectById(projectID);
     project.setStartDate(projectDB.getStartDate());
     project.setEndDate(projectDB.getEndDate());
-
+    project.setProjectEditLeader(projectDB.isProjectEditLeader());
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
