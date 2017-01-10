@@ -58,6 +58,7 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -91,29 +92,33 @@ public class DeliverableAction extends BaseAction {
 
   private Crp loggedCrp;
 
+
   private DeliverableValidator deliverableValidator;
 
 
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
 
+
   private DeliverableManager deliverableManager;
+
 
   private ProjectManager projectManager;
 
-
   private FundingSourceManager fundingSourceManager;
+
 
   private DeliverablePartnershipManager deliverablePartnershipManager;
 
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
+
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
-
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
+
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
@@ -124,6 +129,7 @@ public class DeliverableAction extends BaseAction {
   private long deliverableID;
 
   private List<DeliverableType> deliverableTypeParent;
+
 
   private List<DeliverableType> deliverableSubTypes;
 
@@ -143,22 +149,28 @@ public class DeliverableAction extends BaseAction {
 
   private Map<String, String> genderLevels;
 
-
   private Deliverable deliverable;
 
-
   private List<ProjectFocus> projectPrograms;
+
   private String transaction;
 
-
   private AuditLogManager auditLogManager;
-
 
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
+
   private ProjectPartnerManager projectPartnerManager;
+
+
+  private File fAssurance;
+  private File fDictonary;
+
+
+  private File fTools;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -214,11 +226,9 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
-
 
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
@@ -227,7 +237,6 @@ public class DeliverableAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -262,8 +271,23 @@ public class DeliverableAction extends BaseAction {
     return deliverableSubTypes;
   }
 
+
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
+  }
+
+
+  public File getfAssurance() {
+    return fAssurance;
+  }
+
+
+  public File getfDictonary() {
+    return fDictonary;
+  }
+
+  public File getfTools() {
+    return fTools;
   }
 
   public List<FundingSource> getFundingSources() {
@@ -278,7 +302,6 @@ public class DeliverableAction extends BaseAction {
     return keyOutputs;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -287,28 +310,28 @@ public class DeliverableAction extends BaseAction {
     return partnerPersons;
   }
 
-
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
 
-
   public Map<String, String> getStatus() {
     return status;
   }
+
 
   public String getTransaction() {
     return transaction;
@@ -352,6 +375,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   public Boolean isDeliverabletNew(long deliverableID) {
 
@@ -723,6 +747,12 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getGenderLevels() != null) {
         deliverable.getGenderLevels().clear();
       }
+
+      if (deliverable.getQualityCheck() != null) {
+        deliverable.getQualityCheck().setFileAssurance(null);
+        deliverable.getQualityCheck().setFileDictionary(null);
+        deliverable.getQualityCheck().setFileTools(null);
+      }
     }
   }
 
@@ -947,6 +977,10 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      if (deliverable.getQualityCheck() != null) {
+
+      }
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
@@ -988,6 +1022,45 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  public void saveQualityCheck() {
+    DeliverableQualityCheck qualityCheck;
+    if (deliverable.getQualityCheck().getId() != null) {
+      qualityCheck =
+        deliverableQualityCheckManager.getDeliverableQualityCheckById(deliverable.getQualityCheck().getId());
+
+      if (qualityCheck.getQualityAssurance() != null) {
+        DeliverableQualityAnswer answer =
+          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getQualityAssurance().getId());
+
+        qualityCheck.setQualityAssurance(answer);
+      }
+
+      if (qualityCheck.getDataDictionary() != null) {
+        DeliverableQualityAnswer answer =
+          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
+
+        qualityCheck.setDataDictionary(answer);
+      }
+
+      if (qualityCheck.getDataDictionary() != null) {
+        DeliverableQualityAnswer answer =
+          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
+
+        qualityCheck.setDataDictionary(answer);
+      }
+
+      if (qualityCheck.getDataTools() != null) {
+        DeliverableQualityAnswer answer =
+          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataTools().getId());
+
+        qualityCheck.setDataTools(answer);
+      }
+
+    }
+
+
+  }
+
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
   }
@@ -995,7 +1068,6 @@ public class DeliverableAction extends BaseAction {
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
@@ -1005,18 +1077,31 @@ public class DeliverableAction extends BaseAction {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
+
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
+  }
+
+  public void setfAssurance(File fAssurance) {
+    this.fAssurance = fAssurance;
+  }
+
+  public void setfDictonary(File fDictonary) {
+    this.fDictonary = fDictonary;
+  }
+
+  public void setfTools(File fTools) {
+    this.fTools = fTools;
   }
 
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
 
+
   public void setGenderLevels(Map<String, String> genderLevels) {
     this.genderLevels = genderLevels;
   }
-
 
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
