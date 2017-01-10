@@ -36,6 +36,24 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
   private DeliverableQualityAnswer qualityAssurance;
 
 
+  private FileDB fileTools;
+
+
+  private FileDB fileAssurance;
+
+
+  private FileDB fileDictionary;
+
+
+  private String linkAssurance;
+
+
+  private String linkDictionary;
+
+
+  private String linkTools;
+
+
   private boolean active;
 
 
@@ -44,15 +62,12 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
 
   private String modificationJustification;
 
-
   public DeliverableQualityCheck() {
   }
-
 
   public DeliverableQualityCheck(boolean active) {
     this.active = active;
   }
-
 
   public DeliverableQualityCheck(User modifiedBy, User createdBy, DeliverableQualityAnswer dataDictionary,
     Deliverable deliverable, DeliverableQualityAnswer dataTools, DeliverableQualityAnswer qualityAssurance,
@@ -83,20 +98,47 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     return dataDictionary;
   }
 
-
   public DeliverableQualityAnswer getDataTools() {
     return dataTools;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
+  }
+
+  public FileDB getFileAssurance() {
+    return fileAssurance;
+  }
+
+
+  public FileDB getFileDictionary() {
+    return fileDictionary;
+  }
+
+
+  public FileDB getFileTools() {
+    return fileTools;
   }
 
 
   @Override
   public Long getId() {
     return id;
+  }
+
+
+  public String getLinkAssurance() {
+    return linkAssurance;
+  }
+
+
+  public String getLinkDictionary() {
+    return linkDictionary;
+  }
+
+
+  public String getLinkTools() {
+    return linkTools;
   }
 
 
@@ -107,28 +149,34 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
+
 
   @Override
   public User getModifiedBy() {
     return modifiedBy;
   }
 
+
   public DeliverableQualityAnswer getQualityAssurance() {
     return qualityAssurance;
   }
+
 
   @Override
   public boolean isActive() {
     return active;
   }
 
+
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -150,8 +198,32 @@ public class DeliverableQualityCheck implements java.io.Serializable, IAuditLog 
     this.deliverable = deliverable;
   }
 
+  public void setFileAssurance(FileDB fileAssurance) {
+    this.fileAssurance = fileAssurance;
+  }
+
+  public void setFileDictionary(FileDB fileDictionary) {
+    this.fileDictionary = fileDictionary;
+  }
+
+  public void setFileTools(FileDB fileTools) {
+    this.fileTools = fileTools;
+  }
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setLinkAssurance(String linkAssurance) {
+    this.linkAssurance = linkAssurance;
+  }
+
+  public void setLinkDictionary(String linkDictionary) {
+    this.linkDictionary = linkDictionary;
+  }
+
+  public void setLinkTools(String linkTools) {
+    this.linkTools = linkTools;
   }
 
 
