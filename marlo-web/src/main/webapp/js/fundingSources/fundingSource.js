@@ -33,23 +33,13 @@ function init() {
     var institutionSelected = $(".institution").find("option:selected").val();
     console.log(institutionSelected);
     // If the option selected is center
-    if(option.val() == 4) {
-      if(institutionSelect.val() != "-1") {
-        lastDonor = institutionSelect.val();
-      }
-      institutionSelect.attr("disabled", "disabled");
-      institutionSelect.val(institutionSelected);
-      institutionSelect.trigger('change.select2');
-      $(".note").hide("slow");
-    } else {
-      $(".note").show("slow");
-
-      if(institutionSelect.attr("disabled") == "disabled") {
-        institutionSelect.removeAttr("disabled");
-        institutionSelect.val(lastDonor);
-        institutionSelect.trigger('change.select2');
-      }
-    }
+    /*
+     * if(option.val() == 4) { if(institutionSelect.val() != "-1") { lastDonor = institutionSelect.val(); }
+     * institutionSelect.attr("disabled", "disabled"); institutionSelect.val(institutionSelected);
+     * institutionSelect.trigger('change.select2'); $(".note").hide("slow"); } else { $(".note").show("slow");
+     * if(institutionSelect.attr("disabled") == "disabled") { institutionSelect.removeAttr("disabled");
+     * institutionSelect.val(lastDonor); institutionSelect.trigger('change.select2'); } }
+     */
   });
 
   // Set file upload (blueimp-tmpl)
@@ -180,6 +170,10 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', $(this).datepicker("option", "minDate"));
+    }
   });
 
   var to = $(end).datepicker({
@@ -199,6 +193,10 @@ function date(start,end) {
       }
   }).on("change", function() {
     getYears();
+  }).on("click", function() {
+    if(!$(this).val()) {
+      $(this).datepicker('setDate', $(this).datepicker("option", "maxDate"));
+    }
   });
 
   function getYears() {
