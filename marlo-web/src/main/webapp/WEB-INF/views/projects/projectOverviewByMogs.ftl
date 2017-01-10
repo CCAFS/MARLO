@@ -1,8 +1,8 @@
 [#ftl]
-[#assign title = "Project Deliverables" /]
+[#assign title = "Overview by MOGs" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableList.js","${baseUrl}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customJS = ["","${baseUrl}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "overviewByMogs" /]
@@ -12,7 +12,6 @@
   {"label":"overviewByMogs", "nameSpace":"/overviewByMogs", "action":"overviewByMogs"}
 ]/]
 
-[#assign years = ["2015","2016","2017"]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
@@ -42,67 +41,46 @@
         [#assign selectedYear = "2015" /]
     [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
-              [#list years as year]
-                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year}  </a></li>
+              [#list allYears as year]
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year}  </a></li>
               [/#list]
             </ul>
             
             [#-- Years Content --]
             <div class="tab-content budget-content">
-              [#list years as year]
-                <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                <div class="mog simpleBox clearfix">
-                    [#-- Hidden values 
-                    <input type="hidden" name="project.outputsOverview[${index}].id" value="${outputOverview.id!"-1"}" />
-                    <input type="hidden" name="project.outputsOverview[${index}].year" value="${year}" />
-                    <input type="hidden" name="project.outputsOverview[${index}].output.id" value="${output.id}" />
-                    --]
-                    [#-- MOG Title --]
-                    <div class="fullPartBlock"><p class="checked">test - MOG #2: test lorem ipsum etc </p></div>
-                    [#-- Brief bullet points of your expected annual year contribution towards the selected MOG --]
-                    <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="planning.project.overviewByMogs.expectedBulletPoints" showTitle=true editable=editable  /]
-                    </div>
-                    [#-- Brief summary of your actual annual contribution --]
-                    <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="reporting.project.overviewByMogs.summaryAnnualContribution" showTitle=true  editable=editable /]
-                    </div>
-                    [#-- Brief plan of the gender and social inclusion dimension of the expected annual output --]
-                    <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="planning.project.overviewByMogs.expectedSocialAndGenderPlan" showTitle=true  editable=editable /]
-                    </div>
-                    
-                    [#-- Summary of the gender and social inclusion dimension --]
-                    <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="reporting.project.overviewByMogs.summarySocialInclusionDimmension"  showTitle=true editable=editable  /]
-                    </div>
-                  </div>
-                [#if project.outputs?has_content]
-                [#list project.outputs as output]
+              [#list allYears as year]
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
+               
+                [#if project.mogs?has_content]
+                [#list project.mogs as output]
+                
+                    [#assign overviewMog = (action.getOverview(year,output.id))!{} /]
+                    [#assign overviewMogIndex = (action.getIndex(year,output.id))!-1 /]
+                   
                   <div class="mog simpleBox clearfix">
-                    [#-- Hidden values 
-                    <input type="hidden" name="project.outputsOverview[${index}].id" value="${outputOverview.id!"-1"}" />
-                    <input type="hidden" name="project.outputsOverview[${index}].year" value="${year}" />
-                    <input type="hidden" name="project.outputsOverview[${index}].output.id" value="${output.id}" />
-                    --]
+                  
+                    <input type="hidden" name="project.overviews[${overviewMogIndex}].id" value="${overviewMog.id!"-1"}" />
+                    <input type="hidden" name="project.overviews[${overviewMogIndex}].year" value="${year}" />
+                    <input type="hidden" name="project.overviews[${overviewMogIndex}].ipElement.id" value="${output.id}" />
+                    
                     [#-- MOG Title --]
-                    <div class="fullPartBlock"><p class="checked">test - MOG #2: test lorem ipsum etc </p></div>
+                    <div class="fullPartBlock"><p class="checked">${output.composedId} ${output.description}</p></div>
                     [#-- Brief bullet points of your expected annual year contribution towards the selected MOG --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="planning.project.overviewByMogs.expectedBulletPoints" showTitle=true editable=editable  /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].anualContribution"  i18nkey="planning.project.overviewByMogs.expectedBulletPoints" showTitle=true editable=editable  /]
                     </div>
                     [#-- Brief summary of your actual annual contribution --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="reporting.project.overviewByMogs.summaryAnnualContribution" showTitle=true  editable=editable /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary"  i18nkey="reporting.project.overviewByMogs.summaryAnnualContribution" showTitle=true  editable=editable /]
                     </div>
                     [#-- Brief plan of the gender and social inclusion dimension of the expected annual output --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="planning.project.overviewByMogs.expectedSocialAndGenderPlan" showTitle=true  editable=editable /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].genderContribution"  i18nkey="planning.project.overviewByMogs.expectedSocialAndGenderPlan" showTitle=true  editable=editable /]
                     </div>
                     
                     [#-- Summary of the gender and social inclusion dimension --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="" value="" i18nkey="reporting.project.overviewByMogs.summarySocialInclusionDimmension"  showTitle=true editable=editable  /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender"  i18nkey="reporting.project.overviewByMogs.summarySocialInclusionDimmension"  showTitle=true editable=editable  /]
                     </div>
                   </div>
                   [/#list]
