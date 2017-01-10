@@ -20,8 +20,8 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -32,24 +32,33 @@ import java.util.HashMap;
 
 import com.google.inject.Inject;
 
-public class ProjectCCAFSOutcomeValidator extends BaseValidator {
+public class ProjectOutcomesPandRValidator extends BaseValidator {
 
 
   private CrpManager crpManager;
 
   @Inject
-  public ProjectCCAFSOutcomeValidator(CrpManager crpManager) {
+  public ProjectOutcomesPandRValidator(CrpManager crpManager) {
     this.crpManager = crpManager;
   }
 
   private Path getAutoSaveFilePath(Project project, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = project.getClass().getSimpleName();
-    String actionFile = ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus().replace("/", "_");
+    String actionFile = ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus().replace("/", "_");
     String autoSaveFile =
       project.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  public void replaceAll(StringBuilder builder, String from, String to) {
+    int index = builder.indexOf(from);
+    while (index != -1) {
+      builder.replace(index, index + from.length(), to);
+      index += to.length(); // Move to the end of the replacement
+      index = builder.indexOf(from, index);
+    }
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
@@ -64,38 +73,57 @@ public class ProjectCCAFSOutcomeValidator extends BaseValidator {
     }
     if (project != null) {
 
-      if (project.getProjectIndicators() != null) {
+      if (project.getOutcomesPandr() != null) {
         int i = 0;
-        for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
-          if (ipProjectIndicator != null) {
-            if (ipProjectIndicator.getYear() == action.getCurrentCycleYear()) {
+        for (ProjectOutcomePandr projectOutcomePandr : project.getOutcomesPandr()) {
+          if (projectOutcomePandr != null) {
+            if (projectOutcomePandr.getYear() == action.getCurrentCycleYear()) {
 
-              if (ipProjectIndicator.getArchived() == null || ipProjectIndicator.getArchived().doubleValue() < 0) {
-                this.addMessage(" CCAFS Outcome #" + ipProjectIndicator.getId() + ": Target achieved");
-                action.getInvalidFields().put("input-project.projectIndicators[" + i + "].archived",
+
+              if (!(this.isValidString(projectOutcomePandr.getStatement())
+                && this.wordCount(projectOutcomePandr.getStatement()) <= 100)) {
+                this.addMessage("Project  Outcome ##" + projectOutcomePandr.getId() + ": Statement");
+                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].statement",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
-              if (!(this.isValidString(ipProjectIndicator.getNarrativeTargets())
-                && this.wordCount(ipProjectIndicator.getNarrativeTargets()) <= 100)) {
-                this.addMessage("CCAFS Outcome ##" + ipProjectIndicator.getId() + ": Narrative Target");
-                action.getInvalidFields().put("input-project.projectIndicators[" + i + "].narrativeTargets",
+              if (!(this.isValidString(projectOutcomePandr.getAnualProgress())
+                && this.wordCount(projectOutcomePandr.getAnualProgress()) <= 100)) {
+                this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": anualProgress");
+                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].anualProgress",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
-              if (!(this.isValidString(ipProjectIndicator.getNarrativeGender())
-                && this.wordCount(ipProjectIndicator.getNarrativeGender()) <= 100)) {
-                this.addMessage("CCAFS Outcome ##" + ipProjectIndicator.getId() + ": Narrative Gender");
-                action.getInvalidFields().put("input-project.projectIndicators[" + i + "].narrativeGender",
+              if (!(this.isValidString(projectOutcomePandr.getComunication())
+                && this.wordCount(projectOutcomePandr.getComunication()) <= 100)) {
+                this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": comunication");
+                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].comunication",
                   InvalidFieldsMessages.EMPTYFIELD);
               }
 
+            }
+            if (projectOutcomePandr.getYear() == 2019) {
+              if (!(this.isValidString(projectOutcomePandr.getStatement())
+                && this.wordCount(projectOutcomePandr.getStatement()) <= 100)) {
+                this.addMessage("Project  Outcome ##" + projectOutcomePandr.getId() + ": Statement");
+                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].statement",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
             }
           }
           i++;
         }
       }
 
+      if (!action.isProjectNew(project.getId())) {
+        this.validateLessonsLearn(action, project);
+        if (this.validationMessage.toString().contains("Lessons")) {
+          this.replaceAll(validationMessage, "Lessons",
+            "Lessons regarding partnerships and possible implications for the coming planning cycle");
+          action.getInvalidFields().put("input-project.projectComponentLesson.lessons",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
       if (!action.getFieldErrors().isEmpty()) {
         action.addActionError(action.getText("saving.fields.required"));
       } else if (validationMessage.length() > 0) {
@@ -105,10 +133,10 @@ public class ProjectCCAFSOutcomeValidator extends BaseValidator {
 
       if (action.isReportingActive()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
-          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
+          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus());
       } else {
         this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
-          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
+          ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus());
       }
     }
   }

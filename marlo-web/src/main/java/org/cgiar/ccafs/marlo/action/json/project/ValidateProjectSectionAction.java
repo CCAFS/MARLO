@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
@@ -57,6 +58,7 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
@@ -126,6 +128,9 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectLeverageValidator projectLeverageValidator;
   @Inject
   ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
+
+  @Inject
+  ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
   @Inject
   public CrpManager crpManager;
 
@@ -169,6 +174,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         case CCAFSOUTCOMES:
           this.validateCCAFSOutcomes();
+          break;
+        case OUTCOMES_PANDR:
+          this.validateOutcomesPandR();
           break;
         default:
           break;
@@ -261,6 +269,34 @@ public class ValidateProjectSectionAction extends BaseAction {
         if (project.getActivities().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
           section.put("missingFields", section.get("missingFields") + "-" + "activities");
         }
+
+        break;
+
+      case CASESTUDIES:
+        List<CaseStudyProject> caseStudies =
+          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
+        section.put("missingFields", "");
+
+
+        for (CaseStudyProject caseStudyProject : caseStudies) {
+          if (caseStudyProject.isCreated()) {
+            sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
+              cycle, this.getCurrentCycleYear(), sectionName);
+            if (sectionStatus == null) {
+
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+            }
+          }
+        }
+
 
         break;
 
@@ -497,7 +533,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
-
   public void validateLeverage() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -508,6 +543,17 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setLeverages(projectLeverages);
 
     projectLeverageValidator.validate(this, project, false);
+
+
+  }
+
+  public void validateOutcomesPandR() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setOutcomesPandr(
+      project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOutcomesPandRValidator.validate(this, project, false);
 
 
   }
