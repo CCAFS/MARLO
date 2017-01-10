@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -39,7 +40,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -64,18 +67,21 @@ public class ProjectOutputsAction extends BaseAction {
   private CrpProgramManager crpProgrammManager;
   private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
   private IpElementManager ipElementManager;
+  private List<Integer> allYears;
+
 
   private long projectID;
+
+
   private Project project;
 
   private CrpManager crpManager;
-
   private Crp loggedCrp;
-
 
   private String transaction;
 
   private AuditLogManager auditLogManager;
+
 
   @Inject
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
@@ -92,7 +98,6 @@ public class ProjectOutputsAction extends BaseAction {
     this.auditLogManager = auditLogManager;
 
   }
-
 
   @Override
   public String cancel() {
@@ -116,6 +121,10 @@ public class ProjectOutputsAction extends BaseAction {
     messages = this.getActionMessages();
 
     return SUCCESS;
+  }
+
+  public List<Integer> getAllYears() {
+    return allYears;
   }
 
 
@@ -146,6 +155,7 @@ public class ProjectOutputsAction extends BaseAction {
     return loggedCrp;
   }
 
+
   public IpProjectContributionOverview getOverview(int year, long mogID) {
     int index = this.getIndex(year, mogID);
     if (index >= 0) {
@@ -166,15 +176,14 @@ public class ProjectOutputsAction extends BaseAction {
     return projectManager;
   }
 
-
   public String getProjectRequest() {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public String next() {
@@ -185,6 +194,7 @@ public class ProjectOutputsAction extends BaseAction {
       return result;
     }
   }
+
 
   public void overViewsNewData(List<IpProjectContributionOverview> overviews) {
 
@@ -212,13 +222,13 @@ public class ProjectOutputsAction extends BaseAction {
           overview.setActiveSince(overviewDB.getActiveSince());
 
         }
+        ipProjectContributionOverviewManager.saveIpProjectContributionOverview(overview);
       }
 
-      ipProjectContributionOverviewManager.saveIpProjectContributionOverview(overview);
+
     }
 
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -294,13 +304,18 @@ public class ProjectOutputsAction extends BaseAction {
 
     Project projectDB = projectManager.getProjectById(projectID);
 
-
+    allYears = projectDB.getAllYears();
     project.setMogs(new ArrayList<>());
     List<IpProjectContribution> ipProjectContributions =
       projectDB.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
       project.getMogs().add(ipProjectContribution.getIpElementByMogId());
     }
+    Set<IpElement> elementsMogs = new HashSet<>();
+    elementsMogs.addAll(project.getMogs());
+
+    project.getMogs().clear();
+    project.getMogs().addAll(elementsMogs);
     // Getting the list of all institutions
 
     if (this.isHttpPost()) {
@@ -317,6 +332,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -371,6 +387,10 @@ public class ProjectOutputsAction extends BaseAction {
       }
     }
     return NOT_AUTHORIZED;
+  }
+
+  public void setAllYears(List<Integer> allYears) {
+    this.allYears = allYears;
   }
 
 
