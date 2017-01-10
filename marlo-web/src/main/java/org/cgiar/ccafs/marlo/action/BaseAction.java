@@ -1094,6 +1094,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     int deliverableSection = 0;
     int budgetCoASection = 0;
     int outcomeSection = 0;
+    int caseStudySection = 0;
+    int highlightSection = 0;
+
 
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
@@ -1155,8 +1158,54 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } else {
-      // If is reporting active
-      return false;
+
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+
+            case DESCRIPTION:
+            case PARTNERS:
+            case LOCATIONS:
+            case OUTCOMES_PANDR:
+            case CCAFSOUTCOMES:
+            case OUTPUTS:
+            case LEVERAGES:
+            case OTHERCONTRIBUTIONS:
+            case ACTIVITIES:
+              totalSections++;
+              break;
+            case DELIVERABLES:
+              if (deliverableSection == 0) {
+                deliverableSection = 1;
+                totalSections++;
+              }
+              break;
+
+            case HIGHLIGHT:
+              if (highlightSection == 0) {
+                highlightSection = 1;
+                highlightSection++;
+              }
+
+            case CASESTUDIES:
+              if (caseStudySection == 0) {
+                caseStudySection = 1;
+                caseStudySection++;
+              }
+
+
+          }
+
+        }
+      }
+
+      if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        return totalSections == 8;
+      } else {
+        return totalSections == 12;
+      }
+
     }
 
 
@@ -1312,7 +1361,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
