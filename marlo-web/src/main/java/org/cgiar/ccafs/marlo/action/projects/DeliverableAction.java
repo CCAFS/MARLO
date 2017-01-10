@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -39,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -108,6 +110,8 @@ public class DeliverableAction extends BaseAction {
 
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
+  private DeliverableQualityCheckManager deliverableQualityCheckManager;
+
   private CrpManager crpManager;
 
   private long projectID;
@@ -157,7 +161,8 @@ public class DeliverableAction extends BaseAction {
     AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
     ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager,
-    DeliverableGenderLevelManager deliverableGenderLevelManager) {
+    DeliverableGenderLevelManager deliverableGenderLevelManager,
+    DeliverableQualityCheckManager deliverableQualityCheckManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -173,6 +178,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableFundingSourceManager = deliverableFundingSourceManager;
     this.fundingSourceManager = fundingSourceManager;
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
+    this.deliverableQualityCheckManager = deliverableQualityCheckManager;
   }
 
 
@@ -254,37 +260,37 @@ public class DeliverableAction extends BaseAction {
     return genderLevels;
   }
 
+
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
-
 
   public Project getProject() {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
-
 
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
+
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
@@ -563,6 +569,11 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+        DeliverableQualityCheck deliverableQualityCheck =
+          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        deliverable.setQualityCheck(deliverableQualityCheck);
+
         this.setDraft(false);
       }
 
@@ -798,7 +809,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -922,6 +933,7 @@ public class DeliverableAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());

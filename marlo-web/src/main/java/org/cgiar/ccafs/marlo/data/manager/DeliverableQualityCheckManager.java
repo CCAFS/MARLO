@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,6 +55,14 @@ public interface DeliverableQualityCheckManager {
 
 
   /**
+   * This method gets a deliverableQualityCheck object by a given Deliverable identifier.
+   * 
+   * @param Deliverable is the Deliverable identifier.
+   * @return a DeliverableQualityCheck object.
+   */
+  public DeliverableQualityCheck getDeliverableQualityCheckByDeliverable(long deliverableID);
+
+  /**
    * This method gets a deliverableQualityCheck object by a given deliverableQualityCheck identifier.
    * 
    * @param deliverableQualityCheckID is the deliverableQualityCheck identifier.
@@ -65,8 +73,10 @@ public interface DeliverableQualityCheckManager {
   /**
    * This method saves the information of the given deliverableQualityCheck
    * 
-   * @param deliverableQualityCheck - is the deliverableQualityCheck object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableQualityCheck was
+   * @param deliverableQualityCheck - is the deliverableQualityCheck object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableQualityCheck
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */
