@@ -433,13 +433,15 @@ public class FundingSourceAction extends BaseAction {
 
     if (this.isHttpPost()) {
       fundingSource.setFile(null);
-
-
-      for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
-        fundingSourceInstitution
-          .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+      if (fundingSource.getInstitutions() != null) {
+        for (FundingSourceInstitution fundingSourceInstitution : fundingSource.getInstitutions()) {
+          fundingSourceInstitution
+            .setInstitution(institutionManager.getInstitutionById(fundingSourceInstitution.getId()));
+        }
+        fundingSource.getInstitutions().clear();
       }
-      fundingSource.getInstitutions().clear();
+
+
     }
   }
 
