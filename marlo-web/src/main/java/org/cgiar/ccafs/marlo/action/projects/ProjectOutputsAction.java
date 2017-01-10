@@ -286,7 +286,10 @@ public class ProjectOutputsAction extends BaseAction {
           for (IpProjectContributionOverview overview : project.getOverviews()) {
 
             if (overview != null) {
-              overview.setIpElement(ipElementManager.getIpElementById(overview.getIpElement().getId()));
+              if (overview.getIpElement() != null) {
+                overview.setIpElement(ipElementManager.getIpElementById(overview.getIpElement().getId()));
+              }
+
             }
 
 

@@ -56,12 +56,12 @@
                 
                     [#assign overviewMog = (action.getOverview(year,output.id))!{} /]
                     [#assign overviewMogIndex = (action.getIndex(year,output.id))!-1 /]
-                   
+                     [#if overviewMog?has_content]
                   <div class="mog simpleBox clearfix">
                   
                     <input type="hidden" name="project.overviews[${overviewMogIndex}].id" value="${overviewMog.id!"-1"}" />
                     <input type="hidden" name="project.overviews[${overviewMogIndex}].year" value="${year}" />
-                    <input type="hidden" name="project.overviews[${overviewMogIndex}].ipElement.id" value="${output.id}" />
+                    <input type="hidden" name="project.overviews[${overviewMogIndex}].ipElement.id" value="${(overviewMog.ipElement.id)!-1}" />
                     
                     [#-- MOG Title --]
                     <div class="fullPartBlock"><p class="checked">${output.composedId} ${output.description}</p></div>
@@ -87,6 +87,7 @@
                       [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=reportingActive  /]
                     </div>
                   </div>
+                   [/#if]
                   [/#list]
                 [/#if]
                 </div>
