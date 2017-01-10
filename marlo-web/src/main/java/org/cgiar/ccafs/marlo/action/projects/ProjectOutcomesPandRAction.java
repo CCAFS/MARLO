@@ -263,21 +263,28 @@ public class ProjectOutcomesPandRAction extends BaseAction {
           outcomePandr.setYear(outcomePandrDB.getYear());
           outcomePandr.setProject(project);
           outcomePandr.setActiveSince(outcomePandrDB.getActiveSince());
+          if (outcomePandr.getYear() != this.getCurrentCycleYear()) {
+            outcomePandr.setAnualProgress(outcomePandrDB.getAnualProgress());
+            outcomePandr.setComunication(outcomePandrDB.getComunication());
 
-        }
-
-        if (file != null) {
-          outcomePandr
-            .setFile(this.getFileDB(outcomePandr.getFile(), file, fileFileName, this.getProjectOutcomePath()));
-
-          FileManager.copyFile(file, this.getProjectOutcomePath() + fileFileName);
-
-        }
-        if (outcomePandr.getFile() != null) {
-          if (outcomePandr.getFile().getId() == null) {
-            outcomePandr.setFile(null);
           }
         }
+
+        if (outcomePandr.getYear() == this.getCurrentCycleYear()) {
+          if (file != null) {
+            outcomePandr
+              .setFile(this.getFileDB(outcomePandr.getFile(), file, fileFileName, this.getProjectOutcomePath()));
+
+            FileManager.copyFile(file, this.getProjectOutcomePath() + fileFileName);
+
+          }
+          if (outcomePandr.getFile() != null) {
+            if (outcomePandr.getFile().getId() == null) {
+              outcomePandr.setFile(null);
+            }
+          }
+        }
+
 
         projectOutcomePandrManager.saveProjectOutcomePandr(outcomePandr);
       }
