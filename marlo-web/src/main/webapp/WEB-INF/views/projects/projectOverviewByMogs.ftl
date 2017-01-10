@@ -73,7 +73,7 @@
                     [#-- Brief summary of your actual annual contribution --]
                     <div class="fullBlock">
                      <label>[@customForm.text name="reporting.project.overviewByMogs.summaryAnnualContribution" readText=!reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=(reportingActive && editable) /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=(reportingActive && editable) className="limitWords-50" /]
                     </div>
                     [#-- Brief plan of the gender and social inclusion dimension of the expected annual output --]
                     <div class="fullBlock">
@@ -84,7 +84,7 @@
                     [#-- Summary of the gender and social inclusion dimension --]
                     <div class="fullBlock">
                       <label>[@customForm.text name="reporting.project.overviewByMogs.summarySocialInclusionDimmension" readText=!reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=(reportingActive && editable)  /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=(reportingActive && editable) className="limitWords-50"  /]
                     </div>
                   </div>
                    [/#if]
