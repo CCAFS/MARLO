@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
@@ -91,13 +93,14 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableValidator deliverableValidator;
 
+
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
-
 
   private DeliverableManager deliverableManager;
 
   private ProjectManager projectManager;
+
 
   private FundingSourceManager fundingSourceManager;
 
@@ -105,12 +108,14 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
-
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
+
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
+
+  private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
   private CrpManager crpManager;
 
@@ -130,11 +135,12 @@ public class DeliverableAction extends BaseAction {
 
   private List<FundingSource> fundingSources;
 
+  private List<DeliverableQualityAnswer> answers;
 
   private Project project;
 
-
   private Map<String, String> status;
+
   private Map<String, String> genderLevels;
 
 
@@ -142,16 +148,17 @@ public class DeliverableAction extends BaseAction {
 
 
   private List<ProjectFocus> projectPrograms;
-
   private String transaction;
 
+
   private AuditLogManager auditLogManager;
+
 
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
-  private ProjectPartnerManager projectPartnerManager;
 
+  private ProjectPartnerManager projectPartnerManager;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -162,7 +169,8 @@ public class DeliverableAction extends BaseAction {
     ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
     DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager) {
+    DeliverableQualityCheckManager deliverableQualityCheckManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -179,8 +187,8 @@ public class DeliverableAction extends BaseAction {
     this.fundingSourceManager = fundingSourceManager;
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
+    this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
   }
-
 
   @Override
   public String cancel() {
@@ -207,6 +215,11 @@ public class DeliverableAction extends BaseAction {
   }
 
 
+  public List<DeliverableQualityAnswer> getAnswers() {
+    return answers;
+  }
+
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -214,6 +227,7 @@ public class DeliverableAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -260,37 +274,37 @@ public class DeliverableAction extends BaseAction {
     return genderLevels;
   }
 
-
   public List<CrpClusterKeyOutput> getKeyOutputs() {
     return keyOutputs;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
-
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
+
 
   public Project getProject() {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
-
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
+
 
   public Map<String, String> getStatus() {
     return status;
@@ -576,6 +590,9 @@ public class DeliverableAction extends BaseAction {
 
         this.setDraft(false);
       }
+
+      answers = new ArrayList<>(
+        deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
 
 
       status = new HashMap<>();
@@ -969,6 +986,10 @@ public class DeliverableAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void setAnswers(List<DeliverableQualityAnswer> answers) {
+    this.answers = answers;
   }
 
   public void setDeliverable(Deliverable deliverable) {
