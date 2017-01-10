@@ -73,68 +73,68 @@ public class ProjectCaseStudyValidation extends BaseValidator {
       if (!(this.isValidString(caseStudy.getOutcomeStatement())
         && this.wordCount(caseStudy.getOutcomeStatement()) <= 80)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Outcome Statement");
-        action.getInvalidFields().put("caseStudy.outcomeStatement", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.outcomeStatement", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getResearchOutputs())
         && this.wordCount(caseStudy.getResearchOutputs()) <= 150)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Research Output");
-        action.getInvalidFields().put("caseStudy.researchOutputs", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.researchOutputs", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getResearchPartners())
         && this.wordCount(caseStudy.getResearchPartners()) <= 150)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Research Partners");
-        action.getInvalidFields().put("caseStudy.researchPartners", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.researchPartners", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getResearchPartners())
         && this.wordCount(caseStudy.getResearchPartners()) <= 150)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Research Partners");
-        action.getInvalidFields().put("caseStudy.researchPartners", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.researchPartners", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getActivities()) && this.wordCount(caseStudy.getActivities()) <= 150)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Activities");
-        action.getInvalidFields().put("caseStudy.activities", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.activities", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getNonResearchPartneres())
         && this.wordCount(caseStudy.getNonResearchPartneres()) <= 80)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Non R Partners");
-        action.getInvalidFields().put("caseStudy.nonResearchPartneres", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.nonResearchPartneres", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getOutputUsers()) && this.wordCount(caseStudy.getOutputUsers()) <= 50)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Output User");
-        action.getInvalidFields().put("caseStudy.outputUsers", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.outputUsers", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getOutputUsed()) && this.wordCount(caseStudy.getOutputUsed()) <= 50)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Output Used");
-        action.getInvalidFields().put("caseStudy.outputUsed", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.outputUsed", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getOutputUsed()) && this.wordCount(caseStudy.getOutputUsed()) <= 50)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Output Used");
-        action.getInvalidFields().put("caseStudy.outputUsed", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.outputUsed", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getEvidenceOutcome())
         && this.wordCount(caseStudy.getEvidenceOutcome()) <= 50)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Evidence Outcome");
-        action.getInvalidFields().put("caseStudy.evidenceOutcome", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.evidenceOutcome", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getReferencesCase())
         && this.wordCount(caseStudy.getReferencesCase()) <= 150)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": References");
-        action.getInvalidFields().put("caseStudy.referencesCase", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.referencesCase", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (caseStudy.getFile() == null) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": File");
-        action.getInvalidFields().put("caseStudy.uploadAnnexes", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.uploadAnnexes", InvalidFieldsMessages.EMPTYFIELD);
       }
 
     }

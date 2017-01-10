@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,7 +41,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +72,8 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   private IpElementManager ipElementManager;
   private FileDBManager fileDBManager;
 
+  private ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+
   private List<Integer> allYears;
 
 
@@ -99,7 +101,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   public ProjectOutcomesPandRAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
     CrpManager crpManager, FileDBManager fileDBManager, ProjectOutcomePandrManager projectOutcomePandrManager,
-    IpElementManager ipElementManager) {
+    IpElementManager ipElementManager, ProjectOutcomesPandRValidator projectOutcomesPandRValidator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -108,6 +110,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
     this.ipElementManager = ipElementManager;
     this.fileDBManager = fileDBManager;
     this.crpManager = crpManager;
+    this.projectOutcomesPandRValidator = projectOutcomesPandRValidator;
     this.auditLogManager = auditLogManager;
 
   }
@@ -429,7 +432,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
         path.toFile().delete();
       }
 
-      this.setInvalidFields(new HashMap<>());
+
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
 
@@ -499,7 +502,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
+      projectOutcomesPandRValidator.validate(this, project, true);
 
     }
   }
