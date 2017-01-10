@@ -2,6 +2,11 @@
 [#-- Compliance check (Data products only) --]
 <h4 class="headTitle">Compliance check (Data products only)</h4>
 
+
+[#list answers as answer]
+ ${answer.id}-${answer.name}
+[/#list]
+
 <div class="fullBlock" > 
 <div class="col-md-12 note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</div>
 <div class="clearfix"></div>
@@ -11,15 +16,11 @@
     <hr />
     <br />
     <div class="col-md-4">
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, but not documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, and documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">No</label>
-    </div>
+    [#list answers as answer]
+      <div class="radio">
+        <label><input type="radio" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}">${(answer.name)!}</label>
+      </div>
+    [/#list]
     </div>
     
     [#-- FILE --]
@@ -44,15 +45,11 @@
     <hr />
     <br />
     <div class="col-md-4">
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, but not documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, and documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">No</label>
-    </div>
+    [#list answers as answer]
+      <div class="radio">
+        <label><input type="radio" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}">${(answer.name)!}</label>
+      </div>
+    [/#list]
     </div>
     
     [#-- FILE --]
@@ -77,15 +74,11 @@
     <hr />
     <br />
     <div class="col-md-4">
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, but not documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">Yes, and documented</label>
-    </div>
-    <div class="radio">
-      <label><input type="radio" name="optradio">No</label>
-    </div>
+      [#list answers as answer]
+      <div class="radio">
+        <label><input type="radio" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}">${(answer.name)!}</label>
+      </div>
+    [/#list]
     </div>
     
     [#-- FILE --]
