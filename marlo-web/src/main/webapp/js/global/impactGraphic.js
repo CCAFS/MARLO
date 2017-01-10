@@ -1,5 +1,5 @@
+var initMode = true;
 $(function() { // on dom ready
-
   var url = baseURL + "/impactPathway/impactPathwayGraph.do";
   var graphicContent = "mini-graphic";
   var panningEnable = false;
@@ -20,6 +20,10 @@ $(function() { // on dom ready
 });
 
 function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tooltip) {
+
+  var SLO;
+  var IDO;
+  var subIDO;
   var crps;
   var flagships;
   var outcomes;
@@ -57,10 +61,10 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           'border-width': 9,
           'color': 'white'
       }).selector('edge').css({
-          'width': 2,
+          'width': 1,
           'source-arrow-shape': 'triangle',
-          'line-color': '#eee',
-          'source-arrow-color': '#eee',
+          'line-color': '#999999',
+          'source-arrow-color': '#999999',
           'curve-style': 'bezier',
           'z-index': '1'
       }).selector('.center-center').css({
@@ -86,15 +90,12 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
   nodesInit.addClass('center-center');
   nodesInit.forEach(function(ele) {
     ele.css('background-color', ele.data('color'));
+
     if(ele.data('type') === 'F') {
       colorFlagship = ele.data('color');
-    }
-
-    if(ele.data('type') === 'CoA') {
       ele.css({
           'shape': 'rectangle',
-          'background-color': '#F5F5F5',
-          'border-color': colorFlagship,
+          'border-color': '#884809',
           'color': '#884809',
           'text-outline-width': 0
       });
@@ -103,6 +104,36 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
         });
         ele.addClass('bottom-center');
+      }
+    }
+
+    if(ele.data('type') === 'O') {
+      colorFlagship = ele.data('color');
+      ele.css({
+          'shape': 'rectangle',
+          'background-color': '#F5F5F5',
+          'color': '#884809',
+          'text-outline-width': 0
+      });
+    }
+
+    if(ele.data('type') === 'CoA') {
+      ele.css({
+          'shape': 'rectangle',
+          'background-color': '#F5F5F5',
+          'border-color': colorFlagship,
+          'color': '#F5F5F5',
+          'text-outline-width': 0
+      });
+      if(ele.children().length > 0) {
+        ele.css({
+
+        });
+        ele.addClass('bottom-center');
+      } else {
+        ele.css({
+          'color': colorFlagship
+        });
       }
     }
   });
@@ -119,12 +150,16 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
     cy.$('node').css('background-opacity', '0.4');
     cy.$('node').css('text-opacity', '0.4');
-    cy.$('edge').css('line-opacity', '0.4');
-    cy.$('edge').css('line-color', '#eee');
-    cy.$('edge').css('source-arrow-color', '#eee');
-    cy.$('edge').css('target-arrow-color', '#eee');
+    cy.$('edge').css('line-opacity', '0.9');
+    cy.$('edge').css('line-color', '#999999');
+    cy.$('edge').css('source-arrow-color', '#999999');
+    cy.$('edge').css('target-arrow-color', '#999999');
     cy.$('edge').css('z-index', '1');
     $(".panel-body ul").empty();
+
+    SLO = [];
+    IDO = [];
+    subIDO = [];
     crps = [];
     flagships = [];
     outcomes = [];
@@ -142,9 +177,9 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       cy.$('node').removeClass('eating');
       cy.$('node').css('background-opacity', '1');
       cy.$('node').css('text-opacity', '1');
-      cy.$('edge').css('line-color', '#999999');
-      cy.$('edge').css('source-arrow-color', '#999999');
-      cy.$('edge').css('target-arrow-color', '#999999');
+      cy.$('edge').css('line-color', '#eee');
+      cy.$('edge').css('source-arrow-color', '#eee');
+      cy.$('edge').css('target-arrow-color', '#eee');
 
     } else if(event.cyTarget.isNode()) {
 
@@ -180,6 +215,15 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
       if(inPopUp === true) {
         // add info in Relations panel
+        SLO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>SLO:</label><li>" + ele + "</li>")
+        });
+        IDO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>IDO:</label><li>" + ele + "</li>")
+        });
+        subIDO.forEach(function(ele) {
+          $(".panel-body ul").append("<label>subIDO:</label><li>" + ele + "</li>")
+        });
         crps.forEach(function(ele) {
           $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>")
         });
@@ -209,12 +253,36 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
     ele.addClass('eating');
     ele.css('background-opacity', '1');
     ele.css('text-opacity', '1');
-    ele.css('z-index', '9');
-    ele.css('line-color', '#999999');
-    ele.css('source-arrow-color', '#999999');
-    ele.css('target-arrow-color', '#999999');
+    ele.css('z-index', '99');
+    ele.css('line-color', '#eee');
+    ele.css('source-arrow-color', '#eee');
+    ele.css('target-arrow-color', '#eee');
 
     // Validate if the node exists in any array
+
+    // In flagships array
+    SLO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In flagships array
+    IDO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
+
+    // In subIDO array
+    subIDO.forEach(function(array) {
+      if(ele.data('description') === array[0]) {
+        console.log("asd");
+        stop = 1;
+      }
+    });
 
     // In flagships array
     flagships.forEach(function(array) {
@@ -232,7 +300,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }
     });
 
-    // In Outcomes array
+    // In clusters array
     clusters.forEach(function(array) {
       if(ele.data('description') === array[0]) {
         console.log("asd");
@@ -240,7 +308,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       }
     });
 
-    // In Outcomes array
+    // In key outputs array
     keyOutputs.forEach(function(array) {
       if(ele.data('description') === array[0]) {
         console.log("asd");
@@ -274,6 +342,18 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         data.push(ele.data('description'));
         data.push(ele.data('label'));
         keyOutputs.push(data);
+      } else if(ele.data('type') === 'SLO') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        SLO.push(data);
+      } else if(ele.data('type') === 'IDO') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        IDO.push(data);
+      } else if(ele.data('type') === 'SD') {
+        data.push(ele.data('description'));
+        data.push(ele.data('label'));
+        subIDO.push(data);
       }
     }
 
@@ -442,17 +522,26 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       dataType: "json",
       data: data
   }).done(function(m) {
-    showHelpText();
-    setViewMore();
+    if(initMode == true) {
+      showHelpText();
+      setViewMore();
+      initMode = false;
+    }
     console.log("done");
     var nodes = m.elements.nodes;
     var count = {
+        SLO: 0,
+        IDO: 0,
+        SD: 0,
         F: 0,
         O: 0,
         CoA: 0,
         KO: 0,
     };
     var totalWidth = {
+        SLO: 0,
+        IDO: 0,
+        SD: 0,
         F: 0,
         O: 0,
         CoA: 0,
@@ -463,7 +552,13 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
 
     // For to count and set position
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "F") {
+      if(nodes[i].data.type == "SLO") {
+        count.SLO++;
+      } else if(nodes[i].data.type == "IDO") {
+        count.IDO++;
+      } else if(nodes[i].data.type == "SD") {
+        count.SD++;
+      } else if(nodes[i].data.type == "F") {
         count.F++;
       } else if(nodes[i].data.type == "O") {
         count.O++;
@@ -474,12 +569,18 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
       }
     }
 
+    totalWidth.SLO = count.SLO * (nodeWidth + nodeMargin);
+    totalWidth.IDO = count.IDO * (nodeWidth + nodeMargin);
+    totalWidth.SD = count.SD * (nodeWidth + nodeMargin);
     totalWidth.F = count.F * (nodeWidth + nodeMargin);
     totalWidth.O = count.O * (nodeWidth + nodeMargin);
     totalWidth.CoA = count.CoA * (nodeWidth + nodeMargin);
     totalWidth.KO = (count.KO * (nodeWidth + nodeMargin)) + totalWidth.CoA;
 
     var move = {
+        SLO: -(totalWidth.SLO / 2),
+        IDO: -(totalWidth.IDO / 2),
+        SD: -(totalWidth.SD / 2),
         F: -(totalWidth.F / 2),
         O: -(totalWidth.O / 2),
         CoA: -(totalWidth.CoA / 2),
@@ -487,7 +588,25 @@ function ajaxService(url,data,contentGraph,panningEnable,inPopUp,nameLayout,tool
     };
 
     for(var i = 0; i < nodes.length; i++) {
-      if(nodes[i].data.type == "F") {
+      if(nodes[i].data.type == "SLO") {
+        move.SLO = (move.SLO + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.SLO,
+            y: -200
+        };
+      } else if(nodes[i].data.type == "IDO") {
+        move.IDO = (move.IDO + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.IDO,
+            y: -100
+        };
+      } else if(nodes[i].data.type == "SD") {
+        move.SD = (move.SD + (nodeWidth + nodeMargin));
+        nodes[i].position = {
+            x: move.SD,
+            y: 0
+        };
+      } else if(nodes[i].data.type == "F") {
         move.F = (move.F + (nodeWidth + nodeMargin));
         nodes[i].position = {
             x: move.F,

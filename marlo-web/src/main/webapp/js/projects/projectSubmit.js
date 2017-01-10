@@ -275,7 +275,7 @@ function unSubmitButtonEvent(e) {
           },
           unSubmit: function() {
             var $justification = $dialogContent.find("#justification-unSubmit");
-            if($justification.val().length > 0 && valida($justification) == true) {
+            if($justification.val().length > 0 && $justification.val().trim().length != 0) {
               var url = baseURL + "/unsubmitProject.do";
               var projectId = $(".projectUnSubmitButton").attr("id").split("-")[1];
               var data = {
