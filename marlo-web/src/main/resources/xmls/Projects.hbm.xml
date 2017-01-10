@@ -322,5 +322,13 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" />
 		</set>
+		
+		<set name="projectOutcomesPandr" table="project_outcomes_pandr" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr" />
+        </set>
+		
 	</class>
 </hibernate-mapping>

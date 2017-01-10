@@ -133,6 +133,7 @@
 		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
 		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml"/>
 		<mapping resource="xmls/DeliverableQualityChecks.hbm.xml"/>
+		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
