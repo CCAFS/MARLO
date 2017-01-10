@@ -2,7 +2,7 @@
 [#assign title = "Project Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = [ "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ "${baseUrl}/js/projects/projectOutcomes.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = [ ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectOutcomes" /]
@@ -144,6 +144,9 @@
     </div>  
 </section>
 
+
+[#-- File upload Template--]
+[@customForm.inputFile name="file" fileUrl="" fileName="project.outcomesPandr[${currentCycleYear}].file.id" template=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
