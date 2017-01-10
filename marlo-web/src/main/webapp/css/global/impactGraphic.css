@@ -105,3 +105,13 @@ span.btn {
 .tool:hover {
     color: #2ba6cb;
 }
+
+#loader{
+	z-index: 999;
+	height: 100%;
+	width: 100%;
+	position:absolute;
+	background-image: url("./../../images/global/loading.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+}
