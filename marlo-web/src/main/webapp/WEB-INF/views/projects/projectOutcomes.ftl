@@ -56,8 +56,8 @@
               <div class="fullPartBlock" id="projectOutcomeStatement">
              [#assign index2019 = (action.getIndex(2019))!-1 /]
                 [@customForm.textArea name="project.outcomesPandr[${index2019}].statement" className="limitWords-150" i18nkey="projectOutcomes.statement" editable=(editable && canEditStatement) /]
-                <input name="project.outcomesPandr[${index2019}].id" type="hidden" value="${project.outcomesPandr[index2019].id?c}" />
-               <input name="project.outcomesPandr[${index2019}].year" type="hidden" value="${project.outcomesPandr[index2019].year?c}" />
+                <input name="project.outcomesPandr[${index2019}].id" type="hidden" value="${(project.outcomesPandr[index2019].id?c)!}" />
+               <input name="project.outcomesPandr[${index2019}].year" type="hidden" value="2019" />
         
               </div>
               [#-- Annual progress --]
@@ -103,8 +103,8 @@
                 </div>
                 
                 [/#if]
-                  <input name="project.outcomesPandr[${indexYear}].id" type="hidden" value="${project.outcomesPandr[indexYear].id?c}" />
-               <input name="project.outcomesPandr[${indexYear}].year" type="hidden" value="${project.outcomesPandr[indexYear].year?c}" />
+                  <input name="project.outcomesPandr[${indexYear}].id" type="hidden" value="${(project.outcomesPandr[indexYear].id?c)!}" />
+               <input name="project.outcomesPandr[${indexYear}].year" type="hidden" value="${year}" />
         
               [/#list]
                </div>
