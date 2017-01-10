@@ -364,7 +364,9 @@ public class ProjectOutcomesPandRAction extends BaseAction {
       } else {
         project.setOutcomesPandr(
           project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-
+        if (this.isLessonsActive()) {
+          this.loadLessons(loggedCrp, project);
+        }
         this.setDraft(false);
       }
     }
@@ -410,8 +412,12 @@ public class ProjectOutcomesPandRAction extends BaseAction {
        * this.activitiesPreviousData(project.getClosedProjectActivities(), false);
        * this.activitiesNewData(project.getClosedProjectActivities());
        */
+      if (this.isLessonsActive()) {
+        this.saveLessons(loggedCrp, project);
+      }
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_OUTCOMES_PANDR_RELATION);
+      relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
