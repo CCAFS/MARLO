@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectCCAFSOutcomeValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,7 +48,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +76,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   private List<IpElement> previousOutputs;
   private List<IpIndicator> previousIndicators;
   private List<Integer> allYears;
-
+  private ProjectCCAFSOutcomeValidator ccafsOutcomeValidator;
 
   private long projectID;
 
@@ -107,7 +107,8 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   @Inject
   public ProjectCCAFSOutcomesAction(APConfig config, ProjectManager projectManager, CrpProgramManager crpProgramManager,
     IpElementManager ipElementManager, CrpManager crpManager, AuditLogManager auditLogManager,
-    IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager) {
+    IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager,
+    ProjectCCAFSOutcomeValidator ccafsOutcomeValidator) {
     super(config);
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
@@ -115,9 +116,9 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.ipElementManager = ipElementManager;
     this.auditLogManager = auditLogManager;
     this.ipProjectIndicatorManager = ipProjectIndicatorManager;
+    this.ccafsOutcomeValidator = ccafsOutcomeValidator;
     this.ipIndicatorManager = ipIndicatorManager;
   }
-
 
   public String calculateAcumulativeTarget(int year, IpProjectIndicator id) {
 
@@ -161,7 +162,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
     return String.valueOf(acumulative);
   }
-
 
   @Override
   public String cancel() {
@@ -209,6 +209,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return allYears;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -216,7 +217,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
-
 
   public IpProjectIndicator getIndicator(long indicatorID, long midOutcome, int year) {
 
@@ -227,6 +227,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
     return new IpProjectIndicator();
   }
+
 
   public int getIndicatorIndex(long indicatorID, long midOutcome, int year) {
 
@@ -339,7 +340,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return midOutcomes;
   }
 
-
   private void getMidOutcomesByIndicators() {
     for (IpIndicator indicator : project.getIndicators()) {
       IpElement midoutcome = indicator.getIpElement();
@@ -354,6 +354,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
     }
   }
+
 
   private void getMidOutcomesByOutputs() {
     for (IpElement output : project.getOutputs()) {
@@ -408,7 +409,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
   }
 
-
   public List<IpElement> getMidOutcomesSelected() {
     return midOutcomesSelected;
   }
@@ -440,6 +440,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return previousIndicators;
   }
 
+
   public List<IpElement> getPreviousOutputs() {
     return previousOutputs;
   }
@@ -448,10 +449,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return project;
   }
 
-
   public List<IpProgram> getProjectFocusList() {
     return projectFocusList;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -460,7 +461,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
   public String getTransaction() {
     return transaction;
   }
-
 
   public boolean isRegionalOutcome(IpElement outcome) {
 
@@ -475,6 +475,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     }
     return !translatedOf.isEmpty();
   }
+
 
   /**
    * The regional midOutcomes only can be selected if they are translation of
@@ -510,7 +511,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     return false;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -741,7 +741,6 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
       }
 
 
-      this.setInvalidFields(new HashMap<>());
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
 
@@ -766,6 +765,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
+
   public void setAllYears(List<Integer> allYears) {
     this.allYears = allYears;
   }
@@ -778,10 +778,10 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
     this.midOutcomes = midOutcomes;
   }
 
-
   public void setMidOutcomesSelected(List<IpElement> midOutcomesSelected) {
     this.midOutcomesSelected = midOutcomesSelected;
   }
+
 
   public void setPreviousIndicators(List<IpIndicator> previousIndicators) {
     this.previousIndicators = previousIndicators;
@@ -805,5 +805,13 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      ccafsOutcomeValidator.validate(this, project, true);
+
+    }
   }
 }

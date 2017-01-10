@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
@@ -68,21 +69,47 @@ public class ProjectCCAFSOutcomeValidator extends BaseValidator {
         for (IpProjectIndicator ipProjectIndicator : project.getProjectIndicators()) {
           if (ipProjectIndicator != null) {
             if (ipProjectIndicator.getYear() == action.getCurrentCycleYear()) {
-              try {
-                if (Integer.parseInt(ipProjectIndicator.getTarget()) < 0) {
 
-                }
-              } catch (Exception e) {
-                this.addMessage(" #" + ipProjectIndicator.getId() + ": Title");
-                action.getInvalidFields().put("caseStudy.title", InvalidFieldsMessages.EMPTYFIELD);
+              if (ipProjectIndicator.getArchived() == null || ipProjectIndicator.getArchived().doubleValue() < 0) {
+                this.addMessage(" CCAFS Outcome #" + ipProjectIndicator.getId() + ": Target achieved");
+                action.getInvalidFields().put("project.projectIndicators[" + i + "].archived",
+                  InvalidFieldsMessages.EMPTYFIELD);
               }
+
+              if (!(this.isValidString(ipProjectIndicator.getNarrativeTargets())
+                && this.wordCount(ipProjectIndicator.getNarrativeTargets()) <= 100)) {
+                this.addMessage("CCAFS Outcome ##" + ipProjectIndicator.getId() + ": Narrative Target");
+                action.getInvalidFields().put("project.projectIndicators[" + i + "].narrativeTargets",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+              if (!(this.isValidString(ipProjectIndicator.getNarrativeGender())
+                && this.wordCount(ipProjectIndicator.getNarrativeGender()) <= 100)) {
+                this.addMessage("CCAFS Outcome ##" + ipProjectIndicator.getId() + ": Narrative Gender");
+                action.getInvalidFields().put("project.projectIndicators[" + i + "].narrativeGender",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
             }
           }
           i++;
         }
       }
 
+      if (!action.getFieldErrors().isEmpty()) {
+        action.addActionError(action.getText("saving.fields.required"));
+      } else if (validationMessage.length() > 0) {
+        action
+          .addActionMessage(" " + action.getText("saving.missingFields", new String[] {validationMessage.toString()}));
+      }
 
+      if (action.isReportingActive()) {
+        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
+          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
+      } else {
+        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+          ProjectSectionStatusEnum.CCAFSOUTCOMES.getStatus());
+      }
     }
   }
 }
