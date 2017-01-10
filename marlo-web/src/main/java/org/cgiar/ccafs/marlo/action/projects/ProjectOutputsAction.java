@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -39,7 +40,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,6 +67,8 @@ public class ProjectOutputsAction extends BaseAction {
   private CrpProgramManager crpProgrammManager;
   private IpProjectContributionOverviewManager ipProjectContributionOverviewManager;
   private IpElementManager ipElementManager;
+  private ProjectOutputsValidator projectOutputsValidator;
+
   private List<Integer> allYears;
 
 
@@ -86,14 +88,15 @@ public class ProjectOutputsAction extends BaseAction {
   @Inject
   public ProjectOutputsAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
     CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
-    IpProjectContributionOverviewManager ipProjectContributionOverviewManager, IpElementManager ipElementManager) {
+    IpProjectContributionOverviewManager ipProjectContributionOverviewManager, IpElementManager ipElementManager,
+    ProjectOutputsValidator projectOutputsValidator) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.crpProgrammManager = crpProgrammManager;
     this.ipProjectContributionOverviewManager = ipProjectContributionOverviewManager;
     this.ipElementManager = ipElementManager;
-
+    this.projectOutputsValidator = projectOutputsValidator;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
 
@@ -375,7 +378,7 @@ public class ProjectOutputsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      this.setInvalidFields(new HashMap<>());
+
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
 
@@ -431,7 +434,7 @@ public class ProjectOutputsAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-
+      projectOutputsValidator.validate(this, project, true);
 
     }
   }

@@ -59,6 +59,7 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
@@ -131,6 +132,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Inject
   ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+
+  @Inject
+  ProjectOutputsValidator projectOutputsValidator;
   @Inject
   public CrpManager crpManager;
 
@@ -177,6 +181,8 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case OUTCOMES_PANDR:
           this.validateOutcomesPandR();
+        case OUTPUTS:
+          this.validateOutputs();
           break;
         default:
           break;
@@ -554,6 +560,17 @@ public class ValidateProjectSectionAction extends BaseAction {
     project.setOutcomesPandr(
       project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
     projectOutcomesPandRValidator.validate(this, project, false);
+
+
+  }
+
+  public void validateOutputs() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setOverviews(
+      project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOutputsValidator.validate(this, project, false);
 
 
   }
