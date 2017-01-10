@@ -2,7 +2,7 @@
 [#assign title = "Overview by MOGs" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
-[#assign customJS = ["","${baseUrl}/js/global/fieldsValidation.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
+[#assign customJS = ["${baseUrl}/js/projects/projectOverviewByMogs.js","${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/global/autoSave.js"] /] [#-- "${baseUrl}/js/global/autoSave.js" --]
 [#assign customCSS = ["${baseUrl}/css/projects/projectBudgetByPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "overviewByMogs" /]
@@ -67,20 +67,24 @@
                     <div class="fullPartBlock"><p class="checked">${output.composedId} ${output.description}</p></div>
                     [#-- Brief bullet points of your expected annual year contribution towards the selected MOG --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].anualContribution"  i18nkey="planning.project.overviewByMogs.expectedBulletPoints" showTitle=true editable=editable  /]
+                    <label>[@customForm.text name="planning.project.overviewByMogs.expectedBulletPoints" readText=reportingActive param="${year}" /]:</label>  
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].anualContribution"  showTitle=false  editable=!reportingActive /]
                     </div>
                     [#-- Brief summary of your actual annual contribution --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary"  i18nkey="reporting.project.overviewByMogs.summaryAnnualContribution" showTitle=true  editable=editable /]
+                     <label>[@customForm.text name="reporting.project.overviewByMogs.summaryAnnualContribution" readText=!reportingActive param="${year}" /]:</label>  
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=reportingActive /]
                     </div>
                     [#-- Brief plan of the gender and social inclusion dimension of the expected annual output --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].genderContribution"  i18nkey="planning.project.overviewByMogs.expectedSocialAndGenderPlan" showTitle=true  editable=editable /]
+                      <label>[@customForm.text name="planning.project.overviewByMogs.expectedSocialAndGenderPlan" readText=reportingActive param="${year}" /]:</label>  
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].genderContribution" showTitle=false  editable=!reportingActive /]
                     </div>
                     
                     [#-- Summary of the gender and social inclusion dimension --]
                     <div class="fullBlock">
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender"  i18nkey="reporting.project.overviewByMogs.summarySocialInclusionDimmension"  showTitle=true editable=editable  /]
+                      <label>[@customForm.text name="reporting.project.overviewByMogs.summarySocialInclusionDimmension" readText=!reportingActive param="${year}" /]:</label>  
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=reportingActive  /]
                     </div>
                   </div>
                   [/#list]
