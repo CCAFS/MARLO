@@ -216,33 +216,37 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
       if(inPopUp === true) {
         // add info in Relations panel
         SLO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>SLO:</label><li>" + ele + "</li>")
+          $(".panel-body ul").append("<label>SLO:</label><li>" + ele + "</li>");
         });
         IDO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>IDO:</label><li>" + ele + "</li>")
+          $(".panel-body ul").append("<label>IDO:</label><li>" + ele + "</li>");
         });
         subIDO.forEach(function(ele) {
-          $(".panel-body ul").append("<label>subIDO:</label><li>" + ele + "</li>")
+          $(".panel-body ul").append("<label>subIDO:</label><li>" + ele + "</li>");
         });
         crps.forEach(function(ele) {
-          $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>")
+          $(".panel-body ul").append("<label>CRP:</label><li>" + ele + "</li>");
         });
         flagships.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
+          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
         outcomes.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
+          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
         clusters.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
+          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
-        keyOutputs.forEach(function(ele) {
-          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>")
+        keyOutputs.forEach(function(i,ele) {
+          $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
+        $("#loader").hide();
       }
     }
   });
   function nodeSelected(ele) {
+    if(inPopUp === true) {
+      $("#loader").show();
+    }
     var stop;
     if(ele.isChild()) {
       var parent = ele.parent();
@@ -363,7 +367,9 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
 
   $("#buttonDownload").on("click", function() {
     var image = new Image();
-    image = cy.jpg();
+    image = cy.jpg({
+      full: true
+    });
     var name = "impactPathway_Graphic";
     $('a.download').attr({
         href: image,

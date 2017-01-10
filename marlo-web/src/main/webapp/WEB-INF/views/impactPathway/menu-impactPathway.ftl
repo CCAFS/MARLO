@@ -72,6 +72,8 @@
 [#-- PopUp Graph --]
 <div id="impactGraphic-content"  style="display:none;" >
   
+  <div id="loader" style="display:none;" ></div>
+  
   [#-- Information panel --]
   <div id="infoRelations" class="panel panel-default">
     <div class="panel-heading"><strong>Relations</strong></div>

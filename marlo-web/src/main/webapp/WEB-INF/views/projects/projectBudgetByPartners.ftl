@@ -253,8 +253,9 @@
     
     [#-- Project Title --]
     <p class="checked">
+      [#assign fsRemaining = ((element.fundingSource.getRemaining(selectedYear))!0)?number /]
       <small>Funding source #<span class="titleId">${(element.fundingSource.id)!}</span></small> -
-      <small class="grayLabel"> (Remaining budget US$ <span class="projectAmount">${((element.fundingSource.getRemaining(selectedYear))!0)?number?string(",##0.00")}</span>) </small>
+      <small class="grayLabel [#if fsRemaining lt 0]fieldError[/#if]"> (Remaining budget US$ <span class="projectAmount">${fsRemaining?string(",##0.00")}</span>) </small>
     </p> 
     
     [#if !isTemplate]
