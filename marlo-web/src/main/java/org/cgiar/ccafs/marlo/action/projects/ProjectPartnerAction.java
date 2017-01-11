@@ -411,7 +411,7 @@ public class ProjectPartnerAction extends BaseAction {
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20161118_AV_HT_AW.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
@@ -934,7 +934,7 @@ public class ProjectPartnerAction extends BaseAction {
 
               }
               partnerPerson.setProjectPartner(projectPartner);
-
+              this.notifyNewUserCreated(partnerPerson.getUser());
 
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
               User userDB = userManager.getUser(partnerPerson.getUser().getId());
@@ -1025,9 +1025,7 @@ public class ProjectPartnerAction extends BaseAction {
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
-      if (leader != null) {
-        this.notifyNewUserCreated(leader.getUser());
-      }
+
       this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
 
 
