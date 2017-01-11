@@ -567,6 +567,14 @@ public class DeliverableAction extends BaseAction {
         this.setTransaction("-1");
       }
 
+      if (deliverable.getDeliverableQualityChecks() != null) {
+        List<DeliverableQualityCheck> checks = new ArrayList<>(
+          deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList()));
+        if (!checks.isEmpty()) {
+          deliverable.setQualityCheck(checks.get(0));
+        }
+      }
+
     } else {
       deliverable = deliverableManager.getDeliverableById(deliverableID);
     }
