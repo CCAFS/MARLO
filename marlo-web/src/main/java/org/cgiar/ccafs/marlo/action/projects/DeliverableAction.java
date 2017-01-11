@@ -1016,7 +1016,7 @@ public class DeliverableAction extends BaseAction {
       }
 
       if (deliverable.getQualityCheck() != null) {
-
+        this.saveQualityCheck();
       }
 
       List<String> relationsName = new ArrayList<>();
@@ -1062,41 +1062,41 @@ public class DeliverableAction extends BaseAction {
 
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
-    if (deliverable.getQualityCheck().getId() != null) {
+    if (deliverable.getQualityCheck().getId() != -1) {
       qualityCheck =
         deliverableQualityCheckManager.getDeliverableQualityCheckById(deliverable.getQualityCheck().getId());
-
-      if (qualityCheck.getQualityAssurance() != null) {
-        DeliverableQualityAnswer answer =
-          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getQualityAssurance().getId());
-
-        qualityCheck.setQualityAssurance(answer);
-      }
-
-      if (qualityCheck.getDataDictionary() != null) {
-        DeliverableQualityAnswer answer =
-          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
-
-        qualityCheck.setDataDictionary(answer);
-      }
-
-      if (qualityCheck.getDataDictionary() != null) {
-        DeliverableQualityAnswer answer =
-          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
-
-        qualityCheck.setDataDictionary(answer);
-      }
-
-      if (qualityCheck.getDataTools() != null) {
-        DeliverableQualityAnswer answer =
-          deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataTools().getId());
-
-        qualityCheck.setDataTools(answer);
-      }
-
     } else {
       qualityCheck = new DeliverableQualityCheck();
     }
+
+    if (qualityCheck.getQualityAssurance() != null) {
+      DeliverableQualityAnswer answer =
+        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getQualityAssurance().getId());
+
+      qualityCheck.setQualityAssurance(answer);
+    }
+
+    if (qualityCheck.getDataDictionary() != null) {
+      DeliverableQualityAnswer answer =
+        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
+
+      qualityCheck.setDataDictionary(answer);
+    }
+
+    if (qualityCheck.getDataDictionary() != null) {
+      DeliverableQualityAnswer answer =
+        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
+
+      qualityCheck.setDataDictionary(answer);
+    }
+
+    if (qualityCheck.getDataTools() != null) {
+      DeliverableQualityAnswer answer =
+        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataTools().getId());
+
+      qualityCheck.setDataTools(answer);
+    }
+
 
     if (fAssurance != null) {
       qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
@@ -1111,28 +1111,30 @@ public class DeliverableAction extends BaseAction {
     }
 
     if (fDictionary != null) {
-      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
-        this.getDeliverablePath("Assurance")));
+      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fDictionary, fDictionaryName,
+        this.getDeliverablePath("Dictionary")));
 
-      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+      FileManager.copyFile(fDictionary, this.getDeliverablePath("Dictionary") + fDictionaryName);
     }
-    if (qualityCheck.getFileAssurance() != null) {
-      if (qualityCheck.getFileAssurance().getId() == null) {
-        qualityCheck.setFileAssurance(null);
+    if (qualityCheck.getFileDictionary() != null) {
+      if (qualityCheck.getFileDictionary().getId() == null) {
+        qualityCheck.setFileDictionary(null);
       }
     }
 
-    if (fAssurance != null) {
-      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
-        this.getDeliverablePath("Assurance")));
+    if (fTools != null) {
+      qualityCheck.setFileAssurance(
+        this.getFileDB(qualityCheck.getFileAssurance(), fTools, fToolsName, this.getDeliverablePath("Tools")));
 
-      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+      FileManager.copyFile(fTools, this.getDeliverablePath("Tools") + fToolsName);
     }
-    if (qualityCheck.getFileAssurance() != null) {
-      if (qualityCheck.getFileAssurance().getId() == null) {
-        qualityCheck.setFileAssurance(null);
+    if (qualityCheck.getFileTools() != null) {
+      if (qualityCheck.getFileTools().getId() == null) {
+        qualityCheck.setFileTools(null);
       }
     }
+
+    deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
 
   }
