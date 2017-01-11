@@ -25,7 +25,7 @@
       <div class="col-md-6 form-group  fileAssuranceContent">
         <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance.id?? /]
-        <input id="fileID" type="hidden" name="deliverable.qualityChec.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
+        <input id="fileID" type="hidden" name="deliverable.qualityCheck.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
         [#-- Input File --]
         [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="uploadFileAssurance upload" type="file" name="file" data-url="${baseUrl}/deliverableUploadFile.do"></div>

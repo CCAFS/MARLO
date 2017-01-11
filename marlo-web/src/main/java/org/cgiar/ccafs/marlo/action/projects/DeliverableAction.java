@@ -174,13 +174,6 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectPartnerManager projectPartnerManager;
 
-  private FileDB fAssurance;
-
-  private FileDB fDictionary;
-
-  private FileDB fTools;
-
-
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
@@ -256,10 +249,6 @@ public class DeliverableAction extends BaseAction {
 
   public long getDeliverableID() {
     return deliverableID;
-  }
-
-  private String getDeliverablePath(String fileType) {
-    return config.getUploadsBaseFolder() + File.separator + this.getDeliverableUrl(fileType) + File.separator;
   }
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
@@ -1071,9 +1060,9 @@ public class DeliverableAction extends BaseAction {
       qualityCheck.setDataTools(answer);
     }
 
-    if (fAssurance != null) {
-      if (fAssurance.getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(fAssurance.getId());
+    if (deliverable.getQualityCheck().getFileAssurance() != null) {
+      if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
         qualityCheck.setFileAssurance(fileDb);
       }
     }
@@ -1084,9 +1073,9 @@ public class DeliverableAction extends BaseAction {
     }
 
 
-    if (fDictionary != null) {
-      if (fDictionary.getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+    if (deliverable.getQualityCheck().getFileDictionary() != null) {
+      if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
         qualityCheck.setFileDictionary(fileDb);
       }
     }
@@ -1096,9 +1085,9 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    if (fTools != null) {
-      if (fTools.getId() != null) {
-        FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+    if (deliverable.getQualityCheck().getFileTools() != null) {
+      if (deliverable.getQualityCheck().getFileTools().getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
         qualityCheck.setFileTools(fileDb);
       }
     }
