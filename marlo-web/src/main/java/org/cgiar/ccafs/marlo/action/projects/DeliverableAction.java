@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -105,6 +106,7 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectManager projectManager;
 
+
   private FundingSourceManager fundingSourceManager;
 
 
@@ -115,16 +117,20 @@ public class DeliverableAction extends BaseAction {
 
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
+
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
+
 
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
+
   private CrpManager crpManager;
 
   private long projectID;
+
 
   private long deliverableID;
 
@@ -137,6 +143,7 @@ public class DeliverableAction extends BaseAction {
 
   private List<CrpClusterKeyOutput> keyOutputs;
 
+
   private List<ProjectPartnerPerson> partnerPersons;
 
   private List<FundingSource> fundingSources;
@@ -146,6 +153,7 @@ public class DeliverableAction extends BaseAction {
   private Project project;
 
   private Map<String, String> status;
+
 
   private Map<String, String> genderLevels;
 
@@ -161,16 +169,19 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
-
   private ProjectPartnerManager projectPartnerManager;
 
-
   private File fAssurance;
-  private File fDictonary;
 
+  private File fDictionary;
 
   private File fTools;
 
+  private String fAssuranceName;
+
+  private String fDictionaryName;
+
+  private String fToolsName;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -202,6 +213,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
   }
 
+
   @Override
   public String cancel() {
 
@@ -226,6 +238,7 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
@@ -244,6 +257,10 @@ public class DeliverableAction extends BaseAction {
 
   public long getDeliverableID() {
     return deliverableID;
+  }
+
+  private String getDeliverablePath(String fileType) {
+    return config.getUploadsBaseFolder() + File.separator + this.getDeliverableUrl(fileType) + File.separator;
   }
 
   public List<Map<String, Object>> getDeliverablesSubTypes(long deliverableTypeID) {
@@ -267,27 +284,48 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
-
 
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
 
+  public String getDeliverableUrl(String fileType) {
+    return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
+  }
+
+  public String getDeliverableUrlPath(String fileType) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "deliverable" + File.separator + fileType + File.separator;
+  }
 
   public File getfAssurance() {
     return fAssurance;
   }
 
-
-  public File getfDictonary() {
-    return fDictonary;
+  public String getfAssuranceName() {
+    return fAssuranceName;
   }
+
+  public File getfDictionary() {
+    return fDictionary;
+  }
+
+  public String getfDictionaryName() {
+    return fDictionaryName;
+  }
+
 
   public File getfTools() {
     return fTools;
+  }
+
+
+  public String getfToolsName() {
+    return fToolsName;
   }
 
   public List<FundingSource> getFundingSources() {
@@ -314,28 +352,28 @@ public class DeliverableAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
 
-
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
+
 
   public Map<String, String> getStatus() {
     return status;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
@@ -376,7 +414,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -412,6 +449,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   public List<DeliverablePartnership> otherPartners() {
     try {
@@ -1056,6 +1094,44 @@ public class DeliverableAction extends BaseAction {
         qualityCheck.setDataTools(answer);
       }
 
+    } else {
+      qualityCheck = new DeliverableQualityCheck();
+    }
+
+    if (fAssurance != null) {
+      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
+        this.getDeliverablePath("Assurance")));
+
+      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+    }
+    if (qualityCheck.getFileAssurance() != null) {
+      if (qualityCheck.getFileAssurance().getId() == null) {
+        qualityCheck.setFileAssurance(null);
+      }
+    }
+
+    if (fDictionary != null) {
+      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
+        this.getDeliverablePath("Assurance")));
+
+      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+    }
+    if (qualityCheck.getFileAssurance() != null) {
+      if (qualityCheck.getFileAssurance().getId() == null) {
+        qualityCheck.setFileAssurance(null);
+      }
+    }
+
+    if (fAssurance != null) {
+      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
+        this.getDeliverablePath("Assurance")));
+
+      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+    }
+    if (qualityCheck.getFileAssurance() != null) {
+      if (qualityCheck.getFileAssurance().getId() == null) {
+        qualityCheck.setFileAssurance(null);
+      }
     }
 
 
@@ -1077,27 +1153,39 @@ public class DeliverableAction extends BaseAction {
     this.deliverableSubTypes = deliverableSubTypes;
   }
 
-
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
   }
+
 
   public void setfAssurance(File fAssurance) {
     this.fAssurance = fAssurance;
   }
 
-  public void setfDictonary(File fDictonary) {
-    this.fDictonary = fDictonary;
+  public void setfAssuranceName(String fAssuranceName) {
+    this.fAssuranceName = fAssuranceName;
   }
+
+  public void setfDictionary(File fDictionary) {
+    this.fDictionary = fDictionary;
+  }
+
+  public void setfDictionaryName(String fDictionaryName) {
+    this.fDictionaryName = fDictionaryName;
+  }
+
 
   public void setfTools(File fTools) {
     this.fTools = fTools;
   }
 
+  public void setfToolsName(String fToolsName) {
+    this.fToolsName = fToolsName;
+  }
+
   public void setFundingSources(List<FundingSource> fundingSources) {
     this.fundingSources = fundingSources;
   }
-
 
   public void setGenderLevels(Map<String, String> genderLevels) {
     this.genderLevels = genderLevels;
