@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
@@ -55,7 +57,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 
 import java.io.BufferedReader;
@@ -126,6 +127,8 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
+  private FileDBManager fileDBManager;
+
 
   private CrpManager crpManager;
 
@@ -171,17 +174,12 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectPartnerManager projectPartnerManager;
 
-  private File fAssurance;
+  private FileDB fAssurance;
 
-  private File fDictionary;
+  private FileDB fDictionary;
 
-  private File fTools;
+  private FileDB fTools;
 
-  private String fAssuranceName;
-
-  private String fDictionaryName;
-
-  private String fToolsName;
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -193,7 +191,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager) {
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager, FileDBManager fileDBManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -211,6 +209,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableGenderLevelManager = deliverableGenderLevelManager;
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
     this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
+    this.fileDBManager = fileDBManager;
   }
 
 
@@ -300,32 +299,6 @@ public class DeliverableAction extends BaseAction {
   public String getDeliverableUrlPath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
-  }
-
-  public File getfAssurance() {
-    return fAssurance;
-  }
-
-  public String getfAssuranceName() {
-    return fAssuranceName;
-  }
-
-  public File getfDictionary() {
-    return fDictionary;
-  }
-
-  public String getfDictionaryName() {
-    return fDictionaryName;
-  }
-
-
-  public File getfTools() {
-    return fTools;
-  }
-
-
-  public String getfToolsName() {
-    return fToolsName;
   }
 
   public List<FundingSource> getFundingSources() {
@@ -1090,12 +1063,9 @@ public class DeliverableAction extends BaseAction {
       qualityCheck.setDataTools(answer);
     }
 
-
-    if (fAssurance != null) {
-      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fAssurance, fAssuranceName,
-        this.getDeliverablePath("Assurance")));
-
-      FileManager.copyFile(fAssurance, this.getDeliverablePath("Assurance") + fAssuranceName);
+    if (fAssurance.getId() != null) {
+      FileDB fileDb = fileDBManager.getFileDBById(fAssurance.getId());
+      qualityCheck.setFileAssurance(fileDb);
     }
     if (qualityCheck.getFileAssurance() != null) {
       if (qualityCheck.getFileAssurance().getId() == null) {
@@ -1103,11 +1073,9 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    if (fDictionary != null) {
-      qualityCheck.setFileDictionary(this.getFileDB(qualityCheck.getFileAssurance(), fDictionary, fDictionaryName,
-        this.getDeliverablePath("Dictionary")));
-
-      FileManager.copyFile(fDictionary, this.getDeliverablePath("Dictionary") + fDictionaryName);
+    if (fDictionary.getId() != null) {
+      FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+      qualityCheck.setFileDictionary(fileDb);
     }
     if (qualityCheck.getFileDictionary() != null) {
       if (qualityCheck.getFileDictionary().getId() == null) {
@@ -1115,11 +1083,9 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    if (fTools != null) {
-      qualityCheck.setFileTools(
-        this.getFileDB(qualityCheck.getFileAssurance(), fTools, fToolsName, this.getDeliverablePath("Tools")));
-
-      FileManager.copyFile(fTools, this.getDeliverablePath("Tools") + fToolsName);
+    if (fTools.getId() != null) {
+      FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+      qualityCheck.setFileTools(fileDb);
     }
     if (qualityCheck.getFileTools() != null) {
       if (qualityCheck.getFileTools().getId() == null) {
@@ -1159,32 +1125,6 @@ public class DeliverableAction extends BaseAction {
 
   public void setDeliverableTypeParent(List<DeliverableType> deliverableTypeParent) {
     this.deliverableTypeParent = deliverableTypeParent;
-  }
-
-
-  public void setfAssurance(File fAssurance) {
-    this.fAssurance = fAssurance;
-  }
-
-  public void setfAssuranceName(String fAssuranceName) {
-    this.fAssuranceName = fAssuranceName;
-  }
-
-  public void setfDictionary(File fDictionary) {
-    this.fDictionary = fDictionary;
-  }
-
-  public void setfDictionaryName(String fDictionaryName) {
-    this.fDictionaryName = fDictionaryName;
-  }
-
-
-  public void setfTools(File fTools) {
-    this.fTools = fTools;
-  }
-
-  public void setfToolsName(String fToolsName) {
-    this.fToolsName = fToolsName;
   }
 
   public void setFundingSources(List<FundingSource> fundingSources) {
