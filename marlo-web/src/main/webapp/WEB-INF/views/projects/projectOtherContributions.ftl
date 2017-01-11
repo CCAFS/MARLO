@@ -149,13 +149,11 @@
   
   [#-- CRP Outcome Collaboration --]
   <div class="contributionsBlock">
-  
     <div class="crpOutcomeContribution">
       <div class="form-group">
         [@customForm.textArea name="${customName}.natureCollaboration" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
       </div>
     </div>
-    
   </div>
   [#if editable] 
   <div class="text-right">
