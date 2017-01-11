@@ -1,3 +1,4 @@
+delete from project_crp_contributions;
 INSERT INTO `project_crp_contributions` VALUES (1, 168, 12, 'Joint activities with research on water management/ water saving in Bangladesh and Vietnam', NULL, 1, '2015-10-26 06:04:54', 108, 108, '');
 INSERT INTO `project_crp_contributions` VALUES (2, 43, 13, 'Crowdsourcing will be used for banana variety evaluation.', NULL, 1, '2015-10-28 21:51:05', 174, 174, '');
 INSERT INTO `project_crp_contributions` VALUES (3, 185, 12, 'GRiSP/ CCAFS projects will mutually inform each other. Joint workshops are planned.', NULL, 1, '2015-10-29 07:34:55', 108, 108, '');
