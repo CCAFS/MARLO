@@ -18,8 +18,10 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -46,6 +48,8 @@ public class ProjectBudgetsValidator extends BaseValidator {
 
   @Inject
   private CrpManager crpManager;
+  @Inject
+  private FundingSourceManager fundingSourceManager;
 
   @Inject
   public ProjectBudgetsValidator(ProjectValidator projectValidator, InstitutionManager institutionManager) {
@@ -99,6 +103,16 @@ public class ProjectBudgetsValidator extends BaseValidator {
         for (ProjectBudget projectBudget : project.getBudgets()) {
           if (projectBudget != null) {
             if (projectBudget.getAmount() != null) {
+              if (projectBudget.getYear() == action.getCurrentCycleYear()) {
+                FundingSource fundingSource =
+                  fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
+                System.out.println("REMAINING " + fundingSource.getRemaining(projectBudget.getYear()));
+                System.out.println("BUDGET " + projectBudget.getAmount().doubleValue());
+                if (fundingSource.getRemaining(projectBudget.getYear()) < 0) {
+                  this.addMessage(action.getText("projectBudgets.fundig"));
+                }
+
+              }
               total = total + projectBudget.getAmount().longValue();
             }
 
