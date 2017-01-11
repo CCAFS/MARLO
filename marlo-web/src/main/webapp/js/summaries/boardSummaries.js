@@ -213,7 +213,7 @@ function generateReport(e) {
         $(".wordContent").find(".terms").each(function(i,e) {
           termsArray.push($(e).find(".text").html());
         });
-        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~#");
+        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
         var replace = url.replace(/ /g, "%20");
         setUrl(replace);
       } else {
