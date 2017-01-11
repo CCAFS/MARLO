@@ -25,13 +25,13 @@
     <div class="clearfix"></div>
     
     [#-- Add --]
-    
     <div class="buttons">
       <div class="buttons-content">
-        <a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources' ][/@s.url]">Add Funding Source</a>
+        [#if action.canAddFunding()]<a class="addButton" href="[@s.url namespace="/fundingSources" action='${(crpSession)!}/{crp}/addNewFundingSources' ][/@s.url]">Add Funding Source</a>[/#if]
         <div class="clearfix"></div>
       </div>
     </div>
+    
     
   </article>
 </section>
