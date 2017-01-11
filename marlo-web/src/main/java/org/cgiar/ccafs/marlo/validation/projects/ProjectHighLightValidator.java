@@ -93,10 +93,10 @@ public class ProjectHighLightValidator extends BaseValidator {
     }
 
     if (action.isReportingActive()) {
-      this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
+      this.saveMissingFields(project, highLigths, APConstants.REPORTING, action.getReportingYear(),
         ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
     } else {
-      this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+      this.saveMissingFields(project, highLigths, APConstants.PLANNING, action.getPlanningYear(),
         ProjectSectionStatusEnum.HIGHLIGHT.getStatus());
     }
 

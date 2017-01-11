@@ -67,6 +67,9 @@ public interface SectionStatusDAO {
 
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
+    String sectionName);
+
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
 
   /**

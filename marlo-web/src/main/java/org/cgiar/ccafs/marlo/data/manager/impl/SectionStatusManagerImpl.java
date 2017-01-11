@@ -91,6 +91,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectHighlight(projectHighlightID, cycle, year, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName) {
     return sectionStatusDAO.getSectionStatusByProjectOutcome(projectID, cycle, year, sectionName);
   }

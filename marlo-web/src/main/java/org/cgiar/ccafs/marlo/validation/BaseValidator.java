@@ -8,6 +8,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -146,6 +147,33 @@ public class BaseValidator {
       status.setCycle(cycle);
       status.setYear(year);
       status.setCaseStudy(caseStudy);
+      status.setSectionName(sectionName);
+      status.setProject(project);
+
+    }
+    status.setMissingFields(this.missingFields.toString());
+    sectionStatusManager.saveSectionStatus(status);
+    this.missingFields.setLength(0);
+  }
+
+  /**
+   * This method saves the missing fields into the database for a section at project Case Study level.
+   * 
+   * @param highlight is a Project Highlight.
+   * @param cycle could be 'Planning' or 'Reporting'
+   * @param sectionName is the name of the section inside deliverables.
+   */
+  protected void saveMissingFields(Project project, ProjectHighlight highlight, String cycle, int year,
+    String sectionName) {
+    // Reporting missing fields into the database.
+    SectionStatus status =
+      sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle, year, sectionName);
+    if (status == null) {
+
+      status = new SectionStatus();
+      status.setCycle(cycle);
+      status.setYear(year);
+      status.setProjectHighlight(highlight);
       status.setSectionName(sectionName);
       status.setProject(project);
 

@@ -34,7 +34,6 @@ public class SectionStatus implements java.io.Serializable {
 
   private String sectionName;
 
-
   private String missingFields;
 
 
@@ -46,9 +45,14 @@ public class SectionStatus implements java.io.Serializable {
 
   private Project project;
 
+
   private Deliverable deliverable;
+
+
   private ProjectOutcome projectOutcome;
+
   private CaseStudy caseStudy;
+  private ProjectHighlight projectHighlight;
 
   public SectionStatus() {
   }
@@ -85,24 +89,28 @@ public class SectionStatus implements java.io.Serializable {
     return this.id;
   }
 
-
   public String getMissingFields() {
     return this.missingFields;
   }
-
 
   public Project getProject() {
     return project;
   }
 
+
+  public ProjectHighlight getProjectHighlight() {
+    return projectHighlight;
+  }
+
+
   public ProjectOutcome getProjectOutcome() {
     return projectOutcome;
   }
 
-
   public String getSectionName() {
     return this.sectionName;
   }
+
 
   public Integer getYear() {
     return this.year;
@@ -111,7 +119,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
-
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
@@ -127,17 +134,22 @@ public class SectionStatus implements java.io.Serializable {
     this.deliverable = deliverable;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setProjectHighlight(ProjectHighlight projectHighlight) {
+    this.projectHighlight = projectHighlight;
   }
 
 
