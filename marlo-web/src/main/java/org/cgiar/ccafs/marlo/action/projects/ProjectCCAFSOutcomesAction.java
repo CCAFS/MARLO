@@ -126,29 +126,38 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
 
     try {
       for (IpProjectIndicator indicators : project.getProjectIndicators()) {
-
-        if (id.getIpIndicator().getIpIndicator() != null) {
-          if (indicators.getYear() <= year && indicators.getIpIndicator().getIpIndicator().getId().longValue() == id
-            .getIpIndicator().getIpIndicator().getId().longValue()) {
-            if (indicators.getTarget() != null) {
-              if (!indicators.getTarget().equals("")) {
-                try {
-                  acumulative = acumulative + Integer.parseInt(indicators.getTarget());
-                } catch (NumberFormatException e) {
-                  return "Cannot be Calculated";
+        if (indicators != null) {
+          if (id.getIpIndicator().getIpIndicator() != null) {
+            if (indicators.getYear() <= year && indicators.getIpIndicator().getIpIndicator().getId().longValue() == id
+              .getIpIndicator().getIpIndicator().getId().longValue()) {
+              if (indicators.getTarget() == null) {
+                indicators.setTarget("0");
+              }
+              if (indicators.getTarget() != null) {
+                if (!indicators.getTarget().equals("")) {
+                  try {
+                    acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                  } catch (NumberFormatException e) {
+                    return "Cannot be Calculated";
+                  }
                 }
               }
             }
-          }
-        } else {
-          if (indicators.getYear() <= year
-            && indicators.getIpIndicator().getId().longValue() == id.getIpIndicator().getId().longValue()) {
-            if (indicators.getTarget() != null) {
-              if (!indicators.getTarget().equals("")) {
-                try {
-                  acumulative = acumulative + Integer.parseInt(indicators.getTarget());
-                } catch (NumberFormatException e) {
-                  return "Cannot be Calculated";
+          } else {
+            if (indicators.getYear() <= year && indicators.getIpIndicator() != null
+              && indicators.getIpIndicator().getId() != null
+              && indicators.getIpIndicator().getId().longValue() == id.getIpIndicator().getId().longValue()) {
+              if (indicators.getTarget() == null) {
+                indicators.setTarget("0");
+              }
+              if (indicators.getTarget() != null) {
+
+                if (!indicators.getTarget().equals("")) {
+                  try {
+                    acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                  } catch (NumberFormatException e) {
+                    return "Cannot be Calculated";
+                  }
                 }
               }
             }
