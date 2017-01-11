@@ -120,25 +120,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     String parameters = this.getRequest().getParameter("keys");
     if (parameters != null) {
       if (parameters.isEmpty()) {
-        // Add keys for search
-        keys.add("gender");
-        keys.add("female");
-        keys.add("male");
-        keys.add("men");
-        keys.add("elderly");
-        keys.add("caste");
-        keys.add("women");
-        keys.add("equitable");
-        keys.add("inequality");
-        keys.add("equity");
-        keys.add("social");
-        keys.add("differentiation");
-        keys.add("social");
-        keys.add("inclusion");
-        keys.add("youth");
-        keys.add("social class");
-        keys.add("children");
-        keys.add("child");
+        // Empty keys
       } else {
         keys = Arrays.asList(parameters.split("~/"));
       }
@@ -301,13 +283,17 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
             }
 
             // Set leader institution
-
-            if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution() != null) {
-              ins_leader = "<font size=2 face='Segoe UI' color='#000000'>";
-              ins_leader += activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
-              if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getLocElement() != null) {
-                ins_leader += " - "
-                  + activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getLocElement().getName();
+            if (activity.getProjectPartnerPerson() != null) {
+              if (activity.getProjectPartnerPerson().getProjectPartner() != null) {
+                if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution() != null) {
+                  ins_leader = "<font size=2 face='Segoe UI' color='#000000'>";
+                  ins_leader +=
+                    activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+                  if (activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getLocElement() != null) {
+                    ins_leader += " - " + activity.getProjectPartnerPerson().getProjectPartner().getInstitution()
+                      .getLocElement().getName();
+                  }
+                }
               }
             }
             if (ins_leader.isEmpty()) {
@@ -544,10 +530,10 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
 
     for (String key : keys) {
       if (countKeys == 0) {
-        keysString += key;
+        keysString += "\"" + key + "\"";
         countKeys++;
       } else {
-        keysString += ", " + key;
+        keysString += ", \"" + key + "\"";
         countKeys++;
       }
     }
