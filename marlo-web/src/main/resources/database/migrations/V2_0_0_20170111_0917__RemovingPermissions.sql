@@ -1,0 +1,1 @@
+delete from  role_permissions where role_id in (21,22) and permission_id=446
