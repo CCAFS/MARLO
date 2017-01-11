@@ -1071,9 +1071,11 @@ public class DeliverableAction extends BaseAction {
       qualityCheck.setDataTools(answer);
     }
 
-    if (fAssurance.getId() != null) {
-      FileDB fileDb = fileDBManager.getFileDBById(fAssurance.getId());
-      qualityCheck.setFileAssurance(fileDb);
+    if (fAssurance != null) {
+      if (fAssurance.getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(fAssurance.getId());
+        qualityCheck.setFileAssurance(fileDb);
+      }
     }
     if (qualityCheck.getFileAssurance() != null) {
       if (qualityCheck.getFileAssurance().getId() == null) {
@@ -1081,9 +1083,12 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    if (fDictionary.getId() != null) {
-      FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
-      qualityCheck.setFileDictionary(fileDb);
+
+    if (fDictionary != null) {
+      if (fDictionary.getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+        qualityCheck.setFileDictionary(fileDb);
+      }
     }
     if (qualityCheck.getFileDictionary() != null) {
       if (qualityCheck.getFileDictionary().getId() == null) {
@@ -1091,9 +1096,11 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    if (fTools.getId() != null) {
-      FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
-      qualityCheck.setFileTools(fileDb);
+    if (fTools != null) {
+      if (fTools.getId() != null) {
+        FileDB fileDb = fileDBManager.getFileDBById(fDictionary.getId());
+        qualityCheck.setFileTools(fileDb);
+      }
     }
     if (qualityCheck.getFileTools() != null) {
       if (qualityCheck.getFileTools().getId() == null) {

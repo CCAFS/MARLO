@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class DeliverableUploadFileAction extends BaseAction {
 
+  private static final long serialVersionUID = -4043508735788227016L;
+
 
   // Manager
   private FileDBManager fileDBManager;
