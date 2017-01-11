@@ -16,6 +16,18 @@
       <result name="input">/WEB-INF/views/synthesis/outcomeSynthesis.ftl</result>
     </action>
     
+    <!-- Outcomes Synthesis Planning and Reporting Vesion-->
+    <action name="{crp}/outcomeSynthesisPandR" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/synthesis/outcomeSynthesisPandR.ftl</result>
+    </action>
+    
+    <!-- Synthesis by MOGs -->
+    <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/synthesis/synthesisByMog.ftl</result>
+    </action>
+    
     <!-- Synthesis by Cluster of Activities -->
     <action name="{crp}/coasSynthesis" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="homeStack" />

@@ -10,7 +10,7 @@
     'subItems' : [
       { 'slug': 'crpIndicators', 'name': 'menu.synthesis.crpIndicators', 'namespace': '/synthesis',  'action': '${(crpSession)!}/crpIndicators',  'visible': logged, 'active': action.canAcessCrpAdmin() },
       [#-- PHASE 1 --]
-      { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/outcomeSynthesis',  'visible': logged, 'active': action.canAcessCrpAdmin() },
+      { 'slug': 'outcomeSynthesis', 'name': 'menu.synthesis.outcomeSynthesis', 'namespace': '/synthesis',  'action': '${(crpSession)!}/{crp}/outcomeSynthesisPandR',  'visible': logged, 'active': action.canAcessCrpAdmin() },
       { 'slug': 'synthesisByMog', 'name': 'menu.synthesis.synthesisByMog', 'namespace': '/synthesis',  'action': '${(crpSession)!}/synthesisByMog',  'visible': logged, 'active': action.canAcessCrpAdmin() },
       [#-- PHASE 2 --]
       [#-- 
