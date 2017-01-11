@@ -1083,7 +1083,7 @@ public class DeliverableAction extends BaseAction {
       qualityCheck.setDataDictionary(answer);
     }
 
-    if (qualityCheck.getDataTools() != null) {
+    if (deliverable.getQualityCheck().getDataTools() != null) {
       DeliverableQualityAnswer answer = deliverableQualityAnswerManager
         .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataTools().getId());
 
@@ -1130,6 +1130,12 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setLinkAssurance(deliverable.getQualityCheck().getLinkAssurance());
     qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkAssurance());
     qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkAssurance());
+
+    qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
+    qualityCheck.setActive(true);
+    qualityCheck.setActiveSince(new Date());
+    qualityCheck.setModifiedBy(this.getCurrentUser());
+    qualityCheck.setCreatedBy(this.getCurrentUser());
 
     deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
