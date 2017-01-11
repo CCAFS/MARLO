@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -301,6 +302,34 @@ public class ValidateProjectSectionAction extends BaseAction {
 
             }
           }
+        }
+
+
+        break;
+
+      case HIGHLIGHT:
+        List<ProjectHighlight> highlights =
+          project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
+        section.put("missingFields", "");
+
+
+        for (ProjectHighlight highlight : highlights) {
+
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle,
+            this.getCurrentCycleYear(), sectionName);
+          if (sectionStatus == null) {
+
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+          }
+
         }
 
 
