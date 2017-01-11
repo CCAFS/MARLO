@@ -15,7 +15,11 @@
     <div class="col-md-4">
     [#list answers as answer]
       <div class="radio">
+        [#if editable]
         <label><input type="radio" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+        [#else]
+        <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
+        [/#if]
       </div>
     [/#list]
     </div>
@@ -25,7 +29,7 @@
       <div class="col-md-6 form-group  fileAssuranceContent">
         <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance.id?? /]
-        <input id="fileID" type="hidden" name="deliverable.qualityCheck.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
+        <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
         [#-- Input File --]
         [#if editable]
         <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="uploadFileAssurance upload" type="file" name="file" data-url="${baseUrl}/deliverableUploadFile.do"></div>
@@ -39,7 +43,7 @@
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkAssurance" value="${(deliverable.qualityCheck.linkAssurance)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>
@@ -51,24 +55,35 @@
     <div class="col-md-4">
     [#list answers as answer]
       <div class="radio">
+      [#if editable]
         <label><input type="radio" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+      [#else]
+        <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
+      [/#if]
       </div>
     [/#list]
     </div>
     
     [#-- FILE --]
     <div class="col-md-8">
-      <div class="col-md-6 form-group fileUploadContainer">
+      <div class="col-md-6 form-group fileDictionaryContent">
         <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary.id?? /]
+        <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileDictionary.id" value="${(deliverable.qualityCheck.fileDictionary.id)!"-1"}" />
         [#-- Input File --]
         [#if editable]
-        <div class="fileUpload" style="display:block"> <input class="upload" type="file" name="file" data-url=""></div>
+        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="uploadFileDictionary upload" type="file" name="file" data-url="${baseUrl}/deliverableUploadFile.do"></div>
         [/#if]
+        [#-- Uploaded File --]
+        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary??]${(deliverable.qualityCheck.fileDictionary.fileName)!('No file name')} [/#if]</span> 
+          [#if editable]<span class="removeIcon"> </span> [/#if]
+        </p>
       </div>
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkDictionary" value="${(deliverable.qualityCheck.linkDictionary)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>
@@ -80,24 +95,35 @@
     <div class="col-md-4">
       [#list answers as answer]
       <div class="radio">
+      [#if editable]
         <label><input type="radio" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+      [#else]
+        <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
+      [/#if]
       </div>
     [/#list]
     </div>
     
     [#-- FILE --]
     <div class="col-md-8">
-      <div class="col-md-6 form-group fileUploadContainer">
+      <div class="col-md-6 form-group fileToolsContent">
         <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+        [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools.id?? /]
+        <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileTools.id" value="${(deliverable.qualityCheck.fileTools.id)!"-1"}" />
         [#-- Input File --]
         [#if editable]
-        <div class="fileUpload" style="display:block"> <input class="upload" type="file" name="file" data-url=""></div>
+        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="uploadFileTools upload" type="file" name="file" data-url="${baseUrl}/deliverableUploadFile.do"></div>
         [/#if]
+        [#-- Uploaded File --]
+        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools??]${(deliverable.qualityCheck.fileTools.fileName)!('No file name')} [/#if]</span> 
+          [#if editable]<span class="removeIcon"> </span> [/#if]
+        </p>
       </div>
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkTools" value="${(deliverable.qualityCheck.linkTools)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>

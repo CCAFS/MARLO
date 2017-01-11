@@ -4,12 +4,17 @@ function init() {
   console.log($('input[name=deliverableID]').val());
 
 // Set file upload (blueimp-tmpl)
-  var $uploadBlock = $('.fileAssuranceContent');
-  var $fileUpload = $uploadBlock.find('.uploadFileAssurance')
+  uploadFile($('.fileAssuranceContent'), $('.fileAssuranceContent').find('.uploadFileAssurance'), 'Assurance');
+  uploadFile($('.fileDictionaryContent'), $('.fileDictionaryContent').find('.uploadFileDictionary'), 'Dictionary');
+  uploadFile($('.fileToolsContent'), $('.fileToolsContent').find('.uploadFileTools'), 'Tools');
+
+}
+
+function uploadFile($uploadBlock,$fileUpload,type) {
   $fileUpload.fileupload({
       dataType: 'json',
       formData: {
-          fileType: 'Assurance',
+          fileType: type,
           deliverableID: $('input[name=deliverableID]').val()
       },
       start: function(e) {
@@ -26,7 +31,7 @@ function init() {
           $uploadBlock.find('.textMessage').show();
           $uploadBlock.find('.fileUpload').hide();
           // Set file ID
-          $('input#fileID').val(r.fileID);
+          $uploadBlock.find('input.fileID').val(r.fileID);
         }
       },
       progressall: function(e,data) {
@@ -38,6 +43,6 @@ function init() {
     $uploadBlock.find('.textMessage .contentResult').html("");
     $uploadBlock.find('.textMessage').hide();
     $uploadBlock.find('.fileUpload').show();
-    $('input#fileID').val('');
+    $uploadBlock.find('input.fileID').val('');
   });
 }
