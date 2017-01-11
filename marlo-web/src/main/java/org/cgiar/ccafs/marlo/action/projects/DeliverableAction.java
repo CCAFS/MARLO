@@ -298,7 +298,7 @@ public class DeliverableAction extends BaseAction {
   }
 
   public String getDeliverableUrlPath(String fileType) {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
 

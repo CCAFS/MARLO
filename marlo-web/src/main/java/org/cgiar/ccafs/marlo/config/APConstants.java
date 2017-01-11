@@ -111,6 +111,7 @@ public final class APConstants {
   public static final String HIGHLIGHT_REQUEST_ID = "highlightID";
   public static final String CASE_STUDY_REQUEST_ID = "caseStudyID";
   public static final String CYCLE = "cycle";
+  public static final String FILE_TYPE_REQUEST = "fileType";
 
   public static final String ID = "id";
   public static final String CLASS_NAME = "className";
