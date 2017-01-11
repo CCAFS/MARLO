@@ -55,8 +55,8 @@
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="active"><a href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
                 [#if reportingActive]
-                <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class=""><a href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
+                <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class="dataSharing" style="display:none;"><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
                 [/#if]
             </ul>
@@ -68,17 +68,18 @@
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
               
+              <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade">
+                
+                [#-- Deliverable disseminationMetadata --] 
+                [#include "/WEB-INF/views/projects/deliverableDissemination.ftl" /]
+              </div>
+              
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade">
                
                 [#-- Deliverable qualityCheck --]
                 [#include "/WEB-INF/views/projects/deliverableQualityCheck.ftl" /]
               </div>
               
-              <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade">
-                
-                [#-- Deliverable disseminationMetadata --] 
-                [#include "/WEB-INF/views/projects/deliverableDissemination.ftl" /]
-              </div>
               
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade">
               
