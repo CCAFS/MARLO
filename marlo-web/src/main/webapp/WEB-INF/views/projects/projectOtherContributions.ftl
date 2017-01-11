@@ -30,12 +30,34 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
-      
+        
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <h3 class="headTitle">[@s.text name="projectOtherContributions.title" /]</h3>  
-          <div id="projectOtherContributions" class="borderBox ${reportingActive?string('fieldFocus','')}">
-            
+          <div id="otherContributions" class="borderBox"> 
+          
+            [#-- How are contributing to other CCAFS IP --]
+            <div class="fullBlock">
+              [@customForm.textArea name="projectOtherContributions.contribution" className="contribution limitWords-100" i18nkey="projectOtherContributions.contribution" editable=editable  /]  
+            </div>
+          
+            [#-- -- -- REPORTING BLOCK -- -- --]
+            [#-- Others impact pathways contributions --]
+            [#if reportingActive]
+              <div id="otherContributionsBlock">
+                [#if project.otherContributions?has_content]
+                  [#list project.otherContributions as element]
+                    [@otherContribution element=element index=element_index /] 
+                  [/#list]
+                [#else]
+                  <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div>
+                [/#if]
+              </div>
+              [#if editable]<div id="addOtherContribution"><a href="" class="addLink">[@s.text name="projectOtherContributions.addOtherContribution"/]</a></div>[/#if]
+              <div class="clearfix"></div>
+              <br />
+            [/#if]
+          
             [#-- Collaborating with other CRPs --]
             [#assign crpsName= "project.ipOtherContribution.crps"/]
             <div class="fullPartBlock">      
@@ -45,51 +67,25 @@
                   <ul id="contributionsBlock" class="list">
                   [#if project.ipOtherContribution?? && project.ipOtherContribution.crpContributions?has_content]  
                     [#list project.ipOtherContribution.crpContributions as crp]
-                      [@crpContribution element=crp name="" index=crp_index /]
+                       
                     [/#list] 
                   [#else]
                     <p class="emptyText"> [@s.text name="projectOtherContributions.crpsEmpty" /] </p>  
                   [/#if]  
                   </ul>
                   [#if editable]
-                    <div class="select">
-                      <div class="selectList">   
-                        <select name=""  class="crpsSelect form-control input-sm ">
-                            <option value="-1">Select an option...</option>
-                            <option value="">CCAFS</option>
-                            <option value="">PIM</option>
-                            <option value="">WLE</option>
-                            <option value="">A4NH</option>
-                            <option value="">Livestock</option>
-                            <option value="">Aquatic Agricultural Systems</option>
-                            <option value="">Dryland Cereals</option>
-                            <option value="">Dryland Systems</option>
-                            <option value="">Forests, Trees and Agroforestry</option>
-                            <option value="">Grain Legumes</option>
-                            <option value="">Integrated Systems for the Humid Tropics</option>
-                            <option value="">Maize</option>
-                            <option value="">Rice</option>
-                            <option value="">Roots, Tubers and Bananas</option>
-                            <option value="">Wheat</option>
-                            <option value="">Genebank</option>
-                          </select>
-                        </div> 
-                      </div>
-                  [#--  
                     [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="crps" keyFieldName="id"  displayFieldName="name" className="crpsSelect" value="" /]
-                  --]
-                  [/#if]
+                  [/#if] 
                 </div>
               </div> 
             </div>
-            
-            
-          </div> 
+          
+          </div> <!-- End otherContributions --> 
           
           [#-- Section Buttons & hidden inputs--]
           [#include "/WEB-INF/views/projects/buttons-projects.ftl" /]
           
-         
+        
         [/@s.form] 
       </div>
     </div>  
@@ -97,8 +93,48 @@
 
 [#-- CRP Contribution template --]
 [@crpContribution element={} name="" index=-1 isTemplate=true /]
+
+[#-- Other contribution template --]
+[@otherContribution element={} template=true /]
         
 [#include "/WEB-INF/global/pages/footer.ftl"]
+
+
+
+[#macro otherContribution element index="0" template=false]
+  [#assign customName = "project.otherContributions[${template?string('-1',index)}]" /]
+  [#assign contribution = element /]
+  <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
+    <div class="loading" style="display:none"></div>
+    [#-- Edit/Back/remove buttons --]
+    [#if (editable && canEdit)]<div class="removeElement" title="[@s.text name="projectOtherContributions.removeOtherContribution" /]"></div>[/#if]
+    [#-- Other Contribution ID --]
+    <input type="hidden" name="${customName}.id" class="otherContributionId" value="${(contribution.id)!-1}"/>
+    <div class="fullBlock">
+      [#-- Region --]
+      <div class="halfPartBlock">
+        [@customForm.select name="${customName}.region" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  required=true editable=editable  /]
+      </div> 
+    </div>
+    [#-- Indicator --]
+    <div class="fullBlock">
+      [@customForm.select name="${customName}.indicators" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" required=true editable=editable  /]
+    </div>
+    [#-- Describe how you are contributing to the selected outcome --]
+    <div class="fullBlock">
+      <label>[@customForm.text name="projectOtherContributions.description" param="${currentCycleYear}" readText=!editable /]:[@customForm.req required=editable  /]</label>
+      [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100"  i18nkey="" showTitle=false required=true editable=editable  /]
+    </div>
+    [#-- Target contribution --]
+    <div class="fullBlock">
+      <label>[@customForm.text name="projectOtherContributions.target" readText=!editable /]:</label>
+      <div class="halfPartBlock">
+        [@customForm.input name="${customName}.target" className="otherContributionTarget" i18nkey="" showTitle=false editable=editable  /]
+      </div>
+    </div>
+  </div> 
+[/#macro]
+
 
 
 [#macro crpContribution element name index isTemplate=false]
@@ -115,14 +151,6 @@
   <div class="contributionsBlock">
   
     <div class="crpOutcomeContribution">
-      [#-- Flagship --]
-      <div class="form-group">
-        [@customForm.select name="${customName}.flagship" className="" label="" i18nkey="Flagship" listName="" required=true editable=editable /]
-      </div>
-      [#-- Outcome --]
-      <div class="form-group">
-        [@customForm.select name="${customName}.outcome" className="" label="" i18nkey="Outcome" listName="" required=true editable=editable /]
-      </div>
       <div class="form-group">
         [@customForm.textArea name="${customName}.natureCollaboration" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
       </div>

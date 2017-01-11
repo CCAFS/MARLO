@@ -3,6 +3,7 @@ var $contributionsBlock;
 $(document).ready(init);
 
 function init() {
+
   $contributionsBlock = $('ul#contributionsBlock');
   crpContributionName = $('#crpsName').val();
   otherContributionsName = $('#otherContributionsName').val();
@@ -14,13 +15,13 @@ function init() {
 }
 
 function attachEvents() {
-  // Remove a next user event
-  // $('.removeElement').on('click', removeOtherContribution);
-  // Add new next user event
-  // $('#addOtherContribution .addLink').on('click', addOtherContribution);
+  // Remove other contribution
+  $('.removeElement').on('click', removeOtherContribution);
+  // Add other contribution
+  $('#addOtherContribution .addLink').on('click', addOtherContribution);
 
   // Change a region or flagship
-  // $('.otherContributionFlagship, .otherContributionRegion').on('change', changeRegionFlagship);
+  $('.otherContributionFlagship, .otherContributionRegion').on('change', changeRegionFlagship);
 
   // Disabled values that is not number
   $('.otherContributionTarget').on("keydown", function(e) {
