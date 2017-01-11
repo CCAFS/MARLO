@@ -22,12 +22,19 @@
     
     [#-- FILE --]
     <div class="col-md-8">
-      <div class="col-md-6 form-group fileUploadContainer">
+      <div class="col-md-6 form-group  fileAssuranceContent">
         <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+        [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance.id?? /]
+        <input id="fileID" type="hidden" name="deliverable.qualityChec.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
         [#-- Input File --]
         [#if editable]
-        <div class="fileUpload" style="display:block"> <input class="upload" type="file" name="file" data-url=""></div>
+        <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="uploadFileAssurance upload" type="file" name="file" data-url="${baseUrl}/deliverableUploadFile.do"></div>
         [/#if]
+        [#-- Uploaded File --]
+        <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance??]${(deliverable.qualityCheck.fileAssurance.fileName)!('No file name')} [/#if]</span> 
+          [#if editable]<span class="removeIcon"> </span> [/#if]
+        </p>
       </div>
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
