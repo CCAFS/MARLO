@@ -1069,30 +1069,23 @@ public class DeliverableAction extends BaseAction {
       qualityCheck = new DeliverableQualityCheck();
     }
 
-    if (qualityCheck.getQualityAssurance() != null) {
-      DeliverableQualityAnswer answer =
-        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getQualityAssurance().getId());
+    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
+        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getQualityAssurance().getId());
 
       qualityCheck.setQualityAssurance(answer);
     }
 
-    if (qualityCheck.getDataDictionary() != null) {
-      DeliverableQualityAnswer answer =
-        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
-
-      qualityCheck.setDataDictionary(answer);
-    }
-
-    if (qualityCheck.getDataDictionary() != null) {
-      DeliverableQualityAnswer answer =
-        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataDictionary().getId());
+    if (deliverable.getQualityCheck().getDataDictionary() != null) {
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
+        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataDictionary().getId());
 
       qualityCheck.setDataDictionary(answer);
     }
 
     if (qualityCheck.getDataTools() != null) {
-      DeliverableQualityAnswer answer =
-        deliverableQualityAnswerManager.getDeliverableQualityAnswerById(qualityCheck.getDataTools().getId());
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
+        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataTools().getId());
 
       qualityCheck.setDataTools(answer);
     }
@@ -1111,7 +1104,7 @@ public class DeliverableAction extends BaseAction {
     }
 
     if (fDictionary != null) {
-      qualityCheck.setFileAssurance(this.getFileDB(qualityCheck.getFileAssurance(), fDictionary, fDictionaryName,
+      qualityCheck.setFileDictionary(this.getFileDB(qualityCheck.getFileAssurance(), fDictionary, fDictionaryName,
         this.getDeliverablePath("Dictionary")));
 
       FileManager.copyFile(fDictionary, this.getDeliverablePath("Dictionary") + fDictionaryName);
@@ -1123,7 +1116,7 @@ public class DeliverableAction extends BaseAction {
     }
 
     if (fTools != null) {
-      qualityCheck.setFileAssurance(
+      qualityCheck.setFileTools(
         this.getFileDB(qualityCheck.getFileAssurance(), fTools, fToolsName, this.getDeliverablePath("Tools")));
 
       FileManager.copyFile(fTools, this.getDeliverablePath("Tools") + fToolsName);
@@ -1134,8 +1127,11 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
-    deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
+    qualityCheck.setLinkAssurance(deliverable.getQualityCheck().getLinkAssurance());
+    qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkAssurance());
+    qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkAssurance());
 
+    deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
   }
 
