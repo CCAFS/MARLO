@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -128,6 +129,17 @@ public class FundingSourceListAction extends BaseAction {
   }
 
 
+  public boolean canAddFunding() {
+    boolean permission = this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()));
+
+
+    return permission;
+  }
+
   @Override
   public String delete() {
     FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
@@ -188,12 +200,13 @@ public class FundingSourceListAction extends BaseAction {
         myProjects
           .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
       } else {
-        allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        /*
+         * allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+         * myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+         * allProjects.removeAll(myProjects);
+         */
+        myProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
 
-        myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
-
-
-        allProjects.removeAll(myProjects);
       }
     }
 

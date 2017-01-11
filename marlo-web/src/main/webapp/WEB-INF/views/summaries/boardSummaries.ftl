@@ -61,7 +61,7 @@
           </div>
           
           [#-- Gender Contribution Project Level Summary --]
-          <div class="notAvailable borderBox col-md-3">
+          <div class="summariesFiles borderBox col-md-3">
           <span title="[@s.text name="summaries.board.report.genderContributionSummary.description" /]" class="info-file fa fa-info-circle"></span>
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="searchTermsSummary" value="searchTermsSummary"/>

@@ -20,7 +20,7 @@
   [ "deliverables"],
   [  "effectiveness", "efficiency","endUsers", "evaluation","evaluationCriteria", "evaluationReference", "evidence", "formativeEvaluation" ],
   [ "globalPublicGoods"],
-  [ "impact", "impactAssesment", "impactEvaluation", "impactPathway", "impartiality", "independence", "indicator", "inputs", "ido", "internationalPublicGoods"],
+  [ "impact", "impactAssesment", "impactEvaluation", "impactPathway", "impartiality", "independence", "indicator", "inputs", "ido", "internationalPublicGoods", "interoperable"],
   [ "legitimacy"],
   [ "managementLiason","mog",  "monitoring","mutualAccountability", "nextUsers"],
   [ "orgIndependence", "outcome", "outcomestatement", "outcomestory", "outputs"],
