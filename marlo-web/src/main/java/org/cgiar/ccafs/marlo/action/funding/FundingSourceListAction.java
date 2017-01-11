@@ -188,12 +188,13 @@ public class FundingSourceListAction extends BaseAction {
         myProjects
           .addAll(fundingSourceManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
       } else {
-        allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+        /*
+         * allProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+         * myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
+         * allProjects.removeAll(myProjects);
+         */
+        myProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
 
-        myProjects = fundingSourceManager.getFundingSource(this.getCurrentUser().getId(), loggedCrp.getAcronym());
-
-
-        allProjects.removeAll(myProjects);
       }
     }
 
