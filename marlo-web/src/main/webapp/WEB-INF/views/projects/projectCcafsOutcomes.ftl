@@ -2,7 +2,7 @@
 [#assign title = "Project CCAFS Outcomes" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
-[#assign customJS = [ "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [ "${baseUrl}/js/projects/projectCcafsOutcomes.js", "${baseUrl}/js/global/autoSave.js", "${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign customCSS = [ ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "ccafsOutcomes" /]
@@ -83,8 +83,6 @@
                         
                       [#-- Indicator ID --]
                       <input type="hidden" class="projectIndicatorParent" name="${customName}.ipIndicator.id" value="${(indicator.id)!}"  />
-                     
-                    
                       
                       [#-- Hidden values --]
                       <input type="hidden" class="projectIndicatorID" name="${customName}.id" value="${(projectIndicator.id)!}" [#if projectIndicator?? && projectIndicator.id?? &&  projectIndicator.id == -1 ]disabled="disabled"[/#if]/>
