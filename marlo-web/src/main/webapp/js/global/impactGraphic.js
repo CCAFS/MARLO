@@ -237,6 +237,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
           $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
         keyOutputs.forEach(function(i,ele) {
+          console.log(ele);
           $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
         $("#loader").hide();

@@ -193,6 +193,12 @@ public class Institution implements java.io.Serializable, IAuditLog {
             return this.getAcronym() + " - " + this.getName();
           }
 
+        } else {
+          try {
+            return this.getName() + " - " + this.getLocElement().getName();
+          } catch (Exception e) {
+            return this.getName();
+          }
         }
       } else {
         try {
@@ -201,7 +207,7 @@ public class Institution implements java.io.Serializable, IAuditLog {
           return this.getName();
         }
       }
-      return this.getName();
+
     } catch (Exception e) {
       return this.getName();
     }
