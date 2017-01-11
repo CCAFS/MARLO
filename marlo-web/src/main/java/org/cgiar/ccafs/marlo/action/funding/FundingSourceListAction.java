@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Role;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.Date;
@@ -127,6 +128,17 @@ public class FundingSourceListAction extends BaseAction {
     return INPUT;
   }
 
+
+  public boolean canAddFunding() {
+    boolean permission = this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
+
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()));
+
+
+    return permission;
+  }
 
   @Override
   public String delete() {
