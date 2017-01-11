@@ -134,6 +134,7 @@
 		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml"/>
 		<mapping resource="xmls/DeliverableQualityChecks.hbm.xml"/>
 		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
+		<mapping resource="xmls/OtherContributions.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
