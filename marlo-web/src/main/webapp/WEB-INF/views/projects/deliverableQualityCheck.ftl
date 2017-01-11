@@ -5,6 +5,8 @@
 <div class="fullBlock" > 
 <div class="col-md-12 note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</div>
 <div class="clearfix"></div>
+
+  <input type="hidden" name="deliverable.qualityCheck.id" value="${(deliverable.qualityCheck.id)!"-1"}">
   [#-- Question1 --]
   <div class="question borderBox">
     <h5>Have you had a process of data quality assurance in place?</h5>
