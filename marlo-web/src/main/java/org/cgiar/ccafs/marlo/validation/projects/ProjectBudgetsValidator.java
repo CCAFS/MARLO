@@ -106,8 +106,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
               if (projectBudget.getYear() == action.getCurrentCycleYear()) {
                 FundingSource fundingSource =
                   fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-                System.out.println("REMAINING " + fundingSource.getRemaining(projectBudget.getYear()));
-                System.out.println("BUDGET " + projectBudget.getAmount().doubleValue());
+
                 if (fundingSource.getRemaining(projectBudget.getYear()) < 0) {
                   this.addMessage(action.getText("projectBudgets.fundig"));
                 }
