@@ -75,17 +75,17 @@ public class DeliverableUploadFileAction extends BaseAction {
   }
 
 
+  public String getDeliverableFileURL(String fileType) {
+    return config.getDownloadURL() + "/" + this.getDeliverableRelativePath(fileType).replace('\\', '/');
+  }
+
   private String getDeliverablePath(String fileType) {
-    return config.getUploadsBaseFolder() + File.separator + this.getDeliverableUrl(fileType) + File.separator;
+    String upload = config.getUploadsBaseFolder();
+    return upload + File.separator + this.getDeliverableRelativePath(fileType) + File.separator;
   }
 
 
-  public String getDeliverableUrl(String fileType) {
-    return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
-  }
-
-
-  public String getDeliverableUrlPath(String fileType) {
+  private String getDeliverableRelativePath(String fileType) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverableID + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
   }
