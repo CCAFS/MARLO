@@ -142,7 +142,8 @@ public class PartnersSaveAction extends BaseAction {
 
   @Override
   public String save() {
-    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName;
+    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, city, headQuaterName,
+      website;
     String subject;
     StringBuilder message = new StringBuilder();
 
@@ -154,6 +155,7 @@ public class PartnersSaveAction extends BaseAction {
     partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
     countryId = String.valueOf(activityPartner.getPartner().getLocElement().getId());
     city = activityPartner.getPartner().getCity();
+    website = activityPartner.getPartner().getWebsiteLink();
     headQuaterName = "";
     try {
       headQuater = activityPartner.getPartner().getHeadquarter().getId();
@@ -173,7 +175,7 @@ public class PartnersSaveAction extends BaseAction {
     }
 
     // message subject
-    subject = "[" + this.getCrpSession().toUpperCase() + "-MARLO] Partner verification - " + institutionName;
+    subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Partner verification - " + institutionName;
     // Message content
     message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
     message.append("(" + this.getCurrentUser().getEmail() + ") ");
@@ -201,7 +203,7 @@ public class PartnersSaveAction extends BaseAction {
     message.append(countryName);
     message.append(" </br>");
     // Is there a web page?
-    if (this.partnerWebPage != null && this.partnerWebPage.isEmpty()) {
+    if (this.partnerWebPage != null && !this.partnerWebPage.isEmpty()) {
       message.append("Web Page: ");
       message.append(partnerWebPage);
       message.append(" </br>");
