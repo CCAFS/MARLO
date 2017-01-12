@@ -57,11 +57,11 @@
 [/#if]
 
 [#-- Unsubmit button --]
-
+[#if canUnSubmit]
   <a id="submitProject-${crpProgramID}" class="impactUnSubmitButton projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${crpProgramID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
-
+[/#if]
  [#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
   <div class="dialog-content"> 
