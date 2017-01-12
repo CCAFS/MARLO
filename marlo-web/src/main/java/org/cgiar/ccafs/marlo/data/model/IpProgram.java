@@ -19,7 +19,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -25507491163714552L;
-
   @Expose
   private Long id;
 
@@ -28,6 +27,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String name;
+
   @Expose
   private String acronym;
   @Expose
@@ -73,6 +73,18 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public String getAcronym() {
     return acronym;
+  }
+
+  public String getComposedName() {
+    StringBuilder builder = new StringBuilder();
+    if (this.acronym != null) {
+      builder.append(acronym);
+      builder.append(": ");
+    }
+    if (this.name != null) {
+      builder.append(name);
+    }
+    return builder.toString();
   }
 
   @Override
