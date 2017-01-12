@@ -55,7 +55,9 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectCCAFSOutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectCaseStudyValidation;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
@@ -128,6 +130,14 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectActivitiesValidator projectActivitiesValidator;
   @Inject
   ProjectLeverageValidator projectLeverageValidator;
+
+  @Inject
+  ProjectHighLightValidator projectHighLightValidator;
+
+
+  @Inject
+  ProjectCaseStudyValidation projectCaseStudyValidation;
+
   @Inject
   ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
 
@@ -175,6 +185,14 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case LEVERAGES:
           this.validateLeverage();
+          break;
+
+        case HIGHLIGHT:
+          this.validateHighlight();
+          break;
+
+        case CASESTUDIES:
+          this.validateCaseStduies();
           break;
 
         case CCAFSOUTCOMES:
@@ -312,7 +330,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
 
         section = new HashMap<String, Object>();
-        section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
+        section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHT);
         section.put("missingFields", "");
 
 
@@ -557,6 +575,23 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  public void validateCaseStduies() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<CaseStudyProject> caseStudies =
+      project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+    for (CaseStudyProject caseStudyProject : caseStudies) {
+      if (caseStudyProject.isCreated()) {
+        projectCaseStudyValidation.validate(this, project, caseStudyProject.getCaseStudy(), false);
+      }
+
+
+    }
+
+  }
+
   public void validateCCAFSOutcomes() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -567,6 +602,22 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
   }
+
+  public void validateHighlight() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectHighlight> highlights =
+      project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+    for (ProjectHighlight projectHighlight : highlights) {
+
+      projectHighLightValidator.validate(this, project, projectHighlight, false);
+
+    }
+
+  }
+
 
   public void validateLeverage() {
     // Getting the project information.
