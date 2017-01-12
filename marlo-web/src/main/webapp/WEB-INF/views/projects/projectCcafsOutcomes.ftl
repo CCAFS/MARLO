@@ -125,7 +125,7 @@
                         [#-- 3. Reporting target --]
                         [#-- -- -- REPORTING BLOCK -- -- --]
                         [#if reportingActive && (year == currentCycleYear)]
-                          <div class="col-md-4">
+                          <div class="col-md-4 fieldFocus" style="padding: 5px 15px !important; margin: 0 0 !important;">
                             <label title='[@s.text name="projectCcafsOutcomes.achievedTarget.help" /]'>[@s.text name="projectCcafsOutcomes.achievedTarget" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("achieved") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("achieved")]
                               <input type="text" class="projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.archived" value="${(projectIndicator.archived)!}"/> 
@@ -138,7 +138,7 @@
                       
                       [#-- Indicator target narrative description --]
                       <div class="row">
-                        <div class="textArea form-group col-md-12">
+                        <div class="textArea form-group col-md-12 ">
                           <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") /]</label>
                           [#if editable && (currentCycleYear lte year) && action.hasPermission("description") && !reportingActive ]
                             <textarea class="projectIndicatorDescription form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.description">${projectIndicator.description!}</textarea>
@@ -157,7 +157,7 @@
                       [#if reportingActive && (year == currentCycleYear)]
                         [#-- Narrative for your achieved targets, including evidence --]
                         <div class="row">
-                          <div class="textArea form-group col-md-12">
+                          <div class="textArea form-group col-md-12 fieldFocus">
                             <label>[@s.text name="projectCcafsOutcomes.targetNarrativeAchieved" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("narrativeTargets") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeTargets")]
                               <textarea class="projectIndicatorNarrativeAchieved form-control input-sm imitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="${customName}.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
@@ -194,7 +194,7 @@
                       [#if reportingActive && (year == currentCycleYear)]
                         [#--  Narrative for your achieved annual gender and social inclusion contribution to this CCAFS outcome --]
                         <div class="row">
-                          <div class="textArea form-group col-md-12">
+                          <div class="textArea form-group col-md-12 fieldFocus">
                             <label>[@s.text name="projectCcafsOutcomes.targetNarrativeGenderAchieved" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("narrativeGender") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeGender")]
                               <textarea class="projectIndicatorNarrativeGenderAchieved form-control input-sm limitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="${customName}.narrativeGender" >${(projectIndicator.narrativeGender)!}</textarea>

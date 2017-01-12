@@ -75,18 +75,18 @@
                 </div>
                 [#-- -- -- REPORTING BLOCK -- -- --]
                 [#if reportingActive && (year == currentCycleYear) ]
-                <div class="fullPartBlock bs-callout bs-callout-info">
+                <div class="fullPartBlock bs-callout bs-callout-info fieldFocus" style="padding-bottom:20px !important;">
                   <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
                   [@customForm.textArea name="project.outcomesPandr[${indexYear}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
                 </div>
                 
                 [#-- Comunication and engagement activities --]
-                <div class="fullPartBlock bs-callout bs-callout-info">
+                <div class="fullPartBlock bs-callout bs-callout-info fieldFocus" style="padding-bottom:20px !important;">
                   [@customForm.textArea name="project.outcomesPandr[${indexYear}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
                 </div>
                 
                 [#-- Upload summary--]
-                <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info">
+                <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info fieldFocus">
                   <label>[@customForm.text name="projectOutcomes.uploadSummary" readText=!editable /]:</label>
                   <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
                     [#if (outcome.file?has_content)!false]
