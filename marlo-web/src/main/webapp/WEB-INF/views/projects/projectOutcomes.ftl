@@ -56,7 +56,7 @@
               [#-- Project Outcome statement --]
               <div class="fullPartBlock" id="projectOutcomeStatement">
              [#assign index2019 = (action.getIndex(2019))!-1 /]
-                [@customForm.textArea name="project.outcomesPandr[${index2019}].statement" className="limitWords-150" i18nkey="projectOutcomes.statement" editable=(editable && canEditStatement) /]
+                [@customForm.textArea name="project.outcomesPandr[${index2019}].statement" className="limitWords-150" i18nkey="projectOutcomes.statement" editable=false /]
                 <input name="project.outcomesPandr[${index2019}].id" type="hidden" value="${(project.outcomesPandr[index2019].id?c)!}" />
                <input name="project.outcomesPandr[${index2019}].year" type="hidden" value="2019" />
         
@@ -67,7 +67,7 @@
               <span class="label label-default">${year}</span>
                [#assign indexYear = (action.getIndex(year))!-1 /]
                [#assign outcome = (action.getOutcome(year))!{} /]
-                [#assign yearEditable = editable && (year gte currentCycleYear?number) && canEditStatement /]
+                [#assign yearEditable = false /]
                 [#assign yearRequired = !project.bilateralProject && ((year == currentCycleYear) || (year == currentCycleYear+1)) /]
                 <div class="fullPartBlock">
                   <label>[@customForm.text name="projectOutcomes.annualProgress" readText=!editable param="${year}" /]:[@customForm.req required=yearRequired && editable /]</label>
@@ -131,7 +131,7 @@
               <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectOutcomes.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
                  </div>
           </div>
           [/#if]
