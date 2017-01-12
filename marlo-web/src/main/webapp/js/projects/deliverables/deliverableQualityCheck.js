@@ -8,6 +8,20 @@ function init() {
   uploadFile($('.fileDictionaryContent'), $('.fileDictionaryContent').find('.uploadFileDictionary'), 'Dictionary');
   uploadFile($('.fileToolsContent'), $('.fileToolsContent').find('.uploadFileTools'), 'Tools');
 
+  // Validate url format
+  $(".urlLink").on("change keyup", function() {
+    var $this = $(this).val();
+    if($this.indexOf("http://") == 0 || $this.indexOf("https://") == 0) {
+      $(this).removeClass("fieldError");
+    } else {
+      $(this).addClass("fieldError");
+    }
+
+    if($(this).val().length == 0) {
+      $(this).removeClass("fieldError");
+    }
+  });
+
 }
 
 function uploadFile($uploadBlock,$fileUpload,type) {

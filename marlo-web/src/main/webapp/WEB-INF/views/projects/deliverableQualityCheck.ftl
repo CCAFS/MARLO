@@ -43,7 +43,7 @@
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="deliverable.qualityCheck.linkAssurance" value="${(deliverable.qualityCheck.linkAssurance)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkAssurance" value="${(deliverable.qualityCheck.linkAssurance)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>
