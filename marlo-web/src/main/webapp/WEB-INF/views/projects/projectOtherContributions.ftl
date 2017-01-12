@@ -101,13 +101,13 @@
 [@crpContribution element={} name="project.crpContributions" index=-1 isTemplate=true /]
 
 [#-- Other contribution template --]
-[@otherContribution element={} name="project.otherContributions" template=true /]
+[@otherContribution element={} name="project.otherContributions" index=-1 template=true /]
         
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 
-[#macro otherContribution element name index="0" template=false]
+[#macro otherContribution element name index template=false]
   [#local customName = "${name}[${template?string('-1',index)}]" /]
   [#local contribution = element /]
   <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
