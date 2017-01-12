@@ -279,6 +279,27 @@
     </action>
 
 
+ <action name="{crp}/otherContributions" class="org.cgiar.ccafs.marlo.action.projects.ProjectOtherContributionsAction">
+      <interceptor-ref name="editProjectsStack" />
+      <result name="input">/WEB-INF/views/projects/projectOtherContributions.ftl</result>   
+      <result name="success" type="redirectAction">   
+        <param name="actionName">${crpSession}/otherContributions</param>    
+        <param name="projectID">${projectID}</param>
+        <param name="edit">true</param>
+      </result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">${crpSession}/otherContributions</param>
+        <param name="edit">true</param>
+        <param name="cancel">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+        <param name="projectID">${projectID}</param>
+      </result>
+    </action>
+
  <action name="{crp}/outcomesPandR" class="org.cgiar.ccafs.marlo.action.projects.ProjectOutcomesPandRAction">
       <interceptor-ref name="editProjectsStack" />
       <result name="input">/WEB-INF/views/projects/projectOutcomes.ftl</result>   
@@ -420,28 +441,6 @@
 			</result>
 		</action>
 
-		<action name="{crp}/otherContributions"
-			class="org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction">
-			<interceptor-ref name="editProjectsStack" />
-			<result name="input">/WEB-INF/views/projects/projectOtherContributions.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/otherContributions</param>
-				<param name="edit">true</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-			<result name="cancel" type="redirectAction">
-				<param name="actionName">${crpSession}/otherContributions</param>
-				<param name="edit">true</param>
-				<param name="cancel">true</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-			<result name="redirect" type="redirectAction">
-				<param name="actionName">${url}</param>
-				<param name="edit">true</param>
-				<param name="projectID">${projectID}</param>
-			</result>
-		</action>
 		
 		<action name="{crp}/caseStudies" class="org.cgiar.ccafs.marlo.action.projects.ProjectCaseStudiesListAction">
       <interceptor-ref name="editProjectsStack" />

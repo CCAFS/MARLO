@@ -220,6 +220,9 @@ public final class APConstants {
   public static final String PROJECT_OVERVIEWS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectContributionOverviews)";
 
+  public static final String PROJECT_CRP_CONTRIBUTIONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectCrpContributions)";
+
   public static final String PROJECT_OUTCOMES_PANDR_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectOutcomesPandr)";
 

@@ -66,6 +66,7 @@ public class Permission {
   public static final String PROJECT_CASE_STUDY_BASE_PERMISSION = "crp:{0}:project:{1}:caseStudies";
 
   public static final String PROJECT_OVERVIEWS_BASE_PERMISSION = "crp:{0}:project:{1}:outputs";
+  public static final String PROJECT_OTHER_CONTRIBRUTIONS_BASE_PERMISSION = "crp:{0}:project:{1}:otherContributions";
   public static final String PROJECT_OUTCOMES_PANDR_BASE_PERMISSION = "crp:{0}:project:{1}:outcomesPandR";
 
   public static final String PROJECT_DELIVERABLE_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";

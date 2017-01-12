@@ -65,9 +65,9 @@
                 <div class="panel-head">[@customForm.text name="projectOtherContributions.collaboratingCRPs" readText=!editable /]</div> 
                 <div class="panel-body"> 
                   <ul id="contributionsBlock" class="list">
-                  [#if project.ipOtherContribution?? && project.ipOtherContribution.crpContributions?has_content]  
-                    [#list project.ipOtherContribution.crpContributions as crp]
-                       
+                  [#if  project.crpContributions?has_content]  
+                    [#list project.crpContributions as crp]
+                       ${crp.collaborationNature}
                     [/#list] 
                   [#else]
                     <p class="emptyText"> [@s.text name="projectOtherContributions.crpsEmpty" /] </p>  
