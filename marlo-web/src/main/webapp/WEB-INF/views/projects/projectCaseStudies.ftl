@@ -10,6 +10,7 @@
 [#assign customCSS = ["${baseUrl}/css/projects/projectCaseStudies.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "caseStudies" /]
+[#assign hideJustification = true /]
 
 
 [#assign breadCrumb = [
