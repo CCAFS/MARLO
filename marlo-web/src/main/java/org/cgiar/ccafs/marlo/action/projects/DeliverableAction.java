@@ -607,6 +607,29 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        if (deliverable.getQualityCheck() != null) {
+          if (deliverable.getQualityCheck().getFileAssurance() != null) {
+            if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
+              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
+              deliverable.getQualityCheck().setFileAssurance(db);
+            }
+          }
+
+          if (deliverable.getQualityCheck().getFileDictionary() != null) {
+            if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
+              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
+              deliverable.getQualityCheck().setFileDictionary(db);
+            }
+          }
+
+          if (deliverable.getQualityCheck().getFileTools() != null) {
+            if (deliverable.getQualityCheck().getFileTools().getId() != null) {
+              FileDB db = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
+              deliverable.getQualityCheck().setFileTools(db);
+            }
+          }
+        }
+
         this.setDraft(true);
       } else {
         deliverable.setResponsiblePartner(this.responsiblePartner());
