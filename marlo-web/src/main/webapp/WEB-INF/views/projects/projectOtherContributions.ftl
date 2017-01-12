@@ -50,8 +50,8 @@
             [#-- Others impact pathways contributions --]
             [#if reportingActive]
               <div id="otherContributionsBlock">
-                [#if project.otherContributions?has_content]
-                  [#list project.otherContributions as element]
+                [#if project.otherContributionsList?has_content]
+                  [#list project.otherContributionsList as element]
                     [@otherContribution element=element index=element_index /] 
                   [/#list]
                 [#else]
@@ -107,7 +107,7 @@
 
 
 [#macro otherContribution element index="0" template=false]
-  [#assign customName = "project.otherContributions[${template?string('-1',index)}]" /]
+  [#assign customName = "project.otherContributionsList[${template?string('-1',index)}]" /]
   [#assign contribution = element /]
   <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
     <div class="loading" style="display:none"></div>
@@ -118,12 +118,12 @@
     <div class="fullBlock">
       [#-- Region --]
       <div class="halfPartBlock">
-        [@customForm.select name="${customName}.region" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  required=true editable=editable  /]
+        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  keyFieldName="id"  displayFieldName="composedName" required=true editable=editable  /]
       </div> 
     </div>
     [#-- Indicator --]
     <div class="fullBlock">
-      [@customForm.select name="${customName}.indicators" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" required=true editable=editable  /]
+      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" keyFieldName="id"  displayFieldName="description" required=true editable=editable  /]
     </div>
     [#-- Describe how you are contributing to the selected outcome --]
     <div class="fullBlock">
