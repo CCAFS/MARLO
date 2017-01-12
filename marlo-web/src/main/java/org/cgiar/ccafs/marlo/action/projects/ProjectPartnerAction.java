@@ -934,7 +934,12 @@ public class ProjectPartnerAction extends BaseAction {
 
               }
               partnerPerson.setProjectPartner(projectPartner);
-              this.notifyNewUserCreated(partnerPerson.getUser());
+
+              if (partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+                || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+                this.notifyNewUserCreated(partnerPerson.getUser());
+              }
+
 
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
               User userDB = userManager.getUser(partnerPerson.getUser().getId());

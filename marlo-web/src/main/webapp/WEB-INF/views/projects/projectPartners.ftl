@@ -59,7 +59,7 @@
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
                     <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
-                    <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+                    <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
