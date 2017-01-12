@@ -38,7 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
-import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOtherContributionsValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,7 +47,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +80,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private CrpPandrManager crpPandrManager;
   private IpProgramManager ipProgramManager;
   private IpIndicatorManager ipIndicatorManager;
-  private ProjectOutputsValidator projectOutputsValidator;
+  private ProjectOtherContributionsValidator projectOtherContributionsValidator;
   private List<CrpPandr> crps;
   private List<IpProgram> regions;
   private List<IpIndicator> otherIndicators;
@@ -106,7 +105,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public ProjectOtherContributionsAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
     CrpManager crpManager, ProjectCrpContributionManager projectCrpContributionManager, CrpPandrManager crpPandrManager,
-    ProjectOutputsValidator projectOutputsValidator, IpIndicatorManager ipIndicatorManager,
+    ProjectOtherContributionsValidator projectOtherContributionsValidator, IpIndicatorManager ipIndicatorManager,
     OtherContributionManager otherContributionManager, ProjectOtherContributionManager projectOtherContributionManager,
     IpProgramManager ipProgramManager) {
     super(config);
@@ -116,7 +115,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.projectCrpContributionManager = projectCrpContributionManager;
     this.crpPandrManager = crpPandrManager;
     this.ipIndicatorManager = ipIndicatorManager;
-    this.projectOutputsValidator = projectOutputsValidator;
+    this.projectOtherContributionsValidator = projectOtherContributionsValidator;
     this.crpManager = crpManager;
     this.ipProgramManager = ipProgramManager;
     this.projectOtherContributionManager = projectOtherContributionManager;
@@ -501,7 +500,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
         path.toFile().delete();
       }
 
-      this.setInvalidFields(new HashMap<>());
+
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
 
@@ -568,7 +567,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public void validate() {
     if (save) {
 
-
+      projectOtherContributionsValidator.validate(this, project, true);
     }
   }
 }
