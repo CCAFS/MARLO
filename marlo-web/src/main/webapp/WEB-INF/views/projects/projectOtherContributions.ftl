@@ -98,7 +98,9 @@
 </section>
 
 [#-- CRP Contribution template --]
+<ul>
 [@crpContribution element={} name="project.crpContributions" index=-1 isTemplate=true /]
+</ul>
 
 [#-- Other contribution template --]
 [@otherContribution element={} name="project.otherContributionsList" index=-1 template=true /]
@@ -147,7 +149,7 @@
 <li id="crpOtherContribution-${isTemplate?string('template', index)}" class="crpOtherContribution clearfix" style="display:${isTemplate?string('none','block')}">
   [#local customName = "${name}[${index}]" /]
   [#-- Remove --]
-  [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
+  [#if editable]<span class="listButton remove removeCrpContribution">[@s.text name="form.buttons.remove" /]</span>[/#if]
   
   [#-- Hidden inputs --]
   <input class="id" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!}" />
