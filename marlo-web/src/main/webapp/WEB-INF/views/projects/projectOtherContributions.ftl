@@ -52,7 +52,7 @@
               <div id="otherContributionsBlock">
                 [#if project.otherContributionsList?has_content]
                   [#list project.otherContributionsList as element]
-                    [@otherContribution element=element index=element_index /] 
+                    [@otherContribution element=element name="project.otherContributionsList" index=element_index /] 
                   [/#list]
                 [#else]
                   <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div>
@@ -106,9 +106,10 @@
 
 
 
-[#macro otherContribution element index="0" template=false]
-  [#assign customName = "project.otherContributionsList[${template?string('-1',index)}]" /]
-  [#assign contribution = element /]
+
+[#macro otherContribution element name index="0" template=false]
+  [#local customName = "${name}[${template?string('-1',index)}]" /]
+  [#local contribution = element /]
   <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
     <div class="loading" style="display:none"></div>
     [#-- Edit/Back/remove buttons --]
