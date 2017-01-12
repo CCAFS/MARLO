@@ -363,12 +363,12 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       // Send pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual_V1.0.pdf";
+      String fileName = "MARLO_UserManual_V1.1.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20170111_AV_HT_AW.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
