@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -795,6 +797,53 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         break;
 
 
+      case CASESTUDIES:
+        project = projectManager.getProjectById(projectID);
+        List<CaseStudyProject> caseStudies =
+          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+
+        for (CaseStudyProject caseStudyProject : caseStudies) {
+          if (caseStudyProject.isCreated()) {
+            sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+            if (sectionStatus == null) {
+              return false;
+
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
+
+            }
+          }
+        }
+
+        returnValue = true;
+        break;
+
+      case HIGHLIGHT:
+        project = projectManager.getProjectById(projectID);
+        List<ProjectHighlight> highlights =
+          project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+
+        for (ProjectHighlight highlight : highlights) {
+
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
+            this.getCurrentCycle(), this.getCurrentCycleYear(), section);
+          if (sectionStatus == null) {
+            return false;
+
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+
+          }
+
+        }
+
+        returnValue = true;
+        break;
       case DELIVERABLES:
         project = projectManager.getProjectById(projectID);
 
