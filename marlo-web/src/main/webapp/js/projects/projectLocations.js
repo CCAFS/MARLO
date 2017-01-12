@@ -60,7 +60,7 @@ function attachEvents() {
      */
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
-      if($(".selectWrapper").find("input[value=" + option.val().split("-")[0] + "]").exists()) {
+      if($(".selectWrapper").find("input.locationLevelId[value=" + option.val().split("-")[0] + "]").exists()) {
         var text = option.html() + ' already exists in this list';
         notify(text);
       } else {
