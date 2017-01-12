@@ -23,10 +23,12 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCrpContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOtherContributionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -68,6 +70,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private InstitutionManager institutionManager;
   private CrpProgramManager crpProgrammManager;
   private ProjectCrpContributionManager projectCrpContributionManager;
+  private ProjectOtherContributionManager projectOtherContributionManager;
   private CrpPandrManager crpPandrManager;
   private ProjectOutputsValidator projectOutputsValidator;
   private List<CrpPandr> crps;
@@ -89,7 +92,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public ProjectOtherContributionsAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
     CrpManager crpManager, ProjectCrpContributionManager projectCrpContributionManager, CrpPandrManager crpPandrManager,
-    ProjectOutputsValidator projectOutputsValidator) {
+    ProjectOutputsValidator projectOutputsValidator, ProjectOtherContributionManager projectOtherContributionManager) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
@@ -98,6 +101,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.crpPandrManager = crpPandrManager;
     this.projectOutputsValidator = projectOutputsValidator;
     this.crpManager = crpManager;
+    this.projectOtherContributionManager = projectOtherContributionManager;
     this.auditLogManager = auditLogManager;
 
   }
@@ -163,6 +167,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
+
   public void crpContributionsPreviousData(List<ProjectCrpContribution> crpContributions) {
     if (crpContributions != null) {
       crpContributions = new ArrayList<>();
@@ -183,7 +188,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -192,10 +196,10 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public List<CrpPandr> getCrps() {
     return crps;
   }
-
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -205,6 +209,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
   public Project getProject() {
     return project;
   }
+
 
   public long getProjectID() {
     return projectID;
@@ -218,10 +223,10 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public String next() {
@@ -232,7 +237,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
       return result;
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -304,6 +308,9 @@ public class ProjectOtherContributionsAction extends BaseAction {
         project.setCrpContributions(
           project.getProjectCrpContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        project.setProjectOtherContributionsList(
+          project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
         this.setDraft(false);
       }
     }
@@ -322,8 +329,48 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
     }
 
+    if (project.getProjectOtherContributionsList().isEmpty()) {
+      project.getProjectOtherContributionsList().add(new ProjectOtherContribution());
+    }
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_OTHER_CONTRIBRUTIONS_BASE_PERMISSION, params));
+
+
+  }
+
+
+  public void projectOtherContributionsNewData(List<ProjectOtherContribution> projectOtherContributions) {
+    if (projectOtherContributions != null) {
+      for (ProjectOtherContribution projectOtherContribution : projectOtherContributions) {
+        if (projectOtherContribution != null) {
+          if (projectOtherContribution.getId() == null || projectOtherContribution.getId() == -1) {
+            projectOtherContribution.setActive(true);
+            projectOtherContribution.setCreatedBy(this.getCurrentUser());
+            projectOtherContribution.setModifiedBy(this.getCurrentUser());
+            projectOtherContribution.setModificationJustification(this.getJustification());
+            projectOtherContribution.setActiveSince(new Date());
+            projectOtherContribution.setAdditionalContribution("");
+            projectOtherContribution.setId(null);
+            projectOtherContribution.setProject(project);
+
+          } else {
+            ProjectOtherContribution otherContributionDB =
+              projectOtherContributionManager.getProjectOtherContributionById(projectOtherContribution.getId());
+            projectOtherContribution.setActive(true);
+            projectOtherContribution.setCreatedBy(otherContributionDB.getCreatedBy());
+            projectOtherContribution.setModifiedBy(this.getCurrentUser());
+            projectOtherContribution.setModificationJustification(this.getJustification());
+            projectOtherContribution.setAdditionalContribution(otherContributionDB.getAdditionalContribution());
+            projectOtherContribution.setProject(project);
+            projectOtherContribution.setActiveSince(otherContributionDB.getActiveSince());
+
+          }
+          projectOtherContributionManager.saveProjectOtherContribution(projectOtherContribution);
+        }
+
+
+      }
+    }
 
 
   }
@@ -338,13 +385,14 @@ public class ProjectOtherContributionsAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
-
+      this.projectOtherContributionsNewData(project.getProjectOtherContributionsList());
       this.crpContributionsPreviousData(project.getCrpContributions());
       this.crpContributionsNewData(project.getCrpContributions());
 
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_CRP_CONTRIBUTIONS_RELATION);
+      relationsName.add(APConstants.PROJECT_OTHER_CONTRIBUTIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());

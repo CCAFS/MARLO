@@ -38,7 +38,12 @@
           
             [#-- How are contributing to other CCAFS IP --]
             <div class="fullBlock">
-              [@customForm.textArea name="projectOtherContributions.contribution" className="contribution limitWords-100" i18nkey="projectOtherContributions.contribution" editable=editable  /]  
+             [#if project.projectOtherContributionsList?has_content]
+                  [#list project.projectOtherContributionsList as element]
+              [@customForm.textArea name="project.projectOtherContributionsList[${element_index}].contribution" className="contribution limitWords-100" i18nkey="projectOtherContributions.contribution" editable=editable  /]  
+             <input type="hidden" class="projectIndicatorParent" name="project.projectOtherContributionsList[${element_index}].id" value="${(element.id)!}"  />
+           [/#list]
+            [/#if]
             </div>
           
             [#-- -- -- REPORTING BLOCK -- -- --]
