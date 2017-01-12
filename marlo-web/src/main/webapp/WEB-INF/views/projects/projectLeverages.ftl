@@ -5,7 +5,7 @@
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectLeverages.js", "${baseUrl}/js/global/autoSave.js"] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectLeverages.css"] /]
 [#assign currentSection = "projects" /]
-[#assign currentStage = "Leverage" /]
+[#assign currentStage = "leverages" /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
