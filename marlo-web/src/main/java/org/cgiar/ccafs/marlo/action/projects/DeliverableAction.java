@@ -1064,7 +1064,11 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
         FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileAssurance().getId());
         qualityCheck.setFileAssurance(fileDb);
+      } else {
+        qualityCheck.setFileAssurance(null);
       }
+    } else {
+      qualityCheck.setFileAssurance(null);
     }
     if (qualityCheck.getFileAssurance() != null) {
       if (qualityCheck.getFileAssurance().getId() == null) {
@@ -1077,7 +1081,11 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getQualityCheck().getFileDictionary().getId() != null) {
         FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileDictionary().getId());
         qualityCheck.setFileDictionary(fileDb);
+      } else {
+        qualityCheck.setFileDictionary(null);
       }
+    } else {
+      qualityCheck.setFileDictionary(null);
     }
     if (qualityCheck.getFileDictionary() != null) {
       if (qualityCheck.getFileDictionary().getId() == null) {
@@ -1089,7 +1097,11 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getQualityCheck().getFileTools().getId() != null) {
         FileDB fileDb = fileDBManager.getFileDBById(deliverable.getQualityCheck().getFileTools().getId());
         qualityCheck.setFileTools(fileDb);
+      } else {
+        qualityCheck.setFileTools(null);
       }
+    } else {
+      qualityCheck.setFileTools(null);
     }
     if (qualityCheck.getFileTools() != null) {
       if (qualityCheck.getFileTools().getId() == null) {
@@ -1098,8 +1110,8 @@ public class DeliverableAction extends BaseAction {
     }
 
     qualityCheck.setLinkAssurance(deliverable.getQualityCheck().getLinkAssurance());
-    qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkAssurance());
-    qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkAssurance());
+    qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkDictionary());
+    qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkTools());
 
     qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
     qualityCheck.setActive(true);
