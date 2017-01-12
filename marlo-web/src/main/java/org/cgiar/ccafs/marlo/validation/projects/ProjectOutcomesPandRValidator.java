@@ -80,13 +80,6 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
             if (projectOutcomePandr.getYear() == action.getCurrentCycleYear()) {
 
 
-              if (!(this.isValidString(projectOutcomePandr.getStatement())
-                && this.wordCount(projectOutcomePandr.getStatement()) <= 100)) {
-                this.addMessage("Project  Outcome ##" + projectOutcomePandr.getId() + ": Statement");
-                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].statement",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-
               if (!(this.isValidString(projectOutcomePandr.getAnualProgress())
                 && this.wordCount(projectOutcomePandr.getAnualProgress()) <= 100)) {
                 this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": anualProgress");
