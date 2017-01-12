@@ -27,7 +27,7 @@
     [#-- FILE --]
     <div class="col-md-8">
       <div class="col-md-6 form-group  fileAssuranceContent">
-        <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+        <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance.id?? /]
         <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileAssurance.id" value="${(deliverable.qualityCheck.fileAssurance.id)!"-1"}" />
         [#-- Input File --]
@@ -36,7 +36,7 @@
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance??]${(deliverable.qualityCheck.fileAssurance.fileName)!('No file name')} [/#if]</span> 
+          <span class="contentResult" title="${(deliverable.qualityCheck.fileAssurance.fileName)!}">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance??][@utils.wordCutter string=(deliverable.qualityCheck.fileAssurance.fileName) maxPos=20 substr=" "/][/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
       </div>
@@ -67,7 +67,7 @@
     [#-- FILE --]
     <div class="col-md-8">
       <div class="col-md-6 form-group fileDictionaryContent">
-        <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+        <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
          [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary.id?? /]
         <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileDictionary.id" value="${(deliverable.qualityCheck.fileDictionary.id)!"-1"}" />
         [#-- Input File --]
@@ -76,7 +76,7 @@
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary??]${(deliverable.qualityCheck.fileDictionary.fileName)!('No file name')} [/#if]</span> 
+          <span class="contentResult" title="${(deliverable.qualityCheck.fileDictionary.fileName)!}">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary??][@utils.wordCutter string=(deliverable.qualityCheck.fileDictionary.fileName) maxPos=20 substr=" "/] [/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
       </div>
@@ -107,7 +107,7 @@
     [#-- FILE --]
     <div class="col-md-8">
       <div class="col-md-6 form-group fileToolsContent">
-        <label>[@customForm.text name="Proof of submission" readText=!editable /]:</label>
+        <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools.id?? /]
         <input class="fileID" type="hidden" name="deliverable.qualityCheck.fileTools.id" value="${(deliverable.qualityCheck.fileTools.id)!"-1"}" />
         [#-- Input File --]
@@ -116,7 +116,7 @@
         [/#if]
         [#-- Uploaded File --]
         <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
-          <span class="contentResult">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools??]${(deliverable.qualityCheck.fileTools.fileName)!('No file name')} [/#if]</span> 
+          <span class="contentResult" title="${(deliverable.qualityCheck.fileTools.fileName)!}">[#if deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools??][@utils.wordCutter string=(deliverable.qualityCheck.fileTools.fileName) maxPos=20 substr=" "/][/#if]</span> 
           [#if editable]<span class="removeIcon"> </span> [/#if]
         </p>
       </div>
