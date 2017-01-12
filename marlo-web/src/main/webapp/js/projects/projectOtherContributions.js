@@ -105,13 +105,15 @@ function initItemListEvents() {
 }
 
 function setInitialList() {
-  $("div.crpOtherContribution").each(function(index,element) {
+  $("div.crpContribution").each(function(index,element) {
     // Getting previously selected by project partner
     var $select = $(element).find('select');
+
     $(element).find('li input.id').each(function(i_id,id) {
+      console.log($(id).val());
       $select.find('option[value=' + $(id).val() + ']').remove();
     });
-    $select.trigger("liszt:updated");
+    $select.trigger("select2:change");
   });
 }
 
