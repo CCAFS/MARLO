@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.IpIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -64,6 +66,44 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
     }
     return null;
 
+  }
+
+  public List<IpIndicator> findOtherContributions(long projectID) {
+
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("    SELECT     distinct  I.*");
+    sb.append("                          FROM       ip_indicators i ");
+    sb.append("                          LEFT JOIN  ip_indicators p ");
+    sb.append("                          ON         i.parent_id = p.id ");
+    sb.append("                         INNER JOIN ip_project_indicators ipi ");
+    sb.append("                         ON         i.id = ipi.parent_id ");
+    sb.append("                         INNER JOIN ip_elements ie ");
+    sb.append("                         ON         ipi.outcome_id = ie.id ");
+    sb.append("      inner  JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
+    sb.append("    where i.id not in(");
+    sb.append("    SELECT     distinct  i.id ");
+    sb.append("                         FROM       ip_indicators i ");
+    sb.append("                         LEFT JOIN  ip_indicators p ");
+    sb.append("                         ON         i.parent_id = p.id ");
+    sb.append("                         INNER JOIN ip_project_indicators ipi ");
+    sb.append("                         ON         i.id = ipi.parent_id ");
+    sb.append("                         INNER JOIN ip_elements ie ");
+    sb.append("                         ON         ipi.outcome_id = ie.id ");
+    sb.append("                         WHERE      ipi.project_id =" + projectID + ") ");
+
+
+    String query = sb.toString();;
+    List<Map<String, Object>> rList = dao.findCustomQuery(query);
+    List<IpIndicator> ipIndicators = new ArrayList<>();
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpIndicator indicator = this.find(Long.parseLong(map.get("id").toString()));
+        ipIndicators.add(indicator);
+      }
+    }
+
+    return ipIndicators;
   }
 
   @Override

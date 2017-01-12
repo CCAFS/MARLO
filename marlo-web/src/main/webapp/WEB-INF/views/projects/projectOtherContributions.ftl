@@ -119,7 +119,7 @@
     <div class="fullBlock">
       [#-- Region --]
       <div class="halfPartBlock">
-        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" keyFieldName="id"  displayFieldName="name" listName="regions"  required=true editable=editable  /]
+        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" keyFieldName="id"  displayFieldName="composedName" listName="regions"  required=true editable=editable  /]
       </div> 
     </div>
     [#-- Indicator --]

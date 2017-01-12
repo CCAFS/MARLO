@@ -31,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
@@ -410,14 +409,9 @@ public class ProjectOtherContributionsAction extends BaseAction {
     regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());
 
-    List<IpProjectIndicator> indicators =
-      projectDB.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    otherIndicators = ipIndicatorManager.findOtherContributions(projectID);
 
-    otherIndicators = ipIndicatorManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-    for (IpProjectIndicator ipProjectIndicator : indicators) {
-      otherIndicators.remove(ipProjectIndicator.getIpIndicator());
-    }
     if (this.isHttpPost()) {
 
       if (project.getCrpContributions() != null) {
