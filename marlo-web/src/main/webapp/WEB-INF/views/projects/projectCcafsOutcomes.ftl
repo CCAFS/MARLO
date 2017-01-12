@@ -125,10 +125,10 @@
                         [#-- 3. Reporting target --]
                         [#-- -- -- REPORTING BLOCK -- -- --]
                         [#if reportingActive && (year == currentCycleYear)]
-                          <div class="col-md-4 fieldFocus" style="padding: 5px 15px !important; margin: 0 0 !important;">
+                          <div class="col-md-4 " >
                             <label title='[@s.text name="projectCcafsOutcomes.achievedTarget.help" /]'>[@s.text name="projectCcafsOutcomes.achievedTarget" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("achieved") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("achieved")]
-                              <input type="text" class="projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.archived" value="${(projectIndicator.archived)!}"/> 
+                              <input type="text" class=" fieldFocus projectIndicatorAchievedTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.archived" value="${(projectIndicator.archived)!}"/> 
                             [#else]
                               <div class="input"><p>${(projectIndicator.archived)!'Prefilled if available'}</p></div>
                             [/#if]
