@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
@@ -398,7 +397,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
           project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
         project.setOtherContributionsList(
-          project.getOtherContributionsList().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+          project.getOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         this.setDraft(false);
       }
     }
@@ -408,14 +407,13 @@ public class ProjectOtherContributionsAction extends BaseAction {
     project.setProjectEditLeader(projectDB.isProjectEditLeader());
 
     crps = crpPandrManager.findAll();
-    regions = ipProgramManager.findAll().stream()
-      .filter(c -> c.getIpProgramType().getId().intValue() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+    regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());
 
     List<IpProjectIndicator> indicators =
       projectDB.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
-    otherIndicators = ipIndicatorManager.findAll();
+    otherIndicators = ipIndicatorManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     for (IpProjectIndicator ipProjectIndicator : indicators) {
       otherIndicators.remove(ipProjectIndicator.getIpIndicator());

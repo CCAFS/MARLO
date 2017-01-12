@@ -56,7 +56,7 @@ public class IpProgramMySQLDAO implements IpProgramDAO {
 
   @Override
   public List<IpProgram> findAll() {
-    String query = "from " + IpProgram.class.getName() + " where is_active=1";
+    String query = "from " + IpProgram.class.getName() + " ";
     List<IpProgram> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
