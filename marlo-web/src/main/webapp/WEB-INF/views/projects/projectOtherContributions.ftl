@@ -50,9 +50,9 @@
             [#-- Others impact pathways contributions --]
             [#if reportingActive]
               <div id="otherContributionsBlock">
-                [#if project.otherContributionsList?has_content]
-                  [#list project.otherContributionsList as element]
-                    [@otherContribution element=element name="project.otherContributionsList" index=element_index /] 
+                [#if project.otherContributions?has_content]
+                  [#list project.otherContributions as element]
+                    [@otherContribution element=element name="project.otherContributions" index=element_index /] 
                   [/#list]
                 [#else]
                   <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div>
@@ -97,13 +97,12 @@
 </section>
 
 [#-- CRP Contribution template --]
-[@crpContribution element={} name="" index=-1 isTemplate=true /]
+[@crpContribution element={} name="project.crpContributions" index=-1 isTemplate=true /]
 
 [#-- Other contribution template --]
-[@otherContribution element={} template=true /]
+[@otherContribution element={} name="project.otherContributions" template=true /]
         
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
 
 
 
@@ -119,12 +118,12 @@
     <div class="fullBlock">
       [#-- Region --]
       <div class="halfPartBlock">
-        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  keyFieldName="id"  displayFieldName="composedName" required=true editable=editable  /]
+        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  required=true editable=editable  /]
       </div> 
     </div>
     [#-- Indicator --]
     <div class="fullBlock">
-      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" keyFieldName="id"  displayFieldName="description" required=true editable=editable  /]
+      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" required=true editable=editable  /]
     </div>
     [#-- Describe how you are contributing to the selected outcome --]
     <div class="fullBlock">
@@ -146,7 +145,6 @@
 [#macro crpContribution element name index isTemplate=false]
 <li id="crpOtherContribution-${isTemplate?string('template', index)}" class="crpOtherContribution clearfix" style="display:${isTemplate?string('none','block')}">
   [#local customName = "${name}[${index}]" /]
-  <input class="id" type="hidden" name="${customName}.crp.id" value="${(crp.crp.id)!}" />
   [#-- Remove --]
   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
   
@@ -155,7 +153,7 @@
   <input class="crpContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}" />
   
   [#-- CRP Title --]
-  <div class="fullPartBlock clearfix"><span class="name crpName">${(element.crp.name)!}</span></div>
+  <div class="form-group"><span class="name crpName">${(element.crp.name)!}</span></div>
   
   [#-- CRP Outcome Collaboration --]
   <div class="form-group col-md-12">
