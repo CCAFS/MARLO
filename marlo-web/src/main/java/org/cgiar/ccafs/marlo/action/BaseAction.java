@@ -918,6 +918,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
         break;
 
+      case DESCRIPTION:
+      case LOCATIONS:
+
+
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        } else {
+          if (this.isReportingActive()) {
+            return true;
+          }
+        }
+
+        break;
+
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
