@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOtherContributionsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
@@ -145,6 +146,9 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
 
   @Inject
+  ProjectOtherContributionsValidator projectOtherContributionsValidator;
+
+  @Inject
   ProjectOutputsValidator projectOutputsValidator;
   @Inject
   public CrpManager crpManager;
@@ -202,6 +206,9 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.validateOutcomesPandR();
         case OUTPUTS:
           this.validateOutputs();
+
+        case OTHERCONTRIBUTIONS:
+          this.validateOtherContributions();
           break;
         default:
           break;
@@ -633,6 +640,23 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   }
 
+  public void validateOtherContributions() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setCrpContributions(
+      project.getProjectCrpContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    project.setProjectOtherContributionsList(
+      project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    project.setOtherContributionsList(
+      project.getOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOtherContributionsValidator.validate(this, project, false);
+
+
+  }
+
   public void validateOutcomesPandR() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -643,6 +667,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
   }
+
 
   public void validateOutputs() {
     // Getting the project information.
