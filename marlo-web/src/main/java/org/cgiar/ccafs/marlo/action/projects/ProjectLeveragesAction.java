@@ -274,6 +274,9 @@ public class ProjectLeveragesAction extends BaseAction {
 
         project = (Project) autoSaveReader.readFromJson(jReader);
         reader.close();
+        Project projectDb = projectManager.getProjectById(project.getId());
+        project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setAdministrative(projectDb.getAdministrative());
 
         if (project.getLeverages() == null) {
 

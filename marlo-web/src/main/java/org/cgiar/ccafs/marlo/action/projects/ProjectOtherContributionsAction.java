@@ -403,7 +403,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
     Project projectDB = projectManager.getProjectById(projectID);
     project.setProjectEditLeader(projectDB.isProjectEditLeader());
-
+    project.setAdministrative(projectDB.getAdministrative());
     crps = crpPandrManager.findAll();
     regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());

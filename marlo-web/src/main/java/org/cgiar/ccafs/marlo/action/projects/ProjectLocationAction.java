@@ -382,6 +382,7 @@ public class ProjectLocationAction extends BaseAction {
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setProjectLocations(projectDb.getProjectLocations());
+        project.setAdministrative(projectDb.getAdministrative());
         if (project.getLocationsData() != null) {
           for (CountryLocationLevel level : project.getLocationsData()) {
             LocElementType elementType = locElementTypeManager.getLocElementTypeById(level.getId());

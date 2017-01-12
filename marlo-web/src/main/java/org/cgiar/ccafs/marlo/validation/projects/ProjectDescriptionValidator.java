@@ -159,34 +159,37 @@ public class ProjectDescriptionValidator extends BaseValidator
       }
     }
 
-    if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-      if (project.getClusterActivities() != null) {
-        if (project.getClusterActivities().size() == 0) {
+    if (!action.isReportingActive()) {
+      if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+        if (project.getClusterActivities() != null) {
+          if (project.getClusterActivities().size() == 0) {
+            this.addMessage(action.getText("projectDescription.clusterActivities"));
+            action.getInvalidFields().put("list-project.clusterActivities",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
+          }
+        } else {
           this.addMessage(action.getText("projectDescription.clusterActivities"));
           action.getInvalidFields().put("list-project.clusterActivities",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
         }
-      } else {
-        this.addMessage(action.getText("projectDescription.clusterActivities"));
-        action.getInvalidFields().put("list-project.clusterActivities",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
-      }
-    }
-
-
-    if (project.isProjectEditLeader()) {
-      if (!(this.isValidString(project.getGenderAnalysis()) && this.wordCount(project.getGenderAnalysis()) <= 50)) {
-        this.addMessage(action.getText("project.genderAnalysis"));
-        action.getInvalidFields().put("input-project.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (project.getCrossCuttingGender() == null || project.getCrossCuttingGender().booleanValue() == false) {
-        if (!(this.isValidString(project.getDimension()) && this.wordCount(project.getDimension()) <= 50)) {
-          this.addMessage(action.getText("project.dimension"));
-          action.getInvalidFields().put("input-project.dimension", InvalidFieldsMessages.EMPTYFIELD);
+      if (project.isProjectEditLeader()) {
+        if (!(this.isValidString(project.getGenderAnalysis()) && this.wordCount(project.getGenderAnalysis()) <= 50)) {
+          this.addMessage(action.getText("project.genderAnalysis"));
+          action.getInvalidFields().put("input-project.genderAnalysis", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (project.getCrossCuttingGender() == null || project.getCrossCuttingGender().booleanValue() == false) {
+          if (!(this.isValidString(project.getDimension()) && this.wordCount(project.getDimension()) <= 50)) {
+            this.addMessage(action.getText("project.dimension"));
+            action.getInvalidFields().put("input-project.dimension", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
     }
+
+
     /*
      * if (project.getScopes() != null) {
      * if (project.getScopes().size() == 0) {
@@ -197,18 +200,7 @@ public class ProjectDescriptionValidator extends BaseValidator
      * }
      */
 
-    if (action.isReportingActive()) {
-      if (project.getStatusJustification() != null) {
-        if (!(this.isValidString(project.getStatusJustification())
-          && this.wordCount(project.getStatusJustification()) <= 20)) {
-          this.addMessage(action.getText("project.statusJustification"));
-          action.getInvalidFields().put("input-project.statusJustification", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
-        this.addMessage(action.getText("project.statusJustification"));
-        action.getInvalidFields().put("input-project.statusJustification", InvalidFieldsMessages.EMPTYFIELD);
-      }
-    }
+
   }
 
 }

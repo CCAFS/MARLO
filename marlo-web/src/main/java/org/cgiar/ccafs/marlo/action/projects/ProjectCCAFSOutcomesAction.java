@@ -573,6 +573,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
         project.setStartDate(projectDB.getStartDate());
         project.setEndDate(projectDB.getEndDate());
         project.setProjectEditLeader(projectDB.isProjectEditLeader());
+        project.setAdministrative(projectDB.getAdministrative());
         if (project.getProjectIndicators() == null) {
           project.setProjectIndicators(new ArrayList<IpProjectIndicator>());
         } else {

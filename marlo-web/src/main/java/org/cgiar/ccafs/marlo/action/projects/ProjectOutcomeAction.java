@@ -364,7 +364,7 @@ public class ProjectOutcomeAction extends BaseAction {
         projectID = project.getId();
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
-
+        project.setAdministrative(projectDb.getAdministrative());
         List<ProjectMilestone> milestones = new ArrayList<>();
 
         if (projectOutcome.getMilestones() != null) {

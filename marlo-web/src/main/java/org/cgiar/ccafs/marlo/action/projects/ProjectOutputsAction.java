@@ -317,6 +317,7 @@ public class ProjectOutputsAction extends BaseAction {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
+    project.setAdministrative(projectDB.getAdministrative());
     project.setProjectEditLeader(projectDB.isProjectEditLeader());
     allYears = projectDB.getAllYears();
     project.setMogs(new ArrayList<>());
