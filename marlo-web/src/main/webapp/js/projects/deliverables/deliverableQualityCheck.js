@@ -41,7 +41,9 @@ function uploadFile($uploadBlock,$fileUpload,type) {
         var r = data.result;
         console.log(r);
         if(r.saved) {
-          $uploadBlock.find('.textMessage .contentResult').html(r.fileFileName);
+          var v = r.fileFileName.length > 20 ? r.fileFileName.substr(0, 20) + ' ... ' : r.fileFileName;
+          $uploadBlock.find('.textMessage .contentResult').html(v);
+          $uploadBlock.find('.textMessage .contentResult').attr("title", r.fileFileName);
           $uploadBlock.find('.textMessage').show();
           $uploadBlock.find('.fileUpload').hide();
           // Set file ID

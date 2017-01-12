@@ -67,12 +67,12 @@
             [#assign crpsName= "project.ipOtherContribution.crps"/]
             <div class="fullPartBlock">      
               <div class="crpContribution panel tertiary">
-                <div class="panel-head">[@customForm.text name="projectOtherContributions.collaboratingCRPs" readText=!editable /]</div> 
+                <div class="panel-head"><label for="">[@customForm.text name="projectOtherContributions.collaboratingCRPs" readText=!editable /]</label></div> 
                 <div class="panel-body"> 
                   <ul id="contributionsBlock" class="list">
                   [#if  project.crpContributions?has_content]  
-                    [#list project.crpContributions as crp]
-                       ${crp.collaborationNature}
+                    [#list project.crpContributions as crp] 
+                       [@crpContribution element=crp name="project.crpContributions" index=crp_index /]
                     [/#list] 
                   [#else]
                     <p class="emptyText"> [@s.text name="projectOtherContributions.crpsEmpty" /] </p>  
@@ -149,22 +149,19 @@
   [#-- Remove --]
   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
   
+  [#-- Hidden inputs --]
+  <input class="id" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!}" />
+  <input class="crpContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}" />
+  
   [#-- CRP Title --]
   <div class="fullPartBlock clearfix"><span class="name crpName">${(element.crp.name)!}</span></div>
   
   [#-- CRP Outcome Collaboration --]
-  <div class="contributionsBlock">
-    <div class="crpOutcomeContribution">
-      <div class="form-group">
-        [@customForm.textArea name="${customName}.natureCollaboration" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
-      </div>
-    </div>
+  <div class="form-group col-md-12">
+    [@customForm.textArea name="${customName}.collaborationNature" className="crpCollaborationNature limitWords-50" i18nkey="projectOtherContributions.collaborationNature" required=true editable=editable /]  
   </div>
-  [#if editable] 
-  <div class="text-right">
-    <div class="button-blue"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>Add Outcome Contribution</div>
-  </div>
-  [/#if]
+  
+   
   <br />
   
   
