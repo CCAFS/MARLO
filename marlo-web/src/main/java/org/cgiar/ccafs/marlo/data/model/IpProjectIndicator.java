@@ -29,8 +29,10 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
   private User modifiedBy;
   @Expose
   private String target;
+
   @Expose
   private String description;
+
   @Expose
   private String gender;
   @Expose
@@ -49,6 +51,28 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
   private Date activeSince;
   @Expose
   private String modificationJustification;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    IpProjectIndicator other = (IpProjectIndicator) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
 
   public Date getActiveSince() {
     return activeSince;
@@ -118,6 +142,14 @@ public class IpProjectIndicator implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

@@ -21,11 +21,19 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.OtherContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCrpContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOtherContributionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
+import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
+import org.cgiar.ccafs.marlo.data.model.OtherContribution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
@@ -71,9 +79,15 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private CrpProgramManager crpProgrammManager;
   private ProjectCrpContributionManager projectCrpContributionManager;
   private ProjectOtherContributionManager projectOtherContributionManager;
+  private OtherContributionManager otherContributionManager;
   private CrpPandrManager crpPandrManager;
+  private IpProgramManager ipProgramManager;
+  private IpIndicatorManager ipIndicatorManager;
   private ProjectOutputsValidator projectOutputsValidator;
   private List<CrpPandr> crps;
+  private List<IpProgram> regions;
+  private List<IpIndicator> otherIndicators;
+
 
   private long projectID;
 
@@ -86,22 +100,29 @@ public class ProjectOtherContributionsAction extends BaseAction {
   private Crp loggedCrp;
 
   private String transaction;
+
+
   private AuditLogManager auditLogManager;
 
   @Inject
   public ProjectOtherContributionsAction(APConfig config, ProjectManager projectManager,
     InstitutionManager institutionManager, CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager,
     CrpManager crpManager, ProjectCrpContributionManager projectCrpContributionManager, CrpPandrManager crpPandrManager,
-    ProjectOutputsValidator projectOutputsValidator, ProjectOtherContributionManager projectOtherContributionManager) {
+    ProjectOutputsValidator projectOutputsValidator, IpIndicatorManager ipIndicatorManager,
+    OtherContributionManager otherContributionManager, ProjectOtherContributionManager projectOtherContributionManager,
+    IpProgramManager ipProgramManager) {
     super(config);
     this.projectManager = projectManager;
     this.institutionManager = institutionManager;
     this.crpProgrammManager = crpProgrammManager;
     this.projectCrpContributionManager = projectCrpContributionManager;
     this.crpPandrManager = crpPandrManager;
+    this.ipIndicatorManager = ipIndicatorManager;
     this.projectOutputsValidator = projectOutputsValidator;
     this.crpManager = crpManager;
+    this.ipProgramManager = ipProgramManager;
     this.projectOtherContributionManager = projectOtherContributionManager;
+    this.otherContributionManager = otherContributionManager;
     this.auditLogManager = auditLogManager;
 
   }
@@ -129,7 +150,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
     return SUCCESS;
   }
-
 
   public void crpContributionsNewData(List<ProjectCrpContribution> crpContributions) {
     if (crpContributions != null) {
@@ -188,6 +208,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -196,13 +217,18 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-
   public List<CrpPandr> getCrps() {
     return crps;
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public List<IpIndicator> getOtherIndicators() {
+    return otherIndicators;
   }
 
 
@@ -210,10 +236,10 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
 
   public ProjectManager getProjectManager() {
     return projectManager;
@@ -223,10 +249,15 @@ public class ProjectOtherContributionsAction extends BaseAction {
     return APConstants.PROJECT_REQUEST_ID;
   }
 
+
+  public List<IpProgram> getRegions() {
+    return regions;
+  }
+
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public String next() {
@@ -237,6 +268,61 @@ public class ProjectOtherContributionsAction extends BaseAction {
       return result;
     }
   }
+
+  public void OtherContributionsNewData(List<OtherContribution> otherContributions) {
+    if (otherContributions != null) {
+      for (OtherContribution otherContribution : otherContributions) {
+        if (otherContribution != null) {
+          if (otherContribution.getId() == null || otherContribution.getId() == -1) {
+            otherContribution.setActive(true);
+            otherContribution.setCreatedBy(this.getCurrentUser());
+            otherContribution.setModifiedBy(this.getCurrentUser());
+            otherContribution.setModificationJustification(this.getJustification());
+            otherContribution.setActiveSince(new Date());
+            otherContribution.setId(null);
+            otherContribution.setProject(project);
+
+          } else {
+            OtherContribution otherContributionDB =
+              otherContributionManager.getOtherContributionById(otherContribution.getId());
+            otherContribution.setActive(true);
+            otherContribution.setCreatedBy(otherContributionDB.getCreatedBy());
+            otherContribution.setModifiedBy(this.getCurrentUser());
+            otherContribution.setModificationJustification(this.getJustification());
+
+            otherContribution.setProject(project);
+            otherContribution.setActiveSince(otherContributionDB.getActiveSince());
+
+          }
+          otherContributionManager.saveOtherContribution(otherContribution);
+        }
+
+
+      }
+    }
+
+
+  }
+
+  public void OtherContributionsPreviousData(List<OtherContribution> otherContributions) {
+    if (otherContributions != null) {
+      otherContributions = new ArrayList<>();
+    }
+    List<OtherContribution> projectCrpPrew;
+    Project projectBD = projectManager.getProjectById(projectID);
+
+
+    projectCrpPrew = projectBD.getOtherContributions().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+
+
+    for (OtherContribution projectCrpContribution : projectCrpPrew) {
+      if (!otherContributions.contains(projectCrpContribution)) {
+        otherContributionManager.deleteOtherContribution(projectCrpContribution.getId());
+      }
+    }
+
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -311,6 +397,8 @@ public class ProjectOtherContributionsAction extends BaseAction {
         project.setProjectOtherContributionsList(
           project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+        project.setOtherContributionsList(
+          project.getOtherContributionsList().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
         this.setDraft(false);
       }
     }
@@ -320,13 +408,27 @@ public class ProjectOtherContributionsAction extends BaseAction {
     project.setProjectEditLeader(projectDB.isProjectEditLeader());
 
     crps = crpPandrManager.findAll();
+    regions = ipProgramManager.findAll().stream()
+      .filter(c -> c.getIpProgramType().getId().intValue() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList());
+
+    List<IpProjectIndicator> indicators =
+      projectDB.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+
+    otherIndicators = ipIndicatorManager.findAll();
+
+    for (IpProjectIndicator ipProjectIndicator : indicators) {
+      otherIndicators.remove(ipProjectIndicator.getIpIndicator());
+    }
     if (this.isHttpPost()) {
 
       if (project.getCrpContributions() != null) {
         project.getCrpContributions().clear();
       }
 
-
+      if (project.getOtherContributionsList() != null) {
+        project.getOtherContributionsList().clear();
+      }
     }
 
     if (project.getProjectOtherContributionsList().isEmpty()) {
@@ -337,7 +439,6 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
 
   }
-
 
   public void projectOtherContributionsNewData(List<ProjectOtherContribution> projectOtherContributions) {
     if (projectOtherContributions != null) {
@@ -375,6 +476,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -386,6 +488,8 @@ public class ProjectOtherContributionsAction extends BaseAction {
       project.setModificationJustification(this.getJustification());
       project.setActiveSince(projectDB.getActiveSince());
       this.projectOtherContributionsNewData(project.getProjectOtherContributionsList());
+      this.OtherContributionsPreviousData(project.getOtherContributionsList());
+      this.OtherContributionsNewData(project.getOtherContributionsList());
       this.crpContributionsPreviousData(project.getCrpContributions());
       this.crpContributionsNewData(project.getCrpContributions());
 
@@ -393,6 +497,7 @@ public class ProjectOtherContributionsAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_CRP_CONTRIBUTIONS_RELATION);
       relationsName.add(APConstants.PROJECT_OTHER_CONTRIBUTIONS_RELATION);
+      relationsName.add(APConstants.OTHER_CONTRIBUTIONS_RELATION);
       project = projectManager.getProjectById(projectID);
       project.setActiveSince(new Date());
       project.setModifiedBy(this.getCurrentUser());
@@ -434,9 +539,13 @@ public class ProjectOtherContributionsAction extends BaseAction {
     this.crps = crps;
   }
 
-
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setOtherIndicators(List<IpIndicator> otherIndicators) {
+    this.otherIndicators = otherIndicators;
   }
 
 
@@ -452,6 +561,11 @@ public class ProjectOtherContributionsAction extends BaseAction {
 
   public void setProjectManager(ProjectManager projectManager) {
     this.projectManager = projectManager;
+  }
+
+
+  public void setRegions(List<IpProgram> regions) {
+    this.regions = regions;
   }
 
   public void setTransaction(String transaction) {

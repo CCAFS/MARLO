@@ -119,12 +119,12 @@
     <div class="fullBlock">
       [#-- Region --]
       <div class="halfPartBlock">
-        [@customForm.select name="${customName}.region" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  required=true editable=editable  /]
+        [@customForm.select name="${customName}.ipProgram.id" className="otherContributionRegion" label="" i18nkey="projectOtherContributions.region" listName="regions"  required=true editable=editable  /]
       </div> 
     </div>
     [#-- Indicator --]
     <div class="fullBlock">
-      [@customForm.select name="${customName}.indicators" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" required=true editable=editable  /]
+      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" listName="otherIndicators" required=true editable=editable  /]
     </div>
     [#-- Describe how you are contributing to the selected outcome --]
     <div class="fullBlock">
