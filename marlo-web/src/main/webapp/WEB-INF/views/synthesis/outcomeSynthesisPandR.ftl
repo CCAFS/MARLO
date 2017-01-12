@@ -87,7 +87,7 @@
               <div class="form-group simpleBox">
                 [#-- Milestone title --]
                 <div class="form-group grayBox">
-                  <h4 class="subHeadTitle"> Milestone for ${milestone.year}:</h4> 
+                  <h4 class="subHeadTitle"> Indicator ${milestone.year}:</h4> 
                   <p>${milestone.description}</p>
                 </div>
                
