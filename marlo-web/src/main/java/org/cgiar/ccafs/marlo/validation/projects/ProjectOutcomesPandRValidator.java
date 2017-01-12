@@ -102,14 +102,7 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
               }
 
             }
-            if (projectOutcomePandr.getYear() == 2019) {
-              if (!(this.isValidString(projectOutcomePandr.getStatement())
-                && this.wordCount(projectOutcomePandr.getStatement()) <= 100)) {
-                this.addMessage("Project  Outcome ##" + projectOutcomePandr.getId() + ": Statement");
-                action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].statement",
-                  InvalidFieldsMessages.EMPTYFIELD);
-              }
-            }
+
           }
           i++;
         }
