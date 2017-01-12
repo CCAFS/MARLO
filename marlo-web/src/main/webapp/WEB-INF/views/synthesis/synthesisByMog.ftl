@@ -140,7 +140,7 @@
         </div>
         [/#list]
       [#else]
-        No MOGs Loadeds
+        No MOGs Loaded
       [/#if]
       </div>
       
