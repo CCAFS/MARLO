@@ -82,7 +82,7 @@
     <div class="removeLeverage removeIcon" title="Remove leverage"></div>
     [/#if]
     <input type="hidden" class="leverageId" name="${leverageCustomName}.id" value="${(leverage.id)!}"/>
-  <div class="form-group">
+  <div class="form-group title">
     [#-- title --] 
     [@customForm.input name="${leverageCustomName}.title" value="${(leverage.title)!}" type="text" i18nkey="Title"  placeholder="" className="limitWords-15" required=true editable=editable /]
   </div>
@@ -90,6 +90,13 @@
   <div class="form-group">
     [#-- Partner name --]
     [@customForm.select name="${leverageCustomName}.institution.id" label=""  i18nkey="Partner name" listName="allInstitutions"  multiple=false required=true  className="partnerSelect form-control input-sm " editable=editable/]
+  </div>
+  
+  [#-- Year --]
+  <div class="form-group">
+    <label>[@s.text name="reporting.projectLeverages.year" /]:</label>
+    <div class="selectList"><p>${(leverage.year)!"Not defined"}</p></div>
+    <input type="hidden" name="${leverageCustomName}.year" class="year" value="${(leverage.year)!"-1"}" />
   </div>
   
   <div class="form-group">
