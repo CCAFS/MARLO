@@ -171,7 +171,7 @@ public class ImpactSubmissionAction extends BaseAction {
     // TO
     toEmail = this.getCurrentUser().getEmail();
 
-    // Getting all the MLs associated to the Project Liaison institution
+
     List<CrpProgramLeader> owners =
       crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     StringBuilder ccEmails = new StringBuilder();
