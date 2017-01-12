@@ -21,7 +21,7 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
   @Expose
-  private Crp crp;
+  private CrpPandr crp;
   @Expose
   private Project project;
   @Expose
@@ -73,7 +73,7 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-  public Crp getCrp() {
+  public CrpPandr getCrp() {
     return crp;
   }
 
@@ -93,6 +93,7 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -135,7 +136,7 @@ public class ProjectCrpContribution implements java.io.Serializable, IAuditLog {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
+  public void setCrp(CrpPandr crp) {
     this.crp = crp;
   }
 
