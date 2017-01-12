@@ -22,7 +22,7 @@ function attachEvents() {
   $('#addOtherContribution .addLink').on('click', addOtherContribution);
 
   // Change a region or flagship
-  $('.otherContributionFlagship, .otherContributionRegion').on('change', changeRegionFlagship);
+  // $('.otherContributionFlagship, .otherContributionRegion').on('change', changeRegionFlagship);
 
   // Disabled values that is not number
   $('.otherContributionTarget').on("keydown", function(e) {
@@ -67,6 +67,11 @@ function addOtherContribution(e) {
   var $clone = $("#otherContribution-template").clone(true).removeAttr("id");
   $clone.find('select').select2();
   $clone.appendTo($('#otherContributionsBlock')).hide().show('slow');
+  // 
+  $clone.find('select').select2({
+    width: '100%'
+  });
+
   setOtherContributionsIndexes();
 }
 
@@ -130,7 +135,7 @@ function addItemList($option) {
   $li.appendTo($contributionsBlock).hide().show('slow');
   $option.remove();
   $select.trigger("liszt:updated");
-  // setIndexes();
+  setIndexes();
   $contributionsBlock.find('.emptyText').fadeOut();
 }
 
