@@ -101,7 +101,7 @@
 [@crpContribution element={} name="project.crpContributions" index=-1 isTemplate=true /]
 
 [#-- Other contribution template --]
-[@otherContribution element={} name="project.otherContributions" index=-1 template=true /]
+[@otherContribution element={} name="project.otherContributionsList" index=-1 template=true /]
         
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
