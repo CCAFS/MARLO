@@ -12,7 +12,7 @@
 [#assign recordsList = (action.getListLog(project))!{} /]
 
 <div class="buttons">
-  [#if !action.isProjectNew(projectID)]
+  [#if !action.isProjectNew(projectID) && !hideJustification]
     [#if editable]
     <div class="form-group">
       [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]

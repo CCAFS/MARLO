@@ -6,6 +6,7 @@
 [#assign customCSS = ["${baseUrl}/css/projects/projectHighlights.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "highlights" /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
