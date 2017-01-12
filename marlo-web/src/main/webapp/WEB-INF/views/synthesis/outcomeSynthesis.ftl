@@ -13,8 +13,13 @@
   { 'id': 4, 'acronym': 'F4', 'name': 'Climate services and safety nets'}
 ] /]
 [#assign currentLiaisonInstitution = liaisonInstitutions[1] /]
+
+[#assign indicators = [
+  { 'id': 1, 'acronym': 'F1', 'name': 'Priorities and Policies for CSA'}
+] /]
+
 [#assign midOutcomes = [
-  { 'id': 1, 'composedId': 'Outcome 2022', 'description': '10 policy decisions taken (in part) based on engagement and information dissemination by CCAFS.'}
+  { 'id': 1, 'composedId': 'Outcome 2022', 'indicators' : indicators, 'description': '10 policy decisions taken (in part) based on engagement and information dissemination by CCAFS.'}
 ] /]
 
 [#assign outcomeMilestones = [
