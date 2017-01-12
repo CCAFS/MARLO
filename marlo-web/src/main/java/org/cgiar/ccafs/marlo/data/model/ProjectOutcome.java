@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
 
   private User createdBy;
   @Expose
-  private Long expectedValue;
+  private BigDecimal expectedValue;
   @Expose
   private SrfTargetUnit expectedUnit;
   @Expose
@@ -86,9 +87,10 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, Long achievedValue, String narrativeTarget,
-    String narrativeAchieved, boolean isActive, Date activeSince, String modificationJustification,
-    Set<ProjectMilestone> projectMilestoneses, Set<ProjectCommunication> projectCommunicationses) {
+    User usersByCreatedBy, BigDecimal expectedValue, SrfTargetUnit expectedUnit, Long achievedValue,
+    String narrativeTarget, String narrativeAchieved, boolean isActive, Date activeSince,
+    String modificationJustification, Set<ProjectMilestone> projectMilestoneses,
+    Set<ProjectCommunication> projectCommunicationses) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
     this.modifiedBy = usersByModifiedBy;
@@ -107,8 +109,8 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectOutcome(CrpProgramOutcome crpProgramOutcome, Project project, User usersByModifiedBy,
-    User usersByCreatedBy, long expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget, boolean isActive,
-    Date activeSince, String modificationJustification) {
+    User usersByCreatedBy, BigDecimal expectedValue, SrfTargetUnit expectedUnit, String narrativeTarget,
+    boolean isActive, Date activeSince, String modificationJustification) {
     this.crpProgramOutcome = crpProgramOutcome;
     this.project = project;
     this.modifiedBy = usersByModifiedBy;
@@ -157,7 +159,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public Long getExpectedValue() {
+  public BigDecimal getExpectedValue() {
     return expectedValue;
   }
 
@@ -304,7 +306,7 @@ public class ProjectOutcome implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setExpectedValue(Long expectedValue) {
+  public void setExpectedValue(BigDecimal expectedValue) {
     this.expectedValue = expectedValue;
   }
 
