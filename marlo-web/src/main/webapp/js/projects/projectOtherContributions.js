@@ -97,7 +97,6 @@ function initItemListEvents() {
     addItemList($(this).find('option:selected'));
   });
   $('ul li .remove').on('click', function(e) {
-    console.log('remove');
     removeItemList($(this).parents('li'));
   });
 
@@ -108,9 +107,7 @@ function setInitialList() {
   $("div.crpContribution").each(function(index,element) {
     // Getting previously selected by project partner
     var $select = $(element).find('select');
-
     $(element).find('li input.id').each(function(i_id,id) {
-      console.log($(id).val());
       $select.find('option[value=' + $(id).val() + ']').remove();
     });
     $select.trigger("select2:change");
