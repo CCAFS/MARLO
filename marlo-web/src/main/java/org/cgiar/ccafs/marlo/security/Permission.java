@@ -62,6 +62,8 @@ public class Permission {
   public static final String PROJECT_FUNDING_ = "crp:{0}:fundingSource:canEdit";
   public static final String PROJECT_FUNDING_W1_BASE_PERMISSION = "crp:{0}:fundingSource:w1";
   public static final String PROJECT_FUNDING_W3_BASE_PERMISSION = "crp:{0}:fundingSource:w3";
+  public static final String FUNDING_SOURCE_EDIT_PERMISSION = "crp:{0}:fundingSource:canEdit";
+
 
   public static final String PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:w3";
   public static final String PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION =
