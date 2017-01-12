@@ -802,6 +802,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
 
+        if (caseStudies.isEmpty()) {
+          return false;
+        }
+
 
         for (CaseStudyProject caseStudyProject : caseStudies) {
           if (caseStudyProject.isCreated()) {
@@ -825,7 +829,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         project = projectManager.getProjectById(projectID);
         List<ProjectHighlight> highlights =
           project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-
+        if (highlights.isEmpty()) {
+          return false;
+        }
 
         for (ProjectHighlight highlight : highlights) {
 

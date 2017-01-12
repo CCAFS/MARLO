@@ -111,9 +111,9 @@ public class IpElement implements java.io.Serializable, IAuditLog {
     StringBuilder composedID = new StringBuilder();
     // composedID.append("O");
     if (this.ipProgram != null && this.ipProgram.getId() >= 5) {
-      composedID.append(this.ipProgram != null ? this.ipProgram.getAcronym().substring(3) : "p_null");
+      composedID.append(this.ipProgram != null ? this.ipProgram.getAcronym() : "p_null");
     } else {
-      composedID.append(this.ipProgram != null ? "F" + this.ipProgram.getAcronym().substring(2) : "p_null");
+      composedID.append(this.ipProgram != null ? this.ipProgram.getAcronym() : "p_null");
     }
     composedID.append("-");
     composedID.append(this.ipElementType != null ? this.ipElementType.getName() : "t_null");
