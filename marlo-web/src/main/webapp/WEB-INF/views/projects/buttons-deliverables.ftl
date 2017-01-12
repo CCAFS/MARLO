@@ -13,7 +13,7 @@
 
 <div class="clearfix"></div>
 <div class="buttons">
-  [#if !action.isDeliverableNew(deliverableID)]
+  [#if !action.isDeliverableNew(deliverableID) && !hideJustification]
     [#if editable]
     <div class="form-group">
       [@customForm.textArea name="justification" i18nkey="saving.justification" required=true className="justification"/]
