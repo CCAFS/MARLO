@@ -96,7 +96,7 @@
   [#-- Year --]
   <div class="form-group">
     <label>[@s.text name="reporting.projectLeverages.year" /]:</label>
-    <div class="selectList"><p>${(leverage.year)!"Not defined"}</p></div>
+    <div class="selectList"><p>${(leverage.year)!"${currentCycleYear}"}</p></div>
     <input type="hidden" name="${leverageCustomName}.year" class="year" value="${(leverage.year)!"-1"}" />
   </div>
   
