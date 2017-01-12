@@ -52,7 +52,7 @@
               <div id="otherContributionsBlock">
                 [#if project.otherContributions?has_content]
                   [#list project.otherContributions as element]
-                    [@otherContribution element=element index=element_index /] 
+                    [@otherContribution element=element name="project.otherContributions" index=element_index /] 
                   [/#list]
                 [#else]
                   <div class="emptyMessage simpleBox center"><p>There is not other contributions added</p></div>
@@ -97,18 +97,18 @@
 </section>
 
 [#-- CRP Contribution template --]
-[@crpContribution element={} name="" index=-1 isTemplate=true /]
+[@crpContribution element={} name="project.crpContributions" index=-1 isTemplate=true /]
 
 [#-- Other contribution template --]
-[@otherContribution element={} template=true /]
+[@otherContribution element={} name="project.otherContributions" template=true /]
         
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
 
-[#macro otherContribution element index="0" template=false]
-  [#assign customName = "project.otherContributions[${template?string('-1',index)}]" /]
-  [#assign contribution = element /]
+[#macro otherContribution element name index="0" template=false]
+  [#local customName = "${name}[${template?string('-1',index)}]" /]
+  [#local contribution = element /]
   <div id="otherContribution-${template?string('template',index)}" class="otherContribution simpleBox" style="display:${template?string('none','block')}">
     <div class="loading" style="display:none"></div>
     [#-- Edit/Back/remove buttons --]
@@ -145,7 +145,6 @@
 [#macro crpContribution element name index isTemplate=false]
 <li id="crpOtherContribution-${isTemplate?string('template', index)}" class="crpOtherContribution clearfix" style="display:${isTemplate?string('none','block')}">
   [#local customName = "${name}[${index}]" /]
-  <input class="id" type="hidden" name="${customName}.crp.id" value="${(crp.crp.id)!}" />
   [#-- Remove --]
   [#if editable]<span class="listButton remove">[@s.text name="form.buttons.remove" /]</span>[/#if]
   
@@ -154,7 +153,7 @@
   <input class="crpContributionId" type="hidden" name="${customName}.id" value="${(element.id)!}" />
   
   [#-- CRP Title --]
-  <div class="fullPartBlock clearfix"><span class="name crpName">${(element.crp.name)!}</span></div>
+  <div class="form-group"><span class="name crpName">${(element.crp.name)!}</span></div>
   
   [#-- CRP Outcome Collaboration --]
   <div class="form-group col-md-12">

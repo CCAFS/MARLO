@@ -1,5 +1,6 @@
 var crpContributionName, otherContributionsName;
 var $contributionsBlock;
+
 $(document).ready(init);
 
 function init() {
@@ -82,13 +83,7 @@ function setOtherContributionsIndexes() {
 }
 
 function setOtherContributionIndex(i,element) {
-  var name = otherContributionsName + '[' + i + '].';
-  $(element).find(".otherContributionId").attr("name", name + "id");
-  $(element).find(".otherContributionRegion").attr("name", name + "region");
-  $(element).find(".otherContributionFlagship").attr("name", name + "flagship");
-  $(element).find(".otherContributionIndicator").attr("name", name + "indicators");
-  $(element).find(".otherContributionDescription").attr("name", name + "description");
-  $(element).find(".otherContributionTarget").attr("name", name + "target");
+  $(element).setNameIndexes(1, i);
 }
 
 // Items list functions
@@ -97,6 +92,7 @@ function initItemListEvents() {
     addItemList($(this).find('option:selected'));
   });
   $('ul li .remove').on('click', function(e) {
+    console.log('remove');
     removeItemList($(this).parents('li'));
   });
 
@@ -104,7 +100,7 @@ function initItemListEvents() {
 }
 
 function setInitialList() {
-  $("div.crpContribution").each(function(index,element) {
+  $("div.crpOtherContribution").each(function(index,element) {
     // Getting previously selected by project partner
     var $select = $(element).find('select');
     $(element).find('li input.id').each(function(i_id,id) {
@@ -118,7 +114,7 @@ function removeItemList($item) {
   // Adding to select list
   var $select = $item.parents('.panel').find('select');
   $select.append(setOption($item.find('.id').val(), $item.find('.name').text()));
-  $select.trigger("liszt:updated");
+  $select.trigger("select2:change");
   // Removing from list
   $item.hide("slow", function() {
     $item.remove();
@@ -140,12 +136,7 @@ function addItemList($option) {
 
 function setIndexes() {
   $contributionsBlock.find('li').each(function(i,item) {
-    var elementName = crpContributionName + '[' + i + ']';
-    $(item).find('.id').attr('name', elementName + '.crp.id');
-    $(item).find('.crpContributionId').attr('name', elementName + '.id');
-    $(item).find('.crpCollaborationNature').attr('name', elementName + '.natureCollaboration');
-    $(item).find('.crpCollaborationAchieved').attr('name', elementName + '.explainAchieved');
-
+    $(item).setNameIndexes(1, i);
   });
 }
 
