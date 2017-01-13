@@ -132,10 +132,6 @@ public class ProjectCaseStudyValidation extends BaseValidator {
         action.getInvalidFields().put("input-caseStudy.referencesCase", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (caseStudy.getFile() == null) {
-        this.addMessage("Case Study #" + caseStudy.getId() + ": File");
-        action.getInvalidFields().put("input-caseStudy.uploadAnnexes", InvalidFieldsMessages.EMPTYFIELD);
-      }
 
     }
     if (!action.getFieldErrors().isEmpty()) {
