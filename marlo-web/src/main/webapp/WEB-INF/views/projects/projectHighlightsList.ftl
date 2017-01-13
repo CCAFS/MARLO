@@ -62,7 +62,7 @@
     </div>  
 </section>
   
-[@customForm.confirmJustification action="${crpSession}/deleteHighLight.do" namespace="/projects" nameId="highlightID" projectID="${projectID}" title="Remove project highlights" /]
+[@customForm.confirmJustification action="${crpSession}/deleteHighLight.do" namespace="/projects" nameId="higlightID" projectID="${projectID}" title="Remove project highlights" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 

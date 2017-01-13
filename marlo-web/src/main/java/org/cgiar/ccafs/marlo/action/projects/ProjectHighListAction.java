@@ -104,7 +104,7 @@ public class ProjectHighListAction extends BaseAction {
   public String delete() {
     // Deleting deliverable.
     for (ProjectHighlight projectHighlight : project.getHighligths()) {
-      if (projectHighlight.getId() == higlightID) {
+      if (projectHighlight.getId().longValue() == higlightID) {
         projectHighligthManager.deleteProjectHighligth(projectHighlight.getId());
 
 
@@ -151,6 +151,8 @@ public class ProjectHighListAction extends BaseAction {
   public void prepare() throws Exception {
 
     projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+
+
     project = projectManager.getProjectById(projectID);
 
     // Getting the Deliverables Main Types.
