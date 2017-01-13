@@ -8,7 +8,7 @@
 [#assign submission = (action.submission)! /]
 [#assign canSubmit = (action.hasPersmissionSubmitImpact())!false /]
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
-[#assign canUnSubmit = (action.isProjectSubmitted(crpProgramID))!false /]
+[#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
 
 
 <nav id="secondaryMenu" class="">
