@@ -95,13 +95,14 @@
 </div>
 
 [#-- Key Outputs select --]
-[#if !project.administrative]
+[#if !project.administrative && !reportingActive]
   <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
 [/#if]
 
 [#-- Funding Source --]
+[#if !reportingActive]
 <div class="panel tertiary col-md-12">
  <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
@@ -127,6 +128,7 @@
     [/#if] 
   </div>
 </div>
+[/#if]
 
 
 [#-- Does this deliverable have a cross-cutting dimension --]
