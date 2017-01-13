@@ -171,7 +171,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(ccEmail, toEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
   public void setMessage(List<Map<String, Object>> message) {

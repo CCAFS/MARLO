@@ -108,8 +108,9 @@ public class ClusterActivitiesAction extends BaseAction {
   public ClusterActivitiesAction(APConfig config, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpManager crpManager, UserManager userManager, CrpProgramManager crpProgramManager,
     CrpClusterOfActivityManager crpClusterOfActivityManager, ClusterActivitiesValidator validator,
-    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager, SendMailS sendMail,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
+    CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
+    SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager,
     CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager) {
     super(config);
     this.roleManager = roleManager;
@@ -512,7 +513,8 @@ public class ClusterActivitiesAction extends BaseAction {
         selectedProgram = crpProgramManager.getCrpProgramById(selectedProgram.getId());
         outcomes =
           selectedProgram.getCrpProgramOutcomes().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-        if (!selectedProgram.getSubmissions().isEmpty()) {
+        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList()).isEmpty()) {
           this.setCanEdit(false);
           this.setEditable(false);
           this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));

@@ -8,7 +8,7 @@
 [#assign submission = (action.submission)! /]
 [#assign canSubmit = (action.hasPersmissionSubmitImpact())!false /]
 [#assign completed = action.isCompleteImpact(crpProgramID) /]
-[#assign canUnSubmit = (action.isProjectSubmitted(crpProgramID))!false /]
+[#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
 
 
 <nav id="secondaryMenu" class="">
@@ -57,7 +57,7 @@
 [/#if]
 
 [#-- Unsubmit button --]
-[#if canUnSubmit]
+[#if canUnSubmit && submission?has_content]
   <a id="submitProject-${crpProgramID}" class="impactUnSubmitButton projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${crpProgramID}[/@s.param][/@s.url]" >
     [@s.text name="form.buttons.unsubmit" /]
   </a>
