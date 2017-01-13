@@ -50,10 +50,7 @@
           
           [#-- Outcome case studies list --]
           <div id="caseStudiesBlock" class="">
-
-          [@caseStudyMacro element=caseStudy name="caseStudy" index=0 /]
-           
-          
+            [@caseStudyMacro element=caseStudy name="caseStudy" index=0 /]
           </div> 
           
           [#-- Section Buttons & hidden inputs--]
@@ -183,7 +180,7 @@
        <div class="panel-head"><label for=""> This outcome study is done jointly with the following project(s), please select below: </label></div>
         <div id="myProjectsList" class="panel-body" listname="deliverable.genderLevels"> 
           <ul class="list">
-          [#if element.projects?has_content]
+          [#if element.projects?has_content && (element.projects?size > 1)]
             [#list element.projects as projectLink]
               [@shareOutcomeCaseStudy element=projectLink name="caseStudy.projects" index=projectLink_index template=false /]
             [/#list]
@@ -201,14 +198,16 @@
 [/#macro]
 
 [#macro shareOutcomeCaseStudy element name index=-1 template=false]
-<li id="myProjectsTemplate" class="shareOutcomeCaseStudy clearfix" style="display:${template?string('none','block')}">
+[#local own = (!template) && (element.project.id == projectID) /]
+<li id="sharedProject-${template?string('template', index)}" class="sharedProject ${own?string('hide','')} clearfix" style="display:${template?string('none','block')}">
   [#-- Remove button --]
   [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
+  
   [#-- Hidden inputs --]
   <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
   <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
-  [#-- title --]
   
+  [#-- title --]
   <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
   <div class="clearfix"></div>
 </li>

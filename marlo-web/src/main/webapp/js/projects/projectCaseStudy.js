@@ -51,11 +51,11 @@ function addProject(option) {
   }
 
   var $list = $(option).parents(".select").parents("#myProjectsList").find(".list");
-  var $item = $("#myProjectsTemplate").clone(true).removeAttr("id");
+  var $item = $("#sharedProject-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
-  $list.find('.shareOutcomeCaseStudy').each(function(i,e) {
+  $list.find('.sharedProject').each(function(i,e) {
     if($(e).find('input.projectId').val() == option.val()) {
       canAdd = false;
       return;
@@ -82,7 +82,7 @@ function addProject(option) {
 }
 
 function updateProjects($list) {
-  $($list).find('.shareOutcomeCaseStudy').each(function(i,e) {
+  $($list).find('.sharedProject').each(function(i,e) {
     // Set funding sources indexes
     $(e).setNameIndexes(1, i);
   });
@@ -90,7 +90,7 @@ function updateProjects($list) {
 
 function removeProject() {
   var $list = $(this).parents('.list');
-  var $item = $(this).parents('.shareOutcomeCaseStudy');
+  var $item = $(this).parents('.sharedProject');
   var value = $item.find(".projectId").val();
   var name = $item.find(".name").attr("title");
   console.log(name + "-" + value);
@@ -107,7 +107,7 @@ function removeProject() {
 
 function checkProjects(block) {
   console.log(block);
-  var items = $(block).find('.shareOutcomeCaseStudy').length;
+  var items = $(block).find('.sharedProject').length;
   console.log(items);
   if(items == 0) {
     $(block).parent().find('p.emptyText').fadeIn();
