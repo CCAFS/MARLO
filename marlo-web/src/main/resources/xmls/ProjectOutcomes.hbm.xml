@@ -20,8 +20,8 @@
         <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="created_by" not-null="true" />
         </many-to-one>
-        <property name="expectedValue" type="java.lang.Long">
-            <column name="expected_value" precision="10" scale="0" not-null="false" />
+        <property name="expectedValue" type="big_decimal">
+            <column name="expected_value" precision="20" scale="5" not-null="false" />
         </property>
   
         

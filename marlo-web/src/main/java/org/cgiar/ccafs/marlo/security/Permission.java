@@ -32,6 +32,7 @@ public class Permission {
   public static final String IMPACT_PATHWAY_BASE_PERMISSION = "crp:{0}:impactPathway:{1}";
   public static final String IMPACT_PATHWAY_EDIT_PRIVILEGES = "crp:{0}:impactPathway:{1}:*";
   public static final String IMPACT_PATHWAY_VISIBLE_PRIVILEGES = "crp:{0}:impactPathway:canAcess";
+  public static final String IMPACT_PATHWAY_UNSUBMISSION_PERMISSION = "crp:{0}:impactPathway:{1}:unsubmitted";
   public static final String PROJECT_DESCRIPTION_BASE_PERMISSION = "crp:{0}:project:{1}:description";
   public static final String PROJECT_LIST_BASE_PERMISSION = "crp:{0}:project:projectsList";
   public static final String PROJECT_CONTRIBRUTIONCRP_BASE_PERMISSION = "crp:{0}:project:{1}:contributionCrp";
@@ -77,6 +78,8 @@ public class Permission {
   public static final String PROJECT_FUNDING_ = "crp:{0}:fundingSource:canEdit";
   public static final String PROJECT_FUNDING_W1_BASE_PERMISSION = "crp:{0}:fundingSource:w1";
   public static final String PROJECT_FUNDING_W3_BASE_PERMISSION = "crp:{0}:fundingSource:w3";
+  public static final String FUNDING_SOURCE_EDIT_PERMISSION = "crp:{0}:fundingSource:canEdit";
+
 
   public static final String PROJECT_FUNDING_W3_PROJECT_BASE_PERMISSION = "crp:{0}:project:{1}:fundingSource:w3";
   public static final String PROJECT_FUNDING_W3_PROJECT_INSTITUTION_BASE_PERMISSION =

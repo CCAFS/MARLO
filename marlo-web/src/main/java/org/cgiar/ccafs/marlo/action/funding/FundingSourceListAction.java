@@ -134,8 +134,10 @@ public class FundingSourceListAction extends BaseAction {
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, loggedCrp.getAcronym()))
 
       || this.hasPermissionNoBase(
-        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()));
+        this.generatePermission(Permission.PROJECT_FUNDING_W3_BASE_PERMISSION, loggedCrp.getAcronym()))
 
+      || this.hasPermissionNoBase(
+        this.generatePermission(Permission.FUNDING_SOURCE_EDIT_PERMISSION, loggedCrp.getAcronym()));
 
     return permission;
   }

@@ -27,6 +27,9 @@ $(document).ready(function() {
   // Click on submit button
   $('.submitButton, .projectSubmitButton').on('click', submitButtonEvent);
 
+// Click on unsubmit button
+  $('.impactUnSubmitButton').on('click', unSubmitButtonEvent);
+
   /* Validate justification for old projects */
   var $justification = $('#justification');
   var $parent = $justification.parent().parent();
@@ -111,6 +114,44 @@ function submitButtonEvent(e) {
               }
           }
       ]
+  });
+}
+
+function unSubmitButtonEvent(e) {
+  e.preventDefault();
+  var $dialogContent = $("#unSubmit-justification");
+  $dialogContent.dialog({
+      width: '30%',
+      modal: true,
+      closeText: "",
+      buttons: {
+          Cancel: function() {
+            $(this).dialog("close");
+          },
+          unSubmit: function() {
+            var $justification = $dialogContent.find("#justification-unSubmit");
+            if($justification.val().length > 0 && $justification.val().trim().length != 0) {
+              var url = baseURL + "/unsubmitImpactpathway.do";
+              var programId = $(".impactUnSubmitButton").attr("id").split("-")[1];
+              var data = {
+                  crpProgramID: programId,
+                  justification: $justification.val()
+              }
+              console.log(data);
+              $justification.removeClass('fieldError');
+              $.ajax({
+                  url: url,
+                  type: 'GET',
+                  dataType: "json",
+                  data: data
+              }).done(function(m) {
+                window.location.href = baseURL + "/impactPathway/" + currentCrpSession + "/outcomes.do?edit=true";
+              });
+            } else {
+              $justification.addClass('fieldError');
+            }
+          }
+      }
   });
 }
 

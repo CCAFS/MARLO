@@ -1072,6 +1072,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permissions;
   }
 
+  public boolean hasPersmissionUnSubmitImpact(long programID) {
+    String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
+      this.getCurrentCrp().getAcronym(), String.valueOf(programID));
+    boolean permissions = this.securityContext.hasPermission(permission);
+    return permissions;
+  }
+
 
   public boolean hasProgramnsRegions() {
     try {
@@ -1436,7 +1443,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
