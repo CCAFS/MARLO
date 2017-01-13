@@ -134,7 +134,7 @@ function unSubmitButtonEvent(e) {
               var url = baseURL + "/unsubmitImpactpathway.do";
               var programId = $(".impactUnSubmitButton").attr("id").split("-")[1];
               var data = {
-                  programID: programId,
+                  crpProgramID: programId,
                   justification: $justification.val()
               }
               console.log(data);
