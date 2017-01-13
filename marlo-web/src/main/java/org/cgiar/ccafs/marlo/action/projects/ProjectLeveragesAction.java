@@ -18,13 +18,13 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
-import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLeverageManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -60,7 +60,7 @@ public class ProjectLeveragesAction extends BaseAction {
   // Manager
   private ProjectManager projectManager;
   private InstitutionManager institutionManager;
-  private CrpProgramManager crpProgrammManager;
+  private IpProgramManager crpProgrammManager;
   private ProjectLeverageManager projectLeverageManager;
   private long projectID;
   private Project project;
@@ -79,7 +79,7 @@ public class ProjectLeveragesAction extends BaseAction {
 
   @Inject
   public ProjectLeveragesAction(APConfig config, ProjectManager projectManager, InstitutionManager institutionManager,
-    CrpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
+    IpProgramManager crpProgrammManager, AuditLogManager auditLogManager, CrpManager crpManager,
     ProjectLeverageManager projectLeverageManager, ProjectLeverageValidator projectLeverageValidator) {
     super(config);
     this.projectManager = projectManager;
@@ -203,8 +203,8 @@ public class ProjectLeveragesAction extends BaseAction {
     Project projectBD = projectManager.getProjectById(projectID);
 
 
-    projectLeveragesPrew =
-      projectBD.getProjectLeverages().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+    projectLeveragesPrew = projectBD.getProjectLeverages().stream()
+      .filter(a -> a.isActive() && a.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
 
 
     for (ProjectLeverage projectLeverage : projectLeveragesPrew) {
@@ -313,9 +313,9 @@ public class ProjectLeveragesAction extends BaseAction {
     }
     this.flagships = new HashMap<>();
     // Getting the information of the Flagships program for the View
-    List<CrpProgram> ipProgramFlagships = crpProgrammManager.findAll().stream()
-      .filter(c -> c.getProgramType() == 1 && c.isActive()).collect(Collectors.toList());
-    for (CrpProgram ipProgram : ipProgramFlagships) {
+    List<IpProgram> ipProgramFlagships = crpProgrammManager.findAll().stream()
+      .filter(c -> c.getIpProgramType().getId().intValue() == 4).collect(Collectors.toList());
+    for (IpProgram ipProgram : ipProgramFlagships) {
       this.flagships.put(String.valueOf(ipProgram.getId()), ipProgram.getComposedName());
     }
     if (this.isHttpPost()) {

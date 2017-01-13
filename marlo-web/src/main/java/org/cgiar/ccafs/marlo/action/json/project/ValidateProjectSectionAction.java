@@ -639,8 +639,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectLeverage> projectLeverages =
-      new ArrayList<>(project.getProjectLeverages().stream().filter(pl -> pl.isActive()).collect(Collectors.toList()));
+    List<ProjectLeverage> projectLeverages = new ArrayList<>(project.getProjectLeverages().stream()
+      .filter(pl -> pl.isActive() && pl.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
     project.setLeverages(projectLeverages);
 
