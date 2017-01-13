@@ -36,7 +36,6 @@ public interface IpIndicatorManager {
    */
   public boolean deleteIpIndicator(long ipIndicatorId);
 
-
   /**
    * This method validate if the ipIndicator identify with the given id exists in the system.
    * 
@@ -53,7 +52,10 @@ public interface IpIndicatorManager {
    */
   public List<IpIndicator> findAll();
 
+
   public List<IpIndicator> findOtherContributions(long projectID);
+
+  public List<IpIndicator> getIndicatorsFlagShips();
 
   /**
    * This method gets a ipIndicator object by a given ipIndicator identifier.

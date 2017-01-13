@@ -59,6 +59,8 @@ public interface IpIndicatorDAO {
 
   public List<IpIndicator> findOtherContributions(long projectID);
 
+  public List<IpIndicator> getIndicatorsFlagShips();
+
 
   /**
    * This method saves the information of the given ipIndicator

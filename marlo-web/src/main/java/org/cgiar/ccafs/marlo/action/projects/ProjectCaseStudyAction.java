@@ -17,14 +17,18 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
+import org.cgiar.ccafs.marlo.data.manager.CaseStudyIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
+import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -44,7 +48,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -83,9 +89,10 @@ public class ProjectCaseStudyAction extends BaseAction {
   // Manager
   private ProjectManager projectManager;
 
-
+  private IpIndicatorManager ipIndicatorManager;
   private CaseStudyManager caseStudyManager;
   private CaseStudyProjectManager caseStudyProjectManager;
+  private CaseStudyIndicatorManager caseStudyIndicatorManager;
 
   private FileDBManager fileDBManager;
 
@@ -99,13 +106,16 @@ public class ProjectCaseStudyAction extends BaseAction {
   // Model for the front-end
   private long caseStudyID;
   private long projectID;
+  private Map<String, String> caseStudyIndicators;
 
   private List<Project> myProjects;
+
 
   @Inject
   public ProjectCaseStudyAction(APConfig config, ProjectManager projectManager, CaseStudyManager highLightManager,
     CrpManager crpManager, AuditLogManager auditLogManager, FileDBManager fileDBManager,
-    CaseStudyProjectManager projectHighligthTypeManager, ProjectCaseStudyValidation caseStudyValidation) {
+    CaseStudyProjectManager projectHighligthTypeManager, IpIndicatorManager ipIndicatorManager,
+    ProjectCaseStudyValidation caseStudyValidation, CaseStudyIndicatorManager caseStudyIndicatorManager) {
     super(config);
     this.projectManager = projectManager;
     this.caseStudyManager = highLightManager;
@@ -113,12 +123,15 @@ public class ProjectCaseStudyAction extends BaseAction {
     this.auditLogManager = auditLogManager;
     this.crpManager = crpManager;
     this.fileDBManager = fileDBManager;
+    this.ipIndicatorManager = ipIndicatorManager;
+    this.caseStudyIndicatorManager = caseStudyIndicatorManager;
     this.caseStudyValidation = caseStudyValidation;
 
     this.caseStudyProjectManager = projectHighligthTypeManager;
 
 
   }
+
 
   @Override
   public String cancel() {
@@ -145,12 +158,6 @@ public class ProjectCaseStudyAction extends BaseAction {
   }
 
 
-  private String getAnualReportRelativePath() {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
-      + "hightlihts" + File.separator;
-  }
-
-
   private Path getAutoSaveFilePath() {
     String composedClassName = caseStudy.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -164,10 +171,15 @@ public class ProjectCaseStudyAction extends BaseAction {
     return caseStudy;
   }
 
+
   public long getCaseStudyID() {
     return caseStudyID;
   }
 
+
+  public Map<String, String> getCaseStudyIndicators() {
+    return caseStudyIndicators;
+  }
 
   private String getCaseStudyPath() {
     return config.getUploadsBaseFolder() + File.separator + this.getCaseStudyUrlPath() + File.separator;
@@ -178,11 +190,11 @@ public class ProjectCaseStudyAction extends BaseAction {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
   }
 
+
   public String getCaseStudyUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "caseStudy" + File.separator;
   }
-
 
   public String getContentType() {
     return contentType;
@@ -293,7 +305,14 @@ public class ProjectCaseStudyAction extends BaseAction {
           }
 
         }
+        if (caseStudy.getIndicators() != null) {
+          for (CaseStudyIndicator caseStudyIndicator : caseStudy.getIndicators()) {
+            caseStudyIndicator
+              .setIpIndicator(ipIndicatorManager.getIpIndicatorById(caseStudyIndicator.getIpIndicator().getId()));
 
+          }
+
+        }
         this.setDraft(true);
       } else {
 
@@ -301,10 +320,22 @@ public class ProjectCaseStudyAction extends BaseAction {
           caseStudy.setFile(fileDBManager.getFileDBById(caseStudy.getFile().getId()));
         }
         caseStudy.setProjects(caseStudy.getCaseStudyProjects().stream().collect(Collectors.toList()));
-
+        caseStudy.setIndicators(caseStudy.getCaseStudyIndicators().stream().collect(Collectors.toList()));
+        List<String> idsIndicators = new ArrayList<>();
+        for (CaseStudyIndicator caseStudyIndicator : caseStudy.getIndicators()) {
+          idsIndicators.add(caseStudyIndicator.getIpIndicator().getId().toString());
+        }
+        caseStudy.setCaseStudyIndicatorsIds(idsIndicators);
         this.setDraft(false);
       }
 
+    }
+
+
+    List<IpIndicator> listIndicators = ipIndicatorManager.getIndicatorsFlagShips();
+    caseStudyIndicators = new HashMap();
+    for (IpIndicator ipIndicator : listIndicators) {
+      caseStudyIndicators.put(String.valueOf(ipIndicator.getId()), ipIndicator.getDescription());
     }
 
     try {
@@ -326,13 +357,13 @@ public class ProjectCaseStudyAction extends BaseAction {
           loggedCrp.getProjects().stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-            .collect(Collectors.toList());
+          .collect(Collectors.toList());
       } else {
         myProjects =
           projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-            .collect(Collectors.toList());
+          .collect(Collectors.toList());
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
@@ -359,6 +390,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_CASE_STUDIES_PROJECTS_RELATION);
+      relationsName.add(APConstants.PROJECT_CASE_STUDIES_INDICATORS_RELATION);
       CaseStudy caseStudyDB = caseStudyManager.getCaseStudyById(caseStudyID);
       caseStudy.setActiveSince(new Date());
       caseStudy.setModifiedBy(this.getCurrentUser());
@@ -386,6 +418,26 @@ public class ProjectCaseStudyAction extends BaseAction {
           caseStudyProject.setCreated(false);
           caseStudyProject.setCaseStudy(caseStudy);
           caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
+        }
+      }
+
+      if (caseStudy.getCaseStudyIndicatorsIds() == null) {
+        caseStudy.setCaseStudyIndicatorsIds(new ArrayList<>());
+      }
+      for (CaseStudyIndicator caseStudyIndicator : caseStudyDB.getCaseStudyIndicators()) {
+        if (!caseStudy.getCaseStudyIndicatorsIds().contains(caseStudyIndicator.getIpIndicator().getId().toString())) {
+          caseStudyIndicatorManager.deleteCaseStudyIndicator(caseStudyIndicator.getId());
+        }
+      }
+
+      if (caseStudy.getCaseStudyIndicatorsIds() != null) {
+        for (String indicator : caseStudy.getCaseStudyIndicatorsIds()) {
+          CaseStudyIndicator caseStudyIndicator = new CaseStudyIndicator();
+          caseStudyIndicator.setCaseStudy(caseStudy);
+          caseStudyIndicator.setIpIndicator(ipIndicatorManager.getIpIndicatorById(Long.parseLong(indicator)));
+          if (!caseStudyDB.getCaseStudyIndicators().contains(caseStudyIndicator)) {
+            caseStudyIndicatorManager.saveCaseStudyIndicator(caseStudyIndicator);
+          }
         }
       }
 
@@ -423,12 +475,17 @@ public class ProjectCaseStudyAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
+
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
   }
 
   public void setCaseStudyID(long highlightID) {
     this.caseStudyID = highlightID;
+  }
+
+  public void setCaseStudyIndicators(Map<String, String> caseStudyIndicators) {
+    this.caseStudyIndicators = caseStudyIndicators;
   }
 
 

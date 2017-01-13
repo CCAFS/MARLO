@@ -68,6 +68,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
 
   }
 
+  @Override
   public List<IpIndicator> findOtherContributions(long projectID) {
 
     StringBuilder sb = new StringBuilder();
@@ -99,6 +100,36 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
     if (rList != null) {
       for (Map<String, Object> map : rList) {
         IpIndicator indicator = this.find(Long.parseLong(map.get("id").toString()));
+        ipIndicators.add(indicator);
+      }
+    }
+
+    return ipIndicators;
+  }
+
+  @Override
+  public List<IpIndicator> getIndicatorsFlagShips() {
+
+    StringBuilder query = new StringBuilder();
+
+
+    query.append("SELECT DISTINCT i.id, ");
+    query.append("                i.* ,prog.acronym");
+    query.append(" FROM   ip_indicators i ");
+    query.append("       LEFT JOIN ip_indicators p ");
+    query.append("              ON i.parent_id = p.id ");
+    query.append("       INNER JOIN ip_project_indicators ipi ");
+    query.append("               ON i.id = ipi.parent_id ");
+    query.append("       INNER JOIN ip_elements ie ");
+    query.append("               ON ipi.outcome_id = ie.id ");
+    query.append("        inner  JOIN ip_programs prog on prog.id=ie.ip_program_id and prog.type_id=4");
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<IpIndicator> ipIndicators = new ArrayList<>();
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpIndicator indicator = this.find(Long.parseLong(map.get("id").toString()));
+        indicator.setDescription(map.get("acronym").toString() + "-" + indicator.getDescription());
         ipIndicators.add(indicator);
       }
     }

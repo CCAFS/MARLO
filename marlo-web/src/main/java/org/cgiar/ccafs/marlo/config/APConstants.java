@@ -200,7 +200,8 @@ public final class APConstants {
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyProjects)";
 
-
+  public static final String PROJECT_CASE_STUDIES_INDICATORS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_PROJECT_HIGHLIGTH_COUNTRY_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectHighlight.projectHighligthCountries)";
 

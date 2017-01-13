@@ -25,6 +25,35 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
   public CaseStudyIndicator() {
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    CaseStudyIndicator other = (CaseStudyIndicator) obj;
+    if (caseStudy == null) {
+      if (other.caseStudy != null) {
+        return false;
+      }
+    } else if (!caseStudy.getId().equals(other.caseStudy.getId())) {
+      return false;
+    }
+    if (ipIndicator == null) {
+      if (other.ipIndicator != null) {
+        return false;
+      }
+    } else if (!ipIndicator.getId().equals(other.ipIndicator.getId())) {
+      return false;
+    }
+    return true;
+  }
+
   public CaseStudy getCaseStudy() {
     return caseStudy;
   }
@@ -37,7 +66,6 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
   public IpIndicator getIpIndicator() {
     return ipIndicator;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -59,6 +87,16 @@ public class CaseStudyIndicator implements java.io.Serializable, IAuditLog {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((caseStudy == null) ? 0 : caseStudy.getId().hashCode());
+    result = prime * result + ((ipIndicator == null) ? 0 : ipIndicator.getId().hashCode());
+    return result;
   }
 
 

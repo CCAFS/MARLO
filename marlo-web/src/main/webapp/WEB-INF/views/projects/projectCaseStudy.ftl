@@ -136,8 +136,8 @@
             [@s.fielderror cssClass="fieldError" fieldName="${customName}.caseStudyIndicatorsIds"/]
             [@s.checkboxlist name="${customName}.caseStudyIndicatorsIds" list="caseStudyIndicators" value="${customName}.caseStudyIndicatorsIds" itemKey="id"    cssClass="caseStudyIndicators checkbox" /]
           [#else]
-            [#if (element.caseStudyIndicators?has_content)!false]
-              [#list element.caseStudyIndicators as element]<p class="checked">${element.description}</p>[/#list]
+            [#if (element.indicators?has_content)!false]
+              [#list element.indicators as element]<p class="checked">${element.ipIndicator.description}</p>[/#list]
             [#else]
               <div class="select"><p>Field is empty</p></div>
             [/#if]

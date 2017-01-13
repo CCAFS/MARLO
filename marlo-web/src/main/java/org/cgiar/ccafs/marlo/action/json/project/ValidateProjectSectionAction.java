@@ -333,7 +333,7 @@ public class ValidateProjectSectionAction extends BaseAction {
         }
 
         if (projectCaseStudies.isEmpty()) {
-          section.put("missingFields", "No Case Studies");
+          section.put("missingFields", "No case studies");
         }
         break;
 
@@ -363,7 +363,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         }
         if (highlights.isEmpty()) {
-          sectionStatus.setMissingFields("No highlights");
+          section.put("missingFields", "No highlights");
         }
 
 

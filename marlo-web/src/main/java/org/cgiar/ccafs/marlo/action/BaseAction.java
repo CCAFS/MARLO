@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Auditlog;
+import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
@@ -801,14 +802,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         project = projectManager.getProjectById(projectID);
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-
-        if (caseStudies.isEmpty()) {
-          return false;
-        }
+        List<CaseStudy> caStudies = new ArrayList<>();
 
 
         for (CaseStudyProject caseStudyProject : caseStudies) {
           if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+            caStudies.add(caseStudyProject.getCaseStudy());
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), section);
             if (sectionStatus == null) {
@@ -821,7 +820,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
           }
         }
-
+        if (caStudies.isEmpty()) {
+          return false;
+        }
         returnValue = true;
         break;
 

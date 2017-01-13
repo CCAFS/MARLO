@@ -74,6 +74,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
   private Set<CaseStudyIndicator> caseStudyIndicators = new HashSet<CaseStudyIndicator>(0);
   private List<CaseStudyIndicator> indicators;
+  private List<String> caseStudyIndicatorsIds;
 
 
   public CaseStudy() {
@@ -119,14 +120,19 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
+
   public String getActivities() {
     return activities;
   }
+
 
   public Set<CaseStudyIndicator> getCaseStudyIndicators() {
     return caseStudyIndicators;
   }
 
+  public List<String> getCaseStudyIndicatorsIds() {
+    return caseStudyIndicatorsIds;
+  }
 
   public Set<CaseStudyProject> getCaseStudyProjects() {
     return caseStudyProjects;
@@ -147,6 +153,7 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return evidenceOutcome;
   }
 
+
   public String getExplainIndicatorRelation() {
     return explainIndicatorRelation;
   }
@@ -159,7 +166,6 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
-
 
   public List<CaseStudyIndicator> getIndicators() {
     return indicators;
@@ -282,6 +288,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public void setCaseStudyIndicators(Set<CaseStudyIndicator> caseStudyIndicators) {
     this.caseStudyIndicators = caseStudyIndicators;
+  }
+
+
+  public void setCaseStudyIndicatorsIds(List<String> caseStudyIndicatorsIds) {
+    this.caseStudyIndicatorsIds = caseStudyIndicatorsIds;
   }
 
 

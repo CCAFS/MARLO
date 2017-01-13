@@ -61,8 +61,14 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
 
   @Override
   public List<IpIndicator> findOtherContributions(long projectID) {
-    // TODO Auto-generated method stub
+
     return ipIndicatorDAO.findOtherContributions(projectID);
+  }
+
+  @Override
+  public List<IpIndicator> getIndicatorsFlagShips() {
+
+    return ipIndicatorDAO.getIndicatorsFlagShips();
   }
 
   @Override
