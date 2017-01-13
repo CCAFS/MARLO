@@ -141,8 +141,8 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     String ccEmail = null;
 
     // Send email to the user that is submitting the project.
-    // TO
-    toEmail = this.getCurrentUser().getEmail();
+    // CC
+    ccEmail = this.getCurrentUser().getEmail();
 
 
     List<CrpProgramLeader> owners =
@@ -162,7 +162,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
-    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+    toEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
     if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
