@@ -43,7 +43,7 @@
     [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list allYears as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year}  </a></li>
+                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [#if year == currentCycleYear] <span class="red">*</span> [/#if] </a></li>
               [/#list]
             </ul>
             
@@ -57,6 +57,7 @@
                 
                     [#assign overviewMog = (action.getOverview(year,output.id))!{} /]
                     [#assign overviewMogIndex = (action.getIndex(year,output.id))!-1 /]
+                    [#if year<currentCycleYear][#assign editableByYear = false /][#else][#assign editableByYear = true /] [/#if]
                      [#if overviewMog?has_content]
                   <div class="mog simpleBox clearfix">
                   
@@ -69,23 +70,23 @@
                     [#-- Brief bullet points of your expected annual year contribution towards the selected MOG --]
                     <div class="fullBlock">
                     <label>[@customForm.text name="planning.project.overviewByMogs.expectedBulletPoints" readText=reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].anualContribution"  showTitle=false  editable=(!reportingActive && editable) /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].anualContribution"  showTitle=false  editable=(!reportingActive && editable && editableByYear) /]
                     </div>
                     [#-- Brief summary of your actual annual contribution --]
                     <div class="fullBlock fieldFocus" style="padding: 20px 15px !important; ">
                      <label>[@customForm.text name="reporting.project.overviewByMogs.summaryAnnualContribution" readText=!reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=(reportingActive && editable) className="limitWords-50" /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=(reportingActive && editable && editableByYear) className="limitWords-50" /]
                     </div>
                     [#-- Brief plan of the gender and social inclusion dimension of the expected annual output --]
                     <div class="fullBlock">
                       <label>[@customForm.text name="planning.project.overviewByMogs.expectedSocialAndGenderPlan" readText=reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].genderContribution" showTitle=false  editable=(!reportingActive && editable) /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].genderContribution" showTitle=false  editable=(!reportingActive && editable && editableByYear) /]
                     </div>
                     
                     [#-- Summary of the gender and social inclusion dimension --]
                     <div class="fullBlock fieldFocus" style="padding: 20px 15px !important; ">
                       <label>[@customForm.text name="reporting.project.overviewByMogs.summarySocialInclusionDimmension" readText=!reportingActive param="${year}" /]:</label>  
-                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=(reportingActive && editable) className="limitWords-50"  /]
+                      [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=(reportingActive && editable && editableByYear) className="limitWords-50"  /]
                     </div>
                   </div>
                    [/#if]
