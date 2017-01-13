@@ -398,7 +398,8 @@ public class OutcomesAction extends BaseAction {
 
         String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
         this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-        if (!selectedProgram.getSubmissions().isEmpty()) {
+        if (!selectedProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+          .collect(Collectors.toList()).isEmpty()) {
           this.setCanEdit(false);
           this.setEditable(false);
           this.setSubmission(selectedProgram.getSubmissions().stream().collect(Collectors.toList()).get(0));

@@ -141,8 +141,8 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     String ccEmail = null;
 
     // Send email to the user that is submitting the project.
-    // CC
-    ccEmail = this.getCurrentUser().getEmail();
+    // TO
+    toEmail = this.getCurrentUser().getEmail();
 
 
     List<CrpProgramLeader> owners =
@@ -162,7 +162,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
     }
 
-    toEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
+    ccEmail = ccEmails.toString().isEmpty() ? null : ccEmails.toString();
     // Detect if a last ; was added to CC and remove it
     if (ccEmail != null && ccEmail.length() > 0 && ccEmail.charAt(ccEmail.length() - 2) == ',') {
       ccEmail = ccEmail.substring(0, ccEmail.length() - 2);
@@ -171,7 +171,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
     // BBC will be our gmail notification email.
     String bbcEmails = this.config.getEmailNotification();
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(ccEmail, toEmail, bbcEmails, subject, message.toString(), null, null, null, true);
   }
 
   public void setMessage(List<Map<String, Object>> message) {
