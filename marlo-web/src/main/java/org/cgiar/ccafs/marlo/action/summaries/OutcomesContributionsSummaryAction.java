@@ -274,10 +274,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getMilestonesOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "target_value", "target_unit",
-        "expected_value", "expected_unit", "narrative_target"},
-      new Class[] {String.class, String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
-        Long.class, String.class, String.class},
+      new String[] {"project_id", "flagship", "outcome", "project_url", "milestone", "expected_value", "expected_unit",
+        "narrative_target", "title"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, Long.class, String.class,
+        String.class, String.class},
       0);
 
     for (CrpProgram crpProgram : loggedCrp.getCrpPrograms().stream().filter(cp -> cp.isActive())
@@ -293,9 +293,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
             .filter(pm -> pm.isActive()).collect(Collectors.toList())) {
 
             String project_id = "", title = "", flagship = "", outcome = "", project_url = "", milestone = "",
-              target_unit = "", expected_unit = "", narrative_target = "";
+              expected_unit = "", narrative_target = "";
 
-            BigDecimal target_value = new BigDecimal(-1);
             Long expected_value = -1L;
             project_id = projectMilestone.getProjectOutcome().getProject().getId().toString();
             title = projectMilestone.getProjectOutcome().getProject().getTitle();
@@ -303,10 +302,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
             outcome = projectMilestone.getProjectOutcome().getCrpProgramOutcome().getDescription();
             project_url = "P" + projectMilestone.getProjectOutcome().getProject().getId().toString();
             milestone = crpMilestone.getComposedName();
-            target_value = crpMilestone.getValue();
-            if (crpMilestone.getSrfTargetUnit() != null) {
-              target_unit = crpMilestone.getSrfTargetUnit().getName();
-            }
             expected_value = projectMilestone.getExpectedValue();
             if (projectMilestone.getExpectedUnit() != null) {
               expected_unit = projectMilestone.getExpectedUnit().getName();
@@ -315,8 +310,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
             narrative_target = projectMilestone.getNarrativeTarget();
 
 
-            model.addRow(new Object[] {project_id, flagship, outcome, project_url, milestone, target_value, target_unit,
-              expected_value, expected_unit, narrative_target});
+            model.addRow(new Object[] {project_id, flagship, outcome, project_url, milestone, expected_value,
+              expected_unit, narrative_target, title});
 
           }
         }
@@ -333,10 +328,10 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   private TypedTableModel getProjectsOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "title", "flagship", "outcome", "target_value", "target_unit", "expected_value",
-        "expected_unit", "expected_narrative", "project_url"},
-      new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class,
-        BigDecimal.class, String.class, String.class, String.class},
+      new String[] {"project_id", "title", "flagship", "outcome", "expected_value", "expected_unit",
+        "expected_narrative", "project_url"},
+      new Class[] {String.class, String.class, String.class, String.class, BigDecimal.class, String.class, String.class,
+        String.class},
       0);
     for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
@@ -348,8 +343,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
         String title = "";
         String flagship = "";
         String outcome = "";
-        BigDecimal target_value = new BigDecimal(-1);
-        String target_unit = "";
         BigDecimal expected_value = new BigDecimal(-1);
         String expected_unit = "";
         String expected_narrative = "";
@@ -363,10 +356,6 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
           if (projectOutcome.getCrpProgramOutcome().getCrpProgram() != null) {
             flagship = projectOutcome.getCrpProgramOutcome().getCrpProgram().getAcronym();
             outcome = projectOutcome.getCrpProgramOutcome().getDescription();
-            target_value = projectOutcome.getCrpProgramOutcome().getValue();
-            if (projectOutcome.getCrpProgramOutcome().getSrfTargetUnit() != null) {
-              target_unit = projectOutcome.getCrpProgramOutcome().getSrfTargetUnit().getName();
-            }
           }
 
           expected_value = projectOutcome.getExpectedValue();
@@ -376,8 +365,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
           expected_narrative = projectOutcome.getNarrativeTarget();
         }
-        model.addRow(new Object[] {project_id, title, flagship, outcome, target_value, target_unit, expected_value,
-          expected_unit, expected_narrative, project_url});
+        model.addRow(new Object[] {project_id, title, flagship, outcome, expected_value, expected_unit,
+          expected_narrative, project_url});
 
       }
     }
