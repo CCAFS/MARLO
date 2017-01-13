@@ -21,7 +21,7 @@
             <column name="created_by" not-null="true" />
         </many-to-one>
         <property name="expectedValue" type="big_decimal">
-            <column name="expected_value" precision="10" scale="5" not-null="false" />
+            <column name="expected_value" precision="20" scale="5" not-null="false" />
         </property>
   
         
