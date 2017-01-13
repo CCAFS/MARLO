@@ -126,16 +126,19 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-          if (deliverable.getCrpClusterKeyOutput() != null) {
-            if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
+        if (action.isReportingActive()) {
+          if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+            if (deliverable.getCrpClusterKeyOutput() != null) {
+              if (deliverable.getCrpClusterKeyOutput().getId() == -1) {
+                this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
+                action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+            } else {
               this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
               action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
-          } else {
-            this.addMessage(action.getText("project.deliverable.generalInformation.keyOutput"));
-            action.getInvalidFields().put("input-deliverable.crpClusterKeyOutput.id", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
 
@@ -152,11 +155,12 @@ public class DeliverableValidator extends BaseValidator {
           action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-
-        if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
-          this.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
-          action.getInvalidFields().put("list-deliverable.fundingSources",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+        if (action.isReportingActive()) {
+          if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {
+            this.addMessage(action.getText("project.deliverable.generalInformation.fundingSources"));
+            action.getInvalidFields().put("list-deliverable.fundingSources",
+              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Funding Sources"}));
+          }
         }
         if (deliverable.getCrossCuttingGender() != null && deliverable.getCrossCuttingGender().booleanValue() == true) {
 
