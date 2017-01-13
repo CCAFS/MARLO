@@ -808,7 +808,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
         for (CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isCreated()) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), section);
             if (sectionStatus == null) {
@@ -827,8 +827,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       case HIGHLIGHT:
         project = projectManager.getProjectById(projectID);
-        List<ProjectHighlight> highlights =
-          project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
         if (highlights.isEmpty()) {
           return false;
         }
