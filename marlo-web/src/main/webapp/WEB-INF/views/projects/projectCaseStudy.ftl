@@ -162,7 +162,7 @@
               <p><a href="${(CaseStudyURL)!}${element.file.fileName}">${element.file.fileName}</a><input type="hidden" name="${customName}.file.id" value="${element.file.id}" /> </p>
             [#else]
               [#if editable]
-                [@customForm.inputFile name="file.id" className="annexesFile"  /]
+                [@customForm.inputFile name="file" className="annexesFile"  /]
               [#else]  
                 [@s.text name="form.values.notFileUploaded" /]
               [/#if] 
