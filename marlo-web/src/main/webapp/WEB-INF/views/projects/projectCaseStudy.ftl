@@ -180,7 +180,7 @@
        <div class="panel-head"><label for=""> This outcome study is done jointly with the following project(s), please select below: </label></div>
         <div id="myProjectsList" class="panel-body" listname="deliverable.genderLevels"> 
           <ul class="list">
-          [#if element.projects?has_content && (element.projects?size > 1)]
+          [#if element.projects?has_content ]
             [#list element.projects as projectLink]
               [@shareOutcomeCaseStudy element=projectLink name="caseStudy.projects" index=projectLink_index template=false /]
             [/#list]
