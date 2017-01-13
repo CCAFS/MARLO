@@ -201,14 +201,18 @@
 [/#macro]
 
 [#macro shareOutcomeCaseStudy element name index=-1 template=false]
-<li id="myProjectsTemplate" class="shareOutcomeCaseStudy clearfix" style="display:${template?string('none','block')}">
+[#local own = (!template) && (element.project.id == projectID) /]
+<li id="sharedProject-${template?string('template', index)}" class="sharedProject clearfix" style="display:${template?string('none','block')}">
   [#-- Remove button --]
   [#if editable]<div class="removeProject removeIcon" title="Remove Project"></div>[/#if] 
+  
+  ${own?string('own','')} 
+  
   [#-- Hidden inputs --]
   <input class="id" type="hidden" name="${name}[${index}].id" value="${(element.id)!}" />
   <input class="projectId" type="hidden" name="${name}[${index}].project.id" value="${(element.project.id)!}" />
-  [#-- title --]
   
+  [#-- title --]
   <span title="${(element.project.title)!'undefined'}" class="name">${(element.project.composedName)!'undefined'}</span>
   <div class="clearfix"></div>
 </li>
