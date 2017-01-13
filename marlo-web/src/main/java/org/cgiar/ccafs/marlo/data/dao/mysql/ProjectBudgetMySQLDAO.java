@@ -62,7 +62,7 @@ public class ProjectBudgetMySQLDAO implements ProjectBudgetDAO {
     } catch (Exception e) {
       return "0";
     }
-    return null;
+    return "0";
   }
 
   @Override
