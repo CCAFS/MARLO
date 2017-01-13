@@ -278,6 +278,13 @@ public class ProjectLeveragesAction extends BaseAction {
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
         project.setAdministrative(projectDb.getAdministrative());
 
+        if (project.getLeveragesClosed() == null) {
+
+          project.setLeveragesClosed(new ArrayList<ProjectLeverage>());
+        } else {
+          project.getLeveragesClosed().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        }
+
         if (project.getLeverages() == null) {
 
           project.setLeverages(new ArrayList<ProjectLeverage>());
@@ -286,9 +293,12 @@ public class ProjectLeveragesAction extends BaseAction {
         }
         this.setDraft(true);
       } else {
-        project
-          .setLeverages(project.getProjectLeverages().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        project.setLeverages(project.getProjectLeverages().stream()
+          .filter(c -> c.isActive() && c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+        project.setLeveragesClosed(project.getProjectLeverages().stream()
+          .filter(c -> c.isActive() && c.getYear() != this.getCurrentCycleYear()).collect(Collectors.toList()));
         project.getLeverages().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        project.getLeveragesClosed().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         this.setDraft(false);
       }
     }

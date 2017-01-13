@@ -64,9 +64,9 @@
           [#-- Previous Leverages --]
           <h3 class="headTitle">[@s.text name="projectLeverages.previousLeverages" /]</h3>
           <div class="simpleBox">
-          [#if project.previousLeverages?has_content]
-            [#list project.previousLeverages as leverage]
-              [@leverageMacro leverage=leverage name="project.leverages"  index=leverage_index  /]
+          [#if project.leveragesClosed?has_content]
+            [#list project.leveragesClosed as leverage]
+              [@leverageMacro leverage=leverage name="project.leveragesClosed"  index=leverage_index  /]
             [/#list] 
           [/#if]
           </div>
