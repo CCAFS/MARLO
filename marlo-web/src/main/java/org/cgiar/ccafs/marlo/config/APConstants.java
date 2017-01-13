@@ -74,6 +74,10 @@ public final class APConstants {
   public static final String DELIVERABLE_ID = "deliverableId";
   public static final String CRP_ADMIN_ROLE = "crp_admin_rol";
 
+  // Metadata request
+  public static final String METADATA_REQUEST_ID = "metadataID";
+  public static final String PAGE_ID = "pageID";
+
   // Query parameter
   public static final String QUERY_PARAMETER = "q";
 

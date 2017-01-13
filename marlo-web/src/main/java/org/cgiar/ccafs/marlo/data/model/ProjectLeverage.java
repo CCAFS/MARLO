@@ -25,7 +25,7 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private CrpProgram crpProgram;
+  private IpProgram crpProgram;
   @Expose
   private Institution institution;
   private Project project;
@@ -50,7 +50,7 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   public ProjectLeverage() {
   }
 
-  public ProjectLeverage(CrpProgram crpProgram, Institution institution, Project project, User usersByCreatedBy,
+  public ProjectLeverage(IpProgram crpProgram, Institution institution, Project project, User usersByCreatedBy,
     User usersByModifiedBy, String title, Integer year, Double budget, boolean isActive, Date activeSince,
     String modificationJustification) {
     this.crpProgram = crpProgram;
@@ -116,7 +116,7 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
-  public CrpProgram getCrpProgram() {
+  public IpProgram getCrpProgram() {
     return crpProgram;
   }
 
@@ -205,7 +205,7 @@ public class ProjectLeverage implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCrpProgram(CrpProgram crpProgram) {
+  public void setCrpProgram(IpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
 

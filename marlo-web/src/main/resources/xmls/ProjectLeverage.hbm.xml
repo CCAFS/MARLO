@@ -8,7 +8,7 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.IpProgram" fetch="select">
             <column name="flagship" />
         </many-to-one>
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
