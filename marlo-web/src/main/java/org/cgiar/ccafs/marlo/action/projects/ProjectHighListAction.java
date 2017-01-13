@@ -64,7 +64,7 @@ public class ProjectHighListAction extends BaseAction {
     ProjectHighlight projectHighlight = new ProjectHighlight();
     // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
     projectHighlight.setYear(new Long(this.getCurrentCycleYear()));
-
+    projectHighlight.setModifiedBy(this.getCurrentUser());
     projectHighlight.setActiveSince(new Date());
     projectHighlight.setAuthor("");
     // newDeliverable.setContributor("");

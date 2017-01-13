@@ -155,7 +155,9 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;
       }
-
+      if (caseStudy.getYear() != baseAction.getCurrentCycleYear()) {
+        canEdit = false;
+      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

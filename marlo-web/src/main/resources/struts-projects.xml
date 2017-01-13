@@ -127,7 +127,7 @@
 		</action>
 		
 		
-		   <action name="{crp}/addNewhighlight" method="add" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
+		   <action name="{crp}/addNewHighlight" method="add" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
       <result name="input">/WEB-INF/projects/projectHighlightsList.ftl</result>
       <result name="success" type="redirectAction">
        <param name="actionName">${crpSession}/highlight</param>

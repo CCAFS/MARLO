@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -307,14 +309,15 @@ public class ValidateProjectSectionAction extends BaseAction {
       case CASESTUDIES:
         List<CaseStudyProject> caseStudies =
           project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-
+        List<CaseStudy> projectCaseStudies = new ArrayList<>();
         section = new HashMap<String, Object>();
         section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
         section.put("missingFields", "");
 
 
         for (CaseStudyProject caseStudyProject : caseStudies) {
-          if (caseStudyProject.isCreated()) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+            projectCaseStudies.add(caseStudyProject.getCaseStudy());
             sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
               cycle, this.getCurrentCycleYear(), sectionName);
             if (sectionStatus == null) {
@@ -329,12 +332,14 @@ public class ValidateProjectSectionAction extends BaseAction {
           }
         }
 
-
+        if (projectCaseStudies.isEmpty()) {
+          section.put("missingFields", "No Case Studies");
+        }
         break;
 
       case HIGHLIGHT:
-        List<ProjectHighlight> highlights =
-          project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
 
         section = new HashMap<String, Object>();
         section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHT);
@@ -355,6 +360,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           }
 
+        }
+        if (highlights.isEmpty()) {
+          sectionStatus.setMissingFields("No highlights");
         }
 
 
@@ -590,7 +598,7 @@ public class ValidateProjectSectionAction extends BaseAction {
       project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
 
     for (CaseStudyProject caseStudyProject : caseStudies) {
-      if (caseStudyProject.isCreated()) {
+      if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
         projectCaseStudyValidation.validate(this, project, caseStudyProject.getCaseStudy(), false);
       }
 
@@ -614,8 +622,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
 
-    List<ProjectHighlight> highlights =
-      project.getProjectHighligths().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+      .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
 
@@ -855,7 +863,15 @@ public class ValidateProjectSectionAction extends BaseAction {
     for (ProjectPartner projectPartner : project.getPartners()) {
       List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
+      if (this.isReportingActive()) {
 
+        List<ProjectPartnerOverall> overalls = projectPartner.getProjectPartnerOveralls().stream()
+          .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
+        if (!overalls.isEmpty()) {
+          project.setOverall(overalls.get(0).getOverall());
+
+        }
+      }
       List<ProjectPartnerContribution> partnerContributions =
         projectPartner.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
@@ -868,6 +884,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     if (this.isLessonsActive()) {
       this.loadLessons(loggedCrp, project, ProjectSectionStatusEnum.PARTNERS.getStatus());
     }
+
+
     projectPartnerValidator.validate(this, project, false);
 
   }

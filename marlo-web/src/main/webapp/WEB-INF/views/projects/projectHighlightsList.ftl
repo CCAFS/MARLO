@@ -89,7 +89,7 @@
             <td class="type">[#if hl.title?trim?has_content]${hl.author}[#else]Not defined[/#if]</td>
             <td class="year">[#if hl.title?trim?has_content]${hl.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
-              [#if canEdit && action.hasPermission("removeHighlight") && (hl.year gte  currentCycleYear) ]
+              [#if canEdit  && (hl.year gte  currentCycleYear) ]
                 <a id="removeHighlight-${hl.id}" class="removeHighlight" href="highlightID${hl.id}" title="" >
                   <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>
