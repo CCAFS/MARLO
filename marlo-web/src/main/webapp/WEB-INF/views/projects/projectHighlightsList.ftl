@@ -62,7 +62,7 @@
     </div>  
 </section>
   
-[@customForm.confirmJustification action="${crpSession}/deleteHighLight" namespace="/reporting/projects" nameId="highlightID" projectID="${projectID}" title="Remove project highlights" /]
+[@customForm.confirmJustification action="${crpSession}/deleteHighLight.do" namespace="/projects" nameId="highlightID" projectID="${projectID}" title="Remove project highlights" /]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -90,7 +90,7 @@
             <td class="year">[#if hl.title?trim?has_content]${hl.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
               [#if canEdit  && (hl.year gte  currentCycleYear) ]
-                <a id="removeHighlight-${hl.id}" class="removeHighlight" href="highlightID${hl.id}" title="" >
+                <a id="removeHighlight-${hl.id}" class="removeHighlight" href="#" title="" >
                   <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectHighlights.removeHighlight" /]" /> 
                 </a>
               [#else]

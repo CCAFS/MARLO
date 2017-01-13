@@ -127,18 +127,19 @@
 		</action>
 		
 		
-		   <action name="{crp}/addNewHighlight" method="add" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
+    <action name="{crp}/addNewHighlight" method="add" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
       <result name="input">/WEB-INF/projects/projectHighlightsList.ftl</result>
       <result name="success" type="redirectAction">
        <param name="actionName">${crpSession}/highlight</param>
-        <param name="highlightID">${higlightID}</param>
-        <param name="edit">true</param>
+       <param name="highlightID">${higlightID}</param>
+       <param name="edit">true</param>
       </result>
     </action>
     
     <action name="{crp}/deleteHighLight" method="delete" class="org.cgiar.ccafs.marlo.action.projects.ProjectHighListAction">
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/highlights</param>
+        <param name="highlightID">${higlightID}</param>
         <param name="projectID">${projectID}</param>
       </result>
     </action>
