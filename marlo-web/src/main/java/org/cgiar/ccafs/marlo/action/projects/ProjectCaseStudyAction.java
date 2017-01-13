@@ -414,9 +414,10 @@ public class ProjectCaseStudyAction extends BaseAction {
         }
       }
       for (CaseStudyProject caseStudyProject : caseStudy.getProjects()) {
-        if (caseStudyProject.getId() == null) {
+        if (caseStudyProject.getId() == null || caseStudyProject.getId().longValue() == -1) {
           caseStudyProject.setCreated(false);
           caseStudyProject.setCaseStudy(caseStudy);
+          caseStudyProject.setId(null);
           caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
         }
       }
