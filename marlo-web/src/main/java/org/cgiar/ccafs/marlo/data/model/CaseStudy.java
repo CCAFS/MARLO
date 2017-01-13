@@ -72,9 +72,13 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   private List<CaseStudyProject> projects;
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+  private Set<CaseStudyIndicator> caseStudyIndicators = new HashSet<CaseStudyIndicator>(0);
+  private List<CaseStudyIndicator> indicators;
+
 
   public CaseStudy() {
   }
+
 
   public CaseStudy(boolean isActive, Date activeSince) {
     this.active = isActive;
@@ -115,9 +119,12 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return activeSince;
   }
 
-
   public String getActivities() {
     return activities;
+  }
+
+  public Set<CaseStudyIndicator> getCaseStudyIndicators() {
+    return caseStudyIndicators;
   }
 
 
@@ -125,32 +132,37 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
     return caseStudyProjects;
   }
 
+
   public String getComment() {
     return comment;
   }
+
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+
   public String getEvidenceOutcome() {
     return evidenceOutcome;
   }
-
 
   public String getExplainIndicatorRelation() {
     return explainIndicatorRelation;
   }
 
-
   public FileDB getFile() {
     return file;
   }
 
-
   @Override
   public Long getId() {
     return id;
+  }
+
+
+  public List<CaseStudyIndicator> getIndicators() {
+    return indicators;
   }
 
 
@@ -268,6 +280,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
   }
 
 
+  public void setCaseStudyIndicators(Set<CaseStudyIndicator> caseStudyIndicators) {
+    this.caseStudyIndicators = caseStudyIndicators;
+  }
+
+
   public void setCaseStudyProjects(Set<CaseStudyProject> caseStudyProjectses) {
     this.caseStudyProjects = caseStudyProjectses;
   }
@@ -300,6 +317,11 @@ public class CaseStudy implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setIndicators(List<CaseStudyIndicator> indicators) {
+    this.indicators = indicators;
   }
 
 

@@ -136,6 +136,7 @@
 		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
 		<mapping resource="xmls/OtherContributions.hbm.xml" />
 		<mapping resource="xmls/CrpsPandr.hbm.xml" />
+		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
