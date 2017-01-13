@@ -60,7 +60,7 @@
                   [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
                     <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
-                    <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
+                    <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]
                   [#-- Planning/Reporting lessons --]
@@ -253,7 +253,7 @@
       
       
       [#-- Indicate which PPA Partners for second level partners --]
-      [#if (editable || ((!editable && element.partnerContributors?has_content)!false)) && (!project.bilateralProject)]
+      [#if (editable || ((!editable && element.partnerContributors?has_content)!false))]
         [#assign showPPABlock][#if isPPA || isTemplate]none[#else]block[/#if][/#assign]
         <div class="ppaPartnersList panel tertiary" listname="${name}.partnerContributors" style="display:${showPPABlock}">
           <h5 class="sectionSubTitle">[@customForm.text name="projectPartners.indicatePpaPartners" readText=!editable /] <small>[@customForm.req required=editable /]</small></h5>

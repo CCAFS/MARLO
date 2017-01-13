@@ -406,12 +406,12 @@ public class ProjectPartnerAction extends BaseAction {
       String bbcEmails = this.config.getEmailNotification();
       // Send pdf
       String contentType = "application/pdf";
-      String fileName = "MARLO_UserManual_V1.0.pdf";
+      String fileName = "MARLO_UserManual_V1.1.pdf";
       byte[] buffer = null;
       InputStream inputStream = null;
 
       try {
-        inputStream = this.getClass().getResourceAsStream("/custom/MARLO_UserManual_20161118_AV_HT_AW.pdf");
+        inputStream = this.getClass().getResourceAsStream("/manual/MARLO_UserManual_20170111_AV_HT_AW.pdf");
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
         // TODO Auto-generated catch block
@@ -939,6 +939,11 @@ public class ProjectPartnerAction extends BaseAction {
               }
               partnerPerson.setProjectPartner(projectPartner);
 
+              if (partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PL)
+                || partnerPerson.getContactType().equals(APConstants.PROJECT_PARTNER_PC)) {
+                this.notifyNewUserCreated(partnerPerson.getUser());
+              }
+
 
               projectPartnerPersonManager.saveProjectPartnerPerson(partnerPerson);
               User userDB = userManager.getUser(partnerPerson.getUser().getId());
@@ -1041,9 +1046,7 @@ public class ProjectPartnerAction extends BaseAction {
 
       ProjectPartnerPerson leader = project.getLeaderPerson();
       // Notify user if the project leader was created.
-      if (leader != null) {
-        this.notifyNewUserCreated(leader.getUser());
-      }
+
       this.updateRoles(previousProject.getLeaderPerson(), leader, plRole);
 
 
