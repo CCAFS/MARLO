@@ -143,7 +143,7 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     // method to get all the subreports in the prpt and store in the HashMap
     this.getAllSubreports(hm, masteritemBand);
     // Uncomment to see which Subreports are detecting the method getAllSubreports
-    System.out.println("Pentaho SubReports: " + hm);
+    // System.out.println("Pentaho SubReports: " + hm);
 
     this.fillSubreport((SubReport) hm.get("projects_details"), "project");
     this.fillSubreport((SubReport) hm.get("projects_activities"), "activities");

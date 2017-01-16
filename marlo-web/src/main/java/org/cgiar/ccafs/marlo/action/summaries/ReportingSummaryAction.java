@@ -139,7 +139,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     // Calculate time to generate report
     long startTime = System.currentTimeMillis();
-    System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
+    // System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -308,14 +308,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     } catch (Exception e) {
       long stopTime = System.currentTimeMillis();
       long elapsedTime = stopTime - startTime;
-      System.out.println("Tiempo de ejecución: Error time " + elapsedTime);
+      // System.out.println("Tiempo de ejecución: Error time " + elapsedTime);
       LOG.error("Generating PDF" + e.getMessage());
       throw e;
     }
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;
-    System.out.println("Tiempo de ejecución: " + elapsedTime);
+    // System.out.println("Tiempo de ejecución: " + elapsedTime);
     return SUCCESS;
 
   }
@@ -738,7 +738,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Get funding sources if exist
         for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
           .filter(d -> d.isActive()).collect(Collectors.toList())) {
-          funding_sources += "&#9679; " + dfs.getFundingSource().getTitle() + "<br>";
+          funding_sources += "● " + dfs.getFundingSource().getTitle() + "<br>";
         }
         if (funding_sources.isEmpty()) {
           funding_sources = null;
@@ -753,17 +753,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         if (deliverable.getCrossCuttingGender() != null) {
           if (deliverable.getCrossCuttingGender() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Gender <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
           }
         }
         if (deliverable.getCrossCuttingYouth() != null) {
           if (deliverable.getCrossCuttingYouth() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Youth <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
           }
         }
         if (deliverable.getCrossCuttingCapacity() != null) {
           if (deliverable.getCrossCuttingCapacity() == true) {
-            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; Capacity Development <br>";
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
           }
         }
 
@@ -776,7 +776,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
               cross_cutting += "<br><b>Gender level(s): </b><br>";
               for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
                 if (dgl.getGenderLevel() != 0.0) {
-                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;&#9679; "
+                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
                     + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
                 }
               }
@@ -865,22 +865,22 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String cross_cutting = "";
     if (project.getCrossCuttingNa() != null) {
       if (project.getCrossCuttingNa() == true) {
-        cross_cutting += "&#9679; N/A <br>";
+        cross_cutting += "● N/A <br>";
       }
     }
     if (project.getCrossCuttingGender() != null) {
       if (project.getCrossCuttingGender() == true) {
-        cross_cutting += "&#9679; Gender <br>";
+        cross_cutting += "● Gender <br>";
       }
     }
     if (project.getCrossCuttingYouth() != null) {
       if (project.getCrossCuttingYouth() == true) {
-        cross_cutting += "&#9679; Youth <br>";
+        cross_cutting += "● Youth <br>";
       }
     }
     if (project.getCrossCuttingCapacity() != null) {
       if (project.getCrossCuttingCapacity() == true) {
-        cross_cutting += "&#9679; Capacity Development <br>";
+        cross_cutting += "● Capacity Development <br>";
       }
     }
 
