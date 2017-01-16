@@ -1023,9 +1023,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew",
-        "isAdministrative", "type"},
+        "isAdministrative", "type", "isPlanning", "isGlobal"},
       new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, Boolean.class,
-        Boolean.class, String.class});
+        Boolean.class, String.class, Boolean.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -1107,9 +1107,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
 
     Boolean isNew = this.isProjectNew(projectID);
+    Boolean isPlanning = true;
 
-
-    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative, type});
+    String cycleFront = this.getRequest().getParameter("cycle");
+    if (cycleFront.equals("Reporting")) {
+      isPlanning = false;
+    }
+    model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative, type,
+      isPlanning, project.isLocationGlobal()});
     return model;
   }
 
