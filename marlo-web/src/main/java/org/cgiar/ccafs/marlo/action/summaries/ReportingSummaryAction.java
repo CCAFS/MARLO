@@ -1068,7 +1068,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Filling submission
     List<Submission> submissions = new ArrayList<>();
     for (Submission submission : project.getSubmissions().stream()
-      .filter(c -> c.getCycle().equals(cycle) && c.getYear() == year).collect(Collectors.toList())) {
+      .filter(c -> c.getCycle().equals(cycle) && c.getYear() == year && c.getUnSubmitUser() == null)
+      .collect(Collectors.toList())) {
       submissions.add(submission);
     }
 
