@@ -236,8 +236,8 @@ function checkboxAllCountries() {
           var id = $(e).attr("id").split('-')[1];
           var isList = $(e).parent().parent().parent().find(".isList");
           if(isList.val() == "false") {
-            addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude").val()),
-                $(e).find(".locElementName").val());
+            addMarker(map, id, parseFloat($(e).find(".geoLatitude").val()),
+                parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val());
           }
         })
   }
