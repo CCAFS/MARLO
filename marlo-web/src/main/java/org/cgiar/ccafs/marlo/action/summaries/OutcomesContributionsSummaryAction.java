@@ -102,7 +102,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    String current_date = timezone.format(format) + "(GMT" + timezone.getOffset() + ")";
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
