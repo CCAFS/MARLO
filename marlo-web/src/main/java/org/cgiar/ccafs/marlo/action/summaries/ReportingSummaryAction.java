@@ -1059,7 +1059,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + this.getTimeZone();
+    String current_date = timezone.format(format) + "(GMT" + timezone.getOffset() + ")";
 
     // Filling submission
     List<Submission> submissions = new ArrayList<>();
