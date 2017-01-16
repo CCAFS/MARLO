@@ -35,7 +35,7 @@
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
-        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+        [#include "/WEB-INF/views/projects/messages-deliverables.ftl" /]
         
        
       
