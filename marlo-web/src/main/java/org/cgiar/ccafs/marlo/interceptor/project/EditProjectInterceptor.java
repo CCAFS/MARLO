@@ -151,6 +151,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 
+      if (baseAction.isCrpClosed()) {
+        canEdit = false;
+      }
+
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
