@@ -96,6 +96,7 @@ function attachEvents() {
       $(this).parent().find(".name").removeClass('fieldError');
       if(latitude != "" && latitude != null && longitude != "" && longitude != null) {
         if(isCoordinateValid(latitude, longitude)) {
+          console.log("here1");
           addLocationForm($(this).parent().parent(), latitude, longitude, name);
         }
       } else {
@@ -376,8 +377,8 @@ function addLocationForm(parent,latitude,longitude,name) {
       complete: function(data) {
         $item.attr("id", "location-" + (countID));
         $item.find('.locationName').html(
-            '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude.toFixed(4) + ', '
-                + longitude.toFixed(4) + ' )</span> ');
+            '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
+                + parseFloat(longitude).toFixed(4) + ' )</span> ');
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
         $item.find('.locElementName').val(name);
