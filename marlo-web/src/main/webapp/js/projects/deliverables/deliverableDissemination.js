@@ -2,8 +2,8 @@ $(document).ready(init);
 
 function init() {
   /* Init Select2 plugin */
-  $('form select').select2({
-    width: '100%'
+  $('.disseminationChannel').select2({
+    width: '50%'
   });
   $(".accessible .no-button-label").addClass("radio-checked");
   $(".findable .yes-button-label").addClass("radio-checked");
@@ -76,6 +76,30 @@ function init() {
 // Remove a author
   $('.removeAuthor').on('click', removeAuthor);
 
+  // Change dissemination channel
+  $(".disseminationChannel").on('change', changeDisseminationChannel);
+
+  $("#fillMetadata").on("click", function() {
+    var url = $(".deliverableDisseminationUrl").val();
+    // Validate url
+    // get data from url
+
+  });
+
+}
+
+function changeDisseminationChannel() {
+  var channel = $(".disseminationChannel").val();
+  if(channel != "-1") {
+    if(channel == "other") {
+      $('#disseminationName').slideDown("slow");
+    } else {
+      $('#disseminationName').slideUp("slow");
+    }
+    $('#disseminationUrl').slideDown("slow");
+  } else {
+    $('#disseminationUrl').slideUp("slow");
+  }
 }
 
 function addAuthor() {

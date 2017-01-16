@@ -43,14 +43,20 @@
   <div class="findableOptions" style="display:block;">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
-    [@customForm.select name="" label=""  i18nkey="Select a dissemination channel:" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
-    <div style="display:none;">
-      [@customForm.input name="" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="" required=true editable=editable /]
+    <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
+    <select name="" id="disChannel" class="disseminationChannel">
+      <option value="-1">Select an option</option>
+      <option value="1">Other</option>
+      <option value="2">CGSpace</option>
+      <option value="3">Dataverse</option>
+    </select>
+    <div id="disseminationUrl" style="display:none;">
+      [@customForm.input name="" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+      <div id="fillMetadata" class="checkButton" style="">Search & Fill Metadata</div>
+      <div class="clearfix"></div>
     </div>
-    <br />
-    <div class="col-md-12 note" style="display:none;">[@s.text name = "Metadata form in the next slide will be filled out automatically" /]</div>
     <div style="display:none;">
-      [@customForm.input name="" value="" type="text" i18nkey="Deliverable URL:"  placeholder="" className="" required=true editable=editable /]
+      [@customForm.input name="" value="" type="text" i18nkey="Deliverable URL"  placeholder="" className="" required=true editable=editable /]
     </div>
     <div class="clearfix"></div>
   </div>
