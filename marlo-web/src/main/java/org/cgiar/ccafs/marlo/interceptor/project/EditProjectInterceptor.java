@@ -102,9 +102,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         if (!baseAction.isSubmit(projectId)) {
-          canEdit = true;
+
           canSwitchProject = true;
         }
+        canEdit = true;
 
 
       } else {
@@ -128,6 +129,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canSwitchProject = true;
         }
 
+        if (baseAction.isSubmit(projectId)) {
+          canEdit = false;
+
+        }
+
       }
 
       // TODO Validate is the project is new
@@ -145,10 +151,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 
-      if (baseAction.isSubmit(projectId)) {
-        canEdit = false;
 
-      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

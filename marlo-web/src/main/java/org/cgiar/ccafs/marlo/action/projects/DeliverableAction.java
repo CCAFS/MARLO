@@ -744,6 +744,7 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setTitle(deliverable.getTitle());
       deliverablePrew.setYear(deliverable.getYear());
+      deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
 
       if (deliverable.getCrossCuttingCapacity() == null) {
@@ -798,7 +799,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
