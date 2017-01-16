@@ -1102,12 +1102,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     int budgetCoASection = 0;
     int outcomeSection = 0;
 
+
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
         && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-        if (sectionStatus.getMissingFields().length() > 0) {
-          return false;
+
+        if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
+          Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
+
+          if (a.isActive() && a.getYear() >= this.getCurrentCycleYear()
+            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0)))) {
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
+            }
+          }
+        } else {
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
         }
+
       }
 
     }
