@@ -391,7 +391,7 @@ function addLocationForm(parent,latitude,longitude,name) {
         parent.find(".longitude").val("");
         parent.find(".name").val("");
         // add marker
-        addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name, "false");
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false");
         // update indexes
         updateIndex();
       }
@@ -507,7 +507,7 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site, isList);
+          addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList);
         }
         // ADD country into countries list
         $.ajax({
