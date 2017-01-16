@@ -116,7 +116,11 @@ public class SearchTermsSummaryAction extends BaseAction implements Summary {
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + "(GMT" + timezone.getOffset() + ")";
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String current_date = timezone.format(format) + "(GMT" + zone + ")";
     String parameters = this.getRequest().getParameter("keys");
     if (parameters != null) {
       if (parameters.isEmpty()) {
