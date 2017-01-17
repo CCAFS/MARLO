@@ -201,6 +201,8 @@
           [/#if]
           
           [#-- Next Users --]
+          [#-- For A4NH CRP, nextusers aren't required --]
+          [#if !(crpSession == "a4nh")]
           <h4 class="headTitle">(Next) Users </h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
@@ -216,6 +218,7 @@
               <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
             [/#if]
           </div>
+          [/#if]
           
           [#-- Lessons and progress --]
           [#if !action.isProjectNew(project.id)]

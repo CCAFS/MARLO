@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Crp;
-import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
@@ -35,13 +34,11 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
-import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -62,7 +59,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,10 +84,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Andrés Felipe Valencia Rivera. CCAFS
  */
-public class ReportingSummaryAction extends BaseAction implements Summary {
+public class test2Action extends BaseAction implements Summary {
 
   private static final long serialVersionUID = -624982650510682813L;
-  private static Logger LOG = LoggerFactory.getLogger(ReportingSummaryAction.class);
+  private static Logger LOG = LoggerFactory.getLogger(test2Action.class);
 
   private CrpManager crpManager;
 
@@ -122,7 +118,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private Project project;
 
   @Inject
-  public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
+  public test2Action(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
     LocElementManager locElementManager) {
     super(config);
@@ -148,160 +144,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // manager.registerDefaults();
     try {
       Resource reportResource =
-        manager.createDirectly(this.getClass().getResource("/pentaho/project-description.prpt"), MasterReport.class);
+        manager.createDirectly(this.getClass().getResource("/pentaho/Pruebautf8Html.prpt"), MasterReport.class);
 
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
-
-      // Get project from DB and general parameters
-      project = projectManager.getProjectById(projectID);
-      String masterQueryName = "Main_Query";
-      int year = 0;
-      String cycle = "";
-      year = this.getYear();
-      if (this.getCycle() != null) {
-        cycle = this.getCycle();
-      }
-
-      // General list to store parameters of Subreports
-      List<Object> args = new LinkedList<>();
-      // Verify if the project was found
-      if (project == null) {
-        // Set Main_Query
-        CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-        TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-        TypedTableModel model = this.getNullMasterTableModel(cycle, year);
-        sdf.addTable(masterQueryName, model);
-        masterReport.setDataFactory(cdf);
-
-      } else {
-        // Get details band
-        ItemBand masteritemBand = masterReport.getItemBand();
-        // Create new empty subreport hash map
-        HashMap<String, Element> hm = new HashMap<String, Element>();
-        // method to get all the subreports in the prpt and store in the HashMap
-        this.getAllSubreports(hm, masteritemBand);
-        // Uncomment to see which Subreports are detecting the method getAllSubreports
-        // System.out.println("Pentaho SubReports: " + hm);
-
-        // get project leader
-        ProjectPartner projectLeader = project.getLeader();
-        // get Flagships related to the project sorted by acronym
-        List<CrpProgram> flagships = new ArrayList<>();
-        for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-          .sorted((o1, o2) -> o1.getCrpProgram().getAcronym().compareTo(o2.getCrpProgram().getAcronym()))
-          .filter(
-            c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())) {
-          flagships.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
-        }
-
-        List<CrpParameter> hasRegionsList = new ArrayList<>();
-        Boolean hasRegions = false;
-        for (CrpParameter hasRegionsParam : project.getCrp().getCrpParameters().stream()
-          .filter(cp -> cp.isActive() && cp.getKey().equals(APConstants.CRP_HAS_REGIONS))
-          .collect(Collectors.toList())) {
-          hasRegionsList.add(hasRegionsParam);
-        }
-
-        if (!hasRegionsList.isEmpty()) {
-          if (hasRegionsList.size() > 1) {
-            LOG.warn("There is for more than 1 key of type: " + APConstants.CRP_HAS_REGIONS);
-          }
-          hasRegions = Boolean.valueOf(hasRegionsList.get(0).getValue());
-        }
-
-
-        List<CrpProgram> regions = new ArrayList<>();
-        // If has regions, add the regions to regionsArrayList
-        // Get Regions related to the project sorted by acronym
-        if (hasRegions != false) {
-          for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-            .sorted((c1, c2) -> c1.getCrpProgram().getAcronym().compareTo(c2.getCrpProgram().getAcronym()))
-            .filter(
-              c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
-            .collect(Collectors.toList())) {
-            regions.add(programManager.getCrpProgramById(projectFocuses.getCrpProgram().getId()));
-          }
-        }
-
-        // Set Main_Query
-        CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-        TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-        TypedTableModel model = this.getMasterTableModel(flagships, regions, projectLeader, cycle, year);
-        sdf.addTable(masterQueryName, model);
-        masterReport.setDataFactory(cdf);
-
-        // Start Setting Subreports
-
-        // Subreport Description
-        args.add(projectLeader);
-        args.add(cycle);
-        args.add(hasRegions);
-        this.fillSubreport((SubReport) hm.get("description"), "description", args);
-        // Description Flagships
-        args.clear();
-        args.add(flagships);
-        this.fillSubreport((SubReport) hm.get("Flagships"), "description_flagships", args);
-        // Description Regions
-
-        if (hasRegions != false) {
-          args.clear();
-          args.add(regions);
-          this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
-        }
-        // Description CoAs
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("Description_CoAs"), "description_coas", args);
-
-        // Subreport Partners
-        this.fillSubreport((SubReport) hm.get("partners"), "partners_count", args);
-
-        // Subreport Partner Leader
-        args.clear();
-        args.add(projectLeader);
-        this.fillSubreport((SubReport) hm.get("partner_leader"), "institution_leader", args);
-
-        // Subreport Partner Others
-        args.clear();
-        args.add(projectLeader);
-        this.fillSubreport((SubReport) hm.get("partners_others"), "partners_others_ins", args);
-
-        // Note: Contacts for partners are filled by queries inside the prpt
-        // Subreport Partner Lessons
-        args.clear();
-        args.add(cycle);
-        this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
-
-        // Subreport Locations
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("locations"), "locations", args);
-
-        // Subreport Outcomes
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("outcomes"), "outcomes_list", args);
-
-        // Subreport Deliverables
-        args.clear();
-        args.add(year);
-        this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
-
-        // Subreport Activities
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
-
-        // Subreport Budgets Summary
-        args.clear();
-        args.add(year);
-        this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
-
-        // Subreport BudgetsbyPartners
-        this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
-
-        // Subreport BudgetsbyCoas
-        this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
-      }
-
       PdfReportUtil.createPDF(masterReport, os);
       bytesPDF = os.toByteArray();
       os.close();
@@ -1109,14 +955,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     Boolean isNew = this.isProjectNew(projectID);
     Boolean isPlanning = true;
-    String cycleFront;
-    try {
-      cycleFront = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycleFront = this.getCurrentCycle();
-    }
 
-
+    String cycleFront = this.getRequest().getParameter("cycle");
     if (cycleFront.equals("Reporting")) {
       isPlanning = false;
     }

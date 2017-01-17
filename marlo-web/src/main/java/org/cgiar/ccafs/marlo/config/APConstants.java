@@ -59,6 +59,7 @@ public final class APConstants {
   public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   public static final String CRP_CU = "crp_cu";
   public static final int MID_OUTCOME_YEAR = 2019;
+  public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String CRP_ID = "crpID";

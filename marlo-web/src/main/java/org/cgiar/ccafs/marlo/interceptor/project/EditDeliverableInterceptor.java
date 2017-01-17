@@ -97,14 +97,25 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         if (!baseAction.isSubmit(deliverable.getProject().getId())) {
-          canEdit = true;
+
           canSwitchProject = true;
         }
+
+        canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(deliverable.getProject()) && baseAction
           .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
           canEdit = true;
+        }
+
+        if (baseAction.isSubmit(deliverable.getProject().getId())) {
+          canEdit = false;
+
+        }
+
+        if (baseAction.isCrpClosed()) {
+          canEdit = false;
         }
       }
 
@@ -127,15 +138,13 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canSwitchProject = true;
       }
 
-      if (baseAction.isSubmit(deliverable.getProject().getId())) {
-        canEdit = false;
 
-      }
       if (deliverable.getStatus() != null) {
         if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           canEdit = false;
         }
       }
+
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
