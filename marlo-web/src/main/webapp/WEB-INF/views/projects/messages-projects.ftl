@@ -27,17 +27,21 @@
 [/#if]
 
 [#-- Privileges Message --]
-[#if !canEdit && !(transaction??) && !(submission)]
-  [#if project.projectEditLeader]
-    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+[#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
+  [#if crpClosed]
+    <p class="readPrivileges">MARLO is closed.</p>
   [#else]
-    <p class="readPrivileges">This project is being preset by Management Liaison, it will be able for editing by the project leader soon...</p>
+    [#if project.projectEditLeader]
+      <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+    [#else]
+      <p class="readPrivileges">This project is being preset by Management Liaison, it will be able for editing by the project leader soon...</p>
+    [/#if]    
   [/#if]
 [/#if]
 
 
 [#-- Completed Message--]
-[#if canSubmit && !submission && completed]
+[#if (canSubmit && !submission && completed) && !crpClosed]
   <div class="completed-mode text-center animated flipInX">
     <p>[@s.text name="project.message.completed" /]</p>
   </div>
