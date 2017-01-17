@@ -29,44 +29,6 @@
 			</result>
 		</action>
 
-		<action name="{crp}/test1"
-			class="org.cgiar.ccafs.marlo.action.summaries.test1Action">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
-		<action name="{crp}/test2"
-			class="org.cgiar.ccafs.marlo.action.summaries.test2Action">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
-		<action name="{crp}/test3"
-			class="org.cgiar.ccafs.marlo.action.summaries.test3Action">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
-		<action name="{crp}/test4"
-			class="org.cgiar.ccafs.marlo.action.summaries.test4Action">
-			<interceptor-ref name="homeStack" />
-			<result name="success" type="stream">
-				<param name="inputName">inputStream</param>
-				<param name="contentType">${contentType}</param>
-				<param name="contentDisposition">filename="${fileName}"</param>
-			</result>
-		</action>
-
-
 		<action name="reportingSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction">
 
