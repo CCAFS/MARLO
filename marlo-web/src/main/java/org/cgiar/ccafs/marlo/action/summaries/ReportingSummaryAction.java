@@ -1109,8 +1109,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     Boolean isNew = this.isProjectNew(projectID);
     Boolean isPlanning = true;
+    String cycleFront;
+    try {
+      cycleFront = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycleFront = this.getCurrentCycle();
+    }
 
-    String cycleFront = this.getRequest().getParameter("cycle");
+
     if (cycleFront.equals("Reporting")) {
       isPlanning = false;
     }
