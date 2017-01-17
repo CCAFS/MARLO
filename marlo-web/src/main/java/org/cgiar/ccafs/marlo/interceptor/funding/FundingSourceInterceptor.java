@@ -92,6 +92,10 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
           canEdit = true;
 
         }
+
+        if (baseAction.isCrpClosed()) {
+          canEdit = false;
+        }
       }
 
 

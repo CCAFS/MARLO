@@ -134,6 +134,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
+        if (baseAction.isCrpClosed()) {
+          canEdit = false;
+        }
+
       }
 
       // TODO Validate is the project is new
@@ -149,10 +153,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       if (editParameter || parameters.get("save") != null) {
         hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
-      }
-
-      if (baseAction.isCrpClosed()) {
-        canEdit = false;
       }
 
 

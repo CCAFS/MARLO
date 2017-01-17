@@ -113,6 +113,10 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           canEdit = false;
 
         }
+
+        if (baseAction.isCrpClosed()) {
+          canEdit = false;
+        }
       }
 
       // TODO Validate is the project is new
@@ -141,9 +145,6 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
       }
 
-      if (baseAction.isCrpClosed()) {
-        canEdit = false;
-      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

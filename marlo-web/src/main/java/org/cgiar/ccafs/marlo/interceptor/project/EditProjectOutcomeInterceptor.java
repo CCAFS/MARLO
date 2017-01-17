@@ -135,9 +135,6 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         canSwitchProject = true;
       }
 
-      if (baseAction.isCrpClosed()) {
-        canEdit = false;
-      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
