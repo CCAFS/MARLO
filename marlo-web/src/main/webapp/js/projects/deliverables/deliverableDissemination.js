@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
   /* Init Select2 plugin */
   $('.disseminationChannel').select2({
-    width: '50%'
+    width: '90%'
   });
   $(".accessible .no-button-label").addClass("radio-checked");
   $(".findable .yes-button-label").addClass("radio-checked");

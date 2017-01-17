@@ -43,13 +43,22 @@
   <div class="findableOptions" style="display:block;">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
-    <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
-    <select name="" id="disChannel" class="disseminationChannel">
-      <option value="-1">Select an option</option>
-      <option value="1">Other</option>
-      <option value="2">CGSpace</option>
-      <option value="3">Dataverse</option>
-    </select>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
+        <select name="" id="disChannel" class="disseminationChannel">
+          <option value="-1">Select an option</option>
+          <option value="1">Other</option>
+          <option value="2">CGSpace</option>
+          <option value="3">Dataverse</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="">Example of URL:</label>
+        <span>https://cgspace.cgiar.org/handle/10568/52163</span>
+      </div>
+    </div>
+    
     <div id="disseminationUrl" style="display:none;">
       [@customForm.input name="" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
       <div id="fillMetadata" class="checkButton" style="display:none;">Search & Fill Metadata</div>
