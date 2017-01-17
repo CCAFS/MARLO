@@ -75,34 +75,35 @@
                 </div>
                 [#-- -- -- REPORTING BLOCK -- -- --]
                 [#if reportingActive && (year == currentCycleYear) ]
-                <div class="fullPartBlock bs-callout bs-callout-info fieldFocus" style="padding-bottom:20px !important;">
-                  <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
-                  [@customForm.textArea name="project.outcomesPandr[${indexYear}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
+                <div class="fieldFocus">
+                  <div class="fullPartBlock bs-callout bs-callout-info " style="padding-bottom:20px !important;">
+                    <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
+                    [@customForm.textArea name="project.outcomesPandr[${indexYear}].anualProgress" required=editable className="limitWords-300" showTitle=false editable=editable && action.hasPermission("annualProgress") /]
+                  </div>
+                  
+                  [#-- Comunication and engagement activities --]
+                  <div class="fullPartBlock bs-callout bs-callout-info " style="padding-bottom:20px !important;">
+                    [@customForm.textArea name="project.outcomesPandr[${indexYear}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
+                  </div>
+                  
+                  [#-- Upload summary--]
+                  <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info ">
+                    <label>[@customForm.text name="projectOutcomes.uploadSummary" readText=!editable /]:</label>
+                    <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
+                      [#if (outcome.file?has_content)!false]
+                        [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
+                        <p><a href="${action.getProjectOutcomeUrl()}${((outcome.file.fileName))!}">${(outcome.file.fileName)!}</a></p>
+                         <input id="fileID" type="hidden" name="project.outcomesPandr[${indexYear}].file.id" value="${(outcome.file.id)!}" />
+                      [#else]
+                        [#if editable && action.hasPermission("uploadSummary")]
+                          [@customForm.inputFile name="file"  /]
+                        [#else]  
+                          [@s.text name="form.values.notFileUploaded" /]
+                        [/#if] 
+                      [/#if]
+                    </div>  
+                  </div>
                 </div>
-                
-                [#-- Comunication and engagement activities --]
-                <div class="fullPartBlock bs-callout bs-callout-info fieldFocus" style="padding-bottom:20px !important;">
-                  [@customForm.textArea name="project.outcomesPandr[${indexYear}].comunication" className="limitWords-100" i18nkey="projectOutcomes.commEngagementOutcomes" required=true editable=editable && action.hasPermission("communicationEngagement") /]
-                </div>
-                
-                [#-- Upload summary--]
-                <div class="fullPartBlock fileUpload uploadSummary bs-callout bs-callout-info fieldFocus">
-                  <label>[@customForm.text name="projectOutcomes.uploadSummary" readText=!editable /]:</label>
-                  <div class="uploadContainer" title="[@s.text name="projectOutcomes.uploadSummary.help" /]">
-                    [#if (outcome.file?has_content)!false]
-                      [#if editable]<span id="remove-file" class="remove"></span>[#else]<span class="file"></span>[/#if] 
-                      <p><a href="${action.getProjectOutcomeUrl()}${((outcome.file.fileName))!}">${(outcome.file.fileName)!}</a></p>
-                       <input id="fileID" type="hidden" name="project.outcomesPandr[${indexYear}].file.id" value="${(outcome.file.id)!}" />
-                    [#else]
-                      [#if editable && action.hasPermission("uploadSummary")]
-                        [@customForm.inputFile name="file"  /]
-                      [#else]  
-                        [@s.text name="form.values.notFileUploaded" /]
-                      [/#if] 
-                    [/#if]
-                  </div>  
-                </div>
-                
                 [/#if]
                   <input name="project.outcomesPandr[${indexYear}].id" type="hidden" value="${(project.outcomesPandr[indexYear].id?c)!}" />
                <input name="project.outcomesPandr[${indexYear}].year" type="hidden" value="${year}" />
@@ -117,7 +118,7 @@
           
           [#-- Lessons learnt --]
           [#if !newProject]
-          <div id="lessons" class="borderBox">
+          <div id="lessons" class="borderBox fieldFocus">
             [#-- Lessons learnt from last planning/reporting cycle --]
                [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
