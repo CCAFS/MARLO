@@ -102,7 +102,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
@@ -120,7 +124,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     // method to get all the subreports in the prpt and store in the HashMap
     this.getAllSubreports(hm, masteritemBand);
     // Uncomment to see which Subreports are detecting the method getAllSubreports
-    System.out.println("Pentaho SubReports: " + hm);
+    // System.out.println("Pentaho SubReports: " + hm);
 
     this.fillSubreport((SubReport) hm.get("projects_outcomes"), "projects_outcomes");
     this.fillSubreport((SubReport) hm.get("milestone_projects_outcomes"), "milestone_projects_outcomes");

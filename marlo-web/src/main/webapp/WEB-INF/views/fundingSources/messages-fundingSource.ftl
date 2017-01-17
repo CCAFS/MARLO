@@ -20,9 +20,14 @@
 
 
 [#-- Privileges Message --]
-[#if !canEdit && !(transaction??) && !(submission?has_content)]
-  <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+[#if (!canEdit && !(transaction??) && !(submission?has_content)) || crpClosed]
+  [#if crpClosed]
+    <p class="readPrivileges">MARLO is closed.</p>
+  [#else]
+    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
+  [/#if]
 [/#if]
+
 
 [#-- Concurrence Message --]
 <div id="concurrenceMessage" class="text-center" style="display:none">

@@ -833,6 +833,7 @@ public class DeliverableAction extends BaseAction {
 
       deliverablePrew.setTitle(deliverable.getTitle());
       deliverablePrew.setYear(deliverable.getYear());
+      deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
 
       if (deliverable.getCrossCuttingCapacity() == null) {

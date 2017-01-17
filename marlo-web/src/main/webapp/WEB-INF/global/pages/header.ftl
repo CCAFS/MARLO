@@ -81,6 +81,7 @@
               [/#if]
               </h4>
             [/#if]
+            [#if crpClosed] <h4 class=""><span class="label label-default text-left">Closed</span></h4> [/#if]
             </a>
           </div>
           
