@@ -1140,14 +1140,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
           Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
-          System.out.println(a.getId());
-
 
           if (a.isActive()
             && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                 || a.getStatus().intValue() == 0)))) {
-            System.out.println(a.getId());
+
             if (a.getNewExpectedYear() != null) {
               if (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
                 if (a.getNewExpectedYear() >= this.getCurrentCycleYear()) {
