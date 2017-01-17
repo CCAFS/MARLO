@@ -74,7 +74,7 @@
             <div class="clearfix"></div>
             [#if !config.production] <h4 class="testEnvironment">
               <span class="label label-danger text-left">Testing Environment</span> 
-              [#if reportingActive]
+              [#if reportingActive?? && reportingActive]
                 <span class="label label-default text-left">Reporting</span> 
               [#else]
                 <span class="label label-primary text-left">Planning</span>

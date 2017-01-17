@@ -82,7 +82,26 @@ function init() {
   $("#fillMetadata").on("click", function() {
     var url = $(".deliverableDisseminationUrl").val();
     // Validate url
-    // get data from url
+
+    if(/(http(s)?:\/\/.)?(www\.)?cgspace.cgiar\.org\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g.test(url)) {
+      // get data from url
+      var urlSplit = pageId = url.split("/");
+      var pageId = urlSplit[urlSplit.length - 2] + urlSplit[urlSplit.length - 1];
+
+      // Ajax to service
+      var data = {
+          pageID: "cgspace",
+          metadaID: pageId
+      }
+      $.ajax({
+          url: baseURL + "/metadataByLink.do",
+          type: 'GET',
+          dataType: "json",
+          data: data
+      }).done(function(m) {
+        console.log(m);
+      });
+    }
 
   });
 
@@ -91,10 +110,10 @@ function init() {
 function changeDisseminationChannel() {
   var channel = $(".disseminationChannel").val();
   if(channel != "-1") {
-    if(channel == "other") {
-      $('#disseminationName').slideDown("slow");
+    if(channel == "2") {
+      $("#fillMetadata").slideDown("slow");
     } else {
-      $('#disseminationName').slideUp("slow");
+      $("#fillMetadata").slideUp("slow");
     }
     $('#disseminationUrl').slideDown("slow");
   } else {

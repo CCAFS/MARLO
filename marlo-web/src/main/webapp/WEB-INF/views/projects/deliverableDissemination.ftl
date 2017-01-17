@@ -52,7 +52,7 @@
     </select>
     <div id="disseminationUrl" style="display:none;">
       [@customForm.input name="" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
-      <div id="fillMetadata" class="checkButton" style="">Search & Fill Metadata</div>
+      <div id="fillMetadata" class="checkButton" style="display:none;">Search & Fill Metadata</div>
       <div class="clearfix"></div>
     </div>
     <div style="display:none;">
