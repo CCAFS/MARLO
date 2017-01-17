@@ -91,7 +91,7 @@ function init() {
       // Ajax to service
       var data = {
           pageID: "cgspace",
-          metadaID: pageId
+          metadataID: pageId
       }
       $.ajax({
           url: baseURL + "/metadataByLink.do",
