@@ -68,7 +68,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   // Variables
   private Crp loggedCrp;
-
+  private int year;
+  private String cycle;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -99,6 +100,20 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
+    // Get parameters from URL
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get cycle
+    try {
+      cycle = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -137,6 +152,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   }
 
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -152,6 +168,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
+
 
   /**
    * Get all subreports and store then in a hash map.
@@ -181,6 +198,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       }
     }
   }
+
 
   /**
    * Get all subreports in the band.
@@ -212,10 +230,13 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
+  }
+
+  public String getCycle() {
+    return cycle;
   }
 
   private File getFile(String fileName) {
@@ -237,6 +258,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -263,6 +285,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     }
     return inputStream;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -379,6 +402,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return model;
   }
 
+  public int getYear() {
+    return year;
+  }
 
   @Override
   public void prepare() {
@@ -389,9 +415,18 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     }
   }
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 }
