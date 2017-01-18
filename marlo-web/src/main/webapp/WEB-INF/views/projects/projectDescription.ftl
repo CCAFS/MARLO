@@ -149,7 +149,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !project.administrative && !reportingActive]
+            [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head"> 
                 <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
@@ -183,7 +183,7 @@
             </div>
             [/#if]
             
-            [#if project.projectEditLeader && !reportingActive]
+            [#if project.projectEditLeader && !phaseOne]
               [#--  What type of gender analysis informed the design of this project and how? --]
               <div class="form-group">
                 [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]

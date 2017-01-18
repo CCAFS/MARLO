@@ -1032,8 +1032,10 @@ public class ProjectPartnerAction extends BaseAction {
               overall = overalls.get(0);
             }
 
-            overall.setOverall(project.getOverall());
-            projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+            if (project.getOverall() != null) {
+              overall.setOverall(project.getOverall());
+              projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+            }
           }
         }
 

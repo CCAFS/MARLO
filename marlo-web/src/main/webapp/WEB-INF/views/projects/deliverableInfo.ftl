@@ -50,8 +50,8 @@
   <div class="clearfix"></div>
 </div>
 [#-- Description textArea --] 
-<div class="form-group" style="display:none;">
-  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
+<div class="form-group" style="">
+  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15 metadataDescription" editable=editable /]</div>
   <div class="clearfix"></div>
 </div>
 <div class="clearfix"></div>
@@ -78,7 +78,7 @@
 
 [#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
-  [#assign justificationRequired = (deliverable.year??) && ((deliverable.status == 4)  || (deliverable.status == 5)) ]
+  [#assign justificationRequired = (deliverable.year??) && (deliverable.status??) &&  ((deliverable.status == 4)  || (deliverable.status == 5)) ]
   <div class="form-group">
     <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
       [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]
@@ -95,21 +95,20 @@
 </div>
 
 [#-- Key Outputs select --]
-[#if !project.administrative && !reportingActive]
+[#if !project.administrative && !phaseOne]
   <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
 [/#if]
 
 [#-- Funding Source --]
-[#if !reportingActive]
+[#if !phaseOne]
 <div class="panel tertiary col-md-12">
  <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
     <ul class="list">
     [#if deliverable.fundingSources?has_content]
       [#list deliverable.fundingSources as element]
-      
         <li class="fundingSources clearfix">
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />

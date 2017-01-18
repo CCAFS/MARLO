@@ -124,7 +124,9 @@
       <div class="form-group">
         [@customForm.textArea name="${customName}.referencesCase" i18nkey="caseStudy.references" help="caseStudy.references.help" className="caseStudyReferences limitWords-150" required=true editable=editable /]
       </div>
-      [#-- Region indicators --]
+      
+      [#-- Primary 2019 outcome indicator that this case study is contributing to: --]
+      [#if phaseOne]
       <div class="form-group"> 
         <div class="fullBlock caseStudyIndicators">
           <label for="${customName}.caseStudyIndicators">[@customForm.text name="caseStudy.caseStudyIndicators" readText=!editable /]:[@customForm.req required=editable /]</label>
@@ -143,6 +145,15 @@
         </div>
         [@customForm.textArea name="${customName}.explainIndicatorRelation" i18nkey="caseStudy.explainIndicatorRelation" className="caseStudyExplainIndicatorRelation limitWords-50" editable=editable /]
       </div>
+      [#else]
+      <div class="form-group"> 
+        <div class="fullBlock caseStudyIndicators">
+          <label for="${customName}.caseStudyIndicators">Please select the respective 2022 outcome that this case study is contributing to:[@customForm.req required=editable /]</label>
+          <p>{Checkbox list of 2022 outcomes}</p>
+        </div>
+        [@customForm.textArea name="${customName}.explainIndicatorRelation" i18nkey="caseStudy.explainIndicatorRelation" className="caseStudyExplainIndicatorRelation limitWords-50" editable=editable /]
+      </div>
+      [/#if]
   
       <div class="form-group">
         [#-- Year --]

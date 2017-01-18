@@ -53,7 +53,7 @@
           <option value="3">Dataverse</option>
         </select>
       </div>
-      <div class="col-md-6">
+      <div id="exampleUrl-block" class="col-md-6" style="display:none;">
         <label for="">Example of URL:</label>
         <span>https://cgspace.cgiar.org/handle/10568/52163</span>
       </div>
@@ -64,6 +64,7 @@
       <div id="fillMetadata" class="checkButton" style="display:none;">Search & Fill Metadata</div>
       <div class="clearfix"></div>
     </div>
+    <div id="metadata-output" class="col-md-12"></div>
     <div style="display:none;">
       [@customForm.input name="" value="" type="text" i18nkey="Deliverable URL"  placeholder="" className="" required=true editable=editable /]
     </div>
@@ -75,7 +76,7 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
-  <div class="col-md-8">
+  <div class="col-md-12">
     <label for="">Creator/Authors:</label>
     <div class="authorsList simpleBox">
       <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
@@ -84,17 +85,47 @@
       <div class="button-green addAuthor"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add other creator/author" /]</div>
     </div> 
   </div>
-  
-  <div class="col-md-4">
+  <div class="col-md-6">
     [@customForm.input name="deliverableMetadataDate" i18nkey="Publication date" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
-    [@customForm.select name="" label=""  i18nkey="Language:" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
+  </div>
+  <div class="col-md-6">
+    [@customForm.input name="" i18nkey="Language" className="language" type="text" disabled=!editable  required=true editable=editable /]
+  </div>
+  <div class="col-md-6">
     [@customForm.select name="" label=""  i18nkey="Country" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
+  </div>
+  <div class="col-md-6">
+    [@customForm.input name="" i18nkey="keywords" className="" type="text" disabled=!editable  required=true editable=editable /]
+  </div>
+    
+  <div class="col-md-12">
+    [@customForm.textArea value="" name="" i18nkey="citation" required=true className="citation" editable=editable /]
+  </div>
+  <div class="col-md-6">
+    [@customForm.input name="" i18nkey="Handle" className="handle" type="text" disabled=!editable  required=false editable=editable /]
+  </div>
+  <div class="col-md-6">
+    [@customForm.input name="" i18nkey="DOI" className="doi" type="text" disabled=!editable  required=false editable=editable /]
   </div>
 </div>
 
 <h3 class="headTitle">[@s.text name="Publication Metadata" /]</h3>
 
 <div class="borderBox row">
+  <div class="row">
+    <div class="col-md-4">
+      [@customForm.input name="" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+    <div class="col-md-4">
+      [@customForm.input name="" i18nkey="Issue" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+    <div class="col-md-4">
+      [@customForm.input name="" i18nkey="Pages" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+    <div class="col-md-12">
+      [@customForm.input name="" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
+    </div>
+  </div>
   <label for="">Indicators for journal articles:</label>
   <div class="col-md-12 form-group">
     <input type="checkbox" />Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)  
@@ -121,7 +152,7 @@
   <div class="clearfix"></div>
   <div class="row simpleBox">
     <div class="col-md-6">
-      <input type="checkbox" /> Select relevant CRPs
+      [@customForm.select name="" label=""  i18nkey="Select relevant CRPs" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-6">
       <input type="checkbox" /> Select relevant Flagship
