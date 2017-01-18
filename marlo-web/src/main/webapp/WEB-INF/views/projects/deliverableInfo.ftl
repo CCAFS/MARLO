@@ -95,21 +95,20 @@
 </div>
 
 [#-- Key Outputs select --]
-[#if !project.administrative && !reportingActive]
+[#if !project.administrative && !phaseOne]
   <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
 [/#if]
 
 [#-- Funding Source --]
-[#if !reportingActive]
+[#if !phaseOne]
 <div class="panel tertiary col-md-12">
  <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
     <ul class="list">
     [#if deliverable.fundingSources?has_content]
       [#list deliverable.fundingSources as element]
-      
         <li class="fundingSources clearfix">
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
