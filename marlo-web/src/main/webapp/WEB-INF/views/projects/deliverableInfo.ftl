@@ -51,7 +51,8 @@
 </div>
 [#-- Description textArea --] 
 <div class="form-group" style="">
-  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15 metadataDescription" editable=editable /]</div>
+[#-- Description --] 
+    <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea"/]</div>
   <div class="clearfix"></div>
 </div>
 <div class="clearfix"></div>
