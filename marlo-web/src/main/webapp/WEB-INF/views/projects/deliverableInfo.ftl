@@ -78,7 +78,7 @@
 
 [#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
-  [#assign justificationRequired = (deliverable.year??) && ((deliverable.status == 4)  || (deliverable.status == 5)) ]
+  [#assign justificationRequired = (deliverable.year??) && (deliverable.status??) &&  ((deliverable.status == 4)  || (deliverable.status == 5)) ]
   <div class="form-group">
     <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
       [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]

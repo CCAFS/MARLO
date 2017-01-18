@@ -1210,7 +1210,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     int highlightSection = 0;
 
 
-
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
         && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
@@ -1448,9 +1447,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean isPhaseOne() {
+    if (crpSession.equals("ccafs")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isPlanningActive() {
     return false;
-
   }
 
   public Boolean isProjectNew(long projectID) {
