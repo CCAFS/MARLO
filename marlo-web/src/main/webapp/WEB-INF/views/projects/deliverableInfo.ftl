@@ -50,8 +50,8 @@
   <div class="clearfix"></div>
 </div>
 [#-- Description textArea --] 
-<div class="form-group" style="display:none;">
-  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
+<div class="form-group" style="">
+  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15 metadataDescription" editable=editable /]</div>
   <div class="clearfix"></div>
 </div>
 <div class="clearfix"></div>

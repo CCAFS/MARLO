@@ -1,6 +1,23 @@
 $(document).ready(init);
 
 function init() {
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    // $("textarea").autogrow();
+  });
+
+  $("#deliverableMetadataDate").datepicker({
+      dateFormat: "yy-mm-dd",
+      minDate: '2012-01-01',
+      maxDate: '2030-12-31',
+      changeMonth: true,
+      numberOfMonths: 1,
+      changeYear: true,
+      onChangeMonthYear: function(year,month,inst) {
+        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1)
+        $(this).datepicker('setDate', selectedDate);
+      }
+  });
   /* Init Select2 plugin */
   $('.disseminationChannel').select2({
     width: '90%'
@@ -79,41 +96,94 @@ function init() {
   // Change dissemination channel
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
-  $("#fillMetadata").on("click", function() {
-    var url = $(".deliverableDisseminationUrl").val();
-    // Validate url
+  $("#fillMetadata").on(
+      "click",
+      function() {
+        var url = $(".deliverableDisseminationUrl").val();
+        var uri = new Uri(url);
+        // Validate url
+        var data = {
+          pageID: "cgspace"
+        }
 
-    if(/(http(s)?:\/\/.)?(www\.)?cgspace.cgiar\.org\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g.test(url)) {
-      // get data from url
-      var urlSplit = pageId = url.split("/");
-      var pageId = urlSplit[urlSplit.length - 2] + urlSplit[urlSplit.length - 1];
+        if(uri.host() == "hdl.handle.net") {
+          console.log(uri.path());
+          data.metadataID = "oai:cgspace.cgiar.org:" + uri.path().slice(1, uri.path().length);
+        } else {
+          data.metadataID = "oai:" + uri.host() + ":" + uri.path().slice(8, uri.path().length);
+        }
+        // get data from url
+        // Ajax to service
+        $.ajax({
+            'url': baseURL + '/metadataByLink.do',
+            'type': "GET",
+            'data': data,
+            'dataType': "json",
+            beforeSend: function() {
+              $(".deliverableDisseminationUrl").addClass('input-loading');
+              $('#metadata-output').html("Searching ... " + data.metadataID);
+            },
+            success: function(m) {
 
-      // Ajax to service
-      var data = {
-          pageID: "cgspace",
-          metadataID: pageId
-      }
-      $.ajax({
-          url: baseURL + "/metadataByLink.do",
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).done(function(m) {
-        console.log(m);
+              if(m.errorMessage) {
+                $('#metadata-output').html(data.errorMessage);
+              } else {
+                m.metadata = JSON.parse(m.metadata);
+                if(jQuery.isEmptyObject(m.metadata)) {
+                  $('#metadata-output').html("Metadata empty");
+                } else {
+                  var fields = [];
+                  $.each(m.metadata, function(key,value) {
+                    console.log(key + "-" + value);
+                    fields.push(key.charAt(0).toUpperCase() + key.slice(1));
+                  });
+                  var sendDataJson = {};
+                  sendDataJson.citation = m.metadata['identifier.citation'];
+                  var date = m.metadata['date.available'].split("T");
+                  sendDataJson.publicationDate = date[0];
+                  sendDataJson.languaje = m.metadata['languaje.iso'];
+                  sendDataJson.description = m.metadata['description.abstract'];
+                  sendDataJson.handle = m.metadata['identifier.uri'];
+                  sendDataJson.doi = m.metadata['identifier.doi'];
+                  setMetadata(sendDataJson);
+
+                  $('#metadata-output').empty().append(
+                      "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
+                }
+              }
+            },
+            complete: function() {
+              $(".deliverableDisseminationUrl").removeClass('input-loading');
+            },
+            error: function() {
+              console.log("error");
+              $('#metadata-output').empty().append("Invalid URL for searching metadata");
+            }
+        });
       });
-    }
 
-  });
+}
 
+function setMetadata(data) {
+  $(".citation").val(data.citation).autoGrow();
+  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  $(".language").val(data.languaje);
+  $(".metadataDescription").val(data.description).autoGrow();
+  $(".handle").val(data.handle);
+  $(".doi").val(data.doi);
 }
 
 function changeDisseminationChannel() {
   var channel = $(".disseminationChannel").val();
+  $('#disseminationUrl').find("input").val("");
+  $("#metadata-output").empty();
   if(channel != "-1") {
     if(channel == "2") {
       $("#fillMetadata").slideDown("slow");
+      $("#exampleUrl-block").slideDown("slow");
     } else {
       $("#fillMetadata").slideUp("slow");
+      $("#exampleUrl-block").slideUp("slow");
     }
     $('#disseminationUrl').slideDown("slow");
   } else {
