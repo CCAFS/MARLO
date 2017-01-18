@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -174,6 +175,8 @@ public class DeliverableAction extends BaseAction {
 
   private ProjectPartnerManager projectPartnerManager;
 
+  private MetadataElementManager metadataElementManager;
+
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
     DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
@@ -184,7 +187,8 @@ public class DeliverableAction extends BaseAction {
     DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager, FileDBManager fileDBManager) {
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager, FileDBManager fileDBManager,
+    MetadataElementManager metadataElementManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -203,6 +207,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
     this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
     this.fileDBManager = fileDBManager;
+    this.metadataElementManager = metadataElementManager;
   }
 
 
@@ -643,6 +648,31 @@ public class DeliverableAction extends BaseAction {
           deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
 
+        // TODO
+        if (metadataElementManager.findAll() != null) {
+          deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+        }
+
+        if (deliverable.getDeliverableMetadataElements() != null) {
+          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+        }
+
+        if (deliverable.getDeliverableDisseminations() != null) {
+          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+        }
+
+        if (deliverable.getDeliverableDataSharingFiles() != null) {
+          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+        }
+
+        if (deliverable.getDeliverablePublicationMetadatas() != null) {
+          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+        }
+
+        if (deliverable.getDeliverableDataSharings() != null) {
+          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+        }
+
         this.setDraft(false);
       }
 
@@ -729,9 +759,7 @@ public class DeliverableAction extends BaseAction {
           if (budget.getProject().getId().longValue() == deliverable.getProject().getId()) {
             this.fundingSources.add(fundingSource);
           }
-          {
 
-          }
         }
       }
       Set<FundingSource> hs = new HashSet();
@@ -786,6 +814,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   private DeliverablePartnership responsiblePartner() {
     try {

@@ -156,5 +156,13 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck" />
     </set>
+    <set name="deliverableMetadataElements" table="deliverable_metadata_elements"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="deliverable_id" not-null="true" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
+    </set>
 	</class>
 </hibernate-mapping>
