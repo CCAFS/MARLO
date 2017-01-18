@@ -149,20 +149,20 @@
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharing" />
 		</set>
 		<set name="deliverableQualityChecks" table="deliverable_quality_checks"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_id" not-null="true" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck" />
-    </set>
-    <set name="deliverableMetadataElements" table="deliverable_metadata_elements"
-      inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="deliverable_id" not-null="true" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
-    </set>
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck" />
+		</set>
+		<set name="deliverableMetadataElements" table="deliverable_metadata_elements"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="deliverable_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
+		</set>
+
 	</class>
 </hibernate-mapping>
