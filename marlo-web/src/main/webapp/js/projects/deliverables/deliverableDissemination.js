@@ -141,7 +141,7 @@ function init() {
                   sendDataJson.citation = m.metadata['identifier.citation'];
                   var date = m.metadata['date.available'].split("T");
                   sendDataJson.publicationDate = date[0];
-                  sendDataJson.languaje = m.metadata['languaje.iso'];
+                  sendDataJson.languaje = m.metadata['language.iso'];
                   sendDataJson.description = m.metadata['description.abstract'];
                   sendDataJson.handle = m.metadata['identifier.uri'];
                   sendDataJson.doi = m.metadata['identifier.doi'];

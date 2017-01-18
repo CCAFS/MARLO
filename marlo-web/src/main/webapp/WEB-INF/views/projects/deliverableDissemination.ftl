@@ -76,7 +76,7 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
-  <div class="col-md-8">
+  <div class="col-md-12">
     <label for="">Creator/Authors:</label>
     <div class="authorsList simpleBox">
       <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
@@ -85,13 +85,19 @@
       <div class="button-green addAuthor"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add other creator/author" /]</div>
     </div> 
   </div>
-  
-  <div class="col-md-4">
+  <div class="col-md-6">
     [@customForm.input name="deliverableMetadataDate" i18nkey="Publication date" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
+  </div>
+  <div class="col-md-6">
     [@customForm.input name="" i18nkey="Language" className="language" type="text" disabled=!editable  required=true editable=editable /]
+  </div>
+  <div class="col-md-6">
     [@customForm.select name="" label=""  i18nkey="Country" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
+  </div>
+  <div class="col-md-6">
     [@customForm.input name="" i18nkey="keywords" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
+    
   <div class="col-md-12">
     [@customForm.textArea value="" name="" i18nkey="citation" required=true className="citation" editable=editable /]
   </div>
