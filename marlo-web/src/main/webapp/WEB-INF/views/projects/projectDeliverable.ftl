@@ -137,13 +137,13 @@
 
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list=""]
-  <input type="hidden" name="${params.deliverable.name}.metadata[${deliverable.getMetadataIndex(encodedName)}].id" value="${deliverable.getMetadataID(encodedName)}" />
+  <input type="hidden" name="deliverable.metadata[${deliverable.getMetadataIndex(encodedName)}].id" value="${deliverable.getMetadataID(encodedName)}" />
   [#if type == "input"]
-    [@customForm.input name="${params.deliverable.name}.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata"  type="text" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.input name="deliverable.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata"  type="text" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="${params.deliverable.name}.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="deliverable.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="${params.deliverable.name}.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" listName=list  editable=editable /]
+    [@customForm.select name="deliverable.metadata[${deliverable.getMetadataIndex(encodedName)}].value" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" listName=list  editable=editable /]
  
   [/#if]
 [/#macro]
