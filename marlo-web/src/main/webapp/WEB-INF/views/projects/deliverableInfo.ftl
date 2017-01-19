@@ -131,6 +131,9 @@
 [/#if]
 
 
+<div class="form-group col-md-12">
+  <h3 class="headTitle">Gender, social inclusion and/ or Youth Dimensions of the deliverable </h3>  
+</div>
 [#-- Does this deliverable have a cross-cutting dimension --]
 <div class="form-group col-md-12">
   <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
