@@ -101,12 +101,24 @@ function init() {
 }
 
 function setMetadata(data) {
-  $(".citationMetadata").val(data.citation).autoGrow();
-  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  $(".languageMetadata").val(data.languaje);
-  $(".descriptionMetadata").val(data.description).autoGrow();
-  $(".handleMetadata").val(data.handle);
-  $(".doiMetadata").val(data.doi);
+  if($(".citationMetadata").val() == "") {
+    $(".citationMetadata").val(data.citation).autoGrow();
+  }
+  if($("#deliverableMetadataDate").val() == "") {
+    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  }
+  if($(".languageMetadata").val() == "") {
+    $(".languageMetadata").val(data.languaje);
+  }
+  if($(".descriptionMetadata").val() == "") {
+    $(".descriptionMetadata").val(data.description).autoGrow();
+  }
+  if($(".handleMetadata").val() == "") {
+    $(".handleMetadata").val(data.handle);
+  }
+  if($(".doiMetadata").val() == "") {
+    $(".doiMetadata").val(data.doi);
+  }
 }
 
 function changeDisseminationChannel() {

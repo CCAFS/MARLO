@@ -86,20 +86,20 @@
     </div> 
   </div>
   <div class="col-md-6">
-    [@metadataField title="date" encodedName="dc.date" type="input"/]
+    [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="language" encodedName="dc.language" type="input"/]
+    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="country" encodedName="cg:coverage.country" type="input"/]
+    [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@customForm.input name="" i18nkey="keywords" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
     
   <div class="col-md-12">
-    [@metadataField title="citationMetadata" encodedName="dc.identifier.citation" type="input"/]
+    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="col-md-6">
     [@customForm.input name="" i18nkey="Handle" className="handleMetadata" type="text" disabled=!editable  required=false editable=editable /]
