@@ -6,7 +6,7 @@ function init() {
     // $("textarea").autogrow();
   });
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
-  $(".restrictionDate").attr("id","restrictionDate");
+  $(".restrictionDate").attr("id", "restrictionDate");
   $("#deliverableMetadataDate, #restrictionDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2012-01-01',
@@ -29,56 +29,56 @@ function init() {
   // Validations
 
   // Is this deliverable Open Access
-  $(".accessible .no-button-label").on("click", function() {
-    $(".accessible .yes-button-label").removeClass("radio-checked");
+  $(".accessible .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
-    $(".openAccessOptions").show("slow");
-    checkFAIRCompliant();
-  });
-  $(".accessible .yes-button-label").on("click", function() {
-    $(".accessible .no-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(".openAccessOptions").hide("slow");
+
+    if(!valueSelected) {
+      $(".openAccessOptions").show("slow");
+    } else {
+      $(".openAccessOptions").hide("slow");
+    }
     checkFAIRCompliant();
   });
 
   // Is this deliverable already disseminated
-  $(".findable .no-button-label").on("click", function() {
-    $(".findable .yes-button-label").removeClass("radio-checked");
+  $(".findable .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
-    $(".findableOptions").hide("slow");
-    $(".dataSharing").show("slow");
+
+    if(!valueSelected) {
+      $(".findableOptions").hide("slow");
+      $(".dataSharing").show("slow");
+    } else {
+      $(".findableOptions").show("slow");
+      $(".dataSharing").hide("slow");
+    }
     checkFAIRCompliant();
-  });
-  $(".findable .yes-button-label").on("click", function() {
-    $(".findable .no-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(".findableOptions").show("slow");
-    $(".dataSharing").hide("slow");
-    checkFAIRCompliant();
+
   });
 
   // Does the publication acknowledge
-  $(".acknowledge .no-button-label").on("click", function() {
-    $(".acknowledge .yes-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-  });
-  $(".acknowledge .yes-button-label").on("click", function() {
-    $(".acknowledge .no-button-label").removeClass("radio-checked");
+  $(".acknowledge .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
   });
 
   // Have you adopted a license
-  $(".license .no-button-label").on("click", function() {
-    $(".license .yes-button-label").removeClass("radio-checked");
+  $(".license .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
-    $(".licenseOptions").hide("slow");
-    checkFAIRCompliant();
-  });
-  $(".license .yes-button-label").on("click", function() {
-    $(".license .no-button-label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(".licenseOptions").show("slow");
     checkFAIRCompliant();
   });
 
@@ -104,19 +104,19 @@ function init() {
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
   $("#fillMetadata").on("click", loadAndFillMetadata);
-  
-  $("input[name='deliverable.dissemination.type']").on("change",openAccessRestriction);
+
+  $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
 }
 
-function openAccessRestriction(){
-  if($(this).val()=="restrictedAccess"){
+function openAccessRestriction() {
+  if($(this).val() == "restrictedAccess") {
     $(".restrictionDate-block").find("label").text("Restricted access until");
     $(".restrictionDate-block").show("slow");
-  }else if($(this).val()=="embargoedPeriods"){
+  } else if($(this).val() == "embargoedPeriods") {
     $(".restrictionDate-block").find("label").text("Restricted embargoed date");
     $(".restrictionDate-block").show("slow");
-  }else{
+  } else {
     $(".restrictionDate-block").hide("slow");
   }
 }
@@ -143,7 +143,7 @@ function setMetadata(data) {
   if($(".countryMetadata").val() == "") {
     $(".countryMetadata").val(data.country);
   }
-  
+
 }
 
 function changeDisseminationChannel() {
@@ -266,7 +266,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.description = m.metadata['description.abstract'];
             sendDataJson.handle = m.metadata['identifier.uri'];
             sendDataJson.doi = m.metadata['identifier.doi'];
-            sendDataJson.country=m.metadata['coverage.country'];
+            sendDataJson.country = m.metadata['coverage.country'];
             setMetadata(sendDataJson);
 
             $('#metadata-output').empty().append(
