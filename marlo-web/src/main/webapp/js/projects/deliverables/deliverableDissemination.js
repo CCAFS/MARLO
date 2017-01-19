@@ -5,7 +5,7 @@ function init() {
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
     // $("textarea").autogrow();
   });
-
+  $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $("#deliverableMetadataDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2012-01-01',
@@ -101,12 +101,24 @@ function init() {
 }
 
 function setMetadata(data) {
-  $(".citation").val(data.citation).autoGrow();
-  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  $(".language").val(data.languaje);
-  $(".metadataDescription").val(data.description).autoGrow();
-  $(".handle").val(data.handle);
-  $(".doi").val(data.doi);
+  if($(".citationMetadata").val() == "") {
+    $(".citationMetadata").val(data.citation).autoGrow();
+  }
+  if($("#deliverableMetadataDate").val() == "") {
+    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  }
+  if($(".languageMetadata").val() == "") {
+    $(".languageMetadata").val(data.languaje);
+  }
+  if($(".descriptionMetadata").val() == "") {
+    $(".descriptionMetadata").val(data.description).autoGrow();
+  }
+  if($(".handleMetadata").val() == "") {
+    $(".handleMetadata").val(data.handle);
+  }
+  if($(".doiMetadata").val() == "") {
+    $(".doiMetadata").val(data.doi);
+  }
 }
 
 function changeDisseminationChannel() {

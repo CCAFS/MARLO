@@ -92,26 +92,26 @@
     </div> 
   </div>
   <div class="col-md-6">
-    [@customForm.input name="deliverableMetadataDate" i18nkey="Publication date" className="startDate" type="text" disabled=!editable  required=true editable=editable /]
+    [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="Language" className="language" type="text" disabled=!editable  required=true editable=editable /]
+    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
   </div>
   <div class="col-md-6">
-    [@customForm.select name="" label=""  i18nkey="Country" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
+    [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@customForm.input name="" i18nkey="keywords" className="" type="text" disabled=!editable  required=true editable=editable /]
   </div>
     
   <div class="col-md-12">
-    [@customForm.textArea value="" name="" i18nkey="citation" required=true className="citation" editable=editable /]
+    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="Handle" className="handle" type="text" disabled=!editable  required=false editable=editable /]
+    [@customForm.input name="" i18nkey="Handle" className="handleMetadata" type="text" disabled=!editable  required=false editable=editable /]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="DOI" className="doi" type="text" disabled=!editable  required=false editable=editable /]
+    [@customForm.input name="" i18nkey="DOI" className="doiMetadata" type="text" disabled=!editable  required=false editable=editable /]
   </div>
 </div>
 

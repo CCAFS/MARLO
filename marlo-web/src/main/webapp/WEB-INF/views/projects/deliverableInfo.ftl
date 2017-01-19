@@ -52,7 +52,7 @@
 
 <div class="form-group col-md-12" style="">
 [#-- Description --] 
-    <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea"/]</div>
+    <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=true/]</div>
   <div class="clearfix"></div>
 </div>
 <div class="clearfix"></div>
