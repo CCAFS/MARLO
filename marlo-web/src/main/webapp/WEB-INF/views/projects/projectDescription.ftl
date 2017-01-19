@@ -118,7 +118,6 @@
               <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             [/#if]
             
-            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
