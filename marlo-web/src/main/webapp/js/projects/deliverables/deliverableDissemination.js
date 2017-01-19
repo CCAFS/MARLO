@@ -238,3 +238,7 @@ function getCGSpaceMetadata(channel,url,uri) {
       }
   });
 }
+
+function getDataverseMetadata(channel,url,uri) {
+
+}
