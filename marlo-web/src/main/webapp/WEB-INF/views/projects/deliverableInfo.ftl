@@ -49,8 +49,8 @@
   </div>  
   <div class="clearfix"></div>
 </div>
-[#-- Description textArea --] 
-<div class="form-group" style="">
+
+<div class="form-group col-md-12" style="">
 [#-- Description --] 
     <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea"/]</div>
   <div class="clearfix"></div>

@@ -83,7 +83,7 @@
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="deliverable.qualityCheck.linkDictionary" value="${(deliverable.qualityCheck.linkDictionary)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkDictionary" value="${(deliverable.qualityCheck.linkDictionary)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>
@@ -123,7 +123,7 @@
       <span class="col-md-1"> <br /> or</span>
       <div class="col-md-5">
       <br />
-      [@customForm.input name="deliverable.qualityCheck.linkTools" value="${(deliverable.qualityCheck.linkTools)!}" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
+      [@customForm.input name="deliverable.qualityCheck.linkTools" value="${(deliverable.qualityCheck.linkTools)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
   </div>
