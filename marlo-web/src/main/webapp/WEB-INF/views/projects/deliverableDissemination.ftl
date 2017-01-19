@@ -109,9 +109,9 @@
   </div>
 </div>
 
-<h3 class="headTitle">[@s.text name="Publication Metadata" /]</h3>
+<h3 class="headTitle publicationMetadataBlock" style="display:none;">[@s.text name="Publication Metadata" /]</h3>
 
-<div class="borderBox row">
+<div class="borderBox row publicationMetadataBlock" style="display:none;">
   <div class="row">
     <div class="col-md-4">
       [@customForm.input name="" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
@@ -167,7 +167,7 @@
       [@customForm.yesNoInput name="license"  editable=true inverse=false cssClass="license text-center" /] 
     </div>  
   </div>
-  
+  <hr />
   [#-- Deliverable type computer software --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
