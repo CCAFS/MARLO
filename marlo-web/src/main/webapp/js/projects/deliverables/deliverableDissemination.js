@@ -125,14 +125,14 @@ function changeDisseminationChannel() {
   var channel = $(".disseminationChannel").val();
   $('#disseminationUrl').find("input").val("");
   $("#metadata-output").empty();
+  $(".exampleUrl-block").hide();
   if(channel != "-1") {
     // CGSpace or Dataverse
     if((channel == "2") || channel == "3") {
       $("#fillMetadata").slideDown("slow");
-      $("#exampleUrl-block").slideDown("slow");
+      $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
       $("#fillMetadata").slideUp("slow");
-      $("#exampleUrl-block").slideUp("slow");
     }
     $('#disseminationUrl').slideDown("slow");
   } else {
@@ -178,14 +178,21 @@ function checkNextAuthorItems(block) {
 /* Load Metadata and fill fields */
 function loadAndFillMetadata() {
   var channel = $(".disseminationChannel").val();
-  var url = $(".deliverableDisseminationUrl").val();
+  var url = $.trim($(".deliverableDisseminationUrl").val());
+  // jsUri Library (https://github.com/derek-watson/jsUri)
   var uri = new Uri(url);
 
+  // Validate URL
+  if(url == "") {
+    return
+  }
+
   if(channel == "2") {
-    // Get CGSpace Metadata from server
+    // Get CGSpace Metadata from MARLO server
     getCGSpaceMetadata(channel, url, uri);
   } else if(channel == "3") {
-
+    // Get DataversE Metadata from native API
+    getDataverseMetadata(channel, url, uri);
   }
 
 }
@@ -252,5 +259,53 @@ function getCGSpaceMetadata(channel,url,uri) {
 }
 
 function getDataverseMetadata(channel,url,uri) {
-
+    /**
+     * Dataverse metadata is harvest using swagger https://services.dataverse.harvard.edu/static/swagger-ui/
+     */
+    
+    var data = {
+        key : 'c1580888-185f-4250-8f44-b98ca5e7b01b',
+        persistentId: uri.getQueryParamValue('persistentId')
+      }
+    
+    console.log(data);
+    
+    $.ajax({
+      // url: 'https://dataverse.harvard.edu/api/datasets/:persistentId/',
+      url: 'https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id',
+      data: data, 
+      beforeSend: function() {
+        $(".deliverableDisseminationUrl").addClass('input-loading');
+        $('#metadata-output').html("Searching ... " + data.persistentId);
+      },
+      success: function(m) {
+        console.log("success");
+        if(m.status == "OK"){
+          // Getting metadata
+          var sendDataJson = {
+              citation : '',
+              publicationDate :m.data.timestamps.publicationdate,
+              languaje: '',
+              description : m.data.metadata_blocks.citation.dsDescription,
+              handle: '',
+              doi: data.persistentId,
+              authors : m.data.metadata_blocks.citation.author
+          }
+          
+          // Setting metadata
+          setMetadata(sendDataJson);
+        }else{
+          $('#metadata-output').empty().append("Invalid URL for searching metadata");
+        }
+        
+        console.log(m);
+      },
+      complete: function() {
+        $(".deliverableDisseminationUrl").removeClass('input-loading');
+      },
+      error: function() {
+        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      }
+  });
+   
 }
