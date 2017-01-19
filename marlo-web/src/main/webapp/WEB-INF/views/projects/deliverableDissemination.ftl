@@ -44,18 +44,24 @@
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
         <select name="" id="disChannel" class="disseminationChannel">
           <option value="-1">Select an option</option>
-          <option value="1">Other</option>
           <option value="2">CGSpace</option>
-          <option value="3">Dataverse</option>
+          <option value="3">Dataverse (Harvard)</option>
+          <option value="1">Other</option>
         </select>
       </div>
-      <div id="exampleUrl-block" class="col-md-6" style="display:none;">
+      [#-- CGSpace examples & instructions --]
+      <div class="exampleUrl-block channel-2 col-md-8" style="display:none;">
         <label for="">Example of URL:</label>
-        <span>https://cgspace.cgiar.org/handle/10568/52163</span>
+        <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
+      </div>
+      [#-- Dataverse examples & instructions --]
+      <div class="exampleUrl-block channel-3 col-md-8" style="display:none;">
+        <label for="">Example of URL:</label>
+        <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
       </div>
     </div>
     
