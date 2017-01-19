@@ -635,6 +635,7 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+
         this.setDraft(true);
       } else {
         deliverable.setResponsiblePartner(this.responsiblePartner());
@@ -649,10 +650,6 @@ public class DeliverableAction extends BaseAction {
         deliverable.setQualityCheck(deliverableQualityCheck);
 
         // TODO
-        if (metadataElementManager.findAll() != null) {
-          deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
-        }
-
         if (deliverable.getDeliverableMetadataElements() != null) {
           deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
         }
@@ -674,6 +671,10 @@ public class DeliverableAction extends BaseAction {
         }
 
         this.setDraft(false);
+      }
+
+      if (metadataElementManager.findAll() != null) {
+        deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
 
       answers = new ArrayList<>(
