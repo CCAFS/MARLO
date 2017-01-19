@@ -117,6 +117,38 @@ function init() {
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
+  // Check handle and doi urls
+  $(".handleMetadata").on("change keyup", checkHandleUrl);
+  $(".doiMetadata").on("change keyup", checkDoiUrl);
+
+}
+
+function checkHandleUrl() {
+  var input = $(this);
+  $(input).removeClass("fieldError");
+  var inputData = $.trim(input.val());
+  if(inputData != "") {
+    var uri = new Uri(inputData);
+    if(uri.host() != "hdl.handle.net" && uri.protocol() != "http" || uri.protocol() != "https") {
+      $(input).addClass("fieldError");
+    } else {
+      $(input).removeClass("fieldError");
+    }
+  }
+}
+
+function checkDoiUrl() {
+  var input = $(this);
+  $(input).removeClass("fieldError");
+  var inputData = $.trim(input.val());
+  if(inputData != "") {
+    var uri = new Uri(inputData);
+    if(uri.host() != "dx.doi.org" && uri.protocol() != "http" || uri.protocol() != "https") {
+      $(input).addClass("fieldError");
+    } else {
+      $(input).removeClass("fieldError");
+    }
+  }
 }
 
 function openAccessRestriction() {
