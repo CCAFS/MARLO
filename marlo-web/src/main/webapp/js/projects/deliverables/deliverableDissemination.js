@@ -168,7 +168,17 @@ function loadAndFillMetadata() {
   var channel = $(".disseminationChannel").val();
   var url = $(".deliverableDisseminationUrl").val();
   var uri = new Uri(url);
-  // Validate url
+
+  if(channel == "2") {
+    // Get CGSpace Metadata from server
+    getCGSpaceMetadata(channel, url, uri);
+  } else if(channel == "3") {
+
+  }
+
+}
+
+function getCGSpaceMetadata(channel,url,uri) {
   var data = {
     pageID: "cgspace"
   }
@@ -227,5 +237,4 @@ function loadAndFillMetadata() {
         $('#metadata-output').empty().append("Invalid URL for searching metadata");
       }
   });
-
 }
