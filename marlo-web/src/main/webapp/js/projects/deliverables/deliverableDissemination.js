@@ -5,7 +5,7 @@ function init() {
   $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
     // $("textarea").autogrow();
   });
-
+  $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $("#deliverableMetadataDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2012-01-01',
@@ -101,12 +101,12 @@ function init() {
 }
 
 function setMetadata(data) {
-  $(".citation").val(data.citation).autoGrow();
+  $(".citationMetadata").val(data.citation).autoGrow();
   $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  $(".language").val(data.languaje);
-  $(".metadataDescription").val(data.description).autoGrow();
-  $(".handle").val(data.handle);
-  $(".doi").val(data.doi);
+  $(".languageMetadata").val(data.languaje);
+  $(".descriptionMetadata").val(data.description).autoGrow();
+  $(".handleMetadata").val(data.handle);
+  $(".doiMetadata").val(data.doi);
 }
 
 function changeDisseminationChannel() {
