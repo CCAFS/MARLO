@@ -13,16 +13,21 @@
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="optradio">Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.type == "intellectualProperty")!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="optradio">Limited Exclusivity Agreements</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.type == "limitedExclusivity")!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="optradio">Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedAccess" [#if (deliverable.dissemination.type == "restrictedAccess")!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="optradio">Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="embargoedPeriods"[#if (deliverable.dissemination.type == "embargoedPeriods")!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+    </div>
+    <div class="row restrictionDate-block" style="display:none;">
+      <div class="col-md-5">
+        [@customForm.input name="deliverable.dissemination.restrictedEmbargoedText" value="" type="text" i18nkey="text"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+      </div>
     </div>
   </div>
 </div>

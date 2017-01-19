@@ -6,7 +6,8 @@ function init() {
     // $("textarea").autogrow();
   });
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
-  $("#deliverableMetadataDate").datepicker({
+  $(".restrictionDate").attr("id","restrictionDate");
+  $("#deliverableMetadataDate, #restrictionDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2012-01-01',
       maxDate: '2030-12-31',
@@ -103,7 +104,21 @@ function init() {
   $(".disseminationChannel").on('change', changeDisseminationChannel);
 
   $("#fillMetadata").on("click", loadAndFillMetadata);
+  
+  $("input[name='deliverable.dissemination.type']").on("change",openAccessRestriction);
 
+}
+
+function openAccessRestriction(){
+  if($(this).val()=="restrictedAccess"){
+    $(".restrictionDate-block").find("label").text("Restricted access until");
+    $(".restrictionDate-block").show("slow");
+  }else if($(this).val()=="embargoedPeriods"){
+    $(".restrictionDate-block").find("label").text("Restricted embargoed date");
+    $(".restrictionDate-block").show("slow");
+  }else{
+    $(".restrictionDate-block").hide("slow");
+  }
 }
 
 function setMetadata(data) {
@@ -125,6 +140,10 @@ function setMetadata(data) {
   if($(".doiMetadata").val() == "") {
     $(".doiMetadata").val(data.doi);
   }
+  if($(".countryMetadata").val() == "") {
+    $(".countryMetadata").val(data.country);
+  }
+  
 }
 
 function changeDisseminationChannel() {
@@ -247,6 +266,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.description = m.metadata['description.abstract'];
             sendDataJson.handle = m.metadata['identifier.uri'];
             sendDataJson.doi = m.metadata['identifier.doi'];
+            sendDataJson.country=m.metadata['coverage.country'];
             setMetadata(sendDataJson);
 
             $('#metadata-output').empty().append(
