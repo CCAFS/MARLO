@@ -124,27 +124,30 @@
         <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
       </div>
     [/#if]
-      [#-- Contribution --]
-      <div class="lastName col-md-6">
-          [@customForm.input name="${customName}.contribution" showTitle=false value="" className="lastNameInput" placeholder="Last name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+      [#-- Authors inputs --]
+      <div class="lastName col-md-4">
+          [@customForm.input name="${customName}.lastName" showTitle=false value="" className="lastNameInput" placeholder="Last name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
       </div>
-      <div class="firstName col-md-6">
-          [@customForm.input name="${customName}.contribution" showTitle=false value="" className="firstNameInput" placeholder="First Name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+      <div class="firstName col-md-4">
+          [@customForm.input name="${customName}.firstName" showTitle=false value="" className="firstNameInput" placeholder="First Name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+      </div>
+      <div class="orcidId col-md-4">
+          [@customForm.input name="${customName}.orcidId" showTitle=false value="" className="orcidIdInput" placeholder="ORCID ID" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       <div class="clearfix"></div>
   </div>
 [/#macro]
 
 [#-- Metadata Macro --]
-[#macro metadataField title="" encodedName="" type="input" list=""]
+[#macro metadataField title="" encodedName="" type="input" list="" require=false]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].id" value="${(metadataID)!}" />
   [#if type == "input"]
-    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" listName=list  editable=editable /]
+    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" listName=list  editable=editable /]
  
   [/#if]
 [/#macro]

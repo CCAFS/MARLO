@@ -3,6 +3,13 @@ var $statuses, $statusDescription;
 $(document).ready(init);
 
 function init() {
+// Validate type option
+  var typeOption = $(".typeSelect").find("option:selected");
+  if(typeOption.val() == "49") {
+    $(".publicationMetadataBlock").show("slow");
+  } else {
+    $(".publicationMetadataBlock").hide("slow");
+  }
 
   $statuses = $('select.status');
   $statusDescription = $('#statusDescription');
@@ -403,6 +410,12 @@ function subTypes() {
                   + m.deliverableSubTypes[i].name + "</option>");
             }
           });
+    }
+    // show or hide publication metadata
+    if(option.val() == "49") {
+      $(".publicationMetadataBlock").show("slow");
+    } else {
+      $(".publicationMetadataBlock").hide("slow");
     }
   });
 }
