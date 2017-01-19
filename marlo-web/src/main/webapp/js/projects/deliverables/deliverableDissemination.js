@@ -27,33 +27,37 @@ function init() {
   $(".license .yes-button-label").addClass("radio-checked");
   // Validations
 
-  // accessible
+  // Is this deliverable Open Access
   $(".accessible .no-button-label").on("click", function() {
     $(".accessible .yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".openAccessOptions").show("slow");
+    checkFAIRCompliant();
   });
   $(".accessible .yes-button-label").on("click", function() {
     $(".accessible .no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".openAccessOptions").hide("slow");
+    checkFAIRCompliant();
   });
 
-// findable
+  // Is this deliverable already disseminated
   $(".findable .no-button-label").on("click", function() {
     $(".findable .yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".findableOptions").hide("slow");
     $(".dataSharing").show("slow");
+    checkFAIRCompliant();
   });
   $(".findable .yes-button-label").on("click", function() {
     $(".findable .no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".findableOptions").show("slow");
     $(".dataSharing").hide("slow");
+    checkFAIRCompliant();
   });
 
-// acknowledge
+  // Does the publication acknowledge
   $(".acknowledge .no-button-label").on("click", function() {
     $(".acknowledge .yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
@@ -63,16 +67,18 @@ function init() {
     $(this).addClass("radio-checked");
   });
 
-// license
+  // Have you adopted a license
   $(".license .no-button-label").on("click", function() {
     $(".license .yes-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".licenseOptions").hide("slow");
+    checkFAIRCompliant();
   });
   $(".license .yes-button-label").on("click", function() {
     $(".license .no-button-label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
     $(".licenseOptions").show("slow");
+    checkFAIRCompliant();
   });
 
   $("#deliverableMetadataDate").datepicker({
@@ -90,7 +96,7 @@ function init() {
 
   $(".addAuthor").on("click", addAuthor);
 
-// Remove a author
+  // Remove a author
   $('.removeAuthor').on('click', removeAuthor);
 
   // Change dissemination channel
@@ -184,7 +190,7 @@ function loadAndFillMetadata() {
 
   // Validate URL
   if(url == "") {
-    return
+    return;
   }
 
   if(channel == "2") {
@@ -259,46 +265,50 @@ function getCGSpaceMetadata(channel,url,uri) {
 }
 
 function getDataverseMetadata(channel,url,uri) {
-    /**
-     * Dataverse metadata is harvest using swagger https://services.dataverse.harvard.edu/static/swagger-ui/
-     */
-    
-    var data = {
-        key : 'c1580888-185f-4250-8f44-b98ca5e7b01b',
-        persistentId: uri.getQueryParamValue('persistentId')
-      }
-    
-    console.log(data);
-    
-    $.ajax({
+  /**
+   * Dataverse metadata is harvest using swagger https://services.dataverse.harvard.edu/static/swagger-ui/
+   */
+
+  var data = {
+      key: 'c1580888-185f-4250-8f44-b98ca5e7b01b',
+      persistentId: uri.getQueryParamValue('persistentId')
+  }
+
+  $.ajax({
       // url: 'https://dataverse.harvard.edu/api/datasets/:persistentId/',
       url: 'https://services.dataverse.harvard.edu/miniverse/metrics/v1/datasets/by-persistent-id',
-      data: data, 
+      data: data,
       beforeSend: function() {
         $(".deliverableDisseminationUrl").addClass('input-loading');
         $('#metadata-output').html("Searching ... " + data.persistentId);
       },
       success: function(m) {
         console.log("success");
-        if(m.status == "OK"){
+        if(m.status == "OK") {
           // Getting metadata
           var sendDataJson = {
-              citation : '',
-              publicationDate :m.data.timestamps.publicationdate,
+              citation: '',
+              publicationDate: m.data.timestamps.publicationdate,
               languaje: '',
-              description : m.data.metadata_blocks.citation.dsDescription,
+              description: function() {
+                var output = "";
+                $.each(m.data.metadata_blocks.citation.dsDescription, function(i,element) {
+                  output += element.dsDescriptionValue;
+                })
+                return output;
+              },
               handle: '',
               doi: data.persistentId,
-              authors : m.data.metadata_blocks.citation.author
+              authors: m.data.metadata_blocks.citation.author
           }
-          
+          console.log(sendDataJson);
+
           // Setting metadata
           setMetadata(sendDataJson);
-        }else{
+        } else {
           $('#metadata-output').empty().append("Invalid URL for searching metadata");
         }
-        
-        console.log(m);
+
       },
       complete: function() {
         $(".deliverableDisseminationUrl").removeClass('input-loading');
@@ -307,5 +317,31 @@ function getDataverseMetadata(channel,url,uri) {
         $('#metadata-output').empty().append("Invalid URL for searching metadata");
       }
   });
-   
+
+}
+
+/** FAIR Functions* */
+
+function checkFiandable() {
+  $('.fairCompliant.findable').addClass('achieved');
+}
+
+function checkAccessible() {
+  $('.fairCompliant.accessible').addClass('achieved');
+}
+
+function checkInteroperable() {
+  $('.fairCompliant.interoperable').addClass('achieved');
+}
+
+function checkReusable() {
+  $('.fairCompliant.reusable').addClass('achieved');
+}
+
+function checkFAIRCompliant() {
+  console.log('Check FAIR compliant');
+  checkFiandable();
+  checkAccessible();
+  checkInteroperable();
+  checkReusable();
 }

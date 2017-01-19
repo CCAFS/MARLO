@@ -2,16 +2,15 @@
 [#-- Compliance check (Data products only) --]
 <h4 class="headTitle">Compliance check (Data products only)</h4>
 
-<div class="fullBlock" > 
-<div class="col-md-12 note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</div>
-<div class="clearfix"></div>
+<div class="simpleBox" > 
+  <p class="note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</p>
 
   <input type="hidden" name="deliverable.qualityCheck.id" value="${(deliverable.qualityCheck.id)!"-1"}">
   [#-- Question1 --]
-  <div class="question borderBox">
+  <div class="question ">
     <h5>Have you had a process of data quality assurance in place?</h5>
     <hr />
-    <br />
+    
     <div class="col-md-4">
     [#list answers as answer]
       <div class="radio">
@@ -46,12 +45,13 @@
       [@customForm.input name="deliverable.qualityCheck.linkAssurance" value="${(deliverable.qualityCheck.linkAssurance)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
+    <div class="clearfix"></div>
   </div>
   [#-- Question2 --]
-  <div class="question borderBox">
+  <div class="question ">
     <h5>Do you have a data dictionary?</h5>
     <hr />
-    <br />
+    
     <div class="col-md-4">
     [#list answers as answer]
       <div class="radio">
@@ -86,12 +86,13 @@
       [@customForm.input name="deliverable.qualityCheck.linkDictionary" value="${(deliverable.qualityCheck.linkDictionary)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
+    <div class="clearfix"></div>
   </div>
   [#-- Question3 --]
-  <div class="question borderBox">
+  <div class="question ">
     <h5>Are the tools used for data collection available (e.g. surveys, data analysis scripts, training materials, etc.)?</h5>
     <hr />
-    <br />
+    
     <div class="col-md-4">
       [#list answers as answer]
       <div class="radio">
@@ -126,5 +127,76 @@
       [@customForm.input name="deliverable.qualityCheck.linkTools" value="${(deliverable.qualityCheck.linkTools)!}" className="urlLink" i18nkey="" showTitle=false placeholder="Please give us the link" required=true  editable=editable /]
       </div>
     </div>
+    <div class="clearfix"></div>
   </div>
+  
+</div>
+
+<br />
+
+[#-- Fair Compliant--]
+<h4 class="headTitle">FAIR Compliant</h4>
+
+<div class="simpleBox" > 
+   
+  [#-- Findable --] 
+  <div class="fairCompliant findable">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="sign">F</div>
+      </div>
+      <div class="col-md-10">
+        <strong>Findable</strong>
+        <p>Product published/disseminated</p>
+        <p>Globally unique and persistent identifier (handle and/or DOI)</p>
+        <p>Data are described with rich metadata</p>
+      </div>
+    </div>
+  </div>
+  
+  [#-- Accessible --] 
+  <div class="fairCompliant accessible">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="sign">A</div>
+      </div>
+      <div class="col-md-10">
+        <strong>Accessible</strong>
+        <p>Open Access – without restrictions</p>
+        <p>Retrievable by their identifier using a standardized communications protocol</p>
+        <p>Metadata are accessible, even when the data are not longer available</p>
+      </div>
+    </div>
+  </div>
+  
+  [#-- Interoperable --] 
+  <div class="fairCompliant interoperable achieved">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="sign">I</div>
+      </div>
+      <div class="col-md-10">
+        <strong>Interoperable</strong>
+        <p>Metadata schema implemented</p>
+        <p>Interoperability protocol implemented</p>
+        <p>Protocol allows authentication and authorization procedure, where necessary</p>
+      </div>
+    </div>
+  </div>
+  
+  [#-- Reusable --] 
+  <div class="fairCompliant reusable">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="sign">R</div>
+      </div>
+      <div class="col-md-10">
+        <strong>Reusable</strong>
+        <p>Clear and accessible data usage license</p>
+        <p>Data are associated with detailed provenance</p>
+      </div>
+    </div>
+  </div>
+  
+  
 </div>

@@ -143,11 +143,11 @@
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].id" value="${(metadataID)!}" />
   [#if type == "input"]
-    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" help="reporting.projectDeliverable.metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="reporting.projectDeliverable.metadata.${title}" listName=list  editable=editable /]
+    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
  
   [/#if]
 [/#macro]
