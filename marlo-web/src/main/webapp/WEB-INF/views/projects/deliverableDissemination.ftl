@@ -241,9 +241,9 @@
       </div>
     </div>
     <div class=" col-md-6">
-      <label class="col-md-6" for="">[@s.text name="Does this license allow modifications?" /]</label>
+      <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
-        [@customForm.yesNoInput name="other"  editable=true inverse=false cssClass="other text-center" /] 
+        [@customForm.yesNoInput name="licenceModifications"  editable=true inverse=false cssClass="licenceModifications text-center" /] 
       </div>  
     </div>
     <div class="clearfix"></div>

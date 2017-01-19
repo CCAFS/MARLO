@@ -82,6 +82,16 @@ function init() {
     checkFAIRCompliant();
   });
 
+  // Does this license allow modifications?
+  $(".licenceModifications .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+    checkFAIRCompliant();
+  });
+
   $("#deliverableMetadataDate").datepicker({
       dateFormat: "yy-mm-dd",
       minDate: '2015-01-01',
