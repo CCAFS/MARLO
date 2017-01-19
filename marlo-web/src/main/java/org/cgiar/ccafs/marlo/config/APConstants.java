@@ -217,6 +217,21 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_QUALITY_CHECK =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableQualityChecks)";
 
+  public static final String PROJECT_DELIVERABLE_METADATA_ELEMENT =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
+
+  public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
+
+  public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
+
+  public static final String PROJECT_DELIVERABLE_DATA_SHARING =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
+
+  public static final String PROJECT_DELIVERABLE_PUBLICATION_METADATA =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
+
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";
   public static final String PROJECT_LEVERAGES_RELATION =
