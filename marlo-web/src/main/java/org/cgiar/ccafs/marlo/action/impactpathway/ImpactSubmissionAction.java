@@ -139,8 +139,7 @@ public class ImpactSubmissionAction extends BaseAction {
     sectionStatus = sectionStatusManager.findAll().stream()
       .filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)).collect(Collectors.toList());
     if (!crpProgram.getSubmissions().isEmpty()) {
-      submission = crpProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList()).get(0);
+      submission = crpProgram.getSubmissions().stream().collect(Collectors.toList()).get(0);
     }
   }
 
