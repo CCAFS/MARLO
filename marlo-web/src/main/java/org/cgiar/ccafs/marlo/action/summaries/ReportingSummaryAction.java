@@ -139,7 +139,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     // Calculate time to generate report
     long startTime = System.currentTimeMillis();
-    // System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
+    System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -153,15 +153,24 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-      // Get project from DB and general parameters
+      // Get project from DB
       project = projectManager.getProjectById(projectID);
       String masterQueryName = "Main_Query";
-      int year = 0;
-      String cycle = "";
-      year = this.getYear();
-      if (this.getCycle() != null) {
-        cycle = this.getCycle();
+      // Get parameters from URL
+      // Get year
+      try {
+        year = Integer.parseInt(this.getRequest().getParameter("year"));
+      } catch (Exception e) {
+        year = this.getCurrentCycleYear();
       }
+
+      // Get cycle
+      try {
+        cycle = this.getRequest().getParameter("cycle");
+      } catch (Exception e) {
+        cycle = this.getCurrentCycle();
+      }
+
 
       // General list to store parameters of Subreports
       List<Object> args = new LinkedList<>();
@@ -170,7 +179,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Set Main_Query
         CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
         TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-        TypedTableModel model = this.getNullMasterTableModel(cycle, year);
+        TypedTableModel model = this.getNullMasterTableModel();
         sdf.addTable(masterQueryName, model);
         masterReport.setDataFactory(cdf);
 
@@ -228,7 +237,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Set Main_Query
         CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
         TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-        TypedTableModel model = this.getMasterTableModel(flagships, regions, projectLeader, cycle, year);
+        TypedTableModel model = this.getMasterTableModel(flagships, regions, projectLeader);
         sdf.addTable(masterQueryName, model);
         masterReport.setDataFactory(cdf);
 
@@ -236,7 +245,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Description
         args.add(projectLeader);
-        args.add(cycle);
         args.add(hasRegions);
         this.fillSubreport((SubReport) hm.get("description"), "description", args);
         // Description Flagships
@@ -270,7 +278,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // Note: Contacts for partners are filled by queries inside the prpt
         // Subreport Partner Lessons
         args.clear();
-        args.add(cycle);
         this.fillSubreport((SubReport) hm.get("partner_lessons"), "partner_lessons", args);
 
         // Subreport Locations
@@ -283,7 +290,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Deliverables
         args.clear();
-        args.add(year);
         this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
 
         // Subreport Activities
@@ -292,7 +298,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Budgets Summary
         args.clear();
-        args.add(year);
         this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
 
         // Subreport BudgetsbyPartners
@@ -315,7 +320,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;
-    // System.out.println("Tiempo de ejecución: " + elapsedTime);
+    System.out.println("Tiempo de ejecución: " + elapsedTime);
     return SUCCESS;
 
   }
@@ -327,9 +332,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     switch (query) {
       case "description":
         if (args.get(0) instanceof ProjectPartner) {
-          model = this.getDescTableModel((ProjectPartner) args.get(0), (String) args.get(1), (Boolean) args.get(2));
+          model = this.getDescTableModel((ProjectPartner) args.get(0), (Boolean) args.get(1));
         } else {
-          model = this.getDescTableModel(new ProjectPartner(), (String) args.get(1), (Boolean) args.get(2));
+          model = this.getDescTableModel(new ProjectPartner(), (Boolean) args.get(1));
         }
         break;
       case "description_flagships":
@@ -359,7 +364,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
         break;
       case "partner_lessons":
-        model = this.getPartnersLessonsTableModel((String) args.get(0));
+        model = this.getPartnersLessonsTableModel();
         break;
       case "locations":
         model = this.getLocationsTableModel();
@@ -368,19 +373,19 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         model = this.getOutcomesTableModel();
         break;
       case "deliverables_list":
-        model = this.getDeliverablesTableModel((int) args.get(0));
+        model = this.getDeliverablesTableModel();
         break;
       case "activities_list":
         model = this.getActivitiesTableModel();
         break;
       case "budget_summary":
-        model = this.getBudgetSummaryTableModel((int) args.get(0));
+        model = this.getBudgetSummaryTableModel();
         break;
       case "budgets_by_partners_list":
-        model = this.getBudgetsbyPartnersTableModel((int) args.get(0));
+        model = this.getBudgetsbyPartnersTableModel();
         break;
       case "budgets_by_coas_list":
-        model = this.getBudgetsbyCoasTableModel((int) args.get(0));
+        model = this.getBudgetsbyCoasTableModel();
         break;
 
     }
@@ -497,7 +502,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return null;
   }
 
-  private TypedTableModel getBudgetsbyCoasTableModel(int year) {
+  private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
 
     TypedTableModel model = new TypedTableModel(
@@ -596,7 +601,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getBudgetsbyPartnersTableModel(int year) {
+  private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
         "w3Gender", "bilateralGender", "centerGender", "w1w2GAmount", "w3GAmount", "bilateralGAmount", "centerGAmount"},
@@ -638,7 +643,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getBudgetSummaryTableModel(int year) {
+  private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
     String w1w2 = null;
@@ -679,7 +684,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return cycle;
   }
 
-  private TypedTableModel getDeliverablesTableModel(int year) {
+  private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
         "key_output", "leader", "institution", "funding_sources", "cross_cutting"},
@@ -810,7 +815,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getDescTableModel(ProjectPartner projectLeader, String cycle, Boolean hasRegions) {
+  private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "start_date", "end_date", "ml", "ml_contact", "type", "status", "org_leader", "leader",
         "summary", "cycle", "analysis", "cross-cutting", "hasRegions"},
@@ -1019,7 +1024,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
-    ProjectPartner projectLeader, String cycle, int year) {
+    ProjectPartner projectLeader) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "exist", "cycle", "isNew",
@@ -1109,15 +1114,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     Boolean isNew = this.isProjectNew(projectID);
     Boolean isPlanning = true;
-    String cycleFront;
-    try {
-      cycleFront = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
-      cycleFront = this.getCurrentCycle();
-    }
 
-
-    if (cycleFront.equals("Reporting")) {
+    if (cycle.equals("Reporting")) {
       isPlanning = false;
     }
     model.addRow(new Object[] {title, centerAcry, current_date, submission, 1, cycle, isNew, isAdministrative, type,
@@ -1125,7 +1123,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private TypedTableModel getNullMasterTableModel(String cycle, int year) {
+  private TypedTableModel getNullMasterTableModel() {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "exist", "isNew", "type"},
@@ -1238,7 +1236,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-  private TypedTableModel getPartnersLessonsTableModel(String cycle) {
+  private TypedTableModel getPartnersLessonsTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"year", "lesson"}, new Class[] {Integer.class, String.class}, 0);
     if (!cycle.equals("")) {

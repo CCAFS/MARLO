@@ -75,16 +75,24 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
   // Variables
   private Crp loggedCrp;
+  private int year;
+  private String cycle;
+
 
   // Managers
   private CrpManager crpManager;
+
+
   private CrpProgramManager programManager;
+
 
   // XLSX bytes
   private byte[] bytesXLSX;
 
+
   // Streams
   InputStream inputStream;
+
 
   @Inject
   public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager) {
@@ -106,6 +114,20 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
+    // Get parameters from URL
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get cycle
+    try {
+      cycle = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
@@ -209,8 +231,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
-  public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type, Project project) {
+  public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, long type, Project project) {
 
     for (ProjectBudgetsCluserActvity pb : project.getProjectBudgetsCluserActvities().stream()
       .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getCrpClusterOfActivity() != null
@@ -220,7 +241,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     }
     return null;
   }
-
 
   @Override
   public int getContentLength() {
@@ -232,6 +252,10 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return "application/xlsx";
   }
 
+  public String getCycle() {
+    return cycle;
+  }
+
 
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -240,6 +264,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return file;
 
   }
+
 
   @Override
   public String getFileName() {
@@ -270,6 +295,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     }
   }
 
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -282,7 +308,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model =
@@ -290,7 +315,6 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     model.addRow(new Object[] {center, date});
     return model;
   }
-
 
   private TypedTableModel getProjectsCoAsTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -375,7 +399,7 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
         // Get types of funding sources
         for (ProjectBudget pb : project.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getYear() == this.getCurrentCycleYear() && pb.getBudgetType() != null)
+          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
           .collect(Collectors.toList())) {
           if (pb.getBudgetType().getId() == 1) {
             w1w2 = 100.0;
@@ -465,14 +489,14 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
           }
 
 
-          ProjectBudgetsCluserActvity w1w2pb = this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(),
-            this.getCurrentCycleYear(), 1, project);
-          ProjectBudgetsCluserActvity w3pb = this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(),
-            this.getCurrentCycleYear(), 2, project);
-          ProjectBudgetsCluserActvity bilateralpb = this
-            .getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), this.getCurrentCycleYear(), 3, project);
-          ProjectBudgetsCluserActvity centerpb = this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(),
-            this.getCurrentCycleYear(), 4, project);
+          ProjectBudgetsCluserActvity w1w2pb =
+            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), 1, project);
+          ProjectBudgetsCluserActvity w3pb =
+            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), 2, project);
+          ProjectBudgetsCluserActvity bilateralpb =
+            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), 3, project);
+          ProjectBudgetsCluserActvity centerpb =
+            this.getBudgetbyCoa(clusterActivity.getCrpClusterOfActivity().getId(), 4, project);
 
 
           if (w1w2pb != null) {
@@ -503,6 +527,11 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  public int getYear() {
+    return year;
+  }
+
+
   @Override
   public void prepare() {
 
@@ -515,8 +544,17 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   }
 
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 }

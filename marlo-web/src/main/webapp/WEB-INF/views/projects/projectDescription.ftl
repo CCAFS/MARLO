@@ -100,6 +100,15 @@
             
             [#--  Regions/global and Flagships that the project is working on --]
             [#if !project.administrative]
+            
+            [#if regionFlagships?has_content]
+              [#-- For the CRPs which has Regional Programs --]
+              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions" readText=!editable /]:</h5>
+            [#else]
+              [#-- For those CRPs which do not have Regional programs please phrase this question --]
+              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
+            [/#if]
+            
             <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --] 

@@ -274,8 +274,8 @@ public class OutcomesAction extends BaseAction {
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
 
-      List<SrfTargetUnit> targetUnits =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+      List<SrfTargetUnit> targetUnits = srfTargetUnitManager.findAll().stream()
+        .filter(c -> c.isActive() && (c.getCrp() == null || c.getCrp().equals(loggedCrp))).collect(Collectors.toList());
 
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
