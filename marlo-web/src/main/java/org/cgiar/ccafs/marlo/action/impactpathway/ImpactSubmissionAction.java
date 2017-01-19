@@ -81,8 +81,8 @@ public class ImpactSubmissionAction extends BaseAction {
         List<Submission> submissions = submissionManager.findAll();
         if (submissions != null) {
           submissions =
-            submissions.stream().filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram))
-              .collect(Collectors.toList());
+            submissions.stream().filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)
+              && (c.isUnSubmit() == null || !c.isUnSubmit())).collect(Collectors.toList());
           for (Submission theSubmission : submissions) {
             submission = theSubmission;
             alreadySubmitted = true;
@@ -139,7 +139,8 @@ public class ImpactSubmissionAction extends BaseAction {
     sectionStatus = sectionStatusManager.findAll().stream()
       .filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)).collect(Collectors.toList());
     if (!crpProgram.getSubmissions().isEmpty()) {
-      submission = crpProgram.getSubmissions().stream().collect(Collectors.toList()).get(0);
+      submission = crpProgram.getSubmissions().stream().filter(c -> (c.isUnSubmit() == null || !c.isUnSubmit()))
+        .collect(Collectors.toList()).get(0);
     }
   }
 
