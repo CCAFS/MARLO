@@ -72,22 +72,21 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   private ProjectManager projectManager;
 
-
   private FundingSourceManager fundingSourceManager;
-
-
   private ProjectBudgetManager projectBudgetManager;
+
 
   private LiaisonInstitutionManager liaisonInstitutionManager;
 
   private ProjectBudgetsValidator projectBudgetsValidator;
 
-
   private CrpManager crpManager;
+
 
   private long projectID;
 
   private Crp loggedCrp;
+
   private Project project;
   private String transaction;
   private AuditLogManager auditLogManager;
@@ -133,7 +132,6 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
     return permission;
   }
 
-
   @Override
   public String cancel() {
     Path path = this.getAutoSaveFilePath();
@@ -174,6 +172,14 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       return permission;
     }
     return true;
+
+  }
+
+
+  public boolean canEditFundingSourceBudget() {
+    return this.hasPermissionNoBase(
+      this.generatePermission(Permission.PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION, loggedCrp.getAcronym()));
+
 
   }
 

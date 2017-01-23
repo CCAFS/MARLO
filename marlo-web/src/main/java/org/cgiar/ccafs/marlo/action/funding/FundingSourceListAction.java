@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -208,6 +209,14 @@ public class FundingSourceListAction extends BaseAction {
          * allProjects.removeAll(myProjects);
          */
         myProjects = loggedCrp.getFundingSources().stream().filter(p -> p.isActive()).collect(Collectors.toList());
+
+      }
+    }
+    if (myProjects != null) {
+      for (FundingSource fundingSource : myProjects) {
+        fundingSource.setInstitutions(new ArrayList<>(fundingSource.getFundingSourceInstitutions().stream()
+          .filter(pb -> pb.isActive()).collect(Collectors.toList())));
+
 
       }
     }
