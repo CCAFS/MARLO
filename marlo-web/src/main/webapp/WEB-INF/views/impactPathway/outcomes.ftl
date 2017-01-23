@@ -167,10 +167,10 @@
       </div>
       
 
-    </div>  
-    <div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div>
-    <br />
-    <br />
+    </div>
+    [#if editable]<div class="col-md-12 note">[@s.text name = "outcomes.addNewTargetUnit" /]</div> <br /> <br />[/#if]
+    
+    
     [#-- Outcome Sub-IDOs List --]
     <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>
     <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
@@ -245,8 +245,8 @@
         [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue" required=true editable=editable /]
       </div>
     </div>
+    [#if editable]<div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>[/#if]
     
-    <div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>
   </div>
 [/#macro]
 
