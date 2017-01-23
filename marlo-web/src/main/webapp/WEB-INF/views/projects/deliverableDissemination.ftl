@@ -4,7 +4,7 @@
   <div class=" row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
+      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
     </div>
   </div>
 <div class="clearfix"></div>
@@ -13,18 +13,18 @@
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination??) && (deliverable.dissemination.type == "intellectualProperty"))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.type == "limitedExclusivity")!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedAccess" [#if (deliverable.dissemination.type == "restrictedAccess")!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedAccess" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="embargoedPeriods"[#if (deliverable.dissemination.type == "embargoedPeriods")!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="embargoedPeriods"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
     </div>
-    <div class="row restrictionDate-block" style="display:none;">
+    <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
       <div class="col-md-5">
         [@customForm.input name="deliverable.dissemination.restrictedEmbargoedText" value="" type="text" i18nkey="text"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
       </div>
@@ -45,7 +45,7 @@
     </div>  
   </div>
   
-  <div class="findableOptions" style="display:${(deliverable.dissemination.alreadyDisseminated)?string("block","none")};">
+  <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     <div class="row">
@@ -106,7 +106,7 @@
     [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="keywords" className="" type="text" disabled=!editable  required=true editable=editable /]
+    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]
   </div>
     
   <div class="col-md-12">
@@ -163,10 +163,10 @@
   <div class="clearfix"></div>
   <div class="row simpleBox">
     <div class="col-md-6">
-      [@customForm.select name="" label=""  i18nkey="Select relevant CRPs" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className=" form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select relevant CRPs" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-6">
-      <input type="checkbox" /> Select relevant Flagship
+      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsips" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
   </div>
 </div>
@@ -193,15 +193,15 @@
   [#-- Deliverable type data --]
   <div class=" licenseOptions dataLicense" style="display:none;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="3"/> CC licenses version 4.0
+      <input type="radio" name="deliverable.licenseType" id="" value="3"/> CC licenses version 4.0
 
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="4"/> CC Public Domain Dedication (CC0 1.0)
+      <input type="radio" name="deliverable.licenseType" id="" value="4"/> CC Public Domain Dedication (CC0 1.0)
 
     </div>
     <div class="col-md-12" style="display:none;">
-      <input type="radio" name="deliverable.license" id="" value="5"/> Open Data Commons (ODC)
+      <input type="radio" name="deliverable.licenseType" id="" value="5"/> Open Data Commons (ODC)
     </div>
     <div class="clearfix"></div>
   </div>
@@ -209,19 +209,19 @@
   [#-- Deliverable type other research types --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY <small>(allow modifications and commercial use)</small>
+      <input type="radio" name="deliverable.licenseType" id="" value="6"/> CC-BY <small>(allow modifications and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
+      <input type="radio" name="deliverable.licenseType" id="" value="7"/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
+      <input type="radio" name="deliverable.licenseType" id="" value="8"/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
+      <input type="radio" name="deliverable.licenseType" id="" value="9"/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
+      <input type="radio" name="deliverable.licenseType" id="" value="10"/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
     </div>
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small>
@@ -233,7 +233,7 @@
   <div class="row">
     <div class="col-md-6 form-group">
       <div class="col-md-4">
-        <input type="radio" name="deliverable.license" id="" value="12"/> Other
+        <input type="radio" name="deliverable.licenseType" id="" value="12"/> Other
       </div>
       <div class="col-md-8 licence-modifications" style="display:none;" >
         [@customForm.input name="otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
