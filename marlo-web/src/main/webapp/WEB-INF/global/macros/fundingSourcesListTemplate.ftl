@@ -48,10 +48,11 @@
              <td class=""> 
              [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
-               
-                  <span class="name">${(institutionLead.institution.composedName)!}</span>
+                [#if institutionLead_index!=0]
+                  <hr />
+                [/#if]
+                  <span class="name col-md-11">${(institutionLead.institution.composedName)!}</span>
                   <div class="clearfix"></div>
-             
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
