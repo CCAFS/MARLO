@@ -62,3 +62,42 @@ function uploadFile($uploadBlock,$fileUpload,type) {
     $uploadBlock.find('input.fileID').val('');
   });
 }
+
+/** FAIR Functions* */
+
+function checkFiandable() {
+  // If the deliverables is disseminated
+  if($('.findable input').val() == "true") {
+    var channelSelected = $('select.disseminationChannel').val();
+    // If is disseminated in CGSpace or Dataverse
+    if((channelSelected == "2") || (channelSelected == "3")) {
+      // If is dissemination URL filled correctly
+      if($('input.deliverableDisseminationUrl').val() != "") {
+        $('.fairCompliant.findable').addClass('achieved');
+      }
+    }
+  }
+}
+
+function checkAccessible() {
+  if($('.accessible input').val() == "true") {
+    $('.fairCompliant.accessible').addClass('achieved');
+  }
+}
+
+function checkInteroperable() {
+  // $('.fairCompliant.interoperable').addClass('achieved');
+}
+
+function checkReusable() {
+  // $('.fairCompliant.reusable').addClass('achieved');
+}
+
+function checkFAIRCompliant() {
+  console.log('Check FAIR compliant');
+  $('.fairCompliant').removeClass('achieved');
+  checkFiandable();
+  checkAccessible();
+  checkInteroperable();
+  checkReusable();
+}

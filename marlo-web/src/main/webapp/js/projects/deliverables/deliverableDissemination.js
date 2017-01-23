@@ -24,10 +24,6 @@ function init() {
   $('.disseminationChannel').select2({
     width: '90%'
   });
-  $(".accessible .no-button-label").addClass("radio-checked");
-  $(".findable .yes-button-label").addClass("radio-checked");
-  $(".license .yes-button-label").addClass("radio-checked");
-  // Validations
 
   // Is this deliverable Open Access
   $(".accessible .button-label").on("click", function() {
@@ -61,7 +57,6 @@ function init() {
       $(".dataSharing").hide("slow");
     }
     checkFAIRCompliant();
-
   });
 
   // Does the publication acknowledge
@@ -117,6 +112,11 @@ function init() {
   $("#fillMetadata").on("click", loadAndFillMetadata);
 
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
+
+  // Type a dissemination channel url
+  $('input.deliverableDisseminationUrl').on("change", function() {
+    checkFAIRCompliant();
+  })
 
   // Check handle and doi urls
   $(".handleMetadata").on("change keyup", checkHandleUrl);
@@ -205,6 +205,8 @@ function changeDisseminationChannel() {
   } else {
     $('#disseminationUrl').slideUp("slow");
   }
+
+  checkFAIRCompliant();
 }
 
 function addAuthor() {
@@ -380,30 +382,4 @@ function getDataverseMetadata(channel,url,uri) {
       }
   });
 
-}
-
-/** FAIR Functions* */
-
-function checkFiandable() {
-  $('.fairCompliant.findable').addClass('achieved');
-}
-
-function checkAccessible() {
-  $('.fairCompliant.accessible').addClass('achieved');
-}
-
-function checkInteroperable() {
-  $('.fairCompliant.interoperable').addClass('achieved');
-}
-
-function checkReusable() {
-  $('.fairCompliant.reusable').addClass('achieved');
-}
-
-function checkFAIRCompliant() {
-  console.log('Check FAIR compliant');
-  checkFiandable();
-  checkAccessible();
-  checkInteroperable();
-  checkReusable();
 }
