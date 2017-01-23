@@ -144,16 +144,16 @@ public class DeliverableDissemination implements java.io.Serializable {
   }
 
   public String getType() {
-    if (intellectualProperty) {
+    if (intellectualProperty != null && intellectualProperty) {
       return DisseminationTypeEnum.INTECLLECTUAL_PROPERTY.getValue();
     }
-    if (limitedExclusivity) {
+    if (limitedExclusivity != null && limitedExclusivity) {
       return DisseminationTypeEnum.LIMITED_EXCLUSIVITY.getValue();
     }
-    if (restrictedUseAgreement) {
+    if (restrictedUseAgreement != null && restrictedUseAgreement) {
       return DisseminationTypeEnum.RESTRICTED_USER_AGREEMENT.getValue();
     }
-    if (effectiveDateRestriction) {
+    if (effectiveDateRestriction != null && effectiveDateRestriction) {
       return DisseminationTypeEnum.EMBARGOED_PERIODS.getValue();
     }
 
