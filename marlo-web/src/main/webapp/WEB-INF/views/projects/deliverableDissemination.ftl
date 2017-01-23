@@ -139,7 +139,7 @@
   </div>
   <label for="">Indicators for journal articles:</label>
   <div class="col-md-12 form-group">
-    <input type="checkbox" />Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)  
+    <input type="checkbox" />Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
   </div>
   <div class="col-md-12 form-group">  
     <input type="checkbox" />Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
@@ -209,35 +209,34 @@
   [#-- Deliverable type other research types --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY (allow modifications and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY <small>(allow modifications and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA (allow modifications as long as other share alike and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND (allow commercial use but no modifications)
+      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC (allow modifications but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA (allow modifications as long as other share alike, but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND (don't allow modifications neither commercial use)
+      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small>
     </div>
     <div class="clearfix"></div>
   </div>
   <br />
   [#-- Other --]
   <div class="row">
-  
     <div class="col-md-6 form-group">
       <div class="col-md-4">
         <input type="radio" name="deliverable.license" id="" value="12"/> Other
       </div>
-      <div class="col-md-8">
-        [@customForm.input name="" showTitle=false className="" type="text" placeholder="Text here" disabled=!editable  required=true editable=editable /]
+      <div class="col-md-8 licence-modifications" style="display:none;" >
+        [@customForm.input name="otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
       </div>
     </div>
     <div class=" col-md-6 licence-modifications" style="display:none;">

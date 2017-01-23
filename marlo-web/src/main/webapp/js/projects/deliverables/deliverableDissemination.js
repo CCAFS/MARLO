@@ -114,7 +114,7 @@ function init() {
   $("input[name='deliverable.dissemination.type']").on("change", openAccessRestriction);
 
   // Type a dissemination channel url
-  $('input.deliverableDisseminationUrl').on("change", function() {
+  $('input.deliverableDisseminationUrl, input.otherLicense').on("change", function() {
     checkFAIRCompliant();
   })
 
@@ -129,6 +129,7 @@ function init() {
     } else {
       $(".licence-modifications").hide("slow");
     }
+    checkFAIRCompliant();
   });
 }
 

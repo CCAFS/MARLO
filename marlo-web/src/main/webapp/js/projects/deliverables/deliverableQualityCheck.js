@@ -97,11 +97,13 @@ function checkReusable() {
   // If has the deliverable adopted a license
   if($('.license input').val() == "true") {
     // If is different to "Other"
-    if($('input[name="deliverable.license"]:checked').val() != "12") {
+    var inputChecked = $('input[name="deliverable.license"]:checked').val();
+
+    if(!(typeof inputChecked === "undefined") && (inputChecked != "12")) {
       $('.fairCompliant.reusable').addClass('achieved');
     } else {
       // Does this license allow modifications?
-      if($('.licenceModifications input').val() == "true") {
+      if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
         $('.fairCompliant.reusable').addClass('achieved');
       }
     }
