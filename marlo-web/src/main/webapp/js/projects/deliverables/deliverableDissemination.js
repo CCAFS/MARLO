@@ -313,6 +313,25 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.country = m.metadata['coverage.country'];
             setMetadata(sendDataJson);
 
+            jsonTest = {
+              authors: [
+                  {
+                      lastName: "lastTest",
+                      firstName: "firstTest",
+                      orcidId: 546
+                  }, {
+                      lastName: "lastTest2",
+                      firstName: "firstTest2",
+                      orcidId: 5462
+                  }, {
+                      lastName: "lastTest3",
+                      firstName: "firstTest3",
+                      orcidId: 546435
+                  }
+              ]
+            };
+            authorsByService(jsonTest);
+
             $('#metadata-output').empty().append(
                 "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
           }
