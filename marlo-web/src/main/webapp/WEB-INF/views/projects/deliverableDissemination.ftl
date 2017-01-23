@@ -113,10 +113,10 @@
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="Handle" className="handleMetadata" type="text" disabled=!editable  required=false editable=editable /]
+    [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="DOI" className="doiMetadata" type="text" disabled=!editable  required=false editable=editable /]
+    [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
   </div>
 </div>
 
