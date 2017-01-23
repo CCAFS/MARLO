@@ -4,7 +4,7 @@
   <div class=" row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="accessible"  editable=true inverse=false cssClass="accessible text-center" /]  
+      [@customForm.yesNoInput name="accessible"  editable=true inverse=false value="false" cssClass="accessible text-center" /]  
     </div>  
   </div>
 <div class="clearfix"></div>
@@ -41,7 +41,7 @@
       <span style="font-size:0.9em;">Is the deliverable already uploaded onto a public repository?</span>
     </span>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="findable"  editable=true inverse=false cssClass="findable text-center" /] 
+      [@customForm.yesNoInput name="findable"  editable=true inverse=false value="true" cssClass="findable text-center" /] 
     </div>  
   </div>
   
@@ -152,7 +152,7 @@
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false cssClass="acknowledge text-center" /] 
+      [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false value="true" cssClass="acknowledge text-center" /] 
     </div> 
   </div>
   
@@ -175,7 +175,7 @@
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="license"  editable=true inverse=false cssClass="license text-center" /] 
+      [@customForm.yesNoInput name="license"  editable=true inverse=false value="true" cssClass="license text-center" /] 
     </div>  
   </div>
   <hr />
@@ -243,7 +243,7 @@
     <div class=" col-md-6">
       <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
-        [@customForm.yesNoInput name="licenceModifications"  editable=true inverse=false cssClass="licenceModifications text-center" /] 
+        [@customForm.yesNoInput name="licenceModifications"  editable=true inverse=false value="true" cssClass="licenceModifications text-center" /] 
       </div>  
     </div>
     <div class="clearfix"></div>

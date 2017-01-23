@@ -170,7 +170,7 @@
   </div>
   
   [#-- Interoperable --] 
-  <div class="fairCompliant interoperable achieved">
+  <div class="fairCompliant interoperable">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">I</div>
