@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS `project_highligths`;
-DROP TABLE IF EXISTS `project_highligths_country`;
-DROP TABLE IF EXISTS `project_highligths_types`;
+DROP TABLE IF EXISTS `project_highlights`;
+DROP TABLE IF EXISTS `project_highlights_country`;
+DROP TABLE IF EXISTS `project_highlights_types`;
 
 
 RENAME TABLE `project_highligths` TO `project_highlights`;
