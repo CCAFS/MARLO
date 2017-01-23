@@ -1,9 +1,8 @@
 $(document).ready(init);
 
 function init() {
-  console.log($('input[name=deliverableID]').val());
 
-// Set file upload (blueimp-tmpl)
+  // Set file upload (blueimp-tmpl)
   uploadFile($('.fileAssuranceContent'), $('.fileAssuranceContent').find('.uploadFileAssurance'), 'Assurance');
   uploadFile($('.fileDictionaryContent'), $('.fileDictionaryContent').find('.uploadFileDictionary'), 'Dictionary');
   uploadFile($('.fileToolsContent'), $('.fileToolsContent').find('.uploadFileTools'), 'Tools');
@@ -22,6 +21,8 @@ function init() {
     }
   });
 
+  // Validate FAIR Complain
+  checkFAIRCompliant();
 }
 
 function uploadFile($uploadBlock,$fileUpload,type) {
@@ -68,14 +69,7 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 function checkFiandable() {
   // If the deliverables is disseminated
   if($('.findable input').val() == "true") {
-    var channelSelected = $('select.disseminationChannel').val();
-    // If is disseminated in CGSpace or Dataverse
-    if((channelSelected == "2") || (channelSelected == "3")) {
-      // If is dissemination URL filled correctly
-      if($('input.deliverableDisseminationUrl').val() != "") {
-        $('.fairCompliant.findable').addClass('achieved');
-      }
-    }
+    $('.fairCompliant.findable').addClass('achieved');
   }
 }
 
@@ -86,11 +80,33 @@ function checkAccessible() {
 }
 
 function checkInteroperable() {
-  // $('.fairCompliant.interoperable').addClass('achieved');
+  // If the deliverables is disseminated
+  if($('.findable input').val() == "true") {
+    var channelSelected = $('select.disseminationChannel').val();
+    // If is disseminated in CGSpace or Dataverse
+    if((channelSelected == "2") || (channelSelected == "3")) {
+      // If is dissemination URL filled correctly
+      if($('input.deliverableDisseminationUrl').val() != "") {
+        $('.fairCompliant.interoperable').addClass('achieved');
+      }
+    }
+  }
 }
 
 function checkReusable() {
-  // $('.fairCompliant.reusable').addClass('achieved');
+  // If has the deliverable adopted a license
+  if($('.license input').val() == "true") {
+    // If is different to "Other"
+    if($('input[name="deliverable.license"]:checked').val() != "12") {
+      $('.fairCompliant.reusable').addClass('achieved');
+    } else {
+      // Does this license allow modifications?
+      if($('.licenceModifications input').val() == "true") {
+        $('.fairCompliant.reusable').addClass('achieved');
+      }
+    }
+  }
+
 }
 
 function checkFAIRCompliant() {
