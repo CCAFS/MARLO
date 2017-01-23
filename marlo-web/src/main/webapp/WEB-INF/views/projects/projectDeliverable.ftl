@@ -126,13 +126,13 @@
     [/#if]
       [#-- Authors inputs --]
       <div class="lastName col-md-4">
-          [@customForm.input name="${customName}.lastName" showTitle=false value="" className="lastNameInput" placeholder="Last name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.lastName" showTitle=true i18nkey="Last name (dc.creator)" value="" className="lastNameInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       <div class="firstName col-md-4">
-          [@customForm.input name="${customName}.firstName" showTitle=false value="" className="firstNameInput" placeholder="First Name (dc.creator)" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.firstName" showTitle=true i18nkey="First Name (dc.creator)" value="" className="firstNameInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       <div class="orcidId col-md-4">
-          [@customForm.input name="${customName}.orcidId" showTitle=false value="" className="orcidIdInput" placeholder="ORCID ID" type="text" disabled=!editable  required=true editable=editable /]
+          [@customForm.input name="${customName}.orcidId" showTitle=true i18nkey="ORCID ID" value="" className="orcidIdInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       <div class="clearfix"></div>
   </div>

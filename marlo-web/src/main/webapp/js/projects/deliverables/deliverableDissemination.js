@@ -311,6 +311,25 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.country = m.metadata['coverage.country'];
             setMetadata(sendDataJson);
 
+            jsonTest = {
+              authors: [
+                  {
+                      lastName: "lastTest",
+                      firstName: "firstTest",
+                      orcidId: 546
+                  }, {
+                      lastName: "lastTest2",
+                      firstName: "firstTest2",
+                      orcidId: 5462
+                  }, {
+                      lastName: "lastTest3",
+                      firstName: "firstTest3",
+                      orcidId: 546435
+                  }
+              ]
+            };
+            authorsByService(jsonTest);
+
             $('#metadata-output').empty().append(
                 "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
           }
@@ -406,4 +425,19 @@ function checkFAIRCompliant() {
   checkAccessible();
   checkInteroperable();
   checkReusable();
+}
+
+// Add author by service
+function authorsByService(json) {
+  var $list = $('.authorsList');
+  for(var i = 0; i < json.authors.length; i++) {
+    var $item = $('#author-template').clone(true).removeAttr("id");
+    $($item).find(".lastNameInput").val(json.authors[i].lastName);
+    $($item).find(".firstNameInput").val(json.authors[i].firstName);
+    $($item).find(".orcidIdInput").val(json.authors[i].orcidId);
+    $list.append($item);
+    $item.show('slow');
+    updateAuthor();
+    checkNextAuthorItems($list);
+  }
 }
