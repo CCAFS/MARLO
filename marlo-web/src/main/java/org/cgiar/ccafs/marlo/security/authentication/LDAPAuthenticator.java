@@ -73,6 +73,9 @@ public class LDAPAuthenticator implements Authenticator {
           LOG.error("Authentication error  {}", con.getAuthenticationMessage());
         }
         con.closeContext();
+      } else {
+        looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LOGON_FAILURE);
+
       }
     } catch (Exception e) {
       looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LDAP_CONNECTION);

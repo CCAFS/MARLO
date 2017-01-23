@@ -255,6 +255,7 @@ public class ValidateProjectSectionAction extends BaseAction {
         sectionStatus =
           sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
         section = new HashMap<String, Object>();
+
         section.put("sectionName", sectionStatus.getSectionName());
         section.put("missingFields", sectionStatus.getMissingFields());
         break;
