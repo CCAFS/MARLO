@@ -19,15 +19,19 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
+import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.ByteArrayInputStream;
@@ -84,6 +88,8 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
 
   private CrpProgramManager programManager;
+  private ProjectBudgetManager projectBudgetManager;
+  private InstitutionManager institutionManager;
 
 
   // XLSX bytes
@@ -95,10 +101,13 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
 
   @Inject
-  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager) {
+  public budgetByCoAsSummaryAction(APConfig config, CrpManager crpManager, CrpProgramManager programManager,
+    ProjectBudgetManager projectBudgetManager, InstitutionManager institutionManager) {
     super(config);
     this.crpManager = crpManager;
     this.programManager = programManager;
+    this.projectBudgetManager = projectBudgetManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
@@ -319,23 +328,61 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getProjectsCoAsTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
     TypedTableModel model = new TypedTableModel(
-      new String[] {"project_id", "title", "project_url", "flagships", "regions", "coa", "w1w2", "w3", "bilateral",
-        "center_fund", "w1w2_gender", "w3_gender", "bilateral_gender", "center_fund_gender"},
+      new String[] {"project_id", "title", "project_url", "flagships", "regions", "coa", "total_w1w2", "w1w2_total_per",
+        "w1w2_of_total", "gender_w1w2", "w1w2_gender_per", "w1w2_of_gender", "total_w3", "w3_total_per", "w3_of_total",
+        "gender_w3", "w3_gender_per", "w3_of_gender", "total_bilateral", "bilateral_total_per", "bilateral_of_total",
+        "gender_bilateral", "bilateral_gender_per", "bilateral_of_gender", "total_center", "center_total_per",
+        "center_of_total", "gender_center", "center_gender_per", "center_of_gender"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Double.class,
+        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
+        Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class,
         Double.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class},
       0);
+    // Get amount of total and gender
+    Double total_w1w2 = 0.0, total_w3 = 0.0, total_bilateral = 0.0, total_center = 0.0, total_w1w2_gender = 0.0,
+      total_w3_gender = 0.0, total_bilateral_gender = 0.0, total_center_gender = 0.0, w1w2_per_total = 0.0,
+      w3_per_total = 0.0, bilateral_per_total = 0.0, center_per_total = 0.0, w1w2_per_gender = 0.0, w3_per_gender = 0.0,
+      bilateral_per_gender = 0.0, center_per_gender = 0.0;
+
     for (Project project : loggedCrp.getProjects().stream().filter(p -> p.isActive() && p.getStatus().intValue() == 2)
       .collect(Collectors.toList())) {
 
+      total_w1w2_gender = 0.0;
+      total_w3_gender = 0.0;
+      total_bilateral_gender = 0.0;
+      total_center_gender = 0.0;
+      w1w2_per_total = 0.0;
+      w3_per_total = 0.0;
+      bilateral_per_total = 0.0;
+      center_per_total = 0.0;
+      w1w2_per_gender = 0.0;
+      w3_per_gender = 0.0;
+      bilateral_per_gender = 0.0;
+      center_per_gender = 0.0;
+
+      // get total budget per year
+      total_w1w2 = this.getTotalYear(year, 1, project);
+      total_w3 = this.getTotalYear(year, 2, project);
+      total_bilateral = this.getTotalYear(year, 3, project);
+      total_center = this.getTotalYear(year, 4, project);
+
+      // get total gender per year
+      for (ProjectPartner pp : project.getProjectPartners().stream().filter(pp -> pp.isActive())
+        .collect(Collectors.toList())) {
+        // System.out.println(pp.getInstitution().getComposedName());
+        if (this.isPPA(pp.getInstitution())) {
+          total_w1w2_gender += this.getTotalGender(pp.getInstitution().getId(), year, 1, project);
+          total_w3_gender += this.getTotalGender(pp.getInstitution().getId(), year, 2, project);
+          total_bilateral_gender += this.getTotalGender(pp.getInstitution().getId(), year, 3, project);
+          total_center_gender += this.getTotalGender(pp.getInstitution().getId(), year, 4, project);
+        }
+      }
 
       List<ProjectClusterActivity> coAs = new ArrayList<>();
       coAs = project.getProjectClusterActivities().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
       if (coAs.size() == 1) {
         String project_id = "", title = "", project_url = "", flagships = "", regions = "", coa = "";
-
-        Double w1w2 = 0.0, w3 = 0.0, bilateral = 0.0, center = 0.0, w1w2_gender = 0.0, w3_gender = 0.0,
-          bilateral_gender = 0.0, center_gender = 0.0;
 
         project_id = project.getId().toString();
         project_url = "P" + project.getId().toString();
@@ -352,9 +399,9 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
         for (CrpProgram crpProgram : flagshipsList) {
           if (flagships.isEmpty()) {
-            flagships = crpProgram.getComposedName();
+            flagships = crpProgram.getAcronym();
           } else {
-            flagships += ", " + crpProgram.getComposedName();
+            flagships += ", " + crpProgram.getAcronym();
           }
         }
 
@@ -388,47 +435,68 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
         for (CrpProgram crpProgram : regionsList) {
           if (regions.isEmpty()) {
-            regions = crpProgram.getComposedName();
+            regions = crpProgram.getAcronym();
           } else {
-            regions += ", " + crpProgram.getComposedName();
+            regions += ", " + crpProgram.getAcronym();
           }
         }
 
         coa = coAs.get(0).getCrpClusterOfActivity().getComposedName();
 
 
-        // Get types of funding sources
-        for (ProjectBudget pb : project.getProjectBudgets().stream()
-          .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null)
-          .collect(Collectors.toList())) {
-          if (pb.getBudgetType().getId() == 1) {
-            w1w2 = 100.0;
-            w1w2_gender = 100.0;
-          }
-          if (pb.getBudgetType().getId() == 2) {
-            w3 = 100.0;
-            w3_gender = 100.0;
-          }
-          if (pb.getBudgetType().getId() == 3) {
-            bilateral = 100.0;
-            bilateral_gender = 100.0;
-          }
-          if (pb.getBudgetType().getId() == 4) {
-            center = 100.0;
-            center_gender = 100.0;
-          }
+        if (total_w1w2 != 0.0) {
+          w1w2_per_total = 1.0;
+        }
+        if (total_w3 != 0.0) {
+          w3_per_total = 1.0;
+        }
+        if (total_bilateral != 0.0) {
+          bilateral_per_total = 1.0;
+        }
+        if (total_center != 0.0) {
+          center_per_total = 1.0;
+        }
+
+        if (total_w1w2_gender != 0.0) {
+          w1w2_per_gender = 1.0;
+        }
+        if (total_w3_gender != 0.0) {
+          w3_per_gender = 1.0;
+        }
+        if (total_bilateral_gender != 0.0) {
+          bilateral_per_gender = 1.0;
+        }
+        if (total_center_gender != 0.0) {
+          center_per_gender = 1.0;
         }
 
 
-        model.addRow(new Object[] {project_id, title, project_url, flagships, regions, coa, w1w2, w3, bilateral, center,
-          w1w2_gender, w3_gender, bilateral_gender, center_gender});
+        model.addRow(new Object[] {project_id, title, project_url, flagships, regions, coa, total_w1w2, w1w2_per_total,
+          total_w1w2, total_w1w2_gender, w1w2_per_gender, total_w1w2_gender, total_w3, w3_per_total, total_w3,
+          total_w3_gender, w3_per_gender, total_w3_gender, total_bilateral, bilateral_per_total, total_bilateral,
+          total_bilateral_gender, bilateral_per_gender, total_bilateral_gender, total_center, center_per_total,
+          total_center, total_center_gender, center_per_gender, total_center_gender});
       } else {
 
         for (ProjectClusterActivity clusterActivity : coAs) {
           String project_id = "", title = "", project_url = "", flagships = "", regions = "", coa = "";
 
-          Double w1w2 = 0.0, w3 = 0.0, bilateral = 0.0, center = 0.0, w1w2_gender = 0.0, w3_gender = 0.0,
-            bilateral_gender = 0.0, center_gender = 0.0;
+          Double w1w2 = 0.0;
+          Double w3 = 0.0;
+          Double bilateral = 0.0;
+          Double center = 0.0;
+          Double w1w2_gender = 0.0;
+          Double w3_gender = 0.0;
+          Double bilateral_gender = 0.0;
+          Double center_gender = 0.0;
+          w1w2_per_total = 0.0;
+          w1w2_per_gender = 0.0;
+          w3_per_total = 0.0;
+          w3_per_gender = 0.0;
+          bilateral_per_total = 0.0;
+          bilateral_per_gender = 0.0;
+          center_per_total = 0.0;
+          center_per_gender = 0.0;
 
           coa = clusterActivity.getCrpClusterOfActivity().getComposedName();
           project_id = project.getId().toString();
@@ -446,9 +514,9 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
           for (CrpProgram crpProgram : flagshipsList) {
             if (flagships.isEmpty()) {
-              flagships = crpProgram.getComposedName();
+              flagships = crpProgram.getAcronym();
             } else {
-              flagships += ", " + crpProgram.getComposedName();
+              flagships += ", " + crpProgram.getAcronym();
             }
           }
 
@@ -482,9 +550,9 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
           for (CrpProgram crpProgram : regionsList) {
             if (regions.isEmpty()) {
-              regions = crpProgram.getComposedName();
+              regions = crpProgram.getAcronym();
             } else {
-              regions += ", " + crpProgram.getComposedName();
+              regions += ", " + crpProgram.getAcronym();
             }
           }
 
@@ -500,37 +568,109 @@ public class budgetByCoAsSummaryAction extends BaseAction implements Summary {
 
 
           if (w1w2pb != null) {
-            w1w2 = w1w2pb.getAmount();
-            w1w2_gender = w1w2pb.getGenderPercentage();
+            w1w2 = (w1w2pb.getAmount() * total_w1w2) / 100;
+            w1w2_per_total = w1w2pb.getAmount() / 100;
+            w1w2_gender = (w1w2pb.getGenderPercentage() * total_w1w2_gender) / 100;
+            w1w2_per_gender = w1w2pb.getGenderPercentage() / 100;
+
           }
 
           if (w3pb != null) {
-            w3 = w3pb.getAmount();
-            w3_gender = w3pb.getGenderPercentage();
+            w3 = (w3pb.getAmount() * total_w3) / 100;
+            w3_per_total = w3pb.getAmount() / 100;
+            w3_gender = (w3pb.getGenderPercentage() * total_w3_gender) / 100;
+            w3_per_gender = w3pb.getGenderPercentage() / 100;
           }
 
           if (bilateralpb != null) {
-            bilateral = bilateralpb.getAmount();
-            bilateral_gender = bilateralpb.getGenderPercentage();
+            bilateral = (bilateralpb.getAmount() * total_bilateral) / 100;
+            bilateral_per_total = bilateralpb.getAmount() / 100;
+            bilateral_gender = (bilateralpb.getGenderPercentage() * total_bilateral_gender) / 100;
+            bilateral_per_gender = bilateralpb.getGenderPercentage() / 100;
           }
           if (centerpb != null) {
-            center = centerpb.getAmount();
-            center_gender = centerpb.getGenderPercentage();
+            center = (centerpb.getAmount() * total_center) / 100;
+            center_per_total = centerpb.getAmount() / 100;
+            center_gender = (centerpb.getGenderPercentage() * total_center_gender) / 100;
+            center_per_gender = centerpb.getGenderPercentage() / 100;
           }
 
 
-          model.addRow(new Object[] {project_id, title, project_url, flagships, regions, coa, w1w2, w3, bilateral,
-            center, w1w2_gender, w3_gender, bilateral_gender, center_gender});
+          model.addRow(new Object[] {project_id, title, project_url, flagships, regions, coa, total_w1w2,
+            w1w2_per_total, w1w2, total_w1w2_gender, w1w2_per_gender, w1w2_gender, total_w3, w3_per_total, w3,
+            total_w3_gender, w3_per_gender, w3_gender, total_bilateral, bilateral_per_total, bilateral,
+            total_bilateral_gender, bilateral_per_gender, bilateral_gender, total_center, center_per_total, center,
+            total_center_gender, center_per_gender, center_gender});
         }
       }
     }
     return model;
   }
 
+  /**
+   * Get gender amount per institution, year and budet type
+   * 
+   * @param institutionId
+   * @param year
+   * @param budgetType
+   * @return
+   */
+  public double getTotalGender(long institutionId, int year, long budgetType, Project project) {
+
+    List<ProjectBudget> budgets =
+      projectBudgetManager.getByParameters(institutionId, year, budgetType, project.getId());
+
+    double totalGender = 0;
+    if (budgets != null) {
+      for (ProjectBudget projectBudget : budgets) {
+        double amount = projectBudget.getAmount() != null ? projectBudget.getAmount() : 0;
+        double gender = projectBudget.getGenderPercentage() != null ? projectBudget.getGenderPercentage() : 0;
+
+        totalGender = totalGender + (amount * (gender / 100));
+      }
+    }
+
+    return totalGender;
+  }
+
+  public double getTotalYear(int year, long type, Project project) {
+    double total = 0;
+
+    for (ProjectBudget pb : project.getProjectBudgets().stream()
+      .filter(
+        pb -> pb.isActive() && pb.getYear() == year && pb.getBudgetType() != null && pb.getBudgetType().getId() == type)
+      .collect(Collectors.toList())) {
+      total = total + pb.getAmount();
+    }
+    return total;
+  }
+
   public int getYear() {
     return year;
   }
 
+  /**
+   * Verify if an institution isPPA or not
+   * 
+   * @param institution
+   * @return boolean with true if is ppa and false if not
+   */
+  public boolean isPPA(Institution institution) {
+    if (institution == null) {
+      return false;
+    }
+
+    if (institution.getId() != null) {
+      institution = institutionManager.getInstitutionById(institution.getId());
+      if (institution != null) {
+        if (institution.getCrpPpaPartners().stream().filter(c -> c.isActive()).collect(Collectors.toList())
+          .size() > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   @Override
   public void prepare() {
