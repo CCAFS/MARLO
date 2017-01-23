@@ -81,8 +81,8 @@ public class ImpactSubmissionAction extends BaseAction {
         List<Submission> submissions = submissionManager.findAll();
         if (submissions != null) {
           submissions =
-            submissions.stream().filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram))
-              .collect(Collectors.toList());
+            submissions.stream().filter(c -> c.getCrpProgram() != null && c.getCrpProgram().equals(crpProgram)
+              && (c.isUnSubmit() == null || !c.isUnSubmit())).collect(Collectors.toList());
           for (Submission theSubmission : submissions) {
             submission = theSubmission;
             alreadySubmitted = true;
