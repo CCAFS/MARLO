@@ -5,15 +5,15 @@
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
-    </div>  
+    </div>
   </div>
 <div class="clearfix"></div>
 
-  <div class="col-md-9 openAccessOptions" style="display: ${(deliverable.dissemination.isOpenAccess)?string("none","block")};">
+  <div class="col-md-9 openAccessOptions" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.type == "intellectualProperty")!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination??) && (deliverable.dissemination.type == "intellectualProperty"))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
       <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.type == "limitedExclusivity")!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
