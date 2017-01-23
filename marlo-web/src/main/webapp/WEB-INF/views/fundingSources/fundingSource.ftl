@@ -53,8 +53,8 @@
       [#-- start date, end date and finance code --]
       <div class="form-group">
         <div class="row">
-           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable /] </div>
-           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable/] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.startDate" i18nkey="projectCofunded.startDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
+           <div class="col-md-4">[@customForm.input name="fundingSource.endDate" i18nkey="projectCofunded.endDate" required=true  editable=editable && action.canEditFundingSourceBudget() /] </div>
            <div class="col-md-4">[@customForm.input name="fundingSource.financeCode"  i18nkey="projectCofunded.financeCode" placeholder="projectCofunded.financeCode.placeholder" editable=editable/] </div>
         </div>
       </div>
@@ -159,7 +159,7 @@
             <div class="col-md-4">
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].year" value="${year}"/>
               <input type="hidden" name="fundingSource.budgets[${budgetIndex}].id" value="${(budget.id)!}"/>
-              [#if editable]
+              [#if editable  && action.canEditFundingSourceBudget() ]
                 [@customForm.input name="fundingSource.budgets[${budgetIndex}].budget" i18nkey="projectCofunded.budgetYear" paramText="${year}" className="currencyInput" required=true editable=editable /]
               [#else]
               <div class="input">

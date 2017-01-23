@@ -107,7 +107,7 @@
           </div>
           --]
           [#-- Budget --]
-          <div class="form-group">
+          <div class="form-group" style="display:${(action.canEditFundingSourceBudget())?string('block','none')}">
             <div class="budgetByYears">
                 <strong class="pull-right">Entire funding budget $US <span class="fundingTotalAmount">0.00</span></strong>
                 <ul class="nav nav-tabs" role="tablist">
