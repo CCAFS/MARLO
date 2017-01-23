@@ -18,6 +18,7 @@ public class DeliverableDissemination implements java.io.Serializable {
   @Expose
   private Long id;
 
+
   @Expose
   private Deliverable deliverable;
 
@@ -54,9 +55,11 @@ public class DeliverableDissemination implements java.io.Serializable {
   @Expose
   private String disseminationChannelName;
 
+  private String type;
 
   public DeliverableDissemination() {
   }
+
 
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -79,7 +82,6 @@ public class DeliverableDissemination implements java.io.Serializable {
     this.disseminationUrl = disseminationUrl;
     this.disseminationChannelName = disseminationChannelName;
   }
-
 
   public Boolean getAlreadyDisseminated() {
     return alreadyDisseminated;
@@ -135,6 +137,7 @@ public class DeliverableDissemination implements java.io.Serializable {
     return restrictedAccessUntil;
   }
 
+
   public Date getRestrictedEmbargoed() {
     return restrictedEmbargoed;
   }
@@ -144,17 +147,25 @@ public class DeliverableDissemination implements java.io.Serializable {
   }
 
   public String getType() {
-    if (intellectualProperty) {
-      return DisseminationTypeEnum.INTECLLECTUAL_PROPERTY.getValue();
+    if (intellectualProperty != null) {
+      if (intellectualProperty) {
+        return DisseminationTypeEnum.INTECLLECTUAL_PROPERTY.getValue();
+      }
     }
-    if (limitedExclusivity) {
-      return DisseminationTypeEnum.LIMITED_EXCLUSIVITY.getValue();
+    if (limitedExclusivity != null) {
+      if (limitedExclusivity) {
+        return DisseminationTypeEnum.LIMITED_EXCLUSIVITY.getValue();
+      }
     }
-    if (restrictedUseAgreement) {
-      return DisseminationTypeEnum.RESTRICTED_USER_AGREEMENT.getValue();
+    if (restrictedUseAgreement != null) {
+      if (restrictedUseAgreement) {
+        return DisseminationTypeEnum.RESTRICTED_USER_AGREEMENT.getValue();
+      }
     }
-    if (effectiveDateRestriction) {
-      return DisseminationTypeEnum.EMBARGOED_PERIODS.getValue();
+    if (effectiveDateRestriction != null) {
+      if (effectiveDateRestriction) {
+        return DisseminationTypeEnum.EMBARGOED_PERIODS.getValue();
+      }
     }
 
     return null;
@@ -208,9 +219,13 @@ public class DeliverableDissemination implements java.io.Serializable {
     this.restrictedEmbargoed = restrictedEmbargoed;
   }
 
-
   public void setRestrictedUseAgreement(Boolean restrictedUseAgreement) {
     this.restrictedUseAgreement = restrictedUseAgreement;
+  }
+
+
+  public void setType(String type) {
+    this.type = type;
   }
 
 
