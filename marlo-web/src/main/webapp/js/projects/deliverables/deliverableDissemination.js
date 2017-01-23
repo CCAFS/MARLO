@@ -2,8 +2,9 @@ $(document).ready(init);
 
 function init() {
 
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+  $("a[href='#deliverable-mainInformation']").on('shown.bs.tab', function(e) {
     // $("textarea").autogrow();
+    $("a[href='#deliverable-mainInformation']").removeClass("hideInfo");
   });
   $(".dateMetadata").attr("id", "deliverableMetadataDate");
   $(".restrictionDate").attr("id", "restrictionDate");
@@ -128,8 +129,7 @@ function checkHandleUrl() {
   $(input).removeClass("fieldError");
   var inputData = $.trim(input.val());
   if(inputData != "") {
-    var uri = new Uri(inputData);
-    if(uri.host() != "hdl.handle.net" && uri.protocol() != "http" || uri.protocol() != "https") {
+    if(inputData.indexOf("handle") == -1) {
       $(input).addClass("fieldError");
     } else {
       $(input).removeClass("fieldError");
@@ -142,8 +142,7 @@ function checkDoiUrl() {
   $(input).removeClass("fieldError");
   var inputData = $.trim(input.val());
   if(inputData != "") {
-    var uri = new Uri(inputData);
-    if(uri.host() != "dx.doi.org" && uri.protocol() != "http" || uri.protocol() != "https") {
+    if(inputData.indexOf("doi") == -1) {
       $(input).addClass("fieldError");
     } else {
       $(input).removeClass("fieldError");
@@ -164,6 +163,7 @@ function openAccessRestriction() {
 }
 
 function setMetadata(data) {
+  $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
   if($(".citationMetadata").val() == "") {
     $(".citationMetadata").val(data.citation).autoGrow();
   }

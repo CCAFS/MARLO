@@ -204,3 +204,24 @@ p.noChecked {
 }
 
 .fairCompliant.achieved p{background: url(../../images/global/icon-check-tiny.png) no-repeat 0;opacity: 1;padding-left: 20px;}
+
+.hideInfo {
+  -webkit-animation: bgcolorchange 2s infinite; /* Chrome, Safari, Opera */ 
+  animation: 2s infinite bgcolorchange;
+}
+@keyframes bgcolorchange {
+  0% {
+  }
+  50% {
+  background-color: #ddd
+  }
+  100% {
+    background-color:#d9edf7;;
+  }
+}
+/* Chrome, Safari, Opera */
+ @-webkit-keyframes bgcolorchange {
+      0%   {}
+      50% {background:#ddd}
+      100% {background:#d9edf7;}
+ }
