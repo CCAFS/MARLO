@@ -182,10 +182,10 @@
   [#-- Deliverable type computer software --]
   <div class=" licenseOptions computerLicense" style="display:none;">
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="MIT"/> MIT License
+      <input type="radio" name="deliverable.license" id="" value="1"/> MIT License
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="GNU"/> GNU General Public License
+      <input type="radio" name="deliverable.license" id="" value="2"/> GNU General Public License
     </div>
     <div class="clearfix"></div>
   </div>
@@ -193,15 +193,15 @@
   [#-- Deliverable type data --]
   <div class=" licenseOptions dataLicense" style="display:none;">
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC licenses version 4.0
+      <input type="radio" name="deliverable.license" id="" value="3"/> CC licenses version 4.0
 
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC Public Domain Dedication (CC0 1.0)
+      <input type="radio" name="deliverable.license" id="" value="4"/> CC Public Domain Dedication (CC0 1.0)
 
     </div>
     <div class="col-md-12" style="display:none;">
-      <input type="radio" name="cycle" id="" value="No"/> Open Data Commons (ODC)
+      <input type="radio" name="deliverable.license" id="" value="5"/> Open Data Commons (ODC)
     </div>
     <div class="clearfix"></div>
   </div>
@@ -209,22 +209,22 @@
   [#-- Deliverable type other research types --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY (allow modifications and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY (allow modifications and commercial use)
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY-SA (allow modifications as long as other share alike and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA (allow modifications as long as other share alike and commercial use)
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY-ND (allow commercial use but no modifications)
+      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND (allow commercial use but no modifications)
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY-NC (allow modifications but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC (allow modifications but no commercial use)
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY-NC-SA (allow modifications as long as other share alike, but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA (allow modifications as long as other share alike, but no commercial use)
     </div>
     <div class="col-md-12">
-      <input type="radio" name="cycle" id="" value="No"/> CC-BY-NC-ND (don't allow modifications neither commercial use)
+      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND (don't allow modifications neither commercial use)
     </div>
     <div class="clearfix"></div>
   </div>
@@ -234,13 +234,13 @@
   
     <div class="col-md-6 form-group">
       <div class="col-md-4">
-        <input type="radio" name="cycle" id="" value="No"/> Other
+        <input type="radio" name="deliverable.license" id="" value="12"/> Other
       </div>
       <div class="col-md-8">
         [@customForm.input name="" showTitle=false className="" type="text" placeholder="Text here" disabled=!editable  required=true editable=editable /]
       </div>
     </div>
-    <div class=" col-md-6">
+    <div class=" col-md-6 licence-modifications" style="display:none;">
       <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
         [@customForm.yesNoInput name="licenceModifications"  editable=true inverse=false value="true" cssClass="licenceModifications text-center" /] 

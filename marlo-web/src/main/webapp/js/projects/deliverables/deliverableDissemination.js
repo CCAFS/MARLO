@@ -122,6 +122,14 @@ function init() {
   $(".handleMetadata").on("change keyup", checkHandleUrl);
   $(".doiMetadata").on("change keyup", checkDoiUrl);
 
+  // Ohter license type
+  $("input[name='deliverable.license']").on("change", function() {
+    if($(this).val() == "12") {
+      $(".licence-modifications").show("slow");
+    } else {
+      $(".licence-modifications").hide("slow");
+    }
+  });
 }
 
 function checkHandleUrl() {
