@@ -656,6 +656,8 @@ public class DeliverableAction extends BaseAction {
 
         if (deliverable.getDeliverableDisseminations() != null) {
           deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+
+          deliverable.setDissemination(deliverable.getDisseminations().get(0));
         }
 
         if (deliverable.getDeliverableDataSharingFiles() != null) {
@@ -669,6 +671,7 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getDeliverableDataSharings() != null) {
           deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
         }
+
 
         this.setDraft(false);
       }

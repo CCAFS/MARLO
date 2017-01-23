@@ -4,7 +4,7 @@
   <div class=" row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="accessible"  editable=true inverse=false value="false" cssClass="accessible text-center" /]  
+      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
     </div>  
   </div>
 <div class="clearfix"></div>
