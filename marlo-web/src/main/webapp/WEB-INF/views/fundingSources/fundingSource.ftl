@@ -94,7 +94,7 @@
                   <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
                   <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
                   <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
-                  <span class="name">${institutionLead.institution.composedName}</span>
+                  <span class="name">${(institutionLead.institution.composedName)!}</span>
                   <div class="clearfix"></div>
                 </li>
               [/#list]
