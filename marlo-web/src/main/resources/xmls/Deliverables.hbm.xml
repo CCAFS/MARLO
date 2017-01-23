@@ -40,7 +40,7 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="allowModifications" type="boolean">
+		<property name="allowModifications" type="java.lang.Boolean">
       <column name="allow_modifications" />
     </property>
 		<property name="activeSince" type="timestamp">

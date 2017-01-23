@@ -153,7 +153,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private boolean allowModifications;
+  private Boolean allowModifications;
 
 
   DeliverableQualityCheck qualityCheck;
@@ -566,7 +566,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public boolean isAllowModifications() {
+  public Boolean isAllowModifications() {
     return allowModifications;
   }
 
@@ -579,7 +579,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setAllowModifications(boolean allowModifications) {
+  public void setAllowModifications(Boolean allowModifications) {
     this.allowModifications = allowModifications;
   }
 
