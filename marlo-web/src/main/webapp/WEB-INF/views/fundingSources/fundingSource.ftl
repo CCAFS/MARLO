@@ -164,6 +164,8 @@
               [#else]
               <div class="input">
               	<p>US$ <span>${((budget.budget)!0)?number?string(",##0.00")}</p>
+              	 <input type="hidden" name="fundingSource.budgets[${budgetIndex}].budget" value="${(budget.budget)!0}"/>
+             
               </div>
                 
               [/#if]

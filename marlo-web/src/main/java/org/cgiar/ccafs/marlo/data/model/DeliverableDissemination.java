@@ -14,6 +14,7 @@ public class DeliverableDissemination implements java.io.Serializable {
 
   private static final long serialVersionUID = 3873609958921714313L;
 
+
   @Expose
   private Long id;
 
@@ -53,14 +54,13 @@ public class DeliverableDissemination implements java.io.Serializable {
   @Expose
   private String disseminationChannelName;
 
+
   public DeliverableDissemination() {
   }
-
 
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
-
 
   public DeliverableDissemination(Deliverable deliverable, Boolean isOpenAccess, Boolean intellectualProperty,
     Boolean limitedExclusivity, Boolean restrictedUseAgreement, Date restrictedAccessUntil,
@@ -125,9 +125,11 @@ public class DeliverableDissemination implements java.io.Serializable {
     return isOpenAccess;
   }
 
+
   public Boolean getLimitedExclusivity() {
     return limitedExclusivity;
   }
+
 
   public Date getRestrictedAccessUntil() {
     return restrictedAccessUntil;
@@ -139,6 +141,23 @@ public class DeliverableDissemination implements java.io.Serializable {
 
   public Boolean getRestrictedUseAgreement() {
     return restrictedUseAgreement;
+  }
+
+  public String getType() {
+    if (intellectualProperty) {
+      return DisseminationTypeEnum.INTECLLECTUAL_PROPERTY.getValue();
+    }
+    if (limitedExclusivity) {
+      return DisseminationTypeEnum.LIMITED_EXCLUSIVITY.getValue();
+    }
+    if (restrictedUseAgreement) {
+      return DisseminationTypeEnum.RESTRICTED_USER_AGREEMENT.getValue();
+    }
+    if (effectiveDateRestriction) {
+      return DisseminationTypeEnum.EMBARGOED_PERIODS.getValue();
+    }
+
+    return null;
   }
 
   public void setAlreadyDisseminated(Boolean alreadyDisseminated) {
@@ -185,10 +204,10 @@ public class DeliverableDissemination implements java.io.Serializable {
     this.restrictedAccessUntil = restrictedAccessUntil;
   }
 
-
   public void setRestrictedEmbargoed(Date restrictedEmbargoed) {
     this.restrictedEmbargoed = restrictedEmbargoed;
   }
+
 
   public void setRestrictedUseAgreement(Boolean restrictedUseAgreement) {
     this.restrictedUseAgreement = restrictedUseAgreement;

@@ -4,16 +4,16 @@
   <div class=" row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="accessible"  editable=true inverse=false value="false" cssClass="accessible text-center" /]  
-    </div>  
+      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
+    </div>
   </div>
 <div class="clearfix"></div>
 
-  <div class="col-md-9 openAccessOptions" style="display: block;">
+  <div class="col-md-9 openAccessOptions" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.type == "intellectualProperty")!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination??) && (deliverable.dissemination.type == "intellectualProperty"))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
       <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.type == "limitedExclusivity")!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
@@ -41,11 +41,11 @@
       <span style="font-size:0.9em;">Is the deliverable already uploaded onto a public repository?</span>
     </span>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="findable"  editable=true inverse=false value="true" cssClass="findable text-center" /] 
+      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=true inverse=false cssClass="findable text-center" /] 
     </div>  
   </div>
   
-  <div class="findableOptions" style="display:block;">
+  <div class="findableOptions" style="display:${(deliverable.dissemination.alreadyDisseminated)?string("block","none")};">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     <div class="row">
@@ -113,10 +113,10 @@
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="Handle" className="handleMetadata" type="text" disabled=!editable  required=false editable=editable /]
+    [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@customForm.input name="" i18nkey="DOI" className="doiMetadata" type="text" disabled=!editable  required=false editable=editable /]
+    [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
   </div>
 </div>
 
@@ -139,7 +139,7 @@
   </div>
   <label for="">Indicators for journal articles:</label>
   <div class="col-md-12 form-group">
-    <input type="checkbox" />Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)  
+    <input type="checkbox" />Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
   </div>
   <div class="col-md-12 form-group">  
     <input type="checkbox" />Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
@@ -155,7 +155,7 @@
       [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false value="true" cssClass="acknowledge text-center" /] 
     </div> 
   </div>
-  
+  <hr />
   
   <div class="row">
     <label class="col-md-12" for="">Is this publication contributing to any other flagships?</label>
@@ -209,35 +209,34 @@
   [#-- Deliverable type other research types --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY (allow modifications and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="6"/> CC-BY <small>(allow modifications and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA (allow modifications as long as other share alike and commercial use)
+      <input type="radio" name="deliverable.license" id="" value="7"/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND (allow commercial use but no modifications)
+      <input type="radio" name="deliverable.license" id="" value="8"/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC (allow modifications but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="9"/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA (allow modifications as long as other share alike, but no commercial use)
+      <input type="radio" name="deliverable.license" id="" value="10"/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND (don't allow modifications neither commercial use)
+      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small>
     </div>
     <div class="clearfix"></div>
   </div>
   <br />
   [#-- Other --]
   <div class="row">
-  
     <div class="col-md-6 form-group">
       <div class="col-md-4">
         <input type="radio" name="deliverable.license" id="" value="12"/> Other
       </div>
-      <div class="col-md-8">
-        [@customForm.input name="" showTitle=false className="" type="text" placeholder="Text here" disabled=!editable  required=true editable=editable /]
+      <div class="col-md-8 licence-modifications" style="display:none;" >
+        [@customForm.input name="otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
       </div>
     </div>
     <div class=" col-md-6 licence-modifications" style="display:none;">
