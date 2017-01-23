@@ -180,7 +180,7 @@
   </div>
   <hr />
   [#-- Deliverable type computer software --]
-  <div class=" licenseOptions" style="display:block;">
+  <div class=" licenseOptions computerLicense" style="display:none;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="MIT"/> MIT License
     </div>
@@ -191,7 +191,7 @@
   </div>
   
   [#-- Deliverable type data --]
-  <div class=" licenseOptions" style="display:block;">
+  <div class=" licenseOptions dataLicense" style="display:none;">
     <div class="col-md-12">
       <input type="radio" name="cycle" id="" value="No"/> CC licenses version 4.0
 
