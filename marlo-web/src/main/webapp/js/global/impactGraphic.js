@@ -236,7 +236,7 @@ function createGraphic(json,graphicContent,panningEnable,inPopUp,nameLayout,tool
         clusters.forEach(function(ele) {
           $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });
-        keyOutputs.forEach(function(i,ele) {
+        keyOutputs.forEach(function(ele) {
           console.log(ele);
           $(".panel-body ul").append("<label>" + ele[1] + ":</label><li>" + ele[0] + "</li>");
         });

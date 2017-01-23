@@ -50,7 +50,8 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   // Variables
   private Crp loggedCrp;
-
+  private int year;
+  private String cycle;
 
   private CrpManager crpManager;
   // XLSX bytes
@@ -79,10 +80,28 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
+    // Get parameters from URL
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get cycle
+    try {
+      cycle = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("date", current_date);
@@ -95,15 +114,23 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   }
 
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
 
+
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
+
+
+  public String getCycle() {
+    return cycle;
+  }
+
 
   private File getFile(String fileName) {
 
@@ -116,6 +143,7 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     return file;
 
   }
+
 
   @Override
   public String getFileName() {
@@ -138,6 +166,9 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
+  public int getYear() {
+    return year;
+  }
 
   @Override
   public void prepare() {
@@ -149,9 +180,18 @@ public class InstitutionsSummaryAction extends BaseAction implements Summary {
 
   }
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 

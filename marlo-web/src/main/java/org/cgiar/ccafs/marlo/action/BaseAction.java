@@ -658,7 +658,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section);
     if (sectionStatus != null) {
@@ -669,6 +668,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public HashMap<String, String> getInvalidFields() {
     return invalidFields;
   }
@@ -676,7 +676,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getJustification() {
     return justification;
   }
-
 
   public String getLiasons() {
     String liasonsUsers = "";
@@ -692,6 +691,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return liasonsUsers;
   }
+
 
   public List<Auditlog> getListLog(IAuditLog object) {
     try {
@@ -724,6 +724,40 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return SessionCounter.users.size();
     }
     return 0;
+  }
+
+  public List<Deliverable> getOpenDeliverables(List<Deliverable> deliverables) {
+
+    List<Deliverable> openDeliverables = new ArrayList<>();
+
+    for (Deliverable a : deliverables) {
+
+      if (a.isActive()
+        && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getStatus().intValue() == 0)))) {
+
+        if (a.getNewExpectedYear() != null) {
+          if (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+            if (a.getNewExpectedYear() >= this.getCurrentCycleYear()) {
+              openDeliverables.add(a);
+            }
+          } else {
+            if (a.getYear() >= this.getCurrentCycleYear()) {
+              openDeliverables.add(a);
+            }
+          }
+        } else {
+          if (a.getYear() >= this.getCurrentCycleYear()) {
+            openDeliverables.add(a);
+          }
+        }
+      }
+    }
+
+
+    return openDeliverables;
+
   }
 
   public Map<String, Object> getParameters() {
@@ -857,12 +891,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         List<Deliverable> deliverables =
           project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<Deliverable> openA = deliverables.stream()
-          .filter(a -> a.isActive() && a.getYear() >= this.getCurrentCycleYear()
-            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getStatus().intValue() == 0))))
-          .collect(Collectors.toList());
+        List<Deliverable> openA =
+          this.getOpenDeliverables(deliverables.stream().filter(a -> a.isActive()).collect(Collectors.toList()));
         if (openA.isEmpty()) {
           return false;
         }
@@ -1183,9 +1213,45 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
         && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-        if (sectionStatus.getMissingFields().length() > 0) {
-          return false;
+
+        if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
+          Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
+
+
+          if (a.isActive()
+            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0)))) {
+
+            if (a.getNewExpectedYear() != null) {
+              if (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                if (a.getNewExpectedYear() >= this.getCurrentCycleYear()) {
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+                }
+              } else {
+                if (a.getYear() >= this.getCurrentCycleYear()) {
+                  if (sectionStatus.getMissingFields().length() > 0) {
+                    return false;
+                  }
+                }
+              }
+            } else {
+              if (a.getYear() >= this.getCurrentCycleYear()) {
+                if (sectionStatus.getMissingFields().length() > 0) {
+                  return false;
+                }
+              }
+            }
+          }
+
+        } else {
+          if (sectionStatus.getMissingFields().length() > 0) {
+            return false;
+          }
         }
+
       }
 
     }
@@ -1293,6 +1359,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isCrpClosed() {
+    try {
+      return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+
   public boolean isDataSaved() {
     return dataSaved;
   }
@@ -1337,7 +1412,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean isDraft() {
     return draft;
   }
@@ -1373,9 +1447,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
+  public boolean isPhaseOne() {
+    if (crpSession.equals("ccafs")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   public boolean isPlanningActive() {
     return false;
-
   }
 
   public Boolean isProjectNew(long projectID) {
@@ -1436,6 +1517,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return saveable;
   }
 
+
   public boolean isSubmit(long projectID) {
     Project project = projectManager.getProjectById(projectID);
     int year = this.getCurrentCycleYear();
@@ -1449,7 +1531,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   public void loadLessons(Crp crp, Project project) {
 
@@ -1514,6 +1595,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+
   public void loadLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
     ProjectOutcome projectOutcomeDB = projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
@@ -1557,11 +1639,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // So far, do nothing here!
   }
 
-
   /* Override this method depending of the save action. */
   public String save() {
     return SUCCESS;
   }
+
 
   public void saveLessons(Crp crp, Project project) {
 
@@ -1589,7 +1671,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   }
-
 
   public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
@@ -1627,6 +1708,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.basePermission = basePermission;
   }
 
+
   public void setCancel(boolean cancel) {
     this.cancel = true;
   }
@@ -1636,28 +1718,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.canEdit = canEdit;
   }
 
-
   public void setCanSwitchProject(boolean canSwitchProject) {
     this.canSwitchProject = canSwitchProject;
   }
+
 
   public void setCrpID(Long crpID) {
     this.crpID = crpID;
   }
 
-
   public void setCrpSession(String crpSession) {
     this.crpSession = crpSession;
   }
+
 
   public void setDataSaved(boolean dataSaved) {
     this.dataSaved = dataSaved;
   }
 
-
   public void setDelete(boolean delete) {
     this.delete = delete;
   }
+
 
   public void setDraft(boolean draft) {
     this.draft = draft;
@@ -1668,19 +1750,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.isEditable = isEditable;
   }
 
-
   public void setEditableParameter(boolean isEditable) {
     this.isEditable = isEditable;
   }
+
 
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
   }
 
-
   public void setInvalidFields(HashMap<String, String> invalidFields) {
     this.invalidFields = invalidFields;
   }
+
 
   public void setJustification(String justification) {
     this.justification = justification;
@@ -1690,7 +1772,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void setLessonsActive(boolean lessonsActive) {
     this.lessonsActive = lessonsActive;
   }
-
 
   public void setNext(boolean next) {
     this.next = true;
@@ -1708,10 +1789,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.reportingActive = reportingActive;
   }
 
+
   public void setReportingYear(int reportingYear) {
     this.reportingYear = reportingYear;
   }
-
 
   public void setSave(boolean save) {
     this.save = true;
@@ -1750,4 +1831,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String submit() {
     return SUCCESS;
   }
+
+
 }

@@ -149,7 +149,7 @@
       
       [#-- Key outputs --]
       <br>
-      <h5 class="sectionSubTitle">Key Outputs: </h5>
+      <h5 class="sectionSubTitle">Key Outputs: <small>[@customForm.req required=true /]</small> </h5>
       <div class="keyOutputsItems-list form-group col-md-12" listname="${clusterCustomName}.${keyOutputsName}">
         [#if cluster.keyOutputs?has_content]
           [#list cluster.keyOutputs as keyOutputItems]

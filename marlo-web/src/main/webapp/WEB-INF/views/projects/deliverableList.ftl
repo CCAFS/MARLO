@@ -6,6 +6,7 @@
 [#assign customCSS = ["${baseUrl}/css/global/customDataTable.css","${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
+[#assign isListSection = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},

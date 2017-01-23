@@ -136,6 +136,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
             crp.getAcronym(), crpProgramID + ""))) {
             canEdit = true;
           }
+
+          if (baseAction.isCrpClosed()) {
+            canEdit = false;
+          }
         }
 
         if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {

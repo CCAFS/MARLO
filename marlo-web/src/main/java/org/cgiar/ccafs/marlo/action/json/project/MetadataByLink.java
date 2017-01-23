@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.ClientRepository;
 
+import java.util.Map;
+
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -65,7 +67,6 @@ public class MetadataByLink extends BaseAction {
   @Override
   public String execute() throws Exception {
 
-
     if (page.equals("-1")) {
       return NOT_FOUND;
     }
@@ -97,23 +98,10 @@ public class MetadataByLink extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
-    // Verify if there is a elementID parameter
-    if (this.getRequest().getParameter(APConstants.METADATA_REQUEST_ID) == null) {
-      id = "-1";
-      return;
-    }
-
-    if (this.getRequest().getParameter(APConstants.PAGE_ID) == null) {
-      page = "-1";
-      return;
-    }
-
-
+    Map<String, Object> parameters = this.getParameters();
     // If there is a parameter take its values
-    id = StringUtils.trim(this.getRequest().getParameter(APConstants.METADATA_REQUEST_ID));
-    page = StringUtils.trim(this.getRequest().getParameter(APConstants.PAGE_ID));
-
+    id = StringUtils.trim(((String[]) parameters.get(APConstants.METADATA_REQUEST_ID))[0]);
+    page = StringUtils.trim(((String[]) parameters.get(APConstants.PAGE_ID))[0]);
 
   }
 

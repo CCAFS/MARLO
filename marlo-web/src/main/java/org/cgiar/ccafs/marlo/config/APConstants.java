@@ -59,6 +59,7 @@ public final class APConstants {
   public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   public static final String CRP_CU = "crp_cu";
   public static final int MID_OUTCOME_YEAR = 2019;
+  public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String LIASON_INSTITUTION_ID = "liasonInstitutionID";
   public static final String CRP_ID = "crpID";
@@ -215,6 +216,21 @@ public final class APConstants {
 
   public static final String PROJECT_DELIVERABLE_QUALITY_CHECK =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableQualityChecks)";
+
+  public static final String PROJECT_DELIVERABLE_METADATA_ELEMENT =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
+
+  public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
+
+  public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
+
+  public static final String PROJECT_DELIVERABLE_DATA_SHARING =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
+
+  public static final String PROJECT_DELIVERABLE_PUBLICATION_METADATA =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePublicationMetadatas)";
 
   public static final String PROJECT_ACTIVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.activities)";

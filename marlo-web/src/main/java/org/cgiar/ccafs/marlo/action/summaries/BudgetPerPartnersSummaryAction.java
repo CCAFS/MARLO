@@ -51,6 +51,7 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   // Variables
   private Crp loggedCrp;
   private int year;
+  private String cycle;
 
 
   private CrpManager crpManager;
@@ -63,11 +64,13 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
   // Streams
   InputStream inputStream;
 
+
   @Inject
   public BudgetPerPartnersSummaryAction(APConfig config, CrpManager crpManager) {
     super(config);
     this.crpManager = crpManager;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -83,11 +86,28 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     MasterReport masterReport = (MasterReport) reportResource.getResource();
 
     Number idParam = loggedCrp.getId();
-    year = this.getCurrentCycleYear();
+    // Get parameters from URL
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get cycle
+    try {
+      cycle = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
     masterReport.getParameterValues().put("crp_id", idParam);
     masterReport.getParameterValues().put("year", year);
@@ -105,11 +125,15 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
   }
+
+  public String getCycle() {
+    return cycle;
+  }
+
 
   private File getFile(String fileName) {
 
@@ -158,6 +182,10 @@ public class BudgetPerPartnersSummaryAction extends BaseAction implements Summar
     } catch (Exception e) {
     }
 
+  }
+
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
   }
 
 

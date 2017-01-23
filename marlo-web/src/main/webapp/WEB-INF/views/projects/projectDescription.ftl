@@ -100,8 +100,16 @@
             
             [#--  Regions/global and Flagships that the project is working on --]
             [#if !project.administrative]
-            <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
-            <div id="projectWorking" class="fullBlock dottedBox clearfix">
+            
+            [#if regionFlagships?has_content]
+              [#-- For the CRPs which has Regional Programs --]
+              <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions" readText=!editable /]:</h5>
+            [#else]
+              [#-- For those CRPs which do not have Regional programs please phrase this question --]
+              <h5>[@customForm.text name="projectDescription.projectWorking" readText=!editable /]:</h5>
+            [/#if]
+            
+            <div id="projectWorking" class="fullBlock clearfix">
               [#-- Flagships --] 
               <div class="col-md-6">
                 <div id="projectFlagshipsBlock" class="">
@@ -149,7 +157,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !project.administrative && !reportingActive]
+            [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head"> 
                 <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
@@ -183,7 +191,7 @@
             </div>
             [/#if]
             
-            [#if project.projectEditLeader && !reportingActive]
+            [#if project.projectEditLeader && !phaseOne]
               [#--  What type of gender analysis informed the design of this project and how? --]
               <div class="form-group">
                 [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]

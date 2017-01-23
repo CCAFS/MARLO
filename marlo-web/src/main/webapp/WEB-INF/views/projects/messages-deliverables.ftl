@@ -9,9 +9,9 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${project.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${project.activeSince?datetime}</span>[/@s.param]
-          [@s.param]<a href="[@s.url][@s.param name="projectID" value=projectID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
+          [@s.param]<span>${deliverable.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${deliverable.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>
     [/#if]
@@ -27,21 +27,13 @@
 [/#if]
 
 [#-- Privileges Message --]
-[#if (!canEdit && !(transaction??) && !(submission)) || crpClosed]
-  [#if crpClosed]
-    <p class="readPrivileges">MARLO is closed.</p>
-  [#else]
-    [#if project.projectEditLeader]
-      <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
-    [#else]
-      <p class="readPrivileges">This project is being preset by Management Liaison, it will be able for editing by the project leader soon...</p>
-    [/#if]    
-  [/#if]
+[#if !canEdit && !(transaction??) && !(submission)]
+    <p class="readPrivileges">[@s.text name="saving.read.privileges.section" /]</p>
 [/#if]
 
 
 [#-- Completed Message--]
-[#if (canSubmit && !submission && completed) && !crpClosed]
+[#if canSubmit && !submission && completed]
   <div class="completed-mode text-center animated flipInX">
     <p>[@s.text name="project.message.completed" /]</p>
   </div>
@@ -64,7 +56,7 @@
     <div class="layer"></div>
     <div class="content">
       <span class="glyphicon glyphicon-lock"></span>
-      <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
+      <p>[@s.text name="project.message.concurrence" /] [@s.text name="project.message.concurrenceNotEditing"][@s.param] <a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][/@s.url]">click here</a> [/@s.param][/@s.text]</p>
     </div> 
   </div>
 [/#if]

@@ -96,6 +96,7 @@ function attachEvents() {
       $(this).parent().find(".name").removeClass('fieldError');
       if(latitude != "" && latitude != null && longitude != "" && longitude != null) {
         if(isCoordinateValid(latitude, longitude)) {
+          console.log("here1");
           addLocationForm($(this).parent().parent(), latitude, longitude, name);
         }
       } else {
@@ -235,8 +236,8 @@ function checkboxAllCountries() {
           var id = $(e).attr("id").split('-')[1];
           var isList = $(e).parent().parent().parent().find(".isList");
           if(isList.val() == "false") {
-            addMarker(map, id, parseInt($(e).find(".geoLatitude").val()), parseInt($(e).find(".geoLongitude").val()),
-                $(e).find(".locElementName").val());
+            addMarker(map, id, parseFloat($(e).find(".geoLatitude").val()),
+                parseFloat($(e).find(".geoLongitude").val()), $(e).find(".locElementName").val());
           }
         })
   }
@@ -376,8 +377,8 @@ function addLocationForm(parent,latitude,longitude,name) {
       complete: function(data) {
         $item.attr("id", "location-" + (countID));
         $item.find('.locationName').html(
-            '<span class="lName">' + name + '</span><span class="lPos"> (' + latitude.toFixed(4) + ', '
-                + longitude.toFixed(4) + ' )</span> ');
+            '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
+                + parseFloat(longitude).toFixed(4) + ' )</span> ');
         $item.find('.geoLatitude').val(latitude);
         $item.find('.geoLongitude').val(longitude);
         $item.find('.locElementName').val(name);
@@ -390,7 +391,7 @@ function addLocationForm(parent,latitude,longitude,name) {
         parent.find(".longitude").val("");
         parent.find(".name").val("");
         // add marker
-        addMarker(map, (countID), parseInt(latitude), parseInt(longitude), name, "false");
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false");
         // update indexes
         updateIndex();
       }
@@ -506,7 +507,7 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          addMarker(map, (idMarker), parseInt(latitude), parseInt(longitude), site, isList);
+          addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList);
         }
         // ADD country into countries list
         $.ajax({

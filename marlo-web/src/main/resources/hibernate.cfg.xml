@@ -33,6 +33,7 @@
 
 
 		<!-- Model Mappings -->
+		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
 		<mapping resource="xmls/Auditlog.hbm.xml" />
 		<mapping resource="xmls/Users.hbm.xml" />
 		<mapping resource="xmls/Crps.hbm.xml" />
@@ -136,7 +137,8 @@
 		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
 		<mapping resource="xmls/OtherContributions.hbm.xml" />
 		<mapping resource="xmls/CrpsPandr.hbm.xml" />
-		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />
+		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />		
+		<mapping resource="xmls/MetadataElements.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

@@ -92,9 +92,11 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       String params[] = {crp.getAcronym(), project.getProject().getId() + ""};
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
         if (!baseAction.isSubmit(project.getProject().getId())) {
-          canEdit = true;
+
           canSwitchProject = true;
         }
+
+        canEdit = true;
       } else {
         List<Project> projects = projectManager.getUserProjects(user.getId(), crp.getAcronym());
         if (projects.contains(project.getProject()) && baseAction
@@ -102,6 +104,11 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
 
           canEdit = true;
+
+        }
+
+        if (baseAction.isSubmit(project.getProject().getId())) {
+          canEdit = false;
 
         }
 
@@ -127,10 +134,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__SWITCH, params))) {
         canSwitchProject = true;
       }
-      if (baseAction.isSubmit(project.getProject().getId())) {
-        canEdit = false;
 
-      }
 
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);

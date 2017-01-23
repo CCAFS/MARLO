@@ -68,7 +68,8 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   // Variables
   private Crp loggedCrp;
-
+  private int year;
+  private String cycle;
   // Managers
   private CrpManager crpManager;
   private CrpProgramManager programManager;
@@ -99,10 +100,28 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
+    // Get parameters from URL
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
+    }
+
+    // Get cycle
+    try {
+      cycle = this.getRequest().getParameter("cycle");
+    } catch (Exception e) {
+      cycle = this.getCurrentCycle();
+    }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-    String current_date = timezone.format(format) + timezone.getZone();
+    String zone = timezone.getOffset() + "";
+    if (zone.equals("Z")) {
+      zone = "+0";
+    }
+    String current_date = timezone.format(format) + "(GMT" + zone + ")";
 
     // Set Main_Query
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
@@ -120,7 +139,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     // method to get all the subreports in the prpt and store in the HashMap
     this.getAllSubreports(hm, masteritemBand);
     // Uncomment to see which Subreports are detecting the method getAllSubreports
-    System.out.println("Pentaho SubReports: " + hm);
+    // System.out.println("Pentaho SubReports: " + hm);
 
     this.fillSubreport((SubReport) hm.get("projects_outcomes"), "projects_outcomes");
     this.fillSubreport((SubReport) hm.get("milestone_projects_outcomes"), "milestone_projects_outcomes");
@@ -132,6 +151,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return SUCCESS;
 
   }
+
 
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
@@ -148,6 +168,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     sdf.addTable(query, model);
     subReport.setDataFactory(cdf);
   }
+
 
   /**
    * Get all subreports and store then in a hash map.
@@ -177,6 +198,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
       }
     }
   }
+
 
   /**
    * Get all subreports in the band.
@@ -208,10 +230,13 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return bytesXLSX.length;
   }
 
-
   @Override
   public String getContentType() {
     return "application/xlsx";
+  }
+
+  public String getCycle() {
+    return cycle;
   }
 
   private File getFile(String fileName) {
@@ -233,6 +258,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return fileName.toString();
 
   }
+
 
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
@@ -259,6 +285,7 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     }
     return inputStream;
   }
+
 
   public Crp getLoggedCrp() {
     return loggedCrp;
@@ -375,6 +402,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     return model;
   }
 
+  public int getYear() {
+    return year;
+  }
 
   @Override
   public void prepare() {
@@ -385,9 +415,18 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     }
   }
 
+  public void setCycle(String cycle) {
+    this.cycle = cycle;
+  }
+
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setYear(int year) {
+    this.year = year;
   }
 
 }
