@@ -4,12 +4,12 @@
   <div class=" row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="accessible"  editable=true inverse=false value="false" cssClass="accessible text-center" /]  
+      [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
     </div>  
   </div>
 <div class="clearfix"></div>
 
-  <div class="col-md-9 openAccessOptions" style="display: block;">
+  <div class="col-md-9 openAccessOptions" style="display: ${(deliverable.dissemination.isOpenAccess)?string("none","block")};">
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
@@ -41,11 +41,11 @@
       <span style="font-size:0.9em;">Is the deliverable already uploaded onto a public repository?</span>
     </span>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="findable"  editable=true inverse=false value="true" cssClass="findable text-center" /] 
+      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=true inverse=false cssClass="findable text-center" /] 
     </div>  
   </div>
   
-  <div class="findableOptions" style="display:block;">
+  <div class="findableOptions" style="display:${(deliverable.dissemination.alreadyDisseminated)?string("block","none")};">
     <hr />
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     <div class="row">
@@ -155,7 +155,7 @@
       [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false value="true" cssClass="acknowledge text-center" /] 
     </div> 
   </div>
-  
+  <hr />
   
   <div class="row">
     <label class="col-md-12" for="">Is this publication contributing to any other flagships?</label>
