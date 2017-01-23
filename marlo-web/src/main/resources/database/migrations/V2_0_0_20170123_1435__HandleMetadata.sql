@@ -1,0 +1,2 @@
+INSERT INTO `metadata_elements` VALUES ('35', 'MARLO', 'Handle', 'Handle', 'marlo.handle', 'Optional', null, null);
+INSERT INTO `metadata_elements` VALUES ('36', 'MARLO', 'DOI', 'DOI', 'marlo.doi', 'Optional', null, null);
