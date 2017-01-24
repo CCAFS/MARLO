@@ -136,11 +136,6 @@ public class UploadDeliverableAction extends BaseAction {
   }
 
 
-  public File getFile() {
-    return file;
-  }
-
-
   public String getFileContentType() {
     return fileContentType;
   }
