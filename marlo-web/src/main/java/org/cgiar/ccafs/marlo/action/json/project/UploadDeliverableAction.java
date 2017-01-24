@@ -106,11 +106,6 @@ public class UploadDeliverableAction extends BaseAction {
   }
 
 
-  public Deliverable getDeliverable() {
-    return deliverable;
-  }
-
-
   private String getDeliverableFilePath() {
     String upload = config.getUploadsBaseFolder();
     return upload + File.separator + this.getDeliverableFileRelativePath() + File.separator;
@@ -131,8 +126,9 @@ public class UploadDeliverableAction extends BaseAction {
     return deliverableID;
   }
 
-  public DeliverableManager getDeliverableManager() {
-    return deliverableManager;
+
+  public File getFile() {
+    return file;
   }
 
 
@@ -156,29 +152,8 @@ public class UploadDeliverableAction extends BaseAction {
   }
 
 
-  public boolean isSaved() {
-    return saved;
-  }
-
-
-  @Override
-  public void prepare() throws Exception {
-
-  }
-
-
-  public void setDeliverable(Deliverable deliverable) {
-    this.deliverable = deliverable;
-  }
-
-
   public void setDeliverableID(String deliverableID) {
     this.deliverableID = deliverableID;
-  }
-
-
-  public void setDeliverableManager(DeliverableManager deliverableManager) {
-    this.deliverableManager = deliverableManager;
   }
 
 
@@ -197,21 +172,13 @@ public class UploadDeliverableAction extends BaseAction {
   }
 
 
-  public void setFileID(int fileID) {
-    this.fileID = fileID;
-  }
-
-
   public void setFileInfo(Map<String, Object> fileInfo) {
     this.fileInfo = fileInfo;
   }
 
+
   public void setProjectID(String projectID) {
     this.projectID = projectID;
-  }
-
-  public void setSaved(boolean saved) {
-    this.saved = saved;
   }
 
 
