@@ -162,7 +162,7 @@
   <div class="clearfix"></div>
   <div class="row simpleBox">
     <div class="col-md-6">
-      [@customForm.select name="" label=""  i18nkey="Select relevant CRP(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select relevant CRP(s)" listName="crps"   multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-6">
       [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
