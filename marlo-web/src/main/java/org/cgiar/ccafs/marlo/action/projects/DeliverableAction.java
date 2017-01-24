@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
@@ -666,8 +667,12 @@ public class DeliverableAction extends BaseAction {
 
         if (deliverable.getDeliverableDisseminations() != null) {
           deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+          if (deliverable.getDeliverableDisseminations().size() > 0) {
+            deliverable.setDissemination(deliverable.getDisseminations().get(0));
+          } else {
+            deliverable.setDissemination(new DeliverableDissemination());
+          }
 
-          deliverable.setDissemination(deliverable.getDisseminations().get(0));
         }
 
         if (deliverable.getDeliverableDataSharingFiles() != null) {

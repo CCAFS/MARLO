@@ -9,7 +9,7 @@
             <generator class="identity" />
         </id>
         <property name="fileName" type="string">
-            <column name="file_name" length="100" not-null="true" />
+            <column name="file_name" length="500" not-null="true" />
         </property>
         <property name="tokenId" type="string">
             <column name="token_id" length="100" not-null="true" />

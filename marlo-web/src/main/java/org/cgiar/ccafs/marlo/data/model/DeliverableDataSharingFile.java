@@ -15,14 +15,17 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
   @Expose
   private Long id;
 
-  @Expose
+
   private Deliverable deliverable;
 
   @Expose
-  private String file;
+  private FileDB file;
 
   @Expose
-  private String type;
+  private Integer typeId;
+
+  @Expose
+  private String externalFile;
 
 
   public DeliverableDataSharingFile() {
@@ -34,10 +37,10 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
   }
 
 
-  public DeliverableDataSharingFile(Deliverable deliverable, String file, String type) {
+  public DeliverableDataSharingFile(Deliverable deliverable, FileDB file, Integer type) {
     this.deliverable = deliverable;
     this.file = file;
-    this.type = type;
+
   }
 
 
@@ -45,33 +48,46 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
     return deliverable;
   }
 
-  public String getFile() {
+
+  public String getExternalFile() {
+    return externalFile;
+  }
+
+
+  public FileDB getFile() {
     return file;
   }
+
 
   public Long getId() {
     return id;
   }
 
-  public String getType() {
-    return type;
+
+  public Integer getTypeId() {
+    return typeId;
   }
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
-  public void setFile(String file) {
-    this.file = file;
+  public void setExternalFile(String externalFile) {
+    this.externalFile = externalFile;
   }
 
+
+  public void setFile(FileDB file) {
+    this.file = file;
+  }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public void setType(String type) {
-    this.type = type;
+
+  public void setTypeId(Integer typeId) {
+    this.typeId = typeId;
   }
 
 

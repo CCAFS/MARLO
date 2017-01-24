@@ -11,11 +11,15 @@
         <many-to-one name="deliverable" class="org.cgiar.ccafs.marlo.data.model.Deliverable" fetch="select">
             <column name="deliverable_id" not-null="true" />
         </many-to-one>
-        <property name="file" type="string">
-            <column name="file" length="500" />
+         <many-to-one name="file" class="org.cgiar.ccafs.marlo.data.model.FileDB" fetch="select">
+            <column name="file_id" />
+        </many-to-one>
+        <property name="typeId" type="java.lang.Integer">
+            <column name="type_id" />
         </property>
-        <property name="type" type="string">
-            <column name="type" length="50" />
+       
+        <property name="externalFile" type="string">
+            <column name="external_file" length="500" />
         </property>
     </class>
 </hibernate-mapping>
