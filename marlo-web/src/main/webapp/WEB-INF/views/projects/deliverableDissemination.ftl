@@ -167,17 +167,25 @@
     <label class="col-md-12" for="">Is this publication contributing to any other flagships?</label>
   </div>
   <div class="clearfix"></div>
-  <div class="row simpleBox">
-    <div class="col-md-4">
-      [@customForm.select name="" label=""  i18nkey="Select relevant CRP(s)" listName="crps"   multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
+  <div class="row">
+    <div class="col-md-12">
+      <div class="flagshipList simpleBox col-md-12">
+        <p class="emptyText text-center "> [@s.text name="No Flagships added yet." /]</p> 
+      </div>
+      <div class="clearfix"></div>
     </div>
-    <div class="col-md-6">
-      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
+    <div class="col-md-3">
+      [@customForm.select name="" label=""  i18nkey="Select CRP" listName="crps"   multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
+    </div>
+    <div class="col-md-7">
+      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
     [#if editable]
+    <div class="col-md-2">
     <br />
-    <div id="addPartnerBlock" class="addPerson text-right">
-      <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add Flagship" /]</div>
+    <div id="" class="addFlagship text-right">
+      <div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add" /]</div>
+    </div>
     </div>
     [/#if] 
   </div>
@@ -247,11 +255,11 @@
       <div class="col-md-4">
         <input type="radio" name="deliverable.license" id="" value="OTHER" [#if ((deliverable.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other
       </div>
-      <div class="col-md-8 licence-modifications" style="display:none;" >
+      <div class="col-md-8 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
         [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
       </div>
     </div>
-    <div class=" col-md-6 licence-modifications" style="display:none;">
+    <div class=" col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];">
       <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
         [@customForm.yesNoInput name="licenceModifications"  editable=editable inverse=false value="true" cssClass="licenceModifications text-center" /] 

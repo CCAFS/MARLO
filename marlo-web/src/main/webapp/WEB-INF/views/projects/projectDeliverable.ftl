@@ -113,6 +113,7 @@
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
 [@authorMacro element={} index=-1 name="author"  isTemplate=true /]
+[@flagshipMacro element={} index=-1 name="deliverable.flagships"  isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -135,6 +136,17 @@
           [@customForm.input name="${customName}.orcidId" showTitle=true i18nkey="ORCID ID" value="" className="orcidIdInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro flagshipMacro element index name  isTemplate=false]
+  [#assign customName = "${name}[${index}]" /]
+  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox col-md-6"  style="display:${isTemplate?string('none','block')}">
+    [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if] 
+    <input class="id" type="hidden" name="${customName}.falgship.id" value="${(element.flagship.id)!-1}" />
+    <input class="idElement" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+    <span class="name">${(element.flagship.composedName)!'null'}</span>
+    <div class="clearfix"></div>
   </div>
 [/#macro]
 

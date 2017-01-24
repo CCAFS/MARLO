@@ -225,3 +225,14 @@ p.noChecked {
       50% {background:#ddd}
       100% {background:#d9edf7;}
  }
+
+.flagships {
+    list-style: none;
+    padding: 1px 4px 0px 6px;
+    background-color: #F7F7F7;
+    border: 1px solid #E0E0E0 !important;
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin-bottom: 5px;
+    position: relative;
+}
