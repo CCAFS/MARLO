@@ -1,13 +1,13 @@
 [#ftl]
 [#-- ACCESSIBLE --]
 <div class="borderBox form-group">
-  <div class=" row ">
+  <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
     </div>
   </div>
-<div class="clearfix"></div>
+  <div class="clearfix"></div>
 
   <div class="col-md-9 openAccessOptions" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
@@ -37,8 +37,7 @@
   <div class=" row">
     <span class="col-md-9">
       <label  for="">[@s.text name="Is this deliverable already disseminated? " /]</label>
-      <br />
-      <span style="font-size:0.9em;">Is the deliverable already uploaded onto a public repository?</span>
+      <p><small>Is the deliverable already uploaded to a public repository?</small></p>
     </span>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=true inverse=false cssClass="findable text-center" /] 
@@ -163,10 +162,10 @@
   <div class="clearfix"></div>
   <div class="row simpleBox">
     <div class="col-md-6">
-      [@customForm.select name="" label=""  i18nkey="Select relevant CRPs" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select relevant CRP(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-6">
-      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsips" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
   </div>
 </div>

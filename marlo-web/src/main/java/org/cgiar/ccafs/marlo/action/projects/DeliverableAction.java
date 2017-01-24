@@ -158,8 +158,11 @@ public class DeliverableAction extends BaseAction {
 
   private Map<String, String> status;
 
+  private Map<String, String> crps;
+
 
   private Map<String, String> genderLevels;
+
 
   private Deliverable deliverable;
 
@@ -210,7 +213,6 @@ public class DeliverableAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
   }
 
-
   @Override
   public String cancel() {
 
@@ -235,10 +237,10 @@ public class DeliverableAction extends BaseAction {
     return SUCCESS;
   }
 
-
   public List<DeliverableQualityAnswer> getAnswers() {
     return answers;
   }
+
 
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
@@ -246,6 +248,11 @@ public class DeliverableAction extends BaseAction {
     String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+
+  public Map<String, String> getCrps() {
+    return crps;
   }
 
   public Deliverable getDeliverable() {
@@ -277,10 +284,10 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
+
 
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
@@ -323,24 +330,23 @@ public class DeliverableAction extends BaseAction {
     return projectID;
   }
 
-
   public List<ProjectOutcome> getProjectOutcome() {
     return projectOutcome;
   }
+
 
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
 
-
   public Map<String, String> getStatus() {
     return status;
   }
 
+
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public Boolean isDeliverableNew(long deliverableID) {
@@ -381,6 +387,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public Boolean isDeliverabletNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -417,7 +424,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public List<DeliverablePartnership> otherPartners() {
     try {
       List<DeliverablePartnership> list = deliverable.getDeliverablePartnerships().stream()
@@ -430,6 +436,7 @@ public class DeliverableAction extends BaseAction {
 
 
   }
+
 
   public List<DeliverablePartnership> otherPartnersAutoSave() {
     try {
@@ -594,6 +601,9 @@ public class DeliverableAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
+        if (metadataElementManager.findAll() != null) {
+          deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+        }
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
@@ -679,7 +689,6 @@ public class DeliverableAction extends BaseAction {
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
-
       answers = new ArrayList<>(
         deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
 
@@ -716,6 +725,10 @@ public class DeliverableAction extends BaseAction {
       List<DeliverableGenderTypeEnum> listGenders = Arrays.asList(DeliverableGenderTypeEnum.values());
       for (DeliverableGenderTypeEnum projectStatusEnum : listGenders) {
         genderLevels.put(projectStatusEnum.getId() + "", projectStatusEnum.getValue());
+      }
+      crps = new HashMap<>();
+      for (Crp crp : crpManager.findAll().stream().filter(c -> c.isMarlo()).collect(Collectors.toList())) {
+        crps.put(crp.getId().toString(), crp.getAcronym());
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
@@ -819,7 +832,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   private DeliverablePartnership responsiblePartner() {
     try {
       DeliverablePartnership partnership = deliverable.getDeliverablePartnerships().stream()
@@ -831,6 +843,7 @@ public class DeliverableAction extends BaseAction {
       return null;
     }
   }
+
 
   private DeliverablePartnership responsiblePartnerAutoSave() {
     try {
@@ -921,7 +934,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1050,6 +1063,7 @@ public class DeliverableAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());
@@ -1182,6 +1196,10 @@ public class DeliverableAction extends BaseAction {
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
     this.answers = answers;
+  }
+
+  public void setCrps(Map<String, String> crps) {
+    this.crps = crps;
   }
 
   public void setDeliverable(Deliverable deliverable) {

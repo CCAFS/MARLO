@@ -153,7 +153,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private boolean allowModifications;
+  private Boolean allowModifications;
 
 
   DeliverableQualityCheck qualityCheck;
@@ -414,8 +414,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public int getMetadataID(String metadataName) {
     for (MetadataElement mData : metadata) {
-      if (mData.getEcondedName().equals(metadataName)) {
-        return mData.getId();
+      if (mData != null) {
+        if (mData.getEcondedName().equals(metadataName)) {
+          return mData.getId();
+        }
       }
     }
     return -1;
@@ -424,9 +426,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public int getMetadataIndex(String metadataName) {
     int c = 0;
     for (MetadataElement mData : metadata) {
-      if (mData.getEcondedName().equals(metadataName)) {
-        return c;
+      if (mData != null) {
+        if (mData.getEcondedName().equals(metadataName)) {
+          return c;
+        }
       }
+
       c++;
     }
     return -1;
@@ -436,9 +441,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getMetadataValue(int metadataID) {
     String value = "";
     for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata.getMetadataElement().getId() == metadataID) {
-        value = dmetadata.getElementValue();
+      if (dmetadata.getMetadataElement() != null) {
+        if (dmetadata.getMetadataElement().getId() == metadataID) {
+          value = dmetadata.getElementValue();
+        }
       }
+
     }
 
     return value;
@@ -446,8 +454,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public String getMetadataValue(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData.getMetadataElement().getElement().equals(metadataName)) {
-        return mData.getElementValue();
+      if (mData.getMetadataElement() != null) {
+        if (mData.getMetadataElement().getElement().equals(metadataName)) {
+          return mData.getElementValue();
+        }
       }
     }
     return "";
@@ -455,8 +465,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public String getMetadataValueByEncondedName(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
-        return mData.getElementValue();
+      if (mData.getMetadataElement() != null) {
+        if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
+          return mData.getElementValue();
+        }
       }
     }
     return "";
@@ -557,7 +569,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public boolean isAllowModifications() {
+  public Boolean isAllowModifications() {
     return allowModifications;
   }
 
@@ -570,7 +582,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setAllowModifications(boolean allowModifications) {
+  public void setAllowModifications(Boolean allowModifications) {
     this.allowModifications = allowModifications;
   }
 
