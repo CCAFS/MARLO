@@ -2,9 +2,10 @@ $(document).ready(init);
 
 function init() {
   Dropzone.autoDiscover = false;
-// Create a dropzone to attach files
+  // Create a dropzone to attach files
   addDropzone();
 
+  // Select an storage option
   $("input[name='sharingOption']").on("change", function() {
     console.log($(this).val());
     if($(this).val() == "Externally") {
@@ -15,6 +16,16 @@ function init() {
       $("#dragAndDrop").show("slow");
     }
   });
+
+  // This event is for remove file upload fields and inputs
+  $(".removeInput").on("click", removeFileUploaded);
+
+  // This event is when will be add one URL
+  $(".addFileURL").on("click", addfileURL);
+
+  // Set names to deliverable files already uploaded
+  setDeliverableFilesIndexes();
+
 }
 
 function removeFileUploaded() {
@@ -71,11 +82,20 @@ function addDropzone() {
 }
 
 function initDropzone() {
-  /*
-   * this.on("success", function(file,done) { console.log(done); var result = jQuery.parseJSON(done);
-   * if(result.fileSaved) { file.hosted = "Locally"; file.fileID = result.fileID; if(canAddFile) {
-   * addFileToUploaded(file); } this.removeFile(file); } });
-   */
+
+  this.on("success", function(file,done) {
+    console.log(done);
+    var result = done.fileInfo;
+    if(result.fileSaved) {
+      file.hosted = "Locally";
+      file.fileID = result.fileID;
+      if(canAddFile) {
+        addFileToUploaded(file);
+      }
+      this.removeFile(file);
+    }
+  });
+
 }
 
 function addfileURL(e) {
@@ -156,20 +176,20 @@ function addFileToUploaded(file) {
 }
 
 function setDeliverableFilesIndexes() {
-  $("form .fileUploaded").each(function(i,element) {
+  $("form li.fileUploaded").each(function(i,element) {
     var elementName = "deliverable.files[" + i + "].";
     $(element).find("input[type='hidden'].fileID").attr("name", elementName + "id");
     $(element).find("input[type='hidden'].fileHosted").attr("name", elementName + "hosted");
     $(element).find("input[type='hidden'].fileLink").attr("name", elementName + "link");
 
-    var fileName = $(element).find(".fileName").html();
+    var fileName = $(element).find(".fileName").html() || "Not Defined";
     if((fileName).length > 70) {
       $(element).find(".fileName").html((fileName).substring(0, 70) + "...");
     }
     $(element).find(".fileName").attr("title", fileName);
 
   });
-  if($("form .fileUploaded").length == 0) {
+  if($("form li.fileUploaded").length == 1) {
     $("#filesUploaded .text").show();
   }
 }
