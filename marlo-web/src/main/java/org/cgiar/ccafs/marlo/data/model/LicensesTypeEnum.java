@@ -21,7 +21,8 @@ package org.cgiar.ccafs.marlo.data.model;
  */
 public enum LicensesTypeEnum {
   MIT("MIT"), GNU("GNU"), CC_LICENSES("CC_LICENSES"), CC_PUBLIC("CC_PUBLIC"), OPEN_DATA("OPEN_DATA"), CC_BY("CC_BY"),
-  CC_BY_SA("CC_BY_SA"), CC_BY_ND("CC_BY_ND"), CC_BY_NC_SA("CC_BY_NC_SA"), CC_BY_NC_ND("CC_BY_NC_ND");
+  CC_BY_SA("CC_BY_SA"), CC_BY_ND("CC_BY_ND"), CC_BY_NC("CC_BY_NC"), CC_BY_NC_SA("CC_BY_NC_SA"),
+  CC_BY_NC_ND("CC_BY_NC_ND");
 
   public static LicensesTypeEnum license(String status) {
     LicensesTypeEnum[] lst = LicensesTypeEnum.values();

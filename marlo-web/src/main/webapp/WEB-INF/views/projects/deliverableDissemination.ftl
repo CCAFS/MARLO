@@ -13,16 +13,16 @@
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="1" [#if ((deliverable.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="1" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedAccess" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="1" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="embargoedPeriods"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="1"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
     </div>
     <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
       <div class="col-md-5">
@@ -182,10 +182,10 @@
   [#-- Deliverable type computer software --]
   <div class=" licenseOptions computerLicense" style="display:none;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="1"/> MIT License
+      <input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="2"/> GNU General Public License
+      <input type="radio" name="deliverable.license" id="" value="GNU" [#if ((deliverable.licenseType) == "GNU")!false]checked="checked"[/#if]/> GNU General Public License
     </div>
     <div class="clearfix"></div>
   </div>
@@ -193,15 +193,15 @@
   [#-- Deliverable type data --]
   <div class=" licenseOptions dataLicense" style="display:none;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="3"/> CC licenses version 4.0
+      <input type="radio" name="deliverable.license" id="" value="CC_LICENSES" [#if ((deliverable.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0
 
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="4"/> CC Public Domain Dedication (CC0 1.0)
+      <input type="radio" name="deliverable.license" id="" value="CC_PUBLIC" [#if ((deliverable.licenseType) == "CC_PUBLIC")!false]checked="checked"[/#if]/> CC Public Domain Dedication (CC0 1.0)
 
     </div>
     <div class="col-md-12" style="display:none;">
-      <input type="radio" name="deliverable.licenseType" id="" value="5"/> Open Data Commons (ODC)
+      <input type="radio" name="deliverable.license" id="" value="OPEN_DATA" [#if ((deliverable.licenseType) == "OPEN_DATA")!false]checked="checked"[/#if]/> Open Data Commons (ODC)
     </div>
     <div class="clearfix"></div>
   </div>
@@ -209,22 +209,22 @@
   [#-- Deliverable type other research types --]
   <div class=" licenseOptions" style="display:block;">
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="6"/> CC-BY <small>(allow modifications and commercial use)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY" [#if ((deliverable.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="7"/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY_SA" [#if ((deliverable.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="8"/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY_ND" [#if ((deliverable.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="9"/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY_NC" [#if ((deliverable.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.licenseType" id="" value="10"/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY_NC_SA" [#if ((deliverable.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small>
     </div>
     <div class="col-md-12">
-      <input type="radio" name="deliverable.license" id="" value="11"/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small>
+      <input type="radio" name="deliverable.license" id="" value="CC_BY_NC_ND" [#if ((deliverable.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small>
     </div>
     <div class="clearfix"></div>
   </div>
@@ -233,10 +233,10 @@
   <div class="row">
     <div class="col-md-6 form-group">
       <div class="col-md-4">
-        <input type="radio" name="deliverable.licenseType" id="" value="12"/> Other
+        <input type="radio" name="deliverable.license" id="" value="OTHER" [#if ((deliverable.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other
       </div>
       <div class="col-md-8 licence-modifications" style="display:none;" >
-        [@customForm.input name="otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+        [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
       </div>
     </div>
     <div class=" col-md-6 licence-modifications" style="display:none;">

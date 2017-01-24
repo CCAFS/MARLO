@@ -386,11 +386,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
   public String getLicenseType() {
-    if (Arrays.asList(LicensesTypeEnum.values()).contains(license)) {
-      return license;
-    } else {
-      return "OTHER";
+    if (license != null) {
+      if (Arrays.asList(LicensesTypeEnum.values()).contains(license)) {
+        return license;
+      } else {
+        return "OTHER";
+      }
     }
+    return "";
   }
 
   @Override
