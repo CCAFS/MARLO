@@ -151,6 +151,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private String license;
 
+  @Expose
+  private String otherLicense;
+
 
   @Expose
   private Boolean allowModifications;
