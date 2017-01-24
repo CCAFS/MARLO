@@ -115,6 +115,9 @@
       <column name="license" length="65535"
         not-null="true" />
     </property>
+    <property name="otherLicense" type="string">
+      <column name="license" length="65535"/>
+    </property>
 		<set name="deliverableGenderLevels" table="deliverable_gender_levels"
 			inverse="true" lazy="true" fetch="select">
 			<key>
