@@ -170,7 +170,8 @@
           <div class="uploadContainer">
             [#if (element.file?has_content)!false]
               [#if editable]<span id="remove-annexesFile" class="remove"></span>[/#if] 
-              <p><a href="${(CaseStudyURL)!}${element.file.fileName}">${element.file.fileName}</a><input type="hidden" name="${customName}.file.id" value="${element.file.id}" /> </p>
+              
+              <p><a href="${(CaseStudyUrl)!}${element.file.fileName}">${element.file.fileName}</a><input type="hidden" name="${customName}.file.id" value="${element.file.id}" /> </p>
             [#else]
               [#if editable]
                 [@customForm.inputFile name="file" className="annexesFile"  /]
