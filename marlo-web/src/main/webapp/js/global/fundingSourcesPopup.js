@@ -158,9 +158,9 @@ $(document).ready(
         });
 
         // Validate fileID
-        if(project.fileID == -1) {
-          invalidFields.push('Upload a contract proposal');
-        }
+        // if(project.fileID == -1) {
+        // invalidFields.push('Upload a contract proposal');
+        // }
 
         // Validate Email
         var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
