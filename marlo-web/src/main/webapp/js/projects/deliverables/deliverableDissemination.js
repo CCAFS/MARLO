@@ -124,12 +124,93 @@ function init() {
 
   // Ohter license type
   $("input[name='deliverable.license']").on("change", function() {
-    if($(this).val() == "12") {
+    if($(this).val() == "OTHER") {
       $(".licence-modifications").show("slow");
     } else {
       $(".licence-modifications").hide("slow");
     }
     checkFAIRCompliant();
+  });
+
+  // Add many flagships
+  $(".addFlagship").on("click", function() {
+    var fOption = $(".flaghsipSelect").find("option:selected");
+    if(fOption.val() != "" && fOption.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.id[value='" + fOption.val() + "']").exists()) {
+      } else {
+        var v = $(fOption).text().length > 45 ? $(fOption).text().substr(0, 45) + ' ... ' : $(fOption).text();
+        addFlagship(fOption.val(), v, fOption.text());
+      }
+    }
+  });
+  $(".crpSelect").on("change", flagshipService);
+
+  // remove flagship
+  $(".removeFlagship ").on("click", removeFlagship);
+}
+
+function addFlagship(id,text,title) {
+  var $list = $('.flagshipList');
+  var $item = $('#flagship-template').clone(true).removeAttr("id");
+  $item.find(".name").text(text);
+  $item.find(".name").attr("title", title);
+  $item.find(".id").val(id);
+  $list.append($item);
+  $item.show('slow');
+  updateFlagship();
+  checkNextFlagshipItems($list);
+}
+
+function removeFlagship() {
+  var $list = $(this).parents('.flagshipList');
+  var $item = $(this).parents('.flagships');
+  $item.hide(function() {
+    $item.remove();
+    checkNextFlagshipItems($list);
+    updateFlagship();
+  });
+}
+
+function updateFlagship() {
+  $(".flagshipList").find('.flagships').each(function(i,e) {
+    // Set activity indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+function checkNextFlagshipItems(block) {
+  var items = $(block).find('.flagships ').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
+}
+
+function flagshipService() {
+  $(".flaghsipSelect").empty();
+  $.ajax({
+      'url': baseURL + '/flaghshipsByCrpAction.do',
+      'type': "GET",
+      'data': {
+        crpID: $(this).find("option:selected").val()
+      },
+      'dataType': "json",
+      beforeSend: function() {
+      },
+      success: function(m) {
+        // console.log(m.flagships);
+        $(".flaghsipSelect").addOption("-1", "Select an otpion...");
+        $.each(m.flagships, function(i,e) {
+          $(".flaghsipSelect").addOption(e.id, e.description);
+        });
+
+        $(".flaghsipSelect").trigger("change.select2");
+      },
+      complete: function() {
+      },
+      error: function() {
+      }
   });
 }
 
@@ -323,6 +404,19 @@ function getCGSpaceMetadata(channel,url,uri) {
             setMetadata(sendDataJson);
 
             authorsByService([]);
+
+            var $input = $(".accessible ").parent().find('input');
+            if(m.metadata['identifier.status'] == "Open Access") {
+              $input.val(true);
+              $(".accessible ").parent().find("label").removeClass("radio-checked");
+              $(".openAccessOptions").hide("slow");
+              $(".yes-button-label ").addClass("radio-checked");
+            } else {
+              $input.val(false);
+              $(".accessible ").parent().find("label").removeClass("radio-checked");
+              $(".openAccessOptions").show("slow");
+              $(".no-button-label ").addClass("radio-checked");
+            }
 
             $('#metadata-output').empty().append(
                 "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
