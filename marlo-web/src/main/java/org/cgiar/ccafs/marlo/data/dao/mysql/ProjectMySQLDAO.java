@@ -146,7 +146,7 @@ public class ProjectMySQLDAO implements ProjectDAO {
   @Override
   public List<Map<String, Object>> getUserProjects(long userId, String crp) {
     String query = "select DISTINCT project_id from user_permissions where id=" + userId + " and crp_acronym='" + crp
-      + "' and project_id is not null and  permission_id <>438";
+      + "' and project_id is not null and  permission_id not in (438,462)";
     return dao.findCustomQuery(query);
   }
 

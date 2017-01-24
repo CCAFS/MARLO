@@ -41,7 +41,7 @@ function addDropzone() {
           projectID: $("input[name^='projectID']").val(),
           deliverableID: $("input[name^='deliverableID']").val()
       },
-      url: baseURL + '/reporting/uploadDeliverable.do',
+      url: baseURL + '/uploadDeliverable.do',
       maxFilesize: 30,
       accept: function(file,done) {
         canAddFile = true;
