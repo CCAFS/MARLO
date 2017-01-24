@@ -40,7 +40,7 @@
       <p><small>Is the deliverable already uploaded to a public repository?</small></p>
     </span>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=true inverse=false cssClass="findable text-center" /] 
+      [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="findable text-center" /] 
     </div>  
   </div>
   
@@ -49,6 +49,7 @@
     <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
     <div class="row">
       <div class="col-md-4">
+      [#if editable]
         <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
         <select name="" id="disChannel" class="disseminationChannel">
           <option value="-1">Select an option</option>
@@ -56,6 +57,10 @@
           <option value="3">Dataverse (Harvard)</option>
           <option value="1">Other</option>
         </select>
+      [#else]
+      <label for="disChannel" style="display:block;">Dissemination channel:</label>
+      <p>Prefilled if available</p>
+      [/#if]
       </div>
       [#-- CGSpace examples & instructions --]
       <div class="exampleUrl-block channel-2 col-md-8" style="display:none;">
@@ -91,9 +96,11 @@
     <div class="authorsList simpleBox">
       <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
     </div>
+    [#if editable]
     <div class="addPerson text-right">
       <div class="button-green addAuthor"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add other creator/author" /]</div>
-    </div> 
+    </div>
+    [/#if] 
   </div>
   <div class="col-md-6">
     [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
@@ -151,7 +158,7 @@
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="acknowledge"  editable=true inverse=false value="true" cssClass="acknowledge text-center" /] 
+      [@customForm.yesNoInput name="acknowledge"  editable=editable inverse=false value="true" cssClass="acknowledge text-center" /] 
     </div> 
   </div>
   <hr />
@@ -161,12 +168,18 @@
   </div>
   <div class="clearfix"></div>
   <div class="row simpleBox">
-    <div class="col-md-6">
+    <div class="col-md-4">
       [@customForm.select name="" label=""  i18nkey="Select relevant CRP(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-6">
       [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip(s)" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
+    [#if editable]
+    <br />
+    <div id="addPartnerBlock" class="addPerson text-right">
+      <div class="button-blue  addPartner"><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add Flagship" /]</div>
+    </div>
+    [/#if] 
   </div>
 </div>
 
@@ -174,7 +187,7 @@
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="license"  editable=true inverse=false value="true" cssClass="license text-center" /] 
+      [@customForm.yesNoInput name="license"  editable=editable inverse=false value="true" cssClass="license text-center" /] 
     </div>  
   </div>
   <hr />
@@ -241,7 +254,7 @@
     <div class=" col-md-6 licence-modifications" style="display:none;">
       <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
-        [@customForm.yesNoInput name="licenceModifications"  editable=true inverse=false value="true" cssClass="licenceModifications text-center" /] 
+        [@customForm.yesNoInput name="licenceModifications"  editable=editable inverse=false value="true" cssClass="licenceModifications text-center" /] 
       </div>  
     </div>
     <div class="clearfix"></div>
