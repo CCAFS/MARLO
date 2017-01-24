@@ -405,6 +405,19 @@ function getCGSpaceMetadata(channel,url,uri) {
 
             authorsByService([]);
 
+            var $input = $(".accessible ").parent().find('input');
+            if(m.metadata['identifier.status'] == "Open Access") {
+              $input.val(true);
+              $(".accessible ").parent().find("label").removeClass("radio-checked");
+              $(".openAccessOptions").hide("slow");
+              $(".yes-button-label ").addClass("radio-checked");
+            } else {
+              $input.val(false);
+              $(".accessible ").parent().find("label").removeClass("radio-checked");
+              $(".openAccessOptions").show("slow");
+              $(".no-button-label ").addClass("radio-checked");
+            }
+
             $('#metadata-output').empty().append(
                 "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
           }
