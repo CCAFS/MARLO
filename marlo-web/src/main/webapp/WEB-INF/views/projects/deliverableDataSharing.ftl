@@ -1,7 +1,7 @@
 [#ftl]
 <div class="fullBlock"> 
   [#-- Deliverable file List --]
-  <h5>[@s.text name="reporting.projectDeliverable.dataSharing.deliverableFiles" /]</h5>
+  <h5>[@s.text name="projectDeliverable.dataSharing.deliverableFiles" /]</h5>
   <div id="filesUploaded">
     <ul>
      [#if deliverable.files?has_content]
@@ -27,32 +27,32 @@
   
   [#if editable]
     [#-- Deliverable options to upload --]
-    <h5>[@s.text name="reporting.projectDeliverable.dataSharing.chooseOptions" /]</h5> 
+    <h5>[@s.text name="projectDeliverable.dataSharing.chooseOptions" /]</h5> 
     <div id="dataSharingOptions">
       [#-- Option #1--]
       <div>
         <label for="option-1">
           <input id="option-1" type="radio" name="sharingOption" value="Externally" >
-          [@s.text name="reporting.projectDeliverable.dataSharing.hostedInstitutional" /]
-          <span class="quote">[@s.text name="reporting.projectDeliverable.dataSharing.hostedInstitutional.help" /]</span>
+          [@s.text name="projectDeliverable.dataSharing.hostedInstitutional" /]
+          <span class="quote">[@s.text name="projectDeliverable.dataSharing.hostedInstitutional.help" /]</span>
         </label> 
         <div id="fileURL" class="fullBlock uploadBlock" style="display:none">
-          [@customForm.input name="linkExternally" type="text" i18nkey="reporting.projectDeliverable.filename" value="http://"/]
-          <div id="addFileURL-external" class="addButton addFileURL">[@s.text name="reporting.projectDeliverable.dataSharing.addURL" /]</div>
+          [@customForm.input name="linkExternally" type="text" i18nkey="projectDeliverable.filename" value="http://"/]
+          <div id="addFileURL-external" class="addButton addFileURL">[@s.text name="projectDeliverable.dataSharing.addURL" /]</div>
         </div>
       </div>
       [#-- Option #2--]
       <div>
         <label for="option-2">
           <input id="option-2" type="radio" name="sharingOption" value="To download" >
-          [@s.text name="reporting.projectDeliverable.dataSharing.fileGreater" /]
-          <span class="quote">[@s.text name="reporting.projectDeliverable.dataSharing.fileGreater.help" /]</span>
+          [@s.text name="projectDeliverable.dataSharing.fileGreater" /]
+          <span class="quote">[@s.text name="projectDeliverable.dataSharing.fileGreater.help" /]</span>
         </label>
       </div>
       [#-- This is used for run a JQuery (dropzone) plugin to drag and drop deliverables files--]
       <div id="dragAndDrop" class="dropzone uploadBlock" style="display:none">
         <div class="fallback"> 
-          <div id="addFileInput" class="addButton">[@s.text name="reporting.projectDeliverable.dataSharing.addFile" /]</div>
+          <div id="addFileInput" class="addButton">[@s.text name="projectDeliverable.dataSharing.addFile" /]</div>
         </div>
       </div>
     </div>
