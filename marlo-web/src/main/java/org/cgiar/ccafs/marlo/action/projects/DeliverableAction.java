@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
@@ -42,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
@@ -126,6 +128,8 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
+  private DeliverableMetadataElementManager deliverableMetadataElementManager;
+
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
@@ -183,12 +187,12 @@ public class DeliverableAction extends BaseAction {
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
-    DeliverableManager deliverableManager, CrpManager crpManager, ProjectManager projectManager,
-    ProjectPartnerPersonManager projectPartnerPersonManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpClusterKeyOutputManager crpClusterKeyOutputManager, DeliverablePartnershipManager deliverablePartnershipManager,
-    AuditLogManager auditLogManager, DeliverableValidator deliverableValidator,
-    ProjectPartnerManager projectPartnerManager, FundingSourceManager fundingSourceManager,
-    DeliverableFundingSourceManager deliverableFundingSourceManager,
+    DeliverableMetadataElementManager deliverableMetadataElementManager, DeliverableManager deliverableManager,
+    CrpManager crpManager, ProjectManager projectManager, ProjectPartnerPersonManager projectPartnerPersonManager,
+    CrpProgramOutcomeManager crpProgramOutcomeManager, CrpClusterKeyOutputManager crpClusterKeyOutputManager,
+    DeliverablePartnershipManager deliverablePartnershipManager, AuditLogManager auditLogManager,
+    DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
+    FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, FileDBManager fileDBManager,
@@ -212,6 +216,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
     this.fileDBManager = fileDBManager;
     this.metadataElementManager = metadataElementManager;
+    this.deliverableMetadataElementManager = deliverableMetadataElementManager;
   }
 
   @Override
@@ -1063,7 +1068,7 @@ public class DeliverableAction extends BaseAction {
       if (deliverable.getQualityCheck() != null) {
         this.saveQualityCheck();
       }
-
+      this.saveMetadata();
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
@@ -1073,6 +1078,7 @@ public class DeliverableAction extends BaseAction {
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());
       deliverable.setModificationJustification(this.getJustification());
+
       deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName);
       Path path = this.getAutoSaveFilePath();
 
@@ -1108,8 +1114,13 @@ public class DeliverableAction extends BaseAction {
 
   public void saveMetadata() {
 
-    for (DeliverableQualityAnswer deliverableQualityAnswer : answers) {
+    for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
 
+      if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
+        deliverableMetadataElement.setDeliverable(deliverable);
+        deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
+
+      }
     }
   }
 
