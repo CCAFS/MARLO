@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.io.Serializable;
 
 import com.google.gson.annotations.Expose;
@@ -22,7 +24,7 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class DeliverableMetadataElement implements Serializable {
+public class DeliverableMetadataElement implements Serializable, IAuditLog {
 
 
   private static final long serialVersionUID = -44359971548335546L;
@@ -43,17 +45,21 @@ public class DeliverableMetadataElement implements Serializable {
   public DeliverableMetadataElement() {
   }
 
-
   public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable) {
     this.metadataElement = metadataElement;
     this.deliverable = deliverable;
   }
 
-
   public DeliverableMetadataElement(MetadataElement metadataElement, Deliverable deliverable, String elementValue) {
     this.metadataElement = metadataElement;
     this.deliverable = deliverable;
     this.elementValue = elementValue;
+  }
+
+  @Override
+  public boolean isActive() {
+
+    return true;
   }
 
   public Deliverable getDeliverable() {
@@ -64,12 +70,34 @@ public class DeliverableMetadataElement implements Serializable {
     return elementValue;
   }
 
+
+  @Override
   public Integer getId() {
     return id;
   }
 
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
   public MetadataElement getMetadataElement() {
     return metadataElement;
+  }
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
+  }
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
   }
 
   public void setDeliverable(Deliverable deliverable) {

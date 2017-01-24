@@ -147,6 +147,49 @@ function init() {
 
   // remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
+
+  $('.lastName').dblclick(function() {
+    var spantext = $(this).text();
+    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+  }).keypress(function(e) {
+    if(e.keyCode == 13) {
+      var text = $('input', this).val();
+      if(text == "") {
+        text = "Last Name";
+      } else {
+        $(this).parents(".author").find(".lastNameInput").val(text);
+      }
+      $(this).html(text);
+    }
+  });
+  $('.firstName').dblclick(function() {
+    var spantext = $(this).text();
+    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+  }).keypress(function(e) {
+    if(e.keyCode == 13) {
+      var text = $('input', this).val();
+      if(text == "") {
+        text = "First Name";
+      } else {
+        $(this).parents(".author").find(".firstNameInput").val(text);
+      }
+      $(this).html(text);
+    }
+  });
+  $('.orcidId').dblclick(function() {
+    var spantext = $(this).text();
+    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+  }).keypress(function(e) {
+    if(e.keyCode == 13) {
+      var text = $('input', this).val();
+      if(text == "") {
+        text = "orcid Id";
+      } else {
+        $(this).parents(".author").find(".orcidIdInput").val(text);
+      }
+      $(this).html(text);
+    }
+  });
 }
 
 function addFlagship(id,text,title) {
@@ -300,12 +343,28 @@ function changeDisseminationChannel() {
 }
 
 function addAuthor() {
-  var $list = $('.authorsList');
-  var $item = $('#author-template').clone(true).removeAttr("id");
-  $list.append($item);
-  $item.show('slow');
-  updateAuthor();
-  checkNextAuthorItems($list);
+  if($(".lName").val() != "" && $(".fName").val() != "") {
+    $(".lName").removeClass("fieldError");
+    $(".fName").removeClass("fieldError");
+    $(".oId").removeClass("fieldError");
+    var $list = $('.authorsList');
+    var $item = $('#author-template').clone(true).removeAttr("id");
+    $item.find(".lastName").html($(".lName").val());
+    $item.find(".firstName").html($(".fName").val());
+    $item.find(".orcidId").html($(".oId").val());
+
+    $item.find(".lastNameInput").val($(".lName").val());
+    $item.find(".firstNameInput").val($(".fName").val());
+    $item.find(".orcidIdInput").val($(".oId").val());
+    $list.append($item);
+    $item.show('slow');
+    updateAuthor();
+    checkNextAuthorItems($list);
+  } else {
+    $(".lName").addClass("fieldError");
+    $(".fName").addClass("fieldError");
+    $(".oId").addClass("fieldError");
+  }
 }
 
 function removeAuthor() {
@@ -503,7 +562,10 @@ function authorsByService(authors) {
   var $list = $('.authorsList');
   for(var i = 0; i < authors.length; i++) {
     var $item = $('#author-template').clone(true).removeAttr("id");
-    $($item).find(".lastNameInput").val(authors[i].lastName);
+    $($item).find(".lastName").text(authors[i].lastName + ", ");
+    $($item).find(".firstName").text(authors[i].firstName);
+    $($item).find(".orcidId").text(authors[i].orcidId);
+    $($item).find(".lastNameInput").val(authors[i].lastName + ", ");
     $($item).find(".firstNameInput").val(authors[i].firstName);
     $($item).find(".orcidIdInput").val(authors[i].orcidId);
     $list.append($item);

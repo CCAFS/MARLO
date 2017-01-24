@@ -91,17 +91,34 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
+  <div class="col-md-12 note">[@s.text name = "To change an author's data,you must do double click on that field." /]</div>
   <div class="col-md-12">
     <label for="">Creator/Authors:</label>
-    <div class="authorsList simpleBox">
+    <div class="authorsList simpleBox col-md-12">
       <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
     </div>
     [#if editable]
-    <div class="addPerson text-right">
-      <div class="button-green addAuthor"><span class="glyphicon glyphicon-plus-sign"></span>[@s.text name="Add other creator/author" /]</div>
+    <div class="col-md-12">
+      <div class="col-md-3">
+        <input class="form-control input-sm lName" placeholder="Last Name" type="text" /> 
+      </div>
+      <div class="col-md-3">
+        <input class="form-control input-sm fName" placeholder="First Name" type="text" /> 
+      </div>
+      <div class="col-md-3">
+        <input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> 
+       </div>
+       <div class="col-md-3">
+         <div id="" class="addAuthor text-right">
+          <div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add author" /]</div>
+        </div>
+       </div>
     </div>
     [/#if] 
   </div>
+  <div class="clearfix"></div>
+  <hr />
+  <div class="clearfix"></div>
   <div class="col-md-6">
     [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>

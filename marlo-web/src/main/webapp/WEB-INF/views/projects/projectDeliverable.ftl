@@ -119,23 +119,23 @@
 
 [#macro authorMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox"  style="display:${isTemplate?string('none','block')}">
+  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
     [#if editable] [#--&& (isTemplate) --]
       <div class="removeLink">
         <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
       </div>
     [/#if]
-      [#-- Authors inputs --]
-      <div class="lastName col-md-4">
-          [@customForm.input name="${customName}.lastName" showTitle=true i18nkey="Last name (dc.creator)" value="" className="lastNameInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
+    <div class="row">
+      <div class="col-md-12">
+        <span class="lastName"> </span>
+        <span class="firstName"></span>
       </div>
-      <div class="firstName col-md-4">
-          [@customForm.input name="${customName}.firstName" showTitle=true i18nkey="First Name (dc.creator)" value="" className="firstNameInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
-      </div>
-      <div class="orcidId col-md-4">
-          [@customForm.input name="${customName}.orcidId" showTitle=true i18nkey="ORCID ID" value="" className="orcidIdInput" placeholder="" type="text" disabled=!editable  required=true editable=editable /]
-      </div>
-      <div class="clearfix"></div>
+    </div>
+    <span><small class="orcidId"><b>orcid id:</b> not prefiled</small></span>
+    <input type="hidden" class="lastNameInput" value="" />
+    <input type="hidden" class="firstNameInput" value="" />
+    <input type="hidden" class="orcidIdInput" value="" />
+    <div class="clearfix"></div>
   </div>
 [/#macro]
 
