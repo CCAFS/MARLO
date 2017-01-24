@@ -40,6 +40,7 @@ public final class APConstants {
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";
+  public static final String DELIVERABLE_FILE_LOCALLY_HOSTED = "1";
   public static final String CRP_LANGUAGE = "crp_language";
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_HAS_REGIONS = "crp_has_regions";

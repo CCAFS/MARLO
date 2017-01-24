@@ -230,6 +230,15 @@
       </result>
     </action>
 
+   <action name="uploadDeliverable" class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref> 
+      <result name="input">/WEB-INF/views/projects/deliverableDataSharing.ftl</result>
+      <result name="success">/WEB-INF/views/projects/deliverableDataSharing.ftl</result>
+    </action>
+    
 		<action name="institutionBranchList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectBranchesListAction">
 			<result type="json">
