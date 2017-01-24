@@ -594,6 +594,9 @@ public class DeliverableAction extends BaseAction {
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
+        if (metadataElementManager.findAll() != null) {
+          deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+        }
         Deliverable deliverableDb = deliverableManager.getDeliverableById(deliverable.getId());
         deliverable.setProject(deliverableDb.getProject());
         project.setProjectEditLeader(deliverableDb.getProject().isProjectEditLeader());
@@ -679,7 +682,6 @@ public class DeliverableAction extends BaseAction {
       if (metadataElementManager.findAll() != null) {
         deliverable.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
       }
-
       answers = new ArrayList<>(
         deliverableQualityAnswerManager.findAll().stream().filter(qa -> qa.isActive()).collect(Collectors.toList()));
 
@@ -921,7 +923,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1050,6 +1052,7 @@ public class DeliverableAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());

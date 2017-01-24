@@ -40,6 +40,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="allowModifications" type="java.lang.Boolean">
+      <column name="allow_modifications" />
+    </property>
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
@@ -108,6 +111,10 @@
 			<column name="modification_justification" length="65535"
 				not-null="true" />
 		</property>
+		<property name="license" type="string">
+      <column name="license" length="65535"
+        not-null="true" />
+    </property>
 		<set name="deliverableGenderLevels" table="deliverable_gender_levels"
 			inverse="true" lazy="true" fetch="select">
 			<key>

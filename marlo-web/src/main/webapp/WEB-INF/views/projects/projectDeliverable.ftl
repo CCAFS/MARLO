@@ -142,6 +142,7 @@
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].id" value="${(metadataID)!}" />
+    <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].metadataElement.id" value="${(metadataID)!}" />
   [#if type == "input"]
     [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]

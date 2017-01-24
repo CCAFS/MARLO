@@ -173,27 +173,27 @@ function openAccessRestriction() {
 
 function setMetadata(data) {
   $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
-  if($(".citationMetadata").val() == "") {
-    $(".citationMetadata").val(data.citation).autoGrow();
-  }
-  if($("#deliverableMetadataDate").val() == "") {
-    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  }
-  if($(".languageMetadata").val() == "") {
-    $(".languageMetadata").val(data.languaje);
-  }
-  if($(".descriptionMetadata").val() == "") {
-    $(".descriptionMetadata").val(data.description).autoGrow();
-  }
-  if($(".handleMetadata").val() == "") {
-    $(".handleMetadata").val(data.handle);
-  }
-  if($(".doiMetadata").val() == "") {
-    $(".doiMetadata").val(data.doi);
-  }
-  if($(".countryMetadata").val() == "") {
-    $(".countryMetadata").val(data.country);
-  }
+  // if($(".citationMetadata").val() == "") {
+  $(".citationMetadata").val(data.citation).autoGrow();
+  // }
+  // if($("#deliverableMetadataDate").val() == "") {
+  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  // }
+  // if($(".languageMetadata").val() == "") {
+  $(".languageMetadata").val(data.languaje);
+  // }
+  // if($(".descriptionMetadata").val() == "") {
+  $(".descriptionMetadata").val(data.description).autoGrow();
+  // }
+  // if($(".handleMetadata").val() == "") {
+  $(".handleMetadata").val(data.handle);
+  // }
+  // if($(".doiMetadata").val() == "") {
+  $(".doiMetadata").val(data.doi);
+  // }
+  // if($(".countryMetadata").val() == "") {
+  $(".countryMetadata").val(data.country);
+  // }
 
 }
 
