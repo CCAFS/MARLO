@@ -235,8 +235,10 @@
       <interceptor-ref name="fileUpload">
         <param name="maximumSize">314572900</param>
       </interceptor-ref> 
-      <result name="input">/WEB-INF/views/projects/deliverableDataSharing.ftl</result>
-      <result name="success">/WEB-INF/views/projects/deliverableDataSharing.ftl</result>
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
     </action>
     
 		<action name="institutionBranchList"

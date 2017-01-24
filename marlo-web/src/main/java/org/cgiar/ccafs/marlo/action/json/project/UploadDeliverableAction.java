@@ -27,6 +27,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.inject.Inject;
 import org.slf4j.Logger;
@@ -55,6 +57,7 @@ public class UploadDeliverableAction extends BaseAction {
   private String deliverableID;
   private String projectID;
   private Deliverable deliverable;
+  private Map<String, Object> fileInfo;
   private boolean saved;
   private long fileID;
 
@@ -96,8 +99,12 @@ public class UploadDeliverableAction extends BaseAction {
     fileDatasharing.setTypeId(new Integer(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED));
     fileID = deliverableFileManager.saveDeliverableDataSharingFile(fileDatasharing);
     saved = (fileID != -1) && fileCopied ? true : false;
+    fileInfo = new HashMap<String, Object>();
+    fileInfo.put("fileSaved", saved);
+    fileInfo.put("fileID", fileID);
     return SUCCESS;
   }
+
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -109,11 +116,11 @@ public class UploadDeliverableAction extends BaseAction {
     return upload + File.separator + this.getDeliverableFileRelativePath() + File.separator;
   }
 
-
   private String getDeliverableFileRelativePath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + projectID + File.separator
       + "deliverableDataSharing" + File.separator;
   }
+
 
   public String getDeliverableFileURL() {
     return config.getDownloadURL() + "/" + this.getDeliverableFilePath().replace('\\', '/');
@@ -123,7 +130,6 @@ public class UploadDeliverableAction extends BaseAction {
   public String getDeliverableID() {
     return deliverableID;
   }
-
 
   public DeliverableManager getDeliverableManager() {
     return deliverableManager;
@@ -142,6 +148,11 @@ public class UploadDeliverableAction extends BaseAction {
 
   public String getFileFileName() {
     return fileFileName;
+  }
+
+
+  public Map<String, Object> getFileInfo() {
+    return fileInfo;
   }
 
 
@@ -193,6 +204,11 @@ public class UploadDeliverableAction extends BaseAction {
 
   public void setFileID(int fileID) {
     this.fileID = fileID;
+  }
+
+
+  public void setFileInfo(Map<String, Object> fileInfo) {
+    this.fileInfo = fileInfo;
   }
 
   public void setProjectID(String projectID) {
