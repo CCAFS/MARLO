@@ -46,12 +46,21 @@
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
-                [@customForm.select name="project.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
+                [#if crpSession == "a4nh"]
+                  [#assign liaisonInstitutionI18nkey = "project.liaisonInstitutionA4NH" /]
+                [#else]
+                  [#assign liaisonInstitutionI18nkey = "project.liaisonInstitution" /]
+                [/#if]
+                [@customForm.select name="project.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="${liaisonInstitutionI18nkey}"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
               </div>
               [#--  Project Owner Contact Person --]
-              <div class="col-md-6">
-                
-                [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="project.liaisonUser"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
+              <div class="col-md-6"> 
+                [#if crpSession == "a4nh"]
+                  [#assign liaisonUserI18nkey = "project.liaisonUserA4NH" /]
+                [#else]
+                  [#assign liaisonUserI18nkey = "project.liaisonUser" /]
+                [/#if]
+                [@customForm.select name="project.liaisonUser.id" className="liaisonUserSelect" i18nkey="${liaisonUserI18nkey}"  listName="allOwners" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison")/]
                 <span id="liaisonUserSelected" style="display:none">${(project.liaisonUser.id)!-1}</span>
               </div> 
             </div>  
