@@ -1106,6 +1106,13 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  public void saveMetadata() {
+
+    for (DeliverableQualityAnswer deliverableQualityAnswer : answers) {
+
+    }
+  }
+
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
     if (deliverable.getQualityCheck().getId() != -1) {
