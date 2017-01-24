@@ -322,24 +322,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.country = m.metadata['coverage.country'];
             setMetadata(sendDataJson);
 
-            jsonTest = {
-              authors: [
-                  {
-                      lastName: "lastTest",
-                      firstName: "firstTest",
-                      orcidId: 546
-                  }, {
-                      lastName: "lastTest2",
-                      firstName: "firstTest2",
-                      orcidId: 5462
-                  }, {
-                      lastName: "lastTest3",
-                      firstName: "firstTest3",
-                      orcidId: 546435
-                  }
-              ]
-            };
-            authorsByService(jsonTest);
+            authorsByService([]);
 
             $('#metadata-output').empty().append(
                 "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
@@ -377,8 +360,9 @@ function getDataverseMetadata(channel,url,uri) {
       success: function(m) {
         console.log("success");
         if(m.status == "OK") {
-          // Getting metadata
-          var sendDataJson = {
+
+          // Setting Metadata
+          setMetadata({
               citation: '',
               publicationDate: m.data.timestamps.publicationdate,
               languaje: '',
@@ -390,13 +374,22 @@ function getDataverseMetadata(channel,url,uri) {
                 return output;
               },
               handle: '',
-              doi: data.persistentId,
-              authors: m.data.metadata_blocks.citation.author
-          }
-          console.log(sendDataJson);
+              doi: data.persistentId
+          });
 
-          // Setting metadata
-          setMetadata(sendDataJson);
+          // Getting authors
+          var authors = [];
+          $.each(m.data.metadata_blocks.citation.author, function(i,element) {
+            authors.push({
+                lastName: (element.authorName).split(',')[1],
+                firstName: (element.authorName).split(',')[0],
+                orcidId: element.authorIdentifier
+            });
+          });
+
+          // Set Authors
+          authorsByService(authors);
+
         } else {
           $('#metadata-output').empty().append("Invalid URL for searching metadata");
         }
@@ -410,4 +403,18 @@ function getDataverseMetadata(channel,url,uri) {
       }
   });
 
+}
+
+function authorsByService(authors) {
+  var $list = $('.authorsList');
+  for(var i = 0; i < authors.length; i++) {
+    var $item = $('#author-template').clone(true).removeAttr("id");
+    $($item).find(".lastNameInput").val(authors[i].lastName);
+    $($item).find(".firstNameInput").val(authors[i].firstName);
+    $($item).find(".orcidIdInput").val(authors[i].orcidId);
+    $list.append($item);
+    $item.show('slow');
+    updateAuthor();
+    checkNextAuthorItems($list);
+  }
 }

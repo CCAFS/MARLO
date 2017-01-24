@@ -1,19 +1,19 @@
 [#ftl]
 [#-- ACCESSIBLE --]
 <div class="borderBox form-group">
-  <div class=" row ">
+  <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=true inverse=false cssClass="accessible text-center" /]  
     </div>
   </div>
-<div class="clearfix"></div>
+  <div class="clearfix"></div>
 
   <div class="col-md-9 openAccessOptions" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination??) && (deliverable.dissemination.type == "intellectualProperty"))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.type == "intellectualProperty")!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
       <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.type == "limitedExclusivity")!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
@@ -37,8 +37,7 @@
   <div class=" row">
     <span class="col-md-9">
       <label  for="">[@s.text name="Is this deliverable already disseminated? " /]</label>
-      <br />
-      <span style="font-size:0.9em;">Is the deliverable already uploaded onto a public repository?</span>
+      <p><small>Is the deliverable already uploaded to a public repository?</small></p>
     </span>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=true inverse=false cssClass="findable text-center" /] 
