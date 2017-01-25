@@ -81,6 +81,7 @@ function checkFiandable() {
 }
 
 function checkAccessible() {
+  // Is this deliverable Open Access?
   if($('.accessible input').val() == "true") {
     $('.fairCompliant.accessible').addClass('achieved');
   }
@@ -91,8 +92,9 @@ function checkInteroperable() {
   if($('.findable input').val() == "true") {
     var channelSelected = $('select.disseminationChannel').val();
     // If is disseminated in CGSpace or Dataverse
-    if((channelSelected == "2") || (channelSelected == "3")) {
+    if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
       // If is dissemination URL filled correctly
+
       if($('input.deliverableDisseminationUrl').val() != "") {
         $('.fairCompliant.interoperable').addClass('achieved');
       }
