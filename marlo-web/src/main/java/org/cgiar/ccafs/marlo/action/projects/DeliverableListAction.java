@@ -109,31 +109,6 @@ public class DeliverableListAction extends BaseAction {
     return INPUT;
   }
 
-  public Boolean Boolean(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-
-    if (deliverableBD.getDeliverableDisseminations() != null) {
-      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
-      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
-        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
-      } else {
-        deliverableBD.setDissemination(new DeliverableDissemination());
-      }
-
-    }
-
-    if (deliverableBD.getDissemination().getIsOpenAccess() != null
-      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
-      return true;
-    }
-
-    if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
-      return null;
-    }
-    return false;
-  }
-
-
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (this.isPlanningActive()) {
@@ -144,6 +119,7 @@ public class DeliverableListAction extends BaseAction {
     }
     return true;
   }
+
 
   @Override
   public String delete() {
@@ -180,7 +156,6 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
-
   public List<Deliverable> getDeliverables(boolean open) {
 
     try {
@@ -209,6 +184,7 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
   }
@@ -224,25 +200,31 @@ public class DeliverableListAction extends BaseAction {
     return project;
   }
 
-
   public long getProjectID() {
     return projectID;
   }
+
+
+  public Boolean isA(long deliverableID) {
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    this.loadDissemination(deliverableBD);
+    if (deliverableBD.getDissemination().getIsOpenAccess() != null
+      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
+      return true;
+    }
+
+    if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
+      return null;
+    }
+    return false;
+  }
+
 
   public Boolean isF(long deliverableID) {
 
 
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    if (deliverableBD.getDeliverableDisseminations() != null) {
-      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
-      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
-        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
-      } else {
-        deliverableBD.setDissemination(new DeliverableDissemination());
-      }
-
-    }
-
+    this.loadDissemination(deliverableBD);
     if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
       && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
       return true;
@@ -253,6 +235,54 @@ public class DeliverableListAction extends BaseAction {
 
     return false;
 
+  }
+
+  public Boolean isI(long deliverableID) {
+
+
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    this.loadDissemination(deliverableBD);
+    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
+      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+
+
+      String channel = deliverableBD.getDissemination().getDisseminationChannel();
+      String link = deliverableBD.getDissemination().getDisseminationUrl();
+      if (channel == null || channel.equals("-1")) {
+        return false;
+      }
+      if (link == null || link.equals("-1") || link.isEmpty()) {
+        return false;
+      }
+      switch (channel) {
+        case "cgspace":
+
+          break;
+        case "dataverse":
+
+          break;
+
+      }
+    }
+    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+      return null;
+    }
+
+    return false;
+
+  }
+
+  public void loadDissemination(Deliverable deliverableBD) {
+
+    if (deliverableBD.getDeliverableDisseminations() != null) {
+      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
+      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
+        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
+      } else {
+        deliverableBD.setDissemination(new DeliverableDissemination());
+      }
+
+    }
   }
 
 
