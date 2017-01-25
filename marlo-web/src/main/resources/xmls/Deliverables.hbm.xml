@@ -40,6 +40,9 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
+		<property name="adoptedLicense" type="boolean">
+      <column name="adopted_license" not-null="true" />
+    </property>
 		<property name="allowModifications" type="java.lang.Boolean">
       <column name="allow_modifications" />
     </property>
@@ -126,7 +129,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel" />
 		</set>
-		<set name="deliverableDisseminations" order-by="id" table="deliverable_dissemination"
+		<set name="deliverableDisseminations" table="deliverable_dissemination"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -134,7 +137,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDissemination" />
 		</set>
-		<set name="deliverableDataSharingFiles"  order-by="id"  table="deliverable_data_sharing_file"
+		<set name="deliverableDataSharingFiles" table="deliverable_data_sharing_file"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -142,7 +145,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile" />
 		</set>
-		<set name="deliverablePublicationMetadatas" order-by="id"  table="deliverable_publication_metadata"
+		<set name="deliverablePublicationMetadatas" table="deliverable_publication_metadata"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -150,7 +153,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata" />
 		</set>
-		<set name="deliverableDataSharings" order-by="id"  table="deliverable_data_sharing"
+		<set name="deliverableDataSharings" table="deliverable_data_sharing"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -158,7 +161,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharing" />
 		</set>
-		<set name="deliverableQualityChecks" order-by="id"  table="deliverable_quality_checks"
+		<set name="deliverableQualityChecks" table="deliverable_quality_checks"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -166,7 +169,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck" />
 		</set>
-		<set name="deliverableMetadataElements" order-by="id"  table="deliverable_metadata_elements"
+		<set name="deliverableMetadataElements" table="deliverable_metadata_elements"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
