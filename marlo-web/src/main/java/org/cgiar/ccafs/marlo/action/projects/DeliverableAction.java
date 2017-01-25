@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
+import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
@@ -79,7 +80,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -843,11 +843,13 @@ public class DeliverableAction extends BaseAction {
       deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
 
-    channels = new LinkedHashMap<>();
+    channels = new HashMap<>();
 
-    channels.put("cgspace", "CGSpace");
-    channels.put("dataverse", "Dataverse (Harvard)");
-    channels.put("other", "Other");
+
+    for (ChannelEnum channel : ChannelEnum.values()) {
+      channels.put(channel.getId(), channel.getDesc());
+    }
+
 
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
