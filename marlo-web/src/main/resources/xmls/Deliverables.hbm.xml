@@ -46,6 +46,8 @@
 		<property name="allowModifications" type="java.lang.Boolean">
       <column name="allow_modifications" />
     </property>
+    
+    
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
