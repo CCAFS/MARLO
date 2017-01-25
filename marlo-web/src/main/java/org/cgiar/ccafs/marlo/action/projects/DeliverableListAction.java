@@ -257,20 +257,26 @@ public class DeliverableListAction extends BaseAction {
       if (link == null || link.equals("-1") || link.isEmpty()) {
         return false;
       }
-      if (!this.validURL(link)) {
-        return false;
-      }
+
       switch (channel) {
         case "cgspace":
+          if (!this.validURL(link)) {
+            return false;
+          }
           if (!link.contains("cgspace.cgiar.org")) {
             return false;
           }
           break;
         case "dataverse":
           if (!link.contains("dataverse.harvard.edu")) {
+            if (!this.validURL(link)) {
+              return false;
+            }
             return false;
           }
           break;
+        default:
+          return false;
 
       }
       return true;
