@@ -32,6 +32,9 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -254,15 +257,23 @@ public class DeliverableListAction extends BaseAction {
       if (link == null || link.equals("-1") || link.isEmpty()) {
         return false;
       }
+      if (!this.validURL(link)) {
+        return false;
+      }
       switch (channel) {
         case "cgspace":
-
+          if (!link.contains("cgspace.cgiar.org")) {
+            return false;
+          }
           break;
         case "dataverse":
-
+          if (!link.contains("dataverse.harvard.edu")) {
+            return false;
+          }
           break;
 
       }
+      return true;
     }
     if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
       return null;
@@ -284,7 +295,6 @@ public class DeliverableListAction extends BaseAction {
 
     }
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -318,6 +328,7 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
@@ -345,5 +356,18 @@ public class DeliverableListAction extends BaseAction {
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public boolean validURL(String URL) {
+    try {
+      java.net.URL url = new java.net.URL(URL);
+      URLConnection conn = url.openConnection();
+      conn.connect();
+      return true;
+    } catch (MalformedURLException e) {
+      return false;
+    } catch (IOException e) {
+      return false;
+    }
   }
 }
