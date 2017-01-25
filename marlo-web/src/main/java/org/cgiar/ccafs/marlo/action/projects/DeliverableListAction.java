@@ -32,9 +32,8 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLConnection;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -167,8 +166,8 @@ public class DeliverableListAction extends BaseAction {
         List<Deliverable> openA = deliverables.stream()
           .filter(a -> a.isActive()
             && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || a.getStatus().intValue() == 0))))
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || a.getStatus().intValue() == 0))))
           .collect(Collectors.toList());
         return openA;
 
@@ -177,7 +176,7 @@ public class DeliverableListAction extends BaseAction {
         List<Deliverable> openA = deliverables.stream()
           .filter(a -> a.isActive()
             && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
           .collect(Collectors.toList());
         return openA;
       }
@@ -220,6 +219,7 @@ public class DeliverableListAction extends BaseAction {
     }
     return false;
   }
+
   public Boolean isF(long deliverableID) {
 
 
@@ -371,12 +371,13 @@ public class DeliverableListAction extends BaseAction {
   public boolean validURL(String URL) {
     try {
       java.net.URL url = new java.net.URL(URL);
-      URLConnection conn = url.openConnection();
-      conn.connect();
+      url.toURI();
       return true;
     } catch (MalformedURLException e) {
+      e.printStackTrace();
       return false;
-    } catch (IOException e) {
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
       return false;
     }
   }

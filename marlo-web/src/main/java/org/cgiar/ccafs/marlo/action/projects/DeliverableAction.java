@@ -79,6 +79,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -638,7 +639,7 @@ public class DeliverableAction extends BaseAction {
           for (DeliverableFundingSource fundingSource : deliverable.getFundingSources()) {
             if (fundingSource != null && fundingSource.getFundingSource() != null) {
               fundingSource
-              .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
+                .setFundingSource(fundingSourceManager.getFundingSourceById(fundingSource.getFundingSource().getId()));
             }
 
           }
@@ -842,9 +843,8 @@ public class DeliverableAction extends BaseAction {
       deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
     }
 
-    channels=new HashMap<>();
+    channels = new LinkedHashMap<>();
 
-    channels.put("-1", "Select an option");
     channels.put("cgspace", "CGSpace");
     channels.put("dataverse", "Dataverse (Harvard)");
     channels.put("other", "Other");
@@ -987,8 +987,8 @@ public class DeliverableAction extends BaseAction {
         try {
           partnershipResponsible =
             deliverablePrew.getDeliverablePartnerships().stream()
-            .filter(dp -> dp.isActive()
-              && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
+              .filter(dp -> dp.isActive()
+                && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
             .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
