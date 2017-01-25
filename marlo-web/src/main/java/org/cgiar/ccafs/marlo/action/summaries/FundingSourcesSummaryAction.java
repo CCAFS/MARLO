@@ -33,8 +33,12 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -288,25 +292,21 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       String fs_title = fundingSource.getTitle();
       Long fs_id = fundingSource.getId();
       String finance_code = fundingSource.getFinanceCode();
-      String lead_partner = "";
 
-      for (FundingSourceInstitution fs_ins : fundingSource.getFundingSourceInstitutions()) {
-        if (lead_partner.isEmpty()) {
-          lead_partner = fs_ins.getInstitution().getComposedName();
-        } else {
-          lead_partner += ", " + fs_ins.getInstitution().getComposedName();
-        }
-
-      }
 
       String fs_window = fundingSource.getBudgetType().getName();
 
-      String project_id = "";
-      Double total_budget = 0.0;
+
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
+        String lead_partner = "";
+        String project_id = "";
+        Double total_budget = 0.0;
 
         project_id = projectBudget.getProject().getId().toString();
+        if (projectBudget.getInstitution() != null) {
+          lead_partner = projectBudget.getInstitution().getComposedName();
+        }
 
         total_budget = projectBudget.getAmount();
 
@@ -335,7 +335,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         if (lead_partner.isEmpty()) {
           lead_partner = fs_ins.getInstitution().getComposedName();
         } else {
-          lead_partner += ", " + fs_ins.getInstitution().getComposedName();
+          lead_partner += ", \n" + fs_ins.getInstitution().getComposedName();
         }
 
       }
@@ -343,15 +343,23 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       String fs_window = fundingSource.getBudgetType().getName();
 
       String project_id = "";
+      List<String> projectList = new ArrayList<String>();
       for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
-        .filter(pb -> pb.isActive() && pb.getYear() == year).collect(Collectors.toList())) {
-        if (project_id.isEmpty()) {
-          project_id = projectBudget.getProject().getId().toString();
-        } else {
-          project_id += ", " + projectBudget.getProject().getId();
-        }
-
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
+        projectList.add(projectBudget.getProject().getId().toString());
       }
+
+      // Remove duplicates
+      Set<String> s = new LinkedHashSet<String>(projectList);
+
+      for (String projectString : s.stream().collect(Collectors.toList())) {
+        if (project_id.isEmpty()) {
+          project_id = "P" + projectString;
+        } else {
+          project_id += ", P" + projectString;
+        }
+      }
+
 
       Double total_budget = 0.0;
 
