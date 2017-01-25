@@ -279,7 +279,7 @@
     <div class=" col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];">
       <label class="col-md-6" for="">Does this license allow modifications?</label>
       <div class="col-md-6">
-        [@customForm.yesNoInput name="licenceModifications"  editable=editable inverse=false value="true" cssClass="licenceModifications text-center" /] 
+        [@customForm.yesNoInput name="deliverable.allowModifications"  editable=editable inverse=false value="true" cssClass="licenceModifications text-center" /] 
       </div>  
     </div>
     <div class="clearfix"></div>
