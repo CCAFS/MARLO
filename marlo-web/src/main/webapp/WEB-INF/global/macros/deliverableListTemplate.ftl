@@ -55,10 +55,10 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
-            <span  class="${(action.isF(deliverable.id)?string('findable',''))!} ">F</span>
-            <span class="${(accesible?string('accesible'))!} ">A</span>
-            <span class="${(interoperable?string('interoperable'))!} ">I</span>
-            <span class="${(reusable?string('reusable'))!} ">R</span>
+            <span class="[#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">F</span>
+            <span class="[#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">A</span>
+            <span class="[#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">I</span>
+            <span class="[#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">R</span>
           </td>
           [#-- Deliverable Status --]
           <td>
