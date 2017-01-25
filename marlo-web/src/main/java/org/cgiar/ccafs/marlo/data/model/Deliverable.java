@@ -402,7 +402,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
       if (Arrays.asList(LicensesTypeEnum.values()).contains(license)) {
         return license;
       } else {
-        return "OTHER";
+        return LicensesTypeEnum.OTHER.getValue();
       }
     }
     return "";
