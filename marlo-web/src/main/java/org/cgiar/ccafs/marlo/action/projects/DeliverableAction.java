@@ -39,7 +39,9 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
@@ -693,6 +695,25 @@ public class DeliverableAction extends BaseAction {
         }
 
 
+        deliverable.setFiles(new ArrayList<>());
+        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+          DeliverableFile deFile = new DeliverableFile();
+          switch (dataSharingFile.getTypeId().toString()) {
+            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getFile().getFileName());
+              break;
+
+            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getExternalFile());
+              break;
+          }
+          deFile.setId(dataSharingFile.getId());
+          deFile.setSize(0);
+          deliverable.getFiles().add(deFile);
+        }
         this.setDraft(false);
       }
 

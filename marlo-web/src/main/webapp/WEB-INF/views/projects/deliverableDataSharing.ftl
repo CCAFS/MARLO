@@ -10,6 +10,7 @@
          <input class="fileID" name="deliverable.files[${file_index}].id" type="hidden" value="${(file.id)!}">
          <input class="fileHosted" name="deliverable.files[${file_index}].hosted" type="hidden" value="${(file.hosted)!}">
          <input class="fileLink" name="deliverable.files[${file_index}].link" type="hidden" value="">
+         <input class="fileName" name="deliverable.files[${file_index}].name" type="hidden" value="${(file.name)!}">
          <div class="fileName">${(file.name)!file.link}</div>
          <div class="fileFormat">${(file.hosted)!'Untitled'}</div>
          <div class="fileSize">[#if file.size > 0]${(file.size/1024)?string("0.00")} KB[#else] <span title="Unknown size">- -</span> [/#if]</div>
