@@ -40,12 +40,14 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="adoptedLicense" type="boolean">
-      <column name="adopted_license" not-null="true" />
+		<property name="adoptedLicense" type="java.lang.Boolean">
+      <column name="adopted_license" />
     </property>
 		<property name="allowModifications" type="java.lang.Boolean">
       <column name="allow_modifications" />
     </property>
+    
+    
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>

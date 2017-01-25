@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -286,6 +287,28 @@ public class DeliverableListAction extends BaseAction {
   }
 
   public Boolean isR(long deliverableID) {
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    if (deliverableBD.isAdoptedLicense() == null) {
+      return null;
+    }
+    if (deliverableBD.isAdoptedLicense()) {
+      if (deliverableBD.getLicense() == null) {
+        return false;
+      } else {
+        if (!deliverableBD.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+          return true;
+        } else {
+          if (deliverableBD.getAllowModifications() == null || !deliverableBD.getAllowModifications().booleanValue()) {
+            return false;
+          }
+          if (deliverableBD.getOtherLicense() == null || deliverableBD.getOtherLicense().isEmpty()) {
+            return false;
+          }
+          return true;
+        }
+
+      }
+    }
     return false;
   }
 
