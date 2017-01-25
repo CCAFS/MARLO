@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -919,6 +920,16 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setYear(deliverable.getYear());
       deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
+      deliverablePrew.setLicense(deliverable.getLicense());
+      if (deliverable.getLicense() != null) {
+        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+          deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
+          deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+        } else {
+          deliverablePrew.setOtherLicense(null);
+          deliverablePrew.setAllowModifications(false);
+        }
+      }
 
       if (deliverable.getCrossCuttingCapacity() == null) {
         deliverablePrew.setCrossCuttingCapacity(false);
@@ -972,7 +983,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
