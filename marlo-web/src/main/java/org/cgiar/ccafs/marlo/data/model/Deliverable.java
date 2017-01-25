@@ -17,7 +17,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -37,9 +36,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private Long id;
 
+
   @Expose
   private Project project;
-
 
   @Expose
   private DeliverableType deliverableType;
@@ -47,7 +46,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   @Expose
   private String title;
-
 
   @Expose
   private String typeOther;
@@ -158,42 +156,46 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Expose
   private Boolean allowModifications;
 
+
+  @Expose
+  private boolean adoptedLicense;
+
+
   DeliverableQualityCheck qualityCheck;
 
 
   private Set<DeliverableMetadataElement> deliverableMetadataElements = new HashSet<DeliverableMetadataElement>(0);
 
-
   private Set<DeliverableDissemination> deliverableDisseminations = new HashSet<DeliverableDissemination>(0);
-
 
   private Set<DeliverableDataSharingFile> deliverableDataSharingFiles = new HashSet<DeliverableDataSharingFile>(0);
 
+
   private Set<DeliverablePublicationMetadata> deliverablePublicationMetadatas =
     new HashSet<DeliverablePublicationMetadata>(0);
+
 
   private Set<DeliverableDataSharing> deliverableDataSharings = new HashSet<DeliverableDataSharing>(0);
 
 
   private List<DeliverableMetadataElement> metadataElements;
 
-
   private List<DeliverableDissemination> disseminations;
 
   private List<DeliverableDataSharingFile> dataSharingFiles;
 
+
   private List<DeliverableFile> files;
-
-
-  // Data List from Data Sharing
 
 
   private List<DeliverablePublicationMetadata> publicationMetadatas;
 
-
   private List<DeliverableDataSharing> dataSharing;
 
   private List<MetadataElement> metadata;
+
+
+  // Data List from Data Sharing
 
 
   private DeliverableDissemination dissemination;
@@ -201,7 +203,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public Deliverable() {
   }
-
 
   public Deliverable(Project project, DeliverableType deliverableType, String title, String typeOther, int year,
     Integer status, String statusDescription, boolean active, Date activeSince, User createdBy, User modifiedBy,
@@ -267,6 +268,12 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.activeSince;
   }
 
+
+  public Boolean getAllowModifications() {
+    return allowModifications;
+  }
+
+
   public String getComposedName() {
     try {
       return "<b> (D" + this.id + ") " + this.getDeliverableType().getDescription() + "</b> - " + this.title;
@@ -293,6 +300,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
+
 
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
@@ -330,9 +338,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableDataSharings;
   }
 
-  // End
-
-
   public Set<DeliverableDissemination> getDeliverableDisseminations() {
     return deliverableDisseminations;
   }
@@ -340,6 +345,8 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
+
+  // End
 
 
   public Set<DeliverableGenderLevel> getDeliverableGenderLevels() {
@@ -349,6 +356,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public Set<DeliverableMetadataElement> getDeliverableMetadataElements() {
     return deliverableMetadataElements;
   }
+
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -391,21 +399,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return id;
   }
 
-
   public String getLicense() {
     return license;
   }
 
-
   public String getLicenseType() {
     if (license != null) {
-      if (Arrays.asList(LicensesTypeEnum.values()).contains(license)) {
-        return license;
-      } else {
-        return LicensesTypeEnum.OTHER.getValue();
+      try {
+        return LicensesTypeEnum.license(license).getValue();
+      } catch (Exception e) {
+        return null;
       }
     }
-    return "";
+    return null;
   }
 
 
@@ -416,9 +422,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   public List<MetadataElement> getMetadata() {
     return metadata;
   }
+
 
   public List<DeliverableMetadataElement> getMetadataElements() {
     return metadataElements;
@@ -463,7 +471,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return value;
   }
 
-
   public String getMetadataValue(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
       if (mData.getMetadataElement() != null) {
@@ -497,6 +504,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
@@ -513,7 +521,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return project;
   }
 
-
   public List<DeliverablePublicationMetadata> getPublicationMetadatas() {
     return publicationMetadatas;
   }
@@ -521,6 +528,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public DeliverableQualityCheck getQualityCheck() {
     return qualityCheck;
   }
+
 
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
@@ -534,11 +542,9 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.status;
   }
 
-
   public String getStatusDescription() {
     return this.statusDescription;
   }
-
 
   public String getStatusName() {
     try {
@@ -584,6 +590,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
+  public boolean isAdoptedLicense() {
+    return adoptedLicense;
+  }
+
+
   public Boolean isAllowModifications() {
     return allowModifications;
   }
@@ -596,6 +607,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
+  }
+
+
+  public void setAdoptedLicense(boolean adoptedLicense) {
+    this.adoptedLicense = adoptedLicense;
   }
 
   public void setAllowModifications(Boolean allowModifications) {
