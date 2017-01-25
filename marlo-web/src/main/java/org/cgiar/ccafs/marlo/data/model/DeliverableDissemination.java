@@ -22,6 +22,7 @@ public class DeliverableDissemination implements java.io.Serializable {
   @Expose
   private Deliverable deliverable;
 
+
   @Expose
   private Boolean isOpenAccess;
 
@@ -55,9 +56,11 @@ public class DeliverableDissemination implements java.io.Serializable {
   @Expose
   private String disseminationChannelName;
 
+  private String type;
 
   public DeliverableDissemination() {
   }
+
 
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -80,7 +83,6 @@ public class DeliverableDissemination implements java.io.Serializable {
     this.disseminationUrl = disseminationUrl;
     this.disseminationChannelName = disseminationChannelName;
   }
-
 
   public Boolean getAlreadyDisseminated() {
     return alreadyDisseminated;
@@ -135,6 +137,7 @@ public class DeliverableDissemination implements java.io.Serializable {
   public Date getRestrictedAccessUntil() {
     return restrictedAccessUntil;
   }
+
 
   public Date getRestrictedEmbargoed() {
     return restrictedEmbargoed;
@@ -209,9 +212,13 @@ public class DeliverableDissemination implements java.io.Serializable {
     this.restrictedEmbargoed = restrictedEmbargoed;
   }
 
-
   public void setRestrictedUseAgreement(Boolean restrictedUseAgreement) {
     this.restrictedUseAgreement = restrictedUseAgreement;
+  }
+
+
+  public void setType(String type) {
+    this.type = type;
   }
 
 

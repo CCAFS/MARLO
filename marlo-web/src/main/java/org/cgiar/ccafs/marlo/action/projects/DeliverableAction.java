@@ -939,16 +939,21 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setYear(deliverable.getYear());
       deliverablePrew.setNewExpectedYear(deliverable.getNewExpectedYear());
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
-      deliverablePrew.setLicense(deliverable.getLicense());
-      if (deliverable.getLicense() != null) {
-        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
-          deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
-        } else {
-          deliverablePrew.setOtherLicense(null);
-          deliverablePrew.setAllowModifications(false);
+
+      if (this.isReportingActive()) {
+        deliverablePrew.setLicense(deliverable.getLicense());
+        if (deliverable.getLicense() != null) {
+          if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+            deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
+            deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+          } else {
+            deliverablePrew.setOtherLicense(null);
+            deliverablePrew.setAllowModifications(false);
+          }
         }
+        deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
       }
+
 
       if (deliverable.getCrossCuttingCapacity() == null) {
         deliverablePrew.setCrossCuttingCapacity(false);
@@ -1127,6 +1132,11 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
+
+          if (deliverable.getDissemination() != null) {
+            DeliverableDissemination dissemination = new DeliverableDissemination();
+          }
+
         }
         this.saveMetadata();
         this.saveDataSharing();
