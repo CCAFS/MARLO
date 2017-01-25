@@ -44,7 +44,6 @@ function attachEvents() {
     $("input[name='projectID']").val("-1");
     $("#selectProject").html("Click over me");
     var $this = $(this).parents(".summariesFiles");
-    console.log("holi");
     $(".summariesFiles").removeClass("selected");
     $(".extraOptions").fadeOut();
     $('.extraOptions').find('select, input').attr('disabled', true);
