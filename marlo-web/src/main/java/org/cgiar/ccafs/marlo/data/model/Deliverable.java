@@ -452,7 +452,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getMetadataValue(int metadataID) {
     String value = "";
     for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata.getMetadataElement() != null) {
+      if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
         if (dmetadata.getMetadataElement().getId() == metadataID) {
           value = dmetadata.getElementValue();
         }

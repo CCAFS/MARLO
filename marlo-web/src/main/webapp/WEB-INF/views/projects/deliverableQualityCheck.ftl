@@ -2,8 +2,21 @@
 [#-- Compliance check (Data products only) --]
 <h4 class="headTitle">Compliance check (Data products only)</h4>
 
-<div class="simpleBox" > 
-  <p class="note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</p>
+<div class="simpleBox" >
+  <div class="row">
+    <div class="col-md-9">
+      <p class="note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</p>
+    </div>
+    <div class="col-md-3">
+      <div id="box-out">
+        <div id="box-inside">
+          <div id="red"></div>
+          <div id="yellow"></div>
+          <div id="green"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <input type="hidden" name="deliverable.qualityCheck.id" value="${(deliverable.qualityCheck.id)!"-1"}">
   [#-- Question1 --]
@@ -15,7 +28,7 @@
     [#list answers as answer]
       <div class="radio">
         [#if editable]
-        <label><input type="radio" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+        <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck..id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
         [#else]
         <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
         [/#if]
@@ -56,7 +69,7 @@
     [#list answers as answer]
       <div class="radio">
       [#if editable]
-        <label><input type="radio" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+        <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
         <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
       [/#if]
@@ -94,10 +107,10 @@
     <hr />
     
     <div class="col-md-4">
-      [#list answers as answer]
+    [#list answers as answer]
       <div class="radio">
       [#if editable]
-        <label><input type="radio" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
+        <label><input type="radio" class="dataTools" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
         <p [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] class="checked"[#else]class="noChecked"[/#if]>${(answer.name)!} </p>
       [/#if]

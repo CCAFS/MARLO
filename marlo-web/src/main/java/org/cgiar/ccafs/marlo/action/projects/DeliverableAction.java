@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
@@ -132,6 +133,8 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableMetadataElementManager deliverableMetadataElementManager;
 
+  private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
+
 
   private DeliverableQualityAnswerManager deliverableQualityAnswerManager;
 
@@ -197,7 +200,8 @@ public class DeliverableAction extends BaseAction {
     FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager, FileDBManager fileDBManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
+    DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     MetadataElementManager metadataElementManager) {
     super(config);
     this.deliverableManager = deliverableManager;
@@ -217,6 +221,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
     this.deliverableQualityAnswerManager = deliverableQualityAnswerManager;
     this.fileDBManager = fileDBManager;
+    this.deliverableDataSharingFileManager = deliverableDataSharingFileManager;
     this.metadataElementManager = metadataElementManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
   }
@@ -824,7 +829,9 @@ public class DeliverableAction extends BaseAction {
       });
 
     }
-
+    if (deliverable.getFiles() != null) {
+      deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    }
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
@@ -1086,15 +1093,26 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
-      if (deliverable.getQualityCheck() != null) {
-        this.saveQualityCheck();
+
+      if (this.isReportingActive()) {
+        if (deliverable.getQualityCheck() != null) {
+          this.saveQualityCheck();
+        }
+        this.saveMetadata();
+        this.saveDataSharing();
       }
-      this.saveMetadata();
+
+
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
-      relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+      if (this.isReportingActive()) {
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+      }
+
+
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());
       deliverable.setModifiedBy(this.getCurrentUser());
@@ -1133,16 +1151,70 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-  public void saveMetadata() {
+  public void saveDataSharing() {
+    if (deliverable.getFiles() == null) {
+      deliverable.setFiles(new ArrayList<>());
 
-    for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
+    }
+    List<DeliverableFile> filesPrev = new ArrayList<>();
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
 
-      if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
-        deliverableMetadataElement.setDeliverable(deliverable);
-        deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
 
+    for (DeliverableDataSharingFile dataSharingFile : deliverableDB.getDeliverableDataSharingFiles()) {
+
+      DeliverableFile deFile = new DeliverableFile();
+      switch (dataSharingFile.getTypeId().toString()) {
+        case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+          deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+          deFile.setName(dataSharingFile.getFile().getFileName());
+          break;
+
+        case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+          deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+          deFile.setName(dataSharingFile.getExternalFile());
+          break;
+      }
+      deFile.setId(dataSharingFile.getId());
+      deFile.setSize(0);
+      filesPrev.add(deFile);
+    }
+
+    for (DeliverableFile deliverableFile : filesPrev) {
+      if (!deliverable.getFiles().contains(deliverableFile)) {
+        deliverableDataSharingFileManager.deleteDeliverableDataSharingFile(deliverableFile.getId().longValue());
       }
     }
+
+    for (DeliverableFile deliverableFile : deliverable.getFiles()) {
+      if (deliverableFile.getId().longValue() == -1) {
+        DeliverableDataSharingFile dataSharingFile = new DeliverableDataSharingFile();
+        dataSharingFile.setDeliverable(deliverable);
+        switch (deliverableFile.getHosted()) {
+
+          case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR:
+            dataSharingFile.setTypeId(Integer.parseInt(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED));
+            dataSharingFile.setExternalFile(deliverableFile.getName());
+            break;
+        }
+        deliverableDataSharingFileManager.saveDeliverableDataSharingFile(dataSharingFile);
+      }
+
+    }
+  }
+
+  public void saveMetadata() {
+    if (deliverable.getMetadataElements() != null) {
+
+      for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
+
+        if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
+          deliverableMetadataElement.setDeliverable(deliverable);
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
+
+        }
+      }
+    }
+
   }
 
   public void saveQualityCheck() {

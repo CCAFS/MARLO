@@ -1,6 +1,8 @@
 $(document).ready(init);
-
 function init() {
+  var qualityAssurance = $(".qualityAssurance");
+  var dataDictionary = $(".dataDictionary");
+  var dataTools = $(".dataTools");
 
   // Set file upload (blueimp-tmpl)
   uploadFile($('.fileAssuranceContent'), $('.fileAssuranceContent').find('.uploadFileAssurance'), 'Assurance');
@@ -20,6 +22,11 @@ function init() {
       $(this).removeClass("fieldError");
     }
   });
+  console.log(qualityAssurance);
+  $(qualityAssurance).on("change", checkGolData);
+  $(dataDictionary).on("change", checkGolData);
+  $(dataTools).on("change", checkGolData);
+  checkGolData();
 
   // Validate FAIR Complain
   checkFAIRCompliant();
@@ -118,4 +125,60 @@ function checkFAIRCompliant() {
   checkAccessible();
   checkInteroperable();
   checkReusable();
+}
+function checkQualityAssurance() {
+  var qualityAssurance = $(".qualityAssurance");
+  if(qualityAssurance.val = "1") {
+    return 25;
+  } else if(qualityAssurance.val = "2") {
+    return 50;
+  } else if(qualityAssurance.val = "3") {
+    return 5;
+  }
+}
+
+function checkDictionary() {
+  var dataDictionary = $(".dataDictionary");
+  if(dataDictionary.val = "1") {
+    return 25;
+  } else if(dataDictionary.val = "2") {
+    return 50;
+  } else if(dataDictionary.val = "3") {
+    return 5;
+  }
+}
+
+function checkCollection() {
+  var dataTools = $(".dataTools");
+  if(dataTools.val = "1") {
+    return 25;
+  } else if(dataTools.val = "2") {
+    return 50;
+  } else if(dataTools.val = "3") {
+    return 5;
+  }
+}
+
+function checkGolData() {
+  console.log("checking gol data");
+  var $red = $("#red");
+  var $yellow = $("#yellow");
+  var $green = $("#green");
+  /* remove class */
+  $red.removeClass("highlightRed");
+  $yellow.removeClass("highlightYellow");
+  $green.removeClass("highlightGreen");
+  /* Calculate */
+  var item1 = parseInt(checkQualityAssurance());
+  var item2 = parseInt(checkDictionary());
+  var item3 = parseInt(checkCollection());
+  console.log(item1 + "-" + item2 + "-" + item3);
+  var suma = item1 + item2 + item3;
+  if(suma <= 74) {
+    $red.addClass("highlightRed");
+  } else if(suma >= 75 && suma <= 104) {
+    $yellow.addClass("highlightYellow");
+  } else if(suma >= 105) {
+    $green.addClass("highlightGreen");
+  }
 }
