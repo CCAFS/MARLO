@@ -241,7 +241,9 @@ public class DeliverableListAction extends BaseAction {
   }
 
   public Boolean isI(long deliverableID) {
-
+    if (deliverableID == 661) {
+      System.out.println("holi");
+    }
 
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     this.loadDissemination(deliverableBD);
