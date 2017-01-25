@@ -829,7 +829,9 @@ public class DeliverableAction extends BaseAction {
       });
 
     }
-
+    if (deliverable.getFiles() != null) {
+      deliverable.getFiles().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+    }
     String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_BASE_PERMISSION, params));
 
