@@ -352,7 +352,7 @@ function addAuthor() {
     $item.find(".lastName").html($(".lName").val());
     $item.find(".firstName").html($(".fName").val());
     if($(".oId").val() == "") {
-      $item.find(".orcidId").html("<b>orcid id:</b> not prefiled</small>");
+      $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
       $item.find(".orcidIdInput").val("");
     } else {
       $item.find(".orcidId").html($(".oId").val());
