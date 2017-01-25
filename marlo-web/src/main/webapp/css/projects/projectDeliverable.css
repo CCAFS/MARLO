@@ -11,8 +11,13 @@
     opacity: 0.7;
 }
 
-.fair .active {
+.fair .achieved {
     background-color: #0a8829;
+    color: white;
+}
+
+.fair .notAchieved {
+    background-color: #cf2828;
     color: white;
 }
 
