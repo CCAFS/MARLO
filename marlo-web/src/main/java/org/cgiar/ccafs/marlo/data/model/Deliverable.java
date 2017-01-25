@@ -158,7 +158,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   @Expose
-  private boolean adoptedLicense;
+  private Boolean adoptedLicense;
 
 
   DeliverableQualityCheck qualityCheck;
@@ -590,7 +590,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public boolean isAdoptedLicense() {
+  public Boolean isAdoptedLicense() {
     return adoptedLicense;
   }
 
@@ -610,7 +610,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setAdoptedLicense(boolean adoptedLicense) {
+  public void setAdoptedLicense(Boolean adoptedLicense) {
     this.adoptedLicense = adoptedLicense;
   }
 
