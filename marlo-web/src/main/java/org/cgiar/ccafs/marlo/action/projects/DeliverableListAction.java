@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -119,6 +120,7 @@ public class DeliverableListAction extends BaseAction {
     return true;
   }
 
+
   @Override
   public String delete() {
 
@@ -154,7 +156,6 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
-
   public List<Deliverable> getDeliverables(boolean open) {
 
     try {
@@ -183,6 +184,7 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
+
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
   }
@@ -200,6 +202,27 @@ public class DeliverableListAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
+  }
+
+  public boolean isF(long deliverableID) {
+
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    if (deliverableBD.getDeliverableDisseminations() != null) {
+      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
+      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
+        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
+      } else {
+        deliverableBD.setDissemination(new DeliverableDissemination());
+      }
+
+    }
+    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
+      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+      return true;
+    }
+
+    return false;
+
   }
 
 
