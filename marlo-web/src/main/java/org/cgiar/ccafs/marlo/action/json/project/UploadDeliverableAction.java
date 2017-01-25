@@ -83,7 +83,7 @@ public class UploadDeliverableAction extends BaseAction {
     // finalPath.append(config.getDeliverablesFilesPath());
 
     DeliverableFile delFile = new DeliverableFile();
-    delFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED);
+    delFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
     delFile.setSize(this.file.length());
     delFile.setName(fileFileName);
 

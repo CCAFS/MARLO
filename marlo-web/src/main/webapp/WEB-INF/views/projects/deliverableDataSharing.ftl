@@ -9,8 +9,8 @@
        <li class="fileUploaded"> 
          <input class="fileID" name="deliverable.files[${file_index}].id" type="hidden" value="${(file.id)!}">
          <input class="fileHosted" name="deliverable.files[${file_index}].hosted" type="hidden" value="${(file.hosted)!}">
-         <input class="fileLink" name="deliverable.files[${file_index}].link" type="hidden" value="">
-         <div class="fileName">${(file.name)!file.link}</div>
+         <input class="fileName" name="deliverable.files[${file_index}].name" type="hidden" value="${(file.name)!}">
+         <div class="fileName">${(file.name)!((file.link)!"Not defined")}</div>
          <div class="fileFormat">${(file.hosted)!'Untitled'}</div>
          <div class="fileSize">[#if file.size > 0]${(file.size/1024)?string("0.00")} KB[#else] <span title="Unknown size">- -</span> [/#if]</div>
          [#if editable]<img class="removeInput" src="${baseUrl}/images/global/icon-remove.png" alt="Remove"/>[/#if]
@@ -59,24 +59,3 @@
   [/#if]
 </div>
 
-[#-- File Input template --]
-<div id="fileInputTemplate" class="fileInput" style="display:none">
-  <img class="removeInput" src="${baseUrl}/images/global/icon-remove.png" alt="Remove"> 
-  <input name="filesUploaded" type="file" />
-</div>
- 
-[#-- File uploaded template --]
-<ul>
-  <li id="deliverableFileTemplate" class="fileUploaded" style="display:none">
-    <input class="fileID" name="" type="hidden">
-    <input class="fileHosted" name="" type="hidden">
-    <input class="fileLink" name="" type="hidden">
-    <div class="fileName">filename</div>
-    <div class="fileFormat">- -</div>
-    <div class="fileSize">- -</div>
-    <img class="removeInput" src="${baseUrl}/images/global/icon-remove.png" alt="Remove"/>
-  </li>
-</ul>
-
-[#-- Remove deliverable files modal  template --]
-<div id="removeDeliverableFiles" style="display:none" title="Modal title"></div> 

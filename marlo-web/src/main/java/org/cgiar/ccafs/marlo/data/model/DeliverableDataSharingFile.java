@@ -12,11 +12,13 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
 
   private static final long serialVersionUID = -5369311052598007274L;
 
+
   @Expose
   private Long id;
 
 
   private Deliverable deliverable;
+
 
   @Expose
   private FileDB file;
@@ -24,23 +26,50 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
   @Expose
   private Integer typeId;
 
+
   @Expose
   private String externalFile;
 
-
   public DeliverableDataSharingFile() {
   }
-
 
   public DeliverableDataSharingFile(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
 
-
   public DeliverableDataSharingFile(Deliverable deliverable, FileDB file, Integer type) {
     this.deliverable = deliverable;
     this.file = file;
 
+  }
+
+
+  public DeliverableDataSharingFile(Long id) {
+    super();
+    this.id = id;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableDataSharingFile other = (DeliverableDataSharingFile) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -66,6 +95,15 @@ public class DeliverableDataSharingFile implements java.io.Serializable {
 
   public Integer getTypeId() {
     return typeId;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   public void setDeliverable(Deliverable deliverable) {

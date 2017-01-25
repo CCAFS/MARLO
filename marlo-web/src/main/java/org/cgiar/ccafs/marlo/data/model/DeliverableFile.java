@@ -28,11 +28,24 @@ public class DeliverableFile {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof DeliverableFile) {
-      DeliverableFile v = (DeliverableFile) obj;
-      return v.id == this.id;
+    if (this == obj) {
+      return true;
     }
-    return false;
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableFile other = (DeliverableFile) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public String getHosted() {
@@ -57,7 +70,10 @@ public class DeliverableFile {
 
   @Override
   public int hashCode() {
-    return this.id.hashCode();
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   public void setHosted(String hosted) {
