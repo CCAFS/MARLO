@@ -50,27 +50,27 @@
     <div class="row">
       <div class="col-md-4">
       [#if editable]
-        [@customForm.select name="deliverable.dissemination.disseminationChannel" label=""  i18nkey="Select a dissemination channel" listName="channels"   multiple=false required=true   editable=editable/]
+        [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="Select a dissemination channel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
       [#else]
       <label for="disChannel" style="display:block;">Dissemination channel:</label>
       <p>Prefilled if available</p>
       [/#if]
       </div>
       [#-- CGSpace examples & instructions --]
-      <div class="exampleUrl-block channel-2 col-md-8" style="display:none;">
+      <div class="exampleUrl-block channel-2 col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
         <label for="">Example of URL:</label>
         <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
       </div>
       [#-- Dataverse examples & instructions --]
-      <div class="exampleUrl-block channel-3 col-md-8" style="display:none;">
+      <div class="exampleUrl-block channel-3 col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
         <label for="">Example of URL:</label>
         <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
       </div>
     </div>
     
-    <div id="disseminationUrl" style="display:none;">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
-      <div id="fillMetadata" class="checkButton" style="display:none;">Search & Fill Metadata</div>
+    <div id="disseminationUrl" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">
+      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+      <div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Search & Fill Metadata</div>
       <div class="clearfix"></div>
     </div>
     <div id="metadata-output" class="col-md-12"></div>
@@ -206,7 +206,7 @@
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="license"  editable=editable inverse=false value="true" cssClass="license text-center" /] 
+      [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false value="true" cssClass="license text-center" /] 
     </div>  
   </div>
   <hr />
@@ -261,7 +261,7 @@
   </div>
   <br />
   [#-- Other --]
-  <div class="row">
+  <div class="row licenseOptions">
     <div class="col-md-6 form-group">
       <div class="col-md-4">
         <input type="radio" name="deliverable.license" id="" value="OTHER" [#if ((deliverable.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other

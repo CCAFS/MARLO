@@ -75,6 +75,12 @@ function init() {
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
+
+    if(!valueSelected) {
+      $(".licenseOptions").hide("slow");
+    } else {
+      $(".licenseOptions").show("slow");
+    }
     checkFAIRCompliant();
   });
 
