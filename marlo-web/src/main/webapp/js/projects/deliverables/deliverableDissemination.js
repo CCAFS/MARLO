@@ -414,7 +414,7 @@ function loadAndFillMetadata() {
     // Get CGSpace Metadata from MARLO server
     getCGSpaceMetadata(channel, url, uri);
   } else if(channel == "dataverse") {
-    // Get DataversE Metadata from native API
+    // Get Dataverse Metadata from native API
     getDataverseMetadata(channel, url, uri);
   }
 
