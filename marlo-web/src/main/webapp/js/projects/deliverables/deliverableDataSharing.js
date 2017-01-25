@@ -155,12 +155,12 @@ function addFileToUploaded(file) {
   // Filling information obtained
   $newElement.find(".fileID").val(file.fileID);
   if(file.hosted == "Locally") {
-    $newElement.find("input[type='hidden'].fileHosted").remove();
-    $newElement.find("input[type='hidden'].fileLink").remove();
+    // $newElement.find("input[type='hidden'].fileHosted").remove();
+    // $newElement.find("input[type='hidden'].fileLink").remove();
     $newElement.find(".fileSize").html((file.size / 1024).toFixed(1) + " KB");
   }
-  $newElement.find(".fileHosted").val(file.hosted);
-  $newElement.find(".fileLink").val(file.name);
+  $newElement.find("input.fileHosted").val(file.hosted);
+  $newElement.find("input.fileName").val(file.name || file.link);
   if((file.name).length > 70) {
     file.name = (file.name).substring(0, 70) + "...";
   }
@@ -180,7 +180,7 @@ function setDeliverableFilesIndexes() {
     var elementName = "deliverable.files[" + i + "].";
     $(element).find("input[type='hidden'].fileID").attr("name", elementName + "id");
     $(element).find("input[type='hidden'].fileHosted").attr("name", elementName + "hosted");
-    $(element).find("input[type='hidden'].fileLink").attr("name", elementName + "link");
+    $(element).find("input[type='hidden'].fileName").attr("name", elementName + "name");
 
     var fileName = $(element).find(".fileName").html() || "Not Defined";
     if((fileName).length > 70) {
@@ -189,7 +189,7 @@ function setDeliverableFilesIndexes() {
     $(element).find(".fileName").attr("title", fileName);
 
   });
-  if($("form li.fileUploaded").length == 1) {
+  if($("form li.fileUploaded").length == 0) {
     $("#filesUploaded .text").show();
   }
 }

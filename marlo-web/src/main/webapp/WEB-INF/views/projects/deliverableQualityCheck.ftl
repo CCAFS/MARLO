@@ -94,7 +94,7 @@
     <hr />
     
     <div class="col-md-4">
-      [#list answers as answer]
+    [#list answers as answer]
       <div class="radio">
       [#if editable]
         <label><input type="radio" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
