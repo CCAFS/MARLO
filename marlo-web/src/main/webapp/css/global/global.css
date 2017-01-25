@@ -1319,7 +1319,7 @@ a#userLogOut {
 }
 
 #userInfo .name {
-  font-size: 1em;
+  font-size: 0.8em;
   margin-right: 50px;
   margin-bottom: 0;
 }
@@ -1340,7 +1340,7 @@ a#userLogOut {
 }
 
 #userInfo .institution {
-  font-size: 0.8em;
+  font-size: 0.7em;
   padding-top: 0px;
   min-width: 153px;
   color: #E7E7E7;

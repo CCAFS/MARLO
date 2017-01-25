@@ -328,7 +328,7 @@ function changeDisseminationChannel() {
   $(".exampleUrl-block").hide();
   if(channel != "-1") {
     // CGSpace or Dataverse
-    if((channel == "2") || channel == "3") {
+    if((channel == "cgspace") || channel == "dataverse") {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
@@ -410,10 +410,10 @@ function loadAndFillMetadata() {
     return;
   }
 
-  if(channel == "2") {
+  if(channel == "cgspace") {
     // Get CGSpace Metadata from MARLO server
     getCGSpaceMetadata(channel, url, uri);
-  } else if(channel == "3") {
+  } else if(channel == "dataverse") {
     // Get DataversE Metadata from native API
     getDataverseMetadata(channel, url, uri);
   }
