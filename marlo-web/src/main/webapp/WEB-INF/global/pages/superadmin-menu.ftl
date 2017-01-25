@@ -1,7 +1,8 @@
 [#ftl]
-[#if action.canAccessSuperAdmin()]
+[#if action.canAccessSuperAdmin() || action.canAcessCrpAdmin()]
   [#assign superAdminMenu =[
-     { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true }
+     { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloSLOs', 'visible': action.canAccessSuperAdmin(), 'active': true },
+     { 'slug': 'admin',          'name': 'menu.admin',         'namespace': '/admin',          'action': '${(crpSession)!}/management',    'icon': 'cog',      'visible': action.canAcessCrpAdmin(), 'active': true }
   ]/]
   <div id="superadminBlock">
     <div class="container">
@@ -15,6 +16,8 @@
           </li>
           [/#if]
         [/#list]
+        [#-- CRPs List --]
+        [#if action.canAccessSuperAdmin()]
         <li class="[#if currentSection?? && currentSection != 'superadmin' ]currentSection[/#if]">
           <a href="[@s.url namespace="/" action="${(crpSession?lower_case)!}/dashboard" ][@s.param name="edit" value="true"/][/@s.url]">
             <span class="glyphicon glyphicon-chevron-down"></span> CRP (${(currentCrp.name)!})
@@ -29,6 +32,7 @@
            [/#if]
           </ul>
          </li>
+         [/#if]
          <li class="pull-left"><span class="glyphicon glyphicon-th-list"></span> MARLO Admin Menu</li>
         <div class="clearfix"></div>
       </ul>

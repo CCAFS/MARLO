@@ -53,9 +53,9 @@
         <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
         <select name="" id="disChannel" class="disseminationChannel">
           <option value="-1">Select an option</option>
-          <option value="2">CGSpace</option>
-          <option value="3">Dataverse (Harvard)</option>
-          <option value="1">Other</option>
+          <option value="cgspace">CGSpace</option>
+          <option value="dataverse">Dataverse (Harvard)</option>
+          <option value="other">Other</option>
         </select>
       [#else]
       <label for="disChannel" style="display:block;">Dissemination channel:</label>
