@@ -50,13 +50,7 @@
     <div class="row">
       <div class="col-md-4">
       [#if editable]
-        <label for="disChannel" style="display:block;">Select a dissemination channel:<span class="red">*</span></label>
-        <select name="" id="disChannel" class="disseminationChannel">
-          <option value="-1">Select an option</option>
-          <option value="cgspace">CGSpace</option>
-          <option value="dataverse">Dataverse (Harvard)</option>
-          <option value="other">Other</option>
-        </select>
+        [@customForm.select name="deliverable.dissemination.disseminationChannel" label=""  i18nkey="Select a dissemination channel" listName="channels"   multiple=false required=true   editable=editable/]
       [#else]
       <label for="disChannel" style="display:block;">Dissemination channel:</label>
       <p>Prefilled if available</p>
@@ -75,7 +69,7 @@
     </div>
     
     <div id="disseminationUrl" style="display:none;">
-      [@customForm.input name="" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+      [@customForm.input name="deliverable.dissemination.disseminationUrl" value="" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
       <div id="fillMetadata" class="checkButton" style="display:none;">Search & Fill Metadata</div>
       <div class="clearfix"></div>
     </div>

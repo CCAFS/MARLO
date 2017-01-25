@@ -50,28 +50,28 @@ public class DeliverableListAction extends BaseAction {
   private static final long serialVersionUID = -823169163612346982L;
 
 
-  private Crp loggedCrp;
+  private List<Integer> allYears;
 
-  // Managers
-  private ProjectManager projectManager;
-
-
-  private DeliverableTypeManager deliverableTypeManager;
-  private DeliverableManager deliverableManager;
-
-  private SectionStatusManager sectionStatusManager;
   private CrpManager crpManager;
 
 
+  private long deliverableID;
+  private DeliverableManager deliverableManager;
+
   // Front-end
   private List<Deliverable> deliverables;
-
   private List<DeliverableType> deliverablesType;
-  private long projectID;
 
-  private long deliverableID;
+
+  private DeliverableTypeManager deliverableTypeManager;
+
+  private Crp loggedCrp;
   private Project project;
-  private List<Integer> allYears;
+
+  private long projectID;
+  // Managers
+  private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -164,8 +164,8 @@ public class DeliverableListAction extends BaseAction {
         List<Deliverable> openA = deliverables.stream()
           .filter(a -> a.isActive()
             && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getStatus().intValue() == 0))))
+            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getStatus().intValue() == 0))))
           .collect(Collectors.toList());
         return openA;
 
@@ -174,7 +174,7 @@ public class DeliverableListAction extends BaseAction {
         List<Deliverable> openA = deliverables.stream()
           .filter(a -> a.isActive()
             && ((a.getStatus() != null && (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
-              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
+            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))))))
           .collect(Collectors.toList());
         return openA;
       }
@@ -204,7 +204,6 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
-
   public Boolean isA(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     this.loadDissemination(deliverableBD);
@@ -218,8 +217,6 @@ public class DeliverableListAction extends BaseAction {
     }
     return false;
   }
-
-
   public Boolean isF(long deliverableID) {
 
 
@@ -236,6 +233,7 @@ public class DeliverableListAction extends BaseAction {
     return false;
 
   }
+
 
   public Boolean isI(long deliverableID) {
 
@@ -270,6 +268,10 @@ public class DeliverableListAction extends BaseAction {
 
     return false;
 
+  }
+
+  public Boolean isR(long deliverableID) {
+    return false;
   }
 
   public void loadDissemination(Deliverable deliverableBD) {
