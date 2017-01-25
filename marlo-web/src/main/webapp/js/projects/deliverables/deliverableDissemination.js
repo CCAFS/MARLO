@@ -351,11 +351,16 @@ function addAuthor() {
     var $item = $('#author-template').clone(true).removeAttr("id");
     $item.find(".lastName").html($(".lName").val());
     $item.find(".firstName").html($(".fName").val());
-    $item.find(".orcidId").html($(".oId").val());
+    if($(".oId").val() == "") {
+      $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
+      $item.find(".orcidIdInput").val("");
+    } else {
+      $item.find(".orcidId").html($(".oId").val());
+      $item.find(".orcidIdInput").val($(".oId").val());
+    }
 
     $item.find(".lastNameInput").val($(".lName").val());
     $item.find(".firstNameInput").val($(".fName").val());
-    $item.find(".orcidIdInput").val($(".oId").val());
     $list.append($item);
     $item.show('slow');
     updateAuthor();

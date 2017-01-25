@@ -131,7 +131,7 @@
         <span class="firstName"></span>
       </div>
     </div>
-    <span><small class="orcidId"><b>orcid id:</b> not prefiled</small></span>
+    <span><small class="orcidId"><b>orcid id:</b> not filled</small></span>
     <input type="hidden" class="lastNameInput" value="" />
     <input type="hidden" class="firstNameInput" value="" />
     <input type="hidden" class="orcidIdInput" value="" />
