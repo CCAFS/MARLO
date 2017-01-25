@@ -204,6 +204,28 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
+
+  public boolean isA(long deliverableID) {
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+
+    if (deliverableBD.getDeliverableDisseminations() != null) {
+      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
+      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
+        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
+      } else {
+        deliverableBD.setDissemination(new DeliverableDissemination());
+      }
+
+    }
+
+    if (deliverableBD.getDissemination().getIsOpenAccess() != null
+      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
+      return true;
+    }
+
+    return false;
+  }
+
   public boolean isF(long deliverableID) {
 
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
@@ -216,6 +238,7 @@ public class DeliverableListAction extends BaseAction {
       }
 
     }
+
     if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
       && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
       return true;

@@ -56,7 +56,7 @@
           [#-- Deliverable FAIR compliance --]
           <td class="fair">
             <span  class="${(action.isF(deliverable.id)?string('findable',''))!} ">F</span>
-            <span class="${(accesible?string('accesible'))!} ">A</span>
+            <span class="${(action.isA(deliverable.id)?string('accesible',''))!} ">A</span>
             <span class="${(interoperable?string('interoperable'))!} ">I</span>
             <span class="${(reusable?string('reusable'))!} ">R</span>
           </td>
