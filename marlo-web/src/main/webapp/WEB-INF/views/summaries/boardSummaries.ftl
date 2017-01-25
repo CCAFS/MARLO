@@ -76,10 +76,10 @@
           </div>
           
           [#-- Impact Pathways Contributions --] 
-          <div class="notAvailable borderBox col-md-3">
-            <span title="[@s.text name="summaries.board.report.impactPathwayContributionsSummary.description" /]" class="info-file fa fa-info-circle "></span>
+          <div class="summariesFiles borderBox col-md-3">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="impactPathwayContributionsSummary"/>
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="OutcomesContributionsSummary"/>
               <label for="">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
@@ -147,10 +147,10 @@
             </div>
           </div>
           [#-- Budget Summary by MOGs --]
-          <div class="notAvailable borderBox col-md-3">
-            <span title="[@s.text name="summaries.board.report.powbMOG.description" /]" class="info-file fa fa-info-circle "></span>
+          <div class="summariesFiles borderBox col-md-3">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
             <div class="col-md-12 title-file">
-              <input class="hidden" type="radio" name="formOptions" id="budgetByMOGsSummary" value=""/>
+              <input class="hidden" type="radio" name="formOptions" id="budgetByCoAsSummary" value="budgetByCoAsSummary"/>
               <label for="budgetByMOGsSummary">[@s.text name="summaries.board.report.powbMOG" /] <span>XLSx</span></label>
             </div>
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
@@ -158,6 +158,17 @@
             </div>
           </div>
           
+          [#-- Funding Sources Summary --]
+          <div class="summariesFiles borderBox col-md-3">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="budgetByCoAsSummary" value="FundingSourcesSummary"/>
+              <label for="budgetByMOGsSummary">[@s.text name="Funding Sources Summary" /] <span>XLSx</span></label>
+            </div>
+            <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
+            <div class="extraOptions" style="display:none"> 
+            </div>
+          </div>
           
         </div>
       </div>
