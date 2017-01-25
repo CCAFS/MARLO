@@ -129,34 +129,40 @@ function checkFAIRCompliant() {
   checkReusable();
 }
 function checkQualityAssurance() {
-  var qualityAssurance = $(".qualityAssurance");
-  if(qualityAssurance.val = "1") {
+  var qualityAssurance = $("input.qualityAssurance:checked");
+  var value = qualityAssurance.val();
+  console.log(value);
+  if(value == "1") {
     return 25;
-  } else if(qualityAssurance.val = "2") {
+  } else if(value == "2") {
     return 50;
-  } else if(qualityAssurance.val = "3") {
+  } else if(value == "3") {
     return 5;
   }
 }
 
 function checkDictionary() {
-  var dataDictionary = $(".dataDictionary");
-  if(dataDictionary.val = "1") {
+  var dataDictionary = $("input.dataDictionary:checked");
+  var value = dataDictionary.val();
+  console.log(value);
+  if(value == "1") {
     return 25;
-  } else if(dataDictionary.val = "2") {
+  } else if(value == "2") {
     return 50;
-  } else if(dataDictionary.val = "3") {
+  } else if(value == "3") {
     return 5;
   }
 }
 
 function checkCollection() {
-  var dataTools = $(".dataTools");
-  if(dataTools.val = "1") {
+  var dataTools = $("input.dataTools:checked");
+  var value = dataTools.val();
+  console.log(value);
+  if(value == "1") {
     return 25;
-  } else if(dataTools.val = "2") {
+  } else if(value == "2") {
     return 50;
-  } else if(dataTools.val = "3") {
+  } else if(value == "3") {
     return 5;
   }
 }
