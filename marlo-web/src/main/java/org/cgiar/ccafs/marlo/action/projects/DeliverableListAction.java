@@ -109,6 +109,31 @@ public class DeliverableListAction extends BaseAction {
     return INPUT;
   }
 
+  public Boolean Boolean(long deliverableID) {
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+
+    if (deliverableBD.getDeliverableDisseminations() != null) {
+      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
+      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
+        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
+      } else {
+        deliverableBD.setDissemination(new DeliverableDissemination());
+      }
+
+    }
+
+    if (deliverableBD.getDissemination().getIsOpenAccess() != null
+      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
+      return true;
+    }
+
+    if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
+      return null;
+    }
+    return false;
+  }
+
+
   public boolean canEdit(long deliverableID) {
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (this.isPlanningActive()) {
@@ -119,7 +144,6 @@ public class DeliverableListAction extends BaseAction {
     }
     return true;
   }
-
 
   @Override
   public String delete() {
@@ -156,6 +180,7 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
+
   public List<Deliverable> getDeliverables(boolean open) {
 
     try {
@@ -184,7 +209,6 @@ public class DeliverableListAction extends BaseAction {
     }
   }
 
-
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
   }
@@ -200,33 +224,13 @@ public class DeliverableListAction extends BaseAction {
     return project;
   }
 
+
   public long getProjectID() {
     return projectID;
   }
 
+  public Boolean isF(long deliverableID) {
 
-  public boolean isA(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-
-    if (deliverableBD.getDeliverableDisseminations() != null) {
-      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
-      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
-        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
-      } else {
-        deliverableBD.setDissemination(new DeliverableDissemination());
-      }
-
-    }
-
-    if (deliverableBD.getDissemination().getIsOpenAccess() != null
-      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
-      return true;
-    }
-
-    return false;
-  }
-
-  public boolean isF(long deliverableID) {
 
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     if (deliverableBD.getDeliverableDisseminations() != null) {
@@ -242,6 +246,9 @@ public class DeliverableListAction extends BaseAction {
     if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
       && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
       return true;
+    }
+    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+      return null;
     }
 
     return false;
