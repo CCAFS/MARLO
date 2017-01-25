@@ -75,6 +75,12 @@ function init() {
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
+
+    if(!valueSelected) {
+      $(".licenseOptions").hide("slow");
+    } else {
+      $(".licenseOptions").show("slow");
+    }
     checkFAIRCompliant();
   });
 
@@ -414,7 +420,7 @@ function loadAndFillMetadata() {
     // Get CGSpace Metadata from MARLO server
     getCGSpaceMetadata(channel, url, uri);
   } else if(channel == "dataverse") {
-    // Get DataversE Metadata from native API
+    // Get Dataverse Metadata from native API
     getDataverseMetadata(channel, url, uri);
   }
 

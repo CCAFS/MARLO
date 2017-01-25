@@ -32,9 +32,8 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLConnection;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,28 +52,28 @@ public class DeliverableListAction extends BaseAction {
   private static final long serialVersionUID = -823169163612346982L;
 
 
-  private Crp loggedCrp;
+  private List<Integer> allYears;
 
-  // Managers
-  private ProjectManager projectManager;
-
-
-  private DeliverableTypeManager deliverableTypeManager;
-  private DeliverableManager deliverableManager;
-
-  private SectionStatusManager sectionStatusManager;
   private CrpManager crpManager;
 
 
+  private long deliverableID;
+  private DeliverableManager deliverableManager;
+
   // Front-end
   private List<Deliverable> deliverables;
-
   private List<DeliverableType> deliverablesType;
-  private long projectID;
 
-  private long deliverableID;
+
+  private DeliverableTypeManager deliverableTypeManager;
+
+  private Crp loggedCrp;
   private Project project;
-  private List<Integer> allYears;
+
+  private long projectID;
+  // Managers
+  private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -207,7 +206,6 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
-
   public Boolean isA(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     this.loadDissemination(deliverableBD);
@@ -221,7 +219,6 @@ public class DeliverableListAction extends BaseAction {
     }
     return false;
   }
-
 
   public Boolean isF(long deliverableID) {
 
@@ -240,9 +237,8 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
   public Boolean isI(long deliverableID) {
-
-
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     this.loadDissemination(deliverableBD);
     if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
@@ -287,6 +283,10 @@ public class DeliverableListAction extends BaseAction {
 
     return false;
 
+  }
+
+  public Boolean isR(long deliverableID) {
+    return false;
   }
 
   public void loadDissemination(Deliverable deliverableBD) {
@@ -367,12 +367,13 @@ public class DeliverableListAction extends BaseAction {
   public boolean validURL(String URL) {
     try {
       java.net.URL url = new java.net.URL(URL);
-      URLConnection conn = url.openConnection();
-      conn.connect();
+      url.toURI();
       return true;
     } catch (MalformedURLException e) {
+      e.printStackTrace();
       return false;
-    } catch (IOException e) {
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
       return false;
     }
   }
