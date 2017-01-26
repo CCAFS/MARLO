@@ -168,7 +168,7 @@
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
     <input class="idCrp" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!-1}" />
     <input class="idFlagship" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!-1}" />
-    <span class="name">${(element.flagship.composedName)!'null'}</span>
+    <span class="name">${(element.crp.acronym)!'null'}-${(element.crpProgram.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

@@ -1314,7 +1314,7 @@ public class DeliverableAction extends BaseAction {
     if (deliverable.getDissemination() != null) {
 
       DeliverableDissemination dissemination = new DeliverableDissemination();
-      if (deliverable.getDissemination().getId() != -1) {
+      if (deliverable.getDissemination().getId() != null && deliverable.getDissemination().getId() != -1) {
         dissemination =
           deliverableDisseminationManager.getDeliverableDisseminationById(deliverable.getDissemination().getId());
       } else {
