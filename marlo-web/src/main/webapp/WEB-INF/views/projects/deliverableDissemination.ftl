@@ -142,17 +142,18 @@
 
 <div class="borderBox row publicationMetadataBlock" style="display:none;">
   <div class="row">
+  <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
     <div class="col-md-4">
-      [@customForm.input name="" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     <div class="col-md-4">
-      [@customForm.input name="" i18nkey="Issue" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     <div class="col-md-4">
-      [@customForm.input name="" i18nkey="Pages" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     <div class="col-md-12">
-      [@customForm.input name="" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
   </div>
   <label for="">Indicators for journal articles:</label>
