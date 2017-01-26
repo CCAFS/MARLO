@@ -3,7 +3,7 @@ var $statuses, $statusDescription;
 $(document).ready(init);
 
 function init() {
-// Validate type option
+  // Validate type option
   var typeOption = $(".typeSelect").find("option:selected");
   var subTypeOption = $(".subTypeSelect").find("option:selected");
 
@@ -276,7 +276,7 @@ function addGenderLevel(option) {
     return;
   }
 
-  // Set funding source parameters
+  // Set parameters
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".fId").val(option.val());
