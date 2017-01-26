@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(publication.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/publications/publication.js", "${baseUrl}/js/global/autoSave.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/fundingSources/publication.css"] /]
+[#assign customCSS = [ ] /]
 [#assign currentSection = "publications" /]
 
 [#assign breadCrumb = [
@@ -121,14 +121,32 @@
         </div>
         <div class="clearfix"></div>
       </div>
-      
+      [#-- If gender dimension, select with ones --]
+      <div id="gender-levels" class="panel tertiary col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+       <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+        <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+          <ul class="list">
+          [#if publication?? && publication.genderLevels?has_content]
+            [#list publication.genderLevels as element]
+              
+            [/#list]
+          [#else]
+            <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+          [/#if]  
+          </ul>
+          [#if editable ]
+            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/]
+          [/#if] 
+        </div>
+      </div>
     </div>
+    
     <h4 class="headTitle"> Publication Dissemination</h4> 
     <div class="borderBox">
       [#-- Is open access ? --]
       <div class="form-group simpleBox row">
         <div class="col-md-9">
-          <label>[@s.text name="${customName}.isOpenAccess" /] <br /> <small>(If no, please select the Open Access restriction)</small></label>
+          <label>[@s.text name="${customName}.isPublicationOpenAccess" /] <br /> <small>([@s.text name="${customName}.isOpenAccess.restriction" /])</small></label>
         </div>
         <div class="col-md-3">
           [@customForm.yesNoInput name="${customName}.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="text-center" /]  
@@ -183,14 +201,14 @@
         </div>
         <div class="col-md-12 ">
           <hr />
-          <div class="form-group">
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY" [#if ((publication.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY_SA" [#if ((publication.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY_ND" [#if ((publication.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY_NC" [#if ((publication.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_SA" [#if ((publication.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_ND" [#if ((publication.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
-            <div><input type="radio" name="${customName}.license" id="" value="OTHER" [#if ((publication.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
+          <div class="form-group col-md-12">
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY" [#if ((publication.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_SA" [#if ((publication.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_ND" [#if ((publication.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC" [#if ((publication.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_SA" [#if ((publication.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_ND" [#if ((publication.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
+            <div class="radio"><input type="radio" name="${customName}.license" id="" value="OTHER" [#if ((publication.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
           </div>
           
           <div class="form-group row" style="">
@@ -214,45 +232,53 @@
       </div>
       [#-- Language & publication date --]
       <div class="form-group row">
-        <div class="col-md-6">
-          [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
-        </div>
-        <div class="col-md-6">
-          [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
-        </div>
+        <div class="col-md-6">[@metadataField title="language" encodedName="dc.language" type="input" require=true/]</div>
+        <div class="col-md-6">[@metadataField title="date" encodedName="dc.date" type="input" require=false/]</div>
       </div>
       [#-- Country & Keywords --]
       <div class="form-group row">
-      
+        <div class="col-md-6">[@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]</div>
+        <div class="col-md-6">[@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]</div>
       </div>
       [#-- Citation --]
-      <div class="form-group row">
-      
+      <div class="form-group">
+        [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
       </div>
       [#-- Handle & DOI --]
       <div class="form-group row">
-      
+        <div class="col-md-6">[@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]</div>
+        <div class="col-md-6">[@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]</div>
       </div>
+      
+      <hr />
+      
       [#-- Volume, Issue & Pages --]
       <div class="form-group row">
-      
+        <input type="hidden" name="${customName}.publication.id" value="${(publication.publication.id)!}"/>
+        <div class="col-md-4">[@customForm.input name="${customName}.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+        <div class="col-md-4">[@customForm.input name="${customName}.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+        <div class="col-md-4">[@customForm.input name="${customName}.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
       </div>
       [#-- Journal Publisher Name --]
-      <div class="form-group row">
-      
+      <div class="form-group">
+        [@customForm.input name="${customName}.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
       </div>
       [#-- Indicators for journal articles --]
-      <div class="form-group row">
-      
+      <div class="form-group">
+        <label for="">[@s.text name="${customName}.indicatorsJournalArticles" /]:</label>
+        [@s.checkboxlist name="${customName}.indicatorsJournal" list="" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="" /]
       </div>
       [#-- Does the publication acknowledge {CRP} --]
       <div class="form-group row">
-      
+        <label class="col-md-9" for="">Does the publication acknowledge?</label>
+        <div class="col-md-3">
+          [@customForm.yesNoInput name="${customName}.acknowledge"  editable=editable inverse=false value="true" cssClass="acknowledge text-center" /] 
+        </div>
       </div>
-    </div>
-
+    </div> 
+    
     [#-- Section Buttons & hidden inputs--]
-    [#--  --include "/WEB-INF/views/fundingSources/buttons-fundingSources.ftl" /--]
+    [#include "/WEB-INF/views/publications/buttons-publications.ftl" /]
   </div>
   [/@s.form]
   <div class="col-md-1"></div>
@@ -286,5 +312,16 @@
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input class="fId" type="hidden" name="${customName}.institution.id" value="${(element.institution.id)!}" />
     <span class="name">${(element.institution.composedName)!}</span>
+  </li>
+[/#macro]
+
+[#macro crossDimmensionMacro element name index isTemplate=false]
+  [#local customName = "${name}[${index}]" /]
+  <li id="crossDimmensionMacro-${isTemplate?string('template', index)}" class="crossDimmensionMacro" style="display:${isTemplate?string('none','block')}">
+    [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
+    <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
+    <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
+    <div class="clearfix"></div>
   </li>
 [/#macro]
