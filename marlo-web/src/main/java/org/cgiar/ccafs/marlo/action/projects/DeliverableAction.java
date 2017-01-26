@@ -54,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -697,58 +698,67 @@ public class DeliverableAction extends BaseAction {
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
-        deliverable.setQualityCheck(deliverableQualityCheck);
+        if (this.isReportingActive()) {
 
-        // TODO
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
-        }
+          DeliverableQualityCheck deliverableQualityCheck =
+            deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+          deliverable.setQualityCheck(deliverableQualityCheck);
 
-        if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
-          if (deliverable.getDeliverableDisseminations().size() > 0) {
-            deliverable.setDissemination(deliverable.getDisseminations().get(0));
+          // TODO
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+          }
+
+          if (deliverable.getDeliverableDisseminations() != null) {
+            deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+            if (deliverable.getDeliverableDisseminations().size() > 0) {
+              deliverable.setDissemination(deliverable.getDisseminations().get(0));
+            } else {
+              deliverable.setDissemination(new DeliverableDissemination());
+            }
+
+          }
+
+          if (deliverable.getDeliverableDataSharingFiles() != null) {
+            deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+          }
+
+          if (deliverable.getDeliverablePublicationMetadatas() != null) {
+            deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+          }
+          if (!deliverable.getPublicationMetadatas().isEmpty()) {
+            deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
           } else {
-            deliverable.setDissemination(new DeliverableDissemination());
+            deliverable.setPublication(new DeliverablePublicationMetadata());
           }
 
-        }
-
-        if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
-        }
-
-        if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
-        }
-
-        if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
-        }
-
-
-        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
-        deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
-
-          DeliverableFile deFile = new DeliverableFile();
-          switch (dataSharingFile.getTypeId().toString()) {
-            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getFile().getFileName());
-              break;
-
-            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getExternalFile());
-              break;
+          if (deliverable.getDeliverableDataSharings() != null) {
+            deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
           }
-          deFile.setId(dataSharingFile.getId());
-          deFile.setSize(0);
-          deliverable.getFiles().add(deFile);
+
+
+          deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+          deliverable.setFiles(new ArrayList<>());
+          for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+            DeliverableFile deFile = new DeliverableFile();
+            switch (dataSharingFile.getTypeId().toString()) {
+              case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getFile().getFileName());
+                break;
+
+              case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getExternalFile());
+                break;
+            }
+            deFile.setId(dataSharingFile.getId());
+            deFile.setSize(0);
+            deliverable.getFiles().add(deFile);
+          }
         }
+
         this.setDraft(false);
       }
 
