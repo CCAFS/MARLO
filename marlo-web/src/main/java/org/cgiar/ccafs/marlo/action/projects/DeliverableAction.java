@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
@@ -146,6 +147,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
+  private DeliverableDisseminationManager deliverableDisseminationManager;
 
   private List<DeliverableType> deliverableSubTypes;
 
@@ -209,7 +211,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityCheckManager deliverableQualityCheckManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
-    MetadataElementManager metadataElementManager) {
+    MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
@@ -231,6 +233,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableDataSharingFileManager = deliverableDataSharingFileManager;
     this.metadataElementManager = metadataElementManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
+    this.deliverableDisseminationManager = deliverableDisseminationManager;
   }
 
   @Override
@@ -941,17 +944,32 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
 
       if (this.isReportingActive()) {
-        deliverablePrew.setLicense(deliverable.getLicense());
-        if (deliverable.getLicense() != null) {
-          if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
-            deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+
+        if (deliverable.isAdoptedLicense() != null) {
+          if (deliverable.isAdoptedLicense().booleanValue()) {
+            deliverablePrew.setLicense(deliverable.getLicense());
+            if (deliverable.getLicense() != null) {
+              if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+                deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
+                deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+              } else {
+                deliverablePrew.setOtherLicense(null);
+                deliverablePrew.setAllowModifications(null);
+              }
+            }
+            deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
           } else {
+            deliverablePrew.setLicense(null);
             deliverablePrew.setOtherLicense(null);
-            deliverablePrew.setAllowModifications(false);
+            deliverablePrew.setAllowModifications(null);
           }
+        } else {
+          deliverablePrew.setLicense(null);
+          deliverablePrew.setOtherLicense(null);
+          deliverablePrew.setAllowModifications(null);
         }
-        deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
+
+
       }
 
 
@@ -1133,9 +1151,6 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
 
-          if (deliverable.getDissemination() != null) {
-            DeliverableDissemination dissemination = new DeliverableDissemination();
-          }
 
         }
         this.saveMetadata();
@@ -1240,6 +1255,114 @@ public class DeliverableAction extends BaseAction {
       }
 
     }
+  }
+
+  public void saveDissemination() {
+    if (deliverable.getDissemination() != null) {
+
+      DeliverableDissemination dissemination = new DeliverableDissemination();
+      if (deliverable.getDissemination().getId() != -1) {
+        dissemination =
+          deliverableDisseminationManager.getDeliverableDisseminationById(deliverable.getDissemination().getId());
+      } else {
+        dissemination = new DeliverableDissemination();
+        dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+
+      }
+
+
+      if (deliverable.getDissemination().getIsOpenAccess() != null) {
+        dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());
+        if (!deliverable.getDissemination().getIsOpenAccess().booleanValue()) {
+          String type = deliverable.getDissemination().getType();
+          if (type != null) {
+            switch (type) {
+              case "intellectualProperty":
+
+                dissemination.setIntellectualProperty(true);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+
+                break;
+              case "limitedExclusivity":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(true);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "restrictedUseAgreement":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(true);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(deliverable.getDissemination().getRestrictedAccessUntil());
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "effectiveDateRestriction":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(true);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedAccessUntil());
+
+                break;
+
+              default:
+                break;
+            }
+          }
+        }
+      } else {
+
+        dissemination.setIsOpenAccess(null);
+
+        dissemination.setIntellectualProperty(false);
+        dissemination.setLimitedExclusivity(false);
+        dissemination.setRestrictedUseAgreement(false);
+        dissemination.setEffectiveDateRestriction(false);
+
+        dissemination.setRestrictedAccessUntil(null);
+        dissemination.setRestrictedEmbargoed(null);
+      }
+
+      if (deliverable.getDissemination().getAlreadyDisseminated() != null) {
+        dissemination.setAlreadyDisseminated(deliverable.getDissemination().getAlreadyDisseminated());
+        if (deliverable.getDissemination().getAlreadyDisseminated().booleanValue()) {
+
+          dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          dissemination.setDisseminationChannel(deliverable.getDissemination().getDisseminationChannel());
+        } else {
+          dissemination.setDisseminationUrl(null);
+          dissemination.setDisseminationChannel(null);
+        }
+      } else {
+        dissemination.setAlreadyDisseminated(null);
+        dissemination.setDisseminationUrl(null);
+        dissemination.setDisseminationChannel(null);
+      }
+
+
+      deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
+
+    }
+
+
   }
 
   public void saveMetadata() {
