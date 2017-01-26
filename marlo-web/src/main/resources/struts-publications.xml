@@ -10,7 +10,12 @@
       <result name="input">/WEB-INF/views/publications/publicationsList.ftl</result>
     </action>
     
+    <!-- Publication -->
+    <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.BaseAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/publications/publication.ftl</result>
+    </action>
     
-
+    
   </package>
 </struts>
