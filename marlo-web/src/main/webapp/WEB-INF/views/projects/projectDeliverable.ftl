@@ -135,7 +135,7 @@
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
 [@authorMacro element={} index=-1 name="author"  isTemplate=true /]
-[@flagshipMacro element={} index=-1 name="deliverable.flagships"  isTemplate=true /]
+[@flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
@@ -165,8 +165,9 @@
   [#assign customName = "${name}[${index}]" /]
   <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox col-md-6"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if] 
-    <input class="id" type="hidden" name="${customName}.falgship.id" value="${(element.flagship.id)!-1}" />
-    <input class="idElement" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+    <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+    <input class="idCrp" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!-1}" />
+    <input class="idFlagship" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!-1}" />
     <span class="name">${(element.flagship.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>

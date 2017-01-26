@@ -136,9 +136,9 @@
     </div>
     [/#if] 
   </div>
-
-<div class="row publicationMetadataBlock" style="display:none;">
-<h5 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h5>
+<div class="clearfix"></div>
+<div class="publicationMetadataBlock" style="display:none;">
+<h4 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h4>
  <div class="col-md-12">
   <div class="row">
     <div class="col-md-4">
@@ -155,13 +155,13 @@
     </div>
   </div>
   <label for="">Indicators for journal articles:</label>
-  <div class="col-md-12 form-group">
+  <div class="form-group">
     <input type="checkbox" />Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
   </div>
-  <div class="col-md-12 form-group">  
+  <div class="form-group">  
     <input type="checkbox" />Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
   </div>
-  <div class="col-md-12 form-group">
+  <div class="form-group">
     <input type="checkbox" />Does this article have a co-author based in an Earth System Science-related academic department?
   </div>
   <div class="clearfix"></div>
@@ -181,7 +181,13 @@
   <div class="row">
     <div class="col-md-12">
       <div class="flagshipList simpleBox col-md-12">
-        <p class="emptyText text-center "> [@s.text name="No Flagships added yet." /]</p> 
+        [#if deliverable.crps?has_content]
+          [#list deliverable.crps as flagShips]
+            [@flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
+          [/#list]
+        [#else]
+          <p class="emptyText text-center "> [@s.text name="No Flagships added yet." /]</p> 
+        [/#if]
       </div>
       <div class="clearfix"></div>
     </div>
