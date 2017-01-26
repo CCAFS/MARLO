@@ -9,7 +9,7 @@
 
 
 [#assign breadCrumb = [
-  {"label":"publicationsListList", "nameSpace":"/publications", "action":""}
+  {"label":"publicationsList", "nameSpace":"/publications", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
