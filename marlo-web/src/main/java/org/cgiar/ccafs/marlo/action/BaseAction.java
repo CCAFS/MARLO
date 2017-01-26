@@ -1073,6 +1073,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
 
+  public int goldDataValue(long deliverableID) {
+
+    return 0;
+  }
+
   public boolean hasPermission(String fieldName) {
     if (basePermission == null) {
       return securityContext.hasPermission(fieldName);
@@ -1086,6 +1091,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return securityContext.hasPermission(fieldName);
 
   }
+
 
   public boolean hasPersmissionSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
@@ -1107,7 +1113,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
-
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
@@ -1150,10 +1155,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEdit;
   }
 
+
   public boolean isCanSwitchProject() {
     return canSwitchProject;
   }
-
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -1391,6 +1396,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return dataSaved;
   }
 
+
   public Boolean isDeliverableNew(long deliverableID) {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
@@ -1430,10 +1436,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean isDraft() {
     return draft;
   }
+
 
   public boolean isEditable() {
     return isEditable;
@@ -1456,7 +1462,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
 
   }
-
 
   public boolean isFullEditable() {
     return fullEditable;
