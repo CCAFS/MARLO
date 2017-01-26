@@ -19,8 +19,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   private Long id;
   @Expose
   private CrpProgram crpProgram;
+
   @Expose
   private Crp crp;
+
+
   private Deliverable deliverable;
 
   public DeliverableCrp() {
@@ -30,6 +33,28 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     this.crpProgram = crpProgram;
     this.crp = crp;
     this.deliverable = deliverable;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableCrp other = (DeliverableCrp) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
   }
 
   public Crp getCrp() {
@@ -56,7 +81,6 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
@@ -69,6 +93,15 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     User u = new User();
     u.setId(new Long(3));
     return u;
+  }
+
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
 

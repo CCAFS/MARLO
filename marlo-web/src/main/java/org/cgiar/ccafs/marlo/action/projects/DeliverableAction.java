@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
@@ -42,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -130,7 +133,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
-
+  private DeliverableCrpManager deliverableCrpManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
   private long deliverableID;
@@ -160,6 +163,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableValidator deliverableValidator;
 
   private FileDBManager fileDBManager;
+  private CrpProgramManager crpProgramManager;
 
 
   private FundingSourceManager fundingSourceManager;
@@ -208,15 +212,17 @@ public class DeliverableAction extends BaseAction {
     DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
     FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
+    DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
+    this.deliverableCrpManager = deliverableCrpManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
@@ -649,6 +655,14 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        if (deliverable.getCrps() != null) {
+          for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+            if (deliverableCrp != null) {
+              deliverableCrp.setCrp(crpManager.getCrpById(deliverableCrp.getCrp().getId()));
+              deliverableCrp.setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
+            }
+          }
+        }
         if (deliverable.getQualityCheck() != null) {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
@@ -682,6 +696,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
+
         DeliverableQualityCheck deliverableQualityCheck =
           deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
         deliverable.setQualityCheck(deliverableQualityCheck);
@@ -714,6 +729,7 @@ public class DeliverableAction extends BaseAction {
         }
 
 
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
         deliverable.setFiles(new ArrayList<>());
         for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
 
@@ -1025,7 +1041,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1154,6 +1170,7 @@ public class DeliverableAction extends BaseAction {
 
         }
         this.saveMetadata();
+        this.saveCrps();
         this.saveDataSharing();
       }
 
@@ -1165,6 +1182,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
       }
 
 
@@ -1204,6 +1222,28 @@ public class DeliverableAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void saveCrps() {
+    if (deliverable.getCrps() == null) {
+
+      deliverable.setCrps(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps()) {
+      if (!deliverable.getCrps().contains(deliverableCrp)) {
+        deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+      }
+    }
+
+    for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+
+      if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+        deliverableCrp.setId(null);
+        deliverableCrp.setDeliverable(deliverable);
+        deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
+      }
+    }
   }
 
   public void saveDataSharing() {
