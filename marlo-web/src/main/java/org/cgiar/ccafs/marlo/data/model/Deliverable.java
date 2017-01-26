@@ -604,17 +604,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-
-  public Boolean isAdoptedLicense() {
-    return adoptedLicense;
-  }
-
-
-  public Boolean isAllowModifications() {
-    return allowModifications;
-  }
-
-
   public void setActive(boolean active) {
     this.active = active;
   }
