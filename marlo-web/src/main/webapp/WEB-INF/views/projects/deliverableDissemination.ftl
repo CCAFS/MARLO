@@ -87,7 +87,32 @@
 
 <div class="borderBox">
   <div class="col-md-12 note">[@s.text name = "To change an author's data,you must do double click on that field." /]</div>
+  <div class="col-md-6">
+    [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
+  </div>
+  <div class="col-md-6">
+    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
+  </div>
+  <div class="col-md-6">
+    [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
+  </div>
+  <div class="col-md-6">
+    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]
+  </div>
+    
   <div class="col-md-12">
+    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
+  </div>
+  <div class="col-md-6">
+    [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
+  </div>
+  <div class="col-md-6">
+    [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
+  </div>
+  <div class="clearfix"></div>
+  <hr />
+  <div class="clearfix"></div>
+  <div class="col-md-12 form-group">
     <label for="">Creator/Authors:</label>
     <div class="authorsList simpleBox col-md-12">
       <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
@@ -111,36 +136,10 @@
     </div>
     [/#if] 
   </div>
-  <div class="clearfix"></div>
-  <hr />
-  <div class="clearfix"></div>
-  <div class="col-md-6">
-    [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]
-  </div>
-    
-  <div class="col-md-12">
-    [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
-  </div>
-</div>
 
-<h3 class="headTitle publicationMetadataBlock" style="display:none;">[@s.text name="Publication Metadata" /]</h3>
-
-<div class="borderBox row publicationMetadataBlock" style="display:none;">
+<div class="row publicationMetadataBlock" style="display:none;">
+<h5 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h5>
+ <div class="col-md-12">
   <div class="row">
     <div class="col-md-4">
       [@customForm.input name="" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
@@ -201,7 +200,10 @@
     </div>
     [/#if] 
   </div>
+ </div>
 </div>
+</div>
+
 
 <div class="borderBox">
   <div class=" row">
