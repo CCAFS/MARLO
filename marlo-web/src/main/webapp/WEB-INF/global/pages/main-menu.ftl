@@ -28,9 +28,10 @@
   [#list mainMenu as item]
    [#if item.visible]
     <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}" class="action-${item.action}">
+      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}" class="action-${item.action}" title="[#if item.help?? && item.help][@s.text name="${item.name}.help" /][/#if]">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
+        
       </a>
       [#if item.subItems?has_content]
         <ul class="subMenu">
@@ -55,7 +56,7 @@
 <div class="menuContent">
 	<div class="container">
 	  <ul class="hidden-md hidden-lg">
-	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Menu
+	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> Main menu
 	     <ul class="subMenu">
 	       [@mainMenuList /]
 	     </ul>

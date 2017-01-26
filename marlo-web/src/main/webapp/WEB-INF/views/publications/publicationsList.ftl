@@ -23,7 +23,7 @@
     <div class="col-md-12">
     
       [#-- Publications not directly linked to a Project (My publications) --]
-      <h3 class="headTitle text-center">[@s.text name="publicationsList.yourPublications"/]</h3>
+      <h3 class="headTitle text-center">[@s.text name="publicationsList.yourPublications"/] <br /> <small>([@s.text name="publicationsList.yourPublications.help" /])</small></h3>
       <div class="loadingBlock"></div>
       <div style="display:none">[@publicationsList.publicationsList publications=myPublications canValidate=true canEdit=true namespace="/publications" defaultAction="${(crpSession)!}/description" /]</div>
   
@@ -39,7 +39,7 @@
       <hr/>
       
       [#-- Publications List (Other publications) --]
-      <h3 class="headTitle text-center">[@s.text name="publicationsList.otherPublications" /] <br /> <small>[@s.text name="publicationsList.otherPublications.help" /]</small></h3>
+      <h3 class="headTitle text-center">[@s.text name="publicationsList.otherPublications" /] </h3>
       <div class="loadingBlock"></div>
       <div style="display:none">[@publicationsList.publicationsList publications=allPublications canValidate=true namespace="/publications" defaultAction="${(crpSession)!}/description"/]</div>
     </div>

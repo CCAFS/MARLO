@@ -1464,6 +1464,10 @@ a#userLogOut {
  padding: 0px 18px;
  color: #fff;
 } 
+#mainMenu .menuContent ul a p{
+ font-size: 0.7em;
+ position:absolute;
+} 
 
 
 #mainMenu .menuContent ul li{
