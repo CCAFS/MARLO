@@ -1150,7 +1150,7 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-
+          this.saveDissemination();
 
         }
         this.saveMetadata();
@@ -1327,6 +1327,16 @@ public class DeliverableAction extends BaseAction {
                 break;
             }
           }
+        } else {
+
+
+          dissemination.setIntellectualProperty(false);
+          dissemination.setLimitedExclusivity(false);
+          dissemination.setRestrictedUseAgreement(false);
+          dissemination.setEffectiveDateRestriction(false);
+
+          dissemination.setRestrictedAccessUntil(null);
+          dissemination.setRestrictedEmbargoed(null);
         }
       } else {
 
