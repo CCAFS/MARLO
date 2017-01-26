@@ -129,7 +129,6 @@
 		<mapping resource="xmls/DeliverableDataSharing.hbm.xml" />
 		<mapping resource="xmls/DeliverableDataSharingFile.hbm.xml" />
 		<mapping resource="xmls/DeliverableDissemination.hbm.xml" />
-		<mapping resource="xmls/DeliverablePublicationMetadata.hbm.xml" />	
 		<mapping resource="xmls/IpRelationships.hbm.xml" />
 		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
 		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml"/>
@@ -139,6 +138,8 @@
 		<mapping resource="xmls/CrpsPandr.hbm.xml" />
 		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />		
 		<mapping resource="xmls/MetadataElements.hbm.xml" />
+		<mapping resource="xmls/DeliverablePublicationsMetada.hbm.xml" />
+		<mapping resource="xmls/DeliverableCrps.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 
