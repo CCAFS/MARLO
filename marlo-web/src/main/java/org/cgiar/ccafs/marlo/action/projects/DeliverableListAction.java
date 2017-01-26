@@ -24,17 +24,13 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
-import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
-import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -207,123 +203,6 @@ public class DeliverableListAction extends BaseAction {
     return projectID;
   }
 
-  public Boolean isA(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
-    if (deliverableBD.getDissemination().getIsOpenAccess() != null
-      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
-      return true;
-    }
-
-    if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
-      return null;
-    }
-    return false;
-  }
-
-  public Boolean isF(long deliverableID) {
-
-
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
-      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
-      return true;
-    }
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
-      return null;
-    }
-
-    return false;
-
-  }
-
-
-  public Boolean isI(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
-      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
-
-
-      String channel = deliverableBD.getDissemination().getDisseminationChannel();
-      String link = deliverableBD.getDissemination().getDisseminationUrl();
-      if (channel == null || channel.equals("-1")) {
-        return false;
-      }
-      if (link == null || link.equals("-1") || link.isEmpty()) {
-        return false;
-      }
-
-      switch (channel) {
-        case "cgspace":
-          if (!this.validURL(link)) {
-            return false;
-          }
-          if (!link.contains("cgspace.cgiar.org")) {
-            return false;
-          }
-          break;
-        case "dataverse":
-          if (!link.contains("dataverse.harvard.edu")) {
-            if (!this.validURL(link)) {
-              return false;
-            }
-            return false;
-          }
-          break;
-        default:
-          return false;
-
-      }
-      return true;
-    }
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
-      return null;
-    }
-
-    return false;
-
-  }
-
-  public Boolean isR(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    if (deliverableBD.isAdoptedLicense() == null) {
-      return null;
-    }
-    if (deliverableBD.isAdoptedLicense()) {
-      if (deliverableBD.getLicense() == null) {
-        return false;
-      } else {
-        if (!deliverableBD.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-          return true;
-        } else {
-          if (deliverableBD.getAllowModifications() == null || !deliverableBD.getAllowModifications().booleanValue()) {
-            return false;
-          }
-          if (deliverableBD.getOtherLicense() == null || deliverableBD.getOtherLicense().isEmpty()) {
-            return false;
-          }
-          return true;
-        }
-
-      }
-    }
-    return false;
-  }
-
-  public void loadDissemination(Deliverable deliverableBD) {
-
-    if (deliverableBD.getDeliverableDisseminations() != null) {
-      deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations()));
-      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
-        deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
-      } else {
-        deliverableBD.setDissemination(new DeliverableDissemination());
-      }
-
-    }
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -387,17 +266,5 @@ public class DeliverableListAction extends BaseAction {
     this.projectID = projectID;
   }
 
-  public boolean validURL(String URL) {
-    try {
-      java.net.URL url = new java.net.URL(URL);
-      url.toURI();
-      return true;
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-      return false;
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-      return false;
-    }
-  }
+
 }
