@@ -187,3 +187,7 @@
  
   [/#if]
 [/#macro]
+
+[#function checkDeliverableTypes]
+  <#return true>
+[/#function]
