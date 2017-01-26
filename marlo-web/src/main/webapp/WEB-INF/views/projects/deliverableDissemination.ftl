@@ -1,6 +1,7 @@
 [#ftl]
 [#-- ACCESSIBLE --]
 <div class="borderBox form-group">
+<input type="hidden" value="${(deliverable.dissemination.isOpenAccess)!"-1"}" />
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
