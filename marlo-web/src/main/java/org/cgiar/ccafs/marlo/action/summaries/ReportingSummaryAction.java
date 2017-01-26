@@ -62,6 +62,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -842,7 +843,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       ml_contact =
         project.getLiaisonUser().getComposedName() + "\n&lt;" + project.getLiaisonUser().getUser().getEmail() + "&gt;";
     }
-    String type = project.getType();
+    // Get type from funding sources
+    String type = "";
+    List<String> typeList = new ArrayList<String>();
+    for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getFundingSource() != null)
+      .collect(Collectors.toList())) {
+      typeList.add(projectBudget.getFundingSource().getBudgetType().getName());
+    }
+    // Remove duplicates
+    Set<String> s = new LinkedHashSet<String>(typeList);
+
+    for (String typeString : s.stream().collect(Collectors.toList())) {
+      if (type.isEmpty()) {
+        type = typeString;
+      } else {
+        type += ", " + typeString;
+      }
+    }
+
     String status = ProjectStatusEnum.getValue(project.getStatus().intValue()).getStatus();
     if (projectLeader.getInstitution() != null) {
       org_leader = projectLeader.getInstitution().getComposedName();
@@ -1277,13 +1296,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
   private TypedTableModel getPartnersTableModel() {
-    TypedTableModel model = new TypedTableModel(new String[] {"count"}, new Class[] {Integer.class}, 0);
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"count", "overall"}, new Class[] {Integer.class, String.class}, 0);
     int partnersSize = 0;
-    Set<ProjectPartner> projectPartners = project.getProjectPartners();
+    List<ProjectPartner> projectPartners =
+      project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList());
     if (!projectPartners.isEmpty()) {
       partnersSize = projectPartners.size();
     }
-    model.addRow(new Object[] {partnersSize});
+
+    model.addRow(new Object[] {partnersSize, project.getOverall()});
     return model;
   }
 
