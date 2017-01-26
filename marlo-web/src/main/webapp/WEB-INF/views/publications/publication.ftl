@@ -210,11 +210,16 @@
     <div class="borderBox">
       [#-- Creator / Authors --]
       <div class="form-group row">
-      
+        
       </div>
       [#-- Language & publication date --]
       <div class="form-group row">
-      
+        <div class="col-md-6">
+          [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
+        </div>
+        <div class="col-md-6">
+          [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
+        </div>
       </div>
       [#-- Country & Keywords --]
       <div class="form-group row">
@@ -257,6 +262,21 @@
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
+[#-- Metadata Macro --]
+[#macro metadataField title="" encodedName="" type="input" list="" require=false]
+  [#local metadataID = (publication.getMetadataID(encodedName))!-1 /]
+  [#local metadataIndex = (publication.getMetadataIndex(encodedName))!-1 /]
+  [#local metadataValue = (publication.getMetadataValue(metadataID))!'' /]
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
+  [#if type == "input"]
+    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+  [#elseif type == "textArea"]
+    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+  [#elseif type == "select"]
+    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
+  [/#if]
+[/#macro]
 
 [#macro leadPartnerMacro element name index isTemplate=false]
   <li id="leadPartner-${isTemplate?string('template', index)}" class="leadPartner" style="display:${isTemplate?string('none','block')}">

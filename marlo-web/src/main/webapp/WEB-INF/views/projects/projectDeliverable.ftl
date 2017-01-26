@@ -175,15 +175,16 @@
 
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
-  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
-  <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].id" value="${(metadataID)!}" />
-    <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].metadataElement.id" value="${(metadataID)!}" />
+  [#local metadataID = (publication.getMetadataID(encodedName))!-1 /]
+  [#local metadataIndex = (publication.getMetadataIndex(encodedName))!-1 /]
+  [#local metadataValue = (publication.getMetadataValue(metadataID))!'' /]
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
-    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
- 
+    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
   [/#if]
 [/#macro]
