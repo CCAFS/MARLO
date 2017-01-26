@@ -961,8 +961,8 @@ public class DeliverableAction extends BaseAction {
 
       if (this.isReportingActive()) {
 
-        if (deliverable.isAdoptedLicense() != null) {
-          if (deliverable.isAdoptedLicense().booleanValue()) {
+        if (deliverable.getAdoptedLicense() != null) {
+          if (deliverable.getAdoptedLicense().booleanValue()) {
             deliverablePrew.setLicense(deliverable.getLicense());
             if (deliverable.getLicense() != null) {
               if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
@@ -973,7 +973,7 @@ public class DeliverableAction extends BaseAction {
                 deliverablePrew.setAllowModifications(null);
               }
             }
-            deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
+            deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
           } else {
             deliverablePrew.setLicense(null);
             deliverablePrew.setOtherLicense(null);
@@ -1166,7 +1166,7 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-
+          this.saveDissemination();
 
         }
         this.saveMetadata();
@@ -1367,6 +1367,16 @@ public class DeliverableAction extends BaseAction {
                 break;
             }
           }
+        } else {
+
+
+          dissemination.setIntellectualProperty(false);
+          dissemination.setLimitedExclusivity(false);
+          dissemination.setRestrictedUseAgreement(false);
+          dissemination.setEffectiveDateRestriction(false);
+
+          dissemination.setRestrictedAccessUntil(null);
+          dissemination.setRestrictedEmbargoed(null);
         }
       } else {
 
@@ -1427,25 +1437,28 @@ public class DeliverableAction extends BaseAction {
         deliverableQualityCheckManager.getDeliverableQualityCheckById(deliverable.getQualityCheck().getId());
     } else {
       qualityCheck = new DeliverableQualityCheck();
-    }
-
-    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getQualityAssurance().getId());
-
-      qualityCheck.setQualityAssurance(answer);
+      qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
     }
 
     if (deliverable.getQualityCheck().getDataDictionary() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataDictionary().getId());
+      long id = deliverable.getQualityCheck().getDataDictionary().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataDictionary(answer);
     }
 
+
+    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
+      long id = deliverable.getQualityCheck().getQualityAssurance().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
+
+      qualityCheck.setQualityAssurance(answer);
+    }
+
+
     if (deliverable.getQualityCheck().getDataTools() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataTools().getId());
+      long id = deliverable.getQualityCheck().getDataTools().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataTools(answer);
     }
@@ -1503,7 +1516,7 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkDictionary());
     qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkTools());
 
-    qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
+
     qualityCheck.setActive(true);
     qualityCheck.setActiveSince(new Date());
     qualityCheck.setModifiedBy(this.getCurrentUser());
