@@ -1,6 +1,6 @@
 [#ftl]
 
-[#-- fundingSource identifier --]
+[#--Identifier --]
 <input name="publicationID" type="hidden" value="${(publication.id)!}" />
 <input type="hidden"  name="className" value="${(publication.class.name)!}"/>
 <input type="hidden"  name="id" value="${(publication.id)!}"/>

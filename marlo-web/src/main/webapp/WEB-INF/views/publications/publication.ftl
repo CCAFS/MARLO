@@ -122,21 +122,19 @@
         <div class="clearfix"></div>
       </div>
       [#-- If gender dimension, select with ones --]
-      <div id="gender-levels" class="panel tertiary col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
-       <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-        <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
+      <div id="gender-levels" class="panel tertiary" style="display:${((publication.crossCuttingGender)!false)?string('block','none')}">
+       <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
+        <div id="genderLevelsList" class="panel-body" > 
           <ul class="list">
           [#if publication?? && publication.genderLevels?has_content]
             [#list publication.genderLevels as element]
-              
+              [@crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
             [/#list]
           [#else]
-            <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
+            <p class="emptyText"> [@s.text name="publication.genderLevels.empty" /]</p> 
           [/#if]  
           </ul>
-          [#if editable ]
-            [@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/]
-          [/#if] 
+          [#if editable ][@customForm.select name="" label="" showTitle=false i18nkey="" listName="genderLevels"   required=true  className="genderLevelsSelect" editable=editable/][/#if] 
         </div>
       </div>
     </div>
@@ -151,7 +149,7 @@
         <div class="col-md-3">
           [@customForm.yesNoInput name="${customName}.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="text-center" /]  
         </div>
-        <div class="col-md-12 ">
+        <div class="col-md-12 openAccessOptions">
           <hr />
           [#-- Intellectual Property Rights (confidential information) --]
           <div class="radio"><label><input type="radio" name="${customName}.dissemination.type" value="intellectualProperty" [#if ((publication.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label></div>
@@ -317,7 +315,7 @@
 
 [#macro crossDimmensionMacro element name index isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <li id="crossDimmensionMacro-${isTemplate?string('template', index)}" class="crossDimmensionMacro" style="display:${isTemplate?string('none','block')}">
+  <li id="crossDimmension-${isTemplate?string('template', index)}" class="crossDimmension" style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
     <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
     <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
