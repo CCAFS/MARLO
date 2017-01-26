@@ -145,8 +145,9 @@ function init() {
     if(fOption.val() != "" && fOption.val() != "-1") {
       if($(".flagshipList").find(".flagships input.id[value='" + fOption.val() + "']").exists()) {
       } else {
-        var v = $(fOption).text().length > 45 ? $(fOption).text().substr(0, 45) + ' ... ' : $(fOption).text();
-        addFlagship(fOption.val(), v, fOption.text(), crpOtion.val());
+        var composedText = crpOtion.text().toUpperCase() + "-" + fOption.text();
+        var v = composedText.length > 45 ? composedText.substr(0, 45) + ' ... ' : composedText;
+        addFlagship(fOption.val(), v, composedText, crpOtion.val());
       }
     }
   });
@@ -209,8 +210,8 @@ function addFlagship(id,text,title,crpId) {
   $item.find(".idFlagship").val(id);
   $list.append($item);
   $item.show('slow');
-  updateFlagship();
   checkNextFlagshipItems($list);
+  updateFlagship();
 }
 
 function removeFlagship() {

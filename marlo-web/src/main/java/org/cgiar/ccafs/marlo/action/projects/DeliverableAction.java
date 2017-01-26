@@ -1195,6 +1195,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
       }
 

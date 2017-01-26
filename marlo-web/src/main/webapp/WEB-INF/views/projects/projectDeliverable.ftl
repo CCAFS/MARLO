@@ -188,3 +188,7 @@
     [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
   [/#if]
 [/#macro]
+
+[#function checkDeliverableTypes]
+  <#return true>
+[/#function]
