@@ -4,10 +4,10 @@
 
 <div class="simpleBox" >
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-10">
       <p class="note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</p>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div id="box-out">
         <div id="box-inside">
           <div id="red"></div>

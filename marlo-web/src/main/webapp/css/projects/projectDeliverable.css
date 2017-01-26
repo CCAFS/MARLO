@@ -252,8 +252,8 @@ p.noChecked {
   background-image: -webkit-linear-gradient(right top, rgb(66,74,70) 15%, rgb(142,148,148) 58%);
   background-image: -ms-linear-gradient(right top, rgb(66,74,70) 15%, rgb(142,148,148) 58%);
   background-image: -webkit-gradient(linear,right top,left bottom,color-stop(0.15, rgb(66,74,70)),color-stop(0.58, rgb(142,148,148)));
-  width:150px;
-  height: 60px;
+  width: 115px;
+  height: 35px;
   border:solid 1px;
   border-radius: 10px;
   margin: 5px auto;
@@ -278,16 +278,16 @@ p.noChecked {
   background: linear-gradient(135deg, rgba(10,8,9,1) 0%,rgba(10,14,10,1) 71%,rgba(0,0,0,.5) 74%,rgba(0,0,0,.5) 77%,rgba(0,0,0,.5) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0a0809', endColorstr='#aebcbf',GradientType=1 );
   border-radius: 10px;
-  width:130px;
-  height:40px;
+  width: 110px;
+  height: 30px;
   border: solid 1px;
   position:relative;
-  padding: 5px 0px 10px 15px;
-  /*margin: 15px auto;*/
+  padding: 0px 0px 0px 5px;
+  /* margin: 15px auto; */
   transition:width 2s, height 2s;
   -moz-transition:width 2s, height 2s, -moz-transform 2s; /* Firefox 4 */
   -webkit-transition:width 2s, height 2s, -webkit-transform 2s; /* Safari and Chrome */
-  margin: 10px auto auto 10px;
+  margin: 2px auto auto 1px;
 }
 
 #red{

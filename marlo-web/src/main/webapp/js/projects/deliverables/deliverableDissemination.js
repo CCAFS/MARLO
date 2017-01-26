@@ -290,10 +290,10 @@ function checkDoiUrl() {
 }
 
 function openAccessRestriction() {
-  if($(this).val() == "restrictedAccess") {
+  if($(this).val() == "restrictedUseAgreement") {
     $(".restrictionDate-block").find("label").text("Restricted access until");
     $(".restrictionDate-block").show("slow");
-  } else if($(this).val() == "embargoedPeriods") {
+  } else if($(this).val() == "effectiveDateRestriction") {
     $(".restrictionDate-block").find("label").text("Restricted embargoed date");
     $(".restrictionDate-block").show("slow");
   } else {
