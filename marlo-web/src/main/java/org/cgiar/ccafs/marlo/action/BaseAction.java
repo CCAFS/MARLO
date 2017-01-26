@@ -1236,7 +1236,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isCrpClosed() {
     try {
-      return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
+      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
+        .filter(c -> c.getKey().equals(APConstants.CRP_CLOSED)).collect(Collectors.toList()).get(0).getValue()) == 1;
     } catch (Exception e) {
       return false;
     }
@@ -1393,7 +1395,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
 
     if (submissions.isEmpty()) {
       return false;
