@@ -23,13 +23,13 @@
         <property name="journal" type="string">
             <column name="journal" length="65535" />
         </property>
-        <property name="isiPublication" type="java.lang.Byte">
+        <property name="isiPublication" type="java.lang.Boolean">
             <column name="isi_publication" />
         </property>
-        <property name="nasr" type="java.lang.Byte">
+        <property name="nasr" type="java.lang.Boolean">
             <column name="nasr" />
         </property>
-        <property name="coAuthor" type="java.lang.Byte">
+        <property name="coAuthor" type="java.lang.Boolean">
             <column name="co_author" />
         </property>
     </class>

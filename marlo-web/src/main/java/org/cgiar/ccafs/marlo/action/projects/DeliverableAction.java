@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
@@ -54,7 +55,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -132,6 +132,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
 
 
+  private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
   private DeliverableCrpManager deliverableCrpManager;
@@ -216,6 +217,7 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
+    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
@@ -224,6 +226,7 @@ public class DeliverableAction extends BaseAction {
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.deliverableCrpManager = deliverableCrpManager;
+    this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
@@ -728,8 +731,6 @@ public class DeliverableAction extends BaseAction {
           }
           if (!deliverable.getPublicationMetadatas().isEmpty()) {
             deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
-          } else {
-            deliverable.setPublication(new DeliverablePublicationMetadata());
           }
 
           if (deliverable.getDeliverableDataSharings() != null) {
@@ -1181,6 +1182,7 @@ public class DeliverableAction extends BaseAction {
         }
         this.saveMetadata();
         this.saveCrps();
+        this.savePublicationMetadata();
         this.saveDataSharing();
       }
 
@@ -1192,6 +1194,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
       }
 
@@ -1438,6 +1441,17 @@ public class DeliverableAction extends BaseAction {
       }
     }
 
+  }
+
+  public void savePublicationMetadata() {
+    if (deliverable.getPublication() != null) {
+      deliverable.getPublication().setDeliverable(deliverable);
+      if (deliverable.getPublication().getId() != null && deliverable.getPublication().getId().intValue() == -1) {
+        deliverable.getPublication().setId(null);
+      }
+      deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
+
+    }
   }
 
   public void saveQualityCheck() {
