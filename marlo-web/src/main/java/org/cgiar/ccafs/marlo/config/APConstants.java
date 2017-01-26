@@ -37,6 +37,11 @@ public final class APConstants {
   public static final String SESSION_CRP = "current_crp";
   public static final String USER_TOKEN = "user_token";
   public static final int GLOBAL_PROGRAM = 11;
+
+  public static final int DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO = 1;
+  public static final int DELIVERABLE_QUALITY_ANSWER_YES = 2;
+  public static final int DELIVERABLE_QUALITY_ANSWER_NO = 3;
+
   public static final int ELEMENT_TYPE_OUTCOME2019 = 3;
   // Crp Parameters
   public static final String CRP_PARAMETERS = "crp_parameters";

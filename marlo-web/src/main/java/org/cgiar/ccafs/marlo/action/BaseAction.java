@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -1074,8 +1075,59 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public int goldDataValue(long deliverableID) {
+    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+    int total = 0;
 
-    return 0;
+    this.loadQualityCheck(deliverableBD);
+    if (deliverableBD.getQualityCheck() != null) {
+      if (deliverableBD.getQualityCheck().getQualityAssurance() != null) {
+        switch (deliverableBD.getQualityCheck().getQualityAssurance().getId().intValue()) {
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO:
+            total = total + 25;
+            break;
+
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES:
+            total = total + 50;
+            break;
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_NO:
+            total = total + 5;
+            break;
+        }
+
+      }
+      if (deliverableBD.getQualityCheck().getDataDictionary() != null) {
+        switch (deliverableBD.getQualityCheck().getDataDictionary().getId().intValue()) {
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO:
+            total = total + 25;
+            break;
+
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES:
+            total = total + 50;
+            break;
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_NO:
+            total = total + 5;
+            break;
+        }
+
+      }
+      if (deliverableBD.getQualityCheck().getDataTools() != null) {
+        switch (deliverableBD.getQualityCheck().getDataTools().getId().intValue()) {
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES_BUT_NO:
+            total = total + 25;
+            break;
+
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_YES:
+            total = total + 50;
+            break;
+          case APConstants.DELIVERABLE_QUALITY_ANSWER_NO:
+            total = total + 5;
+            break;
+        }
+
+      }
+    }
+
+    return total;
   }
 
   public boolean hasPermission(String fieldName) {
@@ -1660,7 +1712,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public void loadLessons(Crp crp, Project project) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
@@ -1753,6 +1804,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (!lessons.isEmpty()) {
         projectOutcome.setProjectComponentLesson(lessons.get(0));
       }
+    }
+  }
+
+  public void loadQualityCheck(Deliverable deliverableBD) {
+
+    if (deliverableBD.getDeliverableQualityChecks() != null) {
+
+      if (deliverableBD.getDeliverableQualityChecks().size() > 0) {
+        deliverableBD.setQualityCheck(deliverableBD.getDeliverableQualityChecks().iterator().next());
+      } else {
+        deliverableBD.setQualityCheck(new DeliverableQualityCheck());
+      }
+
     }
   }
 
