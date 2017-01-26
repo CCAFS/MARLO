@@ -28,11 +28,11 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
   @Expose
   private String journal;
   @Expose
-  private Byte isiPublication;
+  private Boolean isiPublication;
   @Expose
-  private Byte nasr;
+  private Boolean nasr;
   @Expose
-  private Byte coAuthor;
+  private Boolean coAuthor;
 
   public DeliverablePublicationMetadata() {
   }
@@ -42,7 +42,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
   }
 
   public DeliverablePublicationMetadata(Deliverable deliverable, String volume, String issue, String pages,
-    String journal, Byte isiPublication, Byte nasr, Byte coAuthor) {
+    String journal, Boolean isiPublication, Boolean nasr, Boolean coAuthor) {
     this.deliverable = deliverable;
     this.volume = volume;
     this.issue = issue;
@@ -53,7 +53,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     this.coAuthor = coAuthor;
   }
 
-  public Byte getCoAuthor() {
+  public Boolean getCoAuthor() {
     return this.coAuthor;
   }
 
@@ -66,7 +66,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     return this.id;
   }
 
-  public Byte getIsiPublication() {
+  public Boolean getIsiPublication() {
     return this.isiPublication;
   }
 
@@ -98,7 +98,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     return u;
   }
 
-  public Byte getNasr() {
+  public Boolean getNasr() {
     return this.nasr;
   }
 
@@ -116,7 +116,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     return true;
   }
 
-  public void setCoAuthor(Byte coAuthor) {
+  public void setCoAuthor(Boolean coAuthor) {
     this.coAuthor = coAuthor;
   }
 
@@ -128,7 +128,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     this.id = id;
   }
 
-  public void setIsiPublication(Byte isiPublication) {
+  public void setIsiPublication(Boolean isiPublication) {
     this.isiPublication = isiPublication;
   }
 
@@ -140,7 +140,7 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     this.journal = journal;
   }
 
-  public void setNasr(Byte nasr) {
+  public void setNasr(Boolean nasr) {
     this.nasr = nasr;
   }
 
