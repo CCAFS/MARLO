@@ -22,14 +22,27 @@ function init() {
       $(this).removeClass("fieldError");
     }
   });
-  console.log(qualityAssurance);
-  $(qualityAssurance).on("change", checkGolData);
-  $(dataDictionary).on("change", checkGolData);
-  $(dataTools).on("change", checkGolData);
+  $(qualityAssurance).on("change", changeOptions);
+  $(dataDictionary).on("change", changeOptions);
+  $(dataTools).on("change", changeOptions);
   checkGolData();
 
   // Validate FAIR Complain
   checkFAIRCompliant();
+}
+
+function changeOptions() {
+  checkGolData();
+  showFileLink();
+}
+
+function showFileLink() {
+  console.log($(this).val());
+  if($(this).val() == "2") {
+    $(this).parents(".question").find(".fileOptions").show("slow");
+  } else {
+    $(this).parents(".question").find(".fileOptions").hide("slow");
+  }
 }
 
 function uploadFile($uploadBlock,$fileUpload,type) {
