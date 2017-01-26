@@ -70,6 +70,7 @@ public class FundingSourceInterceptor extends AbstractInterceptor implements Ser
 
   void setPermissionParameters(ActionInvocation invocation) {
     User user = (User) session.get(APConstants.SESSION_USER);
+    baseAction.clearPermissionsCache();
 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
