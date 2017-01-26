@@ -22,14 +22,26 @@ function init() {
       $(this).removeClass("fieldError");
     }
   });
-  console.log(qualityAssurance);
-  $(qualityAssurance).on("change", checkGolData);
-  $(dataDictionary).on("change", checkGolData);
-  $(dataTools).on("change", checkGolData);
+  $(qualityAssurance).on("change", changeOptions);
+  $(dataDictionary).on("change", changeOptions);
+  $(dataTools).on("change", changeOptions);
   checkGolData();
 
   // Validate FAIR Complain
   checkFAIRCompliant();
+}
+
+function changeOptions() {
+  checkGolData();
+  showFileLink(this);
+}
+
+function showFileLink($this) {
+  if($($this).val() == "2") {
+    $($this).parents(".question").find(".fileOptions").show("slow");
+  } else {
+    $($this).parents(".question").find(".fileOptions").hide("slow");
+  }
 }
 
 function uploadFile($uploadBlock,$fileUpload,type) {
@@ -131,7 +143,6 @@ function checkFAIRCompliant() {
 function checkQualityAssurance() {
   var qualityAssurance = $("input.qualityAssurance:checked");
   var value = qualityAssurance.val();
-  console.log(value);
   if(value == "1") {
     return 25;
   } else if(value == "2") {
@@ -144,7 +155,6 @@ function checkQualityAssurance() {
 function checkDictionary() {
   var dataDictionary = $("input.dataDictionary:checked");
   var value = dataDictionary.val();
-  console.log(value);
   if(value == "1") {
     return 25;
   } else if(value == "2") {
@@ -157,7 +167,6 @@ function checkDictionary() {
 function checkCollection() {
   var dataTools = $("input.dataTools:checked");
   var value = dataTools.val();
-  console.log(value);
   if(value == "1") {
     return 25;
   } else if(value == "2") {
@@ -168,7 +177,7 @@ function checkCollection() {
 }
 
 function checkGolData() {
-  console.log("checking gol data");
+  console.log("checking golden data");
   var $red = $("#red");
   var $yellow = $("#yellow");
   var $green = $("#green");
@@ -180,7 +189,6 @@ function checkGolData() {
   var item1 = parseInt(checkQualityAssurance());
   var item2 = parseInt(checkDictionary());
   var item3 = parseInt(checkCollection());
-  console.log(item1 + "-" + item2 + "-" + item3);
   var suma = item1 + item2 + item3;
   if(suma <= 74) {
     $red.addClass("highlightRed");

@@ -57,12 +57,12 @@
       [/#if]
       </div>
       [#-- CGSpace examples & instructions --]
-      <div class="exampleUrl-block channel-2 col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
+      <div class="exampleUrl-block channel-cgspace col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
         <label for="">Example of URL:</label>
         <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
       </div>
       [#-- Dataverse examples & instructions --]
-      <div class="exampleUrl-block channel-3 col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
+      <div class="exampleUrl-block channel-dataverse col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
         <label for="">Example of URL:</label>
         <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
       </div>
