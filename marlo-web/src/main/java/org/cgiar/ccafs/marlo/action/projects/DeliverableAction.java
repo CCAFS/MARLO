@@ -20,7 +20,9 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
@@ -42,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -51,6 +54,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
@@ -130,7 +134,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
-
+  private DeliverableCrpManager deliverableCrpManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
   private long deliverableID;
@@ -160,6 +164,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableValidator deliverableValidator;
 
   private FileDBManager fileDBManager;
+  private CrpProgramManager crpProgramManager;
 
 
   private FundingSourceManager fundingSourceManager;
@@ -208,15 +213,17 @@ public class DeliverableAction extends BaseAction {
     DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
     FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
+    DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
+    this.deliverableCrpManager = deliverableCrpManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
@@ -649,6 +656,14 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        if (deliverable.getCrps() != null) {
+          for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+            if (deliverableCrp != null) {
+              deliverableCrp.setCrp(crpManager.getCrpById(deliverableCrp.getCrp().getId()));
+              deliverableCrp.setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
+            }
+          }
+        }
         if (deliverable.getQualityCheck() != null) {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
@@ -682,57 +697,68 @@ public class DeliverableAction extends BaseAction {
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
-        deliverable.setQualityCheck(deliverableQualityCheck);
 
-        // TODO
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
-        }
+        if (this.isReportingActive()) {
 
-        if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
-          if (deliverable.getDeliverableDisseminations().size() > 0) {
-            deliverable.setDissemination(deliverable.getDisseminations().get(0));
+          DeliverableQualityCheck deliverableQualityCheck =
+            deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+          deliverable.setQualityCheck(deliverableQualityCheck);
+
+          // TODO
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+          }
+
+          if (deliverable.getDeliverableDisseminations() != null) {
+            deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+            if (deliverable.getDeliverableDisseminations().size() > 0) {
+              deliverable.setDissemination(deliverable.getDisseminations().get(0));
+            } else {
+              deliverable.setDissemination(new DeliverableDissemination());
+            }
+
+          }
+
+          if (deliverable.getDeliverableDataSharingFiles() != null) {
+            deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+          }
+
+          if (deliverable.getDeliverablePublicationMetadatas() != null) {
+            deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+          }
+          if (!deliverable.getPublicationMetadatas().isEmpty()) {
+            deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
           } else {
-            deliverable.setDissemination(new DeliverableDissemination());
+            deliverable.setPublication(new DeliverablePublicationMetadata());
           }
 
-        }
-
-        if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
-        }
-
-        if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
-        }
-
-        if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
-        }
-
-
-        deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
-
-          DeliverableFile deFile = new DeliverableFile();
-          switch (dataSharingFile.getTypeId().toString()) {
-            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getFile().getFileName());
-              break;
-
-            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getExternalFile());
-              break;
+          if (deliverable.getDeliverableDataSharings() != null) {
+            deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
           }
-          deFile.setId(dataSharingFile.getId());
-          deFile.setSize(0);
-          deliverable.getFiles().add(deFile);
+
+
+          deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+          deliverable.setFiles(new ArrayList<>());
+          for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+            DeliverableFile deFile = new DeliverableFile();
+            switch (dataSharingFile.getTypeId().toString()) {
+              case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getFile().getFileName());
+                break;
+
+              case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getExternalFile());
+                break;
+            }
+            deFile.setId(dataSharingFile.getId());
+            deFile.setSize(0);
+            deliverable.getFiles().add(deFile);
+          }
         }
+
         this.setDraft(false);
       }
 
@@ -945,8 +971,8 @@ public class DeliverableAction extends BaseAction {
 
       if (this.isReportingActive()) {
 
-        if (deliverable.isAdoptedLicense() != null) {
-          if (deliverable.isAdoptedLicense().booleanValue()) {
+        if (deliverable.getAdoptedLicense() != null) {
+          if (deliverable.getAdoptedLicense().booleanValue()) {
             deliverablePrew.setLicense(deliverable.getLicense());
             if (deliverable.getLicense() != null) {
               if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
@@ -957,7 +983,7 @@ public class DeliverableAction extends BaseAction {
                 deliverablePrew.setAllowModifications(null);
               }
             }
-            deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
+            deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
           } else {
             deliverablePrew.setLicense(null);
             deliverablePrew.setOtherLicense(null);
@@ -1025,7 +1051,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1150,10 +1176,11 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-
+          this.saveDissemination();
 
         }
         this.saveMetadata();
+        this.saveCrps();
         this.saveDataSharing();
       }
 
@@ -1165,6 +1192,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
       }
 
 
@@ -1204,6 +1232,28 @@ public class DeliverableAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+  }
+
+  public void saveCrps() {
+    if (deliverable.getCrps() == null) {
+
+      deliverable.setCrps(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps()) {
+      if (!deliverable.getCrps().contains(deliverableCrp)) {
+        deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+      }
+    }
+
+    for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+
+      if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+        deliverableCrp.setId(null);
+        deliverableCrp.setDeliverable(deliverable);
+        deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
+      }
+    }
   }
 
   public void saveDataSharing() {
@@ -1327,6 +1377,16 @@ public class DeliverableAction extends BaseAction {
                 break;
             }
           }
+        } else {
+
+
+          dissemination.setIntellectualProperty(false);
+          dissemination.setLimitedExclusivity(false);
+          dissemination.setRestrictedUseAgreement(false);
+          dissemination.setEffectiveDateRestriction(false);
+
+          dissemination.setRestrictedAccessUntil(null);
+          dissemination.setRestrictedEmbargoed(null);
         }
       } else {
 
@@ -1387,25 +1447,28 @@ public class DeliverableAction extends BaseAction {
         deliverableQualityCheckManager.getDeliverableQualityCheckById(deliverable.getQualityCheck().getId());
     } else {
       qualityCheck = new DeliverableQualityCheck();
-    }
-
-    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getQualityAssurance().getId());
-
-      qualityCheck.setQualityAssurance(answer);
+      qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
     }
 
     if (deliverable.getQualityCheck().getDataDictionary() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataDictionary().getId());
+      long id = deliverable.getQualityCheck().getDataDictionary().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataDictionary(answer);
     }
 
+
+    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
+      long id = deliverable.getQualityCheck().getQualityAssurance().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
+
+      qualityCheck.setQualityAssurance(answer);
+    }
+
+
     if (deliverable.getQualityCheck().getDataTools() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataTools().getId());
+      long id = deliverable.getQualityCheck().getDataTools().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataTools(answer);
     }
@@ -1463,7 +1526,7 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkDictionary());
     qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkTools());
 
-    qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
+
     qualityCheck.setActive(true);
     qualityCheck.setActiveSince(new Date());
     qualityCheck.setModifiedBy(this.getCurrentUser());

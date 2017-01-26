@@ -236,6 +236,8 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
 
+  public static final String PROJECT_DELIVERABLE_CRPS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableCrps)";
   public static final String PROJECT_DELIVERABLE_DATA_SHARING =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
 
