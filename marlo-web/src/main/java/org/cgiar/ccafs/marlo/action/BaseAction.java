@@ -1653,10 +1653,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Boolean isR(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    if (deliverableBD.isAdoptedLicense() == null) {
+    if (deliverableBD.getAdoptedLicense() == null) {
       return null;
     }
-    if (deliverableBD.isAdoptedLicense()) {
+    if (deliverableBD.getAdoptedLicense()) {
       if (deliverableBD.getLicense() == null) {
         return false;
       } else {
