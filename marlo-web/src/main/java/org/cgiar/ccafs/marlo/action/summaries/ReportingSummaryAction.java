@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.PentahoListener;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -34,7 +35,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
+import org.cgiar.ccafs.marlo.data.model.IpElement;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -106,7 +108,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
   }
 
-  private CrpManager crpManager;
+
   // Front-end
   private long projectID;
   private int year;
@@ -130,6 +132,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private InstitutionManager institutionManager;
   private ProjectBudgetManager projectBudgetManager;
   private LocElementManager locElementManager;
+  private CrpManager crpManager;
+  private IpElementManager ipElementManager;
 
   // Project from DB
   private Project project;
@@ -137,7 +141,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, IpElementManager ipElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -145,6 +149,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.institutionManager = institutionManager;
     this.projectBudgetManager = projectBudgetManager;
     this.locElementManager = locElementManager;
+    this.ipElementManager = ipElementManager;
   }
 
   @Override
@@ -699,20 +704,39 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getccafsOutcomesTableModel() {
     // TODO Auto-generated method stub
-    TypedTableModel model = new TypedTableModel(new String[] {"activity_id"}, new Class[] {String.class}, 0);
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"program_outcome", "program_outcome_description", "indicator", "indicator_description", "year",
+        "target_value", "target_cumulative", "target_achieved", "target_narrative", "target_achieved_narrative",
+        "achieved_annual_gender", "annual_gender"},
+      new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class},
+      0);
+    String program_outcome = "", program_outcome_description = "", indicator = "", indicator_description = "",
+      target_value = "", target_cumulative = "", target_achieved = "", target_narrative = "",
+      target_achieved_narrative = "", achieved_annual_gender = "", annual_gender = "";
+    int year = 0;
 
-    for (IpProjectContribution ipProjectContribution : project.getIpProjectContributions().stream()
-      .filter(distinctByKey(ipc -> ipc.getIpElementByMidOutcomeId())).filter(ipc -> ipc.isActive())
+
+    for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream().filter(i -> i.isActive())
       .collect(Collectors.toList())) {
+      IpElement ipElement = ipElementManager.getIpElementById(ipProjectIndicator.getOutcomeId());
+      program_outcome = ipElement.getIpProgram().getAcronym() + " - Outcome " + APConstants.MID_OUTCOME_YEAR;
+      program_outcome_description = ipElement.getDescription();
+      indicator = "Indicator #" + ipProjectIndicator.getIpIndicator().getId();
+      indicator_description = ipProjectIndicator.getIpIndicator().getDescription();
+
+      year = ipProjectIndicator.getYear();
+
 
     }
 
 
-    // model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
-    // end_date,
-    // institution, activity_leader, status});
+    model.addRow(new Object[] {program_outcome, program_outcome_description, indicator, indicator_description, year,
+      target_value, target_cumulative, target_achieved, target_narrative, target_achieved_narrative,
+      achieved_annual_gender, annual_gender});
     return model;
   }
+
 
   @Override
   public int getContentLength() {
@@ -727,7 +751,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   public String getCycle() {
     return cycle;
   }
-
 
   private TypedTableModel getDeliverablesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -860,6 +883,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
@@ -1183,6 +1207,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"exp_value", "narrative", "outcome_id", "out_fl", "out_year", "out_value", "out_statement",
@@ -1382,9 +1407,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     String lessons = "";
     String file = "";
     for (ProjectOutcomePandr projectOutcomePandr : project.getProjectOutcomesPandr().stream()
-      .filter(pop -> pop.isActive() && pop.getYear() == 2019 || pop.getYear() == year).collect(Collectors.toList())) {
+      .filter(pop -> pop.isActive() && pop.getYear() == APConstants.MID_OUTCOME_YEAR || pop.getYear() == year)
+      .collect(Collectors.toList())) {
 
-      if (projectOutcomePandr.getYear() == 2019) {
+      if (projectOutcomePandr.getYear() == APConstants.MID_OUTCOME_YEAR) {
         out_statement = projectOutcomePandr.getStatement();
       }
       if (projectOutcomePandr.getYear() == year) {
