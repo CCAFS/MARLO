@@ -2,6 +2,9 @@ $(document).ready(init);
 
 function init() {
 
+  // Select2
+  $('select').select2();
+
   // Attaching events
   attachEvents();
 }
@@ -9,7 +12,7 @@ function init() {
 function attachEvents() {
 
   // Is this deliverable Open Access
-  $(".accessible .button-label").on("click", function() {
+  $(".isOpenAccessQuestion .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
     $input.val(valueSelected);
@@ -20,6 +23,20 @@ function attachEvents() {
       $(".openAccessOptions").show("slow");
     } else {
       $(".openAccessOptions").hide("slow");
+    }
+  });
+
+  $(".adoptedLicense .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
+    var $input = $(this).parent().find('input');
+    $input.val(valueSelected);
+    $(this).parent().find("label").removeClass("radio-checked");
+    $(this).addClass("radio-checked");
+
+    if(!valueSelected) {
+      $(".adoptedLicenseOptions").hide("slow");
+    } else {
+      $(".adoptedLicenseOptions").show("slow");
     }
   });
 

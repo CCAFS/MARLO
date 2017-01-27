@@ -112,10 +112,17 @@
   <div class="clearfix"></div>
   <hr />
   <div class="clearfix"></div>
+  [#-- Creator/Authors --]
   <div class="col-md-12 form-group">
     <label for="">Creator/Authors:</label>
     <div class="authorsList simpleBox col-md-12">
-      <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p> 
+      [#if deliverable.authors?has_content]
+        [#list deliverable.authors as author]
+          [@authorMacro element=author index=author_index name="deliverable.authors"  /]
+        [/#list]
+      [#else]
+        <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p>
+      [/#if]
     </div>
     [#if editable]
     <div class="col-md-12">

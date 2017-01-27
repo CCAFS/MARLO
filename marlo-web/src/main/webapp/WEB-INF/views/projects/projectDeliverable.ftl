@@ -148,15 +148,13 @@
       </div>
     [/#if]
     <div class="row">
-      <div class="col-md-12">
-        <span class="lastName"> </span>
-        <span class="firstName"></span>
-      </div>
+      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
     </div>
-    <span><small class="orcidId"><b>orcid id:</b> not filled</small></span>
-    <input type="hidden" class="lastNameInput" value="" />
-    <input type="hidden" class="firstNameInput" value="" />
-    <input type="hidden" class="orcidIdInput" value="" />
+    <span><small class="orcidId"><b>orcid id:</b> ${(element.orcid)!'not filled'}</small></span>
+    <input type="hidden" class="id" value="${(element.id)!}" />
+    <input type="hidden" class="lastNameInput" value="${(element.lastName)!}" />
+    <input type="hidden" class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden" class="orcidIdInput" value="${(element.orcid)!}" />
     <div class="clearfix"></div>
   </div>
 [/#macro]
@@ -175,9 +173,10 @@
 
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
-  [#local metadataID = (publication.getMetadataID(encodedName))!-1 /]
-  [#local metadataIndex = (publication.getMetadataIndex(encodedName))!-1 /]
-  [#local metadataValue = (publication.getMetadataValue(metadataID))!'' /]
+  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
+  [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
+  [#local customName = "deliverable" /]
   <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
   <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
