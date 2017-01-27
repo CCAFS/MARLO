@@ -30,7 +30,7 @@
     <div class="borderBox">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.textArea name="${customName}.title" required=true className="" editable=editable /]
+        [@customForm.input name="${customName}.title" required=true className="" editable=editable /]
       </div>
       
       [#-- Subtype & year of completition --]
@@ -152,13 +152,13 @@
         <div class="col-md-12 openAccessOptions">
           <hr />
           [#-- Intellectual Property Rights (confidential information) --]
-          <div class="radio"><label><input type="radio" name="${customName}.dissemination.type" value="intellectualProperty" [#if ((publication.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label></div>
+          <div class="radio"><label><input type="radio" class="openAccessRestrictionRadio" name="${customName}.dissemination.type" value="intellectualProperty" [#if ((publication.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label></div>
           [#-- Limited Exclusivity Agreements --]
-          <div class="radio"><label><input type="radio" name="${customName}.dissemination.type" value="limitedExclusivity" [#if (publication.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label></div>
+          <div class="radio"><label><input type="radio" class="openAccessRestrictionRadio" name="${customName}.dissemination.type" value="limitedExclusivity" [#if (publication.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label></div>
           [#-- Restricted Use Agreement - Restricted access (if so, what are these periods?) --]
-          <div class="radio"><label><input type="radio" name="${customName}.dissemination.type" value="restrictedUseAgreement" [#if (publication.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label></div>
+          <div class="radio"><label><input type="radio" class="openAccessRestrictionRadio" name="${customName}.dissemination.type" value="restrictedUseAgreement" [#if (publication.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label></div>
           [#-- Effective Date Restriction - embargoed periods (if so, what are these periods?) --]
-          <div class="radio"><label><input type="radio" name="${customName}.dissemination.type" value="effectiveDateRestriction"[#if (publication.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label></div>
+          <div class="radio"><label><input type="radio" class="openAccessRestrictionRadio" name="${customName}.dissemination.type" value="effectiveDateRestriction"[#if (publication.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label></div>
           [#-- Period --]
           <div class="row restrictionDate-block" style="display:[#if (publication.dissemination.restrictedUseAgreement)?? && (publication.dissemination.restrictedUseAgreement)||(publication.dissemination.effectiveDateRestriction)?? && (publication.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
             <div class="col-md-5">[@customForm.input name="${customName}.dissemination.restrictedEmbargoedText" value="" type="text" i18nkey="text"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]</div>
@@ -200,17 +200,17 @@
         <div class="col-md-12 adoptedLicenseOptions" style="display:${((publication.adoptedLicense)!false)?string('block','none')}">
           <hr />
           <div class="form-group col-md-12">
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY" [#if ((publication.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_SA" [#if ((publication.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_ND" [#if ((publication.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC" [#if ((publication.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_SA" [#if ((publication.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY_NC_ND" [#if ((publication.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
-            <div class="radio"><input type="radio" name="${customName}.license" id="" value="OTHER" [#if ((publication.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY" [#if ((publication.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY_SA" [#if ((publication.licenseType) == "CC_BY_SA")!false]checked="checked"[/#if]/> CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY_ND" [#if ((publication.licenseType) == "CC_BY_ND")!false]checked="checked"[/#if]/> CC-BY-ND <small>(allow commercial use but no modifications)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY_NC" [#if ((publication.licenseType) == "CC_BY_NC")!false]checked="checked"[/#if]/> CC-BY-NC <small>(allow modifications but no commercial use)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY_NC_SA" [#if ((publication.licenseType) == "CC_BY_NC_SA")!false]checked="checked"[/#if]/> CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="CC_BY_NC_ND" [#if ((publication.licenseType) == "CC_BY_NC_ND")!false]checked="checked"[/#if]/> CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></div>
+            <div class="radio"><input type="radio" class="licenseRadio" name="${customName}.license" id="" value="OTHER" [#if ((publication.licenseType) == "OTHER")!false]checked="checked"[/#if]/> Other</div>
           </div>
           
-          <div class="form-group row" style="">
-            <div class="col-md-5 licence-modifications">
+          <div class="form-group row licence-modifications" style="display:[#if ((publication.licenseType) == "OTHER")!false]block[#else]none[/#if]">
+            <div class="col-md-5">
               [@customForm.input name="${customName}.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
             </div>
             <div class="col-md-7">
@@ -218,16 +218,12 @@
               [@customForm.yesNoInput name="${customName}.allowModifications"  editable=editable inverse=false value="true" cssClass="licenceModifications pull-right" /] 
             </div>
           </div>
-          
         </div>
       </div>
     </div>
+    
     <h4 class="headTitle"> Publication Metadata</h4> 
     <div class="borderBox">
-      [#-- Creator / Authors --]
-      <div class="form-group row">
-        
-      </div>
       [#-- Language & publication date --]
       <div class="form-group row">
         <div class="col-md-6">[@metadataField title="language" encodedName="dc.language" type="input" require=true/]</div>
@@ -273,6 +269,41 @@
           [@customForm.yesNoInput name="${customName}.acknowledge"  editable=editable inverse=false value="true" cssClass="acknowledge text-center" /] 
         </div>
       </div>
+      
+      <hr />
+      
+      [#-- Creator / Authors --]
+      <div class="form-group">
+        <label for="">Creator/Authors:</label>
+        <div class="authorsList simpleBox col-md-12">
+          [#if publication?? && publication.authors?has_content]
+            [#list publication.authors as author]
+              [@authorMacro element=author index=author_index name="publication.authors"  /]
+            [/#list]
+          [#else]
+            <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p>
+          [/#if]
+        </div>
+        [#if editable]
+        <div class="col-md-12">
+          <div class="col-md-3">
+            <input class="form-control input-sm lName" placeholder="Last Name" type="text" /> 
+          </div>
+          <div class="col-md-3">
+            <input class="form-control input-sm fName" placeholder="First Name" type="text" /> 
+          </div>
+          <div class="col-md-3">
+            <input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> 
+           </div>
+           <div class="col-md-3">
+             <div id="" class="addAuthor text-right">
+              <div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add author" /]</div>
+            </div>
+           </div>
+        </div>
+        [/#if] 
+      </div>
+      
     </div> 
     
     [#-- Section Buttons & hidden inputs--]
@@ -300,6 +331,26 @@
   [#elseif type == "select"]
     [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
   [/#if]
+[/#macro]
+
+[#macro authorMacro element index name  isTemplate=false]
+  [#assign customName = "${name}[${index}]" /]
+  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
+    [#if editable] [#--&& (isTemplate) --]
+      <div class="removeLink">
+        <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
+      </div>
+    [/#if]
+    <div class="row">
+      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
+    </div>
+    <span><small class="orcidId"> ${(element.elementId)!'<b>orcid id:</b> not filled'}</small></span>
+    <input type="hidden" class="id" value="${(element.id)!}" />
+    <input type="hidden" class="lastNameInput" value="${(element.lastName)!}" />
+    <input type="hidden" class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden" class="orcidIdInput" value="${(element.elementId)!}" />
+    <div class="clearfix"></div>
+  </div>
 [/#macro]
 
 [#macro leadPartnerMacro element name index isTemplate=false]
