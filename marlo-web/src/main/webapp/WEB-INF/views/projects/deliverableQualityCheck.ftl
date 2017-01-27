@@ -1,6 +1,6 @@
 [#ftl]
 [#-- Compliance check (Data products only) --]
-<h4 class="headTitle">Compliance check (Data products only)</h4>
+<h4 class="headTitle">Compliance check</h4>
 
 <div class="simpleBox" >
   <div class="row">
@@ -37,7 +37,7 @@
     </div>
     
     [#-- FILE --]
-    <div class="col-md-8">
+    <div class="col-md-8 fileOptions" style="display:[#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==2] block [#else] none[/#if]">
       <div class="col-md-6 form-group  fileAssuranceContent">
         <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileAssurance?? && deliverable.qualityCheck.fileAssurance.id?? /]
@@ -78,7 +78,7 @@
     </div>
     
     [#-- FILE --]
-    <div class="col-md-8">
+    <div class="col-md-8 fileOptions" style="display:[#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==2] block[#else]none[/#if]">
       <div class="col-md-6 form-group fileDictionaryContent">
         <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
          [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileDictionary?? && deliverable.qualityCheck.fileDictionary.id?? /]
@@ -119,7 +119,7 @@
     </div>
     
     [#-- FILE --]
-    <div class="col-md-8">
+    <div class="col-md-8 fileOptions" style="display:[#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==2]block[#else]none[/#if]">
       <div class="col-md-6 form-group fileToolsContent">
         <label>[@customForm.text name="project.deliverable.proofSubmission" readText=!editable /]:</label>
         [#assign hasFile = deliverable.qualityCheck?? && deliverable.qualityCheck.fileTools?? && deliverable.qualityCheck.fileTools.id?? /]

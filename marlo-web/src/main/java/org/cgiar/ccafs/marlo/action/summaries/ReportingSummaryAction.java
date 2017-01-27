@@ -1318,6 +1318,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       partnersSize = projectPartners.size();
     }
 
+
     String overall = "";
 
     if (cycle.equals("Reporting")) {
@@ -1341,6 +1342,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
 
     model.addRow(new Object[] {partnersSize, overall});
+
     return model;
   }
 

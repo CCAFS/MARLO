@@ -147,7 +147,7 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile" />
 		</set>
-		<set name="deliverablePublicationMetadatas" table="deliverable_publication_metadata"
+		<set name="deliverablePublicationMetadatas" order-by="id" table="deliverable_publications_metada"
 			inverse="true" lazy="true" fetch="select">
 			<key>
 				<column name="deliverable_id" not-null="true" />
@@ -178,6 +178,19 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
 		</set>
-
+		
+		 <set name="deliverableCrps" order-by="id" table="deliverable_crps" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableCrp" />
+        </set>
+		
+<set name="deliverableUsers" table="deliverable_users" inverse="true" order-by="id" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
+        </set>
 	</class>
 </hibernate-mapping>

@@ -141,11 +141,13 @@ function init() {
   // Add many flagships
   $(".addFlagship").on("click", function() {
     var fOption = $(".flaghsipSelect").find("option:selected");
+    var crpOtion = $(".crpSelect").find("option:selected");
     if(fOption.val() != "" && fOption.val() != "-1") {
       if($(".flagshipList").find(".flagships input.id[value='" + fOption.val() + "']").exists()) {
       } else {
-        var v = $(fOption).text().length > 45 ? $(fOption).text().substr(0, 45) + ' ... ' : $(fOption).text();
-        addFlagship(fOption.val(), v, fOption.text());
+        var composedText = crpOtion.text().toUpperCase() + "-" + fOption.text();
+        var v = composedText.length > 45 ? composedText.substr(0, 45) + ' ... ' : composedText;
+        addFlagship(fOption.val(), v, composedText, crpOtion.val());
       }
     }
   });
@@ -198,16 +200,18 @@ function init() {
   });
 }
 
-function addFlagship(id,text,title) {
+function addFlagship(id,text,title,crpId) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
   $item.find(".name").text(text);
   $item.find(".name").attr("title", title);
-  $item.find(".id").val(id);
+  $item.find(".idElemento").val("-1");
+  $item.find(".idCrp").val(crpId);
+  $item.find(".idFlagship").val(id);
   $list.append($item);
   $item.show('slow');
-  updateFlagship();
   checkNextFlagshipItems($list);
+  updateFlagship();
 }
 
 function removeFlagship() {
@@ -292,9 +296,11 @@ function checkDoiUrl() {
 function openAccessRestriction() {
   if($(this).val() == "restrictedUseAgreement") {
     $(".restrictionDate-block").find("label").text("Restricted access until");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedAccessUntil");
     $(".restrictionDate-block").show("slow");
   } else if($(this).val() == "effectiveDateRestriction") {
     $(".restrictionDate-block").find("label").text("Restricted embargoed date");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedEmbargoed");
     $(".restrictionDate-block").show("slow");
   } else {
     $(".restrictionDate-block").hide("slow");
@@ -545,8 +551,8 @@ function getDataverseMetadata(channel,url,uri) {
           var authors = [];
           $.each(m.data.metadata_blocks.citation.author, function(i,element) {
             authors.push({
-                lastName: (element.authorName).split(',')[1],
-                firstName: (element.authorName).split(',')[0],
+                lastName: (element.authorName).split(',')[0],
+                firstName: (element.authorName).split(',')[1],
                 orcidId: element.authorIdentifier
             });
           });

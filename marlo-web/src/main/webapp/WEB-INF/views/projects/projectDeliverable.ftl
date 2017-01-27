@@ -134,9 +134,9 @@
 
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
-[@authorMacro element={} index=-1 name="author"  isTemplate=true /]
-[@flagshipMacro element={} index=-1 name="deliverable.flagships"  isTemplate=true /]
-  
+[@authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
+[@flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro authorMacro element index name  isTemplate=false]
@@ -148,15 +148,13 @@
       </div>
     [/#if]
     <div class="row">
-      <div class="col-md-12">
-        <span class="lastName"> </span>
-        <span class="firstName"></span>
-      </div>
+      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
     </div>
-    <span><small class="orcidId"><b>orcid id:</b> not filled</small></span>
-    <input type="hidden" class="lastNameInput" value="" />
-    <input type="hidden" class="firstNameInput" value="" />
-    <input type="hidden" class="orcidIdInput" value="" />
+    <span><small class="orcidId"><b>orcid id:</b> ${(element.elementId)!'not filled'}</small></span>
+    <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName)!}" />
+    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>
 [/#macro]
@@ -165,9 +163,10 @@
   [#assign customName = "${name}[${index}]" /]
   <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox col-md-6"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if] 
-    <input class="id" type="hidden" name="${customName}.falgship.id" value="${(element.flagship.id)!-1}" />
-    <input class="idElement" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
-    <span class="name">${(element.flagship.composedName)!'null'}</span>
+    <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
+    <input class="idCrp" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!-1}" />
+    <input class="idFlagship" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!-1}" />
+    <span class="name">${(element.crp.acronym)!'null'}-${(element.crpProgram.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
@@ -175,14 +174,24 @@
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
-  <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].id" value="${(metadataID)!}" />
-    <input type="hidden" name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].metadataElement.id" value="${(metadataID)!}" />
+  [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
+  [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
+  [#local customName = 'deliverable' /]
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
-    [@customForm.input name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "textArea"]
-    [@customForm.textArea name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
+    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
   [#elseif type == "select"]
-    [@customForm.select name="deliverable.metadataElements[${deliverable.getMetadataIndex(encodedName)}].elementValue" required=require value="${(deliverable.getMetadataValue(metadataID))!}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
- 
+    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
   [/#if]
 [/#macro]
+
+[#function checkDeliverableTypes]
+  [#if deliverable.deliverableType?? && deliverable.deliverableType.deliverableType.id==49]
+    [#return "block"]
+  [#else]
+    [#return "none"]
+  [/#if]
+[/#function]

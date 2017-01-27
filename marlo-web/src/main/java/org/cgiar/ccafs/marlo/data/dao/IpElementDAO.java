@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,6 +34,7 @@ public interface IpElementDAO {
    */
   public boolean deleteIpElement(long ipElementId);
 
+
   /**
    * This method validate if the ipElement identify with the given id exists in the system.
    * 
@@ -56,6 +57,10 @@ public interface IpElementDAO {
    * @return a list from IpElement null if no exist records
    */
   public List<IpElement> findAll();
+
+  public List<IpElement> getIPElementsByParent(int parentId, int relationTypeID);
+
+  public List<IpElement> getIPElementsRelated(int ipElementID, int relationTypeID);
 
 
   /**

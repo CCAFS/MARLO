@@ -20,16 +20,21 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpClusterKeyOutputManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDataSharingFileManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableFundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverablePartnershipManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
@@ -41,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutput;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterKeyOutputOutcome;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
@@ -53,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -127,9 +134,11 @@ public class DeliverableAction extends BaseAction {
   private DeliverableDataSharingFileManager deliverableDataSharingFileManager;
 
 
+  private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
-
+  private DeliverableUserManager deliverableUserManager;
+  private DeliverableCrpManager deliverableCrpManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
   private long deliverableID;
@@ -146,6 +155,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
+  private DeliverableDisseminationManager deliverableDisseminationManager;
 
   private List<DeliverableType> deliverableSubTypes;
 
@@ -158,6 +168,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableValidator deliverableValidator;
 
   private FileDBManager fileDBManager;
+  private CrpProgramManager crpProgramManager;
 
 
   private FundingSourceManager fundingSourceManager;
@@ -206,15 +217,21 @@ public class DeliverableAction extends BaseAction {
     DeliverableValidator deliverableValidator, ProjectPartnerManager projectPartnerManager,
     FundingSourceManager fundingSourceManager, DeliverableFundingSourceManager deliverableFundingSourceManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager,
-    DeliverableQualityCheckManager deliverableQualityCheckManager,
-    DeliverableQualityAnswerManager deliverableQualityAnswerManager,
+    DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
+    DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
-    MetadataElementManager metadataElementManager) {
+    DeliverableUserManager deliverableUserManager,
+    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
+    MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.deliverableUserManager = deliverableUserManager;
+    this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
+    this.deliverableCrpManager = deliverableCrpManager;
+    this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
     this.projectPartnerPersonManager = projectPartnerPersonManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
     this.crpClusterKeyOutputManager = crpClusterKeyOutputManager;
@@ -231,6 +248,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableDataSharingFileManager = deliverableDataSharingFileManager;
     this.metadataElementManager = metadataElementManager;
     this.deliverableMetadataElementManager = deliverableMetadataElementManager;
+    this.deliverableDisseminationManager = deliverableDisseminationManager;
   }
 
   @Override
@@ -646,6 +664,14 @@ public class DeliverableAction extends BaseAction {
           }
         }
 
+        if (deliverable.getCrps() != null) {
+          for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+            if (deliverableCrp != null) {
+              deliverableCrp.setCrp(crpManager.getCrpById(deliverableCrp.getCrp().getId()));
+              deliverableCrp.setCrpProgram(crpProgramManager.getCrpProgramById(deliverableCrp.getCrpProgram().getId()));
+            }
+          }
+        }
         if (deliverable.getQualityCheck() != null) {
           if (deliverable.getQualityCheck().getFileAssurance() != null) {
             if (deliverable.getQualityCheck().getFileAssurance().getId() != null) {
@@ -679,57 +705,67 @@ public class DeliverableAction extends BaseAction {
         deliverable.setGenderLevels(
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
-        DeliverableQualityCheck deliverableQualityCheck =
-          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
-        deliverable.setQualityCheck(deliverableQualityCheck);
 
-        // TODO
-        if (deliverable.getDeliverableMetadataElements() != null) {
-          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
-        }
+        if (this.isReportingActive()) {
 
-        if (deliverable.getDeliverableDisseminations() != null) {
-          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
-          if (deliverable.getDeliverableDisseminations().size() > 0) {
-            deliverable.setDissemination(deliverable.getDisseminations().get(0));
-          } else {
-            deliverable.setDissemination(new DeliverableDissemination());
+          DeliverableQualityCheck deliverableQualityCheck =
+            deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+          deliverable.setQualityCheck(deliverableQualityCheck);
+
+          // TODO
+          if (deliverable.getDeliverableMetadataElements() != null) {
+            deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
           }
 
-        }
+          if (deliverable.getDeliverableDisseminations() != null) {
+            deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+            if (deliverable.getDeliverableDisseminations().size() > 0) {
+              deliverable.setDissemination(deliverable.getDisseminations().get(0));
+            } else {
+              deliverable.setDissemination(new DeliverableDissemination());
+            }
 
-        if (deliverable.getDeliverableDataSharingFiles() != null) {
-          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
-        }
-
-        if (deliverable.getDeliverablePublicationMetadatas() != null) {
-          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
-        }
-
-        if (deliverable.getDeliverableDataSharings() != null) {
-          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
-        }
-
-
-        deliverable.setFiles(new ArrayList<>());
-        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
-
-          DeliverableFile deFile = new DeliverableFile();
-          switch (dataSharingFile.getTypeId().toString()) {
-            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getFile().getFileName());
-              break;
-
-            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
-              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
-              deFile.setName(dataSharingFile.getExternalFile());
-              break;
           }
-          deFile.setId(dataSharingFile.getId());
-          deFile.setSize(0);
-          deliverable.getFiles().add(deFile);
+
+          if (deliverable.getDeliverableDataSharingFiles() != null) {
+            deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+          }
+
+          if (deliverable.getDeliverablePublicationMetadatas() != null) {
+            deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+          }
+          if (!deliverable.getPublicationMetadatas().isEmpty()) {
+            deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
+          }
+
+          if (deliverable.getDeliverableDataSharings() != null) {
+            deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+          }
+
+
+          deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
+          deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+          deliverable.setFiles(new ArrayList<>());
+          for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+            DeliverableFile deFile = new DeliverableFile();
+            switch (dataSharingFile.getTypeId().toString()) {
+              case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getFile().getFileName());
+                break;
+
+              case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+                deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+                deFile.setName(dataSharingFile.getExternalFile());
+                break;
+            }
+            deFile.setId(dataSharingFile.getId());
+            deFile.setSize(0);
+            deliverable.getFiles().add(deFile);
+          }
         }
+
         this.setDraft(false);
       }
 
@@ -861,6 +897,13 @@ public class DeliverableAction extends BaseAction {
       }
 
 
+      if (deliverable.getPublication() != null) {
+        deliverable.getPublication().setIsiPublication(null);
+        deliverable.getPublication().setCoAuthor(null);
+        deliverable.getPublication().setNasr(null);
+
+      }
+
       deliverable.setCrossCuttingGender(null);
       deliverable.setCrossCuttingCapacity(null);
       deliverable.setCrossCuttingNa(null);
@@ -941,17 +984,32 @@ public class DeliverableAction extends BaseAction {
       deliverablePrew.setStatusDescription(deliverable.getStatusDescription());
 
       if (this.isReportingActive()) {
-        deliverablePrew.setLicense(deliverable.getLicense());
-        if (deliverable.getLicense() != null) {
-          if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
-            deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
-            deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+
+        if (deliverable.getAdoptedLicense() != null) {
+          if (deliverable.getAdoptedLicense().booleanValue()) {
+            deliverablePrew.setLicense(deliverable.getLicense());
+            if (deliverable.getLicense() != null) {
+              if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+                deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
+                deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+              } else {
+                deliverablePrew.setOtherLicense(null);
+                deliverablePrew.setAllowModifications(null);
+              }
+            }
+            deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
           } else {
+            deliverablePrew.setLicense(null);
             deliverablePrew.setOtherLicense(null);
-            deliverablePrew.setAllowModifications(false);
+            deliverablePrew.setAllowModifications(null);
           }
+        } else {
+          deliverablePrew.setLicense(null);
+          deliverablePrew.setOtherLicense(null);
+          deliverablePrew.setAllowModifications(null);
         }
-        deliverablePrew.setAdoptedLicense(deliverable.isAdoptedLicense());
+
+
       }
 
 
@@ -1007,7 +1065,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1132,14 +1190,14 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-
-          if (deliverable.getDissemination() != null) {
-            DeliverableDissemination dissemination = new DeliverableDissemination();
-          }
+          this.saveDissemination();
 
         }
         this.saveMetadata();
+        this.saveCrps();
+        this.savePublicationMetadata();
         this.saveDataSharing();
+        this.saveUsers();
       }
 
 
@@ -1150,6 +1208,10 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DATA_SHARING_FILES);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
 
 
@@ -1190,6 +1252,29 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
+  public void saveCrps() {
+    if (deliverable.getCrps() == null) {
+
+      deliverable.setCrps(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableCrp deliverableCrp : deliverableDB.getDeliverableCrps()) {
+      if (!deliverable.getCrps().contains(deliverableCrp)) {
+        deliverableCrpManager.deleteDeliverableCrp(deliverableCrp.getId());
+      }
+    }
+
+    for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+
+      if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
+        deliverableCrp.setId(null);
+        deliverableCrp.setDeliverable(deliverable);
+        deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
+      }
+    }
+  }
+
 
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
@@ -1242,6 +1327,125 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
+  public void saveDissemination() {
+    if (deliverable.getDissemination() != null) {
+
+      DeliverableDissemination dissemination = new DeliverableDissemination();
+      if (deliverable.getDissemination().getId() != null && deliverable.getDissemination().getId() != -1) {
+        dissemination =
+          deliverableDisseminationManager.getDeliverableDisseminationById(deliverable.getDissemination().getId());
+      } else {
+        dissemination = new DeliverableDissemination();
+        dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+
+      }
+
+
+      if (deliverable.getDissemination().getIsOpenAccess() != null) {
+        dissemination.setIsOpenAccess(deliverable.getDissemination().getIsOpenAccess());
+        if (!deliverable.getDissemination().getIsOpenAccess().booleanValue()) {
+          String type = deliverable.getDissemination().getType();
+          if (type != null) {
+            switch (type) {
+              case "intellectualProperty":
+
+                dissemination.setIntellectualProperty(true);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+
+                break;
+              case "limitedExclusivity":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(true);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "restrictedUseAgreement":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(true);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(deliverable.getDissemination().getRestrictedAccessUntil());
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "effectiveDateRestriction":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(true);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedAccessUntil());
+
+                break;
+
+              default:
+                break;
+            }
+          }
+        } else {
+
+
+          dissemination.setIntellectualProperty(false);
+          dissemination.setLimitedExclusivity(false);
+          dissemination.setRestrictedUseAgreement(false);
+          dissemination.setEffectiveDateRestriction(false);
+
+          dissemination.setRestrictedAccessUntil(null);
+          dissemination.setRestrictedEmbargoed(null);
+        }
+      } else {
+
+        dissemination.setIsOpenAccess(null);
+
+        dissemination.setIntellectualProperty(false);
+        dissemination.setLimitedExclusivity(false);
+        dissemination.setRestrictedUseAgreement(false);
+        dissemination.setEffectiveDateRestriction(false);
+
+        dissemination.setRestrictedAccessUntil(null);
+        dissemination.setRestrictedEmbargoed(null);
+      }
+
+      if (deliverable.getDissemination().getAlreadyDisseminated() != null) {
+        dissemination.setAlreadyDisseminated(deliverable.getDissemination().getAlreadyDisseminated());
+        if (deliverable.getDissemination().getAlreadyDisseminated().booleanValue()) {
+
+          dissemination.setDisseminationUrl(deliverable.getDissemination().getDisseminationUrl());
+          dissemination.setDisseminationChannel(deliverable.getDissemination().getDisseminationChannel());
+        } else {
+          dissemination.setDisseminationUrl(null);
+          dissemination.setDisseminationChannel(null);
+        }
+      } else {
+        dissemination.setAlreadyDisseminated(null);
+        dissemination.setDisseminationUrl(null);
+        dissemination.setDisseminationChannel(null);
+      }
+
+
+      deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
+
+    }
+
+
+  }
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
 
@@ -1257,6 +1461,17 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+  public void savePublicationMetadata() {
+    if (deliverable.getPublication() != null) {
+      deliverable.getPublication().setDeliverable(deliverable);
+      if (deliverable.getPublication().getId() != null && deliverable.getPublication().getId().intValue() == -1) {
+        deliverable.getPublication().setId(null);
+      }
+      deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(deliverable.getPublication());
+
+    }
+  }
+
   public void saveQualityCheck() {
     DeliverableQualityCheck qualityCheck;
     if (deliverable.getQualityCheck().getId() != -1) {
@@ -1264,25 +1479,28 @@ public class DeliverableAction extends BaseAction {
         deliverableQualityCheckManager.getDeliverableQualityCheckById(deliverable.getQualityCheck().getId());
     } else {
       qualityCheck = new DeliverableQualityCheck();
-    }
-
-    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getQualityAssurance().getId());
-
-      qualityCheck.setQualityAssurance(answer);
+      qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
     }
 
     if (deliverable.getQualityCheck().getDataDictionary() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataDictionary().getId());
+      long id = deliverable.getQualityCheck().getDataDictionary().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataDictionary(answer);
     }
 
+
+    if (deliverable.getQualityCheck().getQualityAssurance() != null) {
+      long id = deliverable.getQualityCheck().getQualityAssurance().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
+
+      qualityCheck.setQualityAssurance(answer);
+    }
+
+
     if (deliverable.getQualityCheck().getDataTools() != null) {
-      DeliverableQualityAnswer answer = deliverableQualityAnswerManager
-        .getDeliverableQualityAnswerById(deliverable.getQualityCheck().getDataTools().getId());
+      long id = deliverable.getQualityCheck().getDataTools().getId();
+      DeliverableQualityAnswer answer = deliverableQualityAnswerManager.getDeliverableQualityAnswerById(id);
 
       qualityCheck.setDataTools(answer);
     }
@@ -1340,7 +1558,7 @@ public class DeliverableAction extends BaseAction {
     qualityCheck.setLinkDictionary(deliverable.getQualityCheck().getLinkDictionary());
     qualityCheck.setLinkTools(deliverable.getQualityCheck().getLinkTools());
 
-    qualityCheck.setDeliverable(deliverableManager.getDeliverableById(deliverable.getId()));
+
     qualityCheck.setActive(true);
     qualityCheck.setActiveSince(new Date());
     qualityCheck.setModifiedBy(this.getCurrentUser());
@@ -1348,6 +1566,28 @@ public class DeliverableAction extends BaseAction {
 
     deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
+  }
+
+  public void saveUsers() {
+    if (deliverable.getUsers() == null) {
+
+      deliverable.setUsers(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers()) {
+      if (!deliverable.getUsers().contains(deliverableUser)) {
+        deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
+      }
+    }
+
+    for (DeliverableUser deliverableUser : deliverable.getUsers()) {
+
+      if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
+        deliverableUser.setId(null);
+        deliverableUser.setDeliverable(deliverable);
+        deliverableUserManager.saveDeliverableUser(deliverableUser);
+      }
+    }
   }
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
