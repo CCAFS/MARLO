@@ -3,7 +3,9 @@ $(document).ready(init);
 function init() {
 
   // Select2
-  $('select').select2();
+  $('select').select2({
+    width: '100%'
+  });
 
   // Attaching events
   attachEvents();
@@ -11,14 +13,18 @@ function init() {
 
 function attachEvents() {
 
-  // Is this deliverable Open Access
-  $(".isOpenAccessQuestion .button-label").on("click", function() {
+  // YES/NO Event
+  $(".button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     var $input = $(this).parent().find('input');
     $input.val(valueSelected);
     $(this).parent().find("label").removeClass("radio-checked");
     $(this).addClass("radio-checked");
+  });
 
+  // Is this deliverable Open Access
+  $(".isOpenAccessQuestion .button-label").on("click", function() {
+    var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
       $(".openAccessOptions").show("slow");
     } else {
@@ -26,13 +32,9 @@ function attachEvents() {
     }
   });
 
+  // Have the publication adopted a license
   $(".adoptedLicense .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-
     if(!valueSelected) {
       $(".adoptedLicenseOptions").hide("slow");
     } else {
@@ -41,7 +43,6 @@ function attachEvents() {
   });
 
   /** Gender Levels * */
-
   $(".genderLevelsSelect").on("change", function() {
     var option = $(this).find("option:selected");
     if(option.val() != "-1") {
@@ -81,6 +82,33 @@ function attachEvents() {
     $('input#gender, input#youth, input#capacity').prop("checked", false);
     $('#gender-levels').slideUp();
   });
+
+  $("input.openAccessRestrictionRadio").on("change", openAccessRestriction);
+
+  // Other license type
+  $("input.licenseRadio").on("change", function() {
+    console.log($(this).val());
+    if($(this).val() == "OTHER") {
+      $(".licence-modifications").show("slow");
+    } else {
+      $(".licence-modifications").hide("slow");
+    }
+  });
+}
+
+// Open access restriction period
+function openAccessRestriction() {
+  if($(this).val() == "restrictedUseAgreement") {
+    $(".restrictionDate-block").find("label").text("Restricted access until:*");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedAccessUntil");
+    $(".restrictionDate-block").show("slow");
+  } else if($(this).val() == "effectiveDateRestriction") {
+    $(".restrictionDate-block").find("label").text("Restricted embargoed date:*");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedEmbargoed");
+    $(".restrictionDate-block").show("slow");
+  } else {
+    $(".restrictionDate-block").hide("slow");
+  }
 }
 
 /** Add gender level * */
