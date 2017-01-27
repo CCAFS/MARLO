@@ -891,6 +891,13 @@ public class DeliverableAction extends BaseAction {
       }
 
 
+      if (deliverable.getPublication() != null) {
+        deliverable.getPublication().setIsiPublication(null);
+        deliverable.getPublication().setCoAuthor(null);
+        deliverable.getPublication().setNasr(null);
+
+      }
+
       deliverable.setCrossCuttingGender(null);
       deliverable.setCrossCuttingCapacity(null);
       deliverable.setCrossCuttingNa(null);
