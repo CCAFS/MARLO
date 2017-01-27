@@ -377,6 +377,10 @@ function addAuthor() {
     $item.show('slow');
     updateAuthor();
     checkNextAuthorItems($list);
+
+    $(".lName").val("");
+    $(".fName").val("");
+    $(".oId").val("");
   } else {
     $(".lName").addClass("fieldError");
     $(".fName").addClass("fieldError");

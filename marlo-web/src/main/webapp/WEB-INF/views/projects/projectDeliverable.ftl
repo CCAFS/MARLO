@@ -150,7 +150,7 @@
     <div class="row">
       <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
     </div>
-    <span><small class="orcidId"><b>orcid id:</b> ${(element.elementId)!'not filled'}</small></span>
+    <span><small class="orcidId">[#if element.elementId?has_content][#else]<b>orcid id:</b>[/#if] ${(element.elementId)!'not filled'}</small></span>
     <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
     <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName)!}" />
     <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName)!}" />
