@@ -176,7 +176,7 @@
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
-  [#local customName = "deliverable" /]
+  [#local customName = 'deliverable' /]
   <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
   <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
@@ -189,5 +189,7 @@
 [/#macro]
 
 [#function checkDeliverableTypes]
-  <#return true>
+  [#if deliverable.deliverableType.deliverableType.id==49]
+    <#return "block">
+  [/#if]
 [/#function]

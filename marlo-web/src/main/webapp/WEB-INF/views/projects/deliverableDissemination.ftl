@@ -163,7 +163,15 @@
     </div>
   </div>
   <label for="">Indicators for journal articles:</label>
-  [@s.checkboxlist name="" list="" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="" /]
+    <div class="form-group">
+     <input type="checkbox" name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
+    </div>
+    <div class="form-group">  
+     <input type="checkbox" name="deliverable.publication.nasr" value="true" [#if deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
+    </div>
+    <div class="form-group">
+     <input type="checkbox" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?
+    </div>
   <div class="clearfix"></div>
   <br />
   <div class="row ">
