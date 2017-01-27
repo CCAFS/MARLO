@@ -361,7 +361,7 @@ function addAuthor() {
     $(".oId").removeClass("fieldError");
     var $list = $('.authorsList');
     var $item = $('#author-template').clone(true).removeAttr("id");
-    $item.find(".lastName").html($(".lName").val());
+    $item.find(".lastName").html($(".lName").val() + ", ");
     $item.find(".firstName").html($(".fName").val());
     if($(".oId").val() == "") {
       $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
