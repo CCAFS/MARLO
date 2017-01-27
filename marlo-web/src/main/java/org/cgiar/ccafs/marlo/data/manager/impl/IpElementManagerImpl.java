@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,6 +63,18 @@ public class IpElementManagerImpl implements IpElementManager {
   public IpElement getIpElementById(long ipElementID) {
 
     return ipElementDAO.find(ipElementID);
+  }
+
+  @Override
+  public List<IpElement> getIPElementsByParent(IpElement parent, int relationTypeID) {
+
+    return ipElementDAO.getIPElementsByParent(parent.getId().intValue(), relationTypeID);
+  }
+
+  @Override
+  public List<IpElement> getIPElementsRelated(int ipElementID, int relationTypeID) {
+    //
+    return ipElementDAO.getIPElementsRelated(ipElementID, relationTypeID);
   }
 
   @Override

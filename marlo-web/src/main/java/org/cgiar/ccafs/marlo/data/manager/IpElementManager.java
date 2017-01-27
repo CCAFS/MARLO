@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -45,14 +45,12 @@ public interface IpElementManager {
    */
   public boolean existIpElement(long ipElementID);
 
-
   /**
    * This method gets a list of ipElement that are active
    * 
    * @return a list from IpElement null if no exist records
    */
   public List<IpElement> findAll();
-
 
   /**
    * This method gets a ipElement object by a given ipElement identifier.
@@ -61,6 +59,18 @@ public interface IpElementManager {
    * @return a IpElement object.
    */
   public IpElement getIpElementById(long ipElementID);
+
+
+  /**
+   * This method gets all the elements that are children of the element
+   * passed as parameter.
+   * 
+   * @param parent
+   * @return a list of IPElements objects with the information
+   */
+  public List<IpElement> getIPElementsByParent(IpElement parent, int relationTypeID);
+
+  public List<IpElement> getIPElementsRelated(int ipElementID, int relationTypeID);
 
   /**
    * This method saves the information of the given ipElement

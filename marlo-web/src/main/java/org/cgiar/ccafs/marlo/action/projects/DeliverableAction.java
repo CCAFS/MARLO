@@ -1211,6 +1211,7 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
+        relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
 
 
@@ -1573,7 +1574,7 @@ public class DeliverableAction extends BaseAction {
       deliverable.setUsers(new ArrayList<>());
     }
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    for (DeliverableUser deliverableUser : deliverableDB.getUsers()) {
+    for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers()) {
       if (!deliverable.getUsers().contains(deliverableUser)) {
         deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
       }

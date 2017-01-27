@@ -134,7 +134,7 @@
 
 [#-- deliverable Partner Template --]
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
-[@authorMacro element={} index=-1 name="author"  isTemplate=true /]
+[@authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
 [@flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -150,11 +150,11 @@
     <div class="row">
       <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
     </div>
-    <span><small class="orcidId"><b>orcid id:</b> ${(element.orcid)!'not filled'}</small></span>
-    <input type="hidden" class="id" value="${(element.id)!}" />
-    <input type="hidden" class="lastNameInput" value="${(element.lastName)!}" />
-    <input type="hidden" class="firstNameInput" value="${(element.firstName)!}" />
-    <input type="hidden" class="orcidIdInput" value="${(element.orcid)!}" />
+    <span><small class="orcidId"><b>orcid id:</b> ${(element.elementId)!'not filled'}</small></span>
+    <input type="hidden" name="${customName}.id" class="id" value="${(element.id)!}" />
+    <input type="hidden" name="${customName}.lastName"  class="lastNameInput" value="${(element.lastName)!}" />
+    <input type="hidden" name="${customName}.firstName"  class="firstNameInput" value="${(element.firstName)!}" />
+    <input type="hidden"name="${customName}.elementId"   class="orcidIdInput" value="${(element.elementId)!}" />
     <div class="clearfix"></div>
   </div>
 [/#macro]
