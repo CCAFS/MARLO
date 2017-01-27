@@ -3,28 +3,28 @@ var $statuses, $statusDescription;
 $(document).ready(init);
 
 function init() {
-  // Validate type option
-  var typeOption = $(".typeSelect").find("option:selected");
-  var subTypeOption = $(".subTypeSelect").find("option:selected");
-
-  // Articles and Books
-  if(typeOption.val() == "49") {
-    $(".publicationMetadataBlock").show("slow");
-  } else {
-    $(".publicationMetadataBlock").hide("slow");
-  }
-  // Data
-  if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
-    $(".dataLicense").show("slow");
-  } else {
-    $(".dataLicense").hide("slow");
-  }
-  // Computer software
-  if(subTypeOption.val() == "52") {
-    $(".computerLicense").show("slow");
-  } else {
-    $(".computerLicense").hide("slow");
-  }
+// // Validate type option
+// var typeOption = $(".typeSelect").find("option:selected");
+// var subTypeOption = $(".subTypeSelect").find("option:selected");
+//
+// // Articles and Books
+// if(typeOption.val() == "49") {
+// $(".publicationMetadataBlock").show("slow");
+// } else {
+// $(".publicationMetadataBlock").hide("slow");
+// }
+// // Data
+// if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
+// $(".dataLicense").show("slow");
+// } else {
+// $(".dataLicense").hide("slow");
+// }
+// // Computer software
+// if(subTypeOption.val() == "52") {
+// $(".computerLicense").show("slow");
+// } else {
+// $(".computerLicense").hide("slow");
+// }
 
   $statuses = $('select.status');
   $statusDescription = $('#statusDescription');

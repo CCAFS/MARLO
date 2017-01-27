@@ -144,7 +144,7 @@
     [/#if] 
   </div>
 <div class="clearfix"></div>
-<div class="publicationMetadataBlock" style="display:none;">
+<div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
 <h4 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h4>
  <div class="col-md-12">
   <div class="row">
@@ -228,7 +228,7 @@
   </div>
   <hr />
   [#-- Deliverable type computer software --]
-  <div class=" licenseOptions computerLicense" style="display:none;">
+  <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License
     </div>
@@ -239,7 +239,7 @@
   </div>
   
   [#-- Deliverable type data --]
-  <div class=" licenseOptions dataLicense" style="display:none;">
+  <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="CC_LICENSES" [#if ((deliverable.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0
 
