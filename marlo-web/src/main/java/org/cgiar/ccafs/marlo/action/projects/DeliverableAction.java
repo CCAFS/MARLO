@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityAnswerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
@@ -58,6 +59,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityAnswer;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
@@ -135,6 +137,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
   private DeliverableFundingSourceManager deliverableFundingSourceManager;
 
+  private DeliverableUserManager deliverableUserManager;
   private DeliverableCrpManager deliverableCrpManager;
   private DeliverableGenderLevelManager deliverableGenderLevelManager;
 
@@ -217,12 +220,14 @@ public class DeliverableAction extends BaseAction {
     DeliverableQualityCheckManager deliverableQualityCheckManager, DeliverableCrpManager deliverableCrpManager,
     DeliverableQualityAnswerManager deliverableQualityAnswerManager, CrpProgramManager crpProgramManager,
     DeliverableDataSharingFileManager deliverableDataSharingFileManager, FileDBManager fileDBManager,
+    DeliverableUserManager deliverableUserManager,
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     MetadataElementManager metadataElementManager, DeliverableDisseminationManager deliverableDisseminationManager) {
     super(config);
     this.deliverableManager = deliverableManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.crpManager = crpManager;
+    this.deliverableUserManager = deliverableUserManager;
     this.crpProgramManager = crpProgramManager;
     this.projectManager = projectManager;
     this.deliverableCrpManager = deliverableCrpManager;
@@ -738,6 +743,7 @@ public class DeliverableAction extends BaseAction {
           }
 
 
+          deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
           deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
           deliverable.setFiles(new ArrayList<>());
           for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
@@ -1191,6 +1197,7 @@ public class DeliverableAction extends BaseAction {
         this.saveCrps();
         this.savePublicationMetadata();
         this.saveDataSharing();
+        this.saveUsers();
       }
 
 
@@ -1267,6 +1274,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   public void saveDataSharing() {
     if (deliverable.getFiles() == null) {
       deliverable.setFiles(new ArrayList<>());
@@ -1317,6 +1325,7 @@ public class DeliverableAction extends BaseAction {
 
     }
   }
+
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -1556,6 +1565,28 @@ public class DeliverableAction extends BaseAction {
 
     deliverableQualityCheckManager.saveDeliverableQualityCheck(qualityCheck);
 
+  }
+
+  public void saveUsers() {
+    if (deliverable.getUsers() == null) {
+
+      deliverable.setUsers(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableUser deliverableUser : deliverableDB.getUsers()) {
+      if (!deliverable.getUsers().contains(deliverableUser)) {
+        deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
+      }
+    }
+
+    for (DeliverableUser deliverableUser : deliverable.getUsers()) {
+
+      if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
+        deliverableUser.setId(null);
+        deliverableUser.setDeliverable(deliverable);
+        deliverableUserManager.saveDeliverableUser(deliverableUser);
+      }
+    }
   }
 
   public void setAnswers(List<DeliverableQualityAnswer> answers) {
