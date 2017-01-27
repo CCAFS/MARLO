@@ -136,7 +136,7 @@
 [@deliverableList.deliverablePartner dp={} dp_name="" template=true dp_index=0 editable=editable /]
 [@authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
 [@flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
-  
+
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 [#macro authorMacro element index name  isTemplate=false]
@@ -189,7 +189,9 @@
 [/#macro]
 
 [#function checkDeliverableTypes]
-  [#if deliverable.deliverableType.deliverableType.id==49]
-    <#return "block">
+  [#if deliverable.deliverableType?? && deliverable.deliverableType.deliverableType.id==49]
+    [#return "block"]
+  [#else]
+    [#return "none"]
   [/#if]
 [/#function]

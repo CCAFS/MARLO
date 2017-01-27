@@ -296,9 +296,11 @@ function checkDoiUrl() {
 function openAccessRestriction() {
   if($(this).val() == "restrictedUseAgreement") {
     $(".restrictionDate-block").find("label").text("Restricted access until");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedAccessUntil");
     $(".restrictionDate-block").show("slow");
   } else if($(this).val() == "effectiveDateRestriction") {
     $(".restrictionDate-block").find("label").text("Restricted embargoed date");
+    $("#restrictionDate").attr("name", "deliverable.dissemination.restrictedEmbargoed");
     $(".restrictionDate-block").show("slow");
   } else {
     $(".restrictionDate-block").hide("slow");

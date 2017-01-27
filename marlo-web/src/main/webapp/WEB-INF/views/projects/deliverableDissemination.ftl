@@ -1,7 +1,7 @@
 [#ftl]
 [#-- ACCESSIBLE --]
 <div class="borderBox form-group">
-<input type="hidden" value="${(deliverable.dissemination.id)!"-1"}" />
+<input type="hidden"  name="deliverable.dissemination.id" value="${(deliverable.dissemination.id)!"-1"}" />
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
@@ -14,20 +14,20 @@
     <hr />
    <label for="">Select the Open Access restriction:</label>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if ((deliverable.dissemination.intellectualProperty))!false]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.intellectualProperty?? && (deliverable.dissemination.intellectualProperty))]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if (deliverable.dissemination.limitedExclusivity)!false]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="limitedExclusivity" [#if deliverable.dissemination.limitedExclusivity?? && (deliverable.dissemination.limitedExclusivity)]checked="checked"[/#if]>Limited Exclusivity Agreements</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedUseAgreement" [#if (deliverable.dissemination.restrictedUseAgreement)!false]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="restrictedUseAgreement" [#if deliverable.dissemination.restrictedUseAgreement?? && (deliverable.dissemination.restrictedUseAgreement)]checked="checked"[/#if]>Restricted Use Agreement - Restricted access (if so, what are these periods?)</label>
     </div>
     <div class="radio">
-      <label><input type="radio" name="deliverable.dissemination.type" value="effectiveDateRestriction"[#if (deliverable.dissemination.effectiveDateRestriction)!false]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
+      <label><input type="radio" name="deliverable.dissemination.type" value="effectiveDateRestriction"[#if deliverable.dissemination.effectiveDateRestriction?? && (deliverable.dissemination.effectiveDateRestriction)]checked="checked"[/#if] >Effective Date Restriction - embargoed periods (if so, what are these periods?)</label>
     </div>
     <div class="row restrictionDate-block" style="display:[#if (deliverable.dissemination.restrictedUseAgreement)?? && (deliverable.dissemination.restrictedUseAgreement)||(deliverable.dissemination.effectiveDateRestriction)?? && (deliverable.dissemination.effectiveDateRestriction) ]block[#else]none [/#if];">
       <div class="col-md-5">
-        [@customForm.input name="deliverable.dissemination.restrictedAccessUntil" value="" type="text" i18nkey="text"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
+        [@customForm.input name="deliverable.dissemination.${(deliverable.dissemination.restrictedUseAgreement?string('restrictedAccessUntil','restrictedEmbargoed'))!}" value="" type="text" i18nkey="${(deliverable.dissemination.restrictedUseAgreement?string('Restricted access until','Restricted embargoed date'))!}"  placeholder="" className="restrictionDate col-md-6" required=true editable=editable /]
       </div>
     </div>
   </div>
@@ -144,7 +144,7 @@
     [/#if] 
   </div>
 <div class="clearfix"></div>
-<div class="publicationMetadataBlock" style="display:none;">
+<div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
 <h4 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h4>
  <div class="col-md-12">
   <div class="row">
@@ -228,7 +228,7 @@
   </div>
   <hr />
   [#-- Deliverable type computer software --]
-  <div class=" licenseOptions computerLicense" style="display:none;">
+  <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License
     </div>
@@ -239,7 +239,7 @@
   </div>
   
   [#-- Deliverable type data --]
-  <div class=" licenseOptions dataLicense" style="display:none;">
+  <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="CC_LICENSES" [#if ((deliverable.licenseType) == "CC_LICENSES")!false]checked="checked"[/#if]/> CC licenses version 4.0
 
