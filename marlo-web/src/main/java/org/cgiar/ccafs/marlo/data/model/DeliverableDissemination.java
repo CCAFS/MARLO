@@ -28,8 +28,10 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   @Expose
   private Boolean isOpenAccess;
 
+
   @Expose
   private Boolean intellectualProperty;
+
 
   @Expose
   private Boolean limitedExclusivity;
@@ -63,7 +65,6 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   public DeliverableDissemination() {
   }
 
-
   public DeliverableDissemination(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -86,14 +87,37 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     this.disseminationChannelName = disseminationChannelName;
   }
 
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    DeliverableDissemination other = (DeliverableDissemination) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    } else if (!id.equals(other.id)) {
+      return false;
+    }
+    return true;
+  }
+
   public Boolean getAlreadyDisseminated() {
     return alreadyDisseminated;
   }
 
-
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public String getDisseminationChannel() {
     return disseminationChannel;
@@ -103,15 +127,14 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return disseminationChannelName;
   }
 
-
   public String getDisseminationUrl() {
     return disseminationUrl;
   }
 
+
   public Boolean getEffectiveDateRestriction() {
     return effectiveDateRestriction;
   }
-
 
   @Override
   public Long getId() {
@@ -161,6 +184,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
     return restrictedAccessUntil;
   }
 
+
   public Date getRestrictedEmbargoed() {
     return restrictedEmbargoed;
   }
@@ -171,6 +195,14 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
 
   public String getType() {
     return type;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
   }
 
   @Override

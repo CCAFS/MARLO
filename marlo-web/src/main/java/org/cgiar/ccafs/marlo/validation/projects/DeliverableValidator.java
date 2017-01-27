@@ -21,6 +21,9 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -30,6 +33,8 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -63,9 +68,10 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
+    this.action = action;
     if (deliverable.getYear() >= action.getCurrentCycleYear()) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
-      this.action = action;
+
       if (!saving) {
         Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
 
@@ -172,11 +178,45 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
 
-      if (action.isReportingActive()) {
 
-        // Deliverable Dissemination
+    }
+
+    // TODO PUT inside in the if(deliverable.getYear() >= action.getCurrentCycleYear()) After Test Validations
+    if (action.isReportingActive()) {
+
+      // Deliverable Dissemination
+      if (deliverable.getDissemination() != null) {
+        this.validateDissemination(deliverable.getDissemination());
+      } else {
+        this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+        action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Deliverable Meta-data Elements
+      if (deliverable.getMetadataElements() != null) {
+        this.validateMetadata(deliverable.getMetadataElements());
+      } else {
+        this.addMessage(action.getText("project.deliverable.v.metadata"));
+        action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // Deliverable Publication Meta-data
+      if (deliverable.getDeliverableType().getDeliverableType() != null) {
+        if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+
+          if (deliverable.getCrps() != null || deliverable.getCrps().isEmpty()) {
+
+          }
+
+          if (deliverable.getPublicationMetadatas() != null) {
 
 
+          } else {
+            this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+            action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
       }
 
     }
@@ -195,6 +235,106 @@ public class DeliverableValidator extends BaseValidator {
       this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
         ProjectSectionStatusEnum.DELIVERABLES.getStatus());
     }
+  }
+
+  public void validateDissemination(DeliverableDissemination dissemination) {
+
+    if (dissemination.getIsOpenAccess() != null) {
+
+      if (!dissemination.getIsOpenAccess().booleanValue()) {
+
+        if (dissemination.getType() == null) {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (dissemination.getType().equals("restrictedUseAgreement")) {
+
+            if (dissemination.getRestrictedAccessUntil() == null) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedUseAgreement",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+          }
+
+          if (dissemination.getType().equals("effectiveDateRestriction")) {
+
+            if (dissemination.getRestrictedEmbargoed() == null) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+          }
+        }
+
+      }
+
+    } else {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (dissemination.getAlreadyDisseminated() != null) {
+      if (dissemination.getAlreadyDisseminated().booleanValue()) {
+        if (dissemination.getDisseminationChannel() != null) {
+          if (dissemination.getDisseminationChannel().equals("-1")) {
+            this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+            action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+              InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (!(this.isValidString(dissemination.getDisseminationUrl())
+              && this.wordCount(dissemination.getDisseminationUrl()) <= 100)) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
+              action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+          action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+
+    }
+  }
+
+  public void validateMetadata(List<DeliverableMetadataElement> elements) {
+
+    DeliverableMetadataElement languajeMetadata =
+      elements.stream().filter(e -> e.getId() == 24).collect(Collectors.toList()).get(0);
+
+    if (languajeMetadata == null) {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.language"));
+      action.getInvalidFields().put("input-deliverable.metadataElements[23].elementValue",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    DeliverableMetadataElement keywordMetadata =
+      elements.stream().filter(e -> e.getId() == 37).collect(Collectors.toList()).get(0);
+
+    if (keywordMetadata == null) {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.keyword"));
+      action.getInvalidFields().put("input-deliverable.metadataElements[36].elementValue",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+  }
+
+  public void validatePublicationMetadata(List<DeliverablePublicationMetadata> publicationMetadatas) {
+
+    for (DeliverablePublicationMetadata deliverablePublicationMetadata : publicationMetadatas) {
+
+
+    }
+
   }
 
 }
