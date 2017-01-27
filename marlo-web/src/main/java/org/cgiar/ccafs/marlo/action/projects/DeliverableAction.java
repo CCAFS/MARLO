@@ -917,6 +917,9 @@ public class DeliverableAction extends BaseAction {
         deliverable.getUsers().clear();
       }
 
+      if (deliverable.getMetadataElements() != null) {
+        deliverable.getMetadataElements().clear();
+      }
       if (projectOutcome != null) {
         projectOutcome.clear();
       }
@@ -1461,6 +1464,7 @@ public class DeliverableAction extends BaseAction {
       for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getMetadataElements()) {
 
         if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
+
           deliverableMetadataElement.setDeliverable(deliverable);
           deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
 
