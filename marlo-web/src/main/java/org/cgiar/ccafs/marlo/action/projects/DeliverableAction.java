@@ -909,6 +909,13 @@ public class DeliverableAction extends BaseAction {
       deliverable.setCrossCuttingNa(null);
       deliverable.setCrossCuttingYouth(null);
 
+      if (deliverable.getCrps() != null) {
+        deliverable.getCrps().clear();
+      }
+
+      if (deliverable.getUsers() != null) {
+        deliverable.getUsers().clear();
+      }
 
       if (projectOutcome != null) {
         projectOutcome.clear();
@@ -1034,6 +1041,48 @@ public class DeliverableAction extends BaseAction {
         deliverablePrew.setCrossCuttingYouth(true);
       }
 
+      if (this.isPlanningActive()) {
+        if (deliverable.getCrpClusterKeyOutput() != null) {
+          CrpClusterKeyOutput keyOutput =
+            crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
+
+          deliverablePrew.setCrpClusterKeyOutput(keyOutput);
+        }
+
+        if (deliverable.getFundingSources() != null) {
+          if (deliverablePrew.getDeliverableFundingSources() != null
+            && deliverablePrew.getDeliverableFundingSources().size() > 0) {
+            List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
+              .filter(dp -> dp.isActive()).collect(Collectors.toList());
+
+
+            for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
+              if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
+                deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
+              }
+            }
+          }
+
+          for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
+            if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
+
+
+              deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+              deliverableFundingSource.setActive(true);
+              deliverableFundingSource.setCreatedBy(this.getCurrentUser());
+              deliverableFundingSource.setModifiedBy(this.getCurrentUser());
+              deliverableFundingSource.setModificationJustification("");
+              deliverableFundingSource.setActiveSince(new Date());
+
+              deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
+
+
+            }
+          }
+        }
+      }
+
+
       if (deliverable.getStatus() != null) {
         deliverablePrew.setStatus(deliverable.getStatus());
       }
@@ -1042,13 +1091,6 @@ public class DeliverableAction extends BaseAction {
         deliverableTypeManager.getDeliverableTypeById(deliverable.getDeliverableType().getId());
 
       deliverablePrew.setDeliverableType(deliverableType);
-
-      if (deliverable.getCrpClusterKeyOutput() != null) {
-        CrpClusterKeyOutput keyOutput =
-          crpClusterKeyOutputManager.getCrpClusterKeyOutputById(deliverable.getCrpClusterKeyOutput().getId());
-
-        deliverablePrew.setCrpClusterKeyOutput(keyOutput);
-      }
 
 
       DeliverablePartnership partnershipResponsible = null;
@@ -1065,7 +1107,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1119,39 +1161,6 @@ public class DeliverableAction extends BaseAction {
 
       this.partnershipPreviousData(deliverableSave);
       this.parnershipNewData();
-
-
-      if (deliverable.getFundingSources() != null) {
-        if (deliverablePrew.getDeliverableFundingSources() != null
-          && deliverablePrew.getDeliverableFundingSources().size() > 0) {
-          List<DeliverableFundingSource> fundingSourcesPrew = deliverablePrew.getDeliverableFundingSources().stream()
-            .filter(dp -> dp.isActive()).collect(Collectors.toList());
-
-
-          for (DeliverableFundingSource deliverableFundingSource : fundingSourcesPrew) {
-            if (!deliverable.getFundingSources().contains(deliverableFundingSource)) {
-              deliverableFundingSourceManager.deleteDeliverableFundingSource(deliverableFundingSource.getId());
-            }
-          }
-        }
-
-        for (DeliverableFundingSource deliverableFundingSource : deliverable.getFundingSources()) {
-          if (deliverableFundingSource.getId() == null || deliverableFundingSource.getId() == -1) {
-
-
-            deliverableFundingSource.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-            deliverableFundingSource.setActive(true);
-            deliverableFundingSource.setCreatedBy(this.getCurrentUser());
-            deliverableFundingSource.setModifiedBy(this.getCurrentUser());
-            deliverableFundingSource.setModificationJustification("");
-            deliverableFundingSource.setActiveSince(new Date());
-
-            deliverableFundingSourceManager.saveDeliverableFundingSource(deliverableFundingSource);
-
-
-          }
-        }
-      }
 
 
       if (deliverable.getGenderLevels() != null) {

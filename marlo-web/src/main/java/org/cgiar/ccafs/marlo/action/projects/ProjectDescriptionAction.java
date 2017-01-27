@@ -621,6 +621,8 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.isNoRegional() == null) {
         project.setNoRegional(false);
       }
+
+
       if (project.getCrossCuttingCapacity() == null) {
         project.setCrossCuttingCapacity(false);
       }
@@ -636,6 +638,12 @@ public class ProjectDescriptionAction extends BaseAction {
 
       if (!this.isReportingActive()) {
         project.setStatus(projectDB.getStatus());
+        project.setCrossCuttingCapacity(projectDB.getCrossCuttingCapacity());
+        project.setCrossCuttingNa(projectDB.getCrossCuttingNa());
+        project.setCrossCuttingGender(projectDB.getCrossCuttingGender());
+        project.setCrossCuttingYouth(projectDB.getCrossCuttingYouth());
+
+
       }
 
       if (projectDB.isBilateralProject()) {
@@ -747,37 +755,39 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       // Removing Project Cluster Activities
+      if (this.isPlanningActive()) {
 
-      for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        if (project.getClusterActivities() == null) {
-          project.setClusterActivities(new ArrayList<>());
-        }
-        if (!project.getClusterActivities().contains(projectClusterActivity)) {
-          projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+        for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        }
-      }
-      // Add Project Cluster Activities
-
-      if (project.getClusterActivities() != null) {
-        for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
-          if (projectClusterActivity.getId() == null) {
-            projectClusterActivity.setCreatedBy(this.getCurrentUser());
-
-            projectClusterActivity.setActiveSince(new Date());
-            projectClusterActivity.setActive(true);
-            projectClusterActivity.setProject(project);
-            projectClusterActivity.setModifiedBy(this.getCurrentUser());
-            projectClusterActivity.setModificationJustification("");
-            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+          if (project.getClusterActivities() == null) {
+            project.setClusterActivities(new ArrayList<>());
           }
+          if (!project.getClusterActivities().contains(projectClusterActivity)) {
+            projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
+          }
         }
+        // Add Project Cluster Activities
+
+        if (project.getClusterActivities() != null) {
+          for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+            if (projectClusterActivity.getId() == null) {
+              projectClusterActivity.setCreatedBy(this.getCurrentUser());
+
+              projectClusterActivity.setActiveSince(new Date());
+              projectClusterActivity.setActive(true);
+              projectClusterActivity.setProject(project);
+              projectClusterActivity.setModifiedBy(this.getCurrentUser());
+              projectClusterActivity.setModificationJustification("");
+              projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+            }
+
+          }
+        }
+
       }
-
-
       // Removing Project Scopes
 
       for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
