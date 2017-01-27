@@ -549,8 +549,8 @@ function getDataverseMetadata(channel,url,uri) {
           var authors = [];
           $.each(m.data.metadata_blocks.citation.author, function(i,element) {
             authors.push({
-                lastName: (element.authorName).split(',')[1],
-                firstName: (element.authorName).split(',')[0],
+                lastName: (element.authorName).split(',')[0],
+                firstName: (element.authorName).split(',')[1],
                 orcidId: element.authorIdentifier
             });
           });
