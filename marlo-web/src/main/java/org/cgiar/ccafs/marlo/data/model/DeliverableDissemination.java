@@ -170,20 +170,7 @@ public class DeliverableDissemination implements java.io.Serializable, IAuditLog
   }
 
   public String getType() {
-    if (intellectualProperty != null && intellectualProperty) {
-      return DisseminationTypeEnum.INTECLLECTUAL_PROPERTY.getValue();
-    }
-    if (limitedExclusivity != null && limitedExclusivity) {
-      return DisseminationTypeEnum.LIMITED_EXCLUSIVITY.getValue();
-    }
-    if (restrictedUseAgreement != null && restrictedUseAgreement) {
-      return DisseminationTypeEnum.RESTRICTED_USER_AGREEMENT.getValue();
-    }
-    if (effectiveDateRestriction != null && effectiveDateRestriction) {
-      return DisseminationTypeEnum.EMBARGOED_PERIODS.getValue();
-    }
-
-    return null;
+    return type;
   }
 
   @Override
