@@ -164,13 +164,13 @@
   </div>
   <label for="">Indicators for journal articles:</label>
     <div class="form-group">
-     <input type="checkbox" name="deliverable.isPublication" />Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
+     <input type="checkbox" name="deliverable.isPublication" value="true" [#if deliverable.isPublication?? && deliverable.isPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
     </div>
     <div class="form-group">  
-     <input type="checkbox" name="deliverable.nasr"/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
+     <input type="checkbox" name="deliverable.nasr" value="true" [#if deliverable.nasr?? && deliverable.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
     </div>
     <div class="form-group">
-     <input type="checkbox" name="deliverable.coAuthor" />Does this article have a co-author based in an Earth System Science-related academic department?
+     <input type="checkbox" name="deliverable.coAuthor" value="true" [#if deliverable.coAuthor?? && deliverable.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?
     </div>
   <div class="clearfix"></div>
   <br />
