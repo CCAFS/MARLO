@@ -1065,7 +1065,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1390,7 +1390,7 @@ public class DeliverableAction extends BaseAction {
                 dissemination.setEffectiveDateRestriction(true);
 
                 dissemination.setRestrictedAccessUntil(null);
-                dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedAccessUntil());
+                dissemination.setRestrictedEmbargoed(deliverable.getDissemination().getRestrictedEmbargoed());
 
                 break;
 

@@ -172,6 +172,13 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
 
+      if (action.isReportingActive()) {
+
+        // Deliverable Dissemination
+
+
+      }
+
     }
 
 
