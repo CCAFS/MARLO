@@ -147,7 +147,7 @@
           <label>[@s.text name="${customName}.isPublicationOpenAccess" /] <br /> <small>([@s.text name="${customName}.isOpenAccess.restriction" /])</small></label>
         </div>
         <div class="col-md-3">
-          [@customForm.yesNoInput name="${customName}.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="text-center" /]  
+          [@customForm.yesNoInput name="${customName}.dissemination.isOpenAccess" value="${((publication.dissemination.isOpenAccess)!false)?string}"  editable=editable inverse=false cssClass="isOpenAccessQuestion text-center" /]  
         </div>
         <div class="col-md-12 openAccessOptions">
           <hr />
@@ -195,9 +195,9 @@
           <label>[@s.text name="${customName}.publicationAdoptedLicense" /]</label>
         </div>
         <div class="col-md-3">
-          [@customForm.yesNoInput name="${customName}.adoptedLicense"  editable=editable inverse=false cssClass="text-center" /]  
+          [@customForm.yesNoInput name="${customName}.adoptedLicense" value="${((publication.adoptedLicense)!false)?string}"  editable=editable inverse=false cssClass="adoptedLicense text-center" /]  
         </div>
-        <div class="col-md-12 ">
+        <div class="col-md-12 adoptedLicenseOptions" style="display:${((publication.adoptedLicense)!false)?string('block','none')}">
           <hr />
           <div class="form-group col-md-12">
             <div class="radio"><input type="radio" name="${customName}.license" id="" value="CC_BY" [#if ((publication.licenseType) == "CC_BY")!false]checked="checked"[/#if]/> CC-BY <small>(allow modifications and commercial use)</small></div>
