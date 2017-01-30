@@ -43,7 +43,14 @@
           
             [#assign startYear = (project.startDate?string.yyyy)?number /]
             [#assign endYear = (project.endDate?string.yyyy)?number /]
-            [#if currentCycleYear gt endYear][#assign selectedYear = endYear /][#else][#assign selectedYear = currentCycleYear /][/#if]
+            
+            [#if currentCycleYear gt endYear]
+              [#assign selectedYear = endYear /]
+            [#elseif currentCycleYear lt startYear]
+              [#assign selectedYear = startYear /]
+            [#else]
+              [#assign selectedYear = currentCycleYear /]
+            [/#if]
             [#assign type = { 
               'w1w2':         1,
               'w3':           2,
@@ -54,7 +61,7 @@
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. endYear as year]
-                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable /] </a></li>
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingActive /] </a></li>
               [/#list]
             </ul>
             
@@ -62,30 +69,36 @@
             <div class="tab-content budget-content">
               [#list startYear .. endYear as year]
                 <div role="tabpanel" class="tab-pane [#if year == selectedYear]active[/#if]" id="year-${year}">
-                
-                  [#-- Budgest cannot be editable message --]
-                  [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
-                  
-                  <div class="overallYearBudget fieldset clearfix">
-                    <h5 class="title">Overall ${year} budget</h5>
-                    <div class="row">
-                      [#-- W1/W2 --]
-                      <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
-                      [#-- W3 --]
-                      <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
-                      [#-- Bilateral  --]
-                      <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
-                      [#-- Center Funds --]
-                      <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
-                    </div>
-                  </div>
-                  
-                  [#if projectPPAPartners?has_content]
-                    [#list projectPPAPartners as projectPartner]
-                      [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
-                    [/#list]
+                  [#-- No Budget available for this year --]
+                  [#if reportingActive && (year  lte currentCycleYear)]
+                      <div class="note">No budget available for this year</div>
                   [#else]
-                    <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
+                  
+                    [#-- Budgest cannot be editable message --]
+                    [#if !isYearEditable(year) && editable]<div class="note">Budgets for ${year} cannot be editable.</div>[/#if]
+                  
+                    <div class="overallYearBudget fieldset clearfix">
+                      <h5 class="title">Overall ${year} budget</h5>
+                      <div class="row">
+                        [#-- W1/W2 --]
+                        <div class="col-md-3"><h5 class="subTitle">W1/W2 <small>US$ <span class="totalByYear-${type.w1w2}">${action.getTotalYear(year,1)?number?string(",##0.00")}</span></small></h5></div>
+                        [#-- W3 --]
+                        <div class="col-md-3"><h5 class="subTitle">W3 <small>US$ <span class="totalByYear-${type.w3}">${action.getTotalYear(year,2)?number?string(",##0.00")}</span></small></h5></div>
+                        [#-- Bilateral  --]
+                        <div class="col-md-3"><h5 class="subTitle">Bilateral <small>US$ <span class="totalByYear-${type.bilateral}">${action.getTotalYear(year,3)?number?string(",##0.00")}</span></small></h5></div>
+                        [#-- Center Funds --]
+                        <div class="col-md-3"><h5 class="subTitle">Center Funds <small>US$ <span class="totalByYear-${type.centerFunds}">${action.getTotalYear(year,4)?number?string(",##0.00")}</span></small></h5></div>
+                      </div>
+                    </div>
+                    
+                    [#if projectPPAPartners?has_content]
+                      [#list projectPPAPartners as projectPartner]
+                        [@projectPartnerMacro element=projectPartner name="project.partners[${projectPartner_index}]" index=projectPartner_index selectedYear=year/]
+                      [/#list]
+                    [#else]
+                      <div class="simpleBox emptyMessage text-center">Before entering budget information, you need to add project partner in <a href="[@s.url action="${crpSession}/partners"][@s.param name="projectID" value=projectID /][@s.param name="edit" value=true /][/@s.url]">partners section</a></div>
+                    [/#if]
+
                   [/#if]
                 </div>
               [/#list]  
