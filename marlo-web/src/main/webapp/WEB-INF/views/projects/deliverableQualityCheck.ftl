@@ -10,9 +10,9 @@
     <div class="col-md-2">
       <div id="box-out">
         <div id="box-inside">
-          <div id="red"></div>
-          <div id="yellow"></div>
-          <div id="green"></div>
+          <div id="red" [#if action.goldDataValue(deliverableID)>14 && action.goldDataValue(deliverableID)<=74]class="highlightRed"[/#if]></div>
+          <div id="yellow" [#if action.goldDataValue(deliverableID)>74 && action.goldDataValue(deliverableID)<=104]class="highlightYellow"[/#if]></div>
+          <div id="green" [#if action.goldDataValue(deliverableID)>104]class="highlightGreen"[/#if]></div>
         </div>
       </div>
     </div>

@@ -25,7 +25,7 @@ function init() {
   $(qualityAssurance).on("change", changeOptions);
   $(dataDictionary).on("change", changeOptions);
   $(dataTools).on("change", changeOptions);
-  checkGolData();
+  // checkGolData();
 
   // Validate FAIR Complain
   checkFAIRCompliant();

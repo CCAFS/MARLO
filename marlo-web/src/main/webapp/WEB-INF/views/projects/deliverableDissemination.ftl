@@ -124,7 +124,7 @@
   [#-- Creator/Authors --]
   <div class="col-md-12 form-group">
     <label for="">Creator/Authors:</label>
-    <div class="authorsList simpleBox col-md-12">
+    <div class="authorsList simpleBox col-md-12" >
       [#if deliverable.users?has_content]
         [#list deliverable.users as author]
           [@authorMacro element=author index=author_index name="deliverable.users"  /]
