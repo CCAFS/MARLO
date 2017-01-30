@@ -45,26 +45,24 @@
             ${(project.statusName)!'none'}
           </td>
           [#-- Center Lead --]
-             <td class=""> 
-             [#if project.institutions?has_content]
+          <td class=""> 
+            [#if project.institutions?has_content]
               [#list project.institutions as institutionLead]
                 [#if institutionLead_index!=0]
                   <hr />
                 [/#if]
-                  <span class="name col-md-11">${(institutionLead.institution.composedName)!}</span>
+                  <span class="name col-md-11">${(institutionLead.institution.acronym)!institutionLead.institution.name}</span>
                   <div class="clearfix"></div>
               [/#list]
               [#else]
               <p class="emptyText"> [@s.text name="No lead partner added yet." /]</p> 
             [/#if]
-           
-           
           </td>
           
+          [#-- Donor --]
           <td class=""> 
             ${(project.institution.composedNameLoc)!'Not defined'}
           </td>
-           [#-- Donor --]
         
           [#-- Delete Project--]
           <td class="text-center">
