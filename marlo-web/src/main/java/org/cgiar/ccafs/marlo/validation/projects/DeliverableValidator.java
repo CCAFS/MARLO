@@ -179,59 +179,61 @@ public class DeliverableValidator extends BaseValidator {
       }
 
 
-    }
+      if (action.isReportingActive()) {
 
-    // TODO PUT inside in the if(deliverable.getYear() >= action.getCurrentCycleYear()) After Test Validations
-    if (action.isReportingActive()) {
-
-      // Deliverable Dissemination
-      if (deliverable.getDissemination() != null) {
-        this.validateDissemination(deliverable.getDissemination());
-      } else {
-        this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-        action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // Deliverable Meta-data Elements
-      if (deliverable.getMetadataElements() != null) {
-        this.validateMetadata(deliverable.getMetadataElements());
-      } else {
-        this.addMessage(action.getText("project.deliverable.v.metadata"));
-        action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      // Deliverable Publication Meta-data
-      if (deliverable.getDeliverableType().getDeliverableType() != null) {
-        if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
-          this.validatePublicationMetadata(deliverable);
+        // Deliverable Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination());
+        } else {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
         }
-      }
 
-      // Deliverable Licenses
-      if (deliverable.getAdoptedLicense() != null) {
-        this.validateLicense(deliverable);
-      } else {
-        this.addMessage(action.getText("project.deliverable.v.qualityCheck"));
-        action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
-      }
+        // Deliverable Meta-data Elements
+        if (deliverable.getMetadataElements() != null) {
+          this.validateMetadata(deliverable.getMetadataElements());
+        } else {
+          this.addMessage(action.getText("project.deliverable.v.metadata"));
+          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
 
-      // Deliverable Quality Check
-      if (deliverable.getQualityCheck() != null) {
-        if (deliverable.getQualityCheck().getQualityAssurance() == null) {
-          this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+        // Deliverable Publication Meta-data
+        if (deliverable.getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+            this.validatePublicationMetadata(deliverable);
+          }
+        }
+
+        // Deliverable Licenses
+        if (deliverable.getAdoptedLicense() != null) {
+          this.validateLicense(deliverable);
+        } else {
+          this.addMessage(action.getText("project.deliverable.v.qualityCheck"));
           action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getQualityCheck().getDataDictionary() == null) {
-          this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-          action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+        // Deliverable Quality Check
+        if (deliverable.getQualityCheck() != null) {
+          if (deliverable.getQualityCheck().getQualityAssurance() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (deliverable.getQualityCheck().getDataDictionary() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (deliverable.getQualityCheck().getDataTools() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
 
-        if (deliverable.getQualityCheck().getDataTools() == null) {
-          this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-          action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
-        }
       }
+
 
     }
 
@@ -356,11 +358,20 @@ public class DeliverableValidator extends BaseValidator {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
           switch (deliverableMetadataElement.getMetadataElement().getId()) {
             case 24:
-              languaje = true;
+              if ((this.isValidString(deliverableMetadataElement.getElementValue())
+                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+                languaje = true;
+              }
+
               break;
 
             case 37:
-              keyword = true;
+
+              if ((this.isValidString(deliverableMetadataElement.getElementValue())
+                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+                keyword = true;
+              }
+
               break;
 
           }
@@ -369,14 +380,14 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     if (!languaje) {
-      this.addMessage(action.getText("project.deliverable.dissemination.v.language"));
+      this.addMessage(action.getText("project.deliverable.metadata.v.language"));
       action.getInvalidFields().put("input-deliverable.metadataElements[23].elementValue",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
 
     if (!keyword) {
-      this.addMessage(action.getText("project.deliverable.dissemination.v.keyword"));
+      this.addMessage(action.getText("project.deliverable.metadata.v.keyword"));
       action.getInvalidFields().put("input-deliverable.metadataElements[36].elementValue",
         InvalidFieldsMessages.EMPTYFIELD);
     }
