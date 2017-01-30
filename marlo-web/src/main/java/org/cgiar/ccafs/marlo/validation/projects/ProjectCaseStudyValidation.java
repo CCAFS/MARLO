@@ -67,7 +67,7 @@ public class ProjectCaseStudyValidation extends BaseValidator {
 
       if (!(this.isValidString(caseStudy.getTitle()) && this.wordCount(caseStudy.getTitle()) <= 15)) {
         this.addMessage("Case Study #" + caseStudy.getId() + ": Title");
-        action.getInvalidFields().put("caseStudy.title", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-caseStudy.title", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(caseStudy.getOutcomeStatement())

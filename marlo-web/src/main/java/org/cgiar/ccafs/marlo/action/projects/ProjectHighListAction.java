@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 
 /***
@@ -71,7 +72,7 @@ public class ProjectHighListAction extends BaseAction {
     // newDeliverable.setCoverage("");
     projectHighlight.setCreatedBy(this.getCurrentUser());
     projectHighlight.setDescription("");
-    projectHighlight.setEndDate(new Date());
+
 
     projectHighlight.setActive(true);
     // newDeliverable.setIsGlobal(false);
@@ -85,7 +86,17 @@ public class ProjectHighListAction extends BaseAction {
     // newDeliverable.setRelation("");
     projectHighlight.setResults("");
     // newDeliverable.setRights("");
-    projectHighlight.setStartDate(new Date());
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.YEAR, this.getCurrentCycleYear());
+    cal.set(Calendar.DAY_OF_YEAR, 1);
+    Date start = cal.getTime();
+    projectHighlight.setStartDate(start);
+    cal.set(Calendar.YEAR, this.getCurrentCycleYear());
+    cal.set(Calendar.MONTH, 11); // 11 = december
+    cal.set(Calendar.DAY_OF_MONTH, 31); // new years eve
+
+
+    projectHighlight.setEndDate(cal.getTime());
     projectHighlight.setStatus(new Long(1));
     projectHighlight.setSubject("");
     projectHighlight.setTitle("");

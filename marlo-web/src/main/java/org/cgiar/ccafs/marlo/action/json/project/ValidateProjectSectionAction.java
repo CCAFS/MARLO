@@ -340,9 +340,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           }
         }
 
-        if (projectCaseStudies.isEmpty()) {
-          section.put("missingFields", "No case studies");
-        }
+
         break;
 
       case HIGHLIGHT:
@@ -369,9 +367,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           }
 
-        }
-        if (highlights.isEmpty()) {
-          section.put("missingFields", "No highlights");
         }
 
 

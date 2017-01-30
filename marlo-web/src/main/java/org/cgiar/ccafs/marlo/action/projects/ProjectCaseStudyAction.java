@@ -360,11 +360,11 @@ public class ProjectCaseStudyAction extends BaseAction {
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
           .collect(Collectors.toList());
       } else {
-        myProjects =
-          projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p.isActive()
-              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        myProjects = loggedCrp.getProjects().stream()
+          .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
           .collect(Collectors.toList());
+
+        myProjects.remove(myProjects);
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
     }

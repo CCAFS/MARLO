@@ -862,7 +862,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
         if (caStudies.isEmpty()) {
-          return false;
+          return true;
         }
         returnValue = true;
         break;
@@ -873,7 +873,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
           .collect(Collectors.toList());
         if (highlights.isEmpty()) {
-          return false;
+          return true;
         }
 
         for (ProjectHighlight highlight : highlights) {
@@ -885,7 +885,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           }
           if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
+            return true;
 
           }
 
@@ -1694,7 +1694,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
