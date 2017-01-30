@@ -428,3 +428,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 .fileOptions input[type=file]{
 	color:white;
 }
+
+.radio-block {
+    position: relative;
+}
