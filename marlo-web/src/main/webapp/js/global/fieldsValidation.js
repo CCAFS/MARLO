@@ -69,7 +69,7 @@ function getInputElement(fieldName,message) {
     }
   } else {
     // VALIDATE IF IT'S CHECKBOX
-    if(elementQuery.attr("type") == "checkbox") {
+    if(elementQuery.attr("type") == "checkbox" || elementQuery.attr("type") == "radio") {
       // Tag with message
       var tagElement = $("#test").clone(true).removeAttr("id");
       tagElement.attr("title", message);
