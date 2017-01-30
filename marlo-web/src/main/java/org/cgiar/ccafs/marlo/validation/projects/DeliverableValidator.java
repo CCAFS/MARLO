@@ -262,8 +262,7 @@ public class DeliverableValidator extends BaseValidator {
 
         if (dissemination.getType() == null) {
           this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
-            InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
         } else {
           if (dissemination.getType().equals("restrictedUseAgreement")) {
 
@@ -329,21 +328,20 @@ public class DeliverableValidator extends BaseValidator {
           if (deliverable.getOtherLicense() != null) {
             if (!(this.isValidString(deliverable.getOtherLicense())
               && this.wordCount(deliverable.getOtherLicense()) <= 100)) {
-              this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-              action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
-                InvalidFieldsMessages.EMPTYFIELD);
+              this.addMessage(action.getText("project.deliverable.license.v.other"));
+              action.getInvalidFields().put("input-deliverable.otherLicense", InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getAllowModifications() == null) {
-              this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
-              action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+              this.addMessage(action.getText("project.deliverable.license.v.allowModification"));
+              action.getInvalidFields().put("input-deliverable.dissemination.allowModification",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }
       } else {
         this.addMessage(action.getText("project.deliverable.v.license"));
-        action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.license", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
   }
