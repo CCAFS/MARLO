@@ -712,7 +712,6 @@ public class DeliverableAction extends BaseAction {
             deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
           deliverable.setQualityCheck(deliverableQualityCheck);
 
-          // TODO
           if (deliverable.getDeliverableMetadataElements() != null) {
             deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
           }
@@ -1110,7 +1109,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
