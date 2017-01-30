@@ -166,7 +166,7 @@
         </div>
         [#-- Upload Annexes --]
         <div class="col-md-6 fileUpload uploadAnnexes">
-          <label>[@customForm.text name="caseStudy.uploadAnnexes" readText=!editable /]:[@customForm.req required=editable /]</label>
+          <label>[@customForm.text name="caseStudy.uploadAnnexes" readText=!editable /]:</label>
           <div class="uploadContainer">
             [#if (element.file?has_content)!false]
               [#if editable]<span id="remove-annexesFile" class="remove"></span>[/#if] 
