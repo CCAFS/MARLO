@@ -35,7 +35,7 @@
       <div style="display:none">[@projectList.projectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]</div>
   
       [#-- Section Buttons --]
-      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed)]
+      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive]
       <div class="buttons">
         <div class="buttons-content">
         
