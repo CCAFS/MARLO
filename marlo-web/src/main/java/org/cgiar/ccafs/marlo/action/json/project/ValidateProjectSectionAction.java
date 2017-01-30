@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -30,8 +31,12 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -124,6 +129,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Inject
   ProjectLocationElementTypeManager projectLocationElementTypeManager;
+
+  @Inject
+  DeliverableQualityCheckManager deliverableQualityCheckManager;
 
   @Inject
   ProjectDescriptionValidator descriptionValidator;
@@ -768,6 +776,67 @@ public class ValidateProjectSectionAction extends BaseAction {
         deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       deliverable.setFundingSources(
         deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      if (this.isReportingActive()) {
+
+        DeliverableQualityCheck deliverableQualityCheck =
+          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        deliverable.setQualityCheck(deliverableQualityCheck);
+
+        if (deliverable.getDeliverableMetadataElements() != null) {
+          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+        }
+
+        if (deliverable.getDeliverableDisseminations() != null) {
+          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+          if (deliverable.getDeliverableDisseminations().size() > 0) {
+            deliverable.setDissemination(deliverable.getDisseminations().get(0));
+          } else {
+            deliverable.setDissemination(new DeliverableDissemination());
+          }
+
+        }
+
+        if (deliverable.getDeliverableDataSharingFiles() != null) {
+          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+        }
+
+        if (deliverable.getDeliverablePublicationMetadatas() != null) {
+          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+        }
+        if (!deliverable.getPublicationMetadatas().isEmpty()) {
+          deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
+        }
+
+        if (deliverable.getDeliverableDataSharings() != null) {
+          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+        }
+
+
+        deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+        deliverable.setFiles(new ArrayList<>());
+        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+          DeliverableFile deFile = new DeliverableFile();
+          switch (dataSharingFile.getTypeId().toString()) {
+            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getFile().getFileName());
+              break;
+
+            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getExternalFile());
+              break;
+          }
+          deFile.setId(dataSharingFile.getId());
+          deFile.setSize(0);
+          deliverable.getFiles().add(deFile);
+        }
+      }
+
       deliverableValidator.validate(this, deliverable, false);
     }
 
