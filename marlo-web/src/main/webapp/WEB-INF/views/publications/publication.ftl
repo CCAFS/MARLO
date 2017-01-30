@@ -313,6 +313,8 @@
   <div class="col-md-1"></div>
 </section>
 
+[#-- Author template --]
+[@authorMacro element={} index="-1" name="publication.authors"  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

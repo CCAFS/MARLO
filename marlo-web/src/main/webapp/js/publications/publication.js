@@ -83,6 +83,13 @@ function attachEvents() {
     $('#gender-levels').slideUp();
   });
 
+  // Add authors
+  $(".addAuthor").on("click", addAuthor);
+
+  // Remove a author
+  $('.removeAuthor').on('click', removeAuthor);
+
+  // Select an open restriction
   $("input.openAccessRestrictionRadio").on("change", openAccessRestriction);
 
   // Other license type
@@ -165,4 +172,66 @@ function removeGenderLevel() {
   // Add funding source option again
   $select.addOption(value, name);
   $select.trigger("change.select2");
+}
+
+/* Authors */
+
+function addAuthor() {
+  if($(".lName").val() != "" && $(".fName").val() != "") {
+    $(".lName").removeClass("fieldError");
+    $(".fName").removeClass("fieldError");
+    $(".oId").removeClass("fieldError");
+    var $list = $('.authorsList');
+    var $item = $('#author-template').clone(true).removeAttr("id");
+    $item.find(".lastName").html($(".lName").val());
+    $item.find(".firstName").html($(".fName").val());
+    if($(".oId").val() == "") {
+      $item.find(".orcidId").html("<b>orcid id:</b> not filled</small>");
+      $item.find(".orcidIdInput").val("");
+    } else {
+      $item.find(".orcidId").html($(".oId").val());
+      $item.find(".orcidIdInput").val($(".oId").val());
+    }
+
+    $item.find(".lastNameInput").val($(".lName").val());
+    $item.find(".firstNameInput").val($(".fName").val());
+    $list.append($item);
+    $item.show('slow');
+    updateAuthor();
+    checkNextAuthorItems($list);
+
+    $(".lName").val("");
+    $(".fName").val("");
+    $(".oId").val("");
+  } else {
+    $(".lName").addClass("fieldError");
+    $(".fName").addClass("fieldError");
+    $(".oId").addClass("fieldError");
+  }
+}
+
+function removeAuthor() {
+  var $list = $(this).parents('.authorsList');
+  var $item = $(this).parents('.author');
+  $item.hide(function() {
+    $item.remove();
+    checkNextAuthorItems($list);
+    updateAuthor();
+  });
+}
+
+function updateAuthor() {
+  $(".authorsList").find('.author').each(function(i,e) {
+    // Set activity indexes
+    $(e).setNameIndexes(1, i);
+  });
+}
+
+function checkNextAuthorItems(block) {
+  var items = $(block).find('.author ').length;
+  if(items == 0) {
+    $(block).parent().find('p.emptyText').fadeIn();
+  } else {
+    $(block).parent().find('p.emptyText').fadeOut();
+  }
 }
