@@ -101,7 +101,8 @@
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
-		 <mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
+		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
+		<mapping resource="xmls/CrpTargetUnits.hbm.xml"/>		
 	</session-factory>
 </hibernate-configuration>
 

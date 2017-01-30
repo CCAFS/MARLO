@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
@@ -274,8 +275,15 @@ public class OutcomesAction extends BaseAction {
     targetUnitList = new HashMap<>();
     if (srfTargetUnitManager.findAll() != null) {
 
-      List<SrfTargetUnit> targetUnits = srfTargetUnitManager.findAll().stream()
-        .filter(c -> c.isActive() && (c.getCrp() == null || c.getCrp().equals(loggedCrp))).collect(Collectors.toList());
+      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+      }
+
 
       Collections.sort(targetUnits,
         (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));

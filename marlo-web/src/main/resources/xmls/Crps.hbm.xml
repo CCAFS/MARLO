@@ -122,6 +122,13 @@
       </key>
       <one-to-many class="org.cgiar.ccafs.marlo.data.model.FundingSource" />
     </set>
+    
+    <set name="crpTargetUnits" table="crp_target_units" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
+        </set>
 
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />

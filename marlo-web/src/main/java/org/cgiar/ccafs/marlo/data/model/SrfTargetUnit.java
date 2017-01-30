@@ -39,12 +39,14 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
   @Expose
   private String name;
 
+
   private Set<CrpMilestone> crpMilestones = new HashSet<CrpMilestone>(0);
 
   private Set<SrfSloIndicatorTarget> srfSloIndicatorTargets = new HashSet<SrfSloIndicatorTarget>(0);
 
   private Set<CrpProgramOutcome> crpProgramOutcomes = new HashSet<CrpProgramOutcome>(0);
 
+  private Set<CrpTargetUnit> crpTargetUnits = new HashSet<CrpTargetUnit>(0);
 
   private boolean active;
 
@@ -53,23 +55,20 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   private Date activeSince;
 
-
   private User modifiedBy;
 
 
   private String modificationJustification;
 
-
-  private Crp crp;
-
-
   public SrfTargetUnit() {
   }
+
 
   public SrfTargetUnit(String name) {
     this.name = name;
 
   }
+
 
   public SrfTargetUnit(String name, Set<CrpMilestone> crpMilestones, Set<SrfSloIndicatorTarget> srfSloIndicatorTargets,
     Set<CrpProgramOutcome> crpProgramOutcomes) {
@@ -117,17 +116,17 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return createdBy;
   }
 
-
-  public Crp getCrp() {
-    return crp;
-  }
-
   public Set<CrpMilestone> getCrpMilestones() {
     return this.crpMilestones;
   }
 
+
   public Set<CrpProgramOutcome> getCrpProgramOutcomes() {
     return this.crpProgramOutcomes;
+  }
+
+  public Set<CrpTargetUnit> getCrpTargetUnits() {
+    return crpTargetUnits;
   }
 
   @Override
@@ -160,7 +159,6 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     return this.srfSloIndicatorTargets;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -169,6 +167,7 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -179,18 +178,15 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setCreatedBy(User createdBy) {
     this.createdBy = createdBy;
   }
 
-  public void setCrp(Crp crp) {
-    this.crp = crp;
-  }
 
   public void setCrpMilestones(Set<CrpMilestone> crpMilestones) {
     this.crpMilestones = crpMilestones;
@@ -198,6 +194,10 @@ public class SrfTargetUnit implements java.io.Serializable, IAuditLog {
 
   public void setCrpProgramOutcomes(Set<CrpProgramOutcome> crpProgramOutcomes) {
     this.crpProgramOutcomes = crpProgramOutcomes;
+  }
+
+  public void setCrpTargetUnits(Set<CrpTargetUnit> crpTargetUnits) {
+    this.crpTargetUnits = crpTargetUnits;
   }
 
   public void setId(Long id) {

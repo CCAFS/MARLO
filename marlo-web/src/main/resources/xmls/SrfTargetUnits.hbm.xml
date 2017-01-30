@@ -24,14 +24,10 @@
 			fetch="select">
 			<column name="modified_by" not-null="true" />
 		</many-to-one>
-		<many-to-one name="crp" class="org.cgiar.ccafs.marlo.data.model.Crp"
-      fetch="select">
-      <column name="crp_id"/>
-    </many-to-one>
 		<property name="name" type="string">
 			<column name="name" length="65535" not-null="true" />
 		</property>
-		
+
 		<set lazy="true" name="crpMilestones" table="crp_milestones"
 			inverse="true" fetch="select">
 			<key>
@@ -39,6 +35,15 @@
 			</key>
 			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpMilestone" />
 		</set>
+
+		<set name="crpTargetUnits" table="crp_target_units" inverse="true"
+			lazy="true" fetch="select">
+			<key>
+				<column name="target_unit_id" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
+		</set>
+
 		<set lazy="true" name="srfSloIndicatorTargets" table="srf_slo_indicator_targets"
 			inverse="true" fetch="select">
 			<key>
