@@ -346,12 +346,16 @@ public class ProjectListAction extends BaseAction {
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects =
-          loggedCrp.getProjects().stream()
+        if (this.isPlanningActive()) {
+          myProjects = loggedCrp.getProjects().stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-
+            .collect(Collectors.toList());
+        } else {
+          myProjects = loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+            .collect(Collectors.toList());
+        }
       } else {
 
         if (this.isPlanningActive()) {

@@ -85,9 +85,14 @@ public class IpIndicator implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public Date getActiveSince() {
     return activeSince;
+  }
+
+
+  public String getComposedName() {
+
+    return ipProgramElement.getIpProgram().getAcronym() + "- " + description;
   }
 
 

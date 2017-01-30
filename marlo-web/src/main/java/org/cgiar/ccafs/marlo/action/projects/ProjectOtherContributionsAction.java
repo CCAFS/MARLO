@@ -29,11 +29,14 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOtherContributionManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -407,6 +410,27 @@ public class ProjectOtherContributionsAction extends BaseAction {
     crps = crpPandrManager.findAll();
     regions = ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId().intValue() == 5)
       .collect(Collectors.toList());
+
+    List<IpProgram> tempRegions = new ArrayList<>();
+    tempRegions.addAll(regions);
+    List<CrpProgram> crpPrograms = new ArrayList<>();
+
+    for (ProjectFocus projectFocus : projectDB.getProjectFocuses().stream()
+      .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+      .collect(Collectors.toList())) {
+      crpPrograms.add(projectFocus.getCrpProgram());
+    }
+
+    for (CrpProgram crpProgram : crpPrograms) {
+      for (IpProgram ipProgram : tempRegions) {
+        if (ipProgram.getAcronym().replace("RP ", "").equals(crpProgram.getAcronym())) {
+          regions.remove(ipProgram);
+        }
+        if (ipProgram.getAcronym().equals("Global")) {
+          regions.remove(ipProgram);
+        }
+      }
+    }
 
     otherIndicators = ipIndicatorManager.findOtherContributions(projectID);
 

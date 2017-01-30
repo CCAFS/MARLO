@@ -101,6 +101,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
       for (Map<String, Object> map : rList) {
         IpIndicator indicator = this.find(Long.parseLong(map.get("id").toString()));
         ipIndicators.add(indicator);
+
       }
     }
 

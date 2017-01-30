@@ -126,7 +126,7 @@
     </div>
     [#-- Indicator --]
     <div class="fullBlock">
-      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" keyFieldName="id"  displayFieldName="description"  listName="otherIndicators" required=true editable=editable  /]
+      [@customForm.select name="${customName}.ipIndicator.id" className="otherContributionIndicator" label="" i18nkey="projectOtherContributions.indicators" keyFieldName="id"  displayFieldName="composedName"  listName="otherIndicators" required=true editable=editable  /]
     </div>
     [#-- Describe how you are contributing to the selected outcome --]
     <div class="fullBlock">
