@@ -373,6 +373,38 @@ public class ValidateProjectSectionAction extends BaseAction {
         break;
 
 
+      case BUDGET:
+
+        if (this.isReportingActive()) {
+          section = new HashMap<String, Object>();
+
+          section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
+          section.put("missingFields", "");
+
+        } else {
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+          section = new HashMap<String, Object>();
+
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        }
+
+
+        break;
+
+
+      case LEVERAGES:
+
+
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+        section = new HashMap<String, Object>();
+
+        section.put("sectionName", sectionStatus.getSectionName());
+        section.put("missingFields", sectionStatus.getMissingFields());
+        break;
+
       default:
         sectionStatus =
           sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);

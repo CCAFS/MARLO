@@ -142,6 +142,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = false;
         }
 
+
+      }
+      String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+      if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+        canEdit = false;
       }
 
       // TODO Validate is the project is new

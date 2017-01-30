@@ -885,7 +885,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           }
           if (sectionStatus.getMissingFields().length() > 0) {
-            return true;
+            return false;
 
           }
 
@@ -943,6 +943,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
       case BUDGET:
+
+        if (this.isReportingActive()) {
+          return true;
+        }
         project = projectManager.getProjectById(projectID);
         if (project.getProjectBudgets().stream().filter(d -> d.isActive()).collect(Collectors.toList()).isEmpty()) {
           return false;
@@ -975,6 +979,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         break;
 
+      case LEVERAGES:
+
+
+        sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
+          this.getCurrentCycleYear(), section);
+        if (sectionStatus != null) {
+          if (sectionStatus.getMissingFields().length() == 0) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+        returnValue = false;
+
+
+        break;
 
       default:
         sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
