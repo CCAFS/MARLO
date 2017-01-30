@@ -80,7 +80,7 @@
               </div>
               [#-- Year --]
               <div class="col-md-6">
-                [@customForm.select name="highlight.year" value="${(highlight.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
+                [@customForm.select name="highlight.year" value="${(highlight.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=false  /]
                 [#if !editable]${(highlight.year)!}[/#if]
               </div>
             </div>
