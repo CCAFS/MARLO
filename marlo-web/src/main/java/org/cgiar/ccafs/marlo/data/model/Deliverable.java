@@ -431,6 +431,20 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return id;
   }
 
+  public long getID(int metadataID) {
+
+    for (DeliverableMetadataElement dmetadata : metadataElements) {
+      if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+        if (dmetadata.getMetadataElement().getId() == metadataID) {
+          return dmetadata.getId().longValue();
+        }
+      }
+
+    }
+
+    return -1;
+  }
+
   public String getLicense() {
     return license;
   }

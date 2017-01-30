@@ -69,6 +69,9 @@
 		<property name="administrative" type="java.lang.Boolean">
 			<column name="administrative" />
 		</property>
+		<property name="reporting" type="java.lang.Boolean">
+      <column name="reporting" />
+    </property>
 		<property name="crossCuttingYouth" type="java.lang.Boolean">
 			<column name="cross_cutting_youth" />
 		</property>

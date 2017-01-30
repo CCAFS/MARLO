@@ -628,7 +628,8 @@ public class ValidateProjectSectionAction extends BaseAction {
       .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
 
     for (ProjectHighlight projectHighlight : highlights) {
-
+      projectHighlight.setTypes(
+        projectHighlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       projectHighLightValidator.validate(this, project, projectHighlight, false);
 
     }

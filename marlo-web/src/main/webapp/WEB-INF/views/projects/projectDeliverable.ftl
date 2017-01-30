@@ -174,10 +174,12 @@
 [#-- Metadata Macro --]
 [#macro metadataField title="" encodedName="" type="input" list="" require=false]
   [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
+  
   [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
+   [#local ID = (deliverable.getID(metadataID))!'' /]
   [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
   [#local customName = 'deliverable' /]
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
+  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${ID}" />
   <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
   [#if type == "input"]
     [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
