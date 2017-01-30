@@ -10,10 +10,10 @@
   </div>
   <div class="clearfix"></div>
 
-  <div class="col-md-9 openAccessOptions" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
+  <div class="col-md-12 openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
     [#if editable] 
-   <label for="">Select the Open Access restriction:</label>
+   <label for="">Select the Open Access restriction:<span class="red">*</span></label>
     <div class="radio">
       <label><input type="radio" name="deliverable.dissemination.type" value="intellectualProperty" [#if (deliverable.dissemination.intellectualProperty?? && (deliverable.dissemination.intellectualProperty))]checked="checked"[/#if]>Intellectual Property Rights (confidential information)</label>
     </div>
@@ -123,7 +123,7 @@
   <div class="clearfix"></div>
   [#-- Creator/Authors --]
   <div class="col-md-12 form-group">
-    <label for="">Creator/Authors:</label>
+    <label for="">Creator/Authors: <span class="red">*</span></label>
     <div class="authorsList simpleBox col-md-12" >
       [#if deliverable.users?has_content]
         [#list deliverable.users as author]
@@ -162,16 +162,16 @@
       [@customForm.input name="deliverable.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     <div class="col-md-4 form-group">
-      [@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=false editable=editable /]
     </div>
     <div class="col-md-4 form-group">
-      [@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=false editable=editable /]
     </div>
     <div class="col-md-12">
       [@customForm.input name="deliverable.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
   </div>
-  <label for="">Indicators for journal articles:</label>
+  <label for="">Indicators for journal articles:<span class="red">*</span></label>
   [#if editable]
     <div class="form-group">
      <input type="checkbox" name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
@@ -216,10 +216,10 @@
     </div>
     [#if editable]
     <div class="col-md-3">
-      [@customForm.select name="" label=""  i18nkey="Select CRP" listName="crps"   multiple=false required=true  className="crpSelect form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select CRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-7">
-      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=true  className="flaghsipSelect form-control input-sm " editable=editable/]
+      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-2">
     <br />
@@ -234,5 +234,6 @@
 </div>
 [@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
     <div class="clearfix"></div>
+    </div>
   </div>
 </div>

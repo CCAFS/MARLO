@@ -69,7 +69,7 @@ function getInputElement(fieldName,message) {
     }
   } else {
     // VALIDATE IF IT'S CHECKBOX
-    if(elementQuery.attr("type") == "checkbox" || elementQuery.attr("type") == "radio") {
+    if(elementQuery.attr("type") == "checkbox") {
       // Tag with message
       var tagElement = $("#test").clone(true).removeAttr("id");
       tagElement.attr("title", message);
@@ -82,6 +82,18 @@ function getInputElement(fieldName,message) {
       });
       tagElement.fadeIn(2000);
 
+    } else if(elementQuery.attr("type") == "radio") {
+      // Tag with message
+      var tagElement = $("#test").clone(true).removeAttr("id");
+      tagElement.attr("title", message);
+      $(elementQuery).parents(".radio-block").append(tagElement);
+      var left = $(elementQuery).parents(".radio-block").outerWidth();
+      var top = $(elementQuery).parents(".radio-block").height();
+      tagElement.offset({
+          top: (top / 2),
+          left: left
+      });
+      tagElement.fadeIn(2000);
     } else {
       // FIND ASSOCIATE DIV WHEN THE INPUT IS HIDDEN
       var asociateDiv = $("." + fieldName.replace(/\W+/g, ""));
@@ -126,5 +138,22 @@ function verifyMissingFields(element) {
       tagElement.fadeIn(2000);
     }
   }
+}
 
+function showHiddenTags(element) {
+  if(errorList.length != 0) {
+    if($(element).find(".errorTag").exists()) {
+      // Tag with message
+      var tagElement = $(element).find(".errorTag");
+      var left = $(element).outerWidth();
+      var top = $(element).outerHeight();
+      console.log(left);
+      console.log(top);
+      tagElement.offset({
+          top: (top / 2),
+          left: left
+      });
+      tagElement.fadeIn(2000);
+    }
+  }
 }
