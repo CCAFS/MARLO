@@ -139,7 +139,7 @@
                       [#-- Indicator target narrative description --]
                       <div class="row">
                         <div class="textArea form-group col-md-12 ">
-                          <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") /]</label>
+                          <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") && !reportingActive /]</label>
                           [#if editable && (currentCycleYear lte year) && action.hasPermission("description") && !reportingActive ]
                             <textarea class="projectIndicatorDescription form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.description">${projectIndicator.description!}</textarea>
                           [#else]
@@ -158,7 +158,7 @@
                         [#-- Narrative for your achieved targets, including evidence --]
                         <div class="row">
                           <div class="textArea form-group col-md-12 ">
-                            <label>[@s.text name="projectCcafsOutcomes.targetNarrativeAchieved" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("narrativeTargets") /]</label>
+                            <label>[@s.text name="projectCcafsOutcomes.targetNarrativeAchieved" /]:[@customForm.req required=isYearRequired(year)  && action.hasPermission("narrativeTargets") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeTargets")]
                               <textarea class="projectIndicatorNarrativeAchieved form-control input-sm fieldFocus imitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="${customName}.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
                             [#else]
@@ -176,7 +176,7 @@
                       [#-- The expected annual gender and social inclusion contribution to this CCAFS outcome --]
                       <div class="row">
                         <div class="textArea form-group col-md-12">
-                          <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") /]</label>
+                          <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") && !reportingActive /]</label>
                           [#if editable && (currentCycleYear lte year) && action.hasPermission("gender") && !reportingActive]
                             <textarea class="projectIndicatorGender form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.gender">${(projectIndicator.gender)!}</textarea>
                           [#else]
