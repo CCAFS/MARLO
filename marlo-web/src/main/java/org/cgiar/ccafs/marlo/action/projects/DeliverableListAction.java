@@ -227,6 +227,11 @@ public class DeliverableListAction extends BaseAction {
         }
       }
 
+      if (this.isReportingActive()) {
+        deliverables.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
+          .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
+
+      }
       String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
       this.setBasePermission(this.getText(Permission.PROJECT_DELIVERABLE_LIST_BASE_PERMISSION, params));
 

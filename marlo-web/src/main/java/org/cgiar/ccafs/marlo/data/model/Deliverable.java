@@ -638,7 +638,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return active;
   }
 
-  public boolean isRequieriedReporting(int year) {
+  public Boolean isRequieriedReporting(int year) {
 
     if (status == null && this.year <= year) {
       return true;
