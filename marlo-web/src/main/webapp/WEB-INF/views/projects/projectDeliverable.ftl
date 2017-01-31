@@ -42,13 +42,41 @@
       
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
-          [#-- Back --]
-          <small class="pull-right">
-            <a href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][/@s.url]">
-              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
-            </a>
-          </small>
+          <div class="form-group">
+            <br />
+            [#-- Back --]
+            <small >
+              <a href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][/@s.url]">
+                <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
+              </a>
+            </small>
           
+                 
+            <div class="pull-right">
+              [#-- Findable --] 
+              <div class="fairCompliant mini findable">
+                <div class="sign">F</div>
+              </div>
+              
+              [#-- Accessible --] 
+              <div class="fairCompliant mini accessible">
+                <div class="sign">A</div>
+              </div>
+              
+              [#-- Interoperable --] 
+              <div class="fairCompliant mini interoperable">
+                <div class="sign">I</div>
+              </div>
+              
+              [#-- Reusable --] 
+              <div class="fairCompliant mini reusable">
+                <div class="sign">R</div>
+              </div> 
+              
+            </div>
+          </div>
+             
+            
           <div class="deliverableTabs">      
           
           [#--  Deliverable Menu  --] 
@@ -59,6 +87,8 @@
                 <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class="dataSharing" style="display:${(deliverable.dissemination?? && deliverable.dissemination.alreadyDisseminated?? && deliverable.dissemination.alreadyDisseminated)?string('none','block')};"><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
             </ul>
+            
+            
             
             <div class="tab-content col-md-12">
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade in active row">
