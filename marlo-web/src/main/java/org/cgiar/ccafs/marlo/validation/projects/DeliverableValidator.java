@@ -188,6 +188,15 @@ public class DeliverableValidator extends BaseValidator {
 
       if (action.isReportingActive()) {
 
+
+        if (deliverable.getStatus() != null
+          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+
+          this.addMessage(action.getText("project.deliverable.generalInformation.status"));
+          action.getInvalidFields().put("input-deliverable.status", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+
         // Deliverable Dissemination
         if (deliverable.getDissemination() != null) {
           this.validateDissemination(deliverable.getDissemination());
