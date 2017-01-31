@@ -143,6 +143,7 @@ public class DeliverableAction extends BaseAction {
 
   private long deliverableID;
 
+
   private DeliverableManager deliverableManager;
 
 
@@ -155,6 +156,7 @@ public class DeliverableAction extends BaseAction {
 
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
 
+
   private DeliverableDisseminationManager deliverableDisseminationManager;
 
   private List<DeliverableType> deliverableSubTypes;
@@ -162,18 +164,18 @@ public class DeliverableAction extends BaseAction {
   // Managers
   private DeliverableTypeManager deliverableTypeManager;
 
-
   private List<DeliverableType> deliverableTypeParent;
 
   private DeliverableValidator deliverableValidator;
 
+
   private FileDBManager fileDBManager;
+
   private CrpProgramManager crpProgramManager;
 
-
   private FundingSourceManager fundingSourceManager;
-
   private List<FundingSource> fundingSources;
+
 
   private Map<String, String> genderLevels;
 
@@ -181,24 +183,24 @@ public class DeliverableAction extends BaseAction {
 
   private Crp loggedCrp;
 
-
   private MetadataElementManager metadataElementManager;
 
-
   private List<ProjectPartnerPerson> partnerPersons;
+
 
   private Project project;
 
 
   private long projectID;
 
-
   private ProjectManager projectManager;
 
 
   private List<ProjectOutcome> projectOutcome;
 
+
   private ProjectPartnerManager projectPartnerManager;
+
 
   private ProjectPartnerPersonManager projectPartnerPersonManager;
 
@@ -207,6 +209,10 @@ public class DeliverableAction extends BaseAction {
   private Map<String, String> status;
 
   private String transaction;
+
+
+  private int indexTab;
+
 
   @Inject
   public DeliverableAction(APConfig config, DeliverableTypeManager deliverableTypeManager,
@@ -251,6 +257,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableDisseminationManager = deliverableDisseminationManager;
   }
 
+
   @Override
   public String cancel() {
 
@@ -291,11 +298,9 @@ public class DeliverableAction extends BaseAction {
     return channels;
   }
 
-
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -326,14 +331,15 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
 
+
   public List<DeliverableType> getDeliverableTypeParent() {
     return deliverableTypeParent;
   }
-
 
   public String getDeliverableUrl(String fileType) {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType).replace('\\', '/');
@@ -350,6 +356,11 @@ public class DeliverableAction extends BaseAction {
 
   public Map<String, String> getGenderLevels() {
     return genderLevels;
+  }
+
+
+  public int getIndexTab() {
+    return indexTab;
   }
 
   public List<CrpClusterKeyOutput> getKeyOutputs() {
@@ -379,7 +390,6 @@ public class DeliverableAction extends BaseAction {
   public List<ProjectFocus> getProjectPrograms() {
     return projectPrograms;
   }
-
 
   public Map<String, String> getStatus() {
     return status;
@@ -582,6 +592,7 @@ public class DeliverableAction extends BaseAction {
       }
     }
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -940,6 +951,13 @@ public class DeliverableAction extends BaseAction {
         deliverable.getQualityCheck().setFileTools(null);
       }
     }
+
+    try {
+      indexTab = Integer.parseInt(this.getSession().get("indexTab").toString());
+      this.getSession().remove("indexTab");
+    } catch (Exception e) {
+      indexTab = 0;
+    }
   }
 
   private DeliverablePartnership responsiblePartner() {
@@ -973,11 +991,10 @@ public class DeliverableAction extends BaseAction {
 
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-
+      this.getSession().put("indexTab", indexTab);
       Project projectDB = projectManager.getProjectById(project.getId());
       project.setActive(true);
       project.setCreatedBy(projectDB.getCreatedBy());
@@ -1109,7 +1126,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1338,7 +1355,6 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
-
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -1457,6 +1473,7 @@ public class DeliverableAction extends BaseAction {
 
   }
 
+
   public void saveMetadata() {
     if (deliverable.getMetadataElements() != null) {
 
@@ -1472,6 +1489,7 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
+
 
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
@@ -1638,6 +1656,10 @@ public class DeliverableAction extends BaseAction {
     this.genderLevels = genderLevels;
   }
 
+  public void setIndexTab(int indexTab) {
+    this.indexTab = indexTab;
+  }
+
   public void setKeyOutputs(List<CrpClusterKeyOutput> keyOutputs) {
     this.keyOutputs = keyOutputs;
   }
@@ -1669,6 +1691,7 @@ public class DeliverableAction extends BaseAction {
   public void setStatus(Map<String, String> status) {
     this.status = status;
   }
+
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
