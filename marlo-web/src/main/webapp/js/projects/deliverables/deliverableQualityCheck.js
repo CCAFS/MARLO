@@ -108,9 +108,22 @@ function checkInteroperable() {
     // If is disseminated in CGSpace or Dataverse
     if((channelSelected == "cgspace") || (channelSelected == "dataverse")) {
       // If is dissemination URL filled correctly
+      var inputURL = $('input.deliverableDisseminationUrl').val();
+      if(inputURL != "") {
 
-      if($('input.deliverableDisseminationUrl').val() != "") {
-        $('.fairCompliant.interoperable').addClass('achieved');
+        // If CGSpace
+        if((channelSelected == "cgspace")) {
+          if(inputURL.indexOf("cgspace") >= 0) {
+            $('.fairCompliant.interoperable').addClass('achieved');
+          }
+        }
+        // If Dataverse
+        if((channelSelected == "dataverse")) {
+          if(inputURL.indexOf("dataverse") >= 0) {
+            $('.fairCompliant.interoperable').addClass('achieved');
+          }
+        }
+
       }
     }
   }
@@ -121,10 +134,13 @@ function checkReusable() {
   if($('.license input').val() == "true") {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.license"]:checked').val();
-
-    if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
+    console.log(inputChecked);
+    if(!(typeof inputChecked === "undefined")
+        && !((inputChecked == "OTHER") || (inputChecked == "CC_BY_ND") || (inputChecked == "CC_BY_NC_ND"))) {
       $('.fairCompliant.reusable').addClass('achieved');
+      console.log('here');
     } else {
+      console.log('or here');
       // Does this license allow modifications?
       if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
         $('.fairCompliant.reusable').addClass('achieved');
