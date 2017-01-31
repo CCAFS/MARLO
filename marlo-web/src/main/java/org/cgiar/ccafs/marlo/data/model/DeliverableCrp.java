@@ -10,28 +10,28 @@ import com.google.gson.annotations.Expose;
  */
 public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = 3934374948729277454L;
+
+
   @Expose
   private Long id;
+
+
   @Expose
-  private CrpProgram crpProgram;
+  private CrpPandr crpPandr;
+
 
   @Expose
-  private Crp crp;
+  private IpProgram ipProgram;
 
-
+  @Expose
   private Deliverable deliverable;
 
   public DeliverableCrp() {
   }
 
-  public DeliverableCrp(CrpProgram crpProgram, Crp crp, Deliverable deliverable) {
-    this.crpProgram = crpProgram;
-    this.crp = crp;
+  public DeliverableCrp(Deliverable deliverable) {
+
     this.deliverable = deliverable;
   }
 
@@ -57,12 +57,9 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-  public Crp getCrp() {
-    return crp;
-  }
 
-  public CrpProgram getCrpProgram() {
-    return crpProgram;
+  public CrpPandr getCrpPandr() {
+    return crpPandr;
   }
 
   public Deliverable getDeliverable() {
@@ -73,6 +70,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
+  public IpProgram getIpProgram() {
+    return ipProgram;
+  }
+
 
   @Override
   public String getLogDeatil() {
@@ -87,14 +89,12 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   @Override
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
     return u;
   }
-
 
   @Override
   public int hashCode() {
@@ -112,13 +112,8 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
   }
 
 
-  public void setCrp(Crp crp) {
-    this.crp = crp;
-  }
-
-
-  public void setCrpProgram(CrpProgram crpProgram) {
-    this.crpProgram = crpProgram;
+  public void setCrpPandr(CrpPandr crpPandr) {
+    this.crpPandr = crpPandr;
   }
 
 
@@ -129,6 +124,11 @@ public class DeliverableCrp implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setIpProgram(IpProgram ipProgram) {
+    this.ipProgram = ipProgram;
   }
 
 
