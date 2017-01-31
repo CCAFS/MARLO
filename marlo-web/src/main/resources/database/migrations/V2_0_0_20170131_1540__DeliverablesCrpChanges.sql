@@ -1,3 +1,5 @@
+
+DELETE FROM deliverable_crps;
 ALTER TABLE `deliverable_crps` DROP FOREIGN KEY `deliverable_crps_ibfk_2`;
 
 ALTER TABLE `deliverable_crps` DROP FOREIGN KEY `deliverable_crps_ibfk_3`;

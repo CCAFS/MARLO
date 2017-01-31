@@ -208,7 +208,7 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable Meta-data Elements
         if (deliverable.getMetadataElements() != null) {
-          this.validateMetadata(deliverable.getMetadataElements());
+          // this.validateMetadata(deliverable.getMetadataElements());
         } else {
           this.addMessage(action.getText("project.deliverable.v.metadata"));
           action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",

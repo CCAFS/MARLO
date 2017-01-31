@@ -696,11 +696,13 @@ public class DeliverableAction extends BaseAction {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
 
-              if (deliverableCrp.getIpProgram() != null) {
+              if (deliverableCrp.getIpProgram() == null || deliverableCrp.getIpProgram().getId() == null
+                || deliverableCrp.getIpProgram().getId().intValue() == -1) {
+                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
+
+              } else {
                 deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
                 deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
-              } else {
-                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
               }
 
             }
@@ -1334,10 +1336,10 @@ public class DeliverableAction extends BaseAction {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
 
-        if (deliverableCrp.getIpProgram() != null) {
-          if (deliverableCrp.getIpProgram().getId() != null || deliverableCrp.getIpProgram().getId() != -1) {
-            deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
-          }
+        if (deliverableCrp.getCrpPandr() == null) {
+          deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+        } else {
+          deliverableCrp.setIpProgram(null);
         }
 
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
