@@ -186,7 +186,10 @@ public class ValidateProjectSectionAction extends BaseAction {
         case PARTNERS:
           this.validateProjectParnters();
         case BUDGET:
-          this.validateProjectBudgets();
+          if (this.isPlanningActive()) {
+            this.validateProjectBudgets();
+          }
+
           break;
         case BUDGETBYCOA:
           this.validateProjectBudgetsCoAs();

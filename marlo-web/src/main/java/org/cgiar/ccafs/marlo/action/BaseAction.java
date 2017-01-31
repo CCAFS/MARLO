@@ -1430,13 +1430,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             case HIGHLIGHT:
               if (highlightSection == 0) {
                 highlightSection = 1;
-                highlightSection++;
+                totalSections++;
               }
 
             case CASESTUDIES:
               if (caseStudySection == 0) {
                 caseStudySection = 1;
-                caseStudySection++;
+                totalSections++;
               }
 
 
@@ -1445,7 +1445,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
 
-      if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+      project = projectManager.getProjectById(projectID);
+
+      List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+        .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
+      if (highlights.isEmpty()) {
+        totalSections++;
+      }
+
+      List<CaseStudyProject> caseStudyProjects =
+        project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+      List<CaseStudy> caseStudies = new ArrayList<>();
+      for (CaseStudyProject caseStudyProject : caseStudyProjects) {
+        if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+          caseStudies.add(caseStudyProject.getCaseStudy());
+        }
+
+
+      }
+      if (caseStudies.isEmpty() && !project.getAdministrative()) {
+        totalSections++;
+      }
+
+      if ((project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
         return totalSections == 8;
       } else {
         return totalSections == 12;

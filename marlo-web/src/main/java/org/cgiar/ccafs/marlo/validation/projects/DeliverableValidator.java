@@ -402,7 +402,7 @@ public class DeliverableValidator extends BaseValidator {
 
     }
 
-    if (deliverable.getPublicationMetadatas() != null || !deliverable.getCrps().isEmpty()) {
+    if (deliverable.getPublicationMetadatas() != null && !deliverable.getPublicationMetadatas().isEmpty()) {
 
       DeliverablePublicationMetadata metadata = deliverable.getPublicationMetadatas().get(0);
 
