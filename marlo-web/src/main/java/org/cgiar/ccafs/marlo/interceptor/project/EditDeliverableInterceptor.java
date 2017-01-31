@@ -146,6 +146,11 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       }
 
 
+      if (baseAction.isReportingActive() && deliverable.getStatus() != null
+        && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+        && deliverable.getYear() == baseAction.getCurrentCycleYear()) {
+        canEdit = true;
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);
