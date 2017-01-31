@@ -29,13 +29,15 @@
     <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
     <div id="decisionTree" class="borderBox">
       [#-- Add new Project --]
-      [#if !crpClosed]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">[/#if]
-        <div id="newProject" class="option ${crpClosed?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
-      [#if !crpClosed]</a>[/#if]
+      [#if !crpClosed && !reportingActive]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'/]">[/#if]
+        <div id="newProject" class="option ${(crpClosed)?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.newProject" /]</p></div>
+      [#if !crpClosed && !reportingActive]</a>[/#if]
+      
       [#-- Update an ongoing Project --]
       [#if !crpClosed]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'/]"> [/#if]
         <div id="updatePlanning" class="option ${crpClosed?string('disabled','')}" ><p>[@s.text name="dashboard.decisionTree.updateProject" /]</p></div>
       [#if !crpClosed]</a>[/#if]
+      
       [#-- Evaluate Project --]
       <div id="reportProject" class="option disabled" title="This link is disabled"><p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p></div>
       <div class="clearfix"></div>
