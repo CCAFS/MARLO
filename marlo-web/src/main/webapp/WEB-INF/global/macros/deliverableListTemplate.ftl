@@ -29,7 +29,9 @@
           [#-- Deliverable Title --]
           <td class="left">
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
-            [#if deliverable.isRequieriedReporting(currentCycleYear)] <small><span class="glyphicon glyphicon-record red" title="Required for this cycle"></span></small> [/#if]
+            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive]
+              <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
+            [/#if]
             [#if deliverable.title?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
                 [#if deliverable.title?length < 120] 
