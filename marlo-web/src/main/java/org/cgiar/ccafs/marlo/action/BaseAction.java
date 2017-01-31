@@ -1642,7 +1642,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-    return false;
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
   }
 
   public Boolean isProjectNew(long projectID) {
