@@ -348,45 +348,27 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validateMetadata(List<DeliverableMetadataElement> elements) {
 
-    boolean languaje = false;
-    boolean keyword = false;
+    boolean description = false;
+
 
     for (DeliverableMetadataElement deliverableMetadataElement : elements) {
       if (deliverableMetadataElement != null) {
         if (deliverableMetadataElement.getMetadataElement().getId() != null) {
           switch (deliverableMetadataElement.getMetadataElement().getId()) {
-            case 24:
+            case 8:
               if ((this.isValidString(deliverableMetadataElement.getElementValue())
                 && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-                languaje = true;
+                description = true;
               }
-
-              break;
-
-            case 37:
-
-              if ((this.isValidString(deliverableMetadataElement.getElementValue())
-                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
-                keyword = true;
-              }
-
               break;
 
           }
         }
       }
     }
-
-    if (!languaje) {
-      this.addMessage(action.getText("project.deliverable.metadata.v.language"));
-      action.getInvalidFields().put("input-deliverable.metadataElements[23].elementValue",
-        InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-
-    if (!keyword) {
-      this.addMessage(action.getText("project.deliverable.metadata.v.keyword"));
-      action.getInvalidFields().put("input-deliverable.metadataElements[36].elementValue",
+    if (!description) {
+      this.addMessage(action.getText("project.deliverable.metadata.v.description"));
+      action.getInvalidFields().put("input-deliverable.metadataElements[7].elementValue",
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
