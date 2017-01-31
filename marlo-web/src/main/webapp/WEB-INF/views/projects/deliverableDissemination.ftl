@@ -95,7 +95,7 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
-  <div class="col-md-12 note">[@s.text name = "To change an author's data,you must do double click on that field." /]</div>
+  
   <div class="col-md-6">
     [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>
@@ -123,6 +123,9 @@
   <div class="clearfix"></div>
   [#-- Creator/Authors --]
   <div class="col-md-12 form-group">
+    [#if editable]
+      <div class="col-md-12 note">[@s.text name = "To change an author's data, you must do double click on that field." /]</div>
+    [/#if]
     <label for="">Creator/Authors: <span class="red">*</span></label>
     <div class="authorsList simpleBox col-md-12" >
       [#if deliverable.users?has_content]

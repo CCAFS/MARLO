@@ -120,7 +120,7 @@ function checkReusable() {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.license"]:checked').val();
 
-    if(!(typeof inputChecked === "undefined") && (inputChecked != "12")) {
+    if(!(typeof inputChecked === "undefined") && (inputChecked != "OTHER")) {
       $('.fairCompliant.reusable').addClass('achieved');
     } else {
       // Does this license allow modifications?

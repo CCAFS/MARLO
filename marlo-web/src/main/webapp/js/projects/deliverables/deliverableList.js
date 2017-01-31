@@ -18,7 +18,7 @@ $(document).ready(function() {
       },
       aoColumnDefs: [
           {
-              bSortable: false,
+              bSortable: true,
               aTargets: [
                   -1, -2, -4,
               ]

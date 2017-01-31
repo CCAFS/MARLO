@@ -506,8 +506,8 @@ function getCGSpaceMetadata(channel,url,uri) {
               $(".no-button-label ").addClass("radio-checked");
             }
 
-            $('#metadata-output').empty().append(
-                "Found metadata for " + data.metadataID + " <br /> " + fields.reverse().join(', '));
+            $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+            // " <br /> " + fields.reverse().join(', '));
           }
         }
       },
