@@ -3,6 +3,28 @@ var $statuses, $statusDescription;
 $(document).ready(init);
 
 function init() {
+// // Validate type option
+// var typeOption = $(".typeSelect").find("option:selected");
+// var subTypeOption = $(".subTypeSelect").find("option:selected");
+//
+// // Articles and Books
+// if(typeOption.val() == "49") {
+// $(".publicationMetadataBlock").show("slow");
+// } else {
+// $(".publicationMetadataBlock").hide("slow");
+// }
+// // Data
+// if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
+// $(".dataLicense").show("slow");
+// } else {
+// $(".dataLicense").hide("slow");
+// }
+// // Computer software
+// if(subTypeOption.val() == "52") {
+// $(".computerLicense").show("slow");
+// } else {
+// $(".computerLicense").hide("slow");
+// }
 
   $statuses = $('select.status');
   $statusDescription = $('#statusDescription');
@@ -143,11 +165,21 @@ function init() {
     $('#gender-levels').slideUp();
   });
 
-  /*
-   * if(!reportingActive) { var statusSelect = $("form .status"); statusSelect.find("option").each(function(i,e) {
-   * e.remove(); }); $(statusSelect).append("<option value='-1'>Select an option...</option><option
-   * value='2'>On-going</option>"); }
-   */
+  $(".subTypeSelect").on("change", function() {
+    var subTypeOption = $(this).find("option:selected");
+    // Data
+    if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
+      $(".dataLicense").show("slow");
+    } else {
+      $(".dataLicense").hide("slow");
+    }
+    // Computer software
+    if(subTypeOption.val() == "52") {
+      $(".computerLicense").show("slow");
+    } else {
+      $(".computerLicense").hide("slow");
+    }
+  });
 }
 
 function openDialog() {
@@ -244,7 +276,7 @@ function addGenderLevel(option) {
     return;
   }
 
-  // Set funding source parameters
+  // Set parameters
   $item.find(".name").attr("title", $(option).text()).tooltip();
   $item.find(".name").html(v);
   $item.find(".fId").val(option.val());
@@ -403,6 +435,12 @@ function subTypes() {
                   + m.deliverableSubTypes[i].name + "</option>");
             }
           });
+    }
+    // show or hide publication metadata
+    if(option.val() == "49") {
+      $(".publicationMetadataBlock").show("slow");
+    } else {
+      $(".publicationMetadataBlock").hide("slow");
     }
   });
 }

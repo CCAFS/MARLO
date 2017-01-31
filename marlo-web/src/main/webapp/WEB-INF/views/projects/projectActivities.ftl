@@ -6,6 +6,7 @@
 [#assign customCSS = ["${baseUrl}/css/projects/projectActivities.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "activities" /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -108,7 +109,7 @@
     <div class="blockContent" style="display:none">
       [#-- Title --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable /]
+        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-15" required=true editable=editable && isActive /]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
         <span class="index hidden">${index}</span>
       </div>
@@ -133,15 +134,25 @@
         [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
       
+      <div class="row activityStatusBlock ${reportingActive?string('fieldFocus','')}">
       [#-- Activity status --]
-      <div class="form-group">
+      <div class="col-md-12 form-group">
         [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="project.activities.inputStatus" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]
       </div>
       
       [#if reportingActive]
       [#-- Progress in reporting cycle --]
-      [@customForm.textArea  name="${customName}.activityProgress" i18nkey="Describe overall activity or progress made during this reporting cycle" value="${(element.progressDescription)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
+      <div class="statusDescriptionBlock col-md-12">
+        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${(element.activityStatus)!'NotSelected'}" value="${(element.progressDescription)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
+        <div id="statusesLabels" style="display:none">
+          <div id="status-2">[@s.text name="project.activities.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
+          <div id="status-3">[@s.text name="project.activities.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
+          <div id="status-4">[@s.text name="project.activities.statusJustification.status4" /]:<span class="red">*</span></div>[#-- Extended("4", "Extended") --]
+          <div id="status-5">[@s.text name="project.activities.statusJustification.status5" /]:<span class="red">*</span></div>[#-- Cancelled("5", "Cancelled") --]
+        </div>
+      </div>
       [/#if]
+      </div>
       
       [#-- Activity deliverables --]
       <label for="" class="${editable?string('editable', 'readOnly')}">[@s.text name="project.activities.deliverableList" /]:</label>

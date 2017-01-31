@@ -533,6 +533,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setAdministrative(projectDb.getAdministrative());
         reader.close();
 
         if (project.getBudgets() != null) {

@@ -33,6 +33,7 @@
 
 
 		<!-- Model Mappings -->
+		<mapping resource="xmls/DeliverableMetadataElements.hbm.xml" />
 		<mapping resource="xmls/Auditlog.hbm.xml" />
 		<mapping resource="xmls/Users.hbm.xml" />
 		<mapping resource="xmls/Crps.hbm.xml" />
@@ -101,8 +102,46 @@
 		<mapping resource="xmls/FundingSourceBudgets.hbm.xml" />
 		<mapping resource="xmls/DeliverableFundingSources.hbm.xml" />
 		<mapping resource="xmls/DeliverableGenderLevels.hbm.xml" />
-		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
 		<mapping resource="xmls/CrpTargetUnits.hbm.xml"/>		
+		<mapping resource="xmls/ProjectHighligths.hbm.xml" />
+	  <mapping resource="xmls/ProjectHighligthsCountry.hbm.xml" />
+	  <mapping resource="xmls/ProjectHighligthsTypes.hbm.xml" />
+	  <mapping resource="xmls/ProjectLeverage.hbm.xml" /> 
+    <mapping resource="xmls/CasesStudies.hbm.xml" /> 
+    <mapping resource="xmls/CaseStudyProjects.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicatorReports.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicators.hbm.xml" /> 
+		<mapping resource="xmls/CrpIndicatorTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpElements.hbm.xml" /> 
+		<mapping resource="xmls/IpElementTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpIndicators.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramElementRelationTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramElements.hbm.xml" /> 
+		<mapping resource="xmls/IpPrograms.hbm.xml" /> 
+		<mapping resource="xmls/IpProgramTypes.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectContributionOverviews.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectContributions.hbm.xml" /> 
+		<mapping resource="xmls/IpProjectIndicators.hbm.xml" /> 
+		<mapping resource="xmls/MogSynthesis.hbm.xml" /> 
+		<mapping resource="xmls/OutcomeSynthesis.hbm.xml" /> 
+		<mapping resource="xmls/ProjectOtherContributions.hbm.xml" /> 
+		<mapping resource="xmls/ProjectFocusesPrev.hbm.xml" /> 
+		<mapping resource="xmls/ProjectFurtherContributions.hbm.xml" />
+		<mapping resource="xmls/DeliverableDataSharing.hbm.xml" />
+		<mapping resource="xmls/DeliverableDataSharingFile.hbm.xml" />
+		<mapping resource="xmls/DeliverableDissemination.hbm.xml" />
+		<mapping resource="xmls/IpRelationships.hbm.xml" />
+		<mapping resource="xmls/FundingSourceInstitutions.hbm.xml"/>
+		<mapping resource="xmls/DeliverableQualityAnswers.hbm.xml"/>
+		<mapping resource="xmls/DeliverableQualityChecks.hbm.xml"/>
+		<mapping resource="xmls/ProjectOutcomesPandr.hbm.xml" />
+		<mapping resource="xmls/OtherContributions.hbm.xml" />
+		<mapping resource="xmls/CrpsPandr.hbm.xml" />
+		<mapping resource="xmls/CaseStudieIndicators.hbm.xml" />		
+		<mapping resource="xmls/MetadataElements.hbm.xml" />
+		<mapping resource="xmls/DeliverablePublicationsMetada.hbm.xml" />
+		<mapping resource="xmls/DeliverableCrps.hbm.xml" />
+		<mapping resource="xmls/DeliverableUsers.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -116,8 +117,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
-        if (project.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-          canEdit = false;
+        if (baseAction.isPlanningActive()) {
+          if (project.getStatus().intValue() != Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            canEdit = false;
+          }
+
         }
 
         if (!project.isProjectEditLeader()
@@ -138,6 +142,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           canEdit = false;
         }
 
+
+      }
+      String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
+      if (baseAction.isReportingActive() && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+        canEdit = false;
       }
 
       // TODO Validate is the project is new
@@ -155,7 +164,11 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
           : baseAction.hasPermission(baseAction.generatePermission(Permission.PROJECT__PERMISSION, params));
       }
 
-
+      if (baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "").equals(ProjectSectionStatusEnum.BUDGET)) {
+        if (baseAction.isReportingActive()) {
+          canEdit = false;
+        }
+      }
       // Set the variable that indicates if the user can edit the section
       baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
       baseAction.setCanEdit(canEdit);

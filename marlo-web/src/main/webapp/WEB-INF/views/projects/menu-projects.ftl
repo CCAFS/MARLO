@@ -21,15 +21,18 @@
     },
     { 'title': 'Outcomes', 'show': !project.administrative,
       'items': [
-      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true  },
-      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': false, 'show': reportingActive  },
-      { 'slug': '',  'name': 'Outcome Case Studies',  'action': '',  'active': false, 'show': reportingActive }
+      { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne },
+      { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show': reportingActive && phaseOne  },
+      { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': reportingActive  && phaseOne },
+      { 'slug': 'otherContributions',  'name': 'projects.menu.otherContributions',  'action': 'otherContributions',  'active': phaseOne, 'show': reportingActive  },
+      { 'slug': 'caseStudies',  'name': 'Outcome Case Studies',  'action': 'caseStudies',  'active': true, 'show': reportingActive }
       ]
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
+      { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne },
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true  },
-      { 'slug': '',  'name': 'Project Highlights',  'action': '',  'active': false ,'show': reportingActive }
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive }
       ]
     },
     { 'title': 'Activities', 'show': true,
@@ -39,9 +42,9 @@
     },
     { 'title': 'Budget', 'show': true,
       'items': [
-      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true  },
-      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.administrative, 'active': true  },
-      { 'slug': '',  'name': 'Leverages',  'action': '',  'active': false, 'show': reportingActive }
+      { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': true, 'show': true },
+      { 'slug': 'budgetByCoAs',  'name': 'projects.menu.budgetByCoAs',  'action': 'budgetByCoAs', 'show': action.canEditBudgetByCoAs(project.id) && !project.administrative && !reportingActive && !phaseOne, 'active': true  },
+      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive }
       ]
     }
     
@@ -49,15 +52,12 @@
 [/#if]
 
 
-
 [#assign submission = (action.isProjectSubmitted(projectID))!false /]
 [#assign canSubmit = (action.hasPersmissionSubmit(projectID))!false /]
 [#assign completed = (action.isCompleteProject(projectID))!false /]
 [#assign canUnSubmit = (action.hasPersmissionUnSubmit(projectID))!false /]
 
-
 [#assign sectionsForChecking = [] /]
-
 
 [#-- Menu--]
 <nav id="secondaryMenu" class="">
@@ -89,10 +89,11 @@
 
 <div class="clearfix"></div>
 
+[#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
 [#-- Open for Project Leaders --]
-[#if canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) && !crpClosed]
+[#if !reportingActive && canSwitchProject && (action.isCompletePreProject(project.id) || project.projectEditLeader) && !crpClosed]
   [#if !submission]
   <div class="grayBox text-center">
     [@customForm.yesNoInput name="project.projectEditLeader" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
@@ -100,7 +101,7 @@
   <br />
   [/#if]
 [#else]
-  [#if !project.projectEditLeader]
+  [#if !((project.projectEditLeader)!false)]
     <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
   [/#if]
 [/#if]
@@ -140,7 +141,7 @@
 
 [/#if]
 
- [#-- Justification --]
+[#-- Justification --]
 <div id="unSubmit-justification" title="Unsubmit justification" style="display:none"> 
   <div class="dialog-content"> 
       [@customForm.textArea name="justification-unSubmit" i18nkey="saving.justification" required=true className="justification"/]

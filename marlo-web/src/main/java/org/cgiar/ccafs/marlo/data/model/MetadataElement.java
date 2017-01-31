@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.data.model;
 
+import org.cgiar.ccafs.marlo.data.IAuditLog;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,11 +27,9 @@ import com.google.gson.annotations.Expose;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class MetadataElement implements Serializable {
-
+public class MetadataElement implements Serializable, IAuditLog {
 
   private static final long serialVersionUID = 5792114060838051002L;
-
   @Expose
   private Integer id;
   @Expose
@@ -37,13 +37,11 @@ public class MetadataElement implements Serializable {
 
   @Expose
   private String element;
-
   @Expose
   private String qualifier;
 
   @Expose
   private String econdedName;
-
   @Expose
   private String status;
 
@@ -53,9 +51,7 @@ public class MetadataElement implements Serializable {
   @Expose
   private String definitation;
 
-
   private Set<DeliverableMetadataElement> deliverableMetadataElements = new HashSet<DeliverableMetadataElement>(0);
-
 
   public MetadataElement() {
   }
@@ -72,7 +68,6 @@ public class MetadataElement implements Serializable {
     this.deliverableMetadataElements = deliverableMetadataElements;
   }
 
-
   public String getDefinitation() {
     return definitation;
   }
@@ -87,14 +82,37 @@ public class MetadataElement implements Serializable {
     return econdedName;
   }
 
-
   public String getElement() {
     return element;
   }
 
 
+  @Override
   public Integer getId() {
     return id;
+  }
+
+
+  @Override
+  public String getLogDeatil() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Id : ").append(this.getId());
+    return sb.toString();
+  }
+
+
+  @Override
+  public String getModificationJustification() {
+
+    return "";
+  }
+
+
+  @Override
+  public User getModifiedBy() {
+    User u = new User();
+    u.setId(new Long(3));
+    return u;
   }
 
 
@@ -107,12 +125,19 @@ public class MetadataElement implements Serializable {
     return schema;
   }
 
+
   public String getStatus() {
     return status;
   }
 
   public String getVocabulary() {
     return vocabulary;
+  }
+
+  @Override
+  public boolean isActive() {
+
+    return true;
   }
 
   public void setDefinitation(String definitation) {

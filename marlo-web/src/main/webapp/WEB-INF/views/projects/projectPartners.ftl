@@ -5,6 +5,7 @@
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js"] /]  
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -43,7 +44,7 @@
           <div style="display:none">
             [#-- Other fields --]
             [#if project.projectEditLeader]
-            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')}">
+            <div class="${(!action.isProjectNew(project.id) || reportingActive)?string('simpleBox','')} ${reportingActive?string('fieldFocus','')}">
               [#-- -- -- REPORTING BLOCK -- -- --]
               [#if reportingActive]
               <br />

@@ -29,23 +29,30 @@ public class SectionStatus implements java.io.Serializable {
 
   private Long id;
 
-
   private CrpProgram crpProgram;
 
 
   private String sectionName;
-
 
   private String missingFields;
 
 
   private String cycle;
 
+
   private Integer year;
+
+
   private Project project;
+
+
   private Deliverable deliverable;
+
+
   private ProjectOutcome projectOutcome;
 
+  private CaseStudy caseStudy;
+  private ProjectHighlight projectHighlight;
 
   public SectionStatus() {
   }
@@ -62,6 +69,10 @@ public class SectionStatus implements java.io.Serializable {
     this.sectionName = sectionName;
   }
 
+  public CaseStudy getCaseStudy() {
+    return caseStudy;
+  }
+
   public CrpProgram getCrpProgram() {
     return this.crpProgram;
   }
@@ -74,11 +85,9 @@ public class SectionStatus implements java.io.Serializable {
     return deliverable;
   }
 
-
   public Long getId() {
     return this.id;
   }
-
 
   public String getMissingFields() {
     return this.missingFields;
@@ -86,6 +95,11 @@ public class SectionStatus implements java.io.Serializable {
 
   public Project getProject() {
     return project;
+  }
+
+
+  public ProjectHighlight getProjectHighlight() {
+    return projectHighlight;
   }
 
 
@@ -97,10 +111,14 @@ public class SectionStatus implements java.io.Serializable {
     return this.sectionName;
   }
 
+
   public Integer getYear() {
     return this.year;
   }
 
+  public void setCaseStudy(CaseStudy caseStudy) {
+    this.caseStudy = caseStudy;
+  }
 
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
@@ -116,17 +134,22 @@ public class SectionStatus implements java.io.Serializable {
     this.deliverable = deliverable;
   }
 
+
   public void setId(Long id) {
     this.id = id;
   }
-
 
   public void setMissingFields(String missingFields) {
     this.missingFields = missingFields;
   }
 
+
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setProjectHighlight(ProjectHighlight projectHighlight) {
+    this.projectHighlight = projectHighlight;
   }
 
 

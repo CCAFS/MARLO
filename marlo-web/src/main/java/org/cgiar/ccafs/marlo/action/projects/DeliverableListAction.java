@@ -49,28 +49,28 @@ public class DeliverableListAction extends BaseAction {
   private static final long serialVersionUID = -823169163612346982L;
 
 
-  private Crp loggedCrp;
+  private List<Integer> allYears;
 
-  // Managers
-  private ProjectManager projectManager;
-
-
-  private DeliverableTypeManager deliverableTypeManager;
-  private DeliverableManager deliverableManager;
-
-  private SectionStatusManager sectionStatusManager;
   private CrpManager crpManager;
 
 
+  private long deliverableID;
+  private DeliverableManager deliverableManager;
+
   // Front-end
   private List<Deliverable> deliverables;
-
   private List<DeliverableType> deliverablesType;
-  private long projectID;
 
-  private long deliverableID;
+
+  private DeliverableTypeManager deliverableTypeManager;
+
+  private Crp loggedCrp;
   private Project project;
-  private List<Integer> allYears;
+
+  private long projectID;
+  // Managers
+  private ProjectManager projectManager;
+  private SectionStatusManager sectionStatusManager;
 
   @Inject
   public DeliverableListAction(APConfig config, ProjectManager projectManager, CrpManager crpManager,
@@ -119,6 +119,7 @@ public class DeliverableListAction extends BaseAction {
     return true;
   }
 
+
   @Override
   public String delete() {
 
@@ -154,7 +155,6 @@ public class DeliverableListAction extends BaseAction {
     return deliverables;
   }
 
-
   public List<Deliverable> getDeliverables(boolean open) {
 
     try {
@@ -182,6 +182,7 @@ public class DeliverableListAction extends BaseAction {
       return new ArrayList<>();
     }
   }
+
 
   public List<DeliverableType> getDeliverablesType() {
     return deliverablesType;
@@ -235,6 +236,7 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+
   @Override
   public String save() {
     return SUCCESS;
@@ -263,4 +265,6 @@ public class DeliverableListAction extends BaseAction {
   public void setProjectID(long projectID) {
     this.projectID = projectID;
   }
+
+
 }

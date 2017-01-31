@@ -33,7 +33,7 @@
             <key>
                 <column name="element_id" not-null="true" />
             </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElements" />
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement" />
         </set>
     </class>
 </hibernate-mapping>

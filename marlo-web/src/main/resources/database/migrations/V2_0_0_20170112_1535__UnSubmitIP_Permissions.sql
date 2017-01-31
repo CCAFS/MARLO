@@ -12,3 +12,4 @@ INSERT INTO `role_permissions` (role_id,permission_id) VALUES ('43', '461');
 INSERT INTO `role_permissions` (role_id,permission_id) VALUES ('40', '461');
 INSERT INTO `role_permissions` (role_id,permission_id) VALUES ('39', '461');
 INSERT INTO `role_permissions` (role_id,permission_id) VALUES ('21', '461');
+

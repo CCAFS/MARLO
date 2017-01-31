@@ -60,6 +60,11 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByCaseStudy(caseStudyID, cycle, year, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName) {
     return sectionStatusDAO.getSectionStatusByCrpProgam(crpProgramID, sectionName);
   }
@@ -83,6 +88,12 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   @Override
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName) {
     return sectionStatusDAO.getSectionStatusByProjectCofunded(projectID, cycle, year, sectionName);
+  }
+
+  @Override
+  public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
+    String sectionName) {
+    return sectionStatusDAO.getSectionStatusByProjectHighlight(projectHighlightID, cycle, year, sectionName);
   }
 
   @Override

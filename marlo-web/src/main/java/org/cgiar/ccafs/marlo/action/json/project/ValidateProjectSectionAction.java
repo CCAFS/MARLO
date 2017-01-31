@@ -19,28 +19,38 @@ package org.cgiar.ccafs.marlo.action.json.project;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableFile;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerOverall;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -51,9 +61,16 @@ import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectActivitiesValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsCoAValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectBudgetsValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectCCAFSOutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectCaseStudyValidation;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectDescriptionValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectHighLightValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectLeverageValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOtherContributionsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomesPandRValidator;
+import org.cgiar.ccafs.marlo.validation.projects.ProjectOutputsValidator;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.util.ArrayList;
@@ -114,11 +131,35 @@ public class ValidateProjectSectionAction extends BaseAction {
   ProjectLocationElementTypeManager projectLocationElementTypeManager;
 
   @Inject
+  DeliverableQualityCheckManager deliverableQualityCheckManager;
+
+  @Inject
   ProjectDescriptionValidator descriptionValidator;
   @Inject
   ProjectPartnersValidator projectPartnerValidator;
   @Inject
   ProjectActivitiesValidator projectActivitiesValidator;
+  @Inject
+  ProjectLeverageValidator projectLeverageValidator;
+
+  @Inject
+  ProjectHighLightValidator projectHighLightValidator;
+
+
+  @Inject
+  ProjectCaseStudyValidation projectCaseStudyValidation;
+
+  @Inject
+  ProjectCCAFSOutcomeValidator projectCCAFSOutcomeValidator;
+
+  @Inject
+  ProjectOutcomesPandRValidator projectOutcomesPandRValidator;
+
+  @Inject
+  ProjectOtherContributionsValidator projectOtherContributionsValidator;
+
+  @Inject
+  ProjectOutputsValidator projectOutputsValidator;
   @Inject
   public CrpManager crpManager;
 
@@ -145,31 +186,57 @@ public class ValidateProjectSectionAction extends BaseAction {
         case PARTNERS:
           this.validateProjectParnters();
         case BUDGET:
-          this.validateProjectBudgets();
+          if (this.isPlanningActive()) {
+            this.validateProjectBudgets();
+          }
+
           break;
         case BUDGETBYCOA:
           this.validateProjectBudgetsCoAs();
           break;
-
         case DELIVERABLES:
           this.validateProjectDeliverables();
           break;
-
         case OUTCOMES:
           this.validateProjectOutcomes();
           break;
+        case LEVERAGES:
+          this.validateLeverage();
+          break;
 
+        case HIGHLIGHT:
+          this.validateHighlight();
+          break;
+
+        case CASESTUDIES:
+          this.validateCaseStduies();
+          break;
+
+        case CCAFSOUTCOMES:
+          this.validateCCAFSOutcomes();
+          break;
+        case OUTCOMES_PANDR:
+          this.validateOutcomesPandR();
+        case OUTPUTS:
+          this.validateOutputs();
+
+        case OTHERCONTRIBUTIONS:
+          this.validateOtherContributions();
+          break;
         default:
           break;
       }
     }
+
     String cycle = "";
     if (this.isPlanningActive()) {
       cycle = APConstants.PLANNING;
     } else {
       cycle = APConstants.REPORTING;
     }
+
     Project project = projectManager.getProjectById(projectID);
+
     switch (ProjectSectionStatusEnum.value(sectionName.toUpperCase())) {
       case OUTCOMES:
         section = new HashMap<String, Object>();
@@ -250,6 +317,96 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         break;
 
+      case CASESTUDIES:
+        List<CaseStudyProject> caseStudies =
+          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<CaseStudy> projectCaseStudies = new ArrayList<>();
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.CASESTUDIES);
+        section.put("missingFields", "");
+
+
+        for (CaseStudyProject caseStudyProject : caseStudies) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+            projectCaseStudies.add(caseStudyProject.getCaseStudy());
+            sectionStatus = sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
+              cycle, this.getCurrentCycleYear(), sectionName);
+            if (sectionStatus == null) {
+
+              sectionStatus = new SectionStatus();
+              sectionStatus.setMissingFields("No section");
+            }
+            if (sectionStatus.getMissingFields().length() > 0) {
+              section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+            }
+          }
+        }
+
+
+        break;
+
+      case HIGHLIGHT:
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+
+        section = new HashMap<String, Object>();
+        section.put("sectionName", ProjectSectionStatusEnum.HIGHLIGHT);
+        section.put("missingFields", "");
+
+
+        for (ProjectHighlight highlight : highlights) {
+
+          sectionStatus = sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(), cycle,
+            this.getCurrentCycleYear(), sectionName);
+          if (sectionStatus == null) {
+
+            sectionStatus = new SectionStatus();
+            sectionStatus.setMissingFields("No section");
+          }
+          if (sectionStatus.getMissingFields().length() > 0) {
+            section.put("missingFields", section.get("missingFields") + "-" + sectionStatus.getMissingFields());
+
+          }
+
+        }
+
+
+        break;
+
+
+      case BUDGET:
+
+        if (this.isReportingActive()) {
+          section = new HashMap<String, Object>();
+
+          section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
+          section.put("missingFields", "");
+
+        } else {
+          sectionStatus =
+            sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+          section = new HashMap<String, Object>();
+
+          section.put("sectionName", sectionStatus.getSectionName());
+          section.put("missingFields", sectionStatus.getMissingFields());
+        }
+
+
+        break;
+
+
+      case LEVERAGES:
+
+
+        sectionStatus =
+          sectionStatusManager.getSectionStatusByProject(projectID, cycle, this.getCurrentCycleYear(), sectionName);
+        section = new HashMap<String, Object>();
+
+        section.put("sectionName", sectionStatus.getSectionName());
+        section.put("missingFields", sectionStatus.getMissingFields());
+        break;
 
       default:
         sectionStatus =
@@ -473,6 +630,105 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  public void validateCaseStduies() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<CaseStudyProject> caseStudies =
+      project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+
+    for (CaseStudyProject caseStudyProject : caseStudies) {
+      if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+        projectCaseStudyValidation.validate(this, project, caseStudyProject.getCaseStudy(), false);
+      }
+
+
+    }
+
+  }
+
+  public void validateCCAFSOutcomes() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setProjectIndicators(
+      project.getIpProjectIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectCCAFSOutcomeValidator.validate(this, project, false);
+
+
+  }
+
+  public void validateHighlight() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+      .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
+
+    for (ProjectHighlight projectHighlight : highlights) {
+      projectHighlight.setTypes(
+        projectHighlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      projectHighLightValidator.validate(this, project, projectHighlight, false);
+
+    }
+
+  }
+
+
+  public void validateLeverage() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    List<ProjectLeverage> projectLeverages = new ArrayList<>(project.getProjectLeverages().stream()
+      .filter(pl -> pl.isActive() && pl.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+    project.setLeverages(projectLeverages);
+
+    projectLeverageValidator.validate(this, project, false);
+
+
+  }
+
+  public void validateOtherContributions() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setCrpContributions(
+      project.getProjectCrpContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    project.setProjectOtherContributionsList(
+      project.getProjectOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+    project.setOtherContributionsList(
+      project.getOtherContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOtherContributionsValidator.validate(this, project, false);
+
+
+  }
+
+  public void validateOutcomesPandR() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setOutcomesPandr(
+      project.getProjectOutcomesPandr().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOutcomesPandRValidator.validate(this, project, false);
+
+
+  }
+
+
+  public void validateOutputs() {
+    // Getting the project information.
+    Project project = projectManager.getProjectById(projectID);
+
+    project.setOverviews(
+      project.getIpProjectContributionOverviews().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+    projectOutputsValidator.validate(this, project, false);
+
+
+  }
+
   public void validateProjectActivities() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -506,6 +762,7 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectActivitiesValidator.validate(this, project, false);
   }
 
+
   public void validateProjectBudgets() {
     // Getting the project information.
     Project project = projectManager.getProjectById(projectID);
@@ -516,7 +773,6 @@ public class ValidateProjectSectionAction extends BaseAction {
     projectBudgetsValidator.validate(this, project, false);
 
   }
-
 
   public void validateProjectBudgetsCoAs() {
     // Getting the project information.
@@ -551,6 +807,67 @@ public class ValidateProjectSectionAction extends BaseAction {
         deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
       deliverable.setFundingSources(
         deliverable.getDeliverableFundingSources().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      if (this.isReportingActive()) {
+
+        DeliverableQualityCheck deliverableQualityCheck =
+          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId());
+        deliverable.setQualityCheck(deliverableQualityCheck);
+
+        if (deliverable.getDeliverableMetadataElements() != null) {
+          deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements()));
+        }
+
+        if (deliverable.getDeliverableDisseminations() != null) {
+          deliverable.setDisseminations(new ArrayList<>(deliverable.getDeliverableDisseminations()));
+          if (deliverable.getDeliverableDisseminations().size() > 0) {
+            deliverable.setDissemination(deliverable.getDisseminations().get(0));
+          } else {
+            deliverable.setDissemination(new DeliverableDissemination());
+          }
+
+        }
+
+        if (deliverable.getDeliverableDataSharingFiles() != null) {
+          deliverable.setDataSharingFiles(new ArrayList<>(deliverable.getDeliverableDataSharingFiles()));
+        }
+
+        if (deliverable.getDeliverablePublicationMetadatas() != null) {
+          deliverable.setPublicationMetadatas(new ArrayList<>(deliverable.getDeliverablePublicationMetadatas()));
+        }
+        if (!deliverable.getPublicationMetadatas().isEmpty()) {
+          deliverable.setPublication(deliverable.getPublicationMetadatas().get(0));
+        }
+
+        if (deliverable.getDeliverableDataSharings() != null) {
+          deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
+        }
+
+
+        deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
+        deliverable.setFiles(new ArrayList<>());
+        for (DeliverableDataSharingFile dataSharingFile : deliverable.getDeliverableDataSharingFiles()) {
+
+          DeliverableFile deFile = new DeliverableFile();
+          switch (dataSharingFile.getTypeId().toString()) {
+            case APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_LOCALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getFile().getFileName());
+              break;
+
+            case APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED:
+              deFile.setHosted(APConstants.DELIVERABLE_FILE_EXTERNALLY_HOSTED_STR);
+              deFile.setName(dataSharingFile.getExternalFile());
+              break;
+          }
+          deFile.setId(dataSharingFile.getId());
+          deFile.setSize(0);
+          deliverable.getFiles().add(deFile);
+        }
+      }
+
       deliverableValidator.validate(this, deliverable, false);
     }
 
@@ -648,7 +965,15 @@ public class ValidateProjectSectionAction extends BaseAction {
     for (ProjectPartner projectPartner : project.getPartners()) {
       List<ProjectPartnerContribution> contributors = new ArrayList<>();
 
+      if (this.isReportingActive()) {
 
+        List<ProjectPartnerOverall> overalls = projectPartner.getProjectPartnerOveralls().stream()
+          .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
+        if (!overalls.isEmpty()) {
+          project.setOverall(overalls.get(0).getOverall());
+
+        }
+      }
       List<ProjectPartnerContribution> partnerContributions =
         projectPartner.getProjectPartnerContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
       for (ProjectPartnerContribution projectPartnerContribution : partnerContributions) {
@@ -661,6 +986,8 @@ public class ValidateProjectSectionAction extends BaseAction {
     if (this.isLessonsActive()) {
       this.loadLessons(loggedCrp, project, ProjectSectionStatusEnum.PARTNERS.getStatus());
     }
+
+
     projectPartnerValidator.validate(this, project, false);
 
   }

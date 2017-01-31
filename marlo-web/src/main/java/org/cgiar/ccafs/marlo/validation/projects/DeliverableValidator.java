@@ -21,6 +21,10 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
+import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
+import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -30,6 +34,7 @@ import org.cgiar.ccafs.marlo.validation.BaseValidator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.inject.Inject;
 
@@ -63,9 +68,10 @@ public class DeliverableValidator extends BaseValidator {
   public void validate(BaseAction action, Deliverable deliverable, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
+    this.action = action;
     if (deliverable.getYear() >= action.getCurrentCycleYear()) {
       Project project = projectManager.getProjectById(deliverable.getProject().getId());
-      this.action = action;
+
       if (!saving) {
         Path path = this.getAutoSaveFilePath(deliverable, action.getCrpID());
 
@@ -172,6 +178,63 @@ public class DeliverableValidator extends BaseValidator {
         }
       }
 
+
+      if (action.isReportingActive()) {
+
+        // Deliverable Dissemination
+        if (deliverable.getDissemination() != null) {
+          this.validateDissemination(deliverable.getDissemination());
+        } else {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
+          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Deliverable Meta-data Elements
+        if (deliverable.getMetadataElements() != null) {
+          this.validateMetadata(deliverable.getMetadataElements());
+        } else {
+          this.addMessage(action.getText("project.deliverable.v.metadata"));
+          action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Deliverable Publication Meta-data
+        if (deliverable.getDeliverableType().getDeliverableType() != null) {
+          if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+            this.validatePublicationMetadata(deliverable);
+          }
+        }
+
+        // Deliverable Licenses
+        if (deliverable.getAdoptedLicense() != null) {
+          this.validateLicense(deliverable);
+        } else {
+          this.addMessage(action.getText("project.deliverable.v.qualityCheck"));
+          action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // Deliverable Quality Check
+        if (deliverable.getQualityCheck() != null) {
+          if (deliverable.getQualityCheck().getQualityAssurance() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (deliverable.getQualityCheck().getDataDictionary() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          if (deliverable.getQualityCheck().getDataTools() == null) {
+            this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
+            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+
+      }
+
+
     }
 
 
@@ -187,6 +250,186 @@ public class DeliverableValidator extends BaseValidator {
     } else {
       this.saveMissingFields(deliverable, APConstants.PLANNING, action.getPlanningYear(),
         ProjectSectionStatusEnum.DELIVERABLES.getStatus());
+    }
+  }
+
+
+  public void validateDissemination(DeliverableDissemination dissemination) {
+
+    if (dissemination.getIsOpenAccess() != null) {
+
+      if (!dissemination.getIsOpenAccess().booleanValue()) {
+
+        if (dissemination.getType() == null) {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (dissemination.getType().equals("restrictedUseAgreement")) {
+
+            if (dissemination.getRestrictedAccessUntil() == null) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedUseAgreement",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+          }
+
+          if (dissemination.getType().equals("effectiveDateRestriction")) {
+
+            if (dissemination.getRestrictedEmbargoed() == null) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+          }
+        }
+
+      }
+
+    } else {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.isOpenAccess"));
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (dissemination.getAlreadyDisseminated() != null) {
+      if (dissemination.getAlreadyDisseminated().booleanValue()) {
+        if (dissemination.getDisseminationChannel() != null) {
+          if (dissemination.getDisseminationChannel().equals("-1")) {
+            this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+            action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+              InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (!(this.isValidString(dissemination.getDisseminationUrl())
+              && this.wordCount(dissemination.getDisseminationUrl()) <= 100)) {
+              this.addMessage(action.getText("project.deliverable.dissemination.v.ChanelURL"));
+              action.getInvalidFields().put("input-deliverable.dissemination.disseminationUrl",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        } else {
+          this.addMessage(action.getText("project.deliverable.dissemination.v.DisseminationChanel"));
+          action.getInvalidFields().put("input-deliverable.dissemination.disseminationChannel",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      }
+    } else {
+      this.addMessage(action.getText("project.deliverable.dissemination.v.alreadyDisseminated"));
+      action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess", InvalidFieldsMessages.EMPTYFIELD);
+
+    }
+  }
+
+  public void validateLicense(Deliverable deliverable) {
+    if (deliverable.getAdoptedLicense().booleanValue()) {
+      if (deliverable.getLicense() != null) {
+        if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+          if (deliverable.getOtherLicense() != null) {
+            if (!(this.isValidString(deliverable.getOtherLicense())
+              && this.wordCount(deliverable.getOtherLicense()) <= 100)) {
+              this.addMessage(action.getText("project.deliverable.license.v.other"));
+              action.getInvalidFields().put("input-deliverable.otherLicense", InvalidFieldsMessages.EMPTYFIELD);
+            }
+
+            if (deliverable.getAllowModifications() == null) {
+              this.addMessage(action.getText("project.deliverable.license.v.allowModification"));
+              action.getInvalidFields().put("input-deliverable.dissemination.allowModification",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        }
+      } else {
+        this.addMessage(action.getText("project.deliverable.v.license"));
+        action.getInvalidFields().put("input-deliverable.license", InvalidFieldsMessages.EMPTYFIELD);
+      }
+    }
+  }
+
+  public void validateMetadata(List<DeliverableMetadataElement> elements) {
+
+    boolean languaje = false;
+    boolean keyword = false;
+
+    for (DeliverableMetadataElement deliverableMetadataElement : elements) {
+      if (deliverableMetadataElement != null) {
+        if (deliverableMetadataElement.getMetadataElement().getId() != null) {
+          switch (deliverableMetadataElement.getMetadataElement().getId()) {
+            case 24:
+              if ((this.isValidString(deliverableMetadataElement.getElementValue())
+                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+                languaje = true;
+              }
+
+              break;
+
+            case 37:
+
+              if ((this.isValidString(deliverableMetadataElement.getElementValue())
+                && this.wordCount(deliverableMetadataElement.getElementValue()) <= 100)) {
+                keyword = true;
+              }
+
+              break;
+
+          }
+        }
+      }
+    }
+
+    if (!languaje) {
+      this.addMessage(action.getText("project.deliverable.metadata.v.language"));
+      action.getInvalidFields().put("input-deliverable.metadataElements[23].elementValue",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+    if (!keyword) {
+      this.addMessage(action.getText("project.deliverable.metadata.v.keyword"));
+      action.getInvalidFields().put("input-deliverable.metadataElements[36].elementValue",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+
+  }
+
+  public void validatePublicationMetadata(Deliverable deliverable) {
+
+    if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
+      this.addMessage(action.getText("project.deliverable.publication.v.crp"));
+      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
+        InvalidFieldsMessages.EMPTYFIELD);
+
+    }
+
+    if (deliverable.getPublicationMetadatas() != null && !deliverable.getPublicationMetadatas().isEmpty()) {
+
+      DeliverablePublicationMetadata metadata = deliverable.getPublicationMetadatas().get(0);
+
+      if (!(this.isValidString(metadata.getVolume()) && this.wordCount(metadata.getVolume()) <= 100)) {
+        this.addMessage(action.getText("project.deliverable.publication.v.volume"));
+        action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!(this.isValidString(metadata.getIssue()) && this.wordCount(metadata.getIssue()) <= 100)) {
+        this.addMessage(action.getText("project.deliverable.publication.v.issue"));
+        action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!(this.isValidString(metadata.getPages()) && this.wordCount(metadata.getPages()) <= 100)) {
+        this.addMessage(action.getText("project.deliverable.publication.v.pages"));
+        action.getInvalidFields().put("input-deliverable.publication.page", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
+        this.addMessage(action.getText("project.deliverable.publication.v.journal"));
+        action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+    } else {
+      this.addMessage(action.getText("project.deliverable.v.publication"));
+      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
+        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
 

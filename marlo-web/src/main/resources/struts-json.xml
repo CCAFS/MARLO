@@ -221,7 +221,26 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="flaghshipsByCrpAction"
+      class="org.cgiar.ccafs.marlo.action.json.project.FlaghshipsByCrpAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
 
+   <action name="uploadDeliverable" class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref> 
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
 		<action name="institutionBranchList"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectBranchesListAction">
 			<result type="json">
@@ -254,8 +273,22 @@
       </result>
     </action>
     
-    <action name="unsubmitImpactpathway"
-      class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+
+    <action name="deliverableUploadFile" class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUploadFileAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+
+    <action name="unsubmitImpactpathway" class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+      <result type="json">
+        <param name="noCache">true</param>
+        <param name="excludeNullProperties">true</param>
+      </result>
+    </action>
+    
+    <action name="metadataByLink" class="org.cgiar.ccafs.marlo.action.json.project.MetadataByLink">
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>

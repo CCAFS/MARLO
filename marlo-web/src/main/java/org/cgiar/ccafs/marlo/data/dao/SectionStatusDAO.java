@@ -57,14 +57,18 @@ public interface SectionStatusDAO {
    */
   public List<SectionStatus> findAll();
 
-  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
+  public SectionStatus getSectionStatusByCaseStudy(long caseStudyID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByCrpProgam(long crpProgramID, String sectionName);
 
   public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
 
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
 
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);
+
+  public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
+    String sectionName);
 
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
 

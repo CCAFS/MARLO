@@ -50,13 +50,24 @@ function init() {
     });
   });
 
-// Missing fields in activities
+  // Missing fields in activities
   $("form .projectActivity").each(function(i,e) {
     verifyMissingFields(e);
   });
+
+  // Change status
+  $('select.activityStatus').on("change", function() {
+    var statusId = $(this).val();
+    $statusDescription = $(this).parents('.activityStatusBlock').find('.statusDescriptionBlock');
+
+    $statusDescription.hide().show(400);
+    $statusDescription.find('label').html($('#status-' + statusId).html());
+
+    $statusDescription.find('textarea').val('');
+  });
 }
 
-// FUNCTIONS
+/** FUNCTIONS * */
 
 // change title
 function changeTitle() {

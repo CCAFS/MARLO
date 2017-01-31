@@ -8,7 +8,7 @@ $(document).ready(function() {
       "bFilter": true, // This option enable the search
       "bSort": true, // this option enable the sort of contents by columns
       "bAutoWidth": false, // This option enables the auto adjust columns width
-      "iDisplayLength": 10, // Number of rows to show on the table
+      "iDisplayLength": 50, // Number of rows to show on the table
       "fnDrawCallback": function() {
         // This function locates the add activity button at left to the filter box
         var table = $(this).parent().find("table");
@@ -18,7 +18,7 @@ $(document).ready(function() {
       },
       aoColumnDefs: [
           {
-              bSortable: false,
+              bSortable: true,
               aTargets: [
                   -1, -2, -4,
               ]

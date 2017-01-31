@@ -38,23 +38,26 @@
         [/#if]  
       </table>
     </div> <!-- End dialog-->
-    <div id="popup" class="helpMessage3">
-      <p><a  id="opener"><img src="${baseUrl}/images/global/icon-help.png" />[@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
-    </div>
+    
   <div class="fullBlock">
     <div class="note left">
-      <p>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</p>
+      <div id="popup" class="helpMessage3">
+        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
+      </div>
+      <p><small>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</small></p>
     </div>
   </div>  
   <div class="clearfix"></div>
 </div>
-[#-- Description textArea --] 
-<div class="form-group" style="display:none;">
-  <div class="col-md-12">[@customForm.textArea value="" name="" i18nkey="project.deliverable.generalInformation.description" required=true className="limitWords-15" editable=editable /]</div>
+
+<div class="form-group col-md-12" style="">
+[#-- Description --] 
+    <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=true/]</div>
   <div class="clearfix"></div>
 </div>
-
+<div class="clearfix"></div>
 [#-- Status and year expected selects --]
+<div class="${reportingActive?string('fieldFocus','')}">
 <div class="form-group">
   <div class="col-md-4">
     [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
@@ -76,7 +79,7 @@
 
 [#-- Status justification textArea --]
 [#if !action.isDeliverableNew(deliverable.id)]
-  [#assign justificationRequired = (deliverable.year??) && ((deliverable.status == 4)  || (deliverable.status == 5)) ]
+  [#assign justificationRequired = (deliverable.year??) && (deliverable.status??) &&  ((deliverable.status == 4)  || (deliverable.status == 5)) ]
   <div class="form-group">
     <div id="statusDescription" class="col-md-12" style="display:${justificationRequired?string('block','none')}">
       [@customForm.textArea name="deliverable.statusDescription" className="statusDescription limitWords-150" i18nkey="deliverable.statusJustification.status${(deliverable.status)!'NotSelected'}" editable=editable/]
@@ -88,32 +91,25 @@
       </div>
     </div>
   </div>
+  <div class="clearfix"></div>
 [/#if]
+</div>
 
 [#-- Key Outputs select --]
-[#if !project.administrative]
+[#if !project.administrative && !phaseOne]
   <div class="col-md-12 form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
-  [#if editable && !(keyOutputs?has_content)]
-    <div class="partnerListMsj note col-md-12">
-      [@s.text name="project.deliverable.generalInformation.keyOutputNotList1" /]
-      <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/description'] [@s.param name="projectID"]${projectID}[/@s.param][@s.param name="edit"]true[/@s.param][/@s.url]#projectsList"> 
-        [@s.text name="project.deliverable.generalInformation.partnersLink" /] 
-      </a>
-      [@s.text name="project.deliverable.generalInformation.keyOutputNotList2" /]
-    </div>
-  [/#if]
 [/#if]
 
 [#-- Funding Source --]
+[#if !phaseOne]
 <div class="panel tertiary col-md-12">
  <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
     <ul class="list">
     [#if deliverable.fundingSources?has_content]
       [#list deliverable.fundingSources as element]
-      
         <li class="fundingSources clearfix">
           [#if editable]<div class="removeFundingSource removeIcon" title="Remove funding source"></div>[/#if] 
           <input class="id" type="hidden" name="deliverable.fundingSources[${element_index}].id" value="${(element.id)!}" />
@@ -132,8 +128,12 @@
     [/#if] 
   </div>
 </div>
+[/#if]
 
 
+<div class="form-group col-md-12">
+  <h3 class="headTitle">Gender, social inclusion and/ or Youth Dimensions of the deliverable </h3>  
+</div>
 [#-- Does this deliverable have a cross-cutting dimension --]
 <div class="form-group col-md-12">
   <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>

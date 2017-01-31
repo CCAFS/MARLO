@@ -5,7 +5,9 @@
     <thead>
       <tr class="header">
         <th colspan="4">General Information</th>
-        <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
+        [#if !reportingActive]
+          <th colspan="3">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th> 
+        [/#if]
         <th colspan="3">Actions</th> 
       </tr>
       <tr class="subHeader">
@@ -14,9 +16,11 @@
         <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
         [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
         <th id="projectFlagships">[@s.text name="projectsList.projectFlagships" /]</th>
-        <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
-        <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
-        <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
+        [#if !reportingActive]
+          <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
+          <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
+          <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th>
+        [/#if]
         <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
         <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
         <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
@@ -68,6 +72,7 @@
             <span class="programTag" style="border-color:#444">PMU</span>
           [/#if]
           </td>
+          [#if !reportingActive]
           [#-- Budget W1/W2 --]
           <td class="budget"> 
             [#if project.getCoreBudget(currentCycleYear)?has_content]
@@ -92,6 +97,7 @@
               [@s.text name="projectsList.none" /]
             [/#if]
           </td>
+          [/#if]
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]

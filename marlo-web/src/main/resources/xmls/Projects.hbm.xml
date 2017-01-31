@@ -36,9 +36,9 @@
 		<property name="title" type="string">
 			<column name="title" length="65535" />
 		</property>
-		  <property name="status" type="java.lang.Long">
-      <column name="status" length="65535" />
-    </property>
+		<property name="status" type="java.lang.Long">
+			<column name="status" length="65535" />
+		</property>
 		<property name="summary" type="string">
 			<column name="summary" length="65535" />
 		</property>
@@ -57,30 +57,33 @@
 		<property name="cofinancing" type="boolean">
 			<column name="is_cofinancing" not-null="true" />
 		</property>
-		
+		<property name="statusJustification" type="string">
+			<column name="status_justification" length="65535" />
+		</property>
 		<property name="genderAnalysis" type="string">
-     <column name="gender_analysis" length="65535" />
-     </property>
-        <property name="crossCuttingGender" type="java.lang.Boolean">
-            <column name="cross_cutting_gender" />
-        </property>
-            
-        <property name="administrative" type="java.lang.Boolean">
-            <column name="administrative" />
-        </property>
-        <property name="crossCuttingYouth" type="java.lang.Boolean">
-            <column name="cross_cutting_youth" />
-        </property>
-        <property name="crossCuttingCapacity" type="java.lang.Boolean">
-            <column name="cross_cutting_capacity" />
-        </property>
-        
-         <property name="crossCuttingNa" type="java.lang.Boolean">
-            <column name="cross_cutting_na" />
-        </property>
-        <property name="dimension" type="string">
-            <column name="dimension" length="65535" />
-            </property>
+			<column name="gender_analysis" length="65535" />
+		</property>
+		<property name="crossCuttingGender" type="java.lang.Boolean">
+			<column name="cross_cutting_gender" />
+		</property>
+		<property name="administrative" type="java.lang.Boolean">
+			<column name="administrative" />
+		</property>
+		<property name="reporting" type="java.lang.Boolean">
+      <column name="reporting" />
+    </property>
+		<property name="crossCuttingYouth" type="java.lang.Boolean">
+			<column name="cross_cutting_youth" />
+		</property>
+		<property name="crossCuttingCapacity" type="java.lang.Boolean">
+			<column name="cross_cutting_capacity" />
+		</property>
+		<property name="crossCuttingNa" type="java.lang.Boolean">
+			<column name="cross_cutting_na" />
+		</property>
+		<property name="dimension" type="string">
+			<column name="dimension" length="65535" />
+		</property>
 		<property name="leaderResponsabilities" type="string">
 			<column name="leader_responsabilities" length="65535" />
 		</property>
@@ -103,7 +106,7 @@
 			<column name="create_date" length="19" not-null="true" />
 		</property>
 		<property name="presetDate" type="timestamp">
-			<column name="preset_date" length="19"/>
+			<column name="preset_date" length="19" />
 		</property>
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
@@ -184,13 +187,14 @@
 				class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
 		</set>
 		<set name="projectLocationElementTypes" order-by="id"
-      table="project_location_element_types" inverse="true" lazy="true" fetch="select">
-      <key>
-        <column name="project_id" />
-      </key>
-      <one-to-many
-        class="org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType" />
-    </set>
+			table="project_location_element_types" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType" />
+		</set>
 		<set name="projectClusterActivities" order-by="id"
 			table="project_cluster_activities" inverse="true" lazy="true" fetch="select">
 			<key>
@@ -244,5 +248,97 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectBudgetsCluserActvity" />
 		</set>
+		<set name="projectHighligths" order-by="id" table="project_highligths"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectHighlight" />
+		</set>
+		<set name="projectLeverages" table="project_leverage" order-by="id"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectLeverage" />
+		</set>
+
+		<set name="caseStudyProjects" order-by="id" table="case_study_projects"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.CaseStudyProject" />
+		</set>
+
+
+
+		<set name="ipProjectContributionOverviews" order-by="id"
+			table="ip_project_contribution_overviews" inverse="true" lazy="true"
+			fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview" />
+		</set>
+		<set name="ipProjectContributions" order-by="id"
+			table="ip_project_contributions" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true">
+					<comment>This field is a foreign key to the table projects.</comment>
+				</column>
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectContribution" />
+		</set>
+		<set name="projectOtherContributions" table="project_other_contributions"
+			order-by="id" inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution" />
+		</set>
+		<set name="ipProjectIndicators" table="ip_project_indicators"
+			inverse="true" order-by="id" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true">
+					<comment>This column is a foreign key that references to the table
+						activities</comment>
+				</column>
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.IpProjectIndicator" />
+		</set>
+		<set name="projectFocusPrevs" table="project_focuses_prev"
+			inverse="true" order-by="id" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" not-null="true" />
+			</key>
+			<one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectFocusPrev" />
+		</set>
+
+		<set name="projectFurtherContributions" table="project_further_contributions"
+			inverse="true" lazy="true" fetch="select">
+			<key>
+				<column name="project_id" />
+			</key>
+			<one-to-many
+				class="org.cgiar.ccafs.marlo.data.model.ProjectFurtherContribution" />
+		</set>
+		
+		<set name="projectOutcomesPandr" table="project_outcomes_pandr" order-by="id" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectOutcomePandr" />
+        </set>
+        
+         <set name="otherContributions" table="other_contributions" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="project_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.OtherContribution" />
+        </set>
+		
 	</class>
 </hibernate-mapping>

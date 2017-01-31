@@ -72,9 +72,16 @@
             <div id="title" >MARLO</div>    
             <div id="subTitle" class="visible-md-block visible-lg-block">Managing Agricultural Research for Learning & Outcomes</div>
             <div class="clearfix"></div>
-            [#if !config.production]<h4 class="testEnvironment"> <span class="label label-danger text-left">Testing Environment</span></h4> [/#if]
+            [#if !config.production] <h4 class="testEnvironment">
+              <span class="label label-danger text-left">Testing Environment</span> 
+              [#if reportingActive?? && reportingActive]
+                <span class="label label-default text-left">Reporting</span> 
+              [#else]
+                <span class="label label-primary text-left">Planning</span>
+              [/#if]
+              </h4>
+            [/#if]
             [#if crpClosed] <h4 class=""><span class="label label-default text-left">Closed</span></h4> [/#if]
-            
             </a>
           </div>
           

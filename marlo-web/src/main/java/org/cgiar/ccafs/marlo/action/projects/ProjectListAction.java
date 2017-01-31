@@ -346,26 +346,43 @@ public class ProjectListAction extends BaseAction {
     if (projectManager.findAll() != null) {
 
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
-        myProjects =
-          loggedCrp.getProjects().stream()
+        if (this.isPlanningActive()) {
+          myProjects = loggedCrp.getProjects().stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-
+            .collect(Collectors.toList());
+        } else {
+          myProjects = loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+            .collect(Collectors.toList());
+        }
       } else {
-        allProjects =
-          loggedCrp.getProjects().stream()
+
+        if (this.isPlanningActive()) {
+          allProjects = loggedCrp.getProjects().stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-        myProjects =
-          projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+            .collect(Collectors.toList());
+          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-          .collect(Collectors.toList());
-        // Sort the projects.
-        // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-        allProjects.removeAll(myProjects);
+            .collect(Collectors.toList());
+          // Sort the projects.
+          // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+          allProjects.removeAll(myProjects);
+        } else {
+          allProjects = loggedCrp.getProjects().stream()
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            .collect(Collectors.toList());
+          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+            .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+            .collect(Collectors.toList());
+          // Sort the projects.
+          // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+          allProjects.removeAll(myProjects);
+        }
+
       }
 
       filterBy = this.getRequest().getParameter(APConstants.FILTER_BY);

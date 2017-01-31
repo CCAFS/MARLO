@@ -45,6 +45,8 @@ public class Permission {
   public static final String PROJECT_UNSUBMISSION_PERMISSION = "crp:{0}:project:{1}:unsubmitted";
   public static final String PROJECT_LOCATION_BASE_PERMISSION = "crp:{0}:project:{1}:locations";
   public static final String PROJECT_DELETE_BASE_PERMISSION = "crp:{0}:project:{1}:deleteProject";
+  public static final String PROJECT_CCFASOUTCOME_BASE_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes";
+
   public static final String PROJECT__PERMISSION = "crp:{0}:project:{1}:{2}:canEdit";
 
 
@@ -52,12 +54,25 @@ public class Permission {
   public static final String PROJECT_CONTRIBRUTIONCRP_EDIT_PERMISSION = "crp:{0}:project:{1}:contributionCrp:canEdit";
   public static final String PROJECT_DELIVERABLE_LIST_BASE_PERMISSION = "crp:{0}:project:{1}:deliverableList";
   public static final String PROJECT_DELIVERABLE_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverableList:canEdit";
+  public static final String PROJECT_CCFASOUTCOME_LIST_EDIT_PERMISSION = "crp:{0}:project:{1}:ccafsOutcomes:canEdit";
+
   public static final String PROJECT_DELIVERABLE_LIST_ADD_PERMISSION =
     "crp:{0}:project:{1}:deliverableList:addDeliverable";
   public static final String PROJECT_DELIVERABLE_LIST_REMOVE_PERMISSION =
     "crp:{0}:project:{1}:deliverableList:removeOldDeliverables";
   public static final String PROJECT_DELIVERABLE_BASE_PERMISSION = "crp:{0}:project:{1}:deliverable";
+
+  public static final String PROJECT_LEVERAGES_BASE_PERMISSION = "crp:{0}:project:{1}:leverages";
+  public static final String PROJECT_HIGHLIGHT_BASE_PERMISSION = "crp:{0}:project:{1}:highlights";
+  public static final String PROJECT_CASE_STUDY_BASE_PERMISSION = "crp:{0}:project:{1}:caseStudies";
+
+  public static final String PROJECT_OVERVIEWS_BASE_PERMISSION = "crp:{0}:project:{1}:outputs";
+  public static final String PROJECT_OTHER_CONTRIBRUTIONS_BASE_PERMISSION = "crp:{0}:project:{1}:otherContributions";
+  public static final String PROJECT_OUTCOMES_PANDR_BASE_PERMISSION = "crp:{0}:project:{1}:outcomesPandR";
+
   public static final String PROJECT_DELIVERABLE_EDIT_PERMISSION = "crp:{0}:project:{1}:deliverable:canEdit";
+  public static final String PROJECT_HIGH_LIGHTS_EDIT_PERMISSION = "crp:{0}:project:{1}:highlights:canEdit";
+  public static final String PROJECT_CASE_STUDY_EDIT_PERMISSION = "crp:{0}:project:{1}:caseStudies:canEdit";
   public static final String PROJECT_ACTIVITIES_BASE_PERMISSION = "crp:{0}:project:{1}:activities";
   public static final String PROJECT_FUNDING_SOURCE_BASE_PERMISSION = "crp:{0}:fundingSource:{1}:canEdit";
   public static final String PROJECT_FUNDING_SOURCE_BUDGET_PERMISSION = "crp:{0}:fundingSource:{1}:budget";

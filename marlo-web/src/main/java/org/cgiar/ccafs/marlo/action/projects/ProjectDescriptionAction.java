@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
@@ -52,6 +53,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,7 +107,7 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpClusterOfActivity> clusterofActivites;
 
 
-  private Map<String, String> projectStauses;
+  private Map<String, String> projectStatuses;
 
 
   private List<LiaisonUser> allOwners;
@@ -303,8 +305,8 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public Map<String, String> getProjectStauses() {
-    return projectStauses;
+  public Map<String, String> getProjectStatuses() {
+    return projectStatuses;
   }
 
 
@@ -419,6 +421,7 @@ public class ProjectDescriptionAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setAdministrative(projectDb.getAdministrative());
         if (project.getClusterActivities() != null) {
           for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
             projectClusterActivity.setCrpClusterOfActivity(crpClusterOfActivityManager
@@ -565,6 +568,14 @@ public class ProjectDescriptionAction extends BaseAction {
       .collect(Collectors.toList()));
 
 
+    // Project Statuses
+    projectStatuses = new HashMap<>();
+    List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+    for (ProjectStatusEnum projectStatusEnum : list) {
+
+      projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+    }
+
     projectTypes = new HashMap<>();
     projectTypes.put(APConstants.PROJECT_CORE, this.getText("project.projectType.core"));
     projectTypes.put(APConstants.PROJECT_BILATERAL, this.getText("project.projectType.bilateral"));
@@ -604,13 +615,14 @@ public class ProjectDescriptionAction extends BaseAction {
       project.setModifiedBy(this.getCurrentUser());
       project.setModificationJustification("");
       project.setActiveSince(projectDB.getActiveSince());
-      project.setStatus(projectDB.getStatus());
       project.setCreateDate(projectDB.getCreateDate());
       project.setPresetDate(projectDB.getPresetDate());
 
       if (project.isNoRegional() == null) {
         project.setNoRegional(false);
       }
+
+
       if (project.getCrossCuttingCapacity() == null) {
         project.setCrossCuttingCapacity(false);
       }
@@ -623,6 +635,17 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getCrossCuttingYouth() == null) {
         project.setCrossCuttingYouth(false);
       }
+
+      if (!this.isReportingActive()) {
+        project.setStatus(projectDB.getStatus());
+        project.setCrossCuttingCapacity(projectDB.getCrossCuttingCapacity());
+        project.setCrossCuttingNa(projectDB.getCrossCuttingNa());
+        project.setCrossCuttingGender(projectDB.getCrossCuttingGender());
+        project.setCrossCuttingYouth(projectDB.getCrossCuttingYouth());
+
+
+      }
+
       if (projectDB.isBilateralProject()) {
 
         if (file != null) {
@@ -732,37 +755,39 @@ public class ProjectDescriptionAction extends BaseAction {
       }
 
       // Removing Project Cluster Activities
+      if (this.isPlanningActive()) {
 
-      for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
-        .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        if (project.getClusterActivities() == null) {
-          project.setClusterActivities(new ArrayList<>());
-        }
-        if (!project.getClusterActivities().contains(projectClusterActivity)) {
-          projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
+        for (ProjectClusterActivity projectClusterActivity : projectDB.getProjectClusterActivities().stream()
+          .filter(c -> c.isActive()).collect(Collectors.toList())) {
 
-        }
-      }
-      // Add Project Cluster Activities
-
-      if (project.getClusterActivities() != null) {
-        for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
-          if (projectClusterActivity.getId() == null) {
-            projectClusterActivity.setCreatedBy(this.getCurrentUser());
-
-            projectClusterActivity.setActiveSince(new Date());
-            projectClusterActivity.setActive(true);
-            projectClusterActivity.setProject(project);
-            projectClusterActivity.setModifiedBy(this.getCurrentUser());
-            projectClusterActivity.setModificationJustification("");
-            projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+          if (project.getClusterActivities() == null) {
+            project.setClusterActivities(new ArrayList<>());
           }
+          if (!project.getClusterActivities().contains(projectClusterActivity)) {
+            projectClusterActivityManager.deleteProjectClusterActivity(projectClusterActivity.getId());
 
+          }
         }
+        // Add Project Cluster Activities
+
+        if (project.getClusterActivities() != null) {
+          for (ProjectClusterActivity projectClusterActivity : project.getClusterActivities()) {
+            if (projectClusterActivity.getId() == null) {
+              projectClusterActivity.setCreatedBy(this.getCurrentUser());
+
+              projectClusterActivity.setActiveSince(new Date());
+              projectClusterActivity.setActive(true);
+              projectClusterActivity.setProject(project);
+              projectClusterActivity.setModifiedBy(this.getCurrentUser());
+              projectClusterActivity.setModificationJustification("");
+              projectClusterActivityManager.saveProjectClusterActivity(projectClusterActivity);
+            }
+
+          }
+        }
+
       }
-
-
       // Removing Project Scopes
 
       for (ProjectScope projectLocation : projectDB.getProjectScopes().stream().filter(c -> c.isActive())
@@ -922,8 +947,8 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
 
-  public void setProjectStauses(Map<String, String> projectStauses) {
-    this.projectStauses = projectStauses;
+  public void setProjectStatuses(Map<String, String> projectStatuses) {
+    this.projectStatuses = projectStatuses;
   }
 
 

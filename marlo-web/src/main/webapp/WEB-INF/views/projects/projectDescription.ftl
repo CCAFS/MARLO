@@ -5,6 +5,7 @@
 [#assign customJS = ["${baseUrl}/js/projects/projectDescription.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "description" /]
+[#assign hideJustification = true /]
 
 [#assign breadCrumb = [
   {"label":"projectsList", "nameSpace":"/projects", "action":"${(crpSession)!}/projectsList"},
@@ -81,40 +82,31 @@
               </div>
               --]
             </div> 
-    
-            [#-- Project upload work plan 
-            [#if !((project.bilateralProject)!false)]
-            <div id="uploadWorkPlan" class="tickBox-wrapper fullBlock" style="[#if !((project.requiresWorkplanUpload)!false) && !project.workplan?has_content && !editable]display:none[/#if]">
-              [#if action.hasPermission("workplan") ]
-                [@customForm.checkbox name="project.requiresWorkplanUpload" value="true" checked=project.requiresWorkplanUpload  i18nkey="project.workplanRequired" disabled=!editable editable=editable  && action.hasPermission("workplan") /]
-              [/#if]
-              <div class="tickBox-toggle uploadContainer" [#if !((project.requiresWorkplanUpload)!false)]style="display:none"[/#if]>
-                <div class="halfPartBlock fileUpload projectWorkplan">
-                  [@customForm.inputFile name="file" fileUrl="${(workplanURL)!}" fileName="project.workplan.fileName" editable=editable && action.hasPermission("workplan") /]
-                </div> 
-              </div>  
-            </div>
-            [/#if]--]
-            
-            
             
             [#-- Project Summary --]
             <div class="form-group">
               [@customForm.textArea name="project.summary" required=!((project.bilateralProject)!false) className="project-description" editable=editable && action.hasPermission("summary") /]
             </div>
             
-            [#-- -- -- REPORTING BLOCK -- -- --]
-            [#if reportingActive]
-              [#-- Project upload annual report to donor--]
-              [#if (project.bilateralProject)!false]
-              <div class="fullBlock fileUpload annualreportDonor">
-                <label>[@customForm.text name="projectDescription.annualreportDonor" readText=!editable /]:</label>
-                <div class="uploadContainer">
-                  [@customForm.inputFile name="fileReporting" fileUrl="${(AnualReportURL)!}" fileName="project.annualReportToDonnor.fileName" editable=editable && action.hasPermission("bilateralContract") /]
-                </div>  
+            [#-- Project status 
+            [#if reportingActive ]
+            <div class="form-group">
+              <br />
+              <div class="dottedBox ${reportingActive?string('fieldFocus','')}">
+                <div class="row">
+                  <div class="col-md-6">
+                    [@customForm.select name="project.status" value="${(project.status)!}" i18nkey="project.status" listName="projectStatuses" header=false editable=editable /]
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    [@customForm.textArea name="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=editable  /]
+                  </div>
+                </div>
               </div>
-              [/#if]
+            </div>
             [/#if]
+            --]
             
             [#--  Regions/global and Flagships that the project is working on --]
             [#if !project.administrative]
@@ -175,7 +167,7 @@
             [/#if]
             
             [#-- Cluster of Activities --]
-            [#if !project.administrative]
+            [#if !project.administrative && !phaseOne]
             <div class="panel tertiary">
               <div class="panel-head"> 
                 <label for="">[@customForm.text name="projectDescription.clusterActivities" readText=!editable /]:[@customForm.req required=editable  && action.hasPermission("activities") /]</label>
@@ -209,37 +201,37 @@
             </div>
             [/#if]
             
-            [#if project.projectEditLeader]
-            [#--  What type of gender analysis informed the design of this project and how? --]
-            <div class="form-group">
-              [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
-            </div>
-            
-            [#-- Select the cross-cutting dimension(s) to this project? --]
-            <div class="form-group">
-              <label for="">[@customForm.text name="project.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
-              <div class="row">
-                <div class="col-md-12">
-                  [#if editable]
-                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingGender"   id="gender"   value="true" [#if (project.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
-                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingYouth"    id="youth"    value="true" [#if (project.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
-                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
-                    <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
-                  [#else]
-                    [#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
-                    [#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
-                    [#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
-                    [#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
-                  [/#if]
-                </div>
+            [#if project.projectEditLeader && !phaseOne]
+              [#--  What type of gender analysis informed the design of this project and how? --]
+              <div class="form-group">
+                [@customForm.textArea name="project.genderAnalysis" required=true className=" limitWords-50" editable=editable /]
               </div>
-              <br />
-            </div>
-            
-            [#-- If no gender dimension, then please explain why not --]
-            <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
-              [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
-            </div>
+              
+              [#-- Select the cross-cutting dimension(s) to this project? --]
+              <div class="form-group">
+                <label for="">[@customForm.text name="project.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    [#if editable]
+                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingGender"   id="gender"   value="true" [#if (project.crossCuttingGender)!false ]checked="checked"[/#if]> Gender</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingYouth"    id="youth"    value="true" [#if (project.crossCuttingYouth)!false ]checked="checked"[/#if]> Youth</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingCapacity" id="capacity" value="true" [#if (project.crossCuttingCapacity)!false ]checked="checked"[/#if]> Capacity Development</label>
+                      <label class="checkbox-inline"><input type="checkbox" name="project.crossCuttingNa"       id="na"       value="true" [#if (project.crossCuttingNa)!false ]checked="checked"[/#if]> N/A</label>
+                    [#else]
+                      [#if (project.crossCuttingGender)!false ] <p class="checked"> Gender</p>[/#if]
+                      [#if (project.crossCuttingYouth)!false ] <p class="checked"> Youth</p>[/#if]
+                      [#if (project.crossCuttingCapacity)!false ] <p class="checked"> Capacity Development</p>[/#if]
+                      [#if (project.crossCuttingNa)!false ] <p class="checked"> N/A</p>[/#if]
+                    [/#if]
+                  </div>
+                </div>
+                <br />
+              </div>
+              
+              [#-- If no gender dimension, then please explain why not --]
+              <div id="gender-question" class="form-group" style="display:${((project.crossCuttingGender)!false)?string('none','block')}">
+                [@customForm.textArea name="project.dimension" required=true className=" limitWords-50" editable=editable /]
+              </div>
             [/#if]
           </div> 
            

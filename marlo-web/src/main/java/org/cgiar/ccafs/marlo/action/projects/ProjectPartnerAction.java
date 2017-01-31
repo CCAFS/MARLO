@@ -668,6 +668,7 @@ public class ProjectPartnerAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectEditLeader(projectDb.isProjectEditLeader());
+        project.setAdministrative(projectDb.getAdministrative());
         this.projectPPAPartners = new ArrayList<ProjectPartner>();
         for (ProjectPartner pp : project.getPartners()) {
 
@@ -742,7 +743,10 @@ public class ProjectPartnerAction extends BaseAction {
         if (!project.getPartners().isEmpty()) {
           if (this.isReportingActive()) {
 
-            List<ProjectPartnerOverall> overalls = project.getPartners().get(0).getProjectPartnerOveralls().stream()
+            ProjectPartner partner =
+              project.getProjectPartners().stream().filter(pp -> pp.isActive()).collect(Collectors.toList()).get(0);
+
+            List<ProjectPartnerOverall> overalls = partner.getProjectPartnerOveralls().stream()
               .filter(c -> c.isActive() && c.getYear() == this.getReportingYear()).collect(Collectors.toList());
             if (!overalls.isEmpty()) {
               project.setOverall(overalls.get(0).getOverall());
@@ -1010,17 +1014,31 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
       if (this.isReportingActive()) {
-        ProjectPartnerOverall overall;
-        if (partnerOverall != null) {
-          overall = partnerOverall;
+        Project projectReporting = projectManager.getProjectById(projectID);
 
-        } else {
-          overall = new ProjectPartnerOverall();
-          overall.setProjectPartner(project.getPartners().get(0));
-          overall.setYear(this.getReportingYear());
+        List<ProjectPartner> partnersReporting = new ArrayList<>(
+          projectReporting.getProjectPartners().stream().filter(p -> p.isActive()).collect(Collectors.toList()));
+
+        if (!partnersReporting.isEmpty()) {
+          for (ProjectPartner partner : partnersReporting) {
+            List<ProjectPartnerOverall> overalls = new ArrayList<>(partner.getProjectPartnerOveralls().stream()
+              .filter(ppo -> ppo.isActive() && ppo.getYear() == this.getReportingYear()).collect(Collectors.toList()));
+
+            ProjectPartnerOverall overall = new ProjectPartnerOverall();
+            if (overalls.isEmpty()) {
+              overall.setProjectPartner(partner);
+              overall.setYear(this.getReportingYear());
+            } else {
+              overall = overalls.get(0);
+            }
+
+            if (project.getOverall() != null) {
+              overall.setOverall(project.getOverall());
+              projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+            }
+          }
         }
-        overall.setOverall(project.getOverall());
-        projectPartnerOverallManager.saveProjectPartnerOverall(overall);
+
       }
 
 
