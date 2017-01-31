@@ -300,24 +300,23 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return createDate;
   }
 
-
   public User getCreatedBy() {
     return createdBy;
   }
+
 
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
 
-
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
   }
 
+
   public Boolean getCrossCuttingNa() {
     return crossCuttingNa;
   }
-
 
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
@@ -348,23 +347,24 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return dataSharingFiles;
   }
 
+
   public Set<DeliverableActivity> getDeliverableActivities() {
     return deliverableActivities;
   }
-
 
   public Set<DeliverableCrp> getDeliverableCrps() {
     return deliverableCrps;
   }
 
+
   public Set<DeliverableDataSharingFile> getDeliverableDataSharingFiles() {
     return deliverableDataSharingFiles;
   }
 
-
   public Set<DeliverableDataSharing> getDeliverableDataSharings() {
     return deliverableDataSharings;
   }
+
 
   public Set<DeliverableDissemination> getDeliverableDisseminations() {
     return deliverableDisseminations;
@@ -406,21 +406,21 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return dissemination;
   }
 
-  // End
-
-
   public List<DeliverableDissemination> getDisseminations() {
     return disseminations;
   }
+
+  // End
+
 
   public List<DeliverableFile> getFiles() {
     return files;
   }
 
-
   public List<DeliverableFundingSource> getFundingSources() {
     return fundingSources;
   }
+
 
   public List<DeliverableGenderLevel> getGenderLevels() {
     return genderLevels;
@@ -525,7 +525,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return "";
   }
 
-
   public String getMetadataValueByEncondedName(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
       if (mData.getMetadataElement() != null) {
@@ -549,6 +548,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
+
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
@@ -569,19 +569,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return publication;
   }
 
-
   public List<DeliverablePublicationMetadata> getPublicationMetadatas() {
     return publicationMetadatas;
   }
+
 
   public DeliverableQualityCheck getQualityCheck() {
     return qualityCheck;
   }
 
-
   public DeliverablePartnership getResponsiblePartner() {
     return responsiblePartner;
   }
+
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -612,10 +612,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.title;
   }
 
-
   public String getTypeOther() {
     return this.typeOther;
   }
+
 
   public List<DeliverableUser> getUsers() {
     return users;
@@ -636,6 +636,11 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   @Override
   public boolean isActive() {
     return active;
+  }
+
+  public boolean isRequieriedReporting(int year) {
+
+    return true;
   }
 
 
