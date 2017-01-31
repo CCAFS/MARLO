@@ -6416,3 +6416,7 @@ span#lastUpdateMessage {
 img.removeInput {
     cursor: pointer;
 }
+
+.blue {
+    color: #337ab7;
+}

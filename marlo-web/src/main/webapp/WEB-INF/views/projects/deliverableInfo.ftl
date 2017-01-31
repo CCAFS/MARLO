@@ -68,7 +68,12 @@
   [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
     [#if editable]
-      [@customForm.select name="deliverable.newExpectedYear"  label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+      [#if reportingActive]
+        [#assign startExpectedYear = currentCycleYear-1]
+      [#else]
+        [#assign startExpectedYear = (deliverable.year)!currentCycleYear ]
+      [/#if]
+      [@customForm.select name="deliverable.newExpectedYear"  label=""  listName="project.getYears(${startExpectedYear})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
     [#else]
       <input type="hidden" name="deliverable.newExpectedYear" value="${(deliverable.newExpectedYear)!}"/>
       <div class="select">

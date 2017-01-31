@@ -170,8 +170,10 @@ function init() {
     // Data
     if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
       $(".dataLicense").show("slow");
+      $("#complianceCheck").show("slow");
     } else {
       $(".dataLicense").hide("slow");
+      $("#complianceCheck").hide("slow");
     }
     // Computer software
     if(subTypeOption.val() == "52") {
@@ -366,6 +368,12 @@ function justificationByStatus(statusId) {
 
   if(isStatusExtended(statusId) || (isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""))) {
     $('#newExpectedYear').show();
+    $('#newExpectedYear select').attr('disabled', false);
+    if(isStatusComplete(statusId) && ($('#newExpectedYear select').val() != "")) {
+      $('#newExpectedYear select').attr('disabled', true);
+    } else {
+      $('#newExpectedYear select').attr('disabled', false);
+    }
   } else {
     $('#newExpectedYear').hide();
   }

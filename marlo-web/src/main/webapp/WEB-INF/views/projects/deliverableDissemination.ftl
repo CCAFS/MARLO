@@ -77,9 +77,9 @@
     </div>
     
     <div id="disseminationUrl" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl col-md-11" required=true editable=editable /]
       [#if editable]
-      <div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Search & Fill Metadata</div>
+      <div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Sync</div>
       [/#if]
       <div class="clearfix"></div>
     </div>
@@ -96,7 +96,7 @@
 
 <div class="borderBox">
   <div class="form-group col-md-12">
-    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group col-md-12">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
@@ -131,7 +131,7 @@
     [#if editable]
       <div class="col-md-12 note">[@s.text name = "To change an author's data, you must do double click on that field." /]</div>
     [/#if]
-    <label for="">Creator/Authors: <span class="red">*</span></label>
+    <label for="">Creator/Authors:  </label>
     <div class="authorsList simpleBox col-md-12" >
       [#if deliverable.users?has_content]
         [#list deliverable.users as author]
