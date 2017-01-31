@@ -6090,6 +6090,7 @@ span.programTag {
     opacity: 0.9;
     /* float: left; */
     margin-left: 1px;
+    line-height: 1.8em;
 }
 
 .subMainMenu {
