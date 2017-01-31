@@ -50,17 +50,12 @@
   <div class="clearfix"></div>
 </div>
 
-<div class="form-group col-md-12" style="">
-[#-- Description --] 
-    <div class="fullBlock">[@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=true/]</div>
-  <div class="clearfix"></div>
-</div>
-<div class="clearfix"></div>
+ <div class="clearfix"></div>
 [#-- Status and year expected selects --]
 <div class="${reportingActive?string('fieldFocus','')}">
 <div class="form-group">
   <div class="col-md-4">
-    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
+    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=reportingActive className=" status" editable=editable/]
   </div>
   <div class="col-md-4 form-group">
     [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
@@ -70,9 +65,17 @@
     [#if !editable]${(deliverable.year)!}[/#if]
   </div>
   [#-- New Expected Year - Extended = 4 --]
-  [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && (deliverable.status == 4) /]
+  [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
-    [@customForm.select name="deliverable.newExpectedYear" label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+    [#if editable]
+      [@customForm.select name="deliverable.newExpectedYear"  label=""  listName="project.getYears(${deliverable.year})" header=false  multiple=false required=true  className="yearNewExpected" editable=editable/]
+    [#else]
+      <input type="hidden" name="deliverable.newExpectedYear" value="${(deliverable.newExpectedYear)!}"/>
+      <div class="select">
+        <label for="">Expected year:</label>
+      	<p>${(deliverable.newExpectedYear)!}</p>
+      </div>
+    [/#if]
   </div> 
   <div class="clearfix"></div>
 </div>

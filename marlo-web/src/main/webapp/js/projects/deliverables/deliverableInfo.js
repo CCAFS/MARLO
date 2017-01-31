@@ -362,7 +362,9 @@ function justificationByStatus(statusId) {
     $statusDescription.show().hide(400);
   }
 
-  if(isStatusExtended(statusId)) {
+  console.log($('#newExpectedYear select').val());
+
+  if(isStatusExtended(statusId) || (isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""))) {
     $('#newExpectedYear').show();
   } else {
     $('#newExpectedYear').hide();

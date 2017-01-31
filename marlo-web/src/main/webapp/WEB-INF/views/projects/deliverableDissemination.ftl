@@ -95,18 +95,23 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
-  
+  <div class="form-group col-md-12">
+    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+  </div>
+  <div class="form-group col-md-12">
+    [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
+  </div>
   <div class="col-md-6">
     [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
+    [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]
+    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
   </div>
     
   <div class="col-md-12">
