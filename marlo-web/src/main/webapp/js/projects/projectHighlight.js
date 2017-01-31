@@ -31,6 +31,7 @@ $(document).ready(function() {
     $uploadBlock.find('.textMessage').hide();
     $uploadBlock.find('.fileUpload').show();
     $('input#fileID').val('');
+    $(".image img").attr("src", baseURL + "/images/global/defaultImage.png")
   });
 
   // Attach Events

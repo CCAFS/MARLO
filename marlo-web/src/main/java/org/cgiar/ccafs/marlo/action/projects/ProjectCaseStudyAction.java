@@ -69,47 +69,47 @@ import org.slf4j.LoggerFactory;
 public class ProjectCaseStudyAction extends BaseAction {
 
 
+  // LOG
+  private static Logger LOG = LoggerFactory.getLogger(ProjectCaseStudyAction.class);
   /**
    * 
    */
   private static final long serialVersionUID = -5209003027874233584L;
-  // LOG
-  private static Logger LOG = LoggerFactory.getLogger(ProjectCaseStudyAction.class);
-  private CrpManager crpManager;
-
-
-  private Crp loggedCrp;
-
-  private ProjectCaseStudyValidation caseStudyValidation;
-  private String transaction;
-
-
   private AuditLogManager auditLogManager;
 
 
+  // Model for the back-end
+  private CaseStudy caseStudy;
+
+  // Model for the front-end
+  private long caseStudyID;
+  private CaseStudyIndicatorManager caseStudyIndicatorManager;
+
+
+  private Map<String, String> caseStudyIndicators;
+
+
+  private CaseStudyManager caseStudyManager;
+
+  private CaseStudyProjectManager caseStudyProjectManager;
+  private ProjectCaseStudyValidation caseStudyValidation;
+  private String contentType;
+  private CrpManager crpManager;
+
+  private File file;
+
+  private FileDBManager fileDBManager;
+  // private ProjectHighLightValidator validator;
+  private String fileFileName;
+  private IpIndicatorManager ipIndicatorManager;
+  private Crp loggedCrp;
+  private List<Project> myProjects;
+  private Project project;
+  private long projectID;
   // Manager
   private ProjectManager projectManager;
 
-  private IpIndicatorManager ipIndicatorManager;
-  private CaseStudyManager caseStudyManager;
-  private CaseStudyProjectManager caseStudyProjectManager;
-  private CaseStudyIndicatorManager caseStudyIndicatorManager;
-
-  private FileDBManager fileDBManager;
-
-  private File file;
-  // private ProjectHighLightValidator validator;
-  private String fileFileName;
-  private String contentType;
-  // Model for the back-end
-  private CaseStudy caseStudy;
-  private Project project;
-  // Model for the front-end
-  private long caseStudyID;
-  private long projectID;
-  private Map<String, String> caseStudyIndicators;
-
-  private List<Project> myProjects;
+  private String transaction;
 
 
   @Inject
@@ -309,7 +309,7 @@ public class ProjectCaseStudyAction extends BaseAction {
         if (caseStudy.getIndicators() != null) {
           for (CaseStudyIndicator caseStudyIndicator : caseStudy.getIndicators()) {
             caseStudyIndicator
-              .setIpIndicator(ipIndicatorManager.getIpIndicatorById(caseStudyIndicator.getIpIndicator().getId()));
+            .setIpIndicator(ipIndicatorManager.getIpIndicatorById(caseStudyIndicator.getIpIndicator().getId()));
 
           }
 
@@ -356,15 +356,16 @@ public class ProjectCaseStudyAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects =
           loggedCrp.getProjects().stream()
-            .filter(p -> p.isActive()
-              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+          .filter(p -> p.isActive()
+            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
           .collect(Collectors.toList());
+        myProjects.remove(project);
       } else {
         myProjects = loggedCrp.getProjects().stream()
           .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
           .collect(Collectors.toList());
 
-        myProjects.remove(myProjects);
+        myProjects.remove(project);
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));
     }

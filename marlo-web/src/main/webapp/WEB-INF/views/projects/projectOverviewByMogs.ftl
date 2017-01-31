@@ -43,13 +43,17 @@
     [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list allYears as year]
+              [#if year <=currentCycleYear]
                 <li class="[#if year == currentCycleYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [#if year == currentCycleYear] <span class="red">*</span> [/#if] </a></li>
+              [/#if]
               [/#list]
             </ul>
             
             [#-- Years Content --]
             <div class="tab-content budget-content">
               [#list allYears as year]
+                [#if year <=currentCycleYear]
+                
                 <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="year-${year}">
                
                 [#if project.mogs?has_content]
@@ -75,7 +79,7 @@
                     
                     [#-- Brief summary of your actual annual contribution --]
                     <div class="fullBlock" >
-                     <label>[@customForm.text name="reporting.project.overviewByMogs.summaryAnnualContribution" readText=!reportingActive param="${year}" /]:</label>  
+                     <label>[@customForm.text name="reporting.project.overviewByMogs.summaryAnnualContribution" readText=!reportingActive param="${year}" /]:<span class="red">*</span></label>  
                       [@customForm.textArea name="project.overviews[${overviewMogIndex}].briefSummary" showTitle=false  editable=(reportingActive && editable && editableByYear) className="limitWords-50 ${(year == currentCycleYear)?string('fieldFocus','')}" /]
                     </div>
                     
@@ -87,7 +91,7 @@
                     
                     [#-- Summary of the gender and social inclusion dimension --]
                     <div class="fullBlock" >
-                      <label>[@customForm.text name="reporting.project.overviewByMogs.summarySocialInclusionDimmension" readText=!reportingActive param="${year}" /]:</label>  
+                      <label>[@customForm.text name="reporting.project.overviewByMogs.summarySocialInclusionDimmension" readText=!reportingActive param="${year}" /]:<span class="red">*</span></label>  
                       [@customForm.textArea name="project.overviews[${overviewMogIndex}].summaryGender" showTitle=false editable=(reportingActive && editable && editableByYear) className="limitWords-50 ${(year == currentCycleYear)?string('fieldFocus','')}"  /]
                     </div>
                   </div>
@@ -95,6 +99,7 @@
                   [/#list]
                 [/#if]
                 </div>
+                [/#if]
               [/#list]  
             </div>
             

@@ -80,7 +80,7 @@
               </div>
               [#-- Year --]
               <div class="col-md-6">
-                [@customForm.select name="highlight.year" value="${(highlight.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=true  /]
+                [@customForm.select name="highlight.year" value="${(highlight.year)!currentCycleYear}" i18nkey="highlight.year" listName="allYears" editable=editable stringKey=true required=false  /]
                 [#if !editable]${(highlight.year)!}[/#if]
               </div>
             </div>
@@ -115,7 +115,7 @@
                   <input id="fileID" type="hidden" name="highlight.file.id" value="${(highlight.file.id)!}" />
                   [#-- Input File --]
                   [#if editable]
-                  <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
+                  <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" accept="image/*" name="file" data-url="${baseUrl}/uploadFundingSource.do"></div>
                   [/#if]
                   [#-- Uploaded File --]
                   <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
