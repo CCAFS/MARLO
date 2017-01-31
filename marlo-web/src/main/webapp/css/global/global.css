@@ -6075,6 +6075,7 @@ hr {
 }
 
 span.programTag {
+    display: block;
     /* color: #4a4a4a; */
     border-bottom: 3px solid;
     /* border-bottom: 1px solid; */

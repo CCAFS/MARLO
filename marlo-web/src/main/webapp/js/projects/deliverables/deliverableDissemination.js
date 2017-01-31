@@ -147,19 +147,28 @@ function init() {
   });
 
   // Add many flagships
-  $(".addFlagship").on("click", function() {
-    var fOption = $(".flaghsipSelect").find("option:selected");
-    var crpOtion = $(".crpSelect").find("option:selected");
-    if(fOption.val() != "" && fOption.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.id[value='" + fOption.val() + "']").exists()) {
+  $(".flaghsipSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "" && option.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idFlagship[value='" + option.val() + "']").exists()) {
       } else {
-        var composedText = crpOtion.text().toUpperCase() + "-" + fOption.text();
-        var v = composedText.length > 45 ? composedText.substr(0, 45) + ' ... ' : composedText;
-        addFlagship(fOption.val(), v, composedText, crpOtion.val());
+        var composedText = option.text().toUpperCase() + "-" + option.text();
+        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        addFlagship(option.val(), v, composedText, "");
       }
     }
   });
-  $(".crpSelect").on("change", flagshipService);
+  $(".crpSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "" && option.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists()) {
+      } else {
+        var composedText = option.text().toUpperCase() + "-" + option.text();
+        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        addCrp("", v, composedText, option.val());
+      }
+    }
+  });
 
   // remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
@@ -209,6 +218,20 @@ function init() {
 }
 
 function addFlagship(id,text,title,crpId) {
+  var $list = $('.flagshipList');
+  var $item = $('#flagship-template').clone(true).removeAttr("id");
+  $item.find(".name").text(text);
+  $item.find(".name").attr("title", title);
+  $item.find(".idElemento").val("-1");
+  $item.find(".idCrp").val(crpId);
+  $item.find(".idFlagship").val(id);
+  $list.append($item);
+  $item.show('slow');
+  checkNextFlagshipItems($list);
+  updateFlagship();
+}
+
+function addCrp(id,text,title,crpId) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
   $item.find(".name").text(text);
