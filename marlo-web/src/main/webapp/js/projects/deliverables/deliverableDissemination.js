@@ -1,7 +1,6 @@
 $(document).ready(init);
 
 function init() {
-
   $("a[href='#deliverable-mainInformation']").on('shown.bs.tab', function(e) {
     $("a[href='#deliverable-mainInformation']").removeClass("hideInfo");
 // verifyMissingFields(".radio-block");
@@ -173,48 +172,50 @@ function init() {
   // remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
 
-  $('.lastName').dblclick(function() {
-    var spantext = $(this).text();
-    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-  }).keypress(function(e) {
-    if(e.keyCode == 13) {
-      var text = $('input', this).val();
-      if(text == "") {
-        text = "Last Name";
-      } else {
-        $(this).parents(".author").find(".lastNameInput").val(text);
+  if(editable) {
+    $('.lastName').dblclick(function() {
+      var spantext = $(this).text();
+      $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+    }).keypress(function(e) {
+      if(e.keyCode == 13) {
+        var text = $('input', this).val();
+        if(text == "") {
+          text = "Last Name";
+        } else {
+          $(this).parents(".author").find(".lastNameInput").val(text);
+        }
+        $(this).html(text);
       }
-      $(this).html(text);
-    }
-  });
-  $('.firstName').dblclick(function() {
-    var spantext = $(this).text();
-    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-  }).keypress(function(e) {
-    if(e.keyCode == 13) {
-      var text = $('input', this).val();
-      if(text == "") {
-        text = "First Name";
-      } else {
-        $(this).parents(".author").find(".firstNameInput").val(text);
+    });
+    $('.firstName').dblclick(function() {
+      var spantext = $(this).text();
+      $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+    }).keypress(function(e) {
+      if(e.keyCode == 13) {
+        var text = $('input', this).val();
+        if(text == "") {
+          text = "First Name";
+        } else {
+          $(this).parents(".author").find(".firstNameInput").val(text);
+        }
+        $(this).html(text);
       }
-      $(this).html(text);
-    }
-  });
-  $('.orcidId').dblclick(function() {
-    var spantext = $(this).text();
-    $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
-  }).keypress(function(e) {
-    if(e.keyCode == 13) {
-      var text = $('input', this).val();
-      if(text == "") {
-        text = "orcid Id";
-      } else {
-        $(this).parents(".author").find(".orcidIdInput").val(text);
+    });
+    $('.orcidId').dblclick(function() {
+      var spantext = $(this).text();
+      $(this).empty().html('<input type="text" value="' + spantext + '">').find('input').focus();
+    }).keypress(function(e) {
+      if(e.keyCode == 13) {
+        var text = $('input', this).val();
+        if(text == "") {
+          text = "orcid Id";
+        } else {
+          $(this).parents(".author").find(".orcidIdInput").val(text);
+        }
+        $(this).html(text);
       }
-      $(this).html(text);
-    }
-  });
+    });
+  }
 }
 
 function addFlagship(id,text,title,crpId) {
@@ -339,7 +340,7 @@ function openAccessRestriction() {
 }
 
 function setMetadata(data) {
-  $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
+  // $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
   if($(".citationMetadata").val() == "") {
     $(".citationMetadata").val(data.citation).autoGrow();
   }
@@ -635,16 +636,29 @@ function getDataverseMetadata(channel,url,uri) {
 function authorsByService(authors) {
   var $list = $('.authorsList');
   for(var i = 0; i < authors.length; i++) {
-    var $item = $('#author-template').clone(true).removeAttr("id");
-    $($item).find(".lastName").text(authors[i].lastName + ", ");
-    $($item).find(".firstName").text(authors[i].firstName);
-    $($item).find(".orcidId").text(authors[i].orcidId);
-    $($item).find(".lastNameInput").val(authors[i].lastName + ", ");
-    $($item).find(".firstNameInput").val(authors[i].firstName);
-    $($item).find(".orcidIdInput").val(authors[i].orcidId);
-    $list.append($item);
-    $item.show('slow');
-    updateAuthor();
-    checkNextAuthorItems($list);
+    var validation = validateAuthors(authors[i].lastName, authors[i].firstName);
+    if(validation == false) {
+      var $item = $('#author-template').clone(true).removeAttr("id");
+      $($item).find(".lastName").text(authors[i].lastName + ", ");
+      $($item).find(".firstName").text(authors[i].firstName);
+      $($item).find(".orcidId").text(authors[i].orcidId);
+      $($item).find(".lastNameInput").val(authors[i].lastName + ", ");
+      $($item).find(".firstNameInput").val(authors[i].firstName);
+      $($item).find(".orcidIdInput").val(authors[i].orcidId);
+      $list.append($item);
+      $item.show('slow');
+      updateAuthor();
+      checkNextAuthorItems($list);
+    }
   }
+}
+
+function validateAuthors(lastName,firstName) {
+  if($(".authorsList").find(".author input.lastNameInput[value='" + lastName + "']").exists()
+      || $(".authorsList").find(".author input.firstNameInput[value='" + firstName + "']").exists()) {
+    return true;
+  } else {
+    return false;
+  }
+
 }
