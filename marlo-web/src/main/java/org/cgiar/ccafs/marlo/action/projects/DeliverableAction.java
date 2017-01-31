@@ -695,10 +695,14 @@ public class DeliverableAction extends BaseAction {
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
-              deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
+
               if (deliverableCrp.getIpProgram() != null) {
                 deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
+                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+              } else {
+                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
               }
+
             }
           }
         }
@@ -1157,7 +1161,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }

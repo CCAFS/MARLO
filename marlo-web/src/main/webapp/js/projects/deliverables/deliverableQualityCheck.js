@@ -25,6 +25,7 @@ function init() {
   $(qualityAssurance).on("change", changeOptions);
   $(dataDictionary).on("change", changeOptions);
   $(dataTools).on("change", changeOptions);
+  $(".fileID").on("change", checkGolData);
   // checkGolData();
 
   // Validate FAIR Complain
@@ -80,6 +81,7 @@ function uploadFile($uploadBlock,$fileUpload,type) {
     $uploadBlock.find('.textMessage').hide();
     $uploadBlock.find('.fileUpload').show();
     $uploadBlock.find('input.fileID').val('');
+    checkGolData();
   });
 }
 
@@ -146,7 +148,12 @@ function checkQualityAssurance() {
   if(value == "1") {
     return 25;
   } else if(value == "2") {
-    return 50;
+    var fileInput = $(qualityAssurance).parents(".question").find(".fileID");
+    if(fileInput.val() != "" && fileInput.val() != "-1") {
+      return 50;
+    } else {
+      return 0;
+    }
   } else if(value == "3") {
     return 5;
   }
@@ -158,7 +165,12 @@ function checkDictionary() {
   if(value == "1") {
     return 25;
   } else if(value == "2") {
-    return 50;
+    var fileInput = $(dataDictionary).parents(".question").find(".fileID");
+    if(fileInput.val() != "" && fileInput.val() != "-1") {
+      return 50;
+    } else {
+      return 0;
+    }
   } else if(value == "3") {
     return 5;
   }
@@ -170,7 +182,12 @@ function checkCollection() {
   if(value == "1") {
     return 25;
   } else if(value == "2") {
-    return 50;
+    var fileInput = $(dataTools).parents(".question").find(".fileID");
+    if(fileInput.val() != "" && fileInput.val() != "-1") {
+      return 50;
+    } else {
+      return 0;
+    }
   } else if(value == "3") {
     return 5;
   }
