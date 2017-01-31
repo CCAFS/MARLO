@@ -1,4 +1,7 @@
 [#ftl]
+
+<div id="complianceCheck" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
+
 [#-- Compliance check (Data products only) --]
 <h4 class="headTitle">Compliance check</h4>
 
@@ -143,6 +146,7 @@
     <div class="clearfix"></div>
   </div>
   
+</div>
 </div>
 
 <br />

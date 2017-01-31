@@ -170,8 +170,10 @@ function init() {
     // Data
     if(subTypeOption.val() == "51" || subTypeOption.val() == "74") {
       $(".dataLicense").show("slow");
+      $("#complianceCheck").show("slow");
     } else {
       $(".dataLicense").hide("slow");
+      $("#complianceCheck").hide("slow");
     }
     // Computer software
     if(subTypeOption.val() == "52") {

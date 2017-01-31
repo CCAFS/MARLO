@@ -69,6 +69,7 @@ function uploadFile($uploadBlock,$fileUpload,type) {
           $uploadBlock.find('.fileUpload').hide();
           // Set file ID
           $uploadBlock.find('input.fileID').val(r.fileID);
+          checkGolData();
         }
       },
       progressall: function(e,data) {
