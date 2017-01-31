@@ -340,27 +340,36 @@ function openAccessRestriction() {
 
 function setMetadata(data) {
   $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
-  // if($(".citationMetadata").val() == "") {
-  $(".citationMetadata").val(data.citation).autoGrow();
-  // }
-  // if($("#deliverableMetadataDate").val() == "") {
-  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  // }
-  // if($(".languageMetadata").val() == "") {
-  $(".languageMetadata").val(data.languaje);
-  // }
-  // if($(".descriptionMetadata").val() == "") {
-  $(".descriptionMetadata").val(data.description).autoGrow();
-  // }
-  // if($(".handleMetadata").val() == "") {
-  $(".handleMetadata").val(data.handle);
-  // }
-  // if($(".doiMetadata").val() == "") {
-  $(".doiMetadata").val(data.doi);
-  // }
-  // if($(".countryMetadata").val() == "") {
-  $(".countryMetadata").val(data.country);
-  // }
+  if($(".citationMetadata").val() == "") {
+    $(".citationMetadata").val(data.citation).autoGrow();
+  }
+  if($("#deliverableMetadataDate").val() == "") {
+    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  }
+  if($(".languageMetadata").val() == "") {
+    $(".languageMetadata").val(data.languaje);
+  }
+  if($(".titleMetadata").val() == "") {
+    $(".titleMetadata").val(data.title);
+  }
+
+  if($(".descriptionMetadata").val() == "") {
+    $(".descriptionMetadata").val(data.description).autoGrow();
+  }
+
+  if($(".HandleMetadata").val() == "") {
+    $(".HandleMetadata").val(data.handle);
+  }
+  if($(".DOIMetadata").val() == "") {
+    $(".DOIMetadata").val(data.doi);
+  }
+  if($(".countryMetadata").val() == "") {
+    $(".countryMetadata").val(data.country);
+  }
+
+  if($(".keywordsMetadata ").val() == "") {
+    $(".keywordsMetadata ").val(data.keywords);
+  }
 
 }
 
@@ -503,7 +512,9 @@ function getCGSpaceMetadata(channel,url,uri) {
               console.log(key + "-" + value);
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
+
             var sendDataJson = {};
+            sendDataJson.title = m.metadata['title'];
             sendDataJson.citation = m.metadata['identifier.citation'];
             var date = m.metadata['date.available'].split("T");
             sendDataJson.publicationDate = date[0];
@@ -512,6 +523,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.handle = m.metadata['identifier.uri'];
             sendDataJson.doi = m.metadata['identifier.doi'];
             sendDataJson.country = m.metadata['coverage.country'];
+            sendDataJson.keywords = m.metadata['subject'];
             setMetadata(sendDataJson);
 
             authorsByService([]);
@@ -566,8 +578,11 @@ function getDataverseMetadata(channel,url,uri) {
         console.log("success");
         if(m.status == "OK") {
 
+          console.log(m.data);
+
           // Setting Metadata
           setMetadata({
+              title: m.data.title,
               citation: '',
               publicationDate: m.data.timestamps.publicationdate,
               languaje: '',
@@ -577,6 +592,13 @@ function getDataverseMetadata(channel,url,uri) {
                   output += element.dsDescriptionValue;
                 })
                 return output;
+              },
+              keywords: function() {
+                var output = [];
+                $.each(m.data.metadata_blocks.citation.keyword, function(i,element) {
+                  output.push(element.keywordValue);
+                })
+                return output.join(', ');
               },
               handle: '',
               doi: data.persistentId
