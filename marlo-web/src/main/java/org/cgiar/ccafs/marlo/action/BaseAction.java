@@ -1634,7 +1634,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPhaseOne() {
-    if (crpSession.equals("ccafs")) {
+    if (this.isReportingActive() && crpSession.equals("ccafs")) {
       return true;
     } else {
       return false;
