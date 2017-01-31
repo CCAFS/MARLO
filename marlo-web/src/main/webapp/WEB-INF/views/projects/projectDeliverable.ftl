@@ -162,8 +162,8 @@
   <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox col-md-6"  style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if] 
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
-    <input class="idCrp" type="hidden" name="${customName}.crp.id" value="${(element.crp.id)!-1}" />
-    <input class="idFlagship" type="hidden" name="${customName}.crpProgram.id" value="${(element.crpProgram.id)!-1}" />
+    <input class="idCrp" type="hidden" name="${customName}.crpPandr.id" value="${(element.crp.id)!-1}" />
+    <input class="idFlagship" type="hidden" name="${customName}.ipProgram.id" value="${(element.crpProgram.id)!-1}" />
     <span class="name">${(element.crp.acronym)!'null'}-${(element.crpProgram.composedName)!'null'}</span>
     <div class="clearfix"></div>
   </div>

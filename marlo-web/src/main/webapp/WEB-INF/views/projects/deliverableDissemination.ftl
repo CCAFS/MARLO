@@ -95,18 +95,23 @@
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
 <div class="borderBox">
-  
+  <div class="form-group col-md-12">
+    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+  </div>
+  <div class="form-group col-md-12">
+    [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
+  </div>
   <div class="col-md-6">
     [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="language" encodedName="dc.language" type="input" require=true/]
+    [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
   </div>
   <div class="col-md-6">
     [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
   </div>
   <div class="col-md-6">
-    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=true/]
+    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
   </div>
     
   <div class="col-md-12">
@@ -218,17 +223,11 @@
       <div class="clearfix"></div>
     </div>
     [#if editable]
-    <div class="col-md-3">
-      [@customForm.select name="" label=""  i18nkey="Select CRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
+    <div class="col-md-5">
+      [@customForm.select name="" label=""  i18nkey="Select to add a CRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
     </div>
     <div class="col-md-7">
-      [@customForm.select name="" label=""  i18nkey="Select relevant Flaghsip" listName="" keyFieldName=""  displayFieldName=""  multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
-    </div>
-    <div class="col-md-2">
-    <br />
-    <div id="" class="addFlagship text-right">
-      <div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add" /]</div>
-    </div>
+      [@customForm.select name="" label=""  i18nkey="Select to add a CCAFS Flaghsip" listName="programs"   multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
     </div>
     [/#if] 
   </div>

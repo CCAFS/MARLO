@@ -147,19 +147,28 @@ function init() {
   });
 
   // Add many flagships
-  $(".addFlagship").on("click", function() {
-    var fOption = $(".flaghsipSelect").find("option:selected");
-    var crpOtion = $(".crpSelect").find("option:selected");
-    if(fOption.val() != "" && fOption.val() != "-1") {
-      if($(".flagshipList").find(".flagships input.id[value='" + fOption.val() + "']").exists()) {
+  $(".flaghsipSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "" && option.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idFlagship[value='" + option.val() + "']").exists()) {
       } else {
-        var composedText = crpOtion.text().toUpperCase() + "-" + fOption.text();
-        var v = composedText.length > 45 ? composedText.substr(0, 45) + ' ... ' : composedText;
-        addFlagship(fOption.val(), v, composedText, crpOtion.val());
+        var composedText = option.text().toUpperCase() + "-" + option.text();
+        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        addFlagship(option.val(), v, composedText, "");
       }
     }
   });
-  $(".crpSelect").on("change", flagshipService);
+  $(".crpSelect").on("change", function() {
+    var option = $(this).find("option:selected");
+    if(option.val() != "" && option.val() != "-1") {
+      if($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists()) {
+      } else {
+        var composedText = option.text().toUpperCase() + "-" + option.text();
+        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        addCrp("", v, composedText, option.val());
+      }
+    }
+  });
 
   // remove flagship
   $(".removeFlagship ").on("click", removeFlagship);
@@ -209,6 +218,20 @@ function init() {
 }
 
 function addFlagship(id,text,title,crpId) {
+  var $list = $('.flagshipList');
+  var $item = $('#flagship-template').clone(true).removeAttr("id");
+  $item.find(".name").text(text);
+  $item.find(".name").attr("title", title);
+  $item.find(".idElemento").val("-1");
+  $item.find(".idCrp").val(crpId);
+  $item.find(".idFlagship").val(id);
+  $list.append($item);
+  $item.show('slow');
+  checkNextFlagshipItems($list);
+  updateFlagship();
+}
+
+function addCrp(id,text,title,crpId) {
   var $list = $('.flagshipList');
   var $item = $('#flagship-template').clone(true).removeAttr("id");
   $item.find(".name").text(text);
@@ -317,27 +340,36 @@ function openAccessRestriction() {
 
 function setMetadata(data) {
   $("a[href='#deliverable-mainInformation']").addClass("hideInfo");
-  // if($(".citationMetadata").val() == "") {
-  $(".citationMetadata").val(data.citation).autoGrow();
-  // }
-  // if($("#deliverableMetadataDate").val() == "") {
-  $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
-  // }
-  // if($(".languageMetadata").val() == "") {
-  $(".languageMetadata").val(data.languaje);
-  // }
-  // if($(".descriptionMetadata").val() == "") {
-  $(".descriptionMetadata").val(data.description).autoGrow();
-  // }
-  // if($(".handleMetadata").val() == "") {
-  $(".handleMetadata").val(data.handle);
-  // }
-  // if($(".doiMetadata").val() == "") {
-  $(".doiMetadata").val(data.doi);
-  // }
-  // if($(".countryMetadata").val() == "") {
-  $(".countryMetadata").val(data.country);
-  // }
+  if($(".citationMetadata").val() == "") {
+    $(".citationMetadata").val(data.citation).autoGrow();
+  }
+  if($("#deliverableMetadataDate").val() == "") {
+    $("#deliverableMetadataDate").datepicker('setDate', data.publicationDate);
+  }
+  if($(".languageMetadata").val() == "") {
+    $(".languageMetadata").val(data.languaje);
+  }
+  if($(".titleMetadata").val() == "") {
+    $(".titleMetadata").val(data.title);
+  }
+
+  if($(".descriptionMetadata").val() == "") {
+    $(".descriptionMetadata").val(data.description).autoGrow();
+  }
+
+  if($(".HandleMetadata").val() == "") {
+    $(".HandleMetadata").val(data.handle);
+  }
+  if($(".DOIMetadata").val() == "") {
+    $(".DOIMetadata").val(data.doi);
+  }
+  if($(".countryMetadata").val() == "") {
+    $(".countryMetadata").val(data.country);
+  }
+
+  if($(".keywordsMetadata ").val() == "") {
+    $(".keywordsMetadata ").val(data.keywords);
+  }
 
 }
 
@@ -480,7 +512,9 @@ function getCGSpaceMetadata(channel,url,uri) {
               console.log(key + "-" + value);
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
+
             var sendDataJson = {};
+            sendDataJson.title = m.metadata['title'];
             sendDataJson.citation = m.metadata['identifier.citation'];
             var date = m.metadata['date.available'].split("T");
             sendDataJson.publicationDate = date[0];
@@ -489,6 +523,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.handle = m.metadata['identifier.uri'];
             sendDataJson.doi = m.metadata['identifier.doi'];
             sendDataJson.country = m.metadata['coverage.country'];
+            sendDataJson.keywords = m.metadata['subject'];
             setMetadata(sendDataJson);
 
             authorsByService([]);
@@ -543,8 +578,11 @@ function getDataverseMetadata(channel,url,uri) {
         console.log("success");
         if(m.status == "OK") {
 
+          console.log(m.data);
+
           // Setting Metadata
           setMetadata({
+              title: m.data.title,
               citation: '',
               publicationDate: m.data.timestamps.publicationdate,
               languaje: '',
@@ -554,6 +592,13 @@ function getDataverseMetadata(channel,url,uri) {
                   output += element.dsDescriptionValue;
                 })
                 return output;
+              },
+              keywords: function() {
+                var output = [];
+                $.each(m.data.metadata_blocks.citation.keyword, function(i,element) {
+                  output.push(element.keywordValue);
+                })
+                return output.join(', ');
               },
               handle: '',
               doi: data.persistentId
