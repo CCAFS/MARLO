@@ -19,7 +19,10 @@
   {"id":"4", "startDate":"12/07/2016 ", "endDate":"01/16/2017","what":"MARLO opens for planning (Project Leaders) ","who":"Project Leaders"},
   {"id":"5", "startDate":"12/19/2016", "endDate":"01/10/2017","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"Flagship Leaders and Regional Program Leaders"},
   {"id":"6", "startDate":"01/11/2017", "endDate":"01/13/2017","what":"PLs to make changes accordingly and submit the project","who":"Project Leaders"},
-  {"id":"5", "startDate":"01/16/2017", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"}
+  {"id":"5", "startDate":"01/16/2017", "endDate":"","what":"MARLO closes planning stage","who":"KDS Team"},
+  {"id":"7", "startDate":"02/01/2017", "endDate":"02/17/2017","what":"Project Leaders and Contact Pounts will be responsible to input detailed information regarding their projects for 2016.","who":""},
+  {"id":"8", "startDate":"02/20/2017", "endDate":"02/24/2017","what":"<small>Contact Points will be responsible to report on the CRP indicators and on any publications that are not directly linked to a particular project. <br>Regional Program Leaders will be responsible to complete the synthesis by MOG and by CCAFS Outcome, based on the information reported by Project Leaders.</small>","who":""},
+  {"id":"9", "startDate":"02/27/2017", "endDate":"03/03/2017","what":"Flagship Program Leaders will be responsible to report on the CRP indicators, synthesis by MOG and synthesis by CCAFS Outcome based on the information reported by project leaders and Regional Program leaders.","who":""}
 ]/]
 
 
@@ -64,11 +67,13 @@
                 <span class="endDate hidden">${time.endDate}</span>
                 <h1>[#if time.startDate?has_content]${((time.startDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if] [#if time.endDate?has_content]- ${((time.endDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if]</h1>
                 <hr />
-                <label for="">What?</label>
+                <label for="">What happen?</label>
                 <p> ${time.what}</p>
+                [#if (time.who?has_content)]
                 <hr />
                 <label for="">Who?</label>
                 <p>${time.who}</p>
+                [/#if]
               </li>
             [/#list]
             </ul> 
