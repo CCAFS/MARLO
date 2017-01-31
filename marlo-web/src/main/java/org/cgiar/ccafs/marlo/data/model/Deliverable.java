@@ -433,15 +433,18 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public long getID(int metadataID) {
 
-    for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata != null) {
-        if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
-          if (dmetadata.getMetadataElement().getId() == metadataID) {
-            return dmetadata.getId().longValue();
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              return dmetadata.getId().longValue();
+            }
           }
         }
-      }
 
+
+      }
 
     }
 
@@ -505,45 +508,50 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public String getMetadataValue(int metadataID) {
     String value = "";
-    for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata != null) {
-        if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
-          if (dmetadata.getMetadataElement().getId() == metadataID) {
-            value = dmetadata.getElementValue();
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement dmetadata : metadataElements) {
+        if (dmetadata != null) {
+          if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+            if (dmetadata.getMetadataElement().getId() == metadataID) {
+              value = dmetadata.getElementValue();
+            }
           }
         }
+
+
       }
-
-
     }
-
     return value;
   }
 
   public String getMetadataValue(String metadataName) {
-    for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData != null) {
-        if (mData.getMetadataElement() != null) {
-          if (mData.getMetadataElement().getElement().equals(metadataName)) {
-            return mData.getElementValue();
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement mData : metadataElements) {
+        if (mData != null) {
+          if (mData.getMetadataElement() != null) {
+            if (mData.getMetadataElement().getElement().equals(metadataName)) {
+              return mData.getElementValue();
+            }
           }
         }
-      }
 
+      }
     }
     return "";
   }
 
   public String getMetadataValueByEncondedName(String metadataName) {
-    for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData != null) {
-        if (mData.getMetadataElement() != null) {
-          if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
-            return mData.getElementValue();
+    if (metadataElements != null) {
+      for (DeliverableMetadataElement mData : metadataElements) {
+        if (mData != null) {
+          if (mData.getMetadataElement() != null) {
+            if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
+              return mData.getElementValue();
+            }
           }
         }
-      }
 
+      }
     }
     return "";
   }
