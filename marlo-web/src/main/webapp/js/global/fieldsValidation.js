@@ -144,16 +144,15 @@ function showHiddenTags(element) {
   if(errorList.length != 0) {
     if($(element).find(".errorTag").exists()) {
       // Tag with message
-      var tagElement = $(element).find(".errorTag");
+      var tagElement = $(element).find("span.errorTag");
       var left = $(element).outerWidth();
       var top = $(element).outerHeight();
+      console.log(element);
+      console.log(tagElement);
       console.log(left);
       console.log(top);
-      tagElement.offset({
-          top: (top / 2),
-          left: left
-      });
-      tagElement.fadeIn(2000);
+      tagElement.css("top", (top / 2));
+      tagElement.css("left", left);
     }
   }
 }
