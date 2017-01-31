@@ -1722,7 +1722,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isReportingActive() {
-    return true;
+
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
+
   }
 
   public boolean isSaveable() {
