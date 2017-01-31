@@ -1328,6 +1328,13 @@ public class DeliverableAction extends BaseAction {
       if (deliverableCrp.getId() == null || deliverableCrp.getId().intValue() == -1) {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
+
+        if (deliverableCrp.getIpProgram() != null) {
+          if (deliverableCrp.getIpProgram().getId() != null || deliverableCrp.getIpProgram().getId() != -1) {
+            deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+          }
+        }
+
         deliverableCrpManager.saveDeliverableCrp(deliverableCrp);
       }
     }
