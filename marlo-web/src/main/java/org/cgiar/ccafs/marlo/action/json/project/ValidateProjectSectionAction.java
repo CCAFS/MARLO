@@ -284,6 +284,12 @@ public class ValidateProjectSectionAction extends BaseAction {
               || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                 || a.getStatus().intValue() == 0))))
           .collect(Collectors.toList());
+        if (this.isReportingActive()) {
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
+        }
 
         for (Deliverable deliverable : openA) {
           sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
@@ -798,6 +804,13 @@ public class ValidateProjectSectionAction extends BaseAction {
           || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
             || a.getStatus().intValue() == 0))))
       .collect(Collectors.toList());
+
+    if (this.isReportingActive()) {
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+    }
 
     for (Deliverable deliverable : openA) {
 

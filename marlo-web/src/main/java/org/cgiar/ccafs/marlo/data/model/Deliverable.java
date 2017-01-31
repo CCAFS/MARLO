@@ -673,6 +673,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
       && status.intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
       return true;
     }
+    if (status != null && this.year == year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      return true;
+    }
 
     return false;
   }

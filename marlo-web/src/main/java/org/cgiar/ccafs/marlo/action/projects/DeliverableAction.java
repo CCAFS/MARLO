@@ -812,6 +812,10 @@ public class DeliverableAction extends BaseAction {
             status.remove(ProjectStatusEnum.Ongoing.getStatusId());
           }
         }
+      } else {
+        if (deliverable.getYear() <= this.getReportingYear()) {
+          status.remove(ProjectStatusEnum.Ongoing.getStatusId());
+        }
       }
 
       genderLevels = new HashMap<>();
