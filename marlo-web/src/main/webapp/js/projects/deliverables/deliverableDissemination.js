@@ -1,14 +1,9 @@
 $(document).ready(init);
 
 function init() {
-  $("a[href='#deliverable-mainInformation']").on('shown.bs.tab', function(e) {
-    $("a[href='#deliverable-mainInformation']").removeClass("hideInfo");
-// verifyMissingFields(".radio-block");
-// $(".radio-block").each(function(i,e) {
-//
-// });
-  });
+
   $("a[data-toggle='tab']").on('shown.bs.tab', function(e) {
+    $("#indexTab").val($(this).attr("index"));
     $(".radio-block").each(function(i,e) {
       showHiddenTags(e);
     });
