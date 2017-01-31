@@ -43,7 +43,14 @@
         [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]  
          
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
+          
             
+          [#-- Back --]
+          <small class="pull-right">
+            <a href="[@s.url action='${crpSession}/caseStudies'][@s.param name="projectID" value=project.id /][/@s.url]">
+              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project outcome case study
+            </a>
+          </small>
            
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudyInformation" /]</h3>
    
