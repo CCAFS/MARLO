@@ -640,7 +640,21 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public boolean isRequieriedReporting(int year) {
 
-    return true;
+    if (status == null && this.year <= year) {
+      return true;
+    }
+
+    if (status != null && this.year <= year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+      return true;
+    }
+
+    if (status != null && newExpectedYear != null && this.newExpectedYear <= year
+      && status.intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+      return true;
+    }
+
+    return false;
   }
 
 
