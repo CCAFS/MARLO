@@ -96,7 +96,7 @@
 
 <div class="borderBox">
   <div class="form-group col-md-12">
-    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group col-md-12">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
