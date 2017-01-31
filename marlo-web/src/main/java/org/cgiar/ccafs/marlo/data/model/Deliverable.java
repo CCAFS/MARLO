@@ -434,11 +434,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public long getID(int metadataID) {
 
     for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
-        if (dmetadata.getMetadataElement().getId() == metadataID) {
-          return dmetadata.getId().longValue();
+      if (dmetadata != null) {
+        if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+          if (dmetadata.getMetadataElement().getId() == metadataID) {
+            return dmetadata.getId().longValue();
+          }
         }
       }
+
 
     }
 
@@ -503,11 +506,14 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public String getMetadataValue(int metadataID) {
     String value = "";
     for (DeliverableMetadataElement dmetadata : metadataElements) {
-      if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
-        if (dmetadata.getMetadataElement().getId() == metadataID) {
-          value = dmetadata.getElementValue();
+      if (dmetadata != null) {
+        if (dmetadata.getMetadataElement() != null && dmetadata.getMetadataElement().getId() != null) {
+          if (dmetadata.getMetadataElement().getId() == metadataID) {
+            value = dmetadata.getElementValue();
+          }
         }
       }
+
 
     }
 
@@ -516,22 +522,28 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
   public String getMetadataValue(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData.getMetadataElement() != null) {
-        if (mData.getMetadataElement().getElement().equals(metadataName)) {
-          return mData.getElementValue();
+      if (mData != null) {
+        if (mData.getMetadataElement() != null) {
+          if (mData.getMetadataElement().getElement().equals(metadataName)) {
+            return mData.getElementValue();
+          }
         }
       }
+
     }
     return "";
   }
 
   public String getMetadataValueByEncondedName(String metadataName) {
     for (DeliverableMetadataElement mData : metadataElements) {
-      if (mData.getMetadataElement() != null) {
-        if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
-          return mData.getElementValue();
+      if (mData != null) {
+        if (mData.getMetadataElement() != null) {
+          if (mData.getMetadataElement().getEcondedName().equals(metadataName)) {
+            return mData.getElementValue();
+          }
         }
       }
+
     }
     return "";
   }
