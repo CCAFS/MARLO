@@ -141,7 +141,6 @@ function checkReusable() {
       $('.fairCompliant.reusable').addClass('achieved');
       console.log('here');
     } else {
-      console.log('or here');
       // Does this license allow modifications?
       if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
         $('.fairCompliant.reusable').addClass('achieved');

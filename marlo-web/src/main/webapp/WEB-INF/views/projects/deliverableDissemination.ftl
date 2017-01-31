@@ -96,7 +96,7 @@
 
 <div class="borderBox">
   <div class="form-group col-md-12">
-    [@metadataField title="title" encodedName="dc.title" type="input" require=true/]
+    [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
   <div class="form-group col-md-12">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
@@ -131,7 +131,7 @@
     [#if editable]
       <div class="col-md-12 note">[@s.text name = "To change an author's data, you must do double click on that field." /]</div>
     [/#if]
-    <label for="">Creator/Authors: <span class="red">*</span></label>
+    <label for="">Creator/Authors:  </label>
     <div class="authorsList simpleBox col-md-12" >
       [#if deliverable.users?has_content]
         [#list deliverable.users as author]

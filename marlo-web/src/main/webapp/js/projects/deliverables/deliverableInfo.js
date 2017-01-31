@@ -368,6 +368,12 @@ function justificationByStatus(statusId) {
 
   if(isStatusExtended(statusId) || (isStatusComplete(statusId) && ($('#newExpectedYear select').val() != ""))) {
     $('#newExpectedYear').show();
+    $('#newExpectedYear select').attr('disabled', false);
+    if(isStatusComplete(statusId) && ($('#newExpectedYear select').val() != "")) {
+      $('#newExpectedYear select').attr('disabled', true);
+    } else {
+      $('#newExpectedYear select').attr('disabled', false);
+    }
   } else {
     $('#newExpectedYear').hide();
   }
