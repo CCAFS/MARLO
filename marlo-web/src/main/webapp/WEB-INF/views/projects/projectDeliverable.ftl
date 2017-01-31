@@ -55,11 +55,9 @@
             
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="active"><a href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
-                [#if reportingActive]
                 <li role="presentation" class=""><a href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
                 <li role="presentation" class=""><a href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class="dataSharing" style="display:${(deliverable.dissemination?? && deliverable.dissemination.alreadyDisseminated?? && deliverable.dissemination.alreadyDisseminated)?string('none','block')};"><a href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
-                [/#if]
             </ul>
             
             <div class="tab-content col-md-12">
