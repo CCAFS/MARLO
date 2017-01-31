@@ -11,8 +11,8 @@
         <th id="deliverableEDY" title="[@s.text name="project.deliverableList.expectedYear" /]">Year</th>
         <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         <th id="deliverableStatus">[@s.text name="project.deliverableList.status" /]</th>
-        <th id="deliverableRF">[@s.text name="project.deliverableList.requiredFields" /]</th>
-        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>
+        <th id="deliverableRF">[@s.text name="project.deliverableList.requiredFields" /] </th>
+        <th id="deliverableDelete">[@s.text name="projectsList.delete" /]</th>  
       </tr>
     </thead>
     <tbody>
@@ -22,14 +22,22 @@
         <tr>
         [#-- ID --]
         <td class="deliverableId">
-          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">D${deliverable.id}</a>
+          <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">
+            D${deliverable.id}
+          </a>
         </td>
           [#-- Deliverable Title --]
           <td class="left">
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
+            [#if deliverable.isRequieriedReporting(currentCycleYear)] <small><span class="glyphicon glyphicon-record red" title="Required for this cycle"></span></small> [/#if]
             [#if deliverable.title?has_content]
                 <a href="[@s.url namespace=namespace action=defaultAction] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]" title="${deliverable.title}">
-                [#if deliverable.title?length < 120] ${deliverable.title}</a> [#else] [@utilities.wordCutter string=deliverable.title maxPos=120 /]...</a> [/#if]
+                [#if deliverable.title?length < 120] 
+                  ${deliverable.title}
+                [#else] 
+                  [@utilities.wordCutter string=deliverable.title maxPos=120 /]
+                [/#if]
+                </a> 
             [#else]
               [#if action.canEdit(deliverable.id)]
                 <a href="[@s.url namespace=namespace action=defaultAction includeParams='get'] [@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url] ">

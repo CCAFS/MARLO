@@ -16,11 +16,16 @@ $(document).ready(function() {
           $("#currentActivities_filter").prepend($("#addActivity"));
         }
       },
+      "order": [
+        [
+            3, 'asc'
+        ]
+      ],
       aoColumnDefs: [
           {
               bSortable: true,
               aTargets: [
-                  -1, -2, -4,
+                -1
               ]
           }, {
               sType: "natural",
