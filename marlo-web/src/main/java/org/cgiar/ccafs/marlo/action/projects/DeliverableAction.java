@@ -697,7 +697,7 @@ public class DeliverableAction extends BaseAction {
             if (deliverableCrp != null) {
               deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
               if (deliverableCrp.getIpProgram() != null) {
-                deliverableCrp.setCrpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
+                deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
               }
             }
           }
