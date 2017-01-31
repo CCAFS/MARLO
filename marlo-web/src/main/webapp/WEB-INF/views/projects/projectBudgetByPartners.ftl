@@ -19,7 +19,11 @@
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]</p>
+    <p class="col-md-10">
+      [#if !reportingActive]
+        [#if project.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+      [/#if]
+    </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>

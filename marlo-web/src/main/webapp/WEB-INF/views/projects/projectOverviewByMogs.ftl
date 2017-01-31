@@ -18,13 +18,7 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/global/macros/deliverableListTemplate.ftl" as deliverableList /]
 
-<div class="container helpText viewMore-block">
-  <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10">[#if reportingActive] [@s.text name="" /] [#else] [@s.text name="" /] [/#if] </p>
-  </div> 
-  <div style="display:none" class="viewMore closed"></div>
-</div>
+
     
 <section class="container">
     <div class="row">

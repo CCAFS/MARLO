@@ -27,7 +27,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrl}/images/global/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="projectCcafsOutcomes.help" /] </p>
+    <p class="col-md-10"> [@s.text name="projectOutcomes.help1" ] [@s.param] <a href="${baseUrl}/glossary.do" target="_blank">Glossary</a>[/@s.param][/@s.text]</p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
 </div>
