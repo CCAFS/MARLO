@@ -851,7 +851,7 @@ public class DeliverableAction extends BaseAction {
       programs = new HashMap<>();
       for (IpProgram program : ipProgramManager.findAll().stream().filter(c -> c.getIpProgramType().getId() == 4)
         .collect(Collectors.toList())) {
-        crps.put(program.getId().toString(), program.getAcronym());
+        programs.put(program.getId().toString(), program.getAcronym());
       }
 
       deliverableTypeParent = new ArrayList<>(deliverableTypeManager.findAll().stream()
