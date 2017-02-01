@@ -58,10 +58,18 @@ public class SummaryListAction extends BaseAction {
   public void prepare() throws Exception {
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
-    allProjects = loggedCrp.getProjects().stream()
-      .filter(
-        p -> p.isActive() && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
-      .collect(Collectors.toList());
+
+    if (this.isPlanningActive()) {
+      allProjects = loggedCrp.getProjects().stream()
+        .filter(p -> p.isActive() && p.getStatus() != null
+          && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+        .collect(Collectors.toList());
+    } else {
+      allProjects = loggedCrp.getProjects().stream()
+        .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+        .collect(Collectors.toList());
+    }
+
   }
 
   public void setAllProjects(List<Project> allProjects) {
