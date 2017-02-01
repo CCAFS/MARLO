@@ -2366,9 +2366,9 @@ margin: 0;
 }
 
 .helpMessage3 p {
-  /* padding: 1px; */
+  padding: 1px;
   /* color: #636368; */
-  /* margin-bottom: 5px; */
+  margin-bottom: 0px;
   /* width: 118%; */
 }
 
