@@ -284,7 +284,7 @@ public class DeliverableValidator extends BaseValidator {
 
             if (dissemination.getRestrictedAccessUntil() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-              action.getInvalidFields().put("input-deliverable.dissemination.restrictedUseAgreement",
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
@@ -432,24 +432,26 @@ public class DeliverableValidator extends BaseValidator {
         if (metadata.getCoAuthor().booleanValue()) {
           indicators = true;
         }
-     
 
-      if (!indicators) {
-        this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-        action.getInvalidFields().put("input-deliverable.publication.isiPublication", InvalidFieldsMessages.EMPTYFIELD);
-      }
 
-      if (metadata.getPublicationAcknowledge() == null) {
-        this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
-        action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
+        if (!indicators) {
+          this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
+          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (metadata.getPublicationAcknowledge() == null) {
+          this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
+          action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      } else {
+        this.addMessage(action.getText("project.deliverable.v.publication"));
+        action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
           InvalidFieldsMessages.EMPTYFIELD);
       }
-
-    } else {
-      this.addMessage(action.getText("project.deliverable.v.publication"));
-      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-        InvalidFieldsMessages.EMPTYFIELD);
     }
   }
-
 }
+
