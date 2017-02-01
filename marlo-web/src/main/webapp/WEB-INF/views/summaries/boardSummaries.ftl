@@ -12,6 +12,8 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+
+[#assign years = ["2014","2015", "2016","2017" ]/]
     
 <section class="container">
   <article id="" class="fullBlock col-md-12" > 
@@ -34,6 +36,15 @@
         <div class="summariesOption col-md-3">
           <input type="radio" name="cycle" id="reporting" value="Reporting"  disabled />
           <label for="reporting">[@s.text name="summaries.board.projectResearchCycle.reporting" /]</label>
+        </div>
+        <div class="col-md-3">
+        <label for="">Select a year</label>
+          <select name="" id="reportYear">
+            <option value="-1">Select an option...</option>
+          [#list years as year]
+            <option value="${(year)!}">${(year)!}</option>
+          [/#list]
+          </select>
         </div>
         <div class="clearfix"></div>
         <hr />
