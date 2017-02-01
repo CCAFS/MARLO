@@ -339,10 +339,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
         "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
-        "total_budget_projects"},
+        "total_budget_projects", "contract_name"},
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        Double.class},
+        Double.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -367,9 +367,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
       // TODO: Show link of contract
       String contract = "";
+      String contract_name = "";
 
       if (fundingSource.getFile() != null) {
         contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
+        contract_name = fundingSource.getFile().getFileName();
       }
 
       String status = "";
@@ -431,8 +433,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         total_budget_projects += projectBudget.getAmount();
       }
 
-      model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget,
-        summary, start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects});
+      model
+        .addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget, summary,
+          start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects, contract_name});
     }
     return model;
   }
