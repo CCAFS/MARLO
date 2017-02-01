@@ -240,21 +240,17 @@ public class FundingSourceAction extends BaseAction {
   }
 
 
-  private String getFundingSourceFilePath() {
-    String upload = config.getUploadsBaseFolder();
-    return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
-  }
-
-
   public String getFundingSourceFileURL() {
-    return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
+    return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
+
 
   public long getFundingSourceID() {
     return fundingSourceID;
   }
 
-  private String getFundingSourceRelativePath() {
+
+  public String getFundingSourceUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
 

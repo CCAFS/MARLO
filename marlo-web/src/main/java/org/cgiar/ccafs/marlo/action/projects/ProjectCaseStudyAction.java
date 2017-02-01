@@ -188,7 +188,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
   public String getCaseStudyUrl() {
-    return config.getDownloadURL() + "/" + this.getCaseStudyPath().replace('\\', '/');
+    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
   }
 
 
@@ -196,6 +196,7 @@ public class ProjectCaseStudyAction extends BaseAction {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "caseStudy" + File.separator;
   }
+
 
   public String getContentType() {
     return contentType;
