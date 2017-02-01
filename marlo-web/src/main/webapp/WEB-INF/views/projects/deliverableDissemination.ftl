@@ -38,6 +38,10 @@
   </div>
 </div>
 
+[#-- LICENSE  --]
+
+[@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
+
 [#-- FINDABLE --]
 <div class="simpleBox form-group">
   <div class=" row">
@@ -236,9 +240,4 @@
   </div>
  </div>
 </div>
-</div>
-[@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
-    <div class="clearfix"></div>
-    </div>
-  </div>
 </div>
