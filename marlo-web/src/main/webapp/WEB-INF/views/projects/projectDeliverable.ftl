@@ -233,7 +233,7 @@
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false value="true" cssClass="license text-center" /] 
+      [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] 
     </div>  
   </div>
   <hr />
