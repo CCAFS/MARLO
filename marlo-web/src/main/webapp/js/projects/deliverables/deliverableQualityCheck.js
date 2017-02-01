@@ -29,7 +29,7 @@ function init() {
   // checkGolData();
 
   // Validate FAIR Complain
-  checkFAIRCompliant();
+  // checkFAIRCompliant();
 }
 
 function changeOptions() {
