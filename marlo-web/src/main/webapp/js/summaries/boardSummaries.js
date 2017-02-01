@@ -5,7 +5,6 @@ var genderArray =
         "social differentiation", "social inclusion", "youth", "social class", "children", "child"
     ];
 var termsArray = [];
-
 var reportYear = $("#reportYear").find("option:selected").val();
 
 function init() {
@@ -15,6 +14,13 @@ function init() {
 }
 
 function attachEvents() {
+  if(reportYear == "-1") {
+    if($("input[name='cycle']").val() == "Planning") {
+      reportYear = $(".planningYear").text();
+    } else {
+      reportYear = $(".reportingYear").text();
+    }
+  }
 
   $("#reportYear").on("change", function() {
     reportYear = $(this).find("option:selected").val();
@@ -118,7 +124,7 @@ function attachEvents() {
 
   $(".project").on("click", function() {
     var report = $("#selectProject").parents(".summariesFiles");
-    console.log(report);
+    // console.log(report);
     $("input[name='projectID']").val($(this).attr("id"));
     var v = $(this).text().length > 16 ? $(this).text().substr(0, 16) + ' ... ' : $(this).text();
     $("#selectProject").attr("title", $(this).html());
@@ -260,7 +266,7 @@ function updateUrl(element) {
     if(extraOptions != 0) {
       generateUrl += '?' + extraOptions;
     }
-    console.log(reportYear);
+// console.log(reportYear);
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl);
   } else {
