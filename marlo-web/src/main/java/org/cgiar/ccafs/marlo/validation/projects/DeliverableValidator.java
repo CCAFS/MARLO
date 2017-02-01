@@ -284,7 +284,7 @@ public class DeliverableValidator extends BaseValidator {
 
             if (dissemination.getRestrictedAccessUntil() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-              action.getInvalidFields().put("input-deliverable.dissemination.restrictedUseAgreement",
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
@@ -415,8 +415,8 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       if (!(this.isValidString(metadata.getPages()) && this.wordCount(metadata.getPages()) <= 100)) {
-        this.addMessage(action.getText("project.deliverable.publication.v.pages"));
-        action.getInvalidFields().put("input-deliverable.publication.page", InvalidFieldsMessages.EMPTYFIELD);
+        // this.addMessage(action.getText("project.deliverable.publication.v.pages"));
+        // action.getInvalidFields().put("input-deliverable.publication.page", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
