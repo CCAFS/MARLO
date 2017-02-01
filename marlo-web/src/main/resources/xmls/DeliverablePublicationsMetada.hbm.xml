@@ -32,5 +32,8 @@
         <property name="coAuthor" type="java.lang.Boolean">
             <column name="co_author" />
         </property>
+        <property name="publicationAcknowledge" type="java.lang.Boolean">
+            <column name="publication_acknowledge" />
+        </property>
     </class>
 </hibernate-mapping>

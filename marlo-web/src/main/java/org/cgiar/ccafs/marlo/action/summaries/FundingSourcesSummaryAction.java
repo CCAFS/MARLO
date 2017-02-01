@@ -102,18 +102,23 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
     // Get parameters from URL
-    // Get year
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
 
     // Get cycle
     try {
       cycle = this.getRequest().getParameter("cycle");
     } catch (Exception e) {
       cycle = this.getCurrentCycle();
+    }
+
+    // Get year
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      if (cycle.equals("Planning")) {
+        year = this.getPlanningYear();
+      } else {
+        year = this.getReportingYear();
+      }
     }
     // Get datetime
     ZonedDateTime timezone = ZonedDateTime.now();
@@ -280,6 +285,19 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
   }
 
+  private String getFundingSourceFilePath() {
+    String upload = config.getUploadsBaseFolder();
+    return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
+  }
+
+  public String getFundingSourceFileURL() {
+    return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
+  }
+
+  private String getFundingSourceRelativePath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
+  }
+
   private TypedTableModel getFundingSourcesProjectsTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget"},
@@ -319,8 +337,14 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getFundingSourcesTableModel() {
     TypedTableModel model = new TypedTableModel(
-      new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget"},
-      new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class}, 0);
+      new String[] {"fs_title", "fs_id", "finance_code", "lead_partner", "fs_window", "project_id", "total_budget",
+        "summary", "start_date", "end_date", "contract", "status", "pi_name", "pi_email", "donor",
+        "total_budget_projects", "contract_name"},
+      new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Double.class, String.class},
+      0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
       .filter(fs -> fs.isActive() && fs.getStatus() != null && fs.getStatus().intValue() == 2)
@@ -330,6 +354,40 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       Long fs_id = fundingSource.getId();
       String finance_code = fundingSource.getFinanceCode();
       String lead_partner = "";
+      String summary = fundingSource.getDescription();
+      String start_date = "";
+      if (fundingSource.getStartDate() != null) {
+        start_date = formatter.format(fundingSource.getStartDate());
+      }
+      String end_date = "";
+
+      if (fundingSource.getEndDate() != null) {
+        end_date = formatter.format(fundingSource.getEndDate());
+      }
+
+      // TODO: Show link of contract
+      String contract = "";
+      String contract_name = "";
+
+      if (fundingSource.getFile() != null) {
+        contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
+        contract_name = fundingSource.getFile().getFileName();
+      }
+
+      String status = "";
+      status = fundingSource.getStatusName();
+
+      String pi_name = "";
+      pi_name = fundingSource.getContactPersonName();
+
+      String pi_email = "";
+      pi_email = fundingSource.getContactPersonEmail();
+
+      String donor = "";
+      if (fundingSource.getInstitution() != null) {
+        donor = fundingSource.getInstitution().getComposedName();
+      }
+
 
       for (FundingSourceInstitution fs_ins : fundingSource.getFundingSourceInstitutions()) {
         if (lead_partner.isEmpty()) {
@@ -362,6 +420,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
 
 
       Double total_budget = 0.0;
+      Double total_budget_projects = 0.0;
 
       for (FundingSourceBudget fundingSourceBudget : fundingSource.getFundingSourceBudgets().stream()
         .filter(fsb -> fsb.isActive() && fsb.getYear() != null && fsb.getYear().intValue() == year)
@@ -369,11 +428,17 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         total_budget += fundingSourceBudget.getBudget();
       }
 
-      model.addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget});
+      for (ProjectBudget projectBudget : fundingSource.getProjectBudgets().stream()
+        .filter(pb -> pb.isActive() && pb.getYear() == year && pb.getProject() != null).collect(Collectors.toList())) {
+        total_budget_projects += projectBudget.getAmount();
+      }
+
+      model
+        .addRow(new Object[] {fs_title, fs_id, finance_code, lead_partner, fs_window, project_id, total_budget, summary,
+          start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects, contract_name});
     }
     return model;
   }
-
 
   @Override
   public InputStream getInputStream() {

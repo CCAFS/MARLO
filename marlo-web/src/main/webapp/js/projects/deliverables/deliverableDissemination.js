@@ -79,11 +79,9 @@ function init() {
     $(this).addClass("radio-checked");
 
     if(!valueSelected) {
-      $(".licenseOptions").hide("slow");
-      $(".licenseOptions").parent().hide("slow");
+      $(".licenseOptions-block").hide("slow");
     } else {
-      $(".licenseOptions").show("slow");
-      $(".licenseOptions").parent().show("slow");
+      $(".licenseOptions-block").show("slow");
     }
     checkFAIRCompliant();
   });

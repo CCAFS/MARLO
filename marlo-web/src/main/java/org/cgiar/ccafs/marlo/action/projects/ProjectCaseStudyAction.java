@@ -188,7 +188,7 @@ public class ProjectCaseStudyAction extends BaseAction {
 
 
   public String getCaseStudyUrl() {
-    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
+    return config.getDownloadURL() + "/" + this.getCaseStudyPath().replace('\\', '/');
   }
 
 
@@ -309,7 +309,7 @@ public class ProjectCaseStudyAction extends BaseAction {
         if (caseStudy.getIndicators() != null) {
           for (CaseStudyIndicator caseStudyIndicator : caseStudy.getIndicators()) {
             caseStudyIndicator
-            .setIpIndicator(ipIndicatorManager.getIpIndicatorById(caseStudyIndicator.getIpIndicator().getId()));
+              .setIpIndicator(ipIndicatorManager.getIpIndicatorById(caseStudyIndicator.getIpIndicator().getId()));
 
           }
 
@@ -356,8 +356,8 @@ public class ProjectCaseStudyAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects =
           loggedCrp.getProjects().stream()
-          .filter(p -> p.isActive()
-            && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            .filter(p -> p.isActive()
+              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
           .collect(Collectors.toList());
         myProjects.remove(project);
       } else {

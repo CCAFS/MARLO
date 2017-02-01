@@ -15,8 +15,11 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
    * 
    */
   private static final long serialVersionUID = 1781447896817590575L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private Deliverable deliverable;
   @Expose
@@ -33,6 +36,8 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
   private Boolean nasr;
   @Expose
   private Boolean coAuthor;
+  @Expose
+  private Boolean publicationAcknowledge;
 
   public DeliverablePublicationMetadata() {
   }
@@ -106,6 +111,10 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
     return this.pages;
   }
 
+  public Boolean getPublicationAcknowledge() {
+    return publicationAcknowledge;
+  }
+
   public String getVolume() {
     return this.volume;
   }
@@ -146,6 +155,10 @@ public class DeliverablePublicationMetadata implements java.io.Serializable, IAu
 
   public void setPages(String pages) {
     this.pages = pages;
+  }
+
+  public void setPublicationAcknowledge(Boolean publicationAcknowledge) {
+    this.publicationAcknowledge = publicationAcknowledge;
   }
 
   public void setVolume(String volume) {

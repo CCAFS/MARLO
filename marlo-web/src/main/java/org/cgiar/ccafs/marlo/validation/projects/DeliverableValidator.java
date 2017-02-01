@@ -284,7 +284,7 @@ public class DeliverableValidator extends BaseValidator {
 
             if (dissemination.getRestrictedAccessUntil() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
-              action.getInvalidFields().put("input-deliverable.dissemination.restrictedUseAgreement",
+              action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
 
@@ -400,23 +400,13 @@ public class DeliverableValidator extends BaseValidator {
 
     }
 
-    if (deliverable.getPublicationMetadatas() != null && !deliverable.getPublicationMetadatas().isEmpty()) {
+    if (deliverable.getPublication() != null && deliverable.getPublication().getId() != -1) {
 
-      DeliverablePublicationMetadata metadata = deliverable.getPublicationMetadatas().get(0);
+      DeliverablePublicationMetadata metadata = deliverable.getPublication();
 
       if (!(this.isValidString(metadata.getVolume()) && this.wordCount(metadata.getVolume()) <= 100)) {
         this.addMessage(action.getText("project.deliverable.publication.v.volume"));
         action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      if (!(this.isValidString(metadata.getIssue()) && this.wordCount(metadata.getIssue()) <= 100)) {
-        this.addMessage(action.getText("project.deliverable.publication.v.issue"));
-        action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
-      }
-
-      if (!(this.isValidString(metadata.getPages()) && this.wordCount(metadata.getPages()) <= 100)) {
-        this.addMessage(action.getText("project.deliverable.publication.v.pages"));
-        action.getInvalidFields().put("input-deliverable.publication.page", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
@@ -424,11 +414,44 @@ public class DeliverableValidator extends BaseValidator {
         action.getInvalidFields().put("input-deliverable.publication.journal", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-    } else {
-      this.addMessage(action.getText("project.deliverable.v.publication"));
-      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-        InvalidFieldsMessages.EMPTYFIELD);
+      boolean indicators = false;
+
+      if (metadata.getIsiPublication() != null) {
+        if (metadata.getIsiPublication().booleanValue()) {
+          indicators = true;
+        }
+      }
+
+      if (metadata.getNasr() != null) {
+        if (metadata.getNasr().booleanValue()) {
+          indicators = true;
+        }
+      }
+
+      if (metadata.getCoAuthor() != null) {
+        if (metadata.getCoAuthor().booleanValue()) {
+          indicators = true;
+        }
+
+
+        if (!indicators) {
+          this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
+          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        if (metadata.getPublicationAcknowledge() == null) {
+          this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
+          action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+      } else {
+        this.addMessage(action.getText("project.deliverable.v.publication"));
+        action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
     }
   }
-
 }
+
