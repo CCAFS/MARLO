@@ -239,7 +239,7 @@
   <hr />
   [#if editable]
   [#-- Deliverable type computer software --]
-  <div class="radio-block">
+  <div class="radio-block" style="display:${deliverable.adoptedLicense?string("block","none")}">
   
   <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
     <div class="col-md-12">

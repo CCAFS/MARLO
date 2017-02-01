@@ -80,8 +80,10 @@ function init() {
 
     if(!valueSelected) {
       $(".licenseOptions").hide("slow");
+      $(".licenseOptions").parent().hide("slow");
     } else {
       $(".licenseOptions").show("slow");
+      $(".licenseOptions").parent().show("slow");
     }
     checkFAIRCompliant();
   });
