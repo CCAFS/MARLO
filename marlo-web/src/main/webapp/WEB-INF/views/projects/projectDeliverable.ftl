@@ -90,7 +90,6 @@
             </ul>
             
             
-            
             <div class="tab-content col-md-12">
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if] row">
                 
@@ -236,12 +235,13 @@
       [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] 
     </div>  
   </div>
-  <hr />
   [#if editable]
   [#-- Deliverable type computer software --]
-  <div class="radio-block" style="display:${deliverable.adoptedLicense?string("block","none")}">
+
+  <div class="radio-block licenseOptions-block" style="display:${((deliverable.adoptedLicense)!false)?string('block','none')}">
+  <hr />
   
-  <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
+  <div class="licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
     <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="MIT" [#if ((deliverable.licenseType) == "MIT")!false]checked="checked"[/#if]/> MIT License
     </div>

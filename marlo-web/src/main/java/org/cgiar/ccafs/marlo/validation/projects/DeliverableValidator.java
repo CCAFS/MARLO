@@ -432,7 +432,7 @@ public class DeliverableValidator extends BaseValidator {
         if (metadata.getCoAuthor().booleanValue()) {
           indicators = true;
         }
-      }
+     
 
       if (!indicators) {
         this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
