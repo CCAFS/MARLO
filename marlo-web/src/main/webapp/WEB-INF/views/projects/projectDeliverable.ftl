@@ -81,7 +81,7 @@
            <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
           <div class="deliverableTabs">      
           
-          [#--  Deliverable Menu  --] 
+            [#--  Deliverable Menu  --] 
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
                 [#if reportingActive]
@@ -91,34 +91,27 @@
                 [/#if]
             </ul>
             
-            
             <div class="tab-content ">
+              [#-- Deliverable Information --] 
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
-                
-                [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
               [#if reportingActive]
+              [#-- Deliverable disseminationMetadata --] 
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
-                
-                [#-- Deliverable disseminationMetadata --] 
                 [#include "/WEB-INF/views/projects/deliverableDissemination.ftl" /]
               </div>
-              
+              [#-- Deliverable qualityCheck --]
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
-               
-                [#-- Deliverable qualityCheck --]
                 [#include "/WEB-INF/views/projects/deliverableQualityCheck.ftl" /]
               </div>
-              
-              
+              [#-- Deliverable dataSharing --] 
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
-              
-                [#-- Deliverable dataSharing --] 
                 [#include "/WEB-INF/views/projects/deliverableDataSharing.ftl" /]
               </div>
               [/#if]
             </div>
+            
            </div>
           
           [#-- Section Buttons & hidden inputs--]

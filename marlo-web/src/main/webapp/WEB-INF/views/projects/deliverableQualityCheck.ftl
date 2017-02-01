@@ -146,16 +146,16 @@
     <div class="clearfix"></div>
   </div>
   
-</div>
+  </div> 
+
 </div>
 
-<br />
+
 
 [#-- Fair Compliant--]
 <h4 class="headTitle">FAIR Compliant</h4>
 
 <div class="simpleBox" > 
-   
   [#-- Findable --] 
   <div class="fairCompliant findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
     <div class="row">
@@ -214,6 +214,4 @@
       </div>
     </div>
   </div>
-  
-  
 </div>

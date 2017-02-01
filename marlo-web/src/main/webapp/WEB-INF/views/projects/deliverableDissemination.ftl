@@ -187,14 +187,10 @@
     </div>
     <label for="">Indicators for journal articles:<span class="red">*</span></label>
     [#if editable]
-    <div class="form-group">
-     <input type="checkbox" name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small>  
-    </div>
-    <div class="form-group">  
-     <input type="checkbox" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?
-    </div>
-    <div class="form-group">
-     <input type="checkbox" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?
+    <div class="checkbox">
+      <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
+      <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
+      <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
     </div>
     [#else]
       <p [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
@@ -202,19 +198,19 @@
       <p [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
     [/#if]
   <br />
-  <div class="row ">
+  </div>
+  
+  <div class="row">
+    <hr />
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] 
     </div> 
+    <hr />
   </div>
-  <hr />
   
   <div class="form-group">
     <label for="">Is this publication contributing to any other flagships?</label>
-  </div>
-  
-  <div class="form-group">
     <div class="">
       <div class="flagshipList simpleBox">
         [#if deliverable.crps?has_content]
@@ -225,7 +221,6 @@
           <p class="emptyText text-center "> [@s.text name="No Flagships added yet." /]</p> 
         [/#if]
       </div>
-      <div class="clearfix"></div>
     </div>
     [#if editable]
     <div class="row">
@@ -238,6 +233,6 @@
     </div>
     [/#if] 
   </div>
- </div>
 </div>
+
 </div>
