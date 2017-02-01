@@ -17,6 +17,7 @@ function init() {
     } else {
       $(this).addClass("fieldError");
     }
+    checkGolData();
 
     if($(this).val().length == 0) {
       $(this).removeClass("fieldError");
@@ -177,7 +178,9 @@ function checkQualityAssurance() {
     return 25;
   } else if(value == "2") {
     var fileInput = $(qualityAssurance).parents(".question").find(".fileID");
-    if(fileInput.val() != "" && fileInput.val() != "-1") {
+    var url = $(qualityAssurance).parents(".question").find(".urlLink");
+    if((fileInput.val() != "" && fileInput.val() != "-1")
+        || (url.val().indexOf("http://") == 0 || url.val().indexOf("https://") == 0) && url.val() != "") {
       return 50;
     } else {
       return 0;
@@ -194,7 +197,9 @@ function checkDictionary() {
     return 25;
   } else if(value == "2") {
     var fileInput = $(dataDictionary).parents(".question").find(".fileID");
-    if(fileInput.val() != "" && fileInput.val() != "-1") {
+    var url = $(dataDictionary).parents(".question").find(".urlLink");
+    if((fileInput.val() != "" && fileInput.val() != "-1")
+        || (url.val().indexOf("http://") == 0 || url.val().indexOf("https://") == 0) && url.val() != "") {
       return 50;
     } else {
       return 0;
@@ -211,7 +216,9 @@ function checkCollection() {
     return 25;
   } else if(value == "2") {
     var fileInput = $(dataTools).parents(".question").find(".fileID");
-    if(fileInput.val() != "" && fileInput.val() != "-1") {
+    var url = $(dataTools).parents(".question").find(".urlLink");
+    if((fileInput.val() != "" && fileInput.val() != "-1")
+        || (url.val().indexOf("http://") == 0 || url.val().indexOf("https://") == 0) && url.val() != "") {
       return 50;
     } else {
       return 0;
