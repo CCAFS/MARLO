@@ -454,3 +454,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 .radio-block {
     position: relative;
 }
+
+.licenseOptions-block {
+    padding-left: 24px;
+}
+
+div#deliverable-mainInformation {
+    padding: 5px 10px;
+}

@@ -14,6 +14,9 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 [#assign years = ["2014","2015", "2016","2017" ]/]
+
+<span class="hidden planningYear">${(action.getPlanningYear())!"holi"}</span>
+<span class="hidden reportingYear">${(action.getReportingYear())!"holi"}</span>
     
 <section class="container">
   <article id="" class="fullBlock col-md-12" > 

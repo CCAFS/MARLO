@@ -267,33 +267,6 @@ function checkNextFlagshipItems(block) {
   }
 }
 
-function flagshipService() {
-  $(".flaghsipSelect").empty();
-  $.ajax({
-      'url': baseURL + '/flaghshipsByCrpAction.do',
-      'type': "GET",
-      'data': {
-        crpID: $(this).find("option:selected").val()
-      },
-      'dataType': "json",
-      beforeSend: function() {
-      },
-      success: function(m) {
-        // console.log(m.flagships);
-        $(".flaghsipSelect").addOption("-1", "Select an otpion...");
-        $.each(m.flagships, function(i,e) {
-          $(".flaghsipSelect").addOption(e.id, e.description);
-        });
-
-        $(".flaghsipSelect").trigger("change.select2");
-      },
-      complete: function() {
-      },
-      error: function() {
-      }
-  });
-}
-
 function checkHandleUrl() {
   var input = $(this);
   $(input).removeClass("fieldError");
@@ -612,6 +585,8 @@ function getDataverseMetadata(channel,url,uri) {
 
           // Set Authors
           authorsByService(authors);
+
+          $('#metadata-output').empty().append("Found metadata for " + data.persistentId);
 
         } else {
           $('#metadata-output').empty().append("Invalid URL for searching metadata");

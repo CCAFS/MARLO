@@ -38,6 +38,10 @@
   </div>
 </div>
 
+[#-- LICENSE  --]
+
+[@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
+
 [#-- FINDABLE --]
 <div class="simpleBox form-group">
   <div class=" row">
@@ -99,33 +103,38 @@
   <div class="form-group ">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
-  <div class="col-md-6">
-    [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@metadataField title="date" encodedName="dc.date" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
+    </div>
   </div>
-  <div class="col-md-6">
-    [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
-  </div>
-  <div class="col-md-6">
-    [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
-  </div>
-    
-  <div class="col-md-12">
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@metadataField title="country" encodedName="cg:coverage.country" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
+    </div>
+  </div>  
+  <div class="form-group ">
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
-  <div class="col-md-6">
-    [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
+  <div class="form-group row">
+    <div class="col-md-6">
+      [@metadataField title="Handle" encodedName="marlo.handle" type="input" require=false/]
+    </div>
+    <div class="col-md-6">
+      [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
+    </div>
   </div>
-  <div class="col-md-6">
-    [@metadataField title="DOI" encodedName="marlo.doi" type="input" require=false/]
-  </div>
-  <div class="clearfix"></div>
+   
   <hr />
-  <div class="clearfix"></div>
+   
   [#-- Creator/Authors --]
-  <div class="col-md-12 form-group">
+  <div class="form-group">
     [#if editable]
       <div class="col-md-12 note">[@s.text name = "To change an author's data, you must do double click on that field." /]</div>
     [/#if]
@@ -231,9 +240,4 @@
   </div>
  </div>
 </div>
-</div>
-[@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
-    <div class="clearfix"></div>
-    </div>
-  </div>
 </div>

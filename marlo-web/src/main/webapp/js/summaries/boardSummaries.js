@@ -18,6 +18,13 @@ function attachEvents() {
 
   $("#reportYear").on("change", function() {
     reportYear = $(this).find("option:selected").val();
+    if(reportYear == "-1") {
+      if($("input[name='cycle']").val() == "Planning") {
+        reportYear = $(".planningYear").text();
+      } else {
+        reportYear = $(".reportingYear").text();
+      }
+    }
     if($(".summariesOptions").find(".selected").exists()) {
       updateUrl($(".summariesOptions").find(".selected"));
     }
@@ -254,9 +261,6 @@ function updateUrl(element) {
       generateUrl += '?' + extraOptions;
     }
     console.log(reportYear);
-    if(reportYear == "-1") {
-      reportYear = currentCycleYear;
-    }
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl);
   } else {
