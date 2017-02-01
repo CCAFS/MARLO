@@ -5,6 +5,9 @@ var genderArray =
         "social differentiation", "social inclusion", "youth", "social class", "children", "child"
     ];
 var termsArray = [];
+
+var reportYear = $("#reportYear").find("option:selected").val();
+
 function init() {
   addGenderTerms();
   addSelect2();
@@ -12,6 +15,13 @@ function init() {
 }
 
 function attachEvents() {
+
+  $("#reportYear").on("change", function() {
+    reportYear = $(this).find("option:selected").val();
+    if($(".summariesOptions").find(".selected").exists()) {
+      updateUrl($(".summariesOptions").find(".selected"));
+    }
+  });
 
   $("#gender").on("change", function() {
 
@@ -243,7 +253,11 @@ function updateUrl(element) {
     if(extraOptions != 0) {
       generateUrl += '?' + extraOptions;
     }
-    generateUrl += '&year=' + currentCycleYear;
+    console.log(reportYear);
+    if(reportYear == "-1") {
+      reportYear = currentCycleYear;
+    }
+    generateUrl += '&year=' + reportYear;
     setUrl(generateUrl);
   } else {
     setUrl('#');
