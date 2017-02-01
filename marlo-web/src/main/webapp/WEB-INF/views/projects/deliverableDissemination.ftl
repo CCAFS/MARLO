@@ -1,16 +1,14 @@
 [#ftl]
 [#-- ACCESSIBLE --]
-<div class="borderBox form-group">
+<div class="simpleBox form-group">
 <input type="hidden"  name="deliverable.dissemination.id" value="${(deliverable.dissemination.id)!"-1"}" />
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Is this deliverable Open Access?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.isOpenAccess"  editable=editable inverse=false cssClass="accessible text-center" /]  
     </div>
-  </div>
-  <div class="clearfix"></div>
-
-  <div class="col-md-12 openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
+  </div> 
+  <div class="openAccessOptions radio-block" style="display: ${((deliverable.dissemination.isOpenAccess)!false)?string("none","block")};">
     <hr />
     [#if editable] 
    <label for="">Select the Open Access restriction:<span class="red">*</span></label>
@@ -41,7 +39,7 @@
 </div>
 
 [#-- FINDABLE --]
-<div class="borderBox form-group">
+<div class="simpleBox form-group">
   <div class=" row">
     <span class="col-md-9">
       <label  for="">[@s.text name="Is this deliverable already disseminated? " /]</label>
@@ -94,11 +92,11 @@
 [#-- METADATA --]
 <h3 class="headTitle">[@s.text name="Deliverable Metadata" /]</h3>  
 
-<div class="borderBox">
-  <div class="form-group col-md-12">
+<div class="simpleBox">
+  <div class="form-group ">
     [@metadataField title="title" encodedName="dc.title" type="input" require=false/]
   </div>
-  <div class="form-group col-md-12">
+  <div class="form-group ">
     [@metadataField title="description" encodedName="dc.description.abstract" type="textArea" require=false/]
   </div>
   <div class="col-md-6">

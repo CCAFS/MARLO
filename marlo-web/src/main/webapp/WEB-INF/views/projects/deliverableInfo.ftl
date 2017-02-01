@@ -1,52 +1,55 @@
 [#ftl]
 [#-- Title input --] 
-<div class="col-md-12 form-group">
+<div class="form-group">
   [@customForm.input name="deliverable.title" value="${(deliverable.title)!}" type="text" i18nkey="project.deliverable.generalInformation.title"  placeholder="" className="limitWords-15" required=true editable=editable /]
 </div>
 
 [#-- Type and subtype inputs --] 
-  <div class="col-md-6 form-group">
+<div class="form-group row">
+  <div class="col-md-6 ">
     [@customForm.select name="deliverable.deliverableType.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
   </div>
-  <div class="col-md-6 form-group">
+  <div class="col-md-6">
     [@customForm.select name="deliverable.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
   </div>
+</div>
 [#-- Deliverable table with categories and sub categories --]
-<div class="col-md-12 deliverableTypeMessage">
+<div class="form-group deliverableTypeMessage">
   <div id="dialog" title="Deliverable types" style="display: none">
-      <table id="deliverableTypes" style="height:700px; width:950px;">
-        <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
-        <th> [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
-        [#if deliverableTypeParent?has_content]
-        [#list deliverableTypeParent as mt]
-          [#list action.getDeliverablesSubTypes(mt.id) as st]
-            [#if st_index == 0]
-            <tr>
-              <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
-                  <td> ${st.name} </td>
-                  <td> ${(st.description)!}</td>
-            </tr>
-            [#else]
-            <tr>
-              <td> ${st.name} </td>
-              <td> ${(st.description)!} </td>
-            </tr>
-            [/#if]
-          [/#list]
+    <table id="deliverableTypes" style="height:700px; width:950px;">
+      <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
+      <th> [@s.text name="project.deliverables.dialogMessage.part2" /] </th>
+      <th> [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
+      [#if deliverableTypeParent?has_content]
+      [#list deliverableTypeParent as mt]
+        [#list action.getDeliverablesSubTypes(mt.id) as st]
+          [#if st_index == 0]
+          <tr>
+            <th rowspan="${action.getDeliverablesSubTypes(mt.id).size()}" class="text-center"> ${mt.name} </th>
+                <td> ${st.name} </td>
+                <td> ${(st.description)!}</td>
+          </tr>
+          [#else]
+          <tr>
+            <td> ${st.name} </td>
+            <td> ${(st.description)!} </td>
+          </tr>
+          [/#if]
         [/#list]
-        [/#if]  
-      </table>
-    </div> <!-- End dialog-->
+      [/#list]
+      [/#if]  
+    </table>
+  </div> <!-- End dialog-->
     
-  <div class="fullBlock">
-    <div class="note left">
-      <div id="popup" class="helpMessage3">
-        <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
-      </div>
-      <p><small>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</small></p>
+   
+  <div class="note left">
+    <div id="popup" class="helpMessage3">
+      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.generalInformation.deliverableType" /]</a></p>
     </div>
-  </div>  
+    <p><small>[@s.text name="project.deliverable.generalInformation.disclaimerMessage" /]</small></p>
+  </div>
+  
+   
   <div class="clearfix"></div>
 </div>
 
@@ -105,14 +108,14 @@
 
 [#-- Key Outputs select --]
 [#if !project.administrative && !phaseOne]
-  <div class="col-md-12 form-group">
+  <div class="form-group">
     [@customForm.select name="deliverable.crpClusterKeyOutput.id" label=""  i18nkey="project.deliverable.generalInformation.keyOutput" listName="keyOutputs" keyFieldName="id"  displayFieldName="composedName"  multiple=false required=true  className="keyOutput" editable=editable/]
   </div>
 [/#if]
 
 [#-- Funding Source --]
 [#if !phaseOne]
-<div class="panel tertiary col-md-12">
+<div class="panel tertiary">
  <div class="panel-head"><label for=""> [@customForm.text name="project.deliverable.fundingSource" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="fundingSourceList" class="panel-body" listname="deliverable.fundingSources"> 
     <ul class="list">
@@ -139,11 +142,11 @@
 [/#if]
 
 
-<div class="form-group col-md-12">
+<div class="form-group">
   <h3 class="headTitle">Gender, social inclusion and/ or Youth Dimensions of the deliverable </h3>  
 </div>
 [#-- Does this deliverable have a cross-cutting dimension --]
-<div class="form-group col-md-12">
+<div class="form-group">
   <label for="">[@customForm.text name="deliverable.crossCuttingDimensions" readText=!editable/] [@customForm.req required=editable/]</label>
   <div class="row">
     <div class="col-md-12">
@@ -163,7 +166,7 @@
 </div>
 
 [#-- If gender dimension, select with ones --]
-<div id="gender-levels" class="panel tertiary col-md-12" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
+<div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
  <div class="panel-head"><label for=""> [@customForm.text name="deliverable.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
   <div id="genderLevelsList" class="panel-body" listname="deliverable.genderLevels"> 
     <ul class="list">
@@ -200,7 +203,7 @@
 
 
 [#-- Partners --] 
-<div id="deliverable-partnership" class="clearfix col-md-12">
+<div id="deliverable-partnership" class="form-group">
 <h3 class="headTitle">[@s.text name="Partners contributing to this deliverable" /]</h3>  
   <div class="fullBlock partnerWrapper">
     [#-- Partner who is responsible --]

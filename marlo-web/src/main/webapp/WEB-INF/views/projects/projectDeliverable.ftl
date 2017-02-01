@@ -92,8 +92,8 @@
             </ul>
             
             
-            <div class="tab-content col-md-12">
-              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if] row">
+            <div class="tab-content ">
+              <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
                 
                 [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
@@ -230,7 +230,7 @@
 [/#function]
 
 [#macro deliverableLicense title="" encodedName="" type="input" list="" require=false]
-<div class="borderBox">
+<div class="simpleBox">
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
