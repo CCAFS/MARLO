@@ -200,7 +200,7 @@
   <div class="row ">
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="acknowledge"  editable=editable inverse=false value="true" cssClass="acknowledge text-center" /] 
+      [@customForm.yesNoInput name="acknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] 
     </div> 
   </div>
   <hr />

@@ -232,11 +232,12 @@
   <div class=" row">
     <label class="col-md-9" for="">[@s.text name="Have you adopted a license?" /]</label>
     <div class="col-md-3">
-      [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false value="${((deliverable.adoptedLicense)!false)?string}" cssClass="license text-center" /] 
+      [@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] 
     </div>  
   </div>
   [#if editable]
   [#-- Deliverable type computer software --]
+
   <div class="radio-block licenseOptions-block" style="display:${((deliverable.adoptedLicense)!false)?string('block','none')}">
   <hr />
   

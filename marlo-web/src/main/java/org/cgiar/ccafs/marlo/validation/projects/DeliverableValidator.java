@@ -410,8 +410,8 @@ public class DeliverableValidator extends BaseValidator {
       }
 
       if (!(this.isValidString(metadata.getIssue()) && this.wordCount(metadata.getIssue()) <= 100)) {
-        this.addMessage(action.getText("project.deliverable.publication.v.issue"));
-        action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
+        // this.addMessage(action.getText("project.deliverable.publication.v.issue"));
+        // action.getInvalidFields().put("input-deliverable.publication.issue", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(metadata.getPages()) && this.wordCount(metadata.getPages()) <= 100)) {
