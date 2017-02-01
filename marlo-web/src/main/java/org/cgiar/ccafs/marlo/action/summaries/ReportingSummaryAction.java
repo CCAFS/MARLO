@@ -157,7 +157,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     // Calculate time to generate report
     long startTime = System.currentTimeMillis();
-    System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
+    // System.out.println("Inicia conteo en: " + (startTime - System.currentTimeMillis()));
 
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -342,7 +342,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     long elapsedTime = stopTime - startTime;
-    System.out.println("Tiempo de ejecución: " + elapsedTime);
+    // System.out.println("Tiempo de ejecución: " + elapsedTime);
     return SUCCESS;
 
   }
@@ -1450,7 +1450,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
     String global = "";
     if (project.getNoRegional()) {
-      global = "No regional programmatic focus";
+      global = "Global";
       model.addRow(new Object[] {global});
     }
 
