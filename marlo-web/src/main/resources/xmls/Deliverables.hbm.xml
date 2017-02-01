@@ -11,7 +11,11 @@
 		</id>
 		<many-to-one name="project"
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
-			<column name="project_id" not-null="true" />
+			<column name="project_id"  />
+			 </many-to-one>
+			   <many-to-one name="crp"
+      class="org.cgiar.ccafs.marlo.data.model.Crp" fetch="select">
+      <column name="crp_id"  />
 		</many-to-one>
 		<many-to-one name="deliverableType"
 			class="org.cgiar.ccafs.marlo.data.model.DeliverableType" fetch="select">
@@ -47,6 +51,9 @@
       <column name="allow_modifications" />
     </property>
     
+        <property name="isPublication" type="java.lang.Boolean">
+      <column name="is_publication" />
+    </property>
     
 		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />

@@ -1580,34 +1580,34 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       String channel = deliverableBD.getDissemination().getDisseminationChannel();
       String link = deliverableBD.getDissemination().getDisseminationUrl();
       if (channel == null || channel.equals("-1")) {
-        return false;
+        return null;
       }
       if (link == null || link.equals("-1") || link.isEmpty()) {
-        return false;
+        return null;
       }
 
       switch (channel) {
         case "cgspace":
           if (!this.validURL(link)) {
-            return false;
+            return null;
           }
           if (!link.contains("cgspace.cgiar.org")) {
-            return false;
+            return null;
           }
           break;
         case "dataverse":
           if (!link.contains("dataverse.harvard.edu")) {
             if (!this.validURL(link)) {
-              return false;
+              return null;
             }
-            return false;
+            return null;
           }
           break;
         case "other":
           return null;
 
         default:
-          return false;
+          return null;
 
       }
       return true;
