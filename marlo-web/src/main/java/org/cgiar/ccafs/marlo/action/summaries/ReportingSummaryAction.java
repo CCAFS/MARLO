@@ -269,11 +269,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         this.fillSubreport((SubReport) hm.get("Flagships"), "description_flagships", args);
         // Description Regions
 
-        if (hasRegions != false) {
-          args.clear();
-          args.add(regions);
-          this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
-        }
+        args.clear();
+        args.add(regions);
+        this.fillSubreport((SubReport) hm.get("Regions"), "description_regions", args);
+
         if (cycle.equals("Planning")) {
           // Description CoAs
           args.clear();
@@ -703,7 +702,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getccafsOutcomesTableModel() {
-    // TODO Auto-generated method stub
     TypedTableModel model = new TypedTableModel(
       new String[] {"program_outcome", "program_outcome_description", "indicator", "indicator_description", "year",
         "target_value", "target_cumulative", "target_achieved", "target_narrative", "target_achieved_narrative",
@@ -1450,6 +1448,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
+    String global = "";
+    if (project.getNoRegional()) {
+      global = "No regional programmatic focus";
+      model.addRow(new Object[] {global});
+    }
+
+
     for (CrpProgram crpProgram : regions) {
       model.addRow(new Object[] {crpProgram.getComposedName()});
     }
