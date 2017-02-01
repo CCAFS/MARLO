@@ -1049,6 +1049,7 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
 
         if (deliverable.getAdoptedLicense() != null) {
+          deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
           if (deliverable.getAdoptedLicense().booleanValue()) {
             deliverablePrew.setLicense(deliverable.getLicense());
             if (deliverable.getLicense() != null) {
@@ -1062,6 +1063,7 @@ public class DeliverableAction extends BaseAction {
             }
             deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
           } else {
+
             deliverablePrew.setLicense(null);
             deliverablePrew.setOtherLicense(null);
             deliverablePrew.setAllowModifications(null);
@@ -1163,7 +1165,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
