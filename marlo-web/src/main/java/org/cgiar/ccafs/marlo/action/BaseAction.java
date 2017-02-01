@@ -1616,7 +1616,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
 
-    return false;
+    return null;
 
   }
 
