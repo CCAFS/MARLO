@@ -370,7 +370,8 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       String contract_name = "";
 
       if (fundingSource.getFile() != null) {
-        contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
+        contract =
+          "https://marlo.cgiar.org/data/ccafs/projects/fundingSourceFiles/" + fundingSource.getFile().getFileName();
         contract_name = fundingSource.getFile().getFileName();
       }
 
