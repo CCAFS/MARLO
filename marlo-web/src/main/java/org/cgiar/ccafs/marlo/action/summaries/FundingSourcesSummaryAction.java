@@ -304,8 +304,7 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
       new Class[] {String.class, Long.class, String.class, String.class, String.class, String.class, Double.class}, 0);
 
     for (FundingSource fundingSource : loggedCrp.getFundingSources().stream()
-      .filter(fs -> fs.isActive() && fs.getStatus() != null && fs.getStatus().intValue() == 2)
-      .collect(Collectors.toList())) {
+      .filter(fs -> fs.isActive() && fs.getBudgetType() != null).collect(Collectors.toList())) {
 
       String fs_title = fundingSource.getTitle();
       Long fs_id = fundingSource.getId();
