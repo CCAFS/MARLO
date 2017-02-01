@@ -82,9 +82,11 @@
           [#--  Deliverable Menu  --] 
             <ul class="nav nav-tabs" role="tablist"> 
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
+                [#if reportingActive]
                 <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
                 <li role="presentation" class="[#if indexTab==3]active[/#if]"><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
                 <li role="presentation" class="dataSharing [#if indexTab==4]active[/#if]" style="display:${(deliverable.dissemination?? && deliverable.dissemination.alreadyDisseminated?? && deliverable.dissemination.alreadyDisseminated)?string('none','block')};"><a index="4" href="#deliverable-dataSharing" aria-controls="datasharing" role="tab" data-toggle="tab">Data Sharing</a></li>
+                [/#if]
             </ul>
             
             
@@ -95,7 +97,7 @@
                 [#-- Deliverable Information --] 
                 [#include "/WEB-INF/views/projects/deliverableInfo.ftl" /]
               </div>
-              
+              [#if reportingActive]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                 
                 [#-- Deliverable disseminationMetadata --] 
@@ -114,6 +116,7 @@
                 [#-- Deliverable dataSharing --] 
                 [#include "/WEB-INF/views/projects/deliverableDataSharing.ftl" /]
               </div>
+              [/#if]
             </div>
            </div>
           
