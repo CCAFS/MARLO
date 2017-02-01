@@ -42,24 +42,27 @@
            
           <h3 class="headTitle">[@s.text name="Project Deliverables" /]</h3>  
 
+          [#--  FAIR LEGEND --]
           <div class="form-group col-md-12 legendContent">
-          
-          
-          <div class="col-md-6 explanation">
-            <div class="col-md-12 form-group "><b>FAIR:</b></div>
-            <div class="form-group col-md-6 "><span>F</span> Findable </div>
-            <div class="form-group col-md-6 "><span>A</span> Accessible</div>
-            <div class="form-group col-md-6 "><span>I</span> Interoperable</div>
-            <div class="form-group col-md-6 "><span>R</span> Reusable</div>
+            <div class="col-md-12"></div>
+            <div class="col-md-6 explanation">
+              <div class="col-md-12 form-group "><b>FAIR:</b></div>
+              <div class="form-group col-md-6 "><span>F</span> Findable </div>
+              <div class="form-group col-md-6 "><span>A</span> Accessible</div>
+              <div class="form-group col-md-6 "><span>I</span> Interoperable</div>
+              <div class="form-group col-md-6 "><span>R</span> Reusable</div>
+            </div>
+            <div class="col-md-6 colors">
+              <div class="col-md-12 form-group "><b>FAIR colors:</b></div>
+              <div class="form-group col-md-6 fair"><span id="achieved"></span> Achieved </div>
+              <div class="form-group col-md-6 fair"><span id="notAchieved"></span> Not achieved</div>
+              <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
+            </div>
           </div>
-          <div class="col-md-6 colors">
-            <div class="col-md-12 form-group "><b>FAIR colors:</b></div>
-            <div class="form-group col-md-6 fair"><span id="achieved"></span> Achieved </div>
-            <div class="form-group col-md-6 fair"><span id="notAchieved"></span> Not achieved</div>
-            <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
-          </div>
-         </div>
            <h3 class="subTitle headTitle">On going deliverables</h3>
+           [#if reportingActive]
+             <p class="note">Please focus on those deliverables expected to be reported in ${currentCycleYear}, which are tagged with <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span> at the bedining of the title. </p>
+           [/#if]
            <hr />
            <div style="">[@deliverableList.deliverablesList deliverables=action.getDeliverables(true) canValidate=true canEdit=candit namespace="/projects" defaultAction="${(crpSession)!}/deliverable"/]</div> 
                      
