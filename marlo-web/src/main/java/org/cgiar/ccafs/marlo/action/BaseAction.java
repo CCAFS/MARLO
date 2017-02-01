@@ -1642,17 +1642,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActive() {
-
-    try {
-      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
-        .filter(c -> c.getKey().equals(APConstants.CRP_PLANNING_ACTIVE)).collect(Collectors.toList()).get(0)
-        .getValue()) == 1;
-    } catch (Exception e) {
-      return false;
-    }
-
-
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString()) == 1;
   }
 
   public Boolean isProjectNew(long projectID) {
@@ -1735,15 +1725,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isReportingActive() {
 
-
-    try {
-      // return Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString()) == 1;
-      return Integer.parseInt(crpManager.getCrpById(this.getCrpID()).getCrpParameters().stream()
-        .filter(c -> c.getKey().equals(APConstants.CRP_REPORTING_ACTIVE)).collect(Collectors.toList()).get(0)
-        .getValue()) == 1;
-    } catch (Exception e) {
-      return false;
-    }
+    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString()) == 1;
 
   }
 
