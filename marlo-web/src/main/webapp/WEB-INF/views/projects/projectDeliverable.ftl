@@ -263,7 +263,7 @@
       <input type="radio" name="deliverable.license" id="" value="CC_PUBLIC" [#if ((deliverable.licenseType) == "CC_PUBLIC")!false]checked="checked"[/#if]/> CC Public Domain Dedication (CC0 1.0)
 
     </div>
-    <div class="col-md-12" style="display:none;">
+    <div class="col-md-12">
       <input type="radio" name="deliverable.license" id="" value="OPEN_DATA" [#if ((deliverable.licenseType) == "OPEN_DATA")!false]checked="checked"[/#if]/> Open Data Commons (ODC)
     </div>
     <div class="clearfix"></div>
