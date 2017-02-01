@@ -1603,7 +1603,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             return false;
           }
           break;
-        case "others":
+        case "other":
           return null;
 
         default:
