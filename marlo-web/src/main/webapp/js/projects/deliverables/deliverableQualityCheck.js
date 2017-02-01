@@ -30,7 +30,7 @@ function init() {
   // checkGolData();
 
   // Validate FAIR Complain
-  checkFAIRCompliant();
+  // checkFAIRCompliant();
 }
 
 function changeOptions() {
@@ -90,20 +90,27 @@ function uploadFile($uploadBlock,$fileUpload,type) {
 /** FAIR Functions* */
 
 function checkFiandable() {
+  var $fairCompliant = $('.fairCompliant.findable');
   // If the deliverables is disseminated
   if($('.findable input').val() == "true") {
-    $('.fairCompliant.findable').addClass('achieved');
+    $fairCompliant.addClass('achieved');
+  } else {
+    $fairCompliant.addClass('not-achieved');
   }
 }
 
 function checkAccessible() {
+  var $fairCompliant = $('.fairCompliant.accessible');
   // Is this deliverable Open Access?
   if($('.accessible input').val() == "true") {
-    $('.fairCompliant.accessible').addClass('achieved');
+    $fairCompliant.addClass('achieved');
+  } else {
+    $fairCompliant.addClass('not-achieved');
   }
 }
 
 function checkInteroperable() {
+  var $fairCompliant = $('.fairCompliant.interoperable');
   // If the deliverables is disseminated
   if($('.findable input').val() == "true") {
     var channelSelected = $('select.disseminationChannel').val();
@@ -116,44 +123,49 @@ function checkInteroperable() {
         // If CGSpace
         if((channelSelected == "cgspace")) {
           if(inputURL.indexOf("cgspace") >= 0) {
-            $('.fairCompliant.interoperable').addClass('achieved');
+            $fairCompliant.addClass('achieved');
           }
         }
         // If Dataverse
         if((channelSelected == "dataverse")) {
           if(inputURL.indexOf("dataverse") >= 0) {
-            $('.fairCompliant.interoperable').addClass('achieved');
+            $fairCompliant.addClass('achieved');
           }
         }
-
       }
+    } else if((channelSelected == "other")) {
+      // If other
+
     }
   }
 }
 
 function checkReusable() {
+  var $fairCompliant = $('.fairCompliant.reusable');
   // If has the deliverable adopted a license
   if($('.license input').val() == "true") {
     // If is different to "Other"
     var inputChecked = $('input[name="deliverable.license"]:checked').val();
-    console.log(inputChecked);
     if(!(typeof inputChecked === "undefined")
         && !((inputChecked == "OTHER") || (inputChecked == "CC_BY_ND") || (inputChecked == "CC_BY_NC_ND"))) {
-      $('.fairCompliant.reusable').addClass('achieved');
-      console.log('here');
+      $fairCompliant.addClass('achieved');
     } else {
       // Does this license allow modifications?
       if(($('.licenceModifications input').val() == "true") && ($('input.otherLicense').val() != "")) {
-        $('.fairCompliant.reusable').addClass('achieved');
+        $fairCompliant.addClass('achieved');
+      } else {
+        $fairCompliant.addClass('not-achieved');
       }
     }
+  } else {
+    $fairCompliant.addClass('not-achieved');
   }
 
 }
 
 function checkFAIRCompliant() {
   console.log('Check FAIR compliant');
-  $('.fairCompliant').removeClass('achieved');
+  $('.fairCompliant').removeClass('achieved not-achieved');
   checkFiandable();
   checkAccessible();
   checkInteroperable();

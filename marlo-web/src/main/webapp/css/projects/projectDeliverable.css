@@ -223,6 +223,8 @@ p.noChecked {
 
 .fairCompliant.achieved .sign{background: #8ea786;}
 
+.fairCompliant.not-achieved .sign{background: #D32F2F;}
+
 .fairCompliant.achieved strong{
     opacity: 1;
 }

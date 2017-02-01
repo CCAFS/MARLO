@@ -157,7 +157,7 @@
 <div class="simpleBox" > 
    
   [#-- Findable --] 
-  <div class="fairCompliant findable">
+  <div class="fairCompliant findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">F</div>
@@ -172,7 +172,7 @@
   </div>
   
   [#-- Accessible --] 
-  <div class="fairCompliant accessible">
+  <div class="fairCompliant accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">A</div>
@@ -187,7 +187,7 @@
   </div>
   
   [#-- Interoperable --] 
-  <div class="fairCompliant interoperable">
+  <div class="fairCompliant interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">I</div>
@@ -202,7 +202,7 @@
   </div>
   
   [#-- Reusable --] 
-  <div class="fairCompliant reusable">
+  <div class="fairCompliant reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
     <div class="row">
       <div class="col-md-2">
         <div class="sign">R</div>
