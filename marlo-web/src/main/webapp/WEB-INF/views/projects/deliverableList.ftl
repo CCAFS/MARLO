@@ -44,7 +44,7 @@
 
           [#--  FAIR LEGEND --]
           <div class="form-group col-md-12 legendContent">
-            <div class="col-md-12"></div>
+            <div class="col-md-12 fairDiagram" >Please click here to display a diagram which describes how MARLO is identifying the FAIR compliance</div>
             <div class="col-md-6 explanation">
               <div class="col-md-12 form-group "><b>FAIR:</b></div>
               <div class="form-group col-md-6 "><span>F</span> Findable </div>
@@ -59,6 +59,10 @@
               <div class="form-group col-md-6 fair"><span id="notDefined"></span> Not defined</div>
             </div>
           </div>
+          <div id="diagramPopup" style="display:none; text-align:center;">
+          <img src="${baseUrl}/images/global/FAIR_diagram.jpg" alt="" />
+          </div>
+          
            <h3 class="subTitle headTitle">On going deliverables</h3>
            [#if reportingActive]
              <p class="note">Please focus on those deliverables expected to be reported in ${currentCycleYear}, which are tagged with <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span> at the bedining of the title. </p>

@@ -2,6 +2,8 @@ $(document).ready(function() {
 
   var $deliverableList = $('table.deliverableList');
 
+  $(".fairDiagram").on("click", openDialog);
+
   var table = $deliverableList.DataTable({
       "bPaginate": true, // This option enable the table pagination
       "bLengthChange": true, // This option disables the select table size option
@@ -36,3 +38,13 @@ $(document).ready(function() {
       ]
   });
 });
+
+function openDialog() {
+  $("#diagramPopup").dialog({
+      title: 'FAIR Diagram',
+      width: '990',
+      heigth: '100%',
+      modal: true,
+      closeText: ""
+  });
+}
