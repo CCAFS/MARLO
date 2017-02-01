@@ -462,3 +462,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
 div#deliverable-mainInformation {
     padding: 5px 10px;
 }
+
+.fairDiagram {
+    padding: 5px 10px;
+    text-align: center;
+    font-style: italic;
+    cursor: pointer;
+}
