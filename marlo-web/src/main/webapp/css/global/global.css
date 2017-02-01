@@ -4174,14 +4174,15 @@ margin: 0;}
 }
 
 #disseminationUrl div.input{
-  float:left;
-  width: 75%;
+  /* float:left; */
+  /* width: 75%; */
 }
 #disseminationUrl div#fillMetadata{
-  float: right;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  /* float: right; */
+  /* position: absolute; */
+  /* right: 0; */
+  /* bottom: 0; */
+  text-align: center;
 }
 
 .checkButton{

@@ -39,7 +39,6 @@
 </div>
 
 [#-- LICENSE  --]
-
 [@deliverableLicense title="" encodedName="" type="input" list="" require=false/]
 
 [#-- FINDABLE --]
@@ -56,40 +55,42 @@
   
   <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
     <hr />
-    <div class="col-md-12 note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
-    <div class="row">
+    <div class="note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
+    <div class="form-group row">
       <div class="col-md-4">
-      [#if editable]
-        [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="Select a dissemination channel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
-      [#else]
-      <label for="disChannel" style="display:block;">Dissemination channel:</label>
-      <p>Prefilled if available</p>
-      [/#if]
+        [#if editable]
+          [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="Select a dissemination channel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+        [#else]
+        <label for="disChannel" style="display:block;">Dissemination channel:</label>
+        <p>${(deliverable.dissemination.disseminationChannel)!'Prefilled if available'}</p>
+        [/#if]
       </div>
-      [#-- CGSpace examples & instructions --]
-      <div class="exampleUrl-block channel-cgspace col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
-        <label for="">Example of URL:</label>
-        <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
-      </div>
-      [#-- Dataverse examples & instructions --]
-      <div class="exampleUrl-block channel-dataverse col-md-8" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
-        <label for="">Example of URL:</label>
-        <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
+      <div class="col-md-8">
+        [#-- CGSpace examples & instructions --]
+        <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
+          <label for="">Example of URL:</label>
+          <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
+        </div>
+        [#-- Dataverse examples & instructions --]
+        <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
+          <label for="">Example of URL:</label>
+          <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
+        </div>
       </div>
     </div>
-    
+     
     <div id="disseminationUrl" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other")]block[#else]none[/#if];">
-      [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl col-md-11" required=true editable=editable /]
-      [#if editable]
-      <div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Sync</div>
-      [/#if]
-      <div class="clearfix"></div>
+      <div class="form-group row"> 
+        <div class="col-md-10">
+          [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+        </div>
+        <div class="col-md-2">
+          <br />
+          [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Sync</div>[/#if]
+        </div>
+      </div>
     </div>
-    <div id="metadata-output" class="col-md-12"></div>
-    <div style="display:none;">
-      [@customForm.input name="" value="" type="text" i18nkey="Deliverable URL"  placeholder="" className="" required=true editable=editable /]
-    </div>
-    <div class="clearfix"></div>
+    <div id="metadata-output"></div>
   </div>
 </div>
 
@@ -148,19 +149,11 @@
     </div>
     [#if editable]
     <div class="form-group row">
+      <div class="col-md-3"><input class="form-control input-sm lName" placeholder="Last Name" type="text" /> </div>
+      <div class="col-md-3"><input class="form-control input-sm fName" placeholder="First Name" type="text" /> </div>
+      <div class="col-md-3"><input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> </div>
       <div class="col-md-3">
-        <input class="form-control input-sm lName" placeholder="Last Name" type="text" /> 
-      </div>
-      <div class="col-md-3">
-        <input class="form-control input-sm fName" placeholder="First Name" type="text" /> 
-      </div>
-      <div class="col-md-3">
-        <input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> 
-      </div>
-      <div class="col-md-3">
-        <div id="" class="addAuthor text-right">
-          <div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add author" /]</div>
-        </div>
+        <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add author" /]</div></div>
       </div>
     </div>
     [/#if] 
@@ -169,36 +162,36 @@
 <div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
   <br />
   <h4 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h4>
-  <div class="">
-    <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
-    <div class="form-group row">
-      <div class="col-md-4">
-        [@customForm.input name="deliverable.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
-      </div>
-      <div class="col-md-4">
-        [@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=false editable=editable /]
-      </div>
-      <div class="col-md-4">
-        [@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=false editable=editable /]
-      </div>
+   
+  <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
+  <div class="form-group row">
+    <div class="col-md-4">
+      [@customForm.input name="deliverable.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
-    <div class="form-group">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
+    <div class="col-md-4">
+      [@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=false editable=editable /]
     </div>
-    <label for="">Indicators for journal articles:<span class="red">*</span></label>
-    [#if editable]
-    <div class="checkbox">
-      <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
-      <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
-      <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
+    <div class="col-md-4">
+      [@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=false editable=editable /]
     </div>
-    [#else]
-      <p [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
-      <p [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
-      <p [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
-    [/#if]
-  <br />
   </div>
+  <div class="form-group">
+    [@customForm.input name="deliverable.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
+  </div>
+  <div class="form-group">
+    <label for="">Indicators for journal articles:<span class="red">*</span></label>
+    <div class="checkbox">
+      [#if editable]
+        <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
+        <label for="nasr"><input type="checkbox" id="nasr" name="deliverable.publication.nasr" value="true" [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]checked[/#if]/>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</label>
+        <label for="coAuthor"><input type="checkbox" id="coAuthor" name="deliverable.publication.coAuthor" value="true" [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]checked[/#if] />Does this article have a co-author based in an Earth System Science-related academic department?</label>
+      [#else]
+        <p [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]class="checked">[#else]class="noChecked ">[/#if]Tick this box if this journal article is an ISI publication (check at http://ip-science.thomsonreuters.com/mjl/ for the list)</p>
+        <p [#if deliverable.publication?? && deliverable.publication.nasr?? && deliverable.publication.nasr]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author from a developing country National Agricultural Research System (NARS) ?</p>
+        <p [#if deliverable.publication?? && deliverable.publication.coAuthor?? && deliverable.publication.coAuthor]class="checked"[#else]class="noChecked"[/#if]>Does this article have a co-author based in an Earth System Science-related academic department?</p>
+      [/#if]
+    </div>
+  </div> 
   
   <div class="row">
     <hr />
@@ -233,6 +226,7 @@
     </div>
     [/#if] 
   </div>
+  
 </div>
 
 </div>
