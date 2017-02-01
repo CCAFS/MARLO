@@ -311,7 +311,7 @@ p.noChecked {
   background: -ms-radial-gradient(center, ellipse cover, rgba(216,82,82,1) 0%,rgba(217,117,118,1) 32%,rgba(209,49,55,1) 49%,rgba(205,59,64,1) 71%,rgba(200,70,78,1) 100%);
   background: radial-gradient(ellipse at center, rgba(216,82,82,1) 0%,rgba(217,117,118,1) 32%,rgba(209,49,55,1) 49%,rgba(205,59,64,1) 71%,rgba(200,70,78,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d85252', endColorstr='#c8464e',GradientType=1 );
-  opacity: 0.5;
+  opacity: 0.15;
   border-radius: 20px;
   width: 22px;
   height: 22px;
@@ -348,7 +348,7 @@ p.noChecked {
   background: -ms-radial-gradient(center, ellipse cover, rgba(248,197,96,1) 0%,rgba(247,189,53,1) 50%,rgba(234,152,10,1) 51%,rgba(238,154,10,1) 100%);
   background: radial-gradient(ellipse at center, rgba(248,197,96,1) 0%,rgba(247,189,53,1) 50%,rgba(234,152,10,1) 51%,rgba(238,154,10,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8c560', endColorstr='#ee9a0a',GradientType=1 );
-  opacity: 0.5;
+  opacity: 0.15;
   border-radius: 20px;
   width: 22px;
   height: 22px;
@@ -386,7 +386,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fceabb', end
   background: -ms-radial-gradient(center, ellipse cover, rgba(118,217,65,1) 0%,rgba(61,152,16,1) 50%,rgba(118,217,65,1) 100%);
   background: radial-gradient(ellipse at center, rgba(118,217,65,1) 0%,rgba(61,152,16,1) 50%,rgba(118,217,65,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#76d941', endColorstr='#76d941',GradientType=1 );
-  opacity: 0.5;
+  opacity: 0.15;
   border-radius: 20px;
   width: 22px;
   height: 22px;

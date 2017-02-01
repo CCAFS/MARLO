@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Funding Sources" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${fundingSource.id}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/fundingSources/fundingSource.js", "${baseUrl}/js/global/autoSave.js" ] /]
 [#assign customCSS = ["${baseUrl}/css/fundingSources/fundingSource.css"] /]
 [#assign currentSection = "fundingSources" /]
@@ -174,23 +174,43 @@
           </div>
           <br />
           <h5 class="sectionSubTitle">Projects</h5>
+          
+          <table class="table">
+          <thead>
+           <tr>
+            <th>Project ID</th>
+            <th>Project title</th>
+            <th>Lead partner</th>
+            <th>Budget type</th>
+            <th>Budget amount</th>
+           </tr>
+          </thead>
+          
+         <tbody>
+          
           [#assign counter = 0 /]
           [#list fundingSource.projectBudgetsList as projectBudget]
             [#if projectBudget.year == year]
-            <div class="grayBox col-md-12 borderBox">
-              <div class="col-md-12 pContributionTitle form-group">${(projectBudget.project.composedName)!'null'}</div>
-              <div class="col-md-5 form-group">
-                <span class="col-md-2"><b>Type:</b></span>
-                <span class="col-md-5">${projectBudget.budgetType.name}</span>
-              </div>
-              <div class="col-md-7">
-                <span class="col-md-2"><b>Amount:</b></span>
-                <span class="col-md-5 currencyInput">US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")} </span>
-              </div>
-            </div>
+             <tr>
+              <td>
+                <a href="[@s.url action="${crpSession}/budgetByPartners" namespace="/projects"] [@s.param name="projectID" value="${(projectBudget.project.id)!}"/] [/@s.url]">
+                  P${(projectBudget.project.id)!}              
+                </a>
+              </td>
+              <td class="col-md-5">${(projectBudget.project.title)!}</td>
+              <td> ${(projectBudget.institution.acronym)!(projectBudget.institution.name)} </td>
+              <td>${projectBudget.budgetType.name}</td>
+              <td>US$ <span>${((projectBudget.amount)!0)?number?string(",##0.00")}</td>
+             </tr>
             [#assign counter = counter + 1 /]
             [/#if]
           [/#list]
+          
+          </tbody>
+          
+          </table>
+          
+          
           [#if counter = 0 ]
             <p class="messageText">No projects adopting this funding source for ${year}.</p>
           [/#if] 

@@ -193,14 +193,14 @@
     </div>
   </div> 
   
+  <hr />
   <div class="row">
-    <hr />
     <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] 
     </div> 
-    <hr />
   </div>
+  <hr />
   
   <div class="form-group">
     <label for="">Is this publication contributing to any other flagships?</label>

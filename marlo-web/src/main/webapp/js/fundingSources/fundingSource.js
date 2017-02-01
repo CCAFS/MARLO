@@ -5,6 +5,9 @@ function init() {
   // Popup
   popups();
 
+  // Add Data Table
+  addDataTable();
+
   // Lead partner
   $(".institution").on("change", function() {
     var option = $(this).find("option:selected");
@@ -248,4 +251,27 @@ function date(start,end) {
 
     return date;
   }
+}
+
+function addDataTable() {
+  $('table').dataTable({
+      "bPaginate": false, // This option enable the table pagination
+      "bLengthChange": true, // This option disables the select table size option
+      "bFilter": true, // This option enable the search
+      "bSort": true, // this option enable the sort of contents by columns
+      "bAutoWidth": true, // This option enables the auto adjust columns width
+      "iDisplayLength": 100,// Number of rows to show on the table
+      "language": {
+        "emptyTable": "No projects adopting this funding source."
+      },
+      aoColumnDefs: [
+        {
+            bSortable: false,
+            aTargets: [
+
+            ]
+        }
+      ]
+  });
+
 }
