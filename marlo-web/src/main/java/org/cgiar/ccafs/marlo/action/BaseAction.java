@@ -1616,7 +1616,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
 
-    return false;
+    return null;
 
   }
 
@@ -1743,7 +1743,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
