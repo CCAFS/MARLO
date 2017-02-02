@@ -5,7 +5,7 @@
   <package name="publications" namespace="/publications" extends="marlo-default">
 
     <!-- Publications not directly linked to a Project Lists -->
-    <action name="{crp}/publicationsList" class="org.cgiar.ccafs.marlo.action.publications.PublicalionListAction">
+    <action name="{crp}/publicationsList" class="org.cgiar.ccafs.marlo.action.publications.PublicationListAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/publications/publicationsList.ftl</result>
     </action>

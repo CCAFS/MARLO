@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
-public class PublicalionListAction extends BaseAction {
+public class PublicationListAction extends BaseAction {
 
   /**
    * 
@@ -36,7 +36,7 @@ public class PublicalionListAction extends BaseAction {
   private CrpManager crpManager;
 
   @Inject
-  public PublicalionListAction(APConfig config, CrpManager crpManager) {
+  public PublicationListAction(APConfig config, CrpManager crpManager) {
 
     super(config);
     this.crpManager = crpManager;
