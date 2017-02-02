@@ -210,10 +210,6 @@
           
           </table>
           
-          
-          [#if counter = 0 ]
-            <p class="messageText">No projects adopting this funding source for ${year}.</p>
-          [/#if] 
           </div>
         [/#list] 
       </div>

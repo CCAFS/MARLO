@@ -44,7 +44,7 @@
 
           [#--  FAIR LEGEND --]
           <div class="form-group col-md-12 legendContent">
-            <div class="col-md-12 fairDiagram" >Please click here to display a diagram which describes how MARLO is identifying the FAIR compliance</div>
+            <div class="col-md-12 fairDiagram" >Please <u>click here</u> to display a diagram which describes how MARLO is identifying the FAIR compliance</div>
             <div class="col-md-6 explanation">
               <div class="col-md-12 form-group "><b>FAIR:</b></div>
               <div class="form-group col-md-6 "><span>F</span> Findable </div>
