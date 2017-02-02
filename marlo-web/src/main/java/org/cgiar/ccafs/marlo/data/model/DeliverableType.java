@@ -39,7 +39,13 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
   @Expose
   private Integer timeline;
 
+  @Expose
+  private Boolean fair;
+
+
   private Set<DeliverableType> deliverableTypes = new HashSet<DeliverableType>(0);
+
+
   private Set<Deliverable> deliverables = new HashSet<Deliverable>(0);
 
   public DeliverableType() {
@@ -69,6 +75,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public String getDescription() {
     return this.description;
+  }
+
+  Boolean getFair() {
+    return fair;
   }
 
   @Override
@@ -126,6 +136,10 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  void setFair(Boolean fair) {
+    this.fair = fair;
   }
 
   public void setId(Long id) {
