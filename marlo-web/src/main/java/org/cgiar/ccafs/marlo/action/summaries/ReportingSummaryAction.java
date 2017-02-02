@@ -36,6 +36,8 @@ import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
+import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -67,6 +69,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,6 +153,75 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.projectBudgetManager = projectBudgetManager;
     this.locElementManager = locElementManager;
     this.ipElementManager = ipElementManager;
+  }
+
+  public String calculateAcumulativeTarget(int year, IpProjectIndicator id) {
+
+    int acumulative = 0;
+
+    try {
+      for (IpProjectIndicator indicators : project.getProjectIndicators()) {
+        if (indicators != null) {
+          if (id.getIpIndicator().getIpIndicator() != null) {
+            if (indicators.getYear() <= year && indicators.getIpIndicator().getIpIndicator().getId().longValue() == id
+              .getIpIndicator().getIpIndicator().getId().longValue()) {
+              if (indicators.getTarget() == null) {
+                indicators.setTarget("0");
+              }
+              if (indicators.getTarget() != null) {
+                if (!indicators.getTarget().equals("")) {
+                  try {
+                    acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                  } catch (NumberFormatException e) {
+                    return "Cannot be Calculated";
+                  }
+                }
+              }
+            }
+          } else {
+            if (indicators.getYear() <= year && indicators.getIpIndicator() != null
+              && indicators.getIpIndicator().getId() != null
+              && indicators.getIpIndicator().getId().longValue() == id.getIpIndicator().getId().longValue()) {
+              if (indicators.getTarget() == null) {
+                indicators.setTarget("0");
+              }
+              if (indicators.getTarget() != null) {
+
+                if (!indicators.getTarget().equals("")) {
+                  try {
+                    acumulative = acumulative + Integer.parseInt(indicators.getTarget());
+                  } catch (NumberFormatException e) {
+                    return "Cannot be Calculated";
+                  }
+                }
+              }
+            }
+          }
+        }
+
+
+      }
+    } catch (Exception e) {
+      return "Cannot be Calculated";
+    }
+    return String.valueOf(acumulative);
+  }
+
+  public boolean containsOutput(long outputID, long outcomeID) {
+
+    if (project.getMogs() != null) {
+      for (IpElement output : project.getMogs()) {
+
+        IpElement outputDB = ipElementManager.getIpElementById(output.getId());
+        if (outputDB != null && outputDB.getId().longValue() == outputID) {
+
+
+          return true;
+
+        }
+      }
+    }
+    return false;
   }
 
   @Override
@@ -469,6 +541,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   /**
    * Get all subreports and store then in a hash map.
    * If it encounters a band, search subreports in the band
@@ -633,7 +706,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getBudgetsbyPartnersTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"year", "institution", "w1w2", "w3", "bilateral", "center", "institution_id", "p_id", "w1w2Gender",
@@ -702,39 +774,125 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getccafsOutcomesTableModel() {
+    // TODO:
     TypedTableModel model = new TypedTableModel(
-      new String[] {"program_outcome", "program_outcome_description", "indicator", "indicator_description", "year",
-        "target_value", "target_cumulative", "target_achieved", "target_narrative", "target_achieved_narrative",
-        "achieved_annual_gender", "annual_gender"},
+      new String[] {"program_outcome", "program_outcome_description", "indicator", "indicator_description",
+        "ipProjectIndicatoryear", "target_value", "target_cumulative", "target_achieved", "target_narrative",
+        "target_achieved_narrative", "achieved_annual_gender", "annual_gender", "is_current", "showOutcome",
+        "showIndicator", "showOutputs", "outputs"},
       new Class[] {String.class, String.class, String.class, String.class, Integer.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
+        Boolean.class, Boolean.class, String.class},
       0);
-    String program_outcome = "", program_outcome_description = "", indicator = "", indicator_description = "",
-      target_value = "", target_cumulative = "", target_achieved = "", target_narrative = "",
-      target_achieved_narrative = "", achieved_annual_gender = "", annual_gender = "";
-    int year = 0;
 
 
+    // Get list of outcomes
+    Set<IpElement> outcomesList = new HashSet<>();
     for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream().filter(i -> i.isActive())
       .collect(Collectors.toList())) {
       IpElement ipElement = ipElementManager.getIpElementById(ipProjectIndicator.getOutcomeId());
-      program_outcome = ipElement.getIpProgram().getAcronym() + " - Outcome " + APConstants.MID_OUTCOME_YEAR;
-      program_outcome_description = ipElement.getDescription();
-      indicator = "Indicator #" + ipProjectIndicator.getIpIndicator().getId();
-      indicator_description = ipProjectIndicator.getIpIndicator().getDescription();
-
-      year = ipProjectIndicator.getYear();
-
-
+      outcomesList.add(ipElement);
     }
 
 
-    model.addRow(new Object[] {program_outcome, program_outcome_description, indicator, indicator_description, year,
-      target_value, target_cumulative, target_achieved, target_narrative, target_achieved_narrative,
-      achieved_annual_gender, annual_gender});
+    System.out.println(outcomesList.size());
+    System.out.println(APConstants.MID_OUTCOME_YEAR);
+    //
+    for (IpElement outcome : outcomesList) {
+      System.out.println(outcome.getId());
+      Boolean showOutcome = true;
+
+      // Get list of indicators
+      Set<IpIndicator> indicatorsList = new HashSet<>();
+      for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream()
+        .filter(i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue() && (i.getYear() == year
+          || i.getYear() == year - 1 || i.getYear() == year + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
+        .collect(Collectors.toList())) {
+        indicatorsList.add(ipProjectIndicator.getIpIndicator());
+      }
+
+      int ultimoIndicator = indicatorsList.size();
+      int ultimoIndicatorCount = 0;
+      Boolean showOutputs = false;
+      int indicator_number = 0;
+      for (IpIndicator ipIndicator : indicatorsList) {
+        indicator_number++;
+        ultimoIndicatorCount++;
+        Boolean showIndicator = true;
+        int ultimoProjectIndicator = (int) project.getIpProjectIndicators().stream()
+          .filter(i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue()
+            && i.getIpIndicator() == ipIndicator && (i.getYear() == year || i.getYear() == year - 1
+              || i.getYear() == year + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
+          .count();
+        int ultimoProjectIndicatorCount = 0;
+        for (IpProjectIndicator ipProjectIndicator : project.getIpProjectIndicators().stream()
+          .filter(i -> i.isActive() && i.getOutcomeId() == outcome.getId().intValue()
+            && i.getIpIndicator() == ipIndicator && (i.getYear() == year || i.getYear() == year - 1
+              || i.getYear() == year + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
+          .collect(Collectors.toList())) {
+          ultimoProjectIndicatorCount++;
+
+          String program_outcome = "", program_outcome_description = "", indicator = "", indicator_description = "",
+            target_value = "", target_cumulative = "", target_narrative = "", target_achieved_narrative = "",
+            achieved_annual_gender = "", annual_gender = "", outputs = "";
+          int ipProjectIndicatoryear = 0;
+          Double target_achieved = 0.0;
+          Boolean is_current = false;
+
+          if (outcome.getIpProgram() != null) {
+            program_outcome = outcome.getIpProgram().getAcronym() + "Outcome " + APConstants.MID_OUTCOME_YEAR;
+          }
+
+          if (outcome.getDescription() != null) {
+            program_outcome_description = outcome.getDescription();
+          }
+          if (ipProjectIndicator.getIpIndicator() != null) {
+            indicator_description = this.getIndicatorDescription(ipProjectIndicator.getIpIndicator());
+            indicator = "Indicator #" + indicator_number;
+          }
+
+          ipProjectIndicatoryear = ipProjectIndicator.getYear();
+
+          if (ipProjectIndicator.getTarget() != null) {
+            target_value = ipProjectIndicator.getTarget();
+          }
+
+          target_cumulative = this.calculateAcumulativeTarget(ipProjectIndicator.getYear(), ipProjectIndicator);
+          if (ipProjectIndicator.getArchived() != null) {
+            target_achieved = ipProjectIndicator.getArchived();
+          }
+
+          target_narrative = ipProjectIndicator.getDescription();
+          target_achieved_narrative = ipProjectIndicator.getNarrativeTargets();
+          achieved_annual_gender = ipProjectIndicator.getNarrativeGender();
+          annual_gender = ipProjectIndicator.getGender();
+
+          if (ipProjectIndicator.getYear() == year) {
+            is_current = true;
+          }
+
+          if (ultimoProjectIndicatorCount == ultimoProjectIndicator && ultimoIndicatorCount == ultimoIndicator) {
+            showOutputs = true;
+            List<IpElement> outputsList = this.getMidOutcomeOutputs(outcome.getId());
+
+            for (IpElement ipElement : outputsList) {
+              outputs += ipElement.getIpProgram().getAcronym() + ": " + ipElement.getDescription() + "<br><br>";
+            }
+
+          }
+
+          model.addRow(new Object[] {program_outcome, program_outcome_description, indicator, indicator_description,
+            ipProjectIndicatoryear, target_value, target_cumulative, target_achieved, target_narrative,
+            target_achieved_narrative, achieved_annual_gender, annual_gender, is_current, showOutcome, showIndicator,
+            showOutputs, outputs});
+          showOutcome = false;
+          showIndicator = false;
+        }
+      }
+    }
+
     return model;
   }
-
 
   @Override
   public int getContentLength() {
@@ -869,7 +1027,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getDescCoAsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"description"}, new Class[] {String.class}, 0);
 
@@ -881,7 +1038,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
-
 
   private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
@@ -993,6 +1149,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private File getFile(String fileName) {
 
     // Get file from resources folder
@@ -1000,6 +1157,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -1038,6 +1196,17 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         this.getBandSubreports(hm, (Band) e);
       }
     }
+  }
+
+  public String getIndicatorDescription(IpIndicator ipIndicator) {
+
+    if (ipIndicator.getIpIndicator() != null) {
+      this.getIndicatorDescription(ipIndicator.getIpIndicator());
+    } else {
+      return ipIndicator.getDescription();
+    }
+
+    return "";
   }
 
   @Override
@@ -1205,6 +1374,45 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+  public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
+    List<IpProjectContribution> ipProjectContributions =
+      project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    project.setMogs(new ArrayList<>());
+    for (IpProjectContribution ipProjectContribution : ipProjectContributions) {
+      project.getMogs().add(ipProjectContribution.getIpElementByMogId());
+    }
+    List<IpElement> outputs = new ArrayList<>();
+    IpElement midOutcome = ipElementManager.getIpElementById(midOutcomeID);
+
+    if (this.isRegionalOutcome(midOutcome)) {
+      List<IpElement> mogs = new ArrayList<>();
+
+      List<IpElement> translatedOf =
+        ipElementManager.getIPElementsRelated(midOutcome.getId().intValue(), APConstants.ELEMENT_RELATION_TRANSLATION);
+
+      for (IpElement fsOutcome : translatedOf) {
+        mogs.addAll(ipElementManager.getIPElementsByParent(fsOutcome, APConstants.ELEMENT_RELATION_CONTRIBUTION));
+        for (IpElement mog : mogs) {
+          if (!outputs.contains(mog)) {
+            outputs.add(mog);
+          }
+        }
+      }
+    } else {
+      outputs = ipElementManager.getIPElementsByParent(midOutcome, APConstants.ELEMENT_RELATION_CONTRIBUTION);
+
+    }
+
+    List<IpElement> elements = new ArrayList<>();
+    elements.addAll(outputs);
+    for (IpElement ipElement : elements) {
+      if (!this.containsOutput(ipElement.getId(), midOutcomeID)) {
+        outputs.remove(ipElement);
+      }
+    }
+    return outputs;
+
+  }
 
   private TypedTableModel getOutcomesTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -1270,6 +1478,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
+
 
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
@@ -1373,7 +1582,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return projectID;
   }
 
-
   private TypedTableModel getProjectOtherOutcomesTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"out_statement", "year"}, new Class[] {String.class, Integer.class}, 0);
@@ -1390,6 +1598,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
+
 
   private TypedTableModel getProjectOutcomesTableModel() {
 
@@ -1436,10 +1645,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   public String getProjectOutcomeUrl() {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
+
 
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
@@ -1498,7 +1707,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return totalGender;
   }
 
-
   /**
    * Get total gender percentaje per institution, year and type
    * 
@@ -1521,6 +1729,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       return 0.0;
     }
   }
+
 
   /**
    * Get the total budget per year and type
@@ -1566,6 +1775,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
     return false;
+  }
+
+  public boolean isRegionalOutcome(IpElement outcome) {
+
+    List<IpElement> translatedOf =
+      ipElementManager.getIPElementsRelated(outcome.getId().intValue(), APConstants.ELEMENT_RELATION_TRANSLATION);
+    return !translatedOf.isEmpty();
   }
 
   @Override
