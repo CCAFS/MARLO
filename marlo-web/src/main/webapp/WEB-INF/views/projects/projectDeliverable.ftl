@@ -272,30 +272,43 @@
     [#else]
       [#-- Deliverable type computer software --]
       <div class=" licenseOptions computerLicense" style="display:[#if deliverable.deliverableType?? && deliverable.deliverableType.id==52 ]block [#else]none[/#if];">
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "MIT"]class="checked"[#else]class="noChecked"[/#if]>MIT License</p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "GNU"]class="checked"[#else]class="noChecked"[/#if]>GNU General Public License</p>
+        [#if deliverable.licenseType?? && deliverable.licenseType == "MIT"]<p class="checked">MIT License</p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "GNU"]<p class="checked">GNU General Public License</p>[/#if]
       </div>
       
       [#-- Deliverable type data --]
       <div class=" licenseOptions dataLicense" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_LICENSES"]class="checked"[#else]class="noChecked"[/#if]>CC licenses version 4.0</p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_PUBLIC"]class="checked"[#else]class="noChecked"[/#if]>CC Public Domain Dedication (CC0 1.0)</p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "OPEN_DATA"]class="checked"[#else]class="noChecked"[/#if]>Open Data Commons (ODC)</p>
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_LICENSES"]<p class="checked">CC licenses version 4.0</p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_PUBLIC"]<p class="checked">CC Public Domain Dedication (CC0 1.0)</p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "OPEN_DATA"]<p class="checked">Open Data Commons (ODC)</p>[/#if]
       </div>
       
       [#-- Deliverable type other research types --]
       <div class="licenseOptions" style="display:block;">
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY"]class="checked"[#else]class="noChecked"[/#if]>CC-BY <small>(allow modifications and commercial use)</small></p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_SA"]class="checked"[#else]class="noChecked"[/#if]>CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_ND"]class="checked"[#else]class="noChecked"[/#if]>CC-BY-ND <small>(allow commercial use but no modifications)</small></p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC"]class="checked"[#else]class="noChecked"[/#if]>CC-BY-NC <small>(allow modifications but no commercial use)</small></small></p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_SA"]class="checked"[#else]class="noChecked"[/#if]>CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></p>
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_ND"]class="checked"[#else]class="noChecked"[/#if]>CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></small></p>
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY"]<p class="checked">CC-BY <small>(allow modifications and commercial use)</small></p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_SA"]<p class="checked">CC-BY-SA <small>(allow modifications as long as other share alike and commercial use)</small></p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_ND"]<p class="checked">CC-BY-ND <small>(allow commercial use but no modifications)</small></p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC"]<p class="checked">CC-BY-NC <small>(allow modifications but no commercial use)</small></small></p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_SA"]<p class="checked">CC-BY-NC-SA <small>(allow modifications as long as other share alike, but no commercial use)</small></p>[/#if]
+        [#if deliverable.licenseType?? && deliverable.licenseType == "CC_BY_NC_ND"]<p class="checked">CC-BY-NC-ND <small>(don't allow modifications neither commercial use)</small></small></p>[/#if]
       </div>
       [#-- Other --]
       <div class="licenseOptions">
-        <p [#if deliverable.licenseType?? && deliverable.licenseType == "OTHER"]class="checked"[#else]class="noChecked"[/#if]> Other </p>
+        [#if deliverable.licenseType?? && deliverable.licenseType == "OTHER"]<p class="checked"> Other </p>[/#if]
+        
+        <div class="form-group row">
+          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
+            [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
+          </div>
+          <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
+            <label class="col-md-6" for="">Does this license allows modifications?</label>
+            <div class="col-md-6">
+              [@customForm.yesNoInput name="deliverable.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
+            </div>  
+          </div>
+        </div>
       </div>
+       
     [/#if]
   </div>
   

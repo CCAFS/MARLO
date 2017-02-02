@@ -372,6 +372,8 @@ public class ProjectDescriptionAction extends BaseAction {
     } catch (Exception e) {
 
     }
+    // SendMailGun s = new SendMailGun();
+    // s.SendSimple();
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -845,6 +847,7 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_CLUSTER_ACTIVITIES_RELATION);
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       project.setActiveSince(new Date());
+      project.setReporting(projectDB.getReporting());
       project.setAdministrative(projectDB.getAdministrative());
       project.setModificationJustification(this.getJustification());
       projectManager.saveProject(project, this.getActionName(), relationsName);

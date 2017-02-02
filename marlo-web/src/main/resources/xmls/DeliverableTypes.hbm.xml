@@ -20,6 +20,9 @@
         <property name="timeline" type="java.lang.Integer">
             <column name="timeline" />
         </property>
+         <property name="fair"  type="java.lang.Boolean">
+            <column name="is_fair"  default="0"/>
+        </property>
         <set name="deliverableTypes" table="deliverable_types" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="parent_id" />
