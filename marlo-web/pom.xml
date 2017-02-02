@@ -394,6 +394,17 @@
 			<version>${pentaho-report.version}</version>
 		</dependency>
 
+<dependency>
+    <groupId>javax.ws.rs</groupId>
+    <artifactId>javax.ws.rs-api</artifactId>
+    <version>2.0</version>
+</dependency>
+
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-client</artifactId>
+    <version>2.5.1</version>
+</dependency>
 
 <!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
 <dependency>
