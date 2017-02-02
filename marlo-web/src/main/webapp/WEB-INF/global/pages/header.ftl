@@ -74,10 +74,9 @@
             <div class="clearfix"></div>
             [#if !config.production] <h4 class="testEnvironment">
               <span class="label label-danger text-left">Testing Environment</span> 
-              [#if reportingActive?? && reportingActive]
-                <span class="label label-default text-left">Reporting</span> 
-              [#else]
-                <span class="label label-primary text-left">Planning</span>
+              [#-- Planning / Reporting tag --]
+              [#if reportingActive??]
+                <span class="label label-${(reportingActive)?string('default','primary')} text-left">${(reportingActive)?string('Reporting','Planning')}</span> 
               [/#if]
               </h4>
             [/#if]
