@@ -1449,7 +1449,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
     String global = "";
-    if (project.getNoRegional()) {
+    if (project.getNoRegional() != null && project.getNoRegional()) {
       global = "Global";
       model.addRow(new Object[] {global});
     }
