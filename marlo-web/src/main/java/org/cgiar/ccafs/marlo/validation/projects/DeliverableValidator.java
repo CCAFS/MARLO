@@ -401,7 +401,7 @@ public class DeliverableValidator extends BaseValidator {
     }
 
     if (deliverable.getPublication() != null && deliverable.getPublication().getId() != null
-      && deliverable.getPublication().getId() != -1) {
+      && deliverable.getPublication().getId().intValue() != -1) {
 
       DeliverablePublicationMetadata metadata = deliverable.getPublication();
 
