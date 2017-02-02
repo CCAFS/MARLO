@@ -348,7 +348,7 @@ public class ProjectListAction extends BaseAction {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         if (this.isPlanningActive()) {
           myProjects = loggedCrp.getProjects().stream()
-            .filter(p -> p.isActive()
+            .filter(p -> p.isActive() && p.getStatus() != null
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
             .collect(Collectors.toList());
         } else {
@@ -360,7 +360,7 @@ public class ProjectListAction extends BaseAction {
 
         if (this.isPlanningActive()) {
           allProjects = loggedCrp.getProjects().stream()
-            .filter(p -> p.isActive()
+            .filter(p -> p.isActive() && p.getStatus() != null
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
             .collect(Collectors.toList());
           myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()

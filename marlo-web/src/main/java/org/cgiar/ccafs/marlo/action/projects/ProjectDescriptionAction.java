@@ -637,9 +637,9 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getCrossCuttingYouth() == null) {
         project.setCrossCuttingYouth(false);
       }
-
+      project.setStatus(projectDB.getStatus());
       if (this.isReportingActive()) {
-        project.setStatus(projectDB.getStatus());
+
         project.setCrossCuttingCapacity(projectDB.getCrossCuttingCapacity());
         project.setCrossCuttingNa(projectDB.getCrossCuttingNa());
         project.setCrossCuttingGender(projectDB.getCrossCuttingGender());
