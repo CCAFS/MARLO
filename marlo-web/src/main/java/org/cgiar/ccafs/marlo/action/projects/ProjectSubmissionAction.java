@@ -272,35 +272,27 @@ public class ProjectSubmissionAction extends BaseAction {
     ByteBuffer buffer = null;
     String fileName = null;
     String contentType = null;
+    if (this.isPlanningActive()) {
+      try {
 
-    try {
-      // // Making the URL to get the report.
-      //
-      // // URL pdfURL = new URL("https://localhost:8080/marlo-web/reportingSummary.do?projectID=21");
-      // /*
-      // * URL pdfURL = new URL(config.getBaseUrl() + "/projects/reportingSummary.do?" + APConstants.PROJECT_REQUEST_ID
-      // +
-      // * "="
-      // * + projectID + "&" + APConstants.YEAR_REQUEST + "=" + this.getCurrentCycleYear() + "&" + APConstants.CYCLE +
-      // "="
-      // * + this.getCurrentCycle());
-      // */
-      reportingSummaryAction.setSession(this.getSession());
-      reportingSummaryAction.setYear(this.getCurrentCycleYear());
-      //
-      reportingSummaryAction.setCycle(this.getCurrentCycle());
-      reportingSummaryAction.setProjectID(projectID);
-      reportingSummaryAction.execute();
-      // Getting the file data.
-      //
-      buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-      fileName = this.getFileName();
-      contentType = "application/pdf";
-      //
-    } catch (Exception e) {
-      // // Do nothing.
-      LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+        reportingSummaryAction.setSession(this.getSession());
+        reportingSummaryAction.setYear(this.getCurrentCycleYear());
+        //
+        reportingSummaryAction.setCycle(this.getCurrentCycle());
+        reportingSummaryAction.setProjectID(projectID);
+        reportingSummaryAction.execute();
+        // Getting the file data.
+        //
+        buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
+        fileName = this.getFileName();
+        contentType = "application/pdf";
+        //
+      } catch (Exception e) {
+        // // Do nothing.
+        LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+      }
     }
+
 
     if (buffer != null && fileName != null && contentType != null) {
 
@@ -340,7 +332,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private void submitProject() {
     Submission submission = new Submission();
 
-    submission.setCycle(APConstants.PLANNING);
+    submission.setCycle(this.getCurrentCycle());
     submission.setUser(this.getCurrentUser());
 
 
