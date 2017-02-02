@@ -189,28 +189,27 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
 
 
   private List<DeliverablePublicationMetadata> publicationMetadatas;
+
   private DeliverablePublicationMetadata publication;
-
-
   private List<DeliverableDataSharing> dataSharing;
 
 
   private List<MetadataElement> metadata;
+
 
   private Set<DeliverableCrp> deliverableCrps = new HashSet<DeliverableCrp>(0);
 
   private List<DeliverableCrp> crps;
 
   private DeliverableDissemination dissemination;
+
   private Set<DeliverableUser> deliverableUsers = new HashSet<DeliverableUser>(0);
-
   private List<DeliverableUser> users;
-
 
   private Crp crp;
 
-  private Boolean isPublication;
 
+  private Boolean isPublication;
 
   public Deliverable() {
   }
@@ -300,21 +299,21 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     }
   }
 
+
   public Date getCreateDate() {
     return createDate;
   }
-
-  // Data List from Data Sharing
-
 
   public User getCreatedBy() {
     return createdBy;
   }
 
+  // Data List from Data Sharing
+
+
   public Boolean getCrossCuttingCapacity() {
     return crossCuttingCapacity;
   }
-
 
   public Boolean getCrossCuttingGender() {
     return crossCuttingGender;
@@ -325,28 +324,28 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crossCuttingNa;
   }
 
+
   public Boolean getCrossCuttingYouth() {
     return crossCuttingYouth;
   }
-
 
   Crp getCrp() {
     return crp;
   }
 
+
   public CrpClusterKeyOutput getCrpClusterKeyOutput() {
     return crpClusterKeyOutput;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return crpProgramOutcome;
   }
 
+
   public List<DeliverableCrp> getCrps() {
     return crps;
   }
-
 
   public List<DeliverableDataSharing> getDataSharing() {
     return dataSharing;
@@ -377,23 +376,24 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return deliverableDataSharings;
   }
 
+
   public Set<DeliverableDissemination> getDeliverableDisseminations() {
     return deliverableDisseminations;
   }
-
 
   public Set<DeliverableFundingSource> getDeliverableFundingSources() {
     return deliverableFundingSources;
   }
 
+
   public Set<DeliverableGenderLevel> getDeliverableGenderLevels() {
     return deliverableGenderLevels;
   }
 
-
   public Set<DeliverableMetadataElement> getDeliverableMetadataElements() {
     return deliverableMetadataElements;
   }
+
 
   public Set<DeliverablePartnership> getDeliverablePartnerships() {
     return deliverablePartnerships;
@@ -435,13 +435,13 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return genderLevels;
   }
 
-  // End
-
-
   @Override
   public Long getId() {
     return id;
   }
+
+  // End
+
 
   public long getID(int metadataID) {
 
@@ -463,10 +463,10 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return -1;
   }
 
-
   Boolean getIsPublication() {
     return isPublication;
   }
+
 
   public String getLicense() {
     return license;
@@ -583,7 +583,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return modifiedBy;
   }
 
-
   public Integer getNewExpectedYear() {
     return newExpectedYear;
   }
@@ -597,6 +596,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   public List<DeliverablePartnership> getOtherPartners() {
     return otherPartners;
   }
+
 
   public Project getProject() {
     return project;
@@ -618,19 +618,19 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return responsiblePartner;
   }
 
-
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
   }
+
 
   public Integer getStatus() {
     return this.status;
   }
 
-
   public String getStatusDescription() {
     return this.statusDescription;
   }
+
 
   public String getStatusName() {
     try {
@@ -661,7 +661,6 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return this.year;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -669,6 +668,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
+
 
   @Override
   public boolean isActive() {
@@ -695,6 +695,20 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
       return true;
     }
 
+    return false;
+  }
+
+  public boolean requeriedFair() {
+    try {
+      if (this.getDeliverableType().getFair()) {
+        return true;
+      }
+      if (this.getDeliverableType().getDeliverableType().getFair()) {
+        return true;
+      }
+    } catch (Exception e) {
+      return false;
+    }
     return false;
   }
 

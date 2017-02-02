@@ -77,7 +77,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     return this.description;
   }
 
-  Boolean getFair() {
+  public Boolean getFair() {
     return fair;
   }
 
@@ -138,7 +138,7 @@ public class DeliverableType implements java.io.Serializable, IAuditLog {
     this.description = description;
   }
 
-  void setFair(Boolean fair) {
+  public void setFair(Boolean fair) {
     this.fair = fair;
   }
 
