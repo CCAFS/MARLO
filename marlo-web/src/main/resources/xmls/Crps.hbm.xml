@@ -130,6 +130,13 @@
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.CrpTargetUnit" />
         </set>
 
+
+<set name="deliverables" table="deliverables" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="crp_id" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.Deliverable" />
+        </set>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

@@ -329,7 +329,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return crossCuttingYouth;
   }
 
-  Crp getCrp() {
+  public Crp getCrp() {
     return crp;
   }
 
@@ -463,7 +463,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     return -1;
   }
 
-  Boolean getIsPublication() {
+  public Boolean getIsPublication() {
     return isPublication;
   }
 
@@ -759,7 +759,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
     this.crossCuttingYouth = crossCuttingYouth;
   }
 
-  void setCrp(Crp crp) {
+  public void setCrp(Crp crp) {
     this.crp = crp;
   }
 
@@ -867,7 +867,7 @@ public class Deliverable implements java.io.Serializable, IAuditLog {
   }
 
 
-  void setIsPublication(Boolean isPublication) {
+  public void setIsPublication(Boolean isPublication) {
     this.isPublication = isPublication;
   }
 

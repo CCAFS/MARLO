@@ -1204,6 +1204,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Boolean isA(long deliverableID) {
     Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
     this.loadDissemination(deliverableBD);
+
     if (deliverableBD.getDissemination().getIsOpenAccess() != null
       && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
       return true;
@@ -1743,7 +1744,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }

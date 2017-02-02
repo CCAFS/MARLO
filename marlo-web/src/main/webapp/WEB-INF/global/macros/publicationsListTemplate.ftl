@@ -31,13 +31,13 @@
     </thead>
     <tbody>
     [#if publications?has_content]
-      [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project.id) /]
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+      [#list publications as deliverable]
+
+        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${deliverable.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
           <td class="">
-            
+            ${deliverable.id}
           </td>
           [#-- Title / Name --]
           <td class="">
