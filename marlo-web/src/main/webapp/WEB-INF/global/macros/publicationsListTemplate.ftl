@@ -33,7 +33,7 @@
     [#if publications?has_content]
       [#list publications as deliverable]
 
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${deliverable.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
+        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][@s.param name='edit' value="true" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
           <td class="">

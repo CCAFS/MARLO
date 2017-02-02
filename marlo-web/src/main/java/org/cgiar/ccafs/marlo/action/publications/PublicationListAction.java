@@ -19,12 +19,17 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Date;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 public class PublicationListAction extends BaseAction {
 
@@ -34,15 +39,58 @@ public class PublicationListAction extends BaseAction {
   private static final long serialVersionUID = -5176367401132626314L;
   private Crp loggedCrp;
   private CrpManager crpManager;
+  private long deliverableID;
+  private DeliverableManager deliverableManager;
 
   @Inject
-  public PublicationListAction(APConfig config, CrpManager crpManager) {
+  public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager) {
 
     super(config);
+    this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
 
   }
 
+
+  @Override
+  public String add() {
+
+    Deliverable deliverable = new Deliverable();
+    deliverable.setYear(this.getCurrentCycleYear());
+    deliverable.setCreatedBy(this.getCurrentUser());
+    deliverable.setModifiedBy(this.getCurrentUser());
+    deliverable.setModificationJustification("New publication created");
+    deliverable.setActive(true);
+    deliverable.setActiveSince(new Date());
+    deliverable.setCrp(loggedCrp);
+    deliverable.setCreateDate(new Date());
+    deliverable.setIsPublication(true);
+
+    deliverableID = deliverableManager.saveDeliverable(deliverable);
+
+    if (deliverableID > 0) {
+      return SUCCESS;
+    }
+
+    return INPUT;
+  }
+
+  @Override
+  public String delete() {
+
+    Map<String, Object> parameters = this.getParameters();
+    deliverableID =
+      Long.parseLong(StringUtils.trim(((String[]) parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID))[0]));
+
+
+    Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
+
+    if (deliverable != null) {
+      deliverableManager.deleteDeliverable(deliverableID);
+      this.addActionMessage("message:" + this.getText("deleting.success"));
+    }
+    return SUCCESS;
+  }
 
   public Crp getLoggedCrp() {
     return loggedCrp;

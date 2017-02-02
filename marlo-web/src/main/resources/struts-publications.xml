@@ -10,10 +10,49 @@
       <result name="input">/WEB-INF/views/publications/publicationsList.ftl</result>
     </action>
     
+    
+    
+    
+      <action name="{crp}/addNewPublication" method="add"
+      class="org.cgiar.ccafs.marlo.action.publications.PublicationListAction">
+      <interceptor-ref name="homeStack" />
+      <result name="input">/WEB-INF/views/publications/publicationsList.ftl
+      </result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/publication</param>
+        <param name="deliverableID">${deliverableID}</param>
+        <param name="edit">true</param>
+      </result>
+      <result name="redirect" type="redirectAction">
+        <param name="actionName">${url}</param>
+        <param name="edit">true</param>
+      
+      </result>
+    </action>
+
+    <action name="{crp}/deletePublication" method="delete"
+      class="org.cgiar.ccafs.marlo.action.publications.PublicationListAction">
+       <interceptor-ref name="homeStack" />
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/publicationsList</param>
+      
+      </result>
+     
+    </action>
+    
+    
     <!-- Publication -->
-    <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.PublicationAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/publications/publication.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/publication</param>
+        <param name="deliverableID">${deliverable.id}</param>
+        <param name="edit">true</param>
+      </result>
+    
+    
+      
     </action>
     
     
