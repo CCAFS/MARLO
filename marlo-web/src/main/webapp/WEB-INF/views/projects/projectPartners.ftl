@@ -49,7 +49,7 @@
               [#if reportingActive]
               <br />
               <div class="fullBlock">
-                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" required=!project.bilateralProject editable=editable /]
+                [@customForm.textArea name="project.overall" i18nkey="projectPartners.partnershipsOverall" className="limitWords-100" required=!project.bilateralProject editable=editable /]
               </div>
               [/#if]
               
@@ -68,7 +68,7 @@
                     <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectPartners.lessons.${reportingActive?string('reporting','planning')}" className="limitWords-100" required=!project.bilateralProject editable=editable /]
                   </div>
                 </div>
               [/#if]
