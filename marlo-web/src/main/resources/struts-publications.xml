@@ -42,7 +42,7 @@
     
     
     <!-- Publication -->
-    <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.PublicationAction">
+    <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.publications.PublicationAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/publications/publication.ftl</result>
       <result name="success" type="redirectAction">

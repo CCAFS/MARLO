@@ -50,7 +50,7 @@ public class PublicationAction extends BaseAction {
 
   private DeliverableManager deliverableManager;
 
-  private Deliverable deliverable;
+  private Deliverable publication;
 
   private String transaction;
 
@@ -93,15 +93,15 @@ public class PublicationAction extends BaseAction {
   }
 
   private Path getAutoSaveFilePath() {
-    String composedClassName = deliverable.getClass().getSimpleName();
+    String composedClassName = publication.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = deliverable.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile = publication.getId() + "_" + composedClassName + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Deliverable getDeliverable() {
-    return deliverable;
+  public Deliverable getPublication() {
+    return publication;
   }
 
   public long getDeliverableID() {
@@ -136,7 +136,7 @@ public class PublicationAction extends BaseAction {
       Deliverable history = (Deliverable) auditLogManager.getHistory(transaction);
 
       if (history != null) {
-        deliverable = history;
+        publication = history;
       } else {
         this.transaction = null;
 
@@ -145,10 +145,10 @@ public class PublicationAction extends BaseAction {
     }
 
     else {
-      deliverable = deliverableManager.getDeliverableById(deliverableID);
+      publication = deliverableManager.getDeliverableById(deliverableID);
     }
 
-    if (deliverable != null) {
+    if (publication != null) {
 
       Path path = this.getAutoSaveFilePath();
 
@@ -165,7 +165,7 @@ public class PublicationAction extends BaseAction {
 
         AutoSaveReader autoSaveReader = new AutoSaveReader();
 
-        deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
+        publication = (Deliverable) autoSaveReader.readFromJson(jReader);
         this.setDraft(true);
       } else {
 
@@ -175,8 +175,8 @@ public class PublicationAction extends BaseAction {
   }
 
 
-  public void setDeliverable(Deliverable deliverable) {
-    this.deliverable = deliverable;
+  public void setPublication(Deliverable deliverable) {
+    this.publication = deliverable;
   }
 
   public void setDeliverableID(long deliverableID) {
