@@ -21,8 +21,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
@@ -30,7 +36,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,15 +66,24 @@ public class PublicationAction extends BaseAction {
 
   private AuditLogManager auditLogManager;
 
+  private DeliverableQualityCheckManager deliverableQualityCheckManager;
+  private MetadataElementManager metadataElementManager;
+
+  private List<DeliverableType> deliverableSubTypes;
+  private DeliverableTypeManager deliverableTypeManager;
 
   @Inject
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
-    AuditLogManager auditLogManager) {
+    DeliverableQualityCheckManager deliverableQualityCheckManager, AuditLogManager auditLogManager,
+    DeliverableTypeManager deliverableTypeManager, MetadataElementManager metadataElementManager) {
 
     super(config);
     this.crpManager = crpManager;
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
+    this.deliverableQualityCheckManager = deliverableQualityCheckManager;
+    this.metadataElementManager = metadataElementManager;
+    this.deliverableTypeManager = deliverableTypeManager;
   }
 
   @Override
@@ -100,16 +118,27 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
-  public Deliverable getPublication() {
-    return publication;
-  }
-
   public long getDeliverableID() {
     return deliverableID;
   }
 
+  public List<DeliverableType> getDeliverableSubTypes() {
+    return deliverableSubTypes;
+  }
+
+
+  public DeliverableTypeManager getDeliverableTypeManager() {
+    return deliverableTypeManager;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public Deliverable getPublication() {
+    return publication;
   }
 
 
@@ -169,23 +198,83 @@ public class PublicationAction extends BaseAction {
         this.setDraft(true);
       } else {
 
+
+        /**
+         * 
+         */
+        publication.setGenderLevels(
+          publication.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        DeliverableQualityCheck deliverableQualityCheck =
+          deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(publication.getId());
+        publication.setQualityCheck(deliverableQualityCheck);
+
+        if (publication.getDeliverableMetadataElements() != null) {
+          publication.setMetadataElements(new ArrayList<>(publication.getDeliverableMetadataElements()));
+        }
+
+        if (publication.getDeliverableDisseminations() != null) {
+          publication.setDisseminations(new ArrayList<>(publication.getDeliverableDisseminations()));
+          if (publication.getDeliverableDisseminations().size() > 0) {
+            publication.setDissemination(publication.getDisseminations().get(0));
+          } else {
+            publication.setDissemination(new DeliverableDissemination());
+          }
+
+        }
+
+        if (publication.getDeliverableDataSharingFiles() != null) {
+          publication.setDataSharingFiles(new ArrayList<>(publication.getDeliverableDataSharingFiles()));
+        }
+
+        if (publication.getDeliverablePublicationMetadatas() != null) {
+          publication.setPublicationMetadatas(new ArrayList<>(publication.getDeliverablePublicationMetadatas()));
+        }
+        if (!publication.getPublicationMetadatas().isEmpty()) {
+          publication.setPublication(publication.getPublicationMetadatas().get(0));
+        }
+
+        if (publication.getDeliverableDataSharings() != null) {
+          publication.setDataSharing(new ArrayList<>(publication.getDeliverableDataSharings()));
+
+        }
+        publication.setUsers(publication.getDeliverableUsers().stream().collect(Collectors.toList()));
+
         this.setDraft(false);
       }
+
+
     }
-  }
+    if (metadataElementManager.findAll() != null) {
+      publication.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+    }
 
 
-  public void setPublication(Deliverable deliverable) {
-    this.publication = deliverable;
+    deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
+      .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
+      .collect(Collectors.toList()));
+
   }
+
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
 
+  public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
+    this.deliverableSubTypes = deliverableSubTypes;
+  }
+
+  public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
+    this.deliverableTypeManager = deliverableTypeManager;
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPublication(Deliverable deliverable) {
+    this.publication = deliverable;
   }
 
   public void setTransaction(String transaction) {

@@ -66,6 +66,7 @@ public class PublicationListAction extends BaseAction {
     deliverable.setCreateDate(new Date());
     deliverable.setIsPublication(true);
 
+
     deliverableID = deliverableManager.saveDeliverable(deliverable);
 
     if (deliverableID > 0) {
@@ -92,6 +93,12 @@ public class PublicationListAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  public long getDeliverableID() {
+    return deliverableID;
+  }
+
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
@@ -110,6 +117,11 @@ public class PublicationListAction extends BaseAction {
 
     }
 
+  }
+
+
+  public void setDeliverableID(long deliverableID) {
+    this.deliverableID = deliverableID;
   }
 
   public void setLoggedCrp(Crp loggedCrp) {
