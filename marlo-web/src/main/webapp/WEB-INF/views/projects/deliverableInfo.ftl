@@ -58,7 +58,7 @@
 <div class="${reportingActive?string('fieldFocus','')}">
 <div class="form-group">
   <div class="col-md-4">
-    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=reportingActive className=" status" editable=editable/]
+    [@customForm.select name="deliverable.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className=" status" editable=editable/]
   </div>
   <div class="col-md-4 form-group">
     [#-- If is editable, deliverable is old, there is a saved year and the year is < to the current cycle year --]
