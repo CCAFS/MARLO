@@ -65,7 +65,7 @@
           </td>
           [#-- Deliverable FAIR compliance --]
           <td class="fair"> 
-          [#if deliverable.requeriedFair())]
+          [#if deliverable.requeriedFair()]
             <span class="[#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">F</span>
             <span class="[#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">A</span>
             <span class="[#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">I</span>

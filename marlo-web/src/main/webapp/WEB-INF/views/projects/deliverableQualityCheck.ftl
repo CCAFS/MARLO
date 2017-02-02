@@ -152,65 +152,68 @@
 
 
 
-[#-- Fair Compliant--]
-<h4 class="headTitle">FAIR Compliant</h4>
+[#-- Fair Compliant--] 
+<div class="fairComplian-block" style="display:${deliverable.requeriedFair()?string('block','none')}">
 
-<div class="simpleBox" > 
-  [#-- Findable --] 
-  <div class="fairCompliant findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-    <div class="row">
-      <div class="col-md-2">
-        <div class="sign">F</div>
-      </div>
-      <div class="col-md-10">
-        <strong>Findable</strong>
-        <p>Product published/disseminated</p>
-        <p>Globally unique and persistent identifier (handle and/or DOI)</p>
-        <p>Data are described with rich metadata</p>
+  <h4 class="headTitle">FAIR Compliant</h4>
+  
+  <div class="simpleBox" > 
+    [#-- Findable --] 
+    <div class="fairCompliant findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="sign">F</div>
+        </div>
+        <div class="col-md-10">
+          <strong>Findable</strong>
+          <p>Product published/disseminated</p>
+          <p>Globally unique and persistent identifier (handle and/or DOI)</p>
+          <p>Data are described with rich metadata</p>
+        </div>
       </div>
     </div>
-  </div>
-  
-  [#-- Accessible --] 
-  <div class="fairCompliant accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-    <div class="row">
-      <div class="col-md-2">
-        <div class="sign">A</div>
-      </div>
-      <div class="col-md-10">
-        <strong>Accessible</strong>
-        <p>Open Access – without restrictions</p>
-        <p>Retrievable by their identifier using a standardized communications protocol</p>
-        <p>Metadata are accessible, even when the data are not longer available</p>
-      </div>
-    </div>
-  </div>
-  
-  [#-- Interoperable --] 
-  <div class="fairCompliant interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-    <div class="row">
-      <div class="col-md-2">
-        <div class="sign">I</div>
-      </div>
-      <div class="col-md-10">
-        <strong>Interoperable</strong>
-        <p>Metadata schema implemented</p>
-        <p>Interoperability protocol implemented</p>
-        <p>Protocol allows authentication and authorization procedure, where necessary</p>
+    
+    [#-- Accessible --] 
+    <div class="fairCompliant accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="sign">A</div>
+        </div>
+        <div class="col-md-10">
+          <strong>Accessible</strong>
+          <p>Open Access – without restrictions</p>
+          <p>Retrievable by their identifier using a standardized communications protocol</p>
+          <p>Metadata are accessible, even when the data are not longer available</p>
+        </div>
       </div>
     </div>
-  </div>
-  
-  [#-- Reusable --] 
-  <div class="fairCompliant reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-    <div class="row">
-      <div class="col-md-2">
-        <div class="sign">R</div>
+    
+    [#-- Interoperable --] 
+    <div class="fairCompliant interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="sign">I</div>
+        </div>
+        <div class="col-md-10">
+          <strong>Interoperable</strong>
+          <p>Metadata schema implemented</p>
+          <p>Interoperability protocol implemented</p>
+          <p>Protocol allows authentication and authorization procedure, where necessary</p>
+        </div>
       </div>
-      <div class="col-md-10">
-        <strong>Reusable</strong>
-        <p>Clear and accessible data usage license</p>
-        <p>Data are associated with detailed provenance</p>
+    </div>
+    
+    [#-- Reusable --] 
+    <div class="fairCompliant reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="sign">R</div>
+        </div>
+        <div class="col-md-10">
+          <strong>Reusable</strong>
+          <p>Clear and accessible data usage license</p>
+          <p>Data are associated with detailed provenance</p>
+        </div>
       </div>
     </div>
   </div>
