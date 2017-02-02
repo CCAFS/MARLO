@@ -93,9 +93,10 @@ public class DashboardAction extends BaseAction {
             .collect(Collectors.toList());
 
         } else {
-          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p != null && p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
-            .collect(Collectors.toList());
+          myProjects =
+            projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
+              .filter(p -> p != null && p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+              .collect(Collectors.toList());
         }
       }
       Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));

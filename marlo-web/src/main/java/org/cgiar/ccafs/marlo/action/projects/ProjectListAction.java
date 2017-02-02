@@ -375,8 +375,8 @@ public class ProjectListAction extends BaseAction {
             .filter(p -> p.isActive()
               && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
             .collect(Collectors.toList());
-          myProjects = projectManager.getUserProjects(this.getCurrentUser().getId(), loggedCrp.getAcronym()).stream()
-            .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
+          myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
+            .stream().filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
             .collect(Collectors.toList());
           // Sort the projects.
           // Collections.sort(myProjects, (p1, p2) -> p1.getId().compareTo(p2.getId()));

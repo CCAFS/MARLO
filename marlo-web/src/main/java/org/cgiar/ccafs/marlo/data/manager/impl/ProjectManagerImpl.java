@@ -78,17 +78,23 @@ public class ProjectManagerImpl implements ProjectManager {
         projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
       }
     }
-    /*
-     * for (Project project : projects) {
-     * List<CrpProgram> programs = new ArrayList<>();
-     * for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
-     * .filter(c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-     * .collect(Collectors.toList())) {
-     * programs.add(projectFocuses.getCrpProgram());
-     * }
-     * project.setFlagships(programs);
-     * }
-     */
+
+
+    return projects;
+  }
+
+  @Override
+  public List<Project> getUserProjectsReporting(long userId, String crp) {
+
+    List<Project> projects = new ArrayList<>();
+
+    List<Map<String, Object>> view = projectDAO.getUserProjectsReporting(userId, crp);
+
+    if (view != null) {
+      for (Map<String, Object> map : view) {
+        projects.add(this.getProjectById((Long.parseLong(map.get("project_id").toString()))));
+      }
+    }
 
 
     return projects;
