@@ -160,11 +160,14 @@ public class DeliverableListAction extends BaseAction {
     try {
       if (open) {
         if (this.isPlanningActive()) {
-          List<Deliverable> openA = deliverables.stream()
-            .filter(a -> a.isActive()
-              && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                  || a.getStatus().intValue() == 0))))
+          List<Deliverable> openA =
+            deliverables.stream()
+              .filter(
+                a -> a.isActive()
+                  && ((a.getStatus() == null
+                    || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                    || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                      || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
             .collect(Collectors.toList());
           return openA;
         } else {
