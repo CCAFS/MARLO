@@ -1,7 +1,7 @@
 [#ftl]
 
 [#--Identifier --]
-<input name="publicationID" type="hidden" value="${(publication.id)!}" />
+<input name="deliverableID" type="hidden" value="${(publication.id)!}" />
 <input type="hidden"  name="className" value="${(publication.class.name)!}"/>
 <input type="hidden"  name="id" value="${(publication.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
