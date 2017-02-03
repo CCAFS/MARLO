@@ -124,7 +124,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date);
+    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -223,7 +223,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "shared", "indicators"},
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class},
@@ -271,19 +271,25 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
           for (CaseStudyProject caseStudyProject : studyProjects) {
             if (caseStudyProject.isCreated()) {
-              owner = "P" + caseStudyProject.getProject().getId();
-            } else {
-              shared = shared + " P" + caseStudyProject.getProject().getId();
+              shared = String.valueOf(caseStudyProject.getProject().getId());
             }
+
+            owner = "P" + caseStudyProject.getProject().getId();
           }
 
-          List<CaseStudyIndicator> studyIndicators = new ArrayList<>(caseStudy.getCaseStudyIndicators());
+          List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
+            caseStudy.getCaseStudyIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+          StringBuilder indicatorsS = new StringBuilder();
+
 
           for (CaseStudyIndicator caseStudyIndicator : studyIndicators) {
             if (caseStudyIndicator.isActive()) {
-              indicators = indicators + " - " + caseStudyIndicator.getIpIndicator().getDescription();
+              indicatorsS.append(caseStudyIndicator.getIpIndicator().getDescription() + "\n");
             }
           }
+
+          indicators = indicatorsS.toString();
 
           if (caseStudy.getFile() != null) {
             anex = caseStudy.getFile().getFileName();
@@ -293,7 +299,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
           model.addRow(new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(),
             researchPartners.trim(), activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(),
             evidenceOutcome.trim(), outputUsed.trim(), referencesCase.trim(), explainIndicatorRelation.trim(), anex,
-            owner.trim(), shared.trim(), indicators.trim()});
+            owner.trim(), indicators.trim()});
 
         }
       }
@@ -365,11 +371,11 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date) {
+  private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
+      new Class[] {String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year});
     return model;
   }
 
