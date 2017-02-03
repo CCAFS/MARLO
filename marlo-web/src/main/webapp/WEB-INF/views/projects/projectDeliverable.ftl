@@ -40,8 +40,6 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/views/projects/messages-deliverables.ftl" /]
         
-       
-      
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           
           <div class="form-group">
@@ -52,27 +50,18 @@
                 <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the project deliverables
               </a>
             </small>
-          
-          
-            
+
+            [#-- FAIR Compliant Mini --]
             <div class="fairComplian-block" style="display:${deliverable.requeriedFair()?string('block','none')}">
               <div class="pull-right">
                 [#-- Findable --] 
-                <div class="fairCompliant mini findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-                  <div class="sign">F</div>
-                </div>
+                <div class="fairCompliant mini findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">F</div></div>
                 [#-- Accessible --] 
-                <div class="fairCompliant mini accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-                  <div class="sign">A</div>
-                </div>
+                <div class="fairCompliant mini accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">A</div></div>
                 [#-- Interoperable --] 
-                <div class="fairCompliant mini interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-                  <div class="sign">I</div>
-                </div>
+                <div class="fairCompliant mini interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">I</div></div>
                 [#-- Reusable --] 
-                <div class="fairCompliant mini reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]">
-                  <div class="sign">R</div>
-                </div> 
+                <div class="fairCompliant mini reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">R</div></div> 
               </div>
             </div>
           </div>
@@ -112,7 +101,14 @@
               </div>
               [#-- Deliverable qualityCheck --]
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
-                [#include "/WEB-INF/views/projects/deliverableQualityCheck.ftl" /]
+                <div id="complianceCheck" style="display:[#if deliverable.deliverableType?? && (deliverable.deliverableType.id==51 || deliverable.deliverableType.id==74)]block [#else]none[/#if];">
+                  [#-- Compliance check (Data products only) --]
+                  [@deliverableMacros.complianceCheck /]
+                </div>
+                <div class="fairComplian-block" style="display:${deliverable.requeriedFair()?string('block','none')}">
+                  [#-- Fair Compliant--] 
+                  [@deliverableMacros.fairCompliant /]
+                </div>
               </div>
               [#-- Deliverable dataSharing --] 
               <div id="deliverable-dataSharing" role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]">
