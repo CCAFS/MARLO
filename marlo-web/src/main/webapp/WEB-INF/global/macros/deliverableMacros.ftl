@@ -1,4 +1,6 @@
 [#ftl]
+[#import "/WEB-INF/global/macros/utils.ftl" as utils /]
+
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row">
@@ -310,7 +312,7 @@
 [/#macro]
 
 
-[#macro complianceCheck]
+[#macro complianceCheck ]
 <h4 class="headTitle">Compliance check</h4>
 
 <div class="simpleBox" >
