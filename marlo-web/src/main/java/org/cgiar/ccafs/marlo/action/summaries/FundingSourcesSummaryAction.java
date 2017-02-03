@@ -104,9 +104,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     // Get parameters from URL
 
     // Get cycle
-    try {
+    if (this.getRequest().getParameter("cycle") != null) {
       cycle = this.getRequest().getParameter("cycle");
-    } catch (Exception e) {
+    } else {
       cycle = this.getCurrentCycle();
     }
 
@@ -285,17 +285,9 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
     }
   }
 
-  private String getFundingSourceFilePath() {
-    String upload = config.getUploadsBaseFolder();
-    return upload + File.separator + this.getFundingSourceRelativePath() + File.separator;
-  }
 
   public String getFundingSourceFileURL() {
-    return config.getDownloadURL() + "/" + this.getFundingSourceFilePath().replace('\\', '/');
-  }
-
-  private String getFundingSourceRelativePath() {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
+    return config.getDownloadURL() + "/" + this.getFundingSourceUrlPath().replace('\\', '/');
   }
 
   private TypedTableModel getFundingSourcesProjectsTableModel() {
@@ -363,13 +355,11 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
         end_date = formatter.format(fundingSource.getEndDate());
       }
 
-      // TODO: Show link of contract
       String contract = "";
       String contract_name = "";
 
       if (fundingSource.getFile() != null) {
-        contract =
-          "https://marlo.cgiar.org/data/ccafs/projects/fundingSourceFiles/" + fundingSource.getFile().getFileName();
+        contract = this.getFundingSourceFileURL() + fundingSource.getFile().getFileName();
         contract_name = fundingSource.getFile().getFileName();
       }
 
@@ -439,6 +429,10 @@ public class FundingSourcesSummaryAction extends BaseAction implements Summary {
           start_date, end_date, contract, status, pi_name, pi_email, donor, total_budget_projects, contract_name});
     }
     return model;
+  }
+
+  public String getFundingSourceUrlPath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + "fundingSourceFiles" + File.separator;
   }
 
   @Override

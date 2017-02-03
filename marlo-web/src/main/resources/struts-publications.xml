@@ -47,7 +47,7 @@
       <result name="input">/WEB-INF/views/publications/publication.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/publication</param>
-        <param name="deliverableID">${publication.id}</param>
+        <param name="deliverableID">${deliverable.id}</param>
         <param name="edit">true</param>
       </result>
     
