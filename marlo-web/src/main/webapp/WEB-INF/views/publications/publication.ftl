@@ -16,7 +16,7 @@
 
 [#assign editable = true /]
 
-[#assign customName = "publication" /]
+[#assign customName = "deliverable" /]
 
     
 <section class="container">
