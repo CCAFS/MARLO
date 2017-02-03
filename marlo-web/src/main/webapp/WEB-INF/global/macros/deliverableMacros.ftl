@@ -132,8 +132,8 @@
 <div class="simpleBox form-group">
   <div class=" row">
     <span class="col-md-9">
-      <label  for="">Is this deliverable already disseminated? [@customForm.req /]</label>
-      <p><small>Is the deliverable already uploaded to a public repository? </small></p>
+      <label  for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
+      <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
     </span>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="findable text-center" /] 
