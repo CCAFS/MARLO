@@ -15,8 +15,8 @@
 
 [#assign years = ["2014","2015", "2016","2017" ]/]
 
-<span class="hidden planningYear">${(action.getPlanningYear())!"holi"}</span>
-<span class="hidden reportingYear">${(action.getReportingYear())!"holi"}</span>
+<span class="hidden planningYear">${(action.getPlanningYear())!}</span>
+<span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
 <section class="container">
   <article id="" class="fullBlock col-md-12" > 
@@ -114,7 +114,7 @@
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
               <div class="extraOptions" style="display:none"> 
             </div>
-            <input type="hidden" class="onlyYear" name="caseStudiesYear" value="2015"/>
+            <input type="hidden" class="onlyYear" name="" value="2015"/>
           </div>
         </div>
         
