@@ -32,15 +32,16 @@
       <form action="">
       <div class="headerBlock">
         <h5 class="col-md-3">[@s.text name="summaries.board.projectResearchCycle" /]</h5>
+        
         <div class="summariesOption col-md-3">
           <input type="radio" name="cycle" id="planning" value="Planning" checked="checked"/>
           <label for="planning">[@s.text name="summaries.board.projectResearchCycle.planning" /]</label>
         </div>
         <div class="summariesOption col-md-3">
-          <input type="radio" name="cycle" id="reporting" value="Reporting"  disabled />
+          <input type="radio" name="cycle" id="reporting" value="Reporting"   />
           <label for="reporting">[@s.text name="summaries.board.projectResearchCycle.reporting" /]</label>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="display:none;">
         <label for="">Select a year</label>
           <select name="" id="reportYear">
             <option value="-1">Select an option...</option>
@@ -101,6 +102,22 @@
             </div>
           </div>
         </div>
+        
+        <div class="row">
+        [#-- caseStudies By Year Summary --] 
+          <div class="summariesFiles borderBox col-md-3 reportingCycle" style="display:none;">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudiesByYearSummary"/>
+              <label for="">[@s.text name="project outcomes case studies" /]</label>
+            </div>
+            <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
+              <div class="extraOptions" style="display:none"> 
+            </div>
+            <input type="hidden" class="onlyYear" name="caseStudiesYear" value="2015"/>
+          </div>
+        </div>
+        
         
         </div>
         [#-- -- -- Partners reports -- -- --]

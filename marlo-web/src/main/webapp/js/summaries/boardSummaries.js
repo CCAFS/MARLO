@@ -36,6 +36,17 @@ function attachEvents() {
     }
   });
 
+  $("input[name='cycle']").on("change", function() {
+    if($(this).val() == "Planning") {
+      $(".reportingCycle").hide("");
+      reportYear = "2017";
+    } else {
+      $(".reportingCycle").show("");
+      reportYear = "2016";
+    }
+    updateUrl($(".summariesOptions").find(".selected"));
+  });
+
   $("#gender").on("change", function() {
 
     if($(this).hasClass("view")) {
@@ -267,6 +278,9 @@ function updateUrl(element) {
       generateUrl += '?' + extraOptions;
     }
 // console.log(reportYear);
+    if($(element).find(".onlyYear").exists()) {
+      reportYear = $(element).find(".onlyYear").val();
+    }
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl);
   } else {
