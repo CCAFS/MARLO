@@ -138,6 +138,10 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public Deliverable getDeliverable() {
+    return deliverable;
+  }
+
   public long getDeliverableID() {
     return deliverableID;
   }
@@ -146,6 +150,7 @@ public class PublicationAction extends BaseAction {
     return deliverableSubTypes;
   }
 
+
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
   }
@@ -153,11 +158,6 @@ public class PublicationAction extends BaseAction {
 
   public Crp getLoggedCrp() {
     return loggedCrp;
-  }
-
-
-  public Deliverable getDeliverable() {
-    return deliverable;
   }
 
 
@@ -272,6 +272,8 @@ public class PublicationAction extends BaseAction {
       .collect(Collectors.toList()));
 
     if (this.isHttpPost()) {
+
+
       deliverable.setCrossCuttingGender(null);
       deliverable.setCrossCuttingCapacity(null);
       deliverable.setCrossCuttingNa(null);
@@ -533,6 +535,10 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+  public void setDeliverable(Deliverable deliverable) {
+    this.deliverable = deliverable;
+  }
+
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
   }
@@ -545,13 +551,9 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
+
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-
-  public void setDeliverable(Deliverable deliverable) {
-    this.deliverable = deliverable;
   }
 
   public void setTransaction(String transaction) {

@@ -1,9 +1,9 @@
 [#ftl]
 
 [#--Identifier --]
-<input name="deliverableID" type="hidden" value="${(publication.id)!}" />
-<input type="hidden"  name="className" value="${(publication.class.name)!}"/>
-<input type="hidden"  name="id" value="${(publication.id)!}"/>
+<input name="deliverableID" type="hidden" value="${(deliverable.id)!}" />
+<input type="hidden"  name="className" value="${(deliverable.class.name)!}"/>
+<input type="hidden"  name="id" value="${(deliverable.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
 
@@ -14,7 +14,7 @@
     [#-- History Log --]
     [#if action.getListLog(publication)?has_content]
       [#import "/WEB-INF/global/macros/logHistory.ftl" as logHistory /]
-      [@logHistory.logList list=action.getListLog(publication) itemName="publicationID" itemId=(publication.id)! /]
+      [@logHistory.logList list=action.getListLog(publication) itemName="publicationID" itemId=(deliverable.id)! /]
       <a href="" onclick="return false" class="form-button button-history"><span class="glyphicon glyphicon-glyphicon glyphicon-list-alt" aria-hidden="true"></span> [@s.text name="form.buttons.history" /]</a>
     [/#if]
     [#if editable]
