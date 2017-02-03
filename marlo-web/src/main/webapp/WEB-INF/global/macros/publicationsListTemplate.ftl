@@ -1,6 +1,6 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
-[#macro publicationsList publications={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
+[#macro publicationsList publications={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="publication"]
   <table class="projectsList" id="projects">
     <thead>
       [#--  
@@ -25,6 +25,8 @@
         <th>[@s.text name="publicationsList.column.lead" /]</th>
         [#-- Flagship / Region --]
         <th>[@s.text name="publicationsList.column.flagshipRegion" /]</th>
+        [#-- Fields check --]
+        <th>[@s.text name="publicationsList.column.fieldsCheck" /]</th>
         [#-- Delete --]
         <th></th>
       </tr>
@@ -37,23 +39,30 @@
         <tr>
           [#-- ID --]
           <td class="">
-            ${deliverable.id}
+            <a href="${projectUrl}">${(deliverable.id)!}</a>
           </td>
           [#-- Title / Name --]
           <td class="">
-            
+            <a href="${projectUrl}">${(deliverable.title)!}</a>
           </td>
           [#-- Source --]
           <td class=""> 
-           
+            ${(deliverable.dissemination.disseminationChannel?capitalize)!}
           </td>
           [#-- Delivery year --]
           <td class=""> 
-           
+           ${(deliverable.year)!}
           </td>
           [#-- FAIR Compliance --]
           <td class=""> 
-           
+           [#if (deliverable.requeriedFair())!false]
+            <span class="[#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">F</span>
+            <span class="[#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">A</span>
+            <span class="[#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">I</span>
+            <span class="[#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">R</span>
+          [#else]
+            <p class="message">Not applicable</p>
+          [/#if]
           </td>
           [#-- Lead partner(s) --]
           <td class=""> 
@@ -63,9 +72,27 @@
           <td class=""> 
            
           </td>
-          [#-- Delete --]
+          [#-- Fields check --]
           <td class=""> 
-           
+           [#if (action.getDeliverableStatus(deliverable.id)??)!false]
+              [#if !((action.getDeliverableStatus(deliverable.id)).missingFields)?has_content]
+                <span class="icon-20 icon-check" title="Complete"></span>
+              [#else]
+                <span class="icon-20 icon-uncheck" title=""></span> 
+              [/#if]
+            [#else]
+                <span class="icon-20 icon-uncheck" title=""></span>
+            [/#if]
+          </td>
+          [#-- Delete --]
+          <td class="">
+            [#if true]
+              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/publications/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+                <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
+              </a>
+            [#else]
+              <img src="${baseUrl}/images/global/trash_disable.png" title="[@s.text name="project.deliverable.cannotDelete" /]" />
+            [/#if]
           </td>
         </tr>  
       [/#list]
