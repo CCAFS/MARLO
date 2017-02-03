@@ -114,7 +114,6 @@
             <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
               <div class="extraOptions" style="display:none"> 
             </div>
-            <input type="hidden" class="onlyYear" name="" value="2015"/>
           </div>
         </div>
         
