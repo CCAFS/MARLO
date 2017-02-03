@@ -4,7 +4,7 @@
 [#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row">
-    <label class="col-md-9" for="">Have you adopted a license? [@customForm.req /]</label>
+    <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req /]</label>
     <div class="col-md-3">[@customForm.yesNoInput name="deliverable.adoptedLicense"  editable=editable inverse=false  cssClass="license text-center" /] </div>  
   </div>
   [#-- Deliverable type computer software --]
@@ -38,7 +38,7 @@
             [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]
           </div>
           <div class="col-md-6 licence-modifications" style="display:[#if (deliverable.licenseType)?? && (deliverable.licenseType)=="OTHER"]block[#else]none [/#if];" >
-            <label class="col-md-6" for="">Does this license allows modifications?</label>
+            <label class="col-md-6" for="">[@s.text name="project.deliverable.dissemination.licenseModifications" /]</label>
             <div class="col-md-6">
               [@customForm.yesNoInput name="deliverable.allowModifications"  editable=editable inverse=false cssClass="licenceModifications text-center" /] 
             </div>  
@@ -134,8 +134,8 @@
 <div class="simpleBox form-group">
   <div class=" row">
     <span class="col-md-9">
-      <label  for="">Is this deliverable already disseminated? [@customForm.req /]</label>
-      <p><small>Is the deliverable already uploaded to a public repository? </small></p>
+      <label  for="">[@s.text name="project.deliverable.dissemination.alreadyDisseminatedQuestion" /] [@customForm.req /]</label>
+      <p><small>[@s.text name="project.deliverable.dissemination.alreadyDisseminatedSubQ" /] </small></p>
     </span>
     <div class="col-md-3">
       [@customForm.yesNoInput name="deliverable.dissemination.alreadyDisseminated"  editable=editable inverse=false cssClass="findable text-center" /] 
@@ -145,11 +145,11 @@
   <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
     <hr />
     [#-- Note --]
-    <div class="note">MARLO is interoperable with two repositories - CGSpace and Dataverse.  MARLO does not yet have interoperability with other platforms, but we are working on it.</div>
+    <div class="note">[@s.text name="project.deliverable.dissemination.channelInfo" /]</div>
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]
-          [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="Select a dissemination channel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
+          [@customForm.select name="deliverable.dissemination.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="channels" className="disseminationChannel"   multiple=false required=true   editable=editable/]
         [#else]
         <label for="disChannel" style="display:block;">Dissemination channel:</label>
         <p>${(deliverable.dissemination.disseminationChannel)!'Prefilled if available'}</p>
@@ -158,12 +158,12 @@
       <div class="col-md-8">
         [#-- CGSpace examples & instructions --]
         <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
-          <label for="">Example of URL:</label>
+          <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
           <p><small>https://cgspace.cgiar.org/handle/10568/79435</small></p>
         </div>
         [#-- Dataverse examples & instructions --]
         <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
-          <label for="">Example of URL:</label>
+          <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
           <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
         </div>
       </div>
@@ -172,11 +172,11 @@
     <div id="disseminationUrl" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse" || deliverable.dissemination.disseminationChannel=="other")]block[#else]none[/#if];">
       <div class="form-group row"> 
         <div class="col-md-10">
-          [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="Dissemination URL"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
+          [@customForm.input name="deliverable.dissemination.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=true editable=editable /]
         </div>
         <div class="col-md-2">
           <br />
-          [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">Sync</div>[/#if]
+          [#if editable]<div id="fillMetadata" class="checkButton" style="display:[#if deliverable.dissemination.disseminationChannel?? && (deliverable.dissemination.disseminationChannel=="cgspace" || deliverable.dissemination.disseminationChannel=="dataverse")]block[#else]none[/#if];">[@s.text name="project.deliverable.dissemination.sync" /]</div>[/#if]
         </div>
       </div>
     </div>
@@ -187,7 +187,7 @@
 
 
 [#macro deliverableMetadataMacro ]
-<h3 class="headTitle">Deliverable Metadata</h3>
+<h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
 <div class="simpleBox">
   <div class="form-group ">
     [@deliverableMacros.metadataField title="title" encodedName="dc.title" type="input" require=false/]
@@ -227,15 +227,15 @@
    
   [#-- Creator/Authors --]
   <div class="form-group">
-    <label for="">Creator/Authors:  </label>
-    [#if editable]<div class="note">[@s.text name = "To change an author's data, you must do double click on that field." /]</div>[/#if]
+    <label for="">[@s.text name="metadata.creator" /]:  </label>
+    [#if editable]<div class="note">[@s.text name = "project.deliverable.dissemination.authorsInfo" /]</div>[/#if]
     <div class="authorsList simpleBox row" >
       [#if deliverable.users?has_content]
         [#list deliverable.users as author]
           [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
         [/#list]
       [#else]
-        <p class="emptyText text-center "> [@s.text name="No Creator/Authors added yet." /]</p>
+        <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.notCreators" /]</p>
       [/#if]
     </div>
     [#if editable]
@@ -244,7 +244,7 @@
       <div class="col-md-3"><input class="form-control input-sm fName" placeholder="First Name" type="text" /> </div>
       <div class="col-md-3"><input class="form-control input-sm oId" placeholder="Orcid Id" type="text" /> </div>
       <div class="col-md-3">
-        <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="Add author" /]</div></div>
+        <div id="" class="addAuthor text-right"><div class="button-blue "><span class="glyphicon glyphicon-plus-sign"></span> [@s.text name="project.deliverable.dissemination.addAuthor" /]</div></div>
       </div>
     </div>
     [/#if] 
@@ -252,19 +252,19 @@
 
   <div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
     <br />
-    <h4 class="sectionSubTitle">[@s.text name="Publication Metadata"/]</h4>
+    <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
      
     <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
     <div class="form-group row">
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="Volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="Issue" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
-      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="Pages" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.issue" i18nkey="project.deliverable.dissemination.issue" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="deliverable.publication.pages" i18nkey="project.deliverable.dissemination.pages" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
     </div>
     <div class="form-group">
-      [@customForm.input name="deliverable.publication.journal" i18nkey="Journal/Publisher name" className="" type="text" disabled=!editable  required=true editable=editable /]
+      [@customForm.input name="deliverable.publication.journal" i18nkey="project.deliverable.dissemination.journalName" className="" type="text" disabled=!editable  required=true editable=editable /]
     </div>
     <div class="form-group">
-      <label for="">Indicators for journal articles:<span class="red">*</span></label>
+      <label for="">[@s.text name="project.deliverable.dissemination.indicatorsJournal" /]:<span class="red">*</span></label>
       <div class="checkbox">
         [#if editable]
           <label for="isiPublication"><input type="checkbox" id="isiPublication"  name="deliverable.publication.isiPublication" value="true" [#if deliverable.publication?? && deliverable.publication.isiPublication?? && deliverable.publication.isiPublication]checked[/#if]/>Tick this box if this journal article is an ISI publication <small>(check at http://ip-science.thomsonreuters.com/mjl/ for the list)</small></label>  
@@ -280,29 +280,29 @@
     
     <hr />
     <div class="row">
-      <label class="col-md-9" for="">[@s.text name="Does the publication acknowledge?" /]</label>
+      <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.acknowledgeQuestion" /]</label>
       <div class="col-md-3">[@customForm.yesNoInput name="deliverable.publication.publicationAcknowledge"  editable=editable inverse=false  cssClass="acknowledge text-center" /] </div> 
     </div>
     <hr />
     
     <div class="form-group">
-      <label for="">Is this publication contributing to any other flagships?</label>
-      <div class="flagshipList simpleBox">
+      <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
+      <div class="flagshipList simpleBox col-md-12">
         [#if deliverable.crps?has_content]
           [#list deliverable.crps as flagShips]
             [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
           [/#list]
         [#else]
-          <p class="emptyText text-center "> [@s.text name="No Flagships added yet." /]</p> 
+          <p class="emptyText text-center "> [@s.text name="project.deliverable.dissemination.Notflagships" /]</p> 
         [/#if]
       </div>
       [#if editable]
         <div class="row">
           <div class="col-md-5">
-            [@customForm.select name="" label=""  i18nkey="Select to add a CRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
+            [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
           </div>
           <div class="col-md-7">
-            [@customForm.select name="" label=""  i18nkey="Select to add a CCAFS Flaghsip" listName="programs"   multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
+            [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectFlagships" listName="programs"   multiple=false required=false  className="flaghsipSelect form-control input-sm " editable=editable/]
           </div>
         </div>
       [/#if] 
