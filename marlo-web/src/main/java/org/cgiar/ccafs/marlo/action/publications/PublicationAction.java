@@ -255,6 +255,20 @@ public class PublicationAction extends BaseAction {
       .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
       .collect(Collectors.toList()));
 
+    if (this.isHttpPost()) {
+      publication.setCrossCuttingGender(null);
+      publication.setCrossCuttingCapacity(null);
+      publication.setCrossCuttingNa(null);
+      publication.setCrossCuttingYouth(null);
+
+      if (publication.getUsers() != null) {
+        publication.getUsers().clear();
+      }
+
+      if (publication.getMetadataElements() != null) {
+        publication.getMetadataElements().clear();
+      }
+    }
   }
 
   @Override
