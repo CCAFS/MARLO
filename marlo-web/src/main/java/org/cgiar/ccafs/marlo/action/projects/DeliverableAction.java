@@ -1165,7 +1165,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1257,9 +1257,10 @@ public class DeliverableAction extends BaseAction {
       if (this.isReportingActive()) {
         if (deliverable.getQualityCheck() != null) {
           this.saveQualityCheck();
-          this.saveDissemination();
+
 
         }
+        this.saveDissemination();
         this.saveMetadata();
         this.saveCrps();
         this.savePublicationMetadata();
