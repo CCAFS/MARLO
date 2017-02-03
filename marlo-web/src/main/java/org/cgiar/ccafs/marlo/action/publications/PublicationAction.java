@@ -20,15 +20,21 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableMetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverablePublicationMetadataManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableQualityCheckManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
@@ -62,6 +68,10 @@ public class PublicationAction extends BaseAction {
   private DeliverableManager deliverableManager;
 
   private Deliverable publication;
+  private DeliverableDisseminationManager deliverableDisseminationManager;
+  private DeliverableMetadataElementManager deliverableMetadataElementManager;
+  private DeliverablePublicationMetadataManager deliverablePublicationMetadataManager;
+  private DeliverableUserManager deliverableUserManager;
 
   private String transaction;
 
@@ -77,13 +87,21 @@ public class PublicationAction extends BaseAction {
   @Inject
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, AuditLogManager auditLogManager,
-    DeliverableTypeManager deliverableTypeManager, MetadataElementManager metadataElementManager) {
+    DeliverableTypeManager deliverableTypeManager, MetadataElementManager metadataElementManager,
+    DeliverableDisseminationManager deliverableDisseminationManager,
+    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
+    DeliverableUserManager deliverableUserManager,
+    DeliverableMetadataElementManager deliverableMetadataElementManager) {
 
     super(config);
+    this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.crpManager = crpManager;
     this.deliverableManager = deliverableManager;
     this.auditLogManager = auditLogManager;
     this.deliverableQualityCheckManager = deliverableQualityCheckManager;
+    this.deliverablePublicationMetadataManager = deliverablePublicationMetadataManager;
+    this.deliverableUserManager = deliverableUserManager;
+    this.deliverableMetadataElementManager = deliverableMetadataElementManager;
     this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
   }
@@ -127,7 +145,6 @@ public class PublicationAction extends BaseAction {
   public List<DeliverableType> getDeliverableSubTypes() {
     return deliverableSubTypes;
   }
-
 
   public DeliverableTypeManager getDeliverableTypeManager() {
     return deliverableTypeManager;
@@ -271,6 +288,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
@@ -298,8 +316,15 @@ public class PublicationAction extends BaseAction {
     } else {
       deliverablePrew.setCrossCuttingYouth(true);
     }
+    deliverableManager.saveDeliverable(deliverablePrew);
     List<String> relationsName = new ArrayList<>();
 
+
+    this.saveDissemination();
+    this.saveMetadata();
+
+    this.savePublicationMetadata();
+    this.saveUsers();
     relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
@@ -340,6 +365,174 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
+  public void saveDissemination() {
+    if (publication.getDissemination() != null) {
+
+      DeliverableDissemination dissemination = new DeliverableDissemination();
+      if (publication.getDissemination().getId() != null && publication.getDissemination().getId() != -1) {
+        dissemination =
+          deliverableDisseminationManager.getDeliverableDisseminationById(publication.getDissemination().getId());
+      } else {
+        dissemination = new DeliverableDissemination();
+        dissemination.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+
+      }
+
+
+      if (publication.getDissemination().getIsOpenAccess() != null) {
+        dissemination.setIsOpenAccess(publication.getDissemination().getIsOpenAccess());
+        if (!publication.getDissemination().getIsOpenAccess().booleanValue()) {
+          String type = publication.getDissemination().getType();
+          if (type != null) {
+            switch (type) {
+              case "intellectualProperty":
+
+                dissemination.setIntellectualProperty(true);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+
+                break;
+              case "limitedExclusivity":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(true);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "restrictedUseAgreement":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(true);
+                dissemination.setEffectiveDateRestriction(false);
+
+                dissemination.setRestrictedAccessUntil(publication.getDissemination().getRestrictedAccessUntil());
+                dissemination.setRestrictedEmbargoed(null);
+
+                break;
+              case "effectiveDateRestriction":
+
+                dissemination.setIntellectualProperty(false);
+                dissemination.setLimitedExclusivity(false);
+                dissemination.setRestrictedUseAgreement(false);
+                dissemination.setEffectiveDateRestriction(true);
+
+                dissemination.setRestrictedAccessUntil(null);
+                dissemination.setRestrictedEmbargoed(publication.getDissemination().getRestrictedEmbargoed());
+
+                break;
+
+              default:
+                break;
+            }
+          }
+        } else {
+
+
+          dissemination.setIntellectualProperty(false);
+          dissemination.setLimitedExclusivity(false);
+          dissemination.setRestrictedUseAgreement(false);
+          dissemination.setEffectiveDateRestriction(false);
+
+          dissemination.setRestrictedAccessUntil(null);
+          dissemination.setRestrictedEmbargoed(null);
+        }
+      } else {
+
+        dissemination.setIsOpenAccess(null);
+
+        dissemination.setIntellectualProperty(false);
+        dissemination.setLimitedExclusivity(false);
+        dissemination.setRestrictedUseAgreement(false);
+        dissemination.setEffectiveDateRestriction(false);
+
+        dissemination.setRestrictedAccessUntil(null);
+        dissemination.setRestrictedEmbargoed(null);
+      }
+
+      if (publication.getDissemination().getAlreadyDisseminated() != null) {
+        dissemination.setAlreadyDisseminated(publication.getDissemination().getAlreadyDisseminated());
+        if (publication.getDissemination().getAlreadyDisseminated().booleanValue()) {
+
+          dissemination.setDisseminationUrl(publication.getDissemination().getDisseminationUrl());
+          dissemination.setDisseminationChannel(publication.getDissemination().getDisseminationChannel());
+        } else {
+          dissemination.setDisseminationUrl(null);
+          dissemination.setDisseminationChannel(null);
+        }
+      } else {
+        dissemination.setAlreadyDisseminated(null);
+        dissemination.setDisseminationUrl(null);
+        dissemination.setDisseminationChannel(null);
+      }
+
+
+      deliverableDisseminationManager.saveDeliverableDissemination(dissemination);
+
+    }
+
+
+  }
+
+  public void saveMetadata() {
+    if (publication.getMetadataElements() != null) {
+
+      for (DeliverableMetadataElement deliverableMetadataElement : publication.getMetadataElements()) {
+
+        if (deliverableMetadataElement != null && deliverableMetadataElement.getMetadataElement() != null) {
+
+          deliverableMetadataElement.setDeliverable(publication);
+          deliverableMetadataElementManager.saveDeliverableMetadataElement(deliverableMetadataElement);
+
+        }
+      }
+    }
+
+  }
+
+
+  public void savePublicationMetadata() {
+    if (publication.getPublication() != null) {
+      publication.getPublication().setDeliverable(publication);
+      if (publication.getPublication().getId() != null && publication.getPublication().getId().intValue() == -1) {
+        publication.getPublication().setId(null);
+      }
+      deliverablePublicationMetadataManager.saveDeliverablePublicationMetadata(publication.getPublication());
+
+    }
+  }
+
+  public void saveUsers() {
+    if (publication.getUsers() == null) {
+
+      publication.setUsers(new ArrayList<>());
+    }
+    Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
+    for (DeliverableUser deliverableUser : deliverableDB.getDeliverableUsers()) {
+      if (!publication.getUsers().contains(deliverableUser)) {
+        deliverableUserManager.deleteDeliverableUser(deliverableUser.getId());
+      }
+    }
+
+    for (DeliverableUser deliverableUser : publication.getUsers()) {
+
+      if (deliverableUser.getId() == null || deliverableUser.getId().intValue() == -1) {
+        deliverableUser.setId(null);
+        deliverableUser.setDeliverable(publication);
+        deliverableUserManager.saveDeliverableUser(deliverableUser);
+      }
+    }
+  }
 
   public void setDeliverableID(long deliverableID) {
     this.deliverableID = deliverableID;
