@@ -261,10 +261,9 @@ public class PublicationAction extends BaseAction {
         this.setDraft(false);
       }
 
-
-    }
-    if (metadataElementManager.findAll() != null) {
-      publication.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+      if (metadataElementManager.findAll() != null) {
+        publication.setMetadata(new ArrayList<>(metadataElementManager.findAll()));
+      }
     }
 
 

@@ -36,7 +36,7 @@
       [#-- Subtype & year of completition --]
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+          [@customForm.select name="${customName}.deliverableType.id" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
         </div>
         <div class="col-md-6">
           [@customForm.input name="${customName}.year" required=true className="" editable=editable /]
