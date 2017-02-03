@@ -38,6 +38,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -253,6 +255,75 @@ public class PublicationAction extends BaseAction {
       .filter(dt -> dt.getDeliverableType() != null && dt.getDeliverableType().getId().intValue() == 49)
       .collect(Collectors.toList()));
 
+  }
+
+  @Override
+  public String save() {
+    Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
+
+    deliverablePrew.setTitle(publication.getTitle());
+
+
+    if (publication.getCrossCuttingCapacity() == null) {
+      deliverablePrew.setCrossCuttingCapacity(false);
+    } else {
+      deliverablePrew.setCrossCuttingCapacity(true);
+    }
+    if (publication.getCrossCuttingNa() == null) {
+      deliverablePrew.setCrossCuttingNa(false);
+    } else {
+      deliverablePrew.setCrossCuttingNa(true);
+    }
+    if (publication.getCrossCuttingGender() == null) {
+      deliverablePrew.setCrossCuttingGender(false);
+    } else {
+      deliverablePrew.setCrossCuttingGender(true);
+    }
+    if (publication.getCrossCuttingYouth() == null) {
+      deliverablePrew.setCrossCuttingYouth(false);
+    } else {
+      deliverablePrew.setCrossCuttingYouth(true);
+    }
+    List<String> relationsName = new ArrayList<>();
+
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_PUBLICATION_METADATA);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_DISEMINATIONS);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
+
+
+    publication = deliverableManager.getDeliverableById(deliverableID);
+    publication.setActiveSince(new Date());
+    publication.setModifiedBy(this.getCurrentUser());
+    publication.setModificationJustification(this.getJustification());
+
+    deliverableManager.saveDeliverable(publication, this.getActionName(), relationsName);
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+    this.setInvalidFields(new HashMap<>());
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      Collection<String> messages = this.getActionMessages();
+      if (!this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
+        List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+        for (String key : keys) {
+          this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+        }
+
+      } else {
+        this.addActionMessage("message:" + this.getText("saving.saved"));
+      }
+      return SUCCESS;
+    } else {
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      return REDIRECT;
+    }
   }
 
 

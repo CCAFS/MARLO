@@ -212,7 +212,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
 
   private String getProjectOutcomePath() {
-    return config.getUploadsBaseFolder() + File.separator + this.getProjectOutcomeUrl() + File.separator;
+    return config.getUploadsBaseFolder() + File.separator + this.getProjectOutcomeUrlPath() + File.separator;
   }
 
   public String getProjectOutcomeUrl() {
@@ -221,7 +221,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
 
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
-      + "projectOutcome" + File.separator;
+      + "project_outcome" + File.separator;
   }
 
   public String getProjectRequest() {
