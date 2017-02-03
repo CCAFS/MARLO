@@ -226,25 +226,27 @@ public class DeliverableValidator extends BaseValidator {
         if (deliverable.getAdoptedLicense() != null) {
           this.validateLicense(deliverable);
         } else {
-          this.addMessage(action.getText("project.deliverable.v.qualityCheck"));
+          this.addMessage(action.getText("project.deliverable.v.ALicense"));
           action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
         }
 
         // Deliverable Quality Check
-        if (deliverable.getQualityCheck() != null) {
-          if (deliverable.getQualityCheck().getQualityAssurance() == null) {
-            this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
-          }
+        if (deliverable.getDeliverableType().getDeliverableType().getId() == 42) {
+          if (deliverable.getQualityCheck() != null) {
+            if (deliverable.getQualityCheck().getQualityAssurance() == null) {
+              this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
+              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+            }
 
-          if (deliverable.getQualityCheck().getDataDictionary() == null) {
-            this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
-          }
+            if (deliverable.getQualityCheck().getDataDictionary() == null) {
+              this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
+              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+            }
 
-          if (deliverable.getQualityCheck().getDataTools() == null) {
-            this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-            action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+            if (deliverable.getQualityCheck().getDataTools() == null) {
+              this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
+              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
 
