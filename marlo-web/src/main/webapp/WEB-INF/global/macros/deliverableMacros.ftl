@@ -142,7 +142,8 @@
   
   <div class="findableOptions" style="display:[#if (deliverable.dissemination.alreadyDisseminated)?? && (deliverable.dissemination.alreadyDisseminated)]block[#else]none [/#if]">
     <hr />
-    <div class="note">[@s.text name = "The following list of dissemination channels are in accordance to the CGIAR Open Access Policy (i.e. adopt an Interoperability Protocol and Dublin Core Metadata Schema)." /]</div>
+    [#-- Note --]
+    <div class="note">MARLO is interoperable with two repositories - CGSpace and Dataverse.  MARLO does not yet have interoperability with other platforms, but we are working on it.</div>
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]
@@ -156,7 +157,7 @@
         [#-- CGSpace examples & instructions --]
         <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
           <label for="">Example of URL:</label>
-          <p><small>https://cgspace.cgiar.org/handle/10568/52163</small></p>
+          <p><small>https://cgspace.cgiar.org/handle/10568/79435</small></p>
         </div>
         [#-- Dataverse examples & instructions --]
         <div class="exampleUrl-block channel-dataverse" style="display:[#if deliverable.dissemination.disseminationChannel?? &&  deliverable.dissemination.disseminationChannel=="dataverse"]block[#else]none[/#if];">
