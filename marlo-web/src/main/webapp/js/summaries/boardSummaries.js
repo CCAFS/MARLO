@@ -39,10 +39,11 @@ function attachEvents() {
   $("input[name='cycle']").on("change", function() {
     if($(this).val() == "Planning") {
       $(".reportingCycle").hide("");
-      reportYear = "2017";
+      reportYear = $(".planningYear").text();
     } else {
       $(".reportingCycle").show("");
-      reportYear = "2016";
+      reportYear = $(".reportingYear").text();
+// console.log(reportYear);
     }
     updateUrl($(".summariesOptions").find(".selected"));
   });
@@ -280,7 +281,14 @@ function updateUrl(element) {
 // console.log(reportYear);
     if($(element).find(".onlyYear").exists()) {
       reportYear = $(element).find(".onlyYear").val();
+    } else {
+      if($("input[name='cycle']:checked").val() == "Planning") {
+        reportYear = "2017";
+      } else {
+        reportYear = "2016";
+      }
     }
+// console.log(reportYear);
     generateUrl += '&year=' + reportYear;
     setUrl(generateUrl);
   } else {
