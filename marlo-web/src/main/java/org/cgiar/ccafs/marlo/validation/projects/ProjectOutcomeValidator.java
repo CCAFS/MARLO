@@ -268,7 +268,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
 
-    if (projectOutcome.getNextUsers() != null || projectOutcome.getNextUsers().size() > 0) {
+    if (projectOutcome.getNextUsers() != null && projectOutcome.getNextUsers().size() > 0) {
       for (int i = 0; i < projectOutcome.getNextUsers().size(); i++) {
         this.validateProjectNextUser(action, projectOutcome.getNextUsers().get(i), i);
       }
