@@ -115,6 +115,19 @@
               <div class="extraOptions" style="display:none"> 
             </div>
           </div>
+          
+          [#-- caseStudies By Year Summary PDF--] 
+          <div class="summariesFiles borderBox col-md-3 reportingCycle" style="display:none;">
+            <span title="[@s.text name="" /]" class="info-file fa fa-info-circle "></span>
+            <div class="col-md-12 title-file">
+              <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudySummary"/>
+              <label for="">[@s.text name="project outcomes case studies" /]</label>
+            </div>
+            <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
+              <div class="extraOptions" style="display:none"> 
+            </div>
+          </div>
+          
         </div>
         
         
