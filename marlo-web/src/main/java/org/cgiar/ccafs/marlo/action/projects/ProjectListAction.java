@@ -372,8 +372,7 @@ public class ProjectListAction extends BaseAction {
           allProjects.removeAll(myProjects);
         } else {
           allProjects = loggedCrp.getProjects().stream()
-            .filter(p -> p.isActive()
-              && p.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()))
+            .filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())
             .collect(Collectors.toList());
           myProjects = projectManager.getUserProjectsReporting(this.getCurrentUser().getId(), loggedCrp.getAcronym())
             .stream().filter(p -> p.isActive() && p.getReporting() != null && p.getReporting().booleanValue())

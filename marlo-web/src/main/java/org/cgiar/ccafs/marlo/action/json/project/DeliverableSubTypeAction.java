@@ -58,10 +58,12 @@ public class DeliverableSubTypeAction extends BaseAction {
 
     if (deliverableType != null) {
       for (DeliverableType type : deliverableTypeManager.getSubDeliverableType(deliverableType.getId())) {
-        deliverableSubType = new HashMap<String, Object>();
-        deliverableSubType.put("id", type.getId());
-        deliverableSubType.put("name", type.getName());
-        deliverableSubTypes.add(deliverableSubType);
+        if (type.getId() != 62) {
+          deliverableSubType = new HashMap<String, Object>();
+          deliverableSubType.put("id", type.getId());
+          deliverableSubType.put("name", type.getName());
+          deliverableSubTypes.add(deliverableSubType);
+        }
       }
     }
 
