@@ -19,6 +19,7 @@ function init() {
       coordinatorType, leaderType, defaultType, '-1'
   ];
   if(editable) {
+
     // Getting the actual project leader
     projectLeader = jQuery.extend({}, getProjectLeader());
     // Remove PPA institutions from partner institution list when there is not privileges to update PPA Partners
@@ -30,6 +31,10 @@ function init() {
 
     // Activate the chosen to the existing partners
     addSelect2();
+    $("form .partnerPersonType").select2({
+        templateResult: formatState,
+        width: "100%"
+    });
     // Applying word counters to form fields
     // applyWordCounter($("form textarea.resp"), lWordsResp);
     // applyWordCounter($("#lessons textarea"), lWordsResp);
@@ -844,3 +849,24 @@ function PartnerPersonObject(partnerPerson) {
     });
   };
 }
+
+function formatState(state) {
+  var text = "";
+  if(state.id == "PC") {
+    text =
+        "Responsible for helping the Project Leader to fill the information requested by the system. He/she will have the same privileges as the Project Leader with the exception that cannot officially submit the project into the platform.";
+  } else if(state.id == "PL") {
+    text =
+        "Responsible for the entire project. He/she must officially submit the project into the platform. Only one Project Leader per project is allowed.";
+  } else if(state.id == "CP") {
+    text =
+        "This person is a member of the project but does not have access to nor responsibilities in MARLO. It could also be a person who is responsible for a producing a deliverable and/or activity.";
+  }
+  var $state =
+      $("<span><b>"
+          + state.text
+          + "</b> <br><small style='margin-top:2px; font-size:80%; line-height:13px; display:block; font-style:italic;'>"
+          + text + "</small> </span>");
+  return $state;
+
+};
