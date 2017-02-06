@@ -196,7 +196,6 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     }
   }
 
-
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
@@ -280,7 +279,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
           indicators = indicatorsS.toString();
 
           if (caseStudy.getFile() != null) {
-            anex = caseStudy.getFile().getFileName();
+            anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
 
@@ -296,6 +295,16 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
     return model;
 
+  }
+
+
+  public String getCaseStudyUrl(String project) {
+    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
+  }
+
+  public String getCaseStudyUrlPath(String project) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
+      + File.separator;
   }
 
   @Override

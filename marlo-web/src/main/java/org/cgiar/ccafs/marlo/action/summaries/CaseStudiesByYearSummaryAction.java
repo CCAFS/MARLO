@@ -279,7 +279,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
           indicators = indicatorsS.toString();
 
           if (caseStudy.getFile() != null) {
-            anex = caseStudy.getFile().getFileName();
+            anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
           }
 
 
@@ -298,11 +298,20 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
   }
 
+  public String getCaseStudyUrl(String project) {
+    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
+  }
+
+
+  public String getCaseStudyUrlPath(String project) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
+      + File.separator;
+  }
+
   @Override
   public int getContentLength() {
     return bytesXLSX.length;
   }
-
 
   @Override
   public String getContentType() {

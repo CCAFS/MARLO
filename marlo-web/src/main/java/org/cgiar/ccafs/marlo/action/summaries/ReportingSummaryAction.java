@@ -805,22 +805,21 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
   private TypedTableModel getCaseStudiesTableModel() {
-    // TODO Copy Hermes prpt and action
-
+    // TODO Code Author: Hermes Jimenez
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "indicators", "shared"},
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
 
     Long id = null;
 
     String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
       nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
+      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
     for (CaseStudyProject caseStudyProject : project.getCaseStudyProjects().stream()
       .filter(csp -> csp.isActive() && csp.getCaseStudy() != null).collect(Collectors.toList())) {
@@ -828,36 +827,40 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
       id = caseStudy.getId();
 
-      title = caseStudy.getTitle();
+      year = String.valueOf(caseStudy.getYear());
 
-      outcomeStatement = caseStudy.getOutcomeStatement();
+      title = caseStudy.getTitle().trim().isEmpty() ? null : caseStudy.getTitle();
 
-      researchOutputs = caseStudy.getResearchOutputs();
+      outcomeStatement = caseStudy.getOutcomeStatement().trim().isEmpty() ? null : caseStudy.getOutcomeStatement();
 
-      researchPartners = caseStudy.getResearchPartners();
+      researchOutputs = caseStudy.getResearchOutputs().trim().isEmpty() ? null : caseStudy.getResearchOutputs();
 
-      activities = caseStudy.getActivities();
+      researchPartners = caseStudy.getResearchPartners().trim().isEmpty() ? null : caseStudy.getResearchPartners();
 
-      nonResearchPartneres = caseStudy.getNonResearchPartneres();
+      activities = caseStudy.getActivities().trim().isEmpty() ? null : caseStudy.getActivities();
 
-      outputUsers = caseStudy.getOutputUsers();
+      nonResearchPartneres =
+        caseStudy.getNonResearchPartneres().trim().isEmpty() ? null : caseStudy.getNonResearchPartneres();
 
-      outputUsed = caseStudy.getOutputUsed();
+      outputUsers = caseStudy.getOutputUsers().trim().isEmpty() ? null : caseStudy.getOutputUsers();
 
-      evidenceOutcome = caseStudy.getEvidenceOutcome();
+      outputUsed = caseStudy.getOutputUsed().trim().isEmpty() ? null : caseStudy.getOutputUsed();
 
-      referencesCase = caseStudy.getReferencesCase();
+      evidenceOutcome = caseStudy.getEvidenceOutcome().trim().isEmpty() ? null : caseStudy.getEvidenceOutcome();
 
-      explainIndicatorRelation = caseStudy.getExplainIndicatorRelation();
+      referencesCase = caseStudy.getReferencesCase().trim().isEmpty() ? null : caseStudy.getReferencesCase();
+
+      explainIndicatorRelation =
+        caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
 
       List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects());
 
       for (CaseStudyProject caseStudyProjectList : studyProjects) {
-        if (caseStudyProject.isCreated()) {
-          shared = String.valueOf(caseStudyProject.getProject().getId());
+        if (caseStudyProjectList.isCreated()) {
+          shared = String.valueOf(caseStudyProjectList.getProject().getId());
         }
 
-        owner = "P" + caseStudyProject.getProject().getId();
+        owner = "P" + caseStudyProjectList.getProject().getId();
       }
 
       List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
@@ -875,20 +878,31 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       indicators = indicatorsS.toString();
 
       if (caseStudy.getFile() != null) {
-        anex = caseStudy.getFile().getFileName();
+        anex = this.getCaseStudyUrl() + caseStudy.getFile().getFileName();
+
       }
 
 
-      model.addRow(
-        new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(), researchPartners.trim(),
-          activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(), evidenceOutcome.trim(), outputUsed.trim(),
-          referencesCase.trim(), explainIndicatorRelation.trim(), anex, owner.trim(), indicators.trim()});
-
+      model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+        nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation, anex,
+        owner.trim(), indicators.trim(), shared.trim(), year});
 
     }
 
     return model;
+  }
 
+  private String getCaseStudyPath() {
+    return config.getUploadsBaseFolder() + File.separator + this.getCaseStudyUrlPath() + File.separator;
+  }
+
+  public String getCaseStudyUrl() {
+    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
+  }
+
+  public String getCaseStudyUrlPath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "caseStudy" + File.separator;
   }
 
   private TypedTableModel getccafsOutcomesTableModel() {
@@ -1277,6 +1291,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return file;
   }
 
+
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
@@ -1288,6 +1303,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return fileName.toString();
 
   }
+
 
   public IpIndicator getFinalIndicator(IpIndicator ipIndicator) {
     IpIndicator newIpIndicator = ipIndicator;
@@ -1308,7 +1324,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private void getFooterSubreports(HashMap<String, Element> hm, ReportFooter reportFooter) {
 
     int elementCount = reportFooter.getElementCount();
@@ -1326,7 +1341,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
   }
-
 
   @Override
   public InputStream getInputStream() {
@@ -1600,6 +1614,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getOtherContributionsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"contribution"}, new Class[] {String.class}, 0);
     String contribution = null;
@@ -1683,7 +1698,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getOverviewByMogsTableModel() {
-    // TODO: Auto-generated method stub
     TypedTableModel model = new TypedTableModel(
       new String[] {"ipProgram", "ipElement", "bullet_points", "summary", "plan", "gender", "output_year",
         "changeYearTab", "isMidOutcome"},
@@ -1761,7 +1775,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getPartnerLeaderTableModel(ProjectPartner projectLeader) {
     TypedTableModel model =
       new TypedTableModel(new String[] {"org_leader", "pp_id"}, new Class[] {String.class, Long.class}, 0);
@@ -1822,6 +1835,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getPartnersTableModel() {
     TypedTableModel model =
       new TypedTableModel(new String[] {"count", "overall"}, new Class[] {Integer.class, String.class}, 0);
@@ -1880,7 +1894,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
-
 
   private TypedTableModel getProjectOutcomesTableModel() {
 
@@ -1956,10 +1969,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getProjectOutcomeUrlPath().replace('\\', '/');
   }
 
+
   public String getProjectOutcomeUrlPath() {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
       + "projectOutcome" + File.separator;
   }
+
 
   private TypedTableModel getRLTableModel(List<CrpProgram> regions) {
     TypedTableModel model = new TypedTableModel(new String[] {"RL"}, new Class[] {String.class}, 0);
