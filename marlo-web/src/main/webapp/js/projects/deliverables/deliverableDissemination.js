@@ -23,9 +23,6 @@ function init() {
       }
   });
   /* Init Select2 plugin */
-  $('.disseminationChannel').select2({
-    width: '90%'
-  });
 
   // Is this deliverable Open Access
   $(".accessible .button-label").on("click", function() {
