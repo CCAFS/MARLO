@@ -48,7 +48,7 @@ import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.ReportFooter;
 import org.pentaho.reporting.engine.classic.core.SubReport;
 import org.pentaho.reporting.engine.classic.core.TableDataFactory;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfReportUtil;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -56,27 +56,24 @@ import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class CaseStudiesByYearSummaryAction extends BaseAction implements Summary {
+public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
 
-  private static final long serialVersionUID = 8916546917647383705L;
+  private static final long serialVersionUID = 1L;
 
 
   private CaseStudyManager caseStudyManager;
 
   private CrpManager crpManager;
 
-  private int year;
-
-
   private Crp loggedCrp;
   // XLSX bytes
-  private byte[] bytesXLSX;
+  private byte[] bytesPDF;
   // Streams
   InputStream inputStream;
 
   @Inject
-  public CaseStudiesByYearSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
+  public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
     super(config);
     this.caseStudyManager = caseStudyManager;
     this.crpManager = crpManager;
@@ -92,7 +89,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     manager.registerDefaults();
 
     Resource reportResource =
-      manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudies.prpt"), MasterReport.class);
+      manager.createDirectly(this.getClass().getResource("/pentaho/CaseStudy.prpt"), MasterReport.class);
 
     MasterReport masterReport = (MasterReport) reportResource.getResource();
     String center = loggedCrp.getName();
@@ -111,7 +108,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
+    TypedTableModel model = this.getMasterTableModel(center, date);
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -126,8 +123,8 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
     this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
 
-    ExcelReportUtil.createXLSX(masterReport, os);
-    bytesXLSX = os.toByteArray();
+    PdfReportUtil.createPDF(masterReport, os);
+    bytesPDF = os.toByteArray();
     os.close();
 
     return SUCCESS;
@@ -139,7 +136,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     TypedTableModel model = null;
     switch (query) {
       case "case_studies":
-        model = this.getCaseStudiesTableModel(year);
+        model = this.getCaseStudiesTableModel();
         break;
     }
     sdf.addTable(query, model);
@@ -200,37 +197,39 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   }
 
 
-  public byte[] getBytesXLSX() {
-    return bytesXLSX;
+  public byte[] getBytesPDF() {
+    return bytesPDF;
   }
 
-  private TypedTableModel getCaseStudiesTableModel(int year) {
+  private TypedTableModel getCaseStudiesTableModel() {
 
 
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
-        "explainIndicatorRelation", "anex", "owner", "indicators", "shared"},
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared", "year"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
 
     Long id = null;
 
     String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
       nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
-      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
+      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "", year = "";
 
     if (caseStudyManager.findAll() != null) {
 
-      List<CaseStudy> caseStudies = new ArrayList<>(caseStudyManager.findAll().stream()
-        .filter(cs -> cs.isActive() && cs.getYear() == year).collect(Collectors.toList()));
+      List<CaseStudy> caseStudies =
+        new ArrayList<>(caseStudyManager.findAll().stream().filter(cs -> cs.isActive()).collect(Collectors.toList()));
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
 
           id = caseStudy.getId();
+
+          year = String.valueOf(caseStudy.getYear());
 
           title = caseStudy.getTitle();
 
@@ -286,7 +285,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
           model.addRow(new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(),
             researchPartners.trim(), activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(),
             evidenceOutcome.trim(), outputUsed.trim(), referencesCase.trim(), explainIndicatorRelation.trim(), anex,
-            owner.trim(), indicators.trim(), shared.trim()});
+            owner.trim(), indicators.trim(), shared.trim(), year.trim()});
 
         }
       }
@@ -300,13 +299,13 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
   @Override
   public int getContentLength() {
-    return bytesXLSX.length;
+    return bytesPDF.length;
   }
 
 
   @Override
   public String getContentType() {
-    return "application/xlsx";
+    return "application/pdf";
   }
 
   private File getFile(String fileName) {
@@ -320,9 +319,9 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("CaseStudiesSummary_");
+    fileName.append("CaseStudiesSummaryPDF_");
     fileName.append(new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date()));
-    fileName.append(".xlsx");
+    fileName.append(".pdf");
 
     return fileName.toString();
 
@@ -349,7 +348,7 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
-      inputStream = new ByteArrayInputStream(bytesXLSX);
+      inputStream = new ByteArrayInputStream(bytesPDF);
     }
     return inputStream;
   }
@@ -358,17 +357,14 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date, String year) {
+  private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
-      new Class[] {String.class, String.class, String.class});
-    model.addRow(new Object[] {center, date, year});
+    TypedTableModel model =
+      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
+    model.addRow(new Object[] {center, date});
     return model;
   }
 
-  public int getYear() {
-    return year;
-  }
 
   @Override
   public void prepare() throws Exception {
@@ -377,16 +373,10 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
     }
-
-    try {
-      year = Integer.parseInt(this.getRequest().getParameter("year"));
-    } catch (Exception e) {
-      year = this.getCurrentCycleYear();
-    }
   }
 
-  public void setBytesXLSX(byte[] bytesXLSX) {
-    this.bytesXLSX = bytesXLSX;
+  public void setBytesPDF(byte[] bytesPDF) {
+    this.bytesPDF = bytesPDF;
   }
 
   public void setInputStream(InputStream inputStream) {
@@ -395,10 +385,6 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
-  }
-
-  public void setYear(int year) {
-    this.year = year;
   }
 
 
