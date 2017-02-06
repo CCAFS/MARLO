@@ -283,10 +283,9 @@ public class CaseStudiesByYearSummaryAction extends BaseAction implements Summar
           }
 
 
-          model.addRow(new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(),
-            researchPartners.trim(), activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(),
-            evidenceOutcome.trim(), outputUsed.trim(), referencesCase.trim(), explainIndicatorRelation.trim(), anex,
-            owner.trim(), indicators.trim(), shared.trim()});
+          model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+            nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
+            anex, owner, indicators, shared});
 
         }
       }
