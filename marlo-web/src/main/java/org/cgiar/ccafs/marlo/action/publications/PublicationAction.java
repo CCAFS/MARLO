@@ -168,6 +168,13 @@ public class PublicationAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+
+
+    // CHRISTIAN PLEASE DELETE THIS MACHETAZO
+    this.setCanEdit(true);
+    this.setEditable(true);
+
+
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     try {

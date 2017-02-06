@@ -21,12 +21,13 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
-import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
-import org.cgiar.ccafs.marlo.data.manager.IpProjectIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -40,6 +41,7 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContribution;
+import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.OtherContribution;
@@ -142,8 +144,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   private LocElementManager locElementManager;
   private CrpManager crpManager;
   private IpElementManager ipElementManager;
-  private IpProjectIndicatorManager ipProjectIndicatorManager;
-  private IpIndicatorManager ipIndicatorManager;
 
   // Project from DB
   private Project project;
@@ -151,8 +151,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   @Inject
   public ReportingSummaryAction(APConfig config, CrpManager crpManager, ProjectManager projectManager,
     CrpProgramManager programManager, InstitutionManager institutionManager, ProjectBudgetManager projectBudgetManager,
-    LocElementManager locElementManager, IpElementManager ipElementManager,
-    IpProjectIndicatorManager ipProjectIndicatorManager, IpIndicatorManager ipIndicatorManager) {
+    LocElementManager locElementManager, IpElementManager ipElementManager) {
     super(config);
     this.crpManager = crpManager;
     this.projectManager = projectManager;
@@ -161,8 +160,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     this.projectBudgetManager = projectBudgetManager;
     this.locElementManager = locElementManager;
     this.ipElementManager = ipElementManager;
-    this.ipProjectIndicatorManager = ipProjectIndicatorManager;
-    this.ipIndicatorManager = ipIndicatorManager;
   }
 
 
@@ -396,6 +393,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.fillSubreport((SubReport) hm.get("other_contributions"), "other_contributions", args);
           this.fillSubreport((SubReport) hm.get("other_contributions_detail"), "other_contributions_detail", args);
           this.fillSubreport((SubReport) hm.get("other_contributions_crps"), "other_contributions_crps", args);
+          this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies", args);
+          this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
         }
         // Subreport Deliverables
         args.clear();
@@ -515,6 +514,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       case "other_contributions_crps":
         model = this.getOtherContributionsCrpsTableModel();
         break;
+      case "case_studies":
+        model = this.getCaseStudiesTableModel();
+        break;
+      case "overview_by_mogs":
+        model = this.getOverviewByMogsTableModel();
+        break;
 
 
     }
@@ -565,6 +570,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   /**
    * Get all subreports and store then in a hash map.
    * If it encounters a band, search subreports in the band
@@ -593,6 +599,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
   }
+
 
   /**
    * Get all subreports in the band.
@@ -628,7 +635,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return null;
   }
-
 
   private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -797,6 +803,94 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return bytesPDF;
   }
 
+
+  private TypedTableModel getCaseStudiesTableModel() {
+    // TODO Copy Hermes prpt and action
+
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
+        "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
+        "explainIndicatorRelation", "anex", "owner", "indicators", "shared"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class},
+      0);
+
+    Long id = null;
+
+    String title = "", outcomeStatement = "", researchOutputs = "", researchPartners = "", activities = "",
+      nonResearchPartneres = "", outputUsers = "", evidenceOutcome = "", outputUsed = "", referencesCase = "",
+      explainIndicatorRelation = "", anex = "", owner = "", shared = "", indicators = "";
+
+    for (CaseStudyProject caseStudyProject : project.getCaseStudyProjects().stream()
+      .filter(csp -> csp.isActive() && csp.getCaseStudy() != null).collect(Collectors.toList())) {
+      CaseStudy caseStudy = caseStudyProject.getCaseStudy();
+
+      id = caseStudy.getId();
+
+      title = caseStudy.getTitle();
+
+      outcomeStatement = caseStudy.getOutcomeStatement();
+
+      researchOutputs = caseStudy.getResearchOutputs();
+
+      researchPartners = caseStudy.getResearchPartners();
+
+      activities = caseStudy.getActivities();
+
+      nonResearchPartneres = caseStudy.getNonResearchPartneres();
+
+      outputUsers = caseStudy.getOutputUsers();
+
+      outputUsed = caseStudy.getOutputUsed();
+
+      evidenceOutcome = caseStudy.getEvidenceOutcome();
+
+      referencesCase = caseStudy.getReferencesCase();
+
+      explainIndicatorRelation = caseStudy.getExplainIndicatorRelation();
+
+      List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects());
+
+      for (CaseStudyProject caseStudyProjectList : studyProjects) {
+        if (caseStudyProject.isCreated()) {
+          shared = String.valueOf(caseStudyProject.getProject().getId());
+        }
+
+        owner = "P" + caseStudyProject.getProject().getId();
+      }
+
+      List<CaseStudyIndicator> studyIndicators = new ArrayList<>(
+        caseStudy.getCaseStudyIndicators().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+      StringBuilder indicatorsS = new StringBuilder();
+
+
+      for (CaseStudyIndicator caseStudyIndicator : studyIndicators) {
+        if (caseStudyIndicator.isActive()) {
+          indicatorsS.append(caseStudyIndicator.getIpIndicator().getDescription() + "\n");
+        }
+      }
+
+      indicators = indicatorsS.toString();
+
+      if (caseStudy.getFile() != null) {
+        anex = caseStudy.getFile().getFileName();
+      }
+
+
+      model.addRow(
+        new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(), researchPartners.trim(),
+          activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(), evidenceOutcome.trim(), outputUsed.trim(),
+          referencesCase.trim(), explainIndicatorRelation.trim(), anex, owner.trim(), indicators.trim()});
+
+
+    }
+
+    return model;
+
+  }
+
   private TypedTableModel getccafsOutcomesTableModel() {
 
     TypedTableModel model = new TypedTableModel(
@@ -831,8 +925,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           || i.getYear() == year - 1 || i.getYear() == year + 1 || i.getYear() == APConstants.MID_OUTCOME_YEAR))
         .collect(Collectors.toList())) {
         IpIndicator ipIndicator = ipProjectIndicator.getIpIndicator();
-        System.out.println("Current " + ipIndicator.getId());
-        System.out.println("Final " + this.getFinalIndicator(ipIndicator).getId());
+        // System.out.println("Current " + ipIndicator.getId());
+        // System.out.println("Final " + this.getFinalIndicator(ipIndicator).getId());
         indicatorsList.add(this.getFinalIndicator(ipIndicator));
       }
 
@@ -1205,7 +1299,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
-
   private TypedTableModel getFLTableModel(List<CrpProgram> flagships) {
 
     TypedTableModel model = new TypedTableModel(new String[] {"FL"}, new Class[] {String.class}, 0);
@@ -1233,6 +1326,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
   }
+
 
   @Override
   public InputStream getInputStream() {
@@ -1584,6 +1678,85 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
 
+
+    return model;
+  }
+
+  private TypedTableModel getOverviewByMogsTableModel() {
+    // TODO: Auto-generated method stub
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"ipProgram", "ipElement", "bullet_points", "summary", "plan", "gender", "output_year",
+        "changeYearTab", "isMidOutcome"},
+      new Class[] {String.class, String.class, String.class, String.class, String.class, String.class, Integer.class,
+        Boolean.class, Boolean.class},
+      0);
+    int control_year = 0;
+    Boolean changeYearTab = true;
+    Boolean isMidOutcome = false;
+    for (IpProjectContributionOverview ipProjectContributionOverview : project.getIpProjectContributionOverviews()
+      .stream().sorted((co1, co2) -> co2.getYear() - co1.getYear()).filter(co -> co.isActive())
+      .collect(Collectors.toList())) {
+      System.out.println(ipProjectContributionOverview.getYear());
+      if (ipProjectContributionOverview.getYear() == APConstants.MID_OUTCOME_YEAR) {
+        isMidOutcome = true;
+      } else {
+        isMidOutcome = false;
+      }
+      if (control_year == 0) {
+        control_year = ipProjectContributionOverview.getYear();
+      } else {
+        if (control_year == ipProjectContributionOverview.getYear()) {
+          changeYearTab = false;
+        } else {
+          changeYearTab = true;
+          control_year = ipProjectContributionOverview.getYear();
+        }
+
+      }
+
+      String ipProgram = null;
+      String ipElement = null;
+      String bullet_points = null;
+      String summary = null;
+      String plan = null;
+      String gender = null;
+      int output_year = 0;
+
+      if (ipProjectContributionOverview.getIpElement() != null) {
+        if (!ipProjectContributionOverview.getIpElement().getDescription().isEmpty()) {
+          ipElement = ipProjectContributionOverview.getIpElement().getDescription();
+        }
+        if (ipProjectContributionOverview.getIpElement().getIpProgram() != null) {
+          if (!ipProjectContributionOverview.getIpElement().getIpProgram().getAcronym().isEmpty()) {
+            ipProgram = ipProjectContributionOverview.getIpElement().getIpProgram().getAcronym();
+          }
+
+        }
+      }
+      if (ipProjectContributionOverview.getAnualContribution() != null
+        && !ipProjectContributionOverview.getAnualContribution().isEmpty()) {
+        bullet_points = ipProjectContributionOverview.getAnualContribution();
+      }
+
+      if (ipProjectContributionOverview.getBriefSummary() != null
+        && !ipProjectContributionOverview.getBriefSummary().isEmpty()) {
+        summary = ipProjectContributionOverview.getBriefSummary();
+      }
+      if (ipProjectContributionOverview.getGenderContribution() != null
+        && !ipProjectContributionOverview.getGenderContribution().isEmpty()) {
+        plan = ipProjectContributionOverview.getGenderContribution();
+      }
+      if (ipProjectContributionOverview.getSummaryGender() != null
+        && !ipProjectContributionOverview.getSummaryGender().isEmpty()) {
+        gender = ipProjectContributionOverview.getSummaryGender();
+      }
+
+      output_year = ipProjectContributionOverview.getYear();
+
+      model.addRow(new Object[] {ipProgram, ipElement, bullet_points, summary, plan, gender, output_year, changeYearTab,
+        isMidOutcome});
+
+    }
 
     return model;
   }

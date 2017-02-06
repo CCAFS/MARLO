@@ -97,7 +97,10 @@
                 [@deliverableMacros.deliverableLicenseMacro /]
                 
                 [#-- Metadata (included publications) --]
-                [@deliverableMacros.deliverableMetadataMacro /]
+                <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
+                <div class="simpleBox">
+                  [@deliverableMacros.deliverableMetadataMacro /]
+                </div>
               </div>
               [#-- Deliverable qualityCheck --]
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">

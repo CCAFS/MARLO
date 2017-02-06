@@ -13,7 +13,7 @@
     
     
     
-      <action name="{crp}/addNewPublication" method="add"
+    <action name="{crp}/addNewPublication" method="add"
       class="org.cgiar.ccafs.marlo.action.publications.PublicationListAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/publications/publicationsList.ftl
