@@ -3351,7 +3351,7 @@ p.projectValidateButton-message {
 }
 
 .projectsList #projectFlagships {
-  width: 120px;
+  width: 206px;
 }
 
 .projectsList #projectBudget {
@@ -6086,7 +6086,7 @@ span.programTag {
     border-radius: 1px;
     padding: 0px 6px;
     margin-right: 0px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 0.9em;
     cursor: pointer;
     opacity: 0.9;
