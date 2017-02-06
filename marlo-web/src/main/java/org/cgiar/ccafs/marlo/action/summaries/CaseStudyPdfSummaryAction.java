@@ -231,27 +231,29 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
           year = String.valueOf(caseStudy.getYear());
 
-          title = caseStudy.getTitle();
+          title = caseStudy.getTitle().trim().isEmpty() ? null : caseStudy.getTitle();
 
-          outcomeStatement = caseStudy.getOutcomeStatement();
+          outcomeStatement = caseStudy.getOutcomeStatement().trim().isEmpty() ? null : caseStudy.getOutcomeStatement();
 
-          researchOutputs = caseStudy.getResearchOutputs();
+          researchOutputs = caseStudy.getResearchOutputs().trim().isEmpty() ? null : caseStudy.getResearchOutputs();
 
-          researchPartners = caseStudy.getResearchPartners();
+          researchPartners = caseStudy.getResearchPartners().trim().isEmpty() ? null : caseStudy.getResearchPartners();
 
-          activities = caseStudy.getActivities();
+          activities = caseStudy.getActivities().trim().isEmpty() ? null : caseStudy.getActivities();
 
-          nonResearchPartneres = caseStudy.getNonResearchPartneres();
+          nonResearchPartneres =
+            caseStudy.getNonResearchPartneres().trim().isEmpty() ? null : caseStudy.getNonResearchPartneres();
 
-          outputUsers = caseStudy.getOutputUsers();
+          outputUsers = caseStudy.getOutputUsers().trim().isEmpty() ? null : caseStudy.getOutputUsers();
 
-          outputUsed = caseStudy.getOutputUsed();
+          outputUsed = caseStudy.getOutputUsed().trim().isEmpty() ? null : caseStudy.getOutputUsed();
 
-          evidenceOutcome = caseStudy.getEvidenceOutcome();
+          evidenceOutcome = caseStudy.getEvidenceOutcome().trim().isEmpty() ? null : caseStudy.getEvidenceOutcome();
 
-          referencesCase = caseStudy.getReferencesCase();
+          referencesCase = caseStudy.getReferencesCase().trim().isEmpty() ? null : caseStudy.getReferencesCase();
 
-          explainIndicatorRelation = caseStudy.getExplainIndicatorRelation();
+          explainIndicatorRelation =
+            caseStudy.getExplainIndicatorRelation().trim().isEmpty() ? null : caseStudy.getExplainIndicatorRelation();
 
           List<CaseStudyProject> studyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects());
 
@@ -282,10 +284,9 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
           }
 
 
-          model.addRow(new Object[] {id, title.trim(), outcomeStatement.trim(), researchOutputs.trim(),
-            researchPartners.trim(), activities.trim(), nonResearchPartneres.trim(), outputUsers.trim(),
-            evidenceOutcome.trim(), outputUsed.trim(), referencesCase.trim(), explainIndicatorRelation.trim(), anex,
-            owner.trim(), indicators.trim(), shared.trim(), year.trim()});
+          model.addRow(new Object[] {id, title, outcomeStatement, researchOutputs, researchPartners, activities,
+            nonResearchPartneres, outputUsers, evidenceOutcome, outputUsed, referencesCase, explainIndicatorRelation,
+            anex, owner.trim(), indicators.trim(), shared.trim(), year});
 
         }
       }
