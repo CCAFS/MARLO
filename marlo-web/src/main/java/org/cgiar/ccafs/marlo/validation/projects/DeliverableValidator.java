@@ -408,8 +408,8 @@ public class DeliverableValidator extends BaseValidator {
       DeliverablePublicationMetadata metadata = deliverable.getPublication();
 
       if (!(this.isValidString(metadata.getVolume()) && this.wordCount(metadata.getVolume()) <= 100)) {
-        this.addMessage(action.getText("project.deliverable.publication.v.volume"));
-        action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
+        // this.addMessage(action.getText("project.deliverable.publication.v.volume"));
+        // action.getInvalidFields().put("input-deliverable.publication.volume", InvalidFieldsMessages.EMPTYFIELD);
       }
 
       if (!(this.isValidString(metadata.getJournal()) && this.wordCount(metadata.getJournal()) <= 100)) {
