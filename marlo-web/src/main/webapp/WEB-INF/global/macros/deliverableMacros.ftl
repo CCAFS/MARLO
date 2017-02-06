@@ -313,12 +313,12 @@
 
 
 [#macro complianceCheck ]
-<h4 class="headTitle">Compliance check</h4>
+<h4 class="headTitle">[@s.text name="project.deliverable.quality.compliance" /]</h4>
 
 <div class="simpleBox" >
   <div class="row">
     <div class="col-md-10">
-      <p class="note">[@s.text name = "Compliance check section guarantees that a data deliverable is 'Gold Data'.  If you select 2 out of the 3 questions with yes and documented, and the ranking is over 3.5, it qualifies to be a Gold Data deliverable." /]</p>
+      <p class="note">[@s.text name = "project.deliverable.quality.info" /]</p>
     </div>
     <div class="col-md-2">
       <div id="box-out">
@@ -334,7 +334,7 @@
   <input type="hidden" name="deliverable.qualityCheck.id" value="${(deliverable.qualityCheck.id)!"-1"}">
   [#-- Question1 --]
   <div class="question ">
-    <h5>Have you had a process of data quality assurance in place?</h5>
+    <h5>[@s.text name="project.deliverable.quality.question1" /]</h5>
     <hr />
     
     <div class="col-md-4">
@@ -375,7 +375,7 @@
   </div>
   [#-- Question2 --]
   <div class="question ">
-    <h5>Do you have a data dictionary?</h5>
+    <h5>[@s.text name="project.deliverable.quality.question2" /]</h5>
     <hr />
     
     <div class="col-md-4">
@@ -416,7 +416,7 @@
   </div>
   [#-- Question3 --]
   <div class="question ">
-    <h5>Are the tools used for data collection available (e.g. surveys, data analysis scripts, training materials, etc.)?</h5>
+    <h5>[@s.text name="project.deliverable.quality.question3" /]</h5>
     <hr />
     
     <div class="col-md-4">
@@ -459,7 +459,7 @@
 [/#macro]
 
 [#macro fairCompliant]
-<h4 class="headTitle">FAIR Compliant</h4>
+<h4 class="headTitle">[@s.text name="project.deliverable.quality.fairTitle" /]</h4>
   
 <div class="simpleBox" > 
   [#-- Findable --] 
@@ -469,10 +469,10 @@
         <div class="sign">F</div>
       </div>
       <div class="col-md-10">
-        <strong>Findable</strong>
-        <p>Product published/disseminated</p>
-        <p>Globally unique and persistent identifier (handle and/or DOI)</p>
-        <p>Data are described with rich metadata</p>
+        <strong>[@s.text name="project.deliverable.quality.FLabel" /]</strong>
+        <p>[@s.text name="project.deliverable.quality.Fpoint1" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Fpoint2" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Fpoint3" /]</p>
       </div>
     </div>
   </div>
@@ -484,10 +484,10 @@
         <div class="sign">A</div>
       </div>
       <div class="col-md-10">
-        <strong>Accessible</strong>
-        <p>Open Access – without restrictions</p>
-        <p>Retrievable by their identifier using a standardized communications protocol</p>
-        <p>Metadata are accessible, even when the data are not longer available</p>
+        <strong>[@s.text name="project.deliverable.quality.ALabel" /]</strong>
+        <p>[@s.text name="project.deliverable.quality.Apoint1" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Apoint2" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Apoint3" /]</p>
       </div>
     </div>
   </div>
@@ -499,10 +499,10 @@
         <div class="sign">I</div>
       </div>
       <div class="col-md-10">
-        <strong>Interoperable</strong>
-        <p>Metadata schema implemented</p>
-        <p>Interoperability protocol implemented</p>
-        <p>Protocol allows authentication and authorization procedure, where necessary</p>
+        <strong>[@s.text name="project.deliverable.quality.ILabel" /]</strong>
+        <p>[@s.text name="project.deliverable.quality.Ipoint1" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Ipoint2" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Ipoint3" /]</p>
       </div>
     </div>
   </div>
@@ -514,9 +514,9 @@
         <div class="sign">R</div>
       </div>
       <div class="col-md-10">
-        <strong>Reusable</strong>
-        <p>Clear and accessible data usage license</p>
-        <p>Data are associated with detailed provenance</p>
+        <strong>[@s.text name="project.deliverable.quality.RLabel" /]</strong>
+        <p>[@s.text name="project.deliverable.quality.Ipoint1" /]</p>
+        <p>[@s.text name="project.deliverable.quality.Ipoint2" /]</p>
       </div>
     </div>
   </div>
