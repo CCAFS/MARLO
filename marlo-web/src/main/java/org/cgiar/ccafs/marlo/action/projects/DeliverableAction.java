@@ -1165,7 +1165,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-            .collect(Collectors.toList()).get(0);
+              .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1339,8 +1339,18 @@ public class DeliverableAction extends BaseAction {
         deliverableCrp.setId(null);
         deliverableCrp.setDeliverable(deliverable);
 
+        if (deliverableCrp.getCrpPandr() != null) {
+          if (deliverableCrp.getCrpPandr().getId() == null) {
+            deliverableCrp.setCrpPandr(null);
+          } else {
+            if (deliverableCrp.getCrpPandr().getId().intValue() == -1) {
+              deliverableCrp.setCrpPandr(null);
+            }
+          }
+        }
+
         if (deliverableCrp.getCrpPandr() == null) {
-          deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+          deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(new Long(3)));
         } else {
           deliverableCrp.setIpProgram(null);
         }
