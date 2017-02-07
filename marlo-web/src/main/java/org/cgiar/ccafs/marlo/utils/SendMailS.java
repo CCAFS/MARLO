@@ -90,7 +90,22 @@ public class SendMailS {
     });
 
     // Create a new message
-    Message msg = new MimeMessage(session);
+    MimeMessage msg = new MimeMessage(session) {
+
+      @Override
+      protected void updateMessageID() throws MessagingException {
+        if (this.getHeader("Message-ID") == null) {
+          super.updateMessageID();
+        }
+      }
+    };
+
+    try {
+      msg.saveChanges();
+    } catch (MessagingException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
 
     // Set the FROM and TO fields
     try {
@@ -149,9 +164,11 @@ public class SendMailS {
         mimeMultipart.addBodyPart(attachmentBodyPart);
       }
 
+      LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
       Transport.send(msg);
       LOG.info("Message sent: \n" + subject);
+
 
     } catch (MessagingException e) {
       e.printStackTrace();
