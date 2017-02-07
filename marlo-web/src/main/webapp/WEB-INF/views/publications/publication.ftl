@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/publications/publication.js" ] /] [#-- , "${baseUrl}/js/global/autoSave.js" --]
-[#assign customCSS = [ ] /]
+[#assign customCSS = [ "${baseUrl}/css/publications/publication.css" ] /]
 [#assign currentSection = "publications" /]
 
 [#assign breadCrumb = [
-  {"label":"publicationsList", "nameSpace":"/publications", "action":"publicationsList"},
-  {"label":"publication", "nameSpace":"/publications", "action":""}
+  {"label":"publicationsList", "nameSpace":"publications", "action":"${crpSession}/publicationsList"},
+  {"label":"publication", "nameSpace":"publications", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -35,7 +35,7 @@
       [#-- Subtype & year of completition --]
       <div class="form-group row">
         <div class="col-md-6">
-          [@customForm.select name="${customName}.deliverableType.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
+          [@customForm.select name="${customName}.deliverableType.id" i18nkey="publication.subType" label="" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name" required=true  className="" editable=editable/]
         </div>
         <div class="col-md-6">
           [@customForm.input name="${customName}.year" i18nkey="publication.year" required=true className="" editable=false /]

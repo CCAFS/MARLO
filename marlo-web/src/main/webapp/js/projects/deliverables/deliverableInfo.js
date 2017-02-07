@@ -100,6 +100,11 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
+  if(reportingActive) {
+    $('#newExpectedYear select option[value=' + currentCycleYear + ']').attr('disabled', 'disabled')
+    $('#newExpectedYear select').trigger("change.select2");
+  }
+
   /** Funding source * */
 
   $(".fundingSource").on("change", function() {

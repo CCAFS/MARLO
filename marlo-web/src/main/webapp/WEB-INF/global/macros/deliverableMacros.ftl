@@ -253,7 +253,6 @@
 <div class="publicationMetadataBlock" style="display:${checkDeliverableTypes()!};">
   <br />
   <h4 class="sectionSubTitle">[@s.text name="project.deliverable.dissemination.publicationTitle"/]</h4>
-   
   <input type="hidden" name="deliverable.publication.id" value="${(deliverable.publication.id)!}"/>
   <div class="form-group row">
     <div class="col-md-4">[@customForm.input name="deliverable.publication.volume" i18nkey="project.deliverable.dissemination.volume" className="" type="text" disabled=!editable  required=false editable=editable /]</div>
@@ -314,7 +313,6 @@
 
 [#macro complianceCheck ]
 <h4 class="headTitle">[@s.text name="project.deliverable.quality.compliance" /]</h4>
-
 <div class="simpleBox" >
   <div class="row">
     <div class="col-md-10">
