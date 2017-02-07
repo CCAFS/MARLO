@@ -222,7 +222,7 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Deliverable Publication Meta-data
-        if (deliverable.getDeliverableType().getDeliverableType() != null) {
+        if (deliverable.getDeliverableType() != null && deliverable.getDeliverableType().getDeliverableType() != null) {
           if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
             this.validatePublicationMetadata(deliverable);
           }
