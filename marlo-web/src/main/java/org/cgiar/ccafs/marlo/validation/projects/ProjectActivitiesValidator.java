@@ -88,16 +88,6 @@ public class ProjectActivitiesValidator extends BaseValidator {
       }
     }
 
-    /*
-     * if (project.getClosedProjectActivities() != null) {
-     * int i = 0;
-     * for (Activity activity : project.getClosedProjectActivities()) {
-     * this.validateActivity(activity, i, "closedProjectActivities");
-     * i++;
-     * }
-     * }
-     */
-
     if (!action.getFieldErrors().isEmpty()) {
       action.addActionError(action.getText("saving.fields.required"));
     } else if (validationMessage.length() > 0) {
@@ -167,13 +157,30 @@ public class ProjectActivitiesValidator extends BaseValidator {
         cal.set(Calendar.DAY_OF_MONTH, 31); // new years eve
         if (activity.getEndDate().compareTo(cal.getTime()) <= 0) {
           this.addMessage(action.getText("activity.status", params));
-          action.getInvalidFields().put("input-project." + listName + "[" + index + "].status",
+          action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityStatus",
             InvalidFieldsMessages.EMPTYFIELD);
         }
       }
+      if (action.isReportingActive()) {
+        if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+          || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
+          || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+
+          if (!(this.isValidString(activity.getActivityProgress())
+            && this.wordCount(activity.getActivityProgress()) <= 150)) {
+            this.addMessage(action.getText("activity.statusProgress", params));
+            action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityProgress",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+        }
+      }
+
+
     } else {
       this.addMessage(action.getText("activity.status", params));
-      action.getInvalidFields().put("input-project." + listName + "[" + index + "].status",
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityStatus",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     /*
