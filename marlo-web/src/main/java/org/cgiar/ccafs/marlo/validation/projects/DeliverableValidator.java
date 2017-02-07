@@ -395,13 +395,6 @@ public class DeliverableValidator extends BaseValidator {
 
   public void validatePublicationMetadata(Deliverable deliverable) {
 
-    if (deliverable.getCrps() == null || deliverable.getCrps().isEmpty()) {
-      this.addMessage(action.getText("project.deliverable.publication.v.crp"));
-      action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-        InvalidFieldsMessages.EMPTYFIELD);
-
-    }
-
     if (deliverable.getPublication() != null && deliverable.getPublication().getId() != null
       && deliverable.getPublication().getId().intValue() != -1) {
 
@@ -451,8 +444,7 @@ public class DeliverableValidator extends BaseValidator {
 
       } else {
         this.addMessage(action.getText("project.deliverable.v.publication"));
-        action.getInvalidFields().put("input-deliverable.dissemination.alreadyDisseminated",
-          InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
   }
