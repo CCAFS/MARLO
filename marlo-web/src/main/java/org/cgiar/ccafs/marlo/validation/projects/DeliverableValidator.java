@@ -139,6 +139,11 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        if (deliverable.getNewExpectedYear() != null
+          && deliverable.getNewExpectedYear().intValue() == action.getCurrentCycleYear()) {
+          this.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
+          action.getInvalidFields().put("input-deliverable.newExpectedYear", InvalidFieldsMessages.EMPTYFIELD);
+        }
         if (!action.isReportingActive()) {
           if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
             if (deliverable.getCrpClusterKeyOutput() != null) {
