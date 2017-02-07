@@ -47,13 +47,18 @@
                 [@leverageMacro leverage=leverage name="project.leverages"  index=leverage_index isEditable=editable  /]
               [/#list]
             [#else]
-              [@leverageMacro leverage={} name="project.leverages"  index=0  /]
+              [#if editable]
+                [@leverageMacro leverage={} name="project.leverages" index=0 isEditable=editable /]
+              [#else]
+                <p class="message text-center">No leverages added</p>
+              [/#if]
             [/#if]
             </div>
-            
+            [#if canEdit]
             <div class="text-right">
               <div class="addLeverage bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectLeverages.addLeverage"/]</div>
             </div> 
+            [/#if]
           </div>
           
           [#-- Section Buttons & hidden inputs--]
