@@ -3,6 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/projects/projectPartners.js", "${baseUrl}/js/global/usersManagement.js", "${baseUrl}/js/global/autoSave.js"] /]  
+[#assign customCSS = ["${baseUrl}/css/projects/projectPartners.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]

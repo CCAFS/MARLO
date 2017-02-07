@@ -86,6 +86,9 @@ function attachEvents() {
     }
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
+      $(this).find(".errorTag").hide();
+      $(this).find(".errorTag").css("left", $(this).outerWidth());
+      $(this).find(".errorTag").fadeIn(1000);
     });
   });
 
