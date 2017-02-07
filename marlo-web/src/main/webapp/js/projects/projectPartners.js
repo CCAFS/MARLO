@@ -31,7 +31,7 @@ function init() {
 
     // Activate the chosen to the existing partners
     addSelect2();
-    $("form .partnerPersonType").select2({
+    $("form select.partnerPersonType").select2({
         templateResult: formatState,
         width: "100%"
     });
