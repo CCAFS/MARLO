@@ -9,6 +9,13 @@ function init() {
   uploadFile($('.fileDictionaryContent'), $('.fileDictionaryContent').find('.uploadFileDictionary'), 'Dictionary');
   uploadFile($('.fileToolsContent'), $('.fileToolsContent').find('.uploadFileTools'), 'Tools');
 
+  $("a[data-toggle='tab']").on('shown.bs.tab', function(e) {
+    $("#indexTab").val($(this).attr("index"));
+    $(".radio-block").each(function(i,e) {
+      showHiddenTags(e);
+    });
+  });
+
   // Validate url format
   $(".urlLink").on("change keyup", function() {
     var $this = $(this).val();
