@@ -139,7 +139,8 @@ public class DeliverableValidator extends BaseValidator {
           action.getInvalidFields().put("input-deliverable.year", InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        if (deliverable.getNewExpectedYear() != null
+        if (deliverable.getNewExpectedYear() != null && deliverable.getStatus() != null
+          && deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
           && deliverable.getNewExpectedYear().intValue() == action.getCurrentCycleYear()) {
           this.addMessage(action.getText("project.deliverable.generalInformation.newewExpectedYear"));
           action.getInvalidFields().put("input-deliverable.newExpectedYear", InvalidFieldsMessages.EMPTYFIELD);
