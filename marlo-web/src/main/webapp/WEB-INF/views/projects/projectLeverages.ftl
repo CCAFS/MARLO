@@ -54,7 +54,7 @@
               [/#if]
             [/#if]
             </div>
-            [#if canEdit]
+            [#if canEdit && editable]
             <div class="text-right">
               <div class="addLeverage bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectLeverages.addLeverage"/]</div>
             </div> 

@@ -43,19 +43,19 @@ public class ProjectCaseStudiesListAction extends BaseAction {
    */
   private static final long serialVersionUID = -3082621120976012917L;
 
+  private List<Integer> allYears;
+  private long caseStudyID;
   // Manager
   private CaseStudyManager caseStudyManager;
+
   private CaseStudyProjectManager caseStudyProjectManager;
-  private ProjectManager projectManager;
 
   // Model for the back-end
   private Project project;
-
   // Model for the front-end
   private long projectID;
-  private long caseStudyID;
 
-  private List<Integer> allYears;
+  private ProjectManager projectManager;
 
   @Inject
   public ProjectCaseStudiesListAction(APConfig config, CaseStudyManager caseStudyManager, ProjectManager projectManager,
@@ -185,7 +185,10 @@ public class ProjectCaseStudiesListAction extends BaseAction {
 
     project.setCaseStudies(new ArrayList<CaseStudy>());
     for (CaseStudyProject caseStudyProject : caseStudyProjects) {
-      project.getCaseStudies().add(caseStudyProject.getCaseStudy());
+      if (caseStudyProject.getCaseStudy().isActive()) {
+
+        project.getCaseStudies().add(caseStudyProject.getCaseStudy()); 
+      }
     }
 
 

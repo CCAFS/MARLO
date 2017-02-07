@@ -161,6 +161,7 @@
     [/#if]
   </div>
   <div class="col-md-8">
+    [#if editable]
     [#-- CGSpace examples & instructions --]
     <div class="exampleUrl-block channel-cgspace" style="display:[#if deliverable.dissemination.disseminationChannel?? && deliverable.dissemination.disseminationChannel=="cgspace"]block[#else]none[/#if];">
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
@@ -171,6 +172,7 @@
       <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
       <p><small>https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ZEXKC</small></p>
     </div>
+    [/#if]
   </div>
 </div>
  
@@ -286,7 +288,7 @@
   
   <div class="form-group">
     <label for="">[@s.text name="project.deliverable.dissemination.publicationContribution" /]</label>
-    <div class="flagshipList simpleBox col-md-12">
+    <div class="flagshipList simpleBox">
       [#if deliverable.crps?has_content]
         [#list deliverable.crps as flagShips]
           [@deliverableMacros.flagshipMacro element=flagShips index=flagShips_index name="deliverable.crps"  isTemplate=false /]
@@ -296,7 +298,7 @@
       [/#if]
     </div>
     [#if editable]
-      <div class="row">
+      <div class="form-group row">
         <div class="col-md-5">
           [@customForm.select name="" label=""  i18nkey="project.deliverable.dissemination.selectCRP" listName="crps"   multiple=false required=false  className="crpSelect form-control input-sm " editable=editable/]
         </div>
@@ -306,6 +308,7 @@
       </div>
     [/#if] 
   </div>
+  
 </div>
 
 [/#macro]
@@ -337,7 +340,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
         [#if editable]
         <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
         [#else]
@@ -378,7 +381,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
@@ -419,7 +422,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataTools" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
@@ -562,8 +565,8 @@
 
 [#macro flagshipMacro element index name  isTemplate=false]
   [#assign customName = "${name}[${index}]" /]
-  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox col-md-6"  style="display:${isTemplate?string('none','block')}">
-    [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if] 
+  <div id="flagship-${isTemplate?string('template',(projectActivity.id)!)}" class="flagships  borderBox"  style="display:${isTemplate?string('none','block')}">
+    [#if editable]<div class="removeFlagship removeIcon" title="Remove flagship"></div>[/#if]
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
     <input class="idCrp" type="hidden" name="${customName}.crpPandr.id" value="${(element.crpPandr.id)!}" />
     <input class="idFlagship" type="hidden" name="${customName}.ipProgram.id" value="${(element.ipProgram.id)!}" />
