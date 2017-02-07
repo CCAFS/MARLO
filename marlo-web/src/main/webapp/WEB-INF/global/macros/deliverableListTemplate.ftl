@@ -29,7 +29,7 @@
           [#-- Deliverable Title --]
           <td class="left">
             [#if isDeliverableNew]<span class="label label-info">New</span>[/#if]
-            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive]
+            [#if deliverable.isRequieriedReporting(currentCycleYear) && reportingActive && (action.getDeliverableStatus(deliverable.id)??) && (action.getDeliverableStatus(deliverable.id)).missingFields?has_content]
               <span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>
             [/#if]
             [#if deliverable.title?has_content]

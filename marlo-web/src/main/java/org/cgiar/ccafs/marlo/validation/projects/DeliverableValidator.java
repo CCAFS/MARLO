@@ -241,17 +241,20 @@ public class DeliverableValidator extends BaseValidator {
           if (deliverable.getQualityCheck() != null) {
             if (deliverable.getQualityCheck().getQualityAssurance() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
-              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+              action.getInvalidFields().put("input-deliverable.qualityCheck.qualityAssurance.id",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataDictionary() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.dictionary"));
-              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+              action.getInvalidFields().put("input-deliverable.qualityCheck.dataDictionary.id",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
 
             if (deliverable.getQualityCheck().getDataTools() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.tool"));
-              action.getInvalidFields().put("input-deliverable.adoptedLicense", InvalidFieldsMessages.EMPTYFIELD);
+              action.getInvalidFields().put("input-deliverable.qualityCheck.dataTools.id",
+                InvalidFieldsMessages.EMPTYFIELD);
             }
           }
         }

@@ -340,7 +340,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
         [#if editable]
         <label><input type="radio" class="qualityAssurance" name="deliverable.qualityCheck.qualityAssurance.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.qualityAssurance?? && deliverable.qualityCheck.qualityAssurance.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
         [#else]
@@ -381,7 +381,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataDictionary" name="deliverable.qualityCheck.dataDictionary.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataDictionary?? && deliverable.qualityCheck.dataDictionary.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
@@ -422,7 +422,7 @@
     
     <div class="col-md-4">
     [#list answers as answer]
-      <div class="radio">
+      <div class="radio radio-block">
       [#if editable]
         <label><input type="radio" class="dataTools" name="deliverable.qualityCheck.dataTools.id" value="${(answer.id)!}" [#if deliverable.qualityCheck?? && deliverable.qualityCheck.dataTools?? && deliverable.qualityCheck.dataTools.id==answer.id] checked="checked"[/#if]>${(answer.name)!}</label>
       [#else]
