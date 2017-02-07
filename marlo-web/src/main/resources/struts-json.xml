@@ -272,8 +272,7 @@
         <param name="excludeNullProperties">true</param>
       </result>
     </action>
-    
-
+        
     <action name="deliverableUploadFile" class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUploadFileAction">
       <result type="json">
         <param name="noCache">true</param>
@@ -282,6 +281,10 @@
     </action>
 
     <action name="unsubmitImpactpathway" class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+      <interceptor-ref name="defaultStack" />
+      <interceptor-ref name="fileUpload">
+        <param name="maximumSize">314572900</param>
+      </interceptor-ref> 
       <result type="json">
         <param name="noCache">true</param>
         <param name="excludeNullProperties">true</param>
