@@ -68,7 +68,11 @@
     [#if !editable]${(deliverable.year)!}[/#if]
   </div>
   [#-- New Expected Year - Extended = 4 --]
-  [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
+  [#if reportingActive]
+    [#assign canViewNewExpectedYear = (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
+  [#else]
+    [#assign canViewNewExpectedYear = !action.isDeliverableNew(deliverable.id) && (currentCycleYear gt deliverable.year) && (deliverable.status??) && ((deliverable.status == 4)  ||  ( (deliverable.status == 3) &&  deliverable.newExpectedYear?has_content  )) /]
+  [/#if]
   <div id="newExpectedYear" class="col-md-4" style="display:${canViewNewExpectedYear?string('block','none')}">
     [#if editable]
       [#if reportingActive]
