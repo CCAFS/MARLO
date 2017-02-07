@@ -7,6 +7,9 @@ function init() {
     width: '100%'
   });
 
+  // Set visible publications questions
+  $('.publicationMetadataBlock').show();
+
   // Attaching events
   attachEvents();
 }
@@ -23,7 +26,7 @@ function attachEvents() {
   });
 
   // Is this deliverable Open Access
-  $(".isOpenAccessQuestion .button-label").on("click", function() {
+  $(".accessible .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
       $(".openAccessOptions").show("slow");
@@ -33,12 +36,21 @@ function attachEvents() {
   });
 
   // Have the publication adopted a license
-  $(".adoptedLicense .button-label").on("click", function() {
+  $(".license .button-label").on("click", function() {
     var valueSelected = $(this).hasClass('yes-button-label');
     if(!valueSelected) {
-      $(".adoptedLicenseOptions").hide("slow");
+      $(".licenseOptions-block").hide("slow");
     } else {
-      $(".adoptedLicenseOptions").show("slow");
+      $(".licenseOptions-block").show("slow");
+    }
+  });
+
+  // Other license type
+  $(".licenseOptions input").on("change", function() {
+    if($(this).val() == "OTHER") {
+      $(".licence-modifications").show("slow");
+    } else {
+      $(".licence-modifications").hide("slow");
     }
   });
 
