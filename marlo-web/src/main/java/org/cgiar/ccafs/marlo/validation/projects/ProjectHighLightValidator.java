@@ -75,10 +75,6 @@ public class ProjectHighLightValidator extends BaseValidator {
     }
 
 
-    // If project is CORE or CO-FUNDED
-
-    // this.validateProjectJustification(action, project);
-    // this.validateLessonsLearn(action, project, "highlights");
     this.ValidateHightLigth(action, highLigths);
     this.ValidateHightAuthor(action, highLigths);
     this.ValidateHightTitle(action, highLigths);

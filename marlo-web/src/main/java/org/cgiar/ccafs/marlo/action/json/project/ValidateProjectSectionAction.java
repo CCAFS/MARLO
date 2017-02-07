@@ -44,6 +44,8 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectLeverage;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
@@ -674,6 +676,15 @@ public class ValidateProjectSectionAction extends BaseAction {
     for (ProjectHighlight projectHighlight : highlights) {
       projectHighlight.setTypes(
         projectHighlight.getProjectHighligthsTypes().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+
+      if (projectHighlight.getTypes() != null) {
+        for (ProjectHighlightType projectHighligthsType : projectHighlight.getTypes()) {
+          projectHighlight.getTypesIds().add(ProjectHighligthsTypeEnum.value(projectHighligthsType.getIdType() + ""));
+          projectHighlight.getTypesids().add(projectHighligthsType.getIdType() + "");
+        }
+      }
+
       projectHighLightValidator.validate(this, project, projectHighlight, false);
 
     }
