@@ -680,6 +680,10 @@ public class DeliverableAction extends BaseAction {
         project.setProjectLocations(deliverableDb.getProject().getProjectLocations());
         reader.close();
 
+
+        if (deliverable.getNewExpectedYear() != null) {
+          deliverable.setNewExpectedYear(deliverableDb.getNewExpectedYear());
+        }
         deliverable.setResponsiblePartner(this.responsiblePartnerAutoSave());
         deliverable.setOtherPartners(this.otherPartnersAutoSave());
         if (deliverable.getFundingSources() != null) {
