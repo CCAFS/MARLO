@@ -100,6 +100,7 @@ function init() {
 
   $(".yearExpected").on("change", validateCurrentDate);
 
+  // New Expected year should be greater than current reporting cycle year
   if(reportingActive) {
     $('#newExpectedYear select option[value=' + currentCycleYear + ']').attr('disabled', 'disabled')
     $('#newExpectedYear select').trigger("change.select2");
