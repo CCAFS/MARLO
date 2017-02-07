@@ -183,6 +183,13 @@ public class DeliverableListAction extends BaseAction {
             .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
               && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
+
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+              && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
+
           openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
             .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
           return openA;
@@ -210,6 +217,13 @@ public class DeliverableListAction extends BaseAction {
             .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
               && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
             .collect(Collectors.toList()));
+
+          openA.removeAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+              && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
+
           openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
             .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
           return openA;

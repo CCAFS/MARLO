@@ -898,8 +898,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         List<Deliverable> deliverables =
           project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-        List<Deliverable> openA =
-          this.getOpenDeliverables(deliverables.stream().filter(a -> a.isActive()).collect(Collectors.toList()));
+        List<Deliverable> openA = new ArrayList<>();
+
+        if (this.isPlanningActive()) {
+          openA =
+            deliverables.stream()
+              .filter(
+                a -> a.isActive()
+                  && ((a.getStatus() == null
+                    || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                    || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                      || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
+            .collect(Collectors.toList());
+        } else {
+          openA = deliverables.stream()
+            .filter(a -> a.isActive()
+              && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                  || a.getStatus().intValue() == 0))))
+            .collect(Collectors.toList());
+
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
+
+          openA.addAll(deliverables.stream()
+            .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+              && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+              && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+            .collect(Collectors.toList()));
+
+        }
         if (openA.isEmpty()) {
           return false;
         }
@@ -1742,7 +1772,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     int year = this.getCurrentCycleYear();
     List<Submission> submissions =
       project
-        .getSubmissions().stream().filter(c -> c.getCycle().equals(APConstants.PLANNING)
+        .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
       .collect(Collectors.toList());
     if (submissions.isEmpty()) {

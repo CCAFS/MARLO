@@ -810,6 +810,11 @@ public class ValidateProjectSectionAction extends BaseAction {
         .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
           && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
         .collect(Collectors.toList()));
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
     }
 
     for (Deliverable deliverable : openA) {

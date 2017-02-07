@@ -148,9 +148,16 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
       }
 
-      List<CaseStudyProject> caseStudyProjects = new ArrayList<>(caseStudy.getCaseStudyProjects().stream()
-        .filter(cs -> cs.isActive() && cs.getProject().getId() == project.getId() && cs.isCreated())
-        .collect(Collectors.toList()));
+      for (CaseStudyProject studyProject : caseStudy.getCaseStudyProjects()) {
+        System.out.println(studyProject.getProject().getId());
+      }
+
+      List<CaseStudyProject> caseStudyProjects =
+        new ArrayList<>(
+          caseStudy
+            .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
+              && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
+          .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

@@ -81,7 +81,7 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
 
 
               if (!(this.isValidString(projectOutcomePandr.getAnualProgress())
-                && this.wordCount(projectOutcomePandr.getAnualProgress()) <= 100)) {
+                && this.wordCount(projectOutcomePandr.getAnualProgress()) <= 300)) {
                 this.addMessage("Project Outcome ##" + projectOutcomePandr.getId() + ": anualProgress");
                 action.getInvalidFields().put("input-project.outcomesPandr[" + i + "].anualProgress",
                   InvalidFieldsMessages.EMPTYFIELD);
