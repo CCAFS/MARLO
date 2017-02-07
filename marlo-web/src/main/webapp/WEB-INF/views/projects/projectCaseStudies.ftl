@@ -49,14 +49,13 @@
           [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
             
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudiestitle" /]</h3>
-   
           
           [#-- Outcome case studies list --]
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(project.caseStudies)![]  /]
           </div>
           
-          [#-- Add a new highlight --]
+          [#-- Add a new --]
           [#if canEdit] 
           <div class="text-right"> 
             <a class="button-blue" href="[@s.url action='${crpSession}/addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
