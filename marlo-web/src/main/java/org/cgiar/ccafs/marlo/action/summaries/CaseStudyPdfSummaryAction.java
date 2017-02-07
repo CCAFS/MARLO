@@ -72,6 +72,8 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
   // Streams
   InputStream inputStream;
 
+  private int year;
+
   @Inject
   public CaseStudyPdfSummaryAction(APConfig config, CaseStudyManager caseStudyManager, CrpManager crpManager) {
     super(config);
@@ -108,7 +110,7 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
     String masterQueryName = "main";
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-    TypedTableModel model = this.getMasterTableModel(center, date);
+    TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(year));
     sdf.addTable(masterQueryName, model);
     masterReport.setDataFactory(cdf);
 
@@ -220,8 +222,8 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
 
     if (caseStudyManager.findAll() != null) {
 
-      List<CaseStudy> caseStudies =
-        new ArrayList<>(caseStudyManager.findAll().stream().filter(cs -> cs.isActive()).collect(Collectors.toList()));
+      List<CaseStudy> caseStudies = new ArrayList<>(caseStudyManager.findAll().stream()
+        .filter(cs -> cs.isActive() && cs.getYear() == this.year).collect(Collectors.toList()));
 
       if (!caseStudies.isEmpty()) {
         for (CaseStudy caseStudy : caseStudies) {
@@ -367,11 +369,11 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
     return loggedCrp;
   }
 
-  private TypedTableModel getMasterTableModel(String center, String date) {
+  private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model =
-      new TypedTableModel(new String[] {"center", "date"}, new Class[] {String.class, String.class});
-    model.addRow(new Object[] {center, date});
+    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year"},
+      new Class[] {String.class, String.class, String.class});
+    model.addRow(new Object[] {center, date, year});
     return model;
   }
 
@@ -382,6 +384,12 @@ public class CaseStudyPdfSummaryAction extends BaseAction implements Summary {
       loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     } catch (Exception e) {
+    }
+
+    try {
+      year = Integer.parseInt(this.getRequest().getParameter("year"));
+    } catch (Exception e) {
+      year = this.getCurrentCycleYear();
     }
   }
 

@@ -434,24 +434,23 @@ public class DeliverableValidator extends BaseValidator {
         if (metadata.getCoAuthor().booleanValue()) {
           indicators = true;
         }
+      }
 
-
-        if (!indicators) {
-          this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
-          action.getInvalidFields().put("input-deliverable.publication.isiPublication",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-        if (metadata.getPublicationAcknowledge() == null) {
-          this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
-          action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-      } else {
-        this.addMessage(action.getText("project.deliverable.v.publication"));
+      if (!indicators) {
+        this.addMessage(action.getText("project.deliverable.publication.v.indicators"));
         action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
       }
+
+      if (metadata.getPublicationAcknowledge() == null) {
+        this.addMessage(action.getText("project.deliverable.publication.v.allowPublication"));
+        action.getInvalidFields().put("input-deliverable.publication.publicationAcknowledge",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      // else {
+      // this.addMessage(action.getText("project.deliverable.v.publication"));
+      // action.getInvalidFields().put("input-deliverable.publication.nasr", InvalidFieldsMessages.EMPTYFIELD);
+      // }
     }
   }
 }
