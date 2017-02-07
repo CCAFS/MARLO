@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -192,6 +193,11 @@ public class DeliverableListAction extends BaseAction {
 
           openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
             .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
+
+          HashSet<Deliverable> deliverables = new HashSet<>();
+          deliverables.addAll(openA);
+          openA.clear();
+          openA.addAll(deliverables);
           return openA;
         }
 
@@ -226,6 +232,10 @@ public class DeliverableListAction extends BaseAction {
 
           openA.sort((p1, p2) -> p1.isRequieriedReporting(this.getCurrentCycleYear())
             .compareTo(p2.isRequieriedReporting(this.getCurrentCycleYear())));
+          HashSet<Deliverable> deliverables = new HashSet<>();
+          deliverables.addAll(openA);
+          openA.clear();
+          openA.addAll(deliverables);
           return openA;
         }
       }

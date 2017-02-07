@@ -819,6 +819,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     for (Deliverable deliverable : openA) {
 
+
       deliverable.setResponsiblePartner(this.responsiblePartner(deliverable));
       deliverable.setOtherPartners(this.otherPartners(deliverable));
       deliverable.setGenderLevels(

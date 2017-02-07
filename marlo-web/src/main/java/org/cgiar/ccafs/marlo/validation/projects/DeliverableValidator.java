@@ -205,7 +205,7 @@ public class DeliverableValidator extends BaseValidator {
 
         // Deliverable Dissemination
         if (deliverable.getDissemination() != null) {
-          this.validateDissemination(deliverable.getDissemination());
+          this.validateDissemination(deliverable.getDissemination(), saving);
         } else {
           this.addMessage(action.getText("project.deliverable.dissemination.v.dissemination"));
           action.getInvalidFields().put("input-deliverable.dissemination.isOpenAccess",
@@ -278,36 +278,74 @@ public class DeliverableValidator extends BaseValidator {
   }
 
 
-  public void validateDissemination(DeliverableDissemination dissemination) {
+  public void validateDissemination(DeliverableDissemination dissemination, boolean saving) {
 
     if (dissemination.getIsOpenAccess() != null) {
 
       if (!dissemination.getIsOpenAccess().booleanValue()) {
 
-        if (dissemination.getType() == null) {
-          this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
-          action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
-        } else {
-          if (dissemination.getType().equals("restrictedUseAgreement")) {
 
+        if (saving) {
+          if (dissemination.getType() == null) {
+
+
+            this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+            action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
+          } else {
+            if (dissemination.getType().equals("restrictedUseAgreement")) {
+
+              if (dissemination.getRestrictedAccessUntil() == null) {
+                this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
+                action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+            }
+
+            if (dissemination.getType().equals("effectiveDateRestriction")) {
+
+              if (dissemination.getRestrictedEmbargoed() == null) {
+                this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
+                action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
+            }
+          }
+        } else {
+          boolean hasOne = false;
+          if (dissemination.getIntellectualProperty() != null
+            && dissemination.getIntellectualProperty().booleanValue()) {
+            hasOne = true;
+          }
+          if (dissemination.getLimitedExclusivity() != null && dissemination.getLimitedExclusivity().booleanValue()) {
+            hasOne = true;
+          }
+          if (dissemination.getRestrictedUseAgreement() != null
+            && dissemination.getRestrictedUseAgreement().booleanValue()) {
+            hasOne = true;
             if (dissemination.getRestrictedAccessUntil() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedUseAgreement"));
               action.getInvalidFields().put("input-deliverable.dissemination.restrictedAccessUntil",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
-
           }
-
-          if (dissemination.getType().equals("effectiveDateRestriction")) {
-
+          if (dissemination.getEffectiveDateRestriction() != null
+            && dissemination.getEffectiveDateRestriction().booleanValue()) {
+            hasOne = true;
             if (dissemination.getRestrictedEmbargoed() == null) {
               this.addMessage(action.getText("project.deliverable.dissemination.v.restrictedEmbargoed"));
               action.getInvalidFields().put("input-deliverable.dissemination.restrictedEmbargoed",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
+          }
 
+          if (!hasOne) {
+            this.addMessage(action.getText("project.deliverable.dissemination.v.openAccessRestriction"));
+            action.getInvalidFields().put("input-deliverable.dissemination.type", InvalidFieldsMessages.EMPTYFIELD);
           }
         }
+
 
       }
 
