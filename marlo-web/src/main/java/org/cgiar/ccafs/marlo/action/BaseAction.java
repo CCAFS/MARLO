@@ -1337,6 +1337,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     int caseStudySection = 0;
     int highlightSection = 0;
 
+    List<Deliverable> deliverables =
+      project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+    List<Deliverable> openA = deliverables.stream()
+      .filter(a -> a.isActive() && a.getYear() >= this.getCurrentCycleYear()
+        && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+          || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || a.getStatus().intValue() == 0))))
+      .collect(Collectors.toList());
+
+    if (this.isReportingActive()) {
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+      openA.addAll(deliverables.stream()
+        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+        .collect(Collectors.toList()));
+    }
 
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
@@ -1344,33 +1364,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
           Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
-
-
-          if (a.isActive()
-            && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-              || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || a.getStatus().intValue() == 0)))) {
-
-            if (a.getNewExpectedYear() != null) {
-              if (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                if (a.getNewExpectedYear() >= this.getCurrentCycleYear()) {
-                  if (sectionStatus.getMissingFields().length() > 0) {
-                    return false;
-                  }
-                }
-              } else {
-                if (a.getYear() >= this.getCurrentCycleYear()) {
-                  if (sectionStatus.getMissingFields().length() > 0) {
-                    return false;
-                  }
-                }
-              }
-            } else {
-              if (a.getYear() >= this.getCurrentCycleYear()) {
-                if (sectionStatus.getMissingFields().length() > 0) {
-                  return false;
-                }
-              }
+          if (openA.contains(a)) {
+            if (sectionStatus.getMissingFields().length() > 0) {
+              return false;
             }
           }
 
@@ -1446,6 +1442,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             case OUTCOMES_PANDR:
             case CCAFSOUTCOMES:
             case OUTPUTS:
+            case BUDGET:
             case LEVERAGES:
             case OTHERCONTRIBUTIONS:
             case ACTIVITIES:
@@ -1499,9 +1496,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if ((project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-        return totalSections == 8;
+        return totalSections == 9;
       } else {
-        return totalSections == 12;
+        return totalSections == 13;
       }
 
     }
