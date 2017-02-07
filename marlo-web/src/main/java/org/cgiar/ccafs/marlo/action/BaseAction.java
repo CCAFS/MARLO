@@ -1358,12 +1358,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList()));
     }
 
+    for (Deliverable deliverable : openA) {
+      deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+    }
+
     for (SectionStatus sectionStatus : sections) {
       if (sectionStatus.getCycle().equals(this.getCurrentCycle())
         && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
 
         if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
           Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
+
           if (openA.contains(a)) {
             if (sectionStatus.getMissingFields().length() > 0) {
               return false;
