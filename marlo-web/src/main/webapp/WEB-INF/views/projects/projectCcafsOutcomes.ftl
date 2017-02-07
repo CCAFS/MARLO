@@ -160,7 +160,7 @@
                           <div class="textArea form-group col-md-12 ">
                             <label>[@s.text name="projectCcafsOutcomes.targetNarrativeAchieved" /]:[@customForm.req required=isYearRequired(year)  && action.hasPermission("narrativeTargets") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("narrativeTargets")]
-                              <textarea class="projectIndicatorNarrativeAchieved form-control input-sm fieldFocus imitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="${customName}.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
+                              <textarea class="projectIndicatorNarrativeAchieved form-control input-sm fieldFocus limitWords-100 ${(isYearRequired(year))?string('required','optional')}" name="${customName}.narrativeTargets">${(projectIndicator.narrativeTargets)!}</textarea>
                             [#else]
                               [#if !projectIndicator.narrativeTargets?has_content]
                                 [#if currentCycleYear lt year]${fieldEmpty}[#else]<div class="select"><p>[@s.text name="form.values.fieldEmpty"/]</p></div>[/#if]

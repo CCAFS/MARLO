@@ -32,8 +32,10 @@
           </div> 
           <div class="fullPartBlock">
               <h6>Submission date</h6>
-             
-              <p>${(submission.cycle)!} - ${(submission.year)!} - ${(submission.dateTime?date)!} by ${(submission.user.firstName)!} ${(submission.user.lastName)!}</p>
+              [#if submission]
+                  [#assign lastSubmission =action.getProjectSubmissions(projectID)?last /]
+              [/#if]
+              <p>${(lastSubmission.cycle)!} - ${(lastSubmission.year)!} - ${(lastSubmission.dateTime?date)!} by ${(lastSubmission.user.composedCompleteName)!}</p>
           </div> 
           <div class="fullPartBlock">
             <h6>Download Full Project Report</h6>
