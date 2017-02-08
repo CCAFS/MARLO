@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -63,6 +63,18 @@ public class IpProjectContributionOverviewManagerImpl implements IpProjectContri
   public IpProjectContributionOverview getIpProjectContributionOverviewById(long ipProjectContributionOverviewID) {
 
     return ipProjectContributionOverviewDAO.find(ipProjectContributionOverviewID);
+  }
+
+  @Override
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSytnhesis(long mogId, int year,
+    long program) {
+    return ipProjectContributionOverviewDAO.getProjectContributionOverviewsSynthesis(mogId, year, program);
+  }
+
+  @Override
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSytnhesisGlobal(long mogId, int year,
+    long program) {
+    return ipProjectContributionOverviewDAO.getProjectContributionOverviewsSynthesisGlobal(mogId, year, program);
   }
 
   @Override

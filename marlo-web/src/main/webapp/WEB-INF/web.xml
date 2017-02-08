@@ -38,11 +38,24 @@
     <listener-class>org.cgiar.ccafs.marlo.config.PentahoListener</listener-class>
   </listener>
   
+  
+  <filter>
+  <filter-name>ShiroFilter</filter-name>
+  <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+</filter>
+  <filter-mapping>
+    <filter-name>ShiroFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping> 
+  
   <!-- Google Guice integration with our web application -->
   <filter>
     <filter-name>guice</filter-name>
     <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
   </filter>
+  
+
+
   
   <!-- Google Guice configuration for all requests -->
   <filter-mapping>

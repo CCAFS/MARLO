@@ -23,7 +23,7 @@
     </action>
     
     <!-- Synthesis by MOGs -->
-    <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.synthesis.SynthesisByMogAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/synthesis/synthesisByMog.ftl</result>
     </action>

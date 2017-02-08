@@ -65,7 +65,6 @@ public interface LiaisonInstitutionDAO {
    */
   public LiaisonInstitution findByAcronym(String acronym);
 
-
   /**
    * This method saves the information of the given liaisonInstitution
    * 

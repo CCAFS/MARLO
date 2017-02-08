@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -59,10 +59,28 @@ public interface IpProjectContributionOverviewDAO {
 
 
   /**
+   * @param mogId
+   * @param year
+   * @return
+   */
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSynthesis(long mogId, int year,
+    long program);
+
+  /**
+   * @param mogId
+   * @param year
+   * @return
+   */
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSynthesisGlobal(long mogId, int year,
+    long program);
+
+  /**
    * This method saves the information of the given ipProjectContributionOverview
    * 
-   * @param ipProjectContributionOverview - is the ipProjectContributionOverview object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the ipProjectContributionOverview was
+   * @param ipProjectContributionOverview - is the ipProjectContributionOverview object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         ipProjectContributionOverview was
    *         updated
    *         or -1 is some error occurred.
    */

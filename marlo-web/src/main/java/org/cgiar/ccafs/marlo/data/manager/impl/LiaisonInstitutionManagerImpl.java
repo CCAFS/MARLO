@@ -70,6 +70,7 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
     return liaisonInstitutionDAO.find(liaisonInstitutionID);
   }
 
+
   @Override
   public long saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
 

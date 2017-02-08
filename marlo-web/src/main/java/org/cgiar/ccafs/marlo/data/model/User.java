@@ -40,6 +40,7 @@ public class User implements java.io.Serializable, IAuditLog {
   @Expose
   private String firstName;
 
+
   @Expose
   private String lastName;
 
@@ -61,11 +62,13 @@ public class User implements java.io.Serializable, IAuditLog {
 
   private Date activeSince;
 
-
   private User modifiedBy;
 
   private String modificationJustification;
+
+
   private boolean active;
+
   private Date lastLogin;
   private Set<UserRole> userRoles = new HashSet<UserRole>(0);
   private Set<CrpUser> crpUsers = new HashSet<CrpUser>(0);
@@ -73,15 +76,14 @@ public class User implements java.io.Serializable, IAuditLog {
   private Set<CrpSitesLeader> crpSitesLeaders = new HashSet<CrpSitesLeader>(0);
   private Set<CrpClusterActivityLeader> crpClusterActivityLeaders = new HashSet<CrpClusterActivityLeader>(0);
   private Set<LiaisonUser> liasonsUsers = new HashSet<LiaisonUser>(0);
-
-
+  private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
   private Set<Submission> submissions = new HashSet<Submission>(0);
-
-
   private Set<ProjectPartnerPerson> projectPartnerPersons = new HashSet<ProjectPartnerPerson>(0);
+
 
   public User() {
   }
+
 
   public User(String email, String password, boolean cgiarUser, boolean active) {
     this.email = email;
@@ -89,7 +91,6 @@ public class User implements java.io.Serializable, IAuditLog {
     this.cgiarUser = cgiarUser;
     this.active = active;
   }
-
 
   public User(String firstName, String lastName, String username, String email, String password, boolean cgiarUser,
     User createdBy, boolean active, Date lastLogin, Set<UserRole> userRoles, Set<CrpUser> crpUsers) {
@@ -106,7 +107,6 @@ public class User implements java.io.Serializable, IAuditLog {
     this.userRoles = userRoles;
     this.crpUsers = crpUsers;
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -130,9 +130,11 @@ public class User implements java.io.Serializable, IAuditLog {
     return true;
   }
 
+
   public Date getActiveSince() {
     return activeSince;
   }
+
 
   /**
    * This method returns the user's full name.
@@ -149,7 +151,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return composedId;
   }
 
-
   /**
    * This method returns a composed way to show a User.
    * 
@@ -162,7 +163,6 @@ public class User implements java.io.Serializable, IAuditLog {
     }
     return this.lastName + ", " + this.firstName + " <" + this.email + ">";
   }
-
 
   public User getCreatedBy() {
     return createdBy;
@@ -178,9 +178,11 @@ public class User implements java.io.Serializable, IAuditLog {
     return crpProgramLeaders;
   }
 
+
   public Set<CrpSitesLeader> getCrpSitesLeaders() {
     return crpSitesLeaders;
   }
+
 
   public Set<CrpUser> getCrpUsers() {
     return this.crpUsers;
@@ -197,6 +199,10 @@ public class User implements java.io.Serializable, IAuditLog {
   @Override
   public Long getId() {
     return this.id;
+  }
+
+  public Set<IpLiaisonUser> getIpLiaisonUsers() {
+    return ipLiaisonUsers;
   }
 
   public Date getLastLogin() {
@@ -218,7 +224,7 @@ public class User implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
+  @Override
   public String getModificationJustification() {
     return modificationJustification;
   }
@@ -234,14 +240,15 @@ public class User implements java.io.Serializable, IAuditLog {
     return this.password;
   }
 
+
   public Set<ProjectPartnerPerson> getProjectPartnerPersons() {
     return projectPartnerPersons;
   }
 
-
   public Set<Submission> getSubmissions() {
     return submissions;
   }
+
 
   public String getUsername() {
     return this.username;
@@ -260,7 +267,6 @@ public class User implements java.io.Serializable, IAuditLog {
     return autoSave;
   }
 
-
   public boolean isCgiarUser() {
     return cgiarUser;
   }
@@ -269,6 +275,7 @@ public class User implements java.io.Serializable, IAuditLog {
   public void setActive(boolean active) {
     this.active = active;
   }
+
 
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
@@ -294,10 +301,10 @@ public class User implements java.io.Serializable, IAuditLog {
     this.crpProgramLeaders = crpProgramLeaders;
   }
 
-
   public void setCrpSitesLeaders(Set<CrpSitesLeader> crpSitesLeaders) {
     this.crpSitesLeaders = crpSitesLeaders;
   }
+
 
   public void setCrpUsers(Set<CrpUser> crpUsers) {
     this.crpUsers = crpUsers;
@@ -313,6 +320,10 @@ public class User implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIpLiaisonUsers(Set<IpLiaisonUser> ipLiaisonUsers) {
+    this.ipLiaisonUsers = ipLiaisonUsers;
   }
 
 

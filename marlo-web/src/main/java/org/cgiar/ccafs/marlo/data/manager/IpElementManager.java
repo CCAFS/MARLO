@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.IpElementManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
+import org.cgiar.ccafs.marlo.data.model.IpProgram;
 
 import java.util.List;
 
@@ -60,6 +61,19 @@ public interface IpElementManager {
    */
   public IpElement getIpElementById(long ipElementID);
 
+
+  /**
+   * This method return all the impact pathways elements
+   * setted with the basic information id, description,
+   * translatedOf and contributesTo
+   * 
+   * @param program - Object with the program information
+   * @return a list of ipElements present in the database.
+   *         If the program has id -1 the full list of
+   *         ipElements is returned. Otherwise, the list is
+   *         filtered by the program given.
+   */
+  public List<IpElement> getIPElementListForSynthesis(IpProgram program);
 
   /**
    * This method gets all the elements that are children of the element

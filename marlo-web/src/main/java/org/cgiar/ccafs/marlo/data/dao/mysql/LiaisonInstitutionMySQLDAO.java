@@ -78,6 +78,7 @@ public class LiaisonInstitutionMySQLDAO implements LiaisonInstitutionDAO {
     return null;
   }
 
+
   @Override
   public long save(LiaisonInstitution liaisonInstitution) {
     if (liaisonInstitution.getId() == null) {

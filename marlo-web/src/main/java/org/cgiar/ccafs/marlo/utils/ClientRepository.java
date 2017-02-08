@@ -18,12 +18,14 @@ package org.cgiar.ccafs.marlo.utils;
 import java.io.InputStreamReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -59,7 +61,7 @@ public class ClientRepository {
 
   public JSONObject getMetadata(String linkRequest, String id) {
 
-
+    Gson gson = new Gson();
     JSONObject jo = new JSONObject();
 
     try {
@@ -77,23 +79,27 @@ public class ClientRepository {
 
       linkRequest = linkRequest.replace("{0}", id);
       Element metadata = this.getXmlRestClient(linkRequest);
+      List<String> authors = new ArrayList<String>();
       List<Element> elements = metadata.elements();
       for (Element element : elements) {
         Element key = element.element("key");
         Element value = element.element("value");
         String keyValue = key.getStringValue();
         keyValue = keyValue.substring(3);
-
-        if (jo.has(keyValue)) {
-          jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
+        if (keyValue.equals("contributor.author")) {
+          authors.add(value.getStringValue());
         } else {
-          jo.put(keyValue, value.getStringValue());
+          if (jo.has(keyValue)) {
+            jo.put(keyValue, jo.get(keyValue) + "," + value.getStringValue());
+          } else {
+            jo.put(keyValue, value.getStringValue());
+          }
         }
 
 
       }
 
-
+      jo.put("contributor.author", authors);
     } catch (Exception e) {
       e.printStackTrace();
       jo = null;

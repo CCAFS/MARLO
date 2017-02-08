@@ -142,6 +142,8 @@
 		<mapping resource="xmls/DeliverablePublicationsMetada.hbm.xml" />
 		<mapping resource="xmls/DeliverableCrps.hbm.xml" />
 		<mapping resource="xmls/DeliverableUsers.hbm.xml" />
+		<mapping resource="xmls/IpLiaisonInstitutions.hbm.xml" />
+		<mapping resource="xmls/IpLiaisonUsers.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

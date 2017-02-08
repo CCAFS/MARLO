@@ -69,6 +69,67 @@ public class IpElementMySQLDAO implements IpElementDAO {
   }
 
   @Override
+  public List<IpElement> getIPElementByProgramIDSynthesis(long programID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT e.id, e.description,  ");
+    query.append("et.id as 'element_type_id', et.name as 'element_type_name', ");
+    query.append("pro.id as 'program_id', pro.acronym as 'program_acronym' ");
+    query.append("FROM ip_elements e ");
+    query.append("INNER JOIN ip_element_types et ON e.element_type_id = et.id ");
+    query.append("INNER JOIN ip_programs pro ON e.ip_program_id = pro.id ");
+    query.append("WHERE pro.id = ");
+    query.append(programID + " and et.id =4  ");
+    query.append(" GROUP BY e.id");
+    query.append(" ORDER BY et.id, pro.type_id ");
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<IpElement> ipElements = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpElement ipElement = this.find(Long.parseLong(map.get("id").toString()));
+        ipElements.add(ipElement);
+      }
+    }
+
+    return ipElements;
+  }
+
+  @Override
+  public List<IpElement> getIPElementListForSynthesisRegion(long programId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT e.id, e.description, ");
+    query.append("et.id as 'element_type_id', et.name as 'element_type_name', ");
+    query.append("pro.id as 'program_id', pro.acronym as 'program_acronym', ");
+    query.append("iep.id as 'parent_id', iep.description as 'parent_description' ");
+    query.append("FROM ip_elements e ");
+    query.append("INNER JOIN ip_element_types et ON e.element_type_id = et.id ");
+    query.append("INNER JOIN ip_programs pro ON e.ip_program_id = pro.id ");
+    query.append("INNER JOIN ip_project_contributions ipc ON e.id = ipc.mog_id ");
+    query.append("INNER JOIN ip_elements iep ON iep.id = ipc.midOutcome_id ");
+    query.append("WHERE project_id in (select project_id from project_focuses where program_id=" + programId + ")   ");
+
+    query.append(" AND ipc.is_active = TRUE ");
+    query.append("GROUP BY id order by  pro.acronym  ");
+
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<IpElement> ipElements = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpElement ipElement = this.find(Long.parseLong(map.get("id").toString()));
+        ipElements.add(ipElement);
+      }
+    }
+
+    return ipElements;
+  }
+
+  @Override
   public List<IpElement> getIPElementsByParent(int parentId, int relationTypeID) {
 
     StringBuilder query = new StringBuilder();
