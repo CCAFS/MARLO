@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrl}/js/publications/publicationsList.js" ] /]
-[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrl}/css/global/customDataTable.css", "${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "publications" /]
 [#assign currentStage = (filterBy)!"all" /]
 

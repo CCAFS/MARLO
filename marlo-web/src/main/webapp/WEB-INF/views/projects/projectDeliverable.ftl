@@ -2,7 +2,14 @@
 [#assign title = "Deliverable information" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri"] /]
-[#assign customJS = ["${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js","${baseUrl}/js/projects/deliverables/deliverableDataSharing.js","${baseUrl}/js/projects/deliverables/deliverableInfo.js","${baseUrl}/js/projects/deliverables/deliverableDissemination.js", "${baseUrl}/js/global/autoSave.js","${baseUrl}/js/global/fieldsValidation.js"] /]
+[#assign customJS = [
+  "${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js",
+  "${baseUrl}/js/projects/deliverables/deliverableDataSharing.js",
+  "${baseUrl}/js/projects/deliverables/deliverableInfo.js",
+  "${baseUrl}/js/projects/deliverables/deliverableDissemination.js", 
+  "${baseUrl}/js/global/autoSave.js",
+  "${baseUrl}/js/global/fieldsValidation.js"
+] /]
 [#assign customCSS = ["${baseUrl}/css/projects/projectDeliverable.css"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]

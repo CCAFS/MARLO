@@ -2,8 +2,15 @@
 [#assign title = "MARLO Publication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
-[#assign customJS = ["${baseUrl}/js/global/fieldsValidation.js","${baseUrl}/js/publications/publication.js" ] /] [#-- , "${baseUrl}/js/global/autoSave.js" --]
-[#assign customCSS = [ "${baseUrl}/css/publications/publication.css" ] /]
+[#assign customJS = [
+  "${baseUrl}/js/publications/publication.js",
+  "${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js", 
+  "${baseUrl}/js/projects/deliverables/deliverableInfo.js",
+  "${baseUrl}/js/projects/deliverables/deliverableDissemination.js", 
+  "${baseUrl}/js/global/autoSave.js",
+  "${baseUrl}/js/global/fieldsValidation.js"
+] /]
+[#assign customCSS = [ "${baseUrl}/css/publications/publication.css", "${baseUrl}/css/projects/projectDeliverable.css" ] /]
 [#assign currentSection = "publications" /]
 
 [#assign breadCrumb = [
@@ -23,7 +30,30 @@
   [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
   <div class="col-md-10">
     [#-- Messages --]
-    [#--  --include "/WEB-INF/views/fundingSources/messages-fundingSource.ftl" /--]
+    [#include "/WEB-INF/views/publications/messages-publications.ftl" /]
+    
+    [#-- Back --]
+    <small class="pull-left">
+      <a href="[@s.url action='${crpSession}/publicationsList'][/@s.url]">
+        <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to publications
+      </a>
+    </small>
+    
+    [#-- FAIR Compliant Mini --]
+    <div class="fairComplian-block" style="">
+      <div class="pull-right">
+        [#-- Findable --] 
+        <div class="fairCompliant mini findable [#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">F</div></div>
+        [#-- Accessible --] 
+        <div class="fairCompliant mini accessible [#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">A</div></div>
+        [#-- Interoperable --] 
+        <div class="fairCompliant mini interoperable [#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">I</div></div>
+        [#-- Reusable --] 
+        <div class="fairCompliant mini reusable [#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)]achieved[#else]not-achieved[/#if][/#if]"><div class="sign">R</div></div> 
+      </div>
+    </div>
+    
+    <br />
     
     <h3 class="headTitle"> Publication Information</h3> 
     <div class="borderBox">
