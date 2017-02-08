@@ -58,10 +58,29 @@ public interface IpElementDAO {
    */
   public List<IpElement> findAll();
 
+  /**
+   * This method return a all the IP elements which belongs to the program
+   * indicated by parameter.
+   * 
+   * @param programID, identifier of the program
+   * @return a list of maps with the information of all IP elements returned.
+   */
+
+  public List<IpElement> getIPElementByProgramIDSynthesis(long programID);
+
+  /**
+   * This method return a all the IP elements which belongs to the program
+   * indicated by parameter regions.
+   * 
+   * @param programID, identifier of the program
+   * @return a list of maps with the information of all IP elements returned.
+   */
+  public List<IpElement> getIPElementListForSynthesisRegion(long programId);
+
   public List<IpElement> getIPElementsByParent(int parentId, int relationTypeID);
 
-  public List<IpElement> getIPElementsRelated(int ipElementID, int relationTypeID);
 
+  public List<IpElement> getIPElementsRelated(int ipElementID, int relationTypeID);
 
   /**
    * This method saves the information of the given ipElement

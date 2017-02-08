@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.IpProjectContributionOverviewDAO;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
@@ -64,6 +66,51 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
     }
     return null;
 
+  }
+
+  @Override
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSynthesis(long mogId, int year,
+    long program) {
+    StringBuilder query = new StringBuilder();
+    query.append("select * from ip_project_contribution_overviews where YEAR= ");
+    query.append(year + " and output_id=" + mogId
+      + " and is_active=1 and project_id in (select project_id from project_focuses where program_id=" + program + ")");
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<IpProjectContributionOverview> contributionOverviews = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpProjectContributionOverview contributionOverview = this.find(Long.parseLong(map.get("id").toString()));
+        contributionOverviews.add(contributionOverview);
+      }
+    }
+
+    return contributionOverviews;
+  }
+
+  @Override
+  public List<IpProjectContributionOverview> getProjectContributionOverviewsSynthesisGlobal(long mogId, int year,
+    long program) {
+    StringBuilder query = new StringBuilder();
+    query.append("select * from ip_project_contribution_overviews where YEAR= ");
+    query.append(year + " and output_id=" + mogId
+      + " and is_active=1 and project_id in (select id from projects where is_global=1)");
+
+
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<IpProjectContributionOverview> contributionOverviews = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpProjectContributionOverview contributionOverview = this.find(Long.parseLong(map.get("id").toString()));
+        contributionOverviews.add(contributionOverview);
+      }
+    }
+
+    return contributionOverviews;
   }
 
   @Override

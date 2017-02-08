@@ -70,6 +70,7 @@ public interface LiaisonInstitutionManager {
    */
   public LiaisonInstitution getLiaisonInstitutionById(long liaisonInstitutionID);
 
+
   /**
    * This method saves the information of the given liaisonInstitution
    * 
@@ -79,6 +80,5 @@ public interface LiaisonInstitutionManager {
    *         or -1 is some error occurred.
    */
   public long saveLiaisonInstitution(LiaisonInstitution liaisonInstitution);
-
 
 }

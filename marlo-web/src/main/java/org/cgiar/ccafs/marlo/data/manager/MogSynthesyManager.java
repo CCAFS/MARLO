@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -53,6 +53,22 @@ public interface MogSynthesyManager {
    */
   public List<MogSynthesy> findAll();
 
+
+  /**
+   * This method gets all the OutcomeSynthesis information by a given program id
+   * 
+   * @param projectID - is the Id of the project
+   * @return a List of OutcomeSynthesis with the Information related with the programId
+   */
+  public List<MogSynthesy> getMogSynthesis(long programId);
+
+  /**
+   * This method gets all the MogSynthesis information by a given program id
+   * 
+   * @param projectID - is the Id of the project
+   * @return a List of MogSynthesis with the Information related with the programId
+   */
+  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome);
 
   /**
    * This method gets a mogSynthesy object by a given mogSynthesy identifier.

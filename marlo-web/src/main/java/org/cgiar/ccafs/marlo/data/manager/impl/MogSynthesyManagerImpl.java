@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -57,6 +57,17 @@ public class MogSynthesyManagerImpl implements MogSynthesyManager {
 
     return mogSynthesyDAO.findAll();
 
+  }
+
+
+  @Override
+  public List<MogSynthesy> getMogSynthesis(long programId) {
+    return mogSynthesyDAO.findMogSynthesis(programId);
+  }
+
+  @Override
+  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome) {
+    return mogSynthesyDAO.findMogSynthesisRegion(midoutcome);
   }
 
   @Override
