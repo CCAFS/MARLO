@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -44,17 +45,17 @@ public class ProjectCaseStudiesListAction extends BaseAction {
   private static final long serialVersionUID = -3082621120976012917L;
 
   private List<Integer> allYears;
+
   private long caseStudyID;
   // Manager
   private CaseStudyManager caseStudyManager;
-
   private CaseStudyProjectManager caseStudyProjectManager;
 
   // Model for the back-end
   private Project project;
+
   // Model for the front-end
   private long projectID;
-
   private ProjectManager projectManager;
 
   @Inject
@@ -68,44 +69,50 @@ public class ProjectCaseStudiesListAction extends BaseAction {
 
   @Override
   public String add() {
-    CaseStudy caseStudy = new CaseStudy();
-    // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
 
-    caseStudy.setActive(true);
-    caseStudy.setActiveSince(new Date());
-    caseStudy.setActivities("");
-    caseStudy.setComment("");
-    caseStudy.setCreatedBy(this.getCurrentUser());
-    caseStudy.setEvidenceOutcome("");
-    caseStudy.setExplainIndicatorRelation("");
-    caseStudy.setFile(null);
-    caseStudy.setModificationJustification("");
-    caseStudy.setModifiedBy(this.getCurrentUser());
-    caseStudy.setNonResearchPartneres("");
-    caseStudy.setOutcomeStatement("");
-    caseStudy.setOutputUsed("");
-    caseStudy.setOutputUsers("");
-    caseStudy.setReferencesCase("");
-    caseStudy.setResearchOutputs("");
-    caseStudy.setResearchPartners("");
-    caseStudy.setResearchPatern("");
-    caseStudy.setTitle("");
-    caseStudy.setYear(this.getCurrentCycleYear());
-    caseStudyID = caseStudyManager.saveCaseStudy(caseStudy);
+    String params[] = {this.getCrpSession(), project.getId().toString()};
+
+    if (this.hasPermission(this.generatePermission(Permission.PROJECT_CASE_STUDY_PERMISSION, params))) {
+
+      CaseStudy caseStudy = new CaseStudy();
+      // newDeliverable.setType(deliverableTypeManager.getDeliverableSubTypes().get(0));
+
+      caseStudy.setActive(true);
+      caseStudy.setActiveSince(new Date());
+      caseStudy.setActivities("");
+      caseStudy.setComment("");
+      caseStudy.setCreatedBy(this.getCurrentUser());
+      caseStudy.setEvidenceOutcome("");
+      caseStudy.setExplainIndicatorRelation("");
+      caseStudy.setFile(null);
+      caseStudy.setModificationJustification("");
+      caseStudy.setModifiedBy(this.getCurrentUser());
+      caseStudy.setNonResearchPartneres("");
+      caseStudy.setOutcomeStatement("");
+      caseStudy.setOutputUsed("");
+      caseStudy.setOutputUsers("");
+      caseStudy.setReferencesCase("");
+      caseStudy.setResearchOutputs("");
+      caseStudy.setResearchPartners("");
+      caseStudy.setResearchPatern("");
+      caseStudy.setTitle("");
+      caseStudy.setYear(this.getCurrentCycleYear());
+      caseStudyID = caseStudyManager.saveCaseStudy(caseStudy);
 
 
-    if (caseStudyID > 0) {
-      CaseStudyProject caseStudyProject = new CaseStudyProject();
-      caseStudyProject.setCaseStudy(caseStudy);
-      caseStudyProject.setProject(project);
-      caseStudyProject.setCreated(true);
-      caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
-      return SUCCESS;
+      if (caseStudyID > 0) {
+        CaseStudyProject caseStudyProject = new CaseStudyProject();
+        caseStudyProject.setCaseStudy(caseStudy);
+        caseStudyProject.setProject(project);
+        caseStudyProject.setCreated(true);
+        caseStudyProjectManager.saveCaseStudyProject(caseStudyProject);
+        return SUCCESS;
+      }
+
+
     }
-
-    return INPUT;
+    return NOT_AUTHORIZED;
   }
-
 
   public boolean canDelete(long owner) {
 
@@ -113,6 +120,13 @@ public class ProjectCaseStudiesListAction extends BaseAction {
       return true;
     }
     return false;
+  }
+
+
+  public boolean canEdit() {
+    String params[] = {this.getCrpSession(), project.getId().toString()};
+
+    return (this.hasPermission(this.generatePermission(Permission.PROJECT_CASE_STUDY_PERMISSION, params)));
   }
 
   @Override
@@ -187,7 +201,7 @@ public class ProjectCaseStudiesListAction extends BaseAction {
     for (CaseStudyProject caseStudyProject : caseStudyProjects) {
       if (caseStudyProject.getCaseStudy().isActive()) {
 
-        project.getCaseStudies().add(caseStudyProject.getCaseStudy()); 
+        project.getCaseStudies().add(caseStudyProject.getCaseStudy());
       }
     }
 
