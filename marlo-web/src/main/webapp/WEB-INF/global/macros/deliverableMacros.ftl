@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
-[#macro deliverableLicenseMacro]
+[#macro deliverableLicenseMacro ]
 <div class="simpleBox">
   <div class="form-group row">
     <label class="col-md-9" for="">[@s.text name="project.deliverable.dissemination.adoptedLicenseQuestion" /] [@customForm.req /]</label>

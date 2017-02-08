@@ -101,7 +101,11 @@
                 [@deliverableMacros.isOpenaccessMacro /]
                 
                 [#-- Have you adopted a license?  --]
-                [@deliverableMacros.deliverableLicenseMacro /]
+                [#if deliverable.requeriedFair()]
+                  [@deliverableMacros.deliverableLicenseMacro /]
+                [#else]
+                  <div class="license"><input type="hidden" name="deliverable.adoptedLicense" class="onoffswitch-radio" value="false"></div> 
+                [/#if]
                 
                 [#-- Metadata (included publications) --]
                 <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>

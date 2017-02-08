@@ -40,7 +40,7 @@
             <a href="${projectUrl}">${(deliverable.id)!}</a>
           </td>
           [#-- Title / Name --]
-          <td class="">
+          <td class="col-md-5 left">
             <a href="${projectUrl}">${(deliverable.title)!'Not defined'}</a>
           </td>
           [#-- Lead partner(s) --]

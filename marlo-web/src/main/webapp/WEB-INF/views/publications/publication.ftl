@@ -172,6 +172,7 @@
     <div class="borderBox"> 
       [#-- Dissemination channel & URL --]
       <div class="simpleBox">
+        <div class="findable"><input type="hidden" name="${customName}.dissemination.alreadyDisseminated" value="true"/></div>
         [@deliverableMacros.findableOptions /]
       </div>
       
