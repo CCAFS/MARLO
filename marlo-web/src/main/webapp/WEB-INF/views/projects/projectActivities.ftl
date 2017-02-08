@@ -143,7 +143,7 @@
       [#if reportingActive]
       [#-- Progress in reporting cycle --]
       <div class="statusDescriptionBlock col-md-12">
-        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${(element.activityStatus)!'NotSelected'}" value="${(element.progressDescription)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
+        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${(element.activityStatus)!'NotSelected'}" value="${(element.activityProgress)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
         <div id="statusesLabels" style="display:none">
           <div id="status-2">[@s.text name="project.activities.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
           <div id="status-3">[@s.text name="project.activities.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
