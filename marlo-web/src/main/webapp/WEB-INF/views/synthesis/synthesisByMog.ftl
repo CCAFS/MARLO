@@ -23,7 +23,7 @@
 <section class="container">
   <div class="row"> 
     <div class="col-md-12">
-    [@s.form action="synthesisByMog" method="POST" enctype="multipart/form-data" cssClass="pure-form"]
+    [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
     
     [#-- Program (Regions and Flagships) --]
     <ul id="liaisonInstitutions" class="horizontalSubMenu">
@@ -141,8 +141,12 @@
           [@customForm.textArea name="projectLessons.lessons" i18nkey="synthesisByMog.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesisByMog.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
         </div>
       </div>
-        <input type="hidden" name="liaisonInstitutionID" value="${liaisonInstitutionID}"  />
+        
     </div>
+    
+    [#-- Section Buttons & hidden inputs--]
+    [#include "/WEB-INF/views/synthesis/buttons-synthesis.ftl" /]
+    
     [/@s.form] 
   </div>
   </div>
