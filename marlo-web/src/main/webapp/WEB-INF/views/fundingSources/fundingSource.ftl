@@ -91,7 +91,9 @@
             [#if fundingSource.institutions?has_content]
               [#list fundingSource.institutions as institutionLead]
                 <li id="" class="leadPartners clearfix col-md-6">
+                [#if editable ]
                   <div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>
+                [/#if]
                   <input class="id" type="hidden" name="fundingSource.institutions[${institutionLead_index}].id" value="${institutionLead.id}" />
                   <input class="fId" type="hidden" name="fundingSource.institutions[${institutionLead_index}].institution.id" value="${institutionLead.institution.id}" />
                   <span class="name">${(institutionLead.institution.composedName)!}</span>
