@@ -354,7 +354,7 @@ public class ProjectOutcomesPandRAction extends BaseAction {
           for (ProjectOutcomePandr outcomePandr : project.getOutcomesPandr()) {
 
             if (outcomePandr != null) {
-              if (outcomePandr.getFile() != null) {
+              if (outcomePandr.getFile() != null && outcomePandr.getFile().getId() != null) {
                 outcomePandr.setFile(fileDBManager.getFileDBById(outcomePandr.getFile().getId()));
               }
 
