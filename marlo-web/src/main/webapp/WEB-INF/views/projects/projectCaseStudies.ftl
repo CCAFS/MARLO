@@ -54,9 +54,8 @@
           <div id="caseStudiesBlock" class="simpleBox">
             [@tableList list=(project.caseStudies)![]  /]
           </div>
-          
           [#-- Add a new --]
-          [#if canEdit] 
+          [#if action.canEdit()] 
           <div class="text-right"> 
             <a class="button-blue" href="[@s.url action='${crpSession}/addNewCaseStudy'] [@s.param name="projectID"]${projectID}[/@s.param][/@s.url]">
               <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>  [@s.text name="projectCaseStudies.addCaseStudy" /]
@@ -104,7 +103,7 @@
             <td class="owner">[#if item.owner?trim?has_content]P${item.owner.id}[#else]Not defined[/#if]</td>
             <td class="year">[#if item.year?trim?has_content]${item.year}[#else]Not defined[/#if]</td>
             <td class="removeHighlight-row text-center">
-              [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) ]
+              [#if canEdit && action.canDelete(item.owner.id) && (item.year gte  currentCycleYear) && action.canEdit() ]
                 <a id="removeElement-${item.id}" class="removeElementList" href="#" title="" >
                   <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="projectCaseStudies.removeCaseStudy" /]" /> 
                 </a>
