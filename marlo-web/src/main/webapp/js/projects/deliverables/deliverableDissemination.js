@@ -465,6 +465,7 @@ function getCGSpaceMetadata(channel,url,uri) {
         $('#metadata-output').html("Searching ... " + data.metadataID);
       },
       success: function(m) {
+        console.log(m);
 
         if(m.errorMessage) {
           $('#metadata-output').html(data.errorMessage);
@@ -492,7 +493,17 @@ function getCGSpaceMetadata(channel,url,uri) {
             sendDataJson.keywords = m.metadata['subject'];
             setMetadata(sendDataJson);
 
-            authorsByService([]);
+            // Getting authors
+            var authors = [];
+            $.each(m.metadata['contributor.author'], function(i,element) {
+              authors.push({
+                  lastName: (element).split(',')[0],
+                  firstName: (element).split(',')[1],
+                  orcidId: "not prefilled"
+              });
+            });
+
+            authorsByService(authors);
 
             var $input = $(".accessible ").parent().find('input');
             if(m.metadata['identifier.status'] == "Open Access") {
