@@ -15,16 +15,14 @@
         <th>[@s.text name="publicationsList.column.id" /]</th>
         [#-- Title / Name --]
         <th>[@s.text name="publicationsList.column.title" /]</th>
-        [#-- Source --]
-        <th>[@s.text name="publicationsList.column.source" /]</th>
-        [#-- Delivery year --]
-        <th>[@s.text name="publicationsList.column.year" /]</th>
-        [#-- FAIR Compliance --]
-        <th>[@s.text name="publicationsList.column.fair" /]</th>
         [#-- Lead partner(s) --]
         <th>[@s.text name="publicationsList.column.lead" /]</th>
         [#-- Flagship / Region --]
         <th>[@s.text name="publicationsList.column.flagshipRegion" /]</th>
+        [#-- Delivery year --]
+        <th>[@s.text name="publicationsList.column.year" /]</th>
+        [#-- FAIR Compliance --]
+        <th>[@s.text name="publicationsList.column.fair" /]</th>
         [#-- Fields check --]
         <th>[@s.text name="publicationsList.column.fieldsCheck" /]</th>
         [#-- Delete --]
@@ -43,34 +41,26 @@
           </td>
           [#-- Title / Name --]
           <td class="">
-            <a href="${projectUrl}">${(deliverable.title)!}</a>
+            <a href="${projectUrl}">${(deliverable.title)!'Not defined'}</a>
           </td>
-          [#-- Source --]
+          [#-- Lead partner(s) --]
           <td class=""> 
-            ${(deliverable.dissemination.disseminationChannel?capitalize)!}
+            Not defined
+          </td>
+          [#-- Flagship / Region --]
+          <td class=""> 
+            Not defined
           </td>
           [#-- Delivery year --]
           <td class=""> 
            ${(deliverable.year)!}
           </td>
           [#-- FAIR Compliance --]
-          <td class=""> 
-           [#if (deliverable.requeriedFair())!false]
+          <td class="fair"> 
             <span class="[#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">F</span>
             <span class="[#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">A</span>
             <span class="[#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">I</span>
             <span class="[#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] notAchieved [/#if][/#if]">R</span>
-          [#else]
-            <p class="message">Not applicable</p>
-          [/#if]
-          </td>
-          [#-- Lead partner(s) --]
-          <td class=""> 
-           
-          </td>
-          [#-- Flagship / Region --]
-          <td class=""> 
-           
           </td>
           [#-- Fields check --]
           <td class=""> 
