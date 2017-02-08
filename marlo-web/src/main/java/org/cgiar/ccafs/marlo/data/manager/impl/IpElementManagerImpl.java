@@ -84,7 +84,7 @@ public class IpElementManagerImpl implements IpElementManager {
         /**
          * TODO
          */
-        elementsList = ipElementDAO.getIPElementListForSynthesisRegion(_program.getId());
+        elementsList = ipElementDAO.getIPElementListForSynthesisRegion(_program.getCrpProgram().getId());
         break;
     }
 

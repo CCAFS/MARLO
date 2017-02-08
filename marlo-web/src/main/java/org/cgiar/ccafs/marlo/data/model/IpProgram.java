@@ -19,21 +19,28 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -25507491163714552L;
+
+
   @Expose
   private Long id;
 
   @Expose
   private IpProgramType ipProgramType;
-
   @Expose
   private String name;
 
   @Expose
   private String acronym;
+
   @Expose
   private Long regionId;
+
+  @Expose
+  private CrpProgram crpProgram;
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
+
   private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
+
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
 
@@ -87,6 +94,10 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return builder.toString();
   }
 
+  public CrpProgram getCrpProgram() {
+    return crpProgram;
+  }
+
   @Override
   public Long getId() {
     return id;
@@ -103,7 +114,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public IpProgramType getIpProgramType() {
     return ipProgramType;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -184,6 +194,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+
+  public void setCrpProgram(CrpProgram crpProgram) {
+    this.crpProgram = crpProgram;
   }
 
 

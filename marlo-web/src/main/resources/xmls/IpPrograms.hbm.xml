@@ -11,6 +11,9 @@
         <many-to-one name="ipProgramType" class="org.cgiar.ccafs.marlo.data.model.IpProgramType" fetch="select">
             <column name="type_id" not-null="true" />
         </many-to-one>
+        <many-to-one name="crpProgram" class="org.cgiar.ccafs.marlo.data.model.CrpProgram" fetch="select">
+            <column name="crp_program_id"/>
+        </many-to-one>
         <property name="name" type="string">
             <column name="name" length="65535" />
         </property>

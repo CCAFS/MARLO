@@ -2,20 +2,8 @@
 
 [#assign canEdit = true /]
 [#assign editable = true /]
-[#assign program = {
-  'flagshipProgram' : true
-} /]
-[#assign liaisonInstitutionID = 2 /]
-[#assign liaisonInstitutions = [
-  { 'id': 1, 'acronym': 'F1', 'name': 'Priorities and Policies for CSA'},
-  { 'id': 2, 'acronym': 'F2', 'name': 'Climate-Smart Technologies and Practices'},
-  { 'id': 3, 'acronym': 'F3', 'name': 'Low emissions development'},
-  { 'id': 4, 'acronym': 'F4', 'name': 'Climate services and safety nets'}
-] /]
-[#assign currentLiaisonInstitution = liaisonInstitutions[1] /]
 
-
-
+[#assign title = "Synthesis by Mog" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = ["${baseUrl}/js/synthesis/synthesisByCoAs.js"] /]

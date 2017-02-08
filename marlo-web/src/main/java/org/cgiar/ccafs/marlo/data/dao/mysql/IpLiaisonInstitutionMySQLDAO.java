@@ -68,7 +68,7 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
 
   @Override
   public List<Map<String, Object>> getLiaisonInstitutionSynthesisByMog() {
-    String query = "select id FROM liaison_institutions li where id  in (2,3,4,5,6,7,8,9,10)  ";
+    String query = "select id FROM liaison_institutions li where id  in (2,3,4,5,6,7,8,9,10)";
     return dao.findCustomQuery(query);
   }
 

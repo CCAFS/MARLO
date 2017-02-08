@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -94,11 +95,12 @@ public class SynthesisByMogAction extends BaseAction {
     return currentLiaisonInstitution;
   }
 
-  public int getIndex(IpElement mog, IpProgram program) {
+  public int getIndex(long mog, long program) {
     MogSynthesy synthe = new MogSynthesy();
 
-    synthe.setIpElement(mog);
-    synthe.setIpProgram(program);
+
+    synthe.setIpElement(ipElementManager.getIpElementById(mog));
+    synthe.setIpProgram(ipProgramManager.getIpProgramById(program));
 
     int index = synthesis.indexOf(synthe);
     return index;
@@ -184,6 +186,8 @@ public class SynthesisByMogAction extends BaseAction {
     // Get the list of liaison institutions.
     liaisonInstitutions = IpLiaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
 
+    Collections.sort(liaisonInstitutions, (li1, li2) -> li1.getId().compareTo(li2.getId()));
+
     // Get currentLiaisonInstitution
     currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
 
@@ -206,7 +210,7 @@ public class SynthesisByMogAction extends BaseAction {
 
     for (IpElement mog : mogs) {
 
-      if (this.getIndex(mog, program) == -1) {
+      if (this.getIndex(mog.getId(), program.getId()) == -1) {
         MogSynthesy synthe = new MogSynthesy();
 
         synthe.setIpElement(mog);
