@@ -45,17 +45,17 @@ public class ProjectCaseStudiesListAction extends BaseAction {
   private static final long serialVersionUID = -3082621120976012917L;
 
   private List<Integer> allYears;
+
   private long caseStudyID;
   // Manager
   private CaseStudyManager caseStudyManager;
-
   private CaseStudyProjectManager caseStudyProjectManager;
 
   // Model for the back-end
   private Project project;
+
   // Model for the front-end
   private long projectID;
-
   private ProjectManager projectManager;
 
   @Inject
@@ -114,13 +114,19 @@ public class ProjectCaseStudiesListAction extends BaseAction {
     return NOT_AUTHORIZED;
   }
 
-
   public boolean canDelete(long owner) {
 
     if (owner == projectID) {
       return true;
     }
     return false;
+  }
+
+
+  public boolean canEdit() {
+    String params[] = {this.getCrpSession(), project.getId().toString()};
+
+    return (this.hasPermission(this.generatePermission(Permission.PROJECT_CASE_STUDY_PERMISSION, params)));
   }
 
   @Override
