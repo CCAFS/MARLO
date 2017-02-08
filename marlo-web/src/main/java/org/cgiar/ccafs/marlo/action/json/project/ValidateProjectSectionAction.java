@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CaseStudy;
+import org.cgiar.ccafs.marlo.data.model.CaseStudyIndicator;
 import org.cgiar.ccafs.marlo.data.model.CaseStudyProject;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -647,6 +648,14 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     for (CaseStudyProject caseStudyProject : caseStudies) {
       if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+
+        caseStudyProject.getCaseStudy().setIndicators(
+          caseStudyProject.getCaseStudy().getCaseStudyIndicators().stream().collect(Collectors.toList()));
+        List<String> idsIndicators = new ArrayList<>();
+        for (CaseStudyIndicator caseStudyIndicator : caseStudyProject.getCaseStudy().getIndicators()) {
+          idsIndicators.add(caseStudyIndicator.getIpIndicator().getId().toString());
+        }
+        caseStudyProject.getCaseStudy().setCaseStudyIndicatorsIds(idsIndicators);
         projectCaseStudyValidation.validate(this, project, caseStudyProject.getCaseStudy(), false);
       }
 

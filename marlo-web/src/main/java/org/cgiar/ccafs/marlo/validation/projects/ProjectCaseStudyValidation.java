@@ -132,6 +132,18 @@ public class ProjectCaseStudyValidation extends BaseValidator {
         action.getInvalidFields().put("input-caseStudy.referencesCase", InvalidFieldsMessages.EMPTYFIELD);
       }
 
+      if (caseStudy.getCaseStudyIndicatorsIds() != null) {
+        if (caseStudy.getCaseStudyIndicatorsIds().isEmpty()) {
+          this.addMessage(action.getText("reporting.caseStudy.caseStudyIndicatorsIds").toLowerCase());
+
+          action.getInvalidFields().put("input-caseStudy.caseStudyIndicatorsIds", InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } else {
+        this.addMessage(action.getText("reporting.caseStudy.caseStudyIndicatorsIds").toLowerCase());
+
+        action.getInvalidFields().put("input-caseStudy.caseStudyIndicatorsIds", InvalidFieldsMessages.EMPTYFIELD);
+      }
+
 
     }
     if (!action.getFieldErrors().isEmpty()) {
