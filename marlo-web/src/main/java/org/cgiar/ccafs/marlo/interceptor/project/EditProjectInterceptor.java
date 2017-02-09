@@ -41,7 +41,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
   private static final long serialVersionUID = 1423197153747668108L;
 
-  private BaseAction baseAction;
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -61,7 +60,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
 
-    baseAction = (BaseAction) invocation.getAction();
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -74,7 +72,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction.setBasePermission(null);
     loggedCrp = (Crp) session.get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());

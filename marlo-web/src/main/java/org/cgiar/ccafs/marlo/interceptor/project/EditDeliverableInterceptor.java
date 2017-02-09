@@ -42,7 +42,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   private static final long serialVersionUID = 7287623847333177230L;
 
-  private BaseAction baseAction;
+
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -62,7 +62,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -79,7 +79,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   void setPermissionParameters(ActionInvocation invocation) {
 
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -96,6 +96,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+        System.out.println("----------------------------ENTER SUPER ADMIN---------------------------------------");
         if (!baseAction.isSubmit(deliverable.getProject().getId())) {
 
           canSwitchProject = true;
@@ -141,6 +142,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
       if (deliverable.getStatus() != null) {
         if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+          System.out.println("----------------------------CanEDIT False---------------------------------------");
           canEdit = false;
         }
       }

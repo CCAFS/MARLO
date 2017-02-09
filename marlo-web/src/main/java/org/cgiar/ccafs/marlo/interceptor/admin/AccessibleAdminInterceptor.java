@@ -29,10 +29,10 @@ public class AccessibleAdminInterceptor extends AbstractInterceptor implements S
 
   private static final long serialVersionUID = 2827118230094764204L;
 
-  private BaseAction baseAction;
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     baseAction = (BaseAction) invocation.getAction();
     if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
       return invocation.invoke();
