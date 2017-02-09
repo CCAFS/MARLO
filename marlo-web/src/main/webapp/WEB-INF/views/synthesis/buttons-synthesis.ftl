@@ -8,7 +8,11 @@
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 
-[#assign recordsList = (action.getListLog(currentLiaisonInstitution))!{} /]
+[#attempt]
+  [#assign recordsList = (action.getListLog(currentLiaisonInstitution))!{} /]
+[#recover]
+  [#assign recordsList = [] /]
+[/#attempt]
 
 <div class="buttons">
   <div class="buttons-content">

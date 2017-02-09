@@ -69,9 +69,7 @@
       [#-- Other --]
       <div class="licenseOptions">
         [#if deliverable.licenseType?? && deliverable.licenseType == "OTHER"]
-        
           <p class="checked"> Other </p>
-          
           <div class="form-group row">
             <div class="col-md-6 licence-modifications">
               [@customForm.input name="deliverable.otherLicense" showTitle=false className="" type="text" placeholder="Please specify" disabled=!editable className="otherLicense"  required=true editable=editable /]

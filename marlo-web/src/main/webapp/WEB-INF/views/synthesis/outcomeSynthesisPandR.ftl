@@ -74,7 +74,7 @@
             <p class="readPrivileges">[@s.text name="saving.read.privileges"][@s.param]${title}[/@s.param][/@s.text]</p>
           [/#if]
           [#-- Title --]
-          <h1 class="contentTitle">[@s.text name="reporting.synthesis.outcomeSynthesis.title" ][@s.param]${(currentLiaisonInstitution.name)!}[/@s.param][/@s.text]</h1>
+          <h1 class="contentTitle">[@s.text name="synthesis.outcomeSynthesis.title" ][@s.param]${(currentLiaisonInstitution.name)!}[/@s.param][/@s.text]</h1>
           
           [#-- Outcomes 2019 --]
           <div id="outcomeSynthesisBlock" class="">
@@ -85,7 +85,8 @@
                 <p>${midOutcome.description}</p>
               </div>
               <div class="fullPartBlock">
-                <h6>[@s.text name="reporting.synthesis.outcomeSynthesis.indicators" /]:</h6> 
+                <label>[@s.text name="synthesis.outcomeSynthesis.indicators" /]:</label> 
+                [#if midOutcome.indicators?has_content]
                 
                 [#list midOutcome.indicators as indicator]
                   [#assign flagshipIndicator = (indicator.parent)!indicator /]
@@ -97,31 +98,31 @@
                     </div>
                     [#-- Achieved target in current reporting period --]
                     <div class="fullPartBlock">
-                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedText" type="text" i18nkey="reporting.synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]</div>
+                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]</div>
                       <div class="thirdPartBlock"></div>
-                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedExpectedText" type="text" i18nkey="reporting.synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]</div>
+                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedExpectedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]</div>
                     </div>
                     
                     [#-- Synthesis of annual progress towards this indicator --]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].synthesisAnual" i18nkey="reporting.synthesis.outcomeSynthesis.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
+                      [@customForm.textArea name="synthesis[${index}].synthesisAnual" i18nkey="synthesis.outcomeSynthesis.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
                     </div>
                     
                     [#-- Synthesis of annual progress gender and social inclusion contribution towards this indicator --]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="reporting.synthesis.outcomeSynthesis.genderProgressIndicator" className="genderProgressIndicator limitWords-200" required=canEdit editable=editable /]
+                      [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesis.outcomeSynthesis.genderProgressIndicator" className="genderProgressIndicator limitWords-200" required=canEdit editable=editable /]
                     </div>
                     
                     [#-- Explain any discrepancy  --]
                     [#if midOutcome.regionalProgramType]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].discrepancy" i18nkey="reporting.synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
+                      [@customForm.textArea name="synthesis[${index}].discrepancy" i18nkey="synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
                     </div>
                     [/#if]
                     
                     [#-- Regions/Global contributions --]
                     [#if midOutcome.flagshipProgramType]
-                    <h6>[@s.text name="reporting.synthesis.outcomeSynthesis.regionalContributions" /]:</h6> 
+                    <h6>[@s.text name="synthesis.outcomeSynthesis.regionalContributions" /]:</h6> 
                     <div class="fullPartBlock">
                       <div class="fullPartBlock synthesisContributions-block viewMore-block">
                         <table class="regionalContributions">
@@ -153,11 +154,11 @@
                     
                     [#-- Project Contributions --]
                     [#if midOutcome.flagshipProgramType]
-                      <h6>[@s.text name="reporting.synthesis.outcomeSynthesis.globalProjectContributions" /]:</h6> 
+                      <h6>[@s.text name="synthesis.outcomeSynthesis.globalProjectContributions" /]:</h6> 
                     [#else]
-                      <h6>[@s.text name="reporting.synthesis.outcomeSynthesis.projectContributions" /]:</h6> 
+                      <h6>[@s.text name="synthesis.outcomeSynthesis.projectContributions" /]:</h6> 
                     [/#if]
-                    [#if (action.getProjectIndicators(currentReportingYear, flagshipIndicator.id,midOutcome.id))?has_content]
+                    [#if (action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id))?has_content]
                     <div class="fullPartBlock synthesisContributions-block viewMore-block">
                       <table class="projectContributions">
                         <thead>
@@ -170,7 +171,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                        [#list action.getProjectIndicators(currentReportingYear, flagshipIndicator.id,midOutcome.id) as projectIndicator]
+                        [#list action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id) as projectIndicator]
                           <tr>
                             <td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/reporting/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
                             <td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
@@ -188,13 +189,10 @@
                     [/#if]
                   </div>
                 [/#list]
+                [#else]
+                  <p>No Outcomes Loaded</p>
+                [/#if]
               </div>
-              [#if editable] 
-              <div class="buttons clearfix">
-                [@s.submit type="button" name="save"][@s.text name="form.buttons.save" /][/@s.submit]
-                [@s.submit type="button" name="cancel"][@s.text name="form.buttons.cancel" /][/@s.submit]
-              </div>
-              [/#if]
             </div>
             [/#list]
           </div>
@@ -208,27 +206,16 @@
             [/#if]
             <div class="fullBlock">
               <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
-              <input type="hidden" name="projectLessons.year" value=${currentReportingYear} />
+              <input type="hidden" name="projectLessons.year" value=${currentCycleYear} />
               <input type="hidden" name="projectLessons.componentName" value="${actionName}">
-              [@customForm.textArea name="projectLessons.lessons" i18nkey="reporting.synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="reporting.synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
-            </div>
-            <br />
-            [#if editable] 
-            <div class="buttons clearfix">
-              [@s.submit type="button" name="save"][@s.text name="form.buttons.save" /][/@s.submit]
-              [@s.submit type="button" name="cancel"][@s.text name="form.buttons.cancel" /][/@s.submit]
-            </div>
-            [/#if] 
-          </div>
-            <input type="hidden" name="liaisonInstitutionID" value="${liaisonInstitutionID}"  /> 
-          [#-- Log history --]
-          [#if editable]
-            
-          [#else]
-            [#-- Display Log History --]
-            [#if history??][@log.logList list=history /][/#if] 
-          [/#if]
+              [@customForm.textArea name="projectLessons.lessons" i18nkey="synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
+            </div> 
+          </div>  
         </div>
+        
+        [#-- Section Buttons & hidden inputs--]
+        [#include "/WEB-INF/views/synthesis/buttons-synthesis.ftl" /]
+        
       [/@s.form]
       
     </div>
