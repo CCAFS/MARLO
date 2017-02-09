@@ -46,7 +46,7 @@
     
   </article>
 </section>
-[@customForm.confirmJustification action="deletePublication.do" namespace="/${currentSection}" title="Remove Publications" /]
+[@customForm.confirmJustification action="deletePublication.do" namespace="/${currentSection}" nameId="deliverableID" title="Remove Publications" /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]

@@ -9,7 +9,7 @@ $(document).ready(function() {
       "bFilter": true, // This option enable the search
       "bSort": true, // this option enable the sort of contents by columns
       "bAutoWidth": false, // This option enables the auto adjust columns width
-      "iDisplayLength": 15, // Number of rows to show on the table
+      "iDisplayLength": 50, // Number of rows to show on the table
       "fnDrawCallback": function() {
         // This function locates the add activity button at left to the filter box
         var table = $(this).parent().find("table");
@@ -35,7 +35,7 @@ $(document).ready(function() {
   $('.programTag').on('click', filterByProgram);
 
   $projectList.on('draw.dt', function() {
-    $("a.removeProject").on("click", removeProject);
+    $("a.removeRow").on("click", removeRow);
     $('.programTag').on('click', filterByProgram);
   });
 
@@ -63,7 +63,7 @@ $(document).ready(function() {
       ]
   });
   $('table.projectsHome').on('draw.dt', function() {
-    $("a.removeProject").on("click", removeProject);
+    $("a.removeRow").on("click", removeRow);
   });
 
   $("#submitForm").on("submit", function(evt) {
@@ -118,13 +118,13 @@ function addJustificationPopUp() {
       },
   });
   // Event to open dialog to remove deliverable
-  $("a.removeProject").on("click", removeProject);
+  $("a.removeRow").on("click", removeRow);
 }
 
-function removeProject(e) {
+function removeRow(e) {
   e.preventDefault();
   $dialogContent.find("#justification").val('').removeClass('fieldError');
   // Getting deliverable ID and setting input hidden to remove that deliverable
-  $dialogContent.find('input[name$=projectID]').val($(e.target).parent().attr('id').split('-')[1]);
+  $dialogContent.find('input[name$=deliverableID]').val($(e.target).parent().attr('id').split('-')[1]);
   dialog.dialog("open");
 }

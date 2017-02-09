@@ -41,7 +41,13 @@
           </td>
           [#-- Title / Name --]
           <td class="col-md-5 left">
-            <a href="${projectUrl}">${(deliverable.title)!'Not defined'}</a>
+            <a href="${projectUrl}">
+              [#if deliverable.title?has_content]
+                ${(deliverable.title)!}
+              [#else]
+                Not defined
+              [/#if]
+            </a>
           </td>
           [#-- Lead partner(s) --]
           <td class=""> 
@@ -77,7 +83,7 @@
           [#-- Delete --]
           <td class="">
             [#if true]
-              <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/publications/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
+              <a id="removeRow-${deliverable.id}" class="removeRow" href="${baseUrl}/publications/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>
             [#else]

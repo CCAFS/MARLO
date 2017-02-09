@@ -197,46 +197,10 @@
 </section>
 
 [#-- Author template --]
-[@authorMacro element={} index="-1" name="deliverable.authors"  isTemplate=true /]
+[@deliverableMacros.authorMacro element={} index="-1" name="deliverable.users"  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
-
-[#-- Metadata Macro --]
-[#macro metadataField title="" encodedName="" type="input" list="" require=false]
-  [#local metadataID = (deliverable.getMetadataID(encodedName))!-1 /]
-  [#local metadataIndex = (deliverable.getMetadataIndex(encodedName))!-1 /]
-  [#local metadataValue = (deliverable.getMetadataValue(metadataID))!'' /]
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].id" value="${metadataID}" />
-  <input type="hidden" name="${customName}.metadataElements[${metadataIndex}].metadataElement.id" value="${metadataID}" />
-  [#if type == "input"]
-    [@customForm.input name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata"  type="text" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
-  [#elseif type == "textArea"]
-    [@customForm.textArea name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" help="metadata.${title}.help" editable=editable/]
-  [#elseif type == "select"]
-    [@customForm.select name="${customName}.metadataElements[${metadataIndex}].elementValue" required=require value="${metadataValue}" className="${title}Metadata" i18nkey="metadata.${title}" listName=list  editable=editable /]
-  [/#if]
-[/#macro]
-
-[#macro authorMacro element index name  isTemplate=false]
-  [#assign customName = "${name}[${index}]" /]
-  <div id="author-${isTemplate?string('template',(element.id)!)}" class="author  simpleBox col-md-4"  style="display:${isTemplate?string('none','block')}">
-    [#if editable] [#--&& (isTemplate) --]
-      <div class="removeLink">
-        <div class="removeAuthor removeIcon" title="Remove author/creator"></div>
-      </div>
-    [/#if]
-    <div class="row">
-      <div class="col-md-12"><span class="lastName">${(element.lastName)!} </span>, <span class="firstName">${(element.firstName)!} </span></div>
-    </div>
-    <span><small class="orcidId"> ${(element.elementId)!'<b>orcid id:</b> not filled'}</small></span>
-    <input type="hidden" class="id" value="${(element.id)!}" />
-    <input type="hidden" class="lastNameInput" value="${(element.lastName)!}" />
-    <input type="hidden" class="firstNameInput" value="${(element.firstName)!}" />
-    <input type="hidden" class="orcidIdInput" value="${(element.elementId)!}" />
-    <div class="clearfix"></div>
-  </div>
-[/#macro]
 
 [#macro leadPartnerMacro element name index isTemplate=false]
   <li id="leadPartner-${isTemplate?string('template', index)}" class="leadPartner" style="display:${isTemplate?string('none','block')}">
