@@ -144,6 +144,8 @@
 		<mapping resource="xmls/DeliverableUsers.hbm.xml" />
 		<mapping resource="xmls/IpLiaisonInstitutions.hbm.xml" />
 		<mapping resource="xmls/IpLiaisonUsers.hbm.xml" />
+		<mapping resource="xmls/DeliverableLeaders.hbm.xml" />
+		<mapping resource="xmls/DeliverablePrograms.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>
 

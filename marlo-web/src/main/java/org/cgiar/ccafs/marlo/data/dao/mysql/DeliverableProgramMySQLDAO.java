@@ -16,32 +16,33 @@
 
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
-import org.cgiar.ccafs.marlo.data.dao.DeliverableUserDAO;
-import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
+import org.cgiar.ccafs.marlo.data.dao.DeliverableProgramDAO;
+import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 
 import java.util.List;
 
 import com.google.inject.Inject;
 
-public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
+public class DeliverableProgramMySQLDAO implements DeliverableProgramDAO {
 
   private StandardDAO dao;
 
   @Inject
-  public DeliverableUserMySQLDAO(StandardDAO dao) {
+  public DeliverableProgramMySQLDAO(StandardDAO dao) {
     this.dao = dao;
   }
 
   @Override
-  public boolean deleteDeliverableUser(long deliverableUserId) {
-    DeliverableUser deliverableUser = this.find(deliverableUserId);
-    return dao.delete(deliverableUser);
+  public boolean deleteDeliverableProgram(long deliverableProgramId) {
+    DeliverableProgram deliverableProgram = this.find(deliverableProgramId);
+
+    return dao.delete(deliverableProgram);
   }
 
   @Override
-  public boolean existDeliverableUser(long deliverableUserID) {
-    DeliverableUser deliverableUser = this.find(deliverableUserID);
-    if (deliverableUser == null) {
+  public boolean existDeliverableProgram(long deliverableProgramID) {
+    DeliverableProgram deliverableProgram = this.find(deliverableProgramID);
+    if (deliverableProgram == null) {
       return false;
     }
     return true;
@@ -49,15 +50,15 @@ public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
   }
 
   @Override
-  public DeliverableUser find(long id) {
-    return dao.find(DeliverableUser.class, id);
+  public DeliverableProgram find(long id) {
+    return dao.find(DeliverableProgram.class, id);
 
   }
 
   @Override
-  public List<DeliverableUser> findAll() {
-    String query = "from " + DeliverableUser.class.getName() + " where is_active=1";
-    List<DeliverableUser> list = dao.findAll(query);
+  public List<DeliverableProgram> findAll() {
+    String query = "from " + DeliverableProgram.class.getName() + " where is_active=1";
+    List<DeliverableProgram> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
@@ -66,15 +67,15 @@ public class DeliverableUserMySQLDAO implements DeliverableUserDAO {
   }
 
   @Override
-  public long save(DeliverableUser deliverableUser) {
-    if (deliverableUser.getId() == null) {
-      dao.save(deliverableUser);
+  public long save(DeliverableProgram deliverableProgram) {
+    if (deliverableProgram.getId() == null) {
+      dao.save(deliverableProgram);
     } else {
-      dao.update(deliverableUser);
+      dao.update(deliverableProgram);
     }
 
 
-    return deliverableUser.getId();
+    return deliverableProgram.getId();
   }
 
 

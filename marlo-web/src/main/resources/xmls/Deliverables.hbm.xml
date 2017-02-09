@@ -199,5 +199,19 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableUser" />
         </set>
+        
+         <set name="deliverablePrograms" table="deliverable_programs" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableProgram" />
+        </set>
+        <set name="deliverableLeaders" table="deliverable_leaders" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="deliverable_id" not-null="true" />
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.DeliverableLeader" />
+        </set>
+        
 	</class>
 </hibernate-mapping>
