@@ -152,7 +152,7 @@
           <ul class="list">
           [#if deliverable?? && deliverable.genderLevels?has_content]
             [#list deliverable.genderLevels as element]
-              [@deliverableMacros.crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
+              [@crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
             [/#list]
           [#else]
             <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
