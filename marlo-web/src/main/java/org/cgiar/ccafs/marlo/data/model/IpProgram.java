@@ -26,22 +26,31 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private IpProgramType ipProgramType;
+
+
   @Expose
   private String name;
 
   @Expose
   private String acronym;
 
+
   @Expose
   private Long regionId;
 
   @Expose
+  private ProjectComponentLesson ProjectComponentLesson;
+  private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
+
+  @Expose
   private CrpProgram crpProgram;
+
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
   private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
 
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
+
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
 
   public IpProgram() {
@@ -122,13 +131,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
 
     return "";
   }
-
 
   @Override
   public User getModifiedBy() {
@@ -137,11 +144,9 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return u;
   }
 
-
   public Set<MogSynthesy> getMogSynthesis() {
     return mogSynthesis;
   }
-
 
   public String getName() {
     return name;
@@ -150,6 +155,16 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public Set<OutcomeSynthesy> getOutcomeSynthesis() {
     return outcomeSynthesis;
+  }
+
+
+  public ProjectComponentLesson getProjectComponentLesson() {
+    return ProjectComponentLesson;
+  }
+
+
+  public Set<ProjectComponentLesson> getProjectComponentLessons() {
+    return projectComponentLessons;
   }
 
 
@@ -234,6 +249,16 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public void setOutcomeSynthesis(Set<OutcomeSynthesy> outcomeSynthesis) {
     this.outcomeSynthesis = outcomeSynthesis;
+  }
+
+
+  public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
+    ProjectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessons(Set<ProjectComponentLesson> projectComponentLessons) {
+    this.projectComponentLessons = projectComponentLessons;
   }
 
   public void setRegionId(Long regionId) {

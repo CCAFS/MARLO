@@ -349,9 +349,6 @@ public class Project implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
     Project other = (Project) obj;
     if (id == null) {
       if (other.id != null) {

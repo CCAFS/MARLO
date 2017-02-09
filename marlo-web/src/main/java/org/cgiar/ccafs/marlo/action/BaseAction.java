@@ -46,6 +46,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.FileDB;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -1948,7 +1949,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public void saveLessonsOutcome(Crp crp, ProjectOutcome projectOutcome) {
 
     Project project = projectManager.getProjectById(projectOutcome.getProject().getId());
@@ -1975,6 +1975,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       projectComponentLessonManager.saveProjectComponentLesson(projectOutcome.getProjectComponentLesson());
     }
+  }
+
+
+  public void saveLessonsSynthesis(Crp crp, IpProgram ipProgram) {
+
+    String actionName = this.getActionName().replaceAll(crp.getAcronym() + "/", "");
+
+
+    ipProgram.getProjectComponentLesson().setActive(true);
+    ipProgram.getProjectComponentLesson().setActiveSince(new Date());
+    ipProgram.getProjectComponentLesson().setComponentName(actionName);
+    ipProgram.getProjectComponentLesson().setCreatedBy(this.getCurrentUser());
+    ipProgram.getProjectComponentLesson().setModifiedBy(this.getCurrentUser());
+    ipProgram.getProjectComponentLesson().setModificationJustification("");
+    ipProgram.getProjectComponentLesson().setIpProgram(ipProgram);
+
+
+    if (this.isReportingActive()) {
+      ipProgram.getProjectComponentLesson().setCycle(APConstants.REPORTING);
+      ipProgram.getProjectComponentLesson().setYear(this.getReportingYear());
+
+    } else {
+      ipProgram.getProjectComponentLesson().setCycle(APConstants.PLANNING);
+      ipProgram.getProjectComponentLesson().setYear(this.getPlanningYear());
+    }
+    projectComponentLessonManager.saveProjectComponentLesson(ipProgram.getProjectComponentLesson());
+
   }
 
   public void setAdd(boolean add) {

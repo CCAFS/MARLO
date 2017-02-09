@@ -18,8 +18,11 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
    * 
    */
   private static final long serialVersionUID = -2716216544705498218L;
+
+
   @Expose
   private Long id;
+
   @Expose
   private Project project;
   @Expose
@@ -36,21 +39,21 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
   private boolean active;
   @Expose
   private Date activeSince;
-
+  @Expose
+  private IpProgram ipProgram;
   @Expose
   private String modificationJustification;
-
   @Expose
   private String cycle;
+
   @Expose
   private ProjectOutcome projectOutcome;
 
-
   private Integer ipProgramId;
-
 
   public ProjectComponentLesson() {
   }
+
 
   public ProjectComponentLesson(Project project, User usersByModifiedBy, User usersByCreatedBy, String componentName,
     String lessons, int year, boolean isActive, Date activeSince, String modificationJustification, String cycle,
@@ -67,6 +70,7 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.cycle = cycle;
     this.ipProgramId = ipProgramId;
   }
+
 
   public ProjectComponentLesson(User usersByModifiedBy, User usersByCreatedBy, String componentName, int year,
     boolean isActive, Date activeSince, String modificationJustification) {
@@ -95,11 +99,15 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     return this.cycle;
   }
 
-
   @Override
   public Long getId() {
     return this.id;
   }
+
+  public IpProgram getIpProgram() {
+    return ipProgram;
+  }
+
 
   public Integer getIpProgramId() {
     return this.ipProgramId;
@@ -119,6 +127,7 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+  @Override
   public String getModificationJustification() {
     return this.modificationJustification;
   }
@@ -149,10 +158,10 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.active = active;
   }
 
-
   public void setActiveSince(Date activeSince) {
     this.activeSince = activeSince;
   }
+
 
   public void setComponentName(String componentName) {
     this.componentName = componentName;
@@ -168,6 +177,10 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIpProgram(IpProgram ipProgram) {
+    this.ipProgram = ipProgram;
   }
 
   public void setIpProgramId(Integer ipProgramId) {
