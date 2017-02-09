@@ -41,9 +41,6 @@
         <property name="cycle" type="string">
             <column name="cycle" />
         </property>
-        <property name="ipProgramId" type="java.lang.Integer">
-            <column name="ip_program_id" />
-        </property>
          <many-to-one name="projectOutcome" class="org.cgiar.ccafs.marlo.data.model.ProjectOutcome" fetch="select">
             <column name="project_outcome_id" />
         </many-to-one>

@@ -49,15 +49,12 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
   @Expose
   private ProjectOutcome projectOutcome;
 
-  private Integer ipProgramId;
-
   public ProjectComponentLesson() {
   }
 
 
   public ProjectComponentLesson(Project project, User usersByModifiedBy, User usersByCreatedBy, String componentName,
-    String lessons, int year, boolean isActive, Date activeSince, String modificationJustification, String cycle,
-    Integer ipProgramId) {
+    String lessons, int year, boolean isActive, Date activeSince, String modificationJustification, String cycle) {
     this.project = project;
     this.modifiedBy = usersByModifiedBy;
     this.createdBy = usersByCreatedBy;
@@ -68,7 +65,6 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     this.activeSince = activeSince;
     this.modificationJustification = modificationJustification;
     this.cycle = cycle;
-    this.ipProgramId = ipProgramId;
   }
 
 
@@ -108,10 +104,6 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
     return ipProgram;
   }
 
-
-  public Integer getIpProgramId() {
-    return this.ipProgramId;
-  }
 
   public String getLessons() {
     return this.lessons;
@@ -181,10 +173,6 @@ public class ProjectComponentLesson implements java.io.Serializable, IAuditLog {
 
   public void setIpProgram(IpProgram ipProgram) {
     this.ipProgram = ipProgram;
-  }
-
-  public void setIpProgramId(Integer ipProgramId) {
-    this.ipProgramId = ipProgramId;
   }
 
   public void setLessons(String lessons) {
