@@ -234,6 +234,10 @@ public final class APConstants {
   public static final String PROJECT_DELIVERABLE_DISEMINATIONS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDisseminations)";
 
+  public static final String PROJECT_DELIVERABLE_LEADERS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableLeaders)";
+  public static final String PROJECT_DELIVERABLE_PROGRAMS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
   public static final String PROJECT_DELIVERABLE_DATA_SHARING_FILES =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharingFiles)";
 
