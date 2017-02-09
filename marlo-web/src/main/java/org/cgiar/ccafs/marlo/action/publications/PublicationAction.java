@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpPandrManager;
+import org.cgiar.ccafs.marlo.data.manager.CrpPpaPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableDisseminationManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableGenderLevelManager;
@@ -38,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
+import org.cgiar.ccafs.marlo.data.model.CrpPpaPartner;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrp;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
@@ -49,7 +51,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableProgram;
 import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
-import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -93,7 +94,7 @@ public class PublicationAction extends BaseAction {
   private Map<String, String> programs;
   private Map<String, String> regions;
   private Map<String, String> institutions;
-
+  private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableManager deliverableManager;
 
 
@@ -133,7 +134,8 @@ public class PublicationAction extends BaseAction {
     DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
-    DeliverableProgramManager deliverableProgramManager, DeliverableLeaderManager deliverableLeaderManager,
+    CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
+    DeliverableLeaderManager deliverableLeaderManager,
     DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager) {
 
     super(config);
@@ -154,6 +156,7 @@ public class PublicationAction extends BaseAction {
     this.metadataElementManager = metadataElementManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
+    this.crpPpaPartnerManager = crpPpaPartnerManager;
 
   }
 
@@ -468,10 +471,15 @@ public class PublicationAction extends BaseAction {
       regions.put(program.getId().toString(), program.getAcronym());
     }
     institutions = new HashMap<>();
-    for (Institution institution : institutionManager.findAll().stream().filter(c -> c.getHeadquarter() == null)
+
+    for (CrpPpaPartner crpPpaPartner : crpPpaPartnerManager.findAll().stream()
+      .filter(c -> c.getCrp().getId().longValue() == loggedCrp.getId().longValue() && c.isActive())
       .collect(Collectors.toList())) {
-      institutions.put(institution.getId().toString(), institution.getComposedName());
+      institutions.put(crpPpaPartner.getInstitution().getId().toString(),
+        crpPpaPartner.getInstitution().getComposedName());
+
     }
+
   }
 
   @Override
