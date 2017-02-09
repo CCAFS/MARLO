@@ -78,14 +78,14 @@
          <div class="panel-head"><label for=""> [@customForm.text name="publication.leadPartners" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="leadPartnerList" class="panel-body"> 
             <ul class="list">
-            [#if  publication?? && deliverable.leaders?has_content]
+            [#if  deliverable?? && deliverable.leaders?has_content]
               [#list deliverable.leaders as institutionLead]
                 [@leadPartnerMacro element=institutionLead name="${customName}.leaders" index=institutionLead_index /]
               [/#list]
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false listName="institutions"  required=true className="" editable=editable /]
+              [@customForm.select name="" label=""  showTitle=false listName="institutions"  required=true className="leadPartnersSelect" editable=editable /]
             [/#if] 
           </div>
         </div>
@@ -205,6 +205,9 @@
   </li>
 </ul>
 
+[#-- Lead parter template --]
+[@leadPartnerMacro element={} name="${customName}.leaders" index=-1 isTemplate=true /]
+
 [#-- CRP & Flagships template --]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="${customName}.crps"  isTemplate=true /]
 
@@ -218,7 +221,8 @@
     [#if editable]<div class="removeLeadPartner removeIcon" title="Remove Lead partner"></div>[/#if]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input class="fId" type="hidden" name="${customName}.institution.id" value="${(element.institution.id)!}" />
-    <span class="name">${(element.institution.composedName)!}</span>
+    <span class="name">${(element.institution.composedName)!'undefined'}</span>
+    <div class="clearfix"></div>
   </li>
 [/#macro]
 
