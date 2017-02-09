@@ -568,7 +568,7 @@
     <input class="idElemento" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
     <input class="idCrp" type="hidden" name="${customName}.crpPandr.id" value="${(element.crpPandr.id)!}" />
     <input class="idFlagship" type="hidden" name="${customName}.ipProgram.id" value="${(element.ipProgram.id)!}" />
-    <span class="name">${(element.crpPandr.name)!}-${(element.ipProgram.acronym)!}</span>
+    <span class="name">${(element.crpPandr.acronym?upper_case)!((element.crpPandr.name?upper_case)!)} - ${(element.ipProgram.acronym)!}</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

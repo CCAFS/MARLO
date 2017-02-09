@@ -166,13 +166,16 @@ public class DeliverableValidator extends BaseValidator {
           if (deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == null
             || deliverable.getResponsiblePartner().getProjectPartnerPerson().getId() == -1) {
             this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-            action.addFieldError("deliverable.responsiblePartner.projectPartnerPerson.id",
+
+            action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
               InvalidFieldsMessages.EMPTYFIELD);
+
           }
         } else {
           this.addMessage(action.getText("project.deliverable.generalInformation.partnerResponsible"));
-          action.addFieldError("input-deliverable.responsiblePartner.projectPartnerPerson.id",
+          action.getInvalidFields().put("input-deliverable.responsiblePartner.projectPartnerPerson.id",
             InvalidFieldsMessages.EMPTYFIELD);
+
         }
         if (!action.isReportingActive()) {
           if (deliverable.getFundingSources() == null || deliverable.getFundingSources().isEmpty()) {

@@ -268,15 +268,18 @@ public class ProjectOutcomeValidator extends BaseValidator {
     }
 
 
-    if (projectOutcome.getNextUsers() != null && projectOutcome.getNextUsers().size() > 0) {
-      for (int i = 0; i < projectOutcome.getNextUsers().size(); i++) {
-        this.validateProjectNextUser(action, projectOutcome.getNextUsers().get(i), i);
+    if (action.getCrpID().intValue() != 5) {
+      if (projectOutcome.getNextUsers() != null && projectOutcome.getNextUsers().size() > 0) {
+        for (int i = 0; i < projectOutcome.getNextUsers().size(); i++) {
+          this.validateProjectNextUser(action, projectOutcome.getNextUsers().get(i), i);
+        }
+      } else {
+        this.addMessage(action.getText("projectOutcomeNextUsers"));
+        action.getInvalidFields().put("input-projectOutcome.nextUsers",
+          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
       }
-    } else {
-      this.addMessage(action.getText("projectOutcomeNextUsers"));
-      action.getInvalidFields().put("input-projectOutcome.nextUsers",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Next User"}));
     }
+
 
   }
 }
