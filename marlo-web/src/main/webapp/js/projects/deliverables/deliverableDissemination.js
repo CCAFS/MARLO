@@ -345,8 +345,8 @@ function changeDisseminationChannel() {
   $("#metadata-output").empty();
   $(".exampleUrl-block").hide();
   if(channel != "-1") {
-    // CGSpace or Dataverse
-    if((channel == "cgspace") || channel == "dataverse") {
+    // CGSpace, IFPRI or Dataverse
+    if((channel == "cgspace") || channel == "dataverse" || channel == "ifpri") {
       $("#fillMetadata").slideDown("slow");
       $(".exampleUrl-block.channel-" + channel).slideDown("slow");
     } else {
@@ -438,8 +438,54 @@ function loadAndFillMetadata() {
   } else if(channel == "dataverse") {
     // Get Dataverse Metadata from native API
     getDataverseMetadata(channel, url, uri);
+  } else if(channel == "ifpri") {
+    // Get IFPRI E-BRARY Metadata from MARLO server
+    getIfpriMetadata(channel, url, uri);
   }
 
+}
+
+function getIfpriMetadata(channel,url,uri) {
+  var data = {
+      pageID: "ifpri",
+      metadataID: "oai:cdm15738.contentdm.oclc.org:p15738coll2/" + uri.path().split('/')[6]
+  }
+
+  // get data from url
+  // Ajax to service
+  $.ajax({
+      'url': baseURL + '/metadataByLink.do',
+      'type': "GET",
+      'data': data,
+      'dataType': "json",
+      beforeSend: function() {
+        $(".deliverableDisseminationUrl").addClass('input-loading');
+        $('#metadata-output').html("Searching ... " + data.metadataID);
+      },
+      success: function(m) {
+        console.log(m);
+
+        if(m.errorMessage) {
+          $('#metadata-output').html(data.errorMessage);
+        } else {
+          m.metadata = JSON.parse(m.metadata);
+          if(jQuery.isEmptyObject(m.metadata)) {
+            $('#metadata-output').html("Metadata empty");
+          } else {
+
+            $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
+            // " <br /> " + fields.reverse().join(', '));
+          }
+        }
+      },
+      complete: function() {
+        $(".deliverableDisseminationUrl").removeClass('input-loading');
+      },
+      error: function() {
+        console.log("error");
+        $('#metadata-output').empty().append("Invalid URL for searching metadata");
+      }
+  });
 }
 
 function getCGSpaceMetadata(channel,url,uri) {
@@ -476,7 +522,7 @@ function getCGSpaceMetadata(channel,url,uri) {
           } else {
             var fields = [];
             $.each(m.metadata, function(key,value) {
-              console.log(key + "-" + value);
+              // console.log(key + "-" + value);
               fields.push(key.charAt(0).toUpperCase() + key.slice(1));
             });
 
@@ -498,8 +544,7 @@ function getCGSpaceMetadata(channel,url,uri) {
             $.each(m.metadata['contributor.author'], function(i,element) {
               authors.push({
                   lastName: (element).split(',')[0],
-                  firstName: (element).split(',')[1],
-                  orcidId: "not prefilled"
+                  firstName: (element).split(',')[1]
               });
             });
 

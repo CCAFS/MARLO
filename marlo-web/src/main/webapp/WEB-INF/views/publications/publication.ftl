@@ -78,14 +78,14 @@
          <div class="panel-head"><label for=""> [@customForm.text name="publication.leadPartners" readText=!editable /]:[@customForm.req required=editable /]</label></div>
           <div id="leadPartnerList" class="panel-body"> 
             <ul class="list">
-            [#if  publication?? && deliverable.institutions?has_content]
-              [#list deliverable.institutions as institutionLead]
-                [@leadPartnerMacro element=institutionLead name="${customName}.institutions" index=institutionLead_index /]
+            [#if  publication?? && deliverable.leaders?has_content]
+              [#list deliverable.leaders as institutionLead]
+                [@leadPartnerMacro element=institutionLead name="${customName}.leaders" index=institutionLead_index /]
               [/#list]
             [/#if]
             </ul>
             [#if editable ]
-              [@customForm.select name="" label=""  showTitle=false listName="institutions" keyFieldName="id" displayFieldName="composedName" required=true className="" editable=editable /]
+              [@customForm.select name="" label=""  showTitle=false listName="institutions"  required=true className="" editable=editable /]
             [/#if] 
           </div>
         </div>
@@ -99,27 +99,27 @@
           <div id="" class="dottedBox">
             [#if editable]
               [@s.fielderror cssClass="fieldError" fieldName="${customName}.flagshipValue"/]
-              [@s.checkboxlist name="${customName}.flagshipValue" list="programFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
+              [@s.checkboxlist name="${customName}.flagshipValue" list="programs" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
             [#else]
               <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
-              [#if publication?? && deliverable.flagships?has_content]
-                [#list deliverable.flagships as element]<p class="checked">${(element.composedName)!'null'}</p>[/#list]
+              [#if publication?? && deliverable.programs?has_content]
+                [#list deliverable.programs as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
               [/#if]
             [/#if]
           </div>
         </div>
         [#-- Regions --] 
         <div class="col-md-6"> 
-          [#if regionFlagships?has_content] 
-            <h5>[@s.text name="${customName}.regions" /]:[@customForm.req required=editable /]</h5>
+          [#if regions?has_content] 
+            <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
                 [@s.fielderror cssClass="fieldError" fieldName="${customName}.regionsValue"/]
-                [@s.checkboxlist name="${customName}.regionsValue" list="regionFlagships" listKey="id" listValue="composedName" cssClass="checkboxInput rpInput" value="regionsIds" /]
+                [@s.checkboxlist name="${customName}.regionsValue" list="regions" cssClass="checkboxInput rpInput" value="regionsIds" /]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
                 [#if publication?? && deliverable.regions?has_content]
-                  [#list deliverable.regions as element]<p class="checked">${(element.composedName)!'null'}</p>[/#list]
+                  [#list deliverable.regions as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
                 [/#if]
               [/#if]
             </div>
@@ -150,7 +150,7 @@
        <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
         <div id="genderLevelsList" class="panel-body" > 
           <ul class="list">
-          [#if publication?? && deliverable.genderLevels?has_content]
+          [#if deliverable?? && deliverable.genderLevels?has_content]
             [#list deliverable.genderLevels as element]
               [@crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
             [/#list]
