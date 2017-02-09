@@ -40,7 +40,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
 
   private static final long serialVersionUID = 1423197153747668108L;
 
-  private BaseAction baseAction;
+
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -59,7 +59,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
 
-    baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -73,7 +73,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
 
     boolean canEdit = false;
