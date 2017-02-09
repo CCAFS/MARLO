@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
 import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
+import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 
@@ -400,6 +401,33 @@ public class PublicationAction extends BaseAction {
     Deliverable deliverablePrew = deliverableManager.getDeliverableById(deliverableID);
 
     deliverablePrew.setTitle(deliverable.getTitle());
+
+
+    if (deliverable.getAdoptedLicense() != null) {
+      deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
+      if (deliverable.getAdoptedLicense().booleanValue()) {
+        deliverablePrew.setLicense(deliverable.getLicense());
+        if (deliverable.getLicense() != null) {
+          if (deliverable.getLicense().equals(LicensesTypeEnum.OTHER.getValue())) {
+            deliverablePrew.setOtherLicense(deliverable.getOtherLicense());
+            deliverablePrew.setAllowModifications(deliverable.getAllowModifications());
+          } else {
+            deliverablePrew.setOtherLicense(null);
+            deliverablePrew.setAllowModifications(null);
+          }
+        }
+        deliverablePrew.setAdoptedLicense(deliverable.getAdoptedLicense());
+      } else {
+
+        deliverablePrew.setLicense(null);
+        deliverablePrew.setOtherLicense(null);
+        deliverablePrew.setAllowModifications(null);
+      }
+    } else {
+      deliverablePrew.setLicense(null);
+      deliverablePrew.setOtherLicense(null);
+      deliverablePrew.setAllowModifications(null);
+    }
     deliverablePrew.setDeliverableType(deliverable.getDeliverableType());
     if (deliverable.getCrossCuttingCapacity() == null) {
       deliverablePrew.setCrossCuttingCapacity(false);
