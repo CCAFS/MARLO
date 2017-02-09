@@ -143,8 +143,8 @@ function init() {
     if(option.val() != "" && option.val() != "-1") {
       if($(".flagshipList").find(".flagships input.idFlagship[value='" + option.val() + "']").exists()) {
       } else {
-        var composedText = option.text().toUpperCase() + "-" + option.text();
-        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        var composedText = currentCrpSession.toUpperCase() + " - " + option.text();
+        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
         addFlagship(option.val(), v, composedText, "");
       }
     }
@@ -154,8 +154,8 @@ function init() {
     if(option.val() != "" && option.val() != "-1") {
       if($(".flagshipList").find(".flagships input.idCrp[value='" + option.val() + "']").exists()) {
       } else {
-        var composedText = option.text().toUpperCase() + "-" + option.text();
-        var v = composedText.length > 30 ? composedText.substr(0, 30) + ' ... ' : composedText;
+        var composedText = option.text().toUpperCase();
+        var v = composedText.length > 60 ? composedText.substr(0, 60) + ' ... ' : composedText;
         addCrp("", v, composedText, option.val());
       }
     }

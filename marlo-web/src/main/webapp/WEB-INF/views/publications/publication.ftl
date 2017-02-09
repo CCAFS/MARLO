@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO Publication" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-${(deliverable.id)!}" /]
-[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
+[#assign pageLibs = ["select2","font-awesome","blueimp-file-upload","jsUri"] /]
 [#assign customJS = [
   "${baseUrl}/js/publications/publication.js",
   "${baseUrl}/js/projects/deliverables/deliverableQualityCheck.js", 
@@ -70,11 +70,6 @@
         <div class="col-md-6">
           [@customForm.input name="${customName}.year" i18nkey="publication.year" required=true className="" editable=false /]
         </div>
-      </div>
-      
-      [#-- Description --]
-      <div class="form-group">
-        [@customForm.textArea name="${customName}.description" i18nkey="publication.description" required=true className="" editable=editable /]
       </div>
       
       [#-- Lead partner(s) --]
@@ -197,7 +192,21 @@
 </section>
 
 [#-- Author template --]
-[@deliverableMacros.authorMacro element={} index="-1" name="deliverable.users"  isTemplate=true /]
+[@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
+
+[#-- Gender list template --]
+<ul style="display:none">
+  <li id="glevelTemplate" class="genderLevel clearfix" style="display:none;">
+    <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
+    <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
+    <span class="name"></span>
+    <div class="clearfix"></div>
+  </li>
+</ul>
+
+[#-- CRP & Flagships template --]
+[@deliverableMacros.flagshipMacro element={} index=-1 name="${customName}.crps"  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
