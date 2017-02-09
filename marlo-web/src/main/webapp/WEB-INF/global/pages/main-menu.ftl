@@ -28,17 +28,26 @@
   [#list mainMenu as item]
    [#if item.visible]
     <li id="${item.slug}" class="[#if currentSection?? && currentSection == item.slug ]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-      <a href="[@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${item.active?string}" class="action-${item.action}" title="[#if item.help?? && item.help][@s.text name="${item.name}.help" /][/#if]">
+      [#if item.active]
+        [#assign url][@s.url namespace=item.namespace action='${item.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url][/#assign]
+      [#else]
+        [#assign url]#[/#assign]
+      [/#if]
+      <a href="${url}" onclick="return ${item.active?string}" class="action-${item.action}" title="[#if item.help?? && item.help][@s.text name="${item.name}.help" /][/#if]">
         [#if item.icon?has_content]<span class="glyphicon glyphicon-${item.icon}"></span> [/#if]
         [@s.text name=item.name ][@s.param]${(crpSession?upper_case)!'CRP'}[/@s.param] [/@s.text]
-        
       </a>
       [#if item.subItems?has_content]
         <ul class="subMenu">
           [#list item.subItems as subItem]
             [#if subItem.visible]
             <li id="${subItem.slug}" class="[#if currentStage?? && currentStage == subItem.slug ]currentSection[/#if] ${(subItem.active)?string('enabled','disabled')}">
-              <a href="[@s.url namespace=subItem.namespace action='${subItem.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url]" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
+              [#if subItem.active]
+                [#assign url][@s.url namespace=subItem.namespace action='${subItem.action}'][#if logged][@s.param name="edit" value="true"/][/#if][/@s.url][/#assign]
+              [#else]
+                [#assign url]#[/#assign]
+              [/#if]
+              <a href="${url}" onclick="return ${subItem.active?string}" class="action-${subItem.action}">
                 [#if subItem.icon?has_content]<span class="glyphicon glyphicon-${subItem.icon}"></span> [/#if]
                 [@s.text name=subItem.name ][/@s.text]
               </a>

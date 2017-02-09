@@ -21,7 +21,8 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
 <section class="container">
-  <div class="row"> 
+  <div class="row">
+  
     <div class="col-md-12">
     [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
     
@@ -87,9 +88,9 @@
                 <tbody>
                 [#list action.getRegionalSynthesis(mog.id) as syntesisReport]
                   <tr>
-                      <td class="center"> ${(syntesisReport.ipProgam.acronym)!}</td>
-                      <td>${(syntesisReport.synthesisReport)!}</td>  
-                      <td>${(syntesisReport.synthesisGender)!}</td>
+                    <td class="center"> ${(syntesisReport.ipProgam.acronym)!}</td>
+                    <td>${(syntesisReport.synthesisReport)!}</td>  
+                    <td>${(syntesisReport.synthesisGender)!}</td>
                   </tr>
                 [/#list]
                 </tbody>
@@ -149,6 +150,7 @@
     
     [/@s.form] 
   </div>
+   
   </div>
 </section> 
 
