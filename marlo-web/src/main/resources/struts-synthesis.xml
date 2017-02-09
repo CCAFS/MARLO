@@ -26,6 +26,11 @@
     <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.synthesis.SynthesisByMogAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/synthesis/synthesisByMog.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/synthesisByMog</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
     </action>
     
     <!-- Synthesis by Cluster of Activities -->

@@ -16,8 +16,10 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
    */
   private static final long serialVersionUID = -5798198289191463231L;
 
+
   @Expose
   private Long id;
+
 
   @Expose
   private IpElement ipElement;
@@ -34,10 +36,8 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
   @Expose
   private String synthesisGender;
 
-
   public MogSynthesy() {
   }
-
 
   public MogSynthesy(IpElement ipElement, IpProgram ipProgram, int year, String synthesisReport,
     String synthesisGender) {
@@ -46,6 +46,39 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     this.year = year;
     this.synthesisReport = synthesisReport;
     this.synthesisGender = synthesisGender;
+  }
+
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (this.getClass() != obj.getClass()) {
+      return false;
+    }
+    MogSynthesy other = (MogSynthesy) obj;
+    if (ipElement == null) {
+      if (other.ipElement != null) {
+        return false;
+      }
+    } else if (!ipElement.getId().equals(other.ipElement.getId())) {
+      return false;
+    }
+    if (ipProgram == null) {
+      if (other.ipProgram != null) {
+        return false;
+      }
+    } else if (!ipProgram.getId().equals(other.ipProgram.getId())) {
+      return false;
+    }
+    if (year != other.year) {
+      return false;
+    }
+    return true;
   }
 
 
@@ -72,6 +105,7 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
 
@@ -95,6 +129,16 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((ipElement == null) ? 0 : ipElement.hashCode());
+    result = prime * result + ((ipProgram == null) ? 0 : ipProgram.hashCode());
+    result = prime * result + year;
+    return result;
   }
 
   @Override

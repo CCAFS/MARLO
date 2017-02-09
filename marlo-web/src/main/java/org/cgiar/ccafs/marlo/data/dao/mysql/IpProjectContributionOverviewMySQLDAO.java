@@ -96,7 +96,9 @@ public class IpProjectContributionOverviewMySQLDAO implements IpProjectContribut
     StringBuilder query = new StringBuilder();
     query.append("select * from ip_project_contribution_overviews where YEAR= ");
     query.append(year + " and output_id=" + mogId
-      + " and is_active=1 and project_id in (select id from projects where is_global=1)");
+      + " and is_active=1 and project_id in (SELECT projects.id FROM projects INNER JOIN ip_global_projects "
+      + "ON ip_global_projects.project_id = projects.id WHERE projects.is_active = 1 AND projects.reporting = 1 "
+      + "AND projects.is_location_global = 1)");
 
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());

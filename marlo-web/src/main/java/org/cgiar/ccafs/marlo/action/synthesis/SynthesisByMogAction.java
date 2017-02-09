@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.MogSynthesyManager;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -101,6 +103,7 @@ public class SynthesisByMogAction extends BaseAction {
 
     synthe.setIpElement(ipElementManager.getIpElementById(mog));
     synthe.setIpProgram(ipProgramManager.getIpProgramById(program));
+    synthe.setYear(this.getCurrentCycleYear());
 
     int index = synthesis.indexOf(synthe);
     return index;
@@ -173,11 +176,19 @@ public class SynthesisByMogAction extends BaseAction {
       liaisonInstitutionID =
         Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
     } catch (Exception e) {
-      if (this.getCurrentUser().getLiasonsUsers() != null) {
+      if (this.getCurrentUser().getIpLiaisonUsers() != null || !this.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
 
-        LiaisonUser liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
 
-        liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+        if (!liaisonUsers.isEmpty()) {
+          LiaisonUser liaisonUser = new LiaisonUser();
+          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
+          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+        } else {
+          liaisonInstitutionID = new Long(7);
+        }
+
+
       } else {
         liaisonInstitutionID = new Long(7);
       }
@@ -206,7 +217,8 @@ public class SynthesisByMogAction extends BaseAction {
     // Get all MOGs manually
 
     mogs = ipElementManager.getIPElementListForSynthesis(program);
-    synthesis = mogSynthesisManager.getMogSynthesis(programID);
+    synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
+      .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
     for (IpElement mog : mogs) {
 
