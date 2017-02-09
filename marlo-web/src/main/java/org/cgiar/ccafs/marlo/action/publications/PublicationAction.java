@@ -373,6 +373,7 @@ public class PublicationAction extends BaseAction {
           deliverable.setDataSharing(new ArrayList<>(deliverable.getDeliverableDataSharings()));
 
         }
+        deliverable.setCrps(deliverable.getDeliverableCrps().stream().collect(Collectors.toList()));
         deliverable.setUsers(deliverable.getDeliverableUsers().stream().collect(Collectors.toList()));
         deliverable.setLeaders(deliverable.getDeliverableLeaders().stream().collect(Collectors.toList()));
         deliverable.setPrograms(deliverable.getDeliverablePrograms().stream()
@@ -403,6 +404,7 @@ public class PublicationAction extends BaseAction {
           deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
+        System.out.println(deliverable.getGenderLevels().size());
         this.setDraft(false);
       }
 
