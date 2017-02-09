@@ -226,9 +226,9 @@
   [#local customName = "${name}[${index}]" /]
   <li id="crossDimmension-${isTemplate?string('template', index)}" class="crossDimmension" style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
-    <input class="id" type="hidden" name="deliverable.genderLevels[${element_index}].id" value="${(element.id)!}" />
-    <input class="fId" type="hidden" name="deliverable.genderLevels[${element_index}].genderLevel" value="${(element.genderLevel)!}" />
-    <span title="${(element.nameGenderLevel)!'undefined'}" class="name">[@utils.wordCutter string=(element.nameGenderLevel)!"undefined" maxPos=100 substr=" "/]</span>
+    <input class="id" type="hidden" name="deliverable.genderLevels[${index}].id" value="${(element.id)!}" />
+    <input class="fId" type="hidden" name="deliverable.genderLevels[${index}].genderLevel" value="${(element.genderLevel)!}" />
+    <span title="${(element.nameGenderLevel)!'undefined'}" class="name">${(element.nameGenderLevel)!'undefined'}</span>
     <div class="clearfix"></div>
   </li>
 [/#macro]

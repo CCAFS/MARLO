@@ -26,11 +26,11 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 public class SuperAdminInterceptor extends AbstractInterceptor {
 
   private static final long serialVersionUID = 4248042999127172642L;
-  private BaseAction baseAction;
+
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    baseAction = (BaseAction) invocation.getAction();
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     if (baseAction.canAccessSuperAdmin()) {
       return invocation.invoke();
     } else {
