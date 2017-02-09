@@ -222,10 +222,23 @@ public class PublicationAction extends BaseAction {
   }
 
 
+  public String[] getFlagshipIds() {
+
+    List<DeliverableProgram> projectFocuses = deliverable.getPrograms();
+
+    if (projectFocuses != null) {
+      String[] ids = new String[projectFocuses.size()];
+      for (int c = 0; c < ids.length; c++) {
+        ids[c] = projectFocuses.get(c).getIpProgram().getId().toString();
+      }
+      return ids;
+    }
+    return null;
+  }
+
   public Map<String, String> getGenderLevels() {
     return genderLevels;
   }
-
 
   public Map<String, String> getInstitutions() {
     return institutions;
@@ -241,6 +254,20 @@ public class PublicationAction extends BaseAction {
 
   public Map<String, String> getRegions() {
     return regions;
+  }
+
+  public String[] getRegionsIds() {
+
+    List<DeliverableProgram> projectFocuses = deliverable.getRegions();
+
+    if (projectFocuses != null) {
+      String[] ids = new String[projectFocuses.size()];
+      for (int c = 0; c < ids.length; c++) {
+        ids[c] = projectFocuses.get(c).getIpProgram().getId().toString();
+      }
+      return ids;
+    }
+    return null;
   }
 
   public String getTransaction() {
@@ -372,6 +399,8 @@ public class PublicationAction extends BaseAction {
               deliverable.getRegionsValue() + "," + deliverableProgram.getIpProgram().getId().toString());
           }
         }
+        deliverable.setGenderLevels(
+          deliverable.getDeliverableGenderLevels().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 
 
         this.setDraft(false);
@@ -823,13 +852,19 @@ public class PublicationAction extends BaseAction {
   public void savePrograms() {
 
     Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverableID);
-    if (deliverable.getFlagshipValue() != null && deliverable.getFlagshipValue().length() > 0) {
+    if (deliverable.getFlagshipValue() == null) {
+      deliverable.setFlagshipValue("");
+    }
+    if (deliverable.getRegionsValue() == null) {
+      deliverable.setRegionsValue("");
+    }
+    if (deliverable.getFlagshipValue() != null) {
 
       for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
         .filter(c -> c.isActive() && c.getIpProgram().getIpProgramType().getId().intValue() == 4)
         .collect(Collectors.toList())) {
 
-        if (!deliverableDB.getFlagshipValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
+        if (!deliverable.getFlagshipValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
           deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
 
         }
@@ -851,13 +886,13 @@ public class PublicationAction extends BaseAction {
       }
     }
 
-    if (deliverable.getRegionsValue() != null && deliverable.getRegionsValue().length() > 0) {
+    if (deliverable.getRegionsValue() != null) {
 
       for (DeliverableProgram deliverableProgram : deliverableDB.getDeliverablePrograms().stream()
         .filter(c -> c.isActive() && c.getIpProgram().getIpProgramType().getId().intValue() == 5)
         .collect(Collectors.toList())) {
 
-        if (!deliverableDB.getRegionsValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
+        if (!deliverable.getRegionsValue().contains(deliverableProgram.getIpProgram().getId().toString())) {
           deliverableProgramManager.deleteDeliverableProgram(deliverableProgram.getId());
 
         }

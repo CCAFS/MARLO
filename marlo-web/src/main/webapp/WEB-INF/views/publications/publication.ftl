@@ -111,7 +111,7 @@
         [#-- Regions --] 
         <div class="col-md-6"> 
           [#if regions?has_content] 
-            <h5>[@s.text name="${customName}.regions" /]:[@customForm.req required=editable /]</h5>
+            <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
                 [@s.fielderror cssClass="fieldError" fieldName="${customName}.regionsValue"/]
