@@ -111,7 +111,7 @@
         [#-- Regions --] 
         <div class="col-md-6"> 
           [#if regions?has_content] 
-            <h5>[@s.text name="${customName}.regions" /]:[@customForm.req required=editable /]</h5>
+            <h5>[@s.text name="publication.regions" /]:[@customForm.req required=editable /]</h5>
             <div id="" class="dottedBox">
               [#if editable]
                 [@s.fielderror cssClass="fieldError" fieldName="${customName}.regionsValue"/]
@@ -150,9 +150,9 @@
        <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
         <div id="genderLevelsList" class="panel-body" > 
           <ul class="list">
-          [#if publication?? && deliverable.genderLevels?has_content]
+          [#if deliverable?? && deliverable.genderLevels?has_content]
             [#list deliverable.genderLevels as element]
-              [@crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
+              [@deliverableMacros.crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
             [/#list]
           [#else]
             <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 

@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.model;
 
 
 public enum ChannelEnum {
+
+  // IFPRI("ifpri", "IFPRI E-BRARY")
   CGSPACE("cgspace", "CGSpace"), OTHER("other", "Other"), DATAVERSE("dataverse", "Dataverse (Harvard)");
 
 
