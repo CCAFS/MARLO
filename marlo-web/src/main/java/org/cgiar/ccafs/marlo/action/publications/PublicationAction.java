@@ -133,6 +133,7 @@ public class PublicationAction extends BaseAction {
     this.ipProgramManager = ipProgramManager;
   }
 
+
   @Override
   public String cancel() {
 
@@ -157,6 +158,7 @@ public class PublicationAction extends BaseAction {
     return SUCCESS;
   }
 
+
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -165,13 +167,21 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Map<String, String> getChannels() {
     return channels;
   }
 
+
+  public Map<String, String> getCrps() {
+    return crps;
+  }
+
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
+
 
   public long getDeliverableID() {
     return deliverableID;
@@ -185,16 +195,21 @@ public class PublicationAction extends BaseAction {
     return deliverableTypeManager;
   }
 
+  public Map<String, String> getGenderLevels() {
+    return genderLevels;
+  }
 
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
 
+  public Map<String, String> getPrograms() {
+    return programs;
+  }
 
   public String getTransaction() {
     return transaction;
   }
-
 
   @Override
   public void prepare() throws Exception {
@@ -529,6 +544,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
 
@@ -664,6 +680,7 @@ public class PublicationAction extends BaseAction {
 
   }
 
+
   public void savePublicationMetadata() {
     if (deliverable.getPublication() != null) {
       deliverable.getPublication().setDeliverable(deliverable);
@@ -674,7 +691,6 @@ public class PublicationAction extends BaseAction {
 
     }
   }
-
 
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
@@ -698,9 +714,15 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void setChannels(Map<String, String> channels) {
     this.channels = channels;
   }
+
+  public void setCrps(Map<String, String> crps) {
+    this.crps = crps;
+  }
+
 
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
@@ -718,9 +740,17 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
   }
 
+  public void setGenderLevels(Map<String, String> genderLevels) {
+    this.genderLevels = genderLevels;
+  }
 
   public void setLoggedCrp(Crp loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+
+  public void setPrograms(Map<String, String> programs) {
+    this.programs = programs;
   }
 
   public void setTransaction(String transaction) {
