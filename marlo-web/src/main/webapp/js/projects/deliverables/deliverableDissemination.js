@@ -510,12 +510,12 @@ function getCGSpaceMetadata(channel,url,uri) {
               $input.val(true);
               $(".accessible ").parent().find("label").removeClass("radio-checked");
               $(".openAccessOptions").hide("slow");
-              $(".yes-button-label ").addClass("radio-checked");
+              $(".accessible .yes-button-label ").addClass("radio-checked");
             } else {
               $input.val(false);
               $(".accessible ").parent().find("label").removeClass("radio-checked");
               $(".openAccessOptions").show("slow");
-              $(".no-button-label ").addClass("radio-checked");
+              $(".accessible .no-button-label ").addClass("radio-checked");
             }
 
             $('#metadata-output').empty().append("Found metadata for " + data.metadataID);
