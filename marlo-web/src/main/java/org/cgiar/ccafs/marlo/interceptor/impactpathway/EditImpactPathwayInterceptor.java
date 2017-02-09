@@ -46,7 +46,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   private UserManager userManager;
   private CrpProgramManager crpProgramManager;
 
-  private BaseAction baseAction;
+
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -95,7 +95,8 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
 
-    baseAction = (BaseAction) invocation.getAction();
+    BaseAction baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -116,7 +117,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
   }
 
   public void setPermissionParameters(ActionInvocation invocation) {
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;

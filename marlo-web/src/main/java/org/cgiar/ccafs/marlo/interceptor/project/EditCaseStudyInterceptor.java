@@ -45,7 +45,6 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
   private static final long serialVersionUID = 7287623847333177230L;
 
-  private BaseAction baseAction;
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -67,7 +66,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -85,7 +84,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
   void setPermissionParameters(ActionInvocation invocation) {
 
     User user = (User) session.get(APConstants.SESSION_USER);
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
@@ -157,7 +156,7 @@ public class EditCaseStudyInterceptor extends AbstractInterceptor implements Ser
           caseStudy
             .getCaseStudyProjects().stream().filter(cs -> cs.isActive()
               && cs.getProject().getId().longValue() == project.getId().longValue() && cs.isCreated())
-          .collect(Collectors.toList()));
+            .collect(Collectors.toList()));
 
       if (caseStudyProjects.isEmpty()) {
         canEdit = false;

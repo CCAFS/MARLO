@@ -42,7 +42,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
   private static final long serialVersionUID = 7287623847333177230L;
 
-  private BaseAction baseAction;
+
   private Map<String, Object> parameters;
   private Map<String, Object> session;
   private Crp crp;
@@ -62,7 +62,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    baseAction = (BaseAction) invocation.getAction();
+
     parameters = invocation.getInvocationContext().getParameters();
     session = invocation.getInvocationContext().getSession();
     crp = (Crp) session.get(APConstants.SESSION_CRP);
@@ -77,7 +77,7 @@ public class EditHighLightInterceptor extends AbstractInterceptor implements Ser
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
-
+    BaseAction baseAction = (BaseAction) invocation.getAction();
     User user = (User) session.get(APConstants.SESSION_USER);
 
     boolean canEdit = false;
