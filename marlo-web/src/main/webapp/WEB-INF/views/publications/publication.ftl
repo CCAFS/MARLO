@@ -191,25 +191,17 @@
   <div class="col-md-1"></div>
 </section>
 
-[#-- Author template --]
-[@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
-
-[#-- Gender list template --]
-<ul style="display:none">
-  <li id="glevelTemplate" class="genderLevel clearfix" style="display:none;">
-    <div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>
-    <input class="id" type="hidden" name="deliverable.genderLevels[-1].id" value="" />
-    <input class="fId" type="hidden" name="deliverable.genderLevels[-1].genderLevel" value="" />
-    <span class="name"></span>
-    <div class="clearfix"></div>
-  </li>
-</ul>
-
 [#-- Lead parter template --]
 [@leadPartnerMacro element={} name="${customName}.leaders" index=-1 isTemplate=true /]
 
+[#-- Gender list template --]
+[@crossDimmensionMacro element={} name="${customName}.genderLevels" index=-1 isTemplate=true /]
+
 [#-- CRP & Flagships template --]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="${customName}.crps"  isTemplate=true /]
+
+[#-- Author template --]
+[@deliverableMacros.authorMacro element={} index="-1" name="${customName}.users"  isTemplate=true /]
 
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
@@ -230,8 +222,8 @@
   [#local customName = "${name}[${index}]" /]
   <li id="crossDimmension-${isTemplate?string('template', index)}" class="crossDimmension" style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
-    <input class="id" type="hidden" name="deliverable.genderLevels[${index}].id" value="${(element.id)!}" />
-    <input class="fId" type="hidden" name="deliverable.genderLevels[${index}].genderLevel" value="${(element.genderLevel)!}" />
+    <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <input class="fId" type="hidden" name="${customName}.genderLevel" value="${(element.genderLevel)!}" />
     <span title="${(element.nameGenderLevel)!'undefined'}" class="name">${(element.nameGenderLevel)!'undefined'}</span>
     <div class="clearfix"></div>
   </li>
