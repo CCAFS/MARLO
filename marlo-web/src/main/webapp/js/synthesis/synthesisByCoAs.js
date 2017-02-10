@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
 
   // Adding DataTable plugin
-  $(".projectContributions").dataTable({
+  $(".projectContributions, .regionalContributions").dataTable({
       "bPaginate": false, // This option enable the table pagination
       "bLengthChange": false, // This option disables the select table size option
       "bFilter": false, // This option enable the search

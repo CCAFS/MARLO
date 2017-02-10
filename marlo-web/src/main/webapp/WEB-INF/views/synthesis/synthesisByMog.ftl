@@ -63,20 +63,22 @@
           </div>
           
           [#assign index = action.getIndex(mog.id,program.id) /]
-          [#-- Synthesis report for MOG --]
-          <div class="fullPartBlock">
-            [@customForm.textArea name="synthesis[${index}].synthesisReport" i18nkey="synthesisByMog.synthesisReport" paramText="${mog.getComposedId()}" className="synthesisReport limitWords-${program.flagshipProgram?string('250','150')}" required=canEdit editable=editable /]
-          </div>
-          [#-- Gender synthesis report for MOG --]
-          <div class="fullPartBlock">
-            [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesisByMog.genderSynthesisReport" paramText="${mog.getComposedId()}" className="genderSynthesisReport limitWords-${program.flagshipProgram?string('150','100')}" required=canEdit editable=editable /]
+          <div class="form-group row">
+            [#-- Synthesis report for MOG --]
+            <div class="col-md-12">
+              [@customForm.textArea name="synthesis[${index}].synthesisReport" i18nkey="synthesisByMog.synthesisReport" paramText="${mog.getComposedId()}" className="synthesisReport limitWords-${program.flagshipProgram?string('250','150')}" required=canEdit editable=editable /]
+            </div>
+            [#-- Gender synthesis report for MOG --]
+            <div class="col-md-12">
+              [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesisByMog.genderSynthesisReport" paramText="${mog.getComposedId()}" className="genderSynthesisReport limitWords-${program.flagshipProgram?string('150','100')}" required=canEdit editable=editable /]
+            </div> 
           </div>
           
           [#-- Synthesis reported by regions --]
           [#if program.flagshipProgram]
           <div class="fullPartBlock">
-            <h6>[@s.text name="synthesisByMog.RegionalSynthesis" /]:</h6> 
-            <div class="fullPartBlock synthesisContributions-block viewMore-block">
+            <label>[@s.text name="synthesisByMog.RegionalSynthesis" /]:</label> 
+            <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
               <table class="regionalContributions">
                 <thead>
                   <tr class="header">
@@ -95,15 +97,15 @@
                 [/#list]
                 </tbody>
               </table>
-              <div class="viewMore"></div>
+              <div class="viewMoreSyntesis"></div>
             </div>
           </div>
           [/#if]
           
           [#-- Projects contributions to this MOG --]
           <div class="fullPartBlock">
-            <h6>[@s.text name="synthesisByMog.projectContributions" /]:</h6> 
-            <div class="fullPartBlock synthesisContributions-block viewMore-block">
+            <label>[@s.text name="synthesisByMog.projectContributions" /]:</label> 
+            <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
               <table class="projectContributions">
                 <thead>
                   <tr class="header">
@@ -122,7 +124,7 @@
                 [/#list]
                 </tbody>
               </table>
-              <div class="viewMore"></div>
+              <div class="viewMoreSyntesis"></div>
             </div>
           </div>
           
