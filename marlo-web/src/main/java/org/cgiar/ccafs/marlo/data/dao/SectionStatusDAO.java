@@ -72,6 +72,8 @@ public interface SectionStatusDAO {
 
   public SectionStatus getSectionStatusByProjectOutcome(long projectID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusBySynteshisMog(long ipProgramID, String cycle, int year, String sectionName);
+
   /**
    * This method saves the information of the given sectionStatus
    * 

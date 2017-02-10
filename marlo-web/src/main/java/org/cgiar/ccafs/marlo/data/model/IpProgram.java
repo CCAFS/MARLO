@@ -40,11 +40,12 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private ProjectComponentLesson ProjectComponentLesson;
+
+
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
   @Expose
   private CrpProgram crpProgram;
-
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
   private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
@@ -52,6 +53,8 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
 
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
+
+  private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   public IpProgram() {
   }
@@ -152,11 +155,9 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return name;
   }
 
-
   public Set<OutcomeSynthesy> getOutcomeSynthesis() {
     return outcomeSynthesis;
   }
-
 
   public ProjectComponentLesson getProjectComponentLesson() {
     return ProjectComponentLesson;
@@ -170,6 +171,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public Long getRegionId() {
     return regionId;
+  }
+
+
+  public Set<SectionStatus> getSectionStatuses() {
+    return sectionStatuses;
   }
 
 
@@ -191,7 +197,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public boolean isFlagshipProgram() {
     if (ipProgramType != null) {
-      return (this.ipProgramType.getId().intValue() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+      return (this.ipProgramType.getId().intValue() == 4);
     } else {
       return false;
     }
@@ -200,7 +206,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public boolean isRegionalProgram() {
     if (ipProgramType != null) {
-      return (this.ipProgramType.getId().intValue() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
+      return (this.ipProgramType.getId().intValue() == 5);
     } else {
       return false;
     }
@@ -261,8 +267,13 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     this.projectComponentLessons = projectComponentLessons;
   }
 
+
   public void setRegionId(Long regionId) {
     this.regionId = regionId;
+  }
+
+  public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
+    this.sectionStatuses = sectionStatuses;
   }
 
 

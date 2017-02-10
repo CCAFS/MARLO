@@ -39,7 +39,6 @@ public class SectionStatus implements java.io.Serializable {
 
   private String cycle;
 
-
   private Integer year;
 
 
@@ -51,8 +50,13 @@ public class SectionStatus implements java.io.Serializable {
 
   private ProjectOutcome projectOutcome;
 
+
   private CaseStudy caseStudy;
+
+
   private ProjectHighlight projectHighlight;
+
+  private IpProgram ipProgram;
 
   public SectionStatus() {
   }
@@ -89,6 +93,10 @@ public class SectionStatus implements java.io.Serializable {
     return this.id;
   }
 
+  public IpProgram getIpProgram() {
+    return ipProgram;
+  }
+
   public String getMissingFields() {
     return this.missingFields;
   }
@@ -96,7 +104,6 @@ public class SectionStatus implements java.io.Serializable {
   public Project getProject() {
     return project;
   }
-
 
   public ProjectHighlight getProjectHighlight() {
     return projectHighlight;
@@ -107,14 +114,15 @@ public class SectionStatus implements java.io.Serializable {
     return projectOutcome;
   }
 
+
   public String getSectionName() {
     return this.sectionName;
   }
 
-
   public Integer getYear() {
     return this.year;
   }
+
 
   public void setCaseStudy(CaseStudy caseStudy) {
     this.caseStudy = caseStudy;
@@ -123,7 +131,6 @@ public class SectionStatus implements java.io.Serializable {
   public void setCrpProgram(CrpProgram crpProgram) {
     this.crpProgram = crpProgram;
   }
-
 
   public void setCycle(String cycle) {
     this.cycle = cycle;
@@ -137,6 +144,11 @@ public class SectionStatus implements java.io.Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+
+  public void setIpProgram(IpProgram ipProgram) {
+    this.ipProgram = ipProgram;
   }
 
   public void setMissingFields(String missingFields) {

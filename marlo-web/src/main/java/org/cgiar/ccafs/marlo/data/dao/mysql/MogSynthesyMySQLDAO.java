@@ -73,9 +73,9 @@ public class MogSynthesyMySQLDAO implements MogSynthesyDAO {
   }
 
   @Override
-  public List<MogSynthesy> findMogSynthesisRegion(long midoutcome) {
-    String sql =
-      "from " + MogSynthesy.class.getName() + " where mog_id=" + midoutcome + " and program_id not in (1,2,3,4)";
+  public List<MogSynthesy> findMogSynthesisRegion(long midoutcome, int year) {
+    String sql = "from " + MogSynthesy.class.getName() + " where mog_id=" + midoutcome + " and year=" + year
+      + " and program_id not in (1,2,3,4)";
     List<MogSynthesy> list = dao.findAll(sql);
     return list;
   }

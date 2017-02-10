@@ -17,11 +17,13 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.MogSynthesyManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
@@ -30,7 +32,10 @@ import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.sythesis.SynthesisByMogValidator;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +58,6 @@ public class SynthesisByMogAction extends BaseAction {
 
   private static Logger LOG = LoggerFactory.getLogger(SynthesisByMogAction.class);
 
-
   // Manager
   // private MogSynthesisValidator validator;
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
@@ -61,12 +65,15 @@ public class SynthesisByMogAction extends BaseAction {
 
   private IpProgramManager ipProgramManager;
 
+
   private IpElementManager ipElementManager;
 
 
   private IpProjectContributionOverviewManager overviewManager;
 
   private MogSynthesyManager mogSynthesisManager;
+
+  private CrpManager crpManager;
 
 
   // Model for the front-end
@@ -78,19 +85,59 @@ public class SynthesisByMogAction extends BaseAction {
   private List<IpElement> mogs;
 
   private IpProgram program;
+
+
   private List<MogSynthesy> synthesis;
+
   private Long liaisonInstitutionID;
+  private Crp loggedCrp;
+
+  private SynthesisByMogValidator validator;
 
   @Inject
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager,
-    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager) {
+    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager,
+    CrpManager crpManager) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.mogSynthesisManager = mogSynthesisManager;
+    this.crpManager = crpManager;
+  }
+
+  @Override
+  public String cancel() {
+
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+
+      boolean fileDeleted = path.toFile().delete();
+    }
+
+    this.setDraft(false);
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    } else {
+      this.addActionMessage("draft:" + this.getText("cancel.autoSave"));
+    }
+    messages = this.getActionMessages();
+
+    return SUCCESS;
+  }
+
+  private Path getAutoSaveFilePath() {
+    String composedClassName = program.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
   public IpLiaisonInstitution getCurrentLiaisonInstitution() {
@@ -116,6 +163,10 @@ public class SynthesisByMogAction extends BaseAction {
 
   public List<IpLiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
+  }
+
+  public Crp getLoggedCrp() {
+    return loggedCrp;
   }
 
   public List<IpElement> getMogs() {
@@ -147,7 +198,7 @@ public class SynthesisByMogAction extends BaseAction {
   }
 
   public List<MogSynthesy> getRegionalSynthesis(int midoutcome) {
-    List<MogSynthesy> list = mogSynthesisManager.getMogSynthesisRegions(midoutcome);
+    List<MogSynthesy> list = mogSynthesisManager.getMogSynthesisRegions(midoutcome, this.getCurrentCycleYear());
     for (MogSynthesy mogSynthesis : list) {
       mogSynthesis.setIpProgram(ipProgramManager.getIpProgramById(mogSynthesis.getIpProgram().getId()));
     }
@@ -170,7 +221,9 @@ public class SynthesisByMogAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    super.prepare();
+
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
 
     try {
       liaisonInstitutionID =
@@ -234,8 +287,6 @@ public class SynthesisByMogAction extends BaseAction {
       }
 
     }
-    // this.setProjectLessons(lessonManager.getProjectComponentLessonSynthesis(program.getId(), this.getActionName(),
-    // this.getCurrentReportingYear(), this.getCycleName()));
   }
 
   @Override
@@ -245,6 +296,10 @@ public class SynthesisByMogAction extends BaseAction {
 
       mogSynthesisManager.saveMogSynthesy(synthe);
 
+    }
+
+    if (this.isLessonsActive()) {
+      this.saveLessonsSynthesis(loggedCrp, program);
     }
 
     // this.saveProjectLessonsSynthesis(program.getId());
@@ -273,6 +328,10 @@ public class SynthesisByMogAction extends BaseAction {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
+  public void setLoggedCrp(Crp loggedCrp) {
+    this.loggedCrp = loggedCrp;
+  }
+
   public void setMogs(List<IpElement> mogs) {
     this.mogs = mogs;
   }
@@ -285,5 +344,11 @@ public class SynthesisByMogAction extends BaseAction {
     this.synthesis = synthesis;
   }
 
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, synthesis, program, true);
+    }
+  }
 
 }
