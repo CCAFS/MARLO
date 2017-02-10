@@ -911,7 +911,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1778,7 +1778,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
