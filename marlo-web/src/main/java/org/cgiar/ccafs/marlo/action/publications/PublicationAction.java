@@ -606,6 +606,10 @@ public class PublicationAction extends BaseAction {
       deliverablePrew.setAllowModifications(null);
     }
     deliverablePrew.setDeliverableType(deliverable.getDeliverableType());
+
+    if (deliverablePrew.getDeliverableType().getId().intValue() == -1) {
+      deliverablePrew.setDeliverableType(null);
+    }
     if (deliverable.getCrossCuttingCapacity() == null) {
       deliverablePrew.setCrossCuttingCapacity(false);
     } else {
