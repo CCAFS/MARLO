@@ -1176,7 +1176,7 @@ public class DeliverableAction extends BaseAction {
             deliverablePrew.getDeliverablePartnerships().stream()
               .filter(dp -> dp.isActive()
                 && dp.getPartnerType().equals(DeliverablePartnershipTypeEnum.RESPONSIBLE.getValue()))
-              .collect(Collectors.toList()).get(0);
+            .collect(Collectors.toList()).get(0);
         } catch (Exception e) {
           partnershipResponsible = null;
         }
@@ -1283,6 +1283,7 @@ public class DeliverableAction extends BaseAction {
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
       relationsName.add(APConstants.PROJECT_DELIVERABLE_FUNDING_RELATION);
+      relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
       if (this.isReportingActive()) {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_QUALITY_CHECK);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_METADATA_ELEMENT);
@@ -1292,7 +1293,6 @@ public class DeliverableAction extends BaseAction {
         relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
         relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
       }
-
 
       deliverable = deliverableManager.getDeliverableById(deliverableID);
       deliverable.setActiveSince(new Date());

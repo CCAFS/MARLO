@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LicensesTypeEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.publications.PublicationValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -97,6 +98,7 @@ public class PublicationAction extends BaseAction {
   private CrpPpaPartnerManager crpPpaPartnerManager;
   private DeliverableManager deliverableManager;
 
+  private PublicationValidator publicationValidator;
 
   private Deliverable deliverable;
 
@@ -125,7 +127,6 @@ public class PublicationAction extends BaseAction {
 
   private DeliverableTypeManager deliverableTypeManager;
 
-
   @Inject
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, AuditLogManager auditLogManager,
@@ -135,12 +136,13 @@ public class PublicationAction extends BaseAction {
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
-    DeliverableLeaderManager deliverableLeaderManager,
+    DeliverableLeaderManager deliverableLeaderManager, PublicationValidator publicationValidator,
     DeliverableMetadataElementManager deliverableMetadataElementManager, IpProgramManager ipProgramManager) {
 
     super(config);
     this.deliverableDisseminationManager = deliverableDisseminationManager;
     this.crpManager = crpManager;
+    this.publicationValidator = publicationValidator;
     this.crpPandrManager = crpPandrManager;
     this.deliverableCrpManager = deliverableCrpManager;
     this.deliverableManager = deliverableManager;
@@ -184,7 +186,6 @@ public class PublicationAction extends BaseAction {
     return SUCCESS;
   }
 
-
   private Path getAutoSaveFilePath() {
     String composedClassName = deliverable.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -193,6 +194,7 @@ public class PublicationAction extends BaseAction {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+
   public Map<String, String> getChannels() {
     return channels;
   }
@@ -200,7 +202,6 @@ public class PublicationAction extends BaseAction {
   public Map<String, String> getCrps() {
     return crps;
   }
-
 
   public Deliverable getDeliverable() {
     return deliverable;
@@ -235,6 +236,7 @@ public class PublicationAction extends BaseAction {
     }
     return null;
   }
+
 
   public Map<String, String> getGenderLevels() {
     return genderLevels;
@@ -279,9 +281,9 @@ public class PublicationAction extends BaseAction {
 
 
     // CHRISTIAN PLEASE DELETE THIS MACHETAZO
+
     this.setCanEdit(true);
     this.setEditable(true);
-
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -300,6 +302,8 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
+        this.setCanEdit(false);
+        this.setEditable(false);
       } else {
         this.transaction = null;
 
@@ -673,6 +677,8 @@ public class PublicationAction extends BaseAction {
     relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_PROGRAMS);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_LEADERS);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
 
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     deliverable.setActiveSince(new Date());
@@ -686,7 +692,7 @@ public class PublicationAction extends BaseAction {
       path.toFile().delete();
     }
 
-    this.setInvalidFields(new HashMap<>());
+
     if (this.getUrl() == null || this.getUrl().isEmpty()) {
       Collection<String> messages = this.getActionMessages();
       if (!this.getInvalidFields().isEmpty()) {
@@ -746,7 +752,6 @@ public class PublicationAction extends BaseAction {
       }
     }
   }
-
 
   public void saveDissemination() {
     if (deliverable.getDissemination() != null) {
@@ -986,6 +991,7 @@ public class PublicationAction extends BaseAction {
     }
   }
 
+
   public void saveUsers() {
     if (deliverable.getUsers() == null) {
 
@@ -1024,10 +1030,10 @@ public class PublicationAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-
   public void setDeliverableSubTypes(List<DeliverableType> deliverableSubTypes) {
     this.deliverableSubTypes = deliverableSubTypes;
   }
+
 
   public void setDeliverableTypeManager(DeliverableTypeManager deliverableTypeManager) {
     this.deliverableTypeManager = deliverableTypeManager;
@@ -1049,12 +1055,19 @@ public class PublicationAction extends BaseAction {
     this.programs = programs;
   }
 
-
   public void setRegions(Map<String, String> regions) {
     this.regions = regions;
   }
 
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      publicationValidator.validate(this, deliverable, true);
+    }
   }
 }
