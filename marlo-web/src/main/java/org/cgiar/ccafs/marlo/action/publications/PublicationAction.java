@@ -330,7 +330,63 @@ public class PublicationAction extends BaseAction {
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
         this.setDraft(true);
+        if (deliverable.getCrps() != null) {
+          for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
+            if (deliverableCrp != null) {
 
+              if (deliverableCrp.getIpProgram() == null || deliverableCrp.getIpProgram().getId() == null
+                || deliverableCrp.getIpProgram().getId().intValue() == -1) {
+                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(deliverableCrp.getCrpPandr().getId()));
+
+              } else {
+                deliverableCrp.setIpProgram(ipProgramManager.getIpProgramById(deliverableCrp.getIpProgram().getId()));
+                deliverableCrp.setCrpPandr(crpPandrManager.getCrpPandrById(3));
+              }
+
+            }
+          }
+        }
+
+        if (deliverable.getLeaders() != null) {
+          for (DeliverableLeader deliverableLeader : deliverable.getLeaders()) {
+            if (deliverableLeader != null) {
+              deliverableLeader
+                .setInstitution(institutionManager.getInstitutionById(deliverableLeader.getInstitution().getId()));
+
+            }
+          }
+        }
+        List<DeliverableProgram> programs = new ArrayList<>();
+        if (deliverable.getFlagshipValue() != null) {
+          for (String programID : deliverable.getFlagshipValue().trim().replace("[", "").replace("]", "").split(",")) {
+            try {
+              DeliverableProgram deliverableProgram = new DeliverableProgram();
+              IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+              deliverableProgram.setDeliverable(deliverable);
+              deliverableProgram.setIpProgram(program);
+              programs.add(deliverableProgram);
+            } catch (Exception e) {
+
+            }
+          }
+        }
+
+        List<DeliverableProgram> regions = new ArrayList<>();
+        if (deliverable.getRegionsValue() != null) {
+          for (String programID : deliverable.getRegionsValue().trim().replace("[", "").replace("]", "").split(",")) {
+            try {
+              DeliverableProgram deliverableProgram = new DeliverableProgram();
+              IpProgram program = ipProgramManager.getIpProgramById(Long.parseLong(programID.trim()));
+              deliverableProgram.setDeliverable(deliverable);
+              deliverableProgram.setIpProgram(program);
+              regions.add(deliverableProgram);
+            } catch (Exception e) {
+
+            }
+          }
+        }
+        deliverable.setPrograms(programs);
+        deliverable.setRegions(regions);
 
       } else {
 
