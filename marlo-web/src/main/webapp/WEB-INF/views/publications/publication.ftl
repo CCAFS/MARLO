@@ -152,7 +152,7 @@
           <ul class="list">
           [#if deliverable?? && deliverable.genderLevels?has_content]
             [#list deliverable.genderLevels as element]
-              [@crossDimmensionMacro element=element name="${customName}.genderLevels" index=element_index /]
+              [@genderLevelMacro element=element name="${customName}.genderLevels" index=element_index /]
             [/#list]
           [#else]
             <p class="emptyText"> [@s.text name="deliverable.genderLevels.empty" /]</p> 
@@ -195,7 +195,7 @@
 [@leadPartnerMacro element={} name="${customName}.leaders" index=-1 isTemplate=true /]
 
 [#-- Gender list template --]
-[@crossDimmensionMacro element={} name="${customName}.genderLevels" index=-1 isTemplate=true /]
+[@genderLevelMacro element={} name="${customName}.genderLevels" index=-1 isTemplate=true /]
 
 [#-- CRP & Flagships template --]
 [@deliverableMacros.flagshipMacro element={} index=-1 name="${customName}.crps"  isTemplate=true /]
@@ -218,9 +218,9 @@
   </li>
 [/#macro]
 
-[#macro crossDimmensionMacro element name index isTemplate=false]
+[#macro genderLevelMacro element name index isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <li id="crossDimmension-${isTemplate?string('template', index)}" class="crossDimmension" style="display:${isTemplate?string('none','block')}">
+  <li id="genderLevel-${isTemplate?string('template', index)}" class="genderLevel" style="display:${isTemplate?string('none','block')}">
     [#if editable]<div class="removeGenderLevel removeIcon" title="Remove Gender Level"></div>[/#if] 
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}" />
     <input class="fId" type="hidden" name="${customName}.genderLevel" value="${(element.genderLevel)!}" />

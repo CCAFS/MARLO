@@ -270,7 +270,7 @@ function addGenderLevel(option) {
   }
 
   var $list = $(option).parents(".select").parents("#genderLevelsList").find(".list");
-  var $item = $("#glevelTemplate").clone(true).removeAttr("id");
+  var $item = $("#genderLevel-template").clone(true).removeAttr("id");
   var v = $(option).text().length > 80 ? $(option).text().substr(0, 80) + ' ... ' : $(option).text();
 
   // Check if is already selected
