@@ -68,7 +68,7 @@ public interface MogSynthesyManager {
    * @param projectID - is the Id of the project
    * @return a List of MogSynthesis with the Information related with the programId
    */
-  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome);
+  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome, int year);
 
   /**
    * This method gets a mogSynthesy object by a given mogSynthesy identifier.

@@ -64,5 +64,13 @@
 			<one-to-many
 				class="org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson" />
 		</set>
+		<set name="sectionStatuses" order-by="id"
+      table="section_statuses" inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="ip_program_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.SectionStatus" />
+    </set>
 	</class>
 </hibernate-mapping>

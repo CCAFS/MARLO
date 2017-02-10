@@ -96,7 +96,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
       String params[] = {crp.getAcronym(), deliverable.getProject().getId() + ""};
 
       if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
-        System.out.println("----------------------------ENTER SUPER ADMIN---------------------------------------");
+
         if (!baseAction.isSubmit(deliverable.getProject().getId())) {
 
           canSwitchProject = true;
@@ -142,7 +142,6 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
 
       if (deliverable.getStatus() != null) {
         if (deliverable.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-          System.out.println("----------------------------CanEDIT False---------------------------------------");
           canEdit = false;
         }
       }

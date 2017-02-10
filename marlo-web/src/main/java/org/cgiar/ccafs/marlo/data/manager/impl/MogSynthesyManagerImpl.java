@@ -66,8 +66,8 @@ public class MogSynthesyManagerImpl implements MogSynthesyManager {
   }
 
   @Override
-  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome) {
-    return mogSynthesyDAO.findMogSynthesisRegion(midoutcome);
+  public List<MogSynthesy> getMogSynthesisRegions(long midoutcome, int year) {
+    return mogSynthesyDAO.findMogSynthesisRegion(midoutcome, year);
   }
 
   @Override

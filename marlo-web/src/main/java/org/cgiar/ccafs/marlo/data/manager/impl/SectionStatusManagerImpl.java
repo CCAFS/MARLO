@@ -102,6 +102,11 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusBySynthesisMog(long ipProgramID, String cycle, int year, String sectionName) {
+    return sectionStatusDAO.getSectionStatusBySynteshisMog(ipProgramID, cycle, year, sectionName);
+  }
+
+  @Override
   public long saveSectionStatus(SectionStatus sectionStatus) {
 
     return sectionStatusDAO.save(sectionStatus);

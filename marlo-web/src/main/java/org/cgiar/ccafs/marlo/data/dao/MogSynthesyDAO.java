@@ -60,7 +60,7 @@ public interface MogSynthesyDAO {
 
   public List<MogSynthesy> findMogSynthesis(long programId);
 
-  public List<MogSynthesy> findMogSynthesisRegion(long midoutcome);
+  public List<MogSynthesy> findMogSynthesisRegion(long midoutcome, int year);
 
   /**
    * This method saves the information of the given mogSynthesy

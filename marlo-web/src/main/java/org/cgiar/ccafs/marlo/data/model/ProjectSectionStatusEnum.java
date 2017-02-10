@@ -26,7 +26,7 @@ public enum ProjectSectionStatusEnum {
   OUTCOMES_PANDR("outcomesPandR"), DELIVERABLESLIST("deliverablesList"), DELIVERABLES("deliverableList"),
   ACTIVITIES("activities"), BUDGET("budgetByPartners"), BUDGETBYCOA("budgetByCoAs"), NEXTUSERS("nextUsers"),
   CCAFSOUTCOMES("ccafsOutcomes"), CASESTUDIES("caseStudies"), HIGHLIGHT("highlights"), LEVERAGES("leverages"),
-  DELIVERABLE("deliverable");
+  DELIVERABLE("deliverable"), SYNTHESISMOG("synthesisByMog");
 
   public static ProjectSectionStatusEnum value(String status) {
     ProjectSectionStatusEnum[] lst = ProjectSectionStatusEnum.values();
