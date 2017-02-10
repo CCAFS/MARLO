@@ -43,16 +43,16 @@
     
     <!-- Publication -->
     <action name="{crp}/publication" class="org.cgiar.ccafs.marlo.action.publications.PublicationAction">
-      <interceptor-ref name="homeStack" />
+      <interceptor-ref name="editPublicationStack" />
+
+     
+  
       <result name="input">/WEB-INF/views/publications/publication.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/publication</param>
         <param name="deliverableID">${deliverable.id}</param>
         <param name="edit">true</param>
       </result>
-    
-    
-      
     </action>
     
     
