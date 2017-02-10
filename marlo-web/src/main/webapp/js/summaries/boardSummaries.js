@@ -230,7 +230,19 @@ function reportTypes($selected) {
       $(".wordContent").find(".terms").each(function(i,e) {
         termsArray.push($(e).find(".text").html());
       });
-      url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
+      url =
+          baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?cycle="
+              + $("input[name='cycle']:checked").val() + "&keys=" + termsArray.join("~/");
+      if($($selected).find(".onlyYear").exists()) {
+        reportYear = $($selected).find(".onlyYear").val();
+      } else {
+        if($("input[name='cycle']:checked").val() == "Planning") {
+          reportYear = "2017";
+        } else {
+          reportYear = "2016";
+        }
+      }
+      url += '&year=' + reportYear;
       var replace = url.replace(/ /g, "%20");
       setUrl(replace);
     } else {
