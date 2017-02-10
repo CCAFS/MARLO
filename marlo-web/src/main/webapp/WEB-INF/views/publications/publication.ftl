@@ -76,7 +76,7 @@
       <div class="form-group">
         <div class="panel tertiary">
          <div class="panel-head"><label for=""> [@customForm.text name="publication.leadPartners" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-          <div id="leadPartnerList" class="panel-body"> 
+          <div id="leadPartnerList" class="panel-body"  listname="deliverable.leaders" style="position: relative;"> 
             <ul class="list">
             [#if  deliverable?? && deliverable.leaders?has_content]
               [#list deliverable.leaders as institutionLead]
@@ -148,7 +148,7 @@
       [#-- If gender dimension, select with ones --]
       <div id="gender-levels" class="panel tertiary" style="display:${((deliverable.crossCuttingGender)!false)?string('block','none')}">
        <div class="panel-head"><label for=""> [@customForm.text name="${customName}.genderLevels" readText=!editable /]:[@customForm.req required=editable /]</label></div>
-        <div id="genderLevelsList" class="panel-body" > 
+        <div id="genderLevelsList" class="panel-body"  listname="deliverable.genderLevels" style="position: relative;" > 
           <ul class="list">
           [#if deliverable?? && deliverable.genderLevels?has_content]
             [#list deliverable.genderLevels as element]
