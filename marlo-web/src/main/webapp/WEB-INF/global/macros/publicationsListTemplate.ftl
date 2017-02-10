@@ -82,7 +82,7 @@
           </td>
           [#-- Delete --]
           <td class="">
-            [#if true]
+            [#if canEdit]
               <a id="removeRow-${deliverable.id}" class="removeRow" href="${baseUrl}/publications/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}" title="">
                 <img src="${baseUrl}/images/global/trash.png" title="[@s.text name="project.deliverable.removeDeliverable" /]" /> 
               </a>

@@ -78,6 +78,9 @@
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
+    <interceptor name="canEditPublication"
+        class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
+ 
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"
 				class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
@@ -159,7 +162,7 @@
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
-   
+        <interceptor-ref name="canEditPublication" />
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
         <interceptor-ref name="trimInputs" />

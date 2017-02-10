@@ -280,11 +280,6 @@ public class PublicationAction extends BaseAction {
   public void prepare() throws Exception {
 
 
-    // CHRISTIAN PLEASE DELETE THIS MACHETAZO
-
-    this.setCanEdit(true);
-    this.setEditable(true);
-
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
     try {
@@ -302,8 +297,7 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
-        this.setCanEdit(false);
-        this.setEditable(false);
+
       } else {
         this.transaction = null;
 

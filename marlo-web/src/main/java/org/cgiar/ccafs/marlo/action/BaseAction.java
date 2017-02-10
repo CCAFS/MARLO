@@ -210,21 +210,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   // button actions
   protected boolean save;
-  private boolean saveable; // If user is able to see the save, cancel, delete buttons
 
+  private boolean saveable; // If user is able to see the save, cancel, delete buttons
   @Inject
   private SectionStatusManager sectionStatusManager;
+
   // Config Variables
   @Inject
   protected BaseSecurityContext securityContext;
-
   private Map<String, Object> session;
-  private Submission submission;
 
+  private Submission submission;
   protected boolean submit;
 
-
   private String url;
+
 
   @Inject
   private UserRoleManager userRoleManager;
@@ -270,10 +270,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return securityContext.hasPermission(permission);
+  }
+
+
+  public boolean canAcessPublications() {
+    String params[] = {this.getCrpSession()};
+    return (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params)));
   }
 
 

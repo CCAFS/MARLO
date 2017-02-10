@@ -25,7 +25,7 @@
       [#-- Publications not directly linked to a Project (My publications) --]
       <h3 class="headTitle text-center">[@s.text name="publicationsList.yourPublications"/] <br /> <small>([@s.text name="publicationsList.yourPublications.help" /])</small></h3>
       <div class="loadingBlock"></div>
-      <div style="display:none">[@publicationsList.publicationsList publications=loggedCrp.deliverablesList canValidate=true canEdit=true namespace="/publications" defaultAction="${(crpSession)!}/publication" /]</div>
+      <div style="display:none">[@publicationsList.publicationsList publications=action.getPublications(true) canValidate=true canEdit=true namespace="/publications" defaultAction="${(crpSession)!}/publication" /]</div>
   
       [#-- Section Buttons --]
       <div class="buttons">
@@ -41,7 +41,7 @@
       [#-- Publications List (Other publications) --]
       <h3 class="headTitle text-center">[@s.text name="publicationsList.otherPublications" /] </h3>
       <div class="loadingBlock"></div>
-      <div style="display:none">[@publicationsList.publicationsList publications=allPublications canValidate=true namespace="/publications" defaultAction="${(crpSession)!}/publication"/]</div>
+      <div style="display:none">[@publicationsList.publicationsList publications=action.getPublications(false) canValidate=true canEdit=false namespace="/publications" defaultAction="${(crpSession)!}/publication"/]</div>
     </div>
     
   </article>
