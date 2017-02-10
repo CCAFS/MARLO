@@ -81,6 +81,12 @@ public class Permission {
   public static final String PROJECT_FUNDING_SOURCE_ADD_BUDGET_PERMISSION = "crp:{0}:fundingSource:budget";
 
 
+  public static final String PUBLICATION_ADD = "crp:{0}:publication:add";
+  public static final String PUBLICATION_INSTITUTION = "crp:{0}:publication:{1}:*";
+  public static final String PUBLICATION_FULL_PERMISSION = "crp:{0}:publication:*";
+  public static final String PUBLICATION_BASE_INSTITUTION = "crp:{0}:publication:{1}";
+  public static final String PUBLICATION_BASE_FULL_PERMISSION = "crp:{0}:publication";
+
   public static final String PROJECT_FUNDING_ = "crp:{0}:fundingSource:canEdit";
   public static final String PROJECT_FUNDING_W1_BASE_PERMISSION = "crp:{0}:fundingSource:w1";
   public static final String PROJECT_FUNDING_W3_BASE_PERMISSION = "crp:{0}:fundingSource:w3";
