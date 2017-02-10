@@ -75,6 +75,13 @@ function attachEvents() {
 
   // Clicking other report
   $(".title-file , .description").on("click", function() {
+    // fileTypes
+    $("#optionsPopUp").find(".pdfIcon").parent().show();
+    $("#optionsPopUp").find(".excelIcon").parent().show();
+    $("#optionsPopUp").find(".pdfIcon").parent().removeClass("choose");
+    $("#optionsPopUp").find(".pdfIcon").parent().addClass("notChoose");
+    $("#optionsPopUp").find(".excelIcon").parent().removeClass("choose");
+    $("#optionsPopUp").find(".excelIcon").parent().addClass("notChoose");
     // $('.wordContent').empty();
     var $this = $(this).parents(".summariesFiles");
     $(".summariesFiles").removeClass("selected");
@@ -183,6 +190,7 @@ function generateReport(e) {
     console.log(extraOption);
     // Validate full report
     if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
+      validateFileType($selected);
       openDialog();
     } else {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
@@ -190,7 +198,25 @@ function generateReport(e) {
       noty(notyOptions);
     }
   } else {
+    validateFileType($selected);
     openDialog();
+  }
+}
+
+function validateFileType($selected) {
+  if($selected.find(".fileTypes").length <= 1) {
+    var type = $selected.find(".fileTypes").text();
+    if(type == "pdf") {
+      var file = $("#optionsPopUp").find(".excelIcon").parent();
+      file.hide();
+      $("#optionsPopUp").find(".pdfIcon").parent().removeClass("notChoose");
+      $("#optionsPopUp").find(".excelIcon").parent().addClass("choose");
+    } else {
+      var file = $("#optionsPopUp").find(".pdfIcon").parent();
+      file.hide();
+      $("#optionsPopUp").find(".excelIcon").parent().removeClass("notChoose");
+      $("#optionsPopUp").find(".pdfIcon").parent().addClass("choose");
+    }
   }
 }
 
