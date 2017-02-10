@@ -43,11 +43,11 @@
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
-
+        
+        [#-- Section Messages --]
+        [#include "/WEB-INF/views/projects/messages-projects.ftl" /]
+        
         [@s.form action="caseStudies" cssClass="pure-form" enctype="multipart/form-data" ]  
-         
-          [#include "/WEB-INF/views/projects/dataInfo-projects.ftl" /] 
-            
           <h3 class="headTitle">[@s.text name="projectCaseStudies.caseStudiestitle" /]</h3>
           
           [#-- Outcome case studies list --]
