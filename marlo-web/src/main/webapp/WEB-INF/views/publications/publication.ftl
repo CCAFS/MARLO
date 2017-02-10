@@ -102,7 +102,7 @@
               [@s.checkboxlist name="${customName}.flagshipValue" list="programs" cssClass="checkboxInput fpInput"  value="flagshipIds" /]
             [#else]
               <input type="hidden" name="${customName}.flagshipValue" value="${(deliverable.flagshipValue)!}"/>
-              [#if publication?? && deliverable.programs?has_content]
+              [#if deliverable.programs?has_content]
                 [#list deliverable.programs as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
               [/#if]
             [/#if]
@@ -118,7 +118,7 @@
                 [@s.checkboxlist name="${customName}.regionsValue" list="regions" cssClass="checkboxInput rpInput" value="regionsIds" /]
               [#else] 
                 <input type="hidden" name="${customName}.regionsValue" value="${(deliverable.regionsValue)!}"/>
-                [#if publication?? && deliverable.regions?has_content]
+                [#if  deliverable.regions?has_content]
                   [#list deliverable.regions as element]<p class="checked">${(element.ipProgram.composedName)!'null'}</p>[/#list]
                 [/#if]
               [/#if]

@@ -279,9 +279,9 @@ public class PublicationAction extends BaseAction {
 
 
     // CHRISTIAN PLEASE DELETE THIS MACHETAZO
+
     this.setCanEdit(true);
     this.setEditable(true);
-
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
@@ -300,6 +300,8 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
+        this.setCanEdit(false);
+        this.setEditable(false);
       } else {
         this.transaction = null;
 
@@ -673,6 +675,8 @@ public class PublicationAction extends BaseAction {
     relationsName.add(APConstants.PROJECT_DELIVERABLE_USERS);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_PROGRAMS);
     relationsName.add(APConstants.PROJECT_DELIVERABLE_LEADERS);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_GENDER_LEVELS);
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_CRPS);
 
     deliverable = deliverableManager.getDeliverableById(deliverableID);
     deliverable.setActiveSince(new Date());

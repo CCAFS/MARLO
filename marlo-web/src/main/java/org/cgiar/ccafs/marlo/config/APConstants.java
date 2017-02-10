@@ -245,6 +245,9 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableCrps)";
   public static final String PROJECT_DELIVERABLE_USERS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUsers)";
+
+  public static final String PROJECT_DELIVERABLE_GENDER_LEVELS =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableGenderLevels)";
   public static final String PROJECT_DELIVERABLE_DATA_SHARING =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableDataSharings)";
 

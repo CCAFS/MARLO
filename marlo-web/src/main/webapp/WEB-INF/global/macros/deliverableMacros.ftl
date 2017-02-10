@@ -230,6 +230,7 @@
   <label for="">[@s.text name="metadata.creator" /]:  </label>
   [#if editable]<div class="note">[@s.text name = "project.deliverable.dissemination.authorsInfo" /]</div>[/#if]
   <div class="authorsList simpleBox row" >
+ 
     [#if deliverable.users?has_content]
       [#list deliverable.users as author]
         [@deliverableMacros.authorMacro element=author index=author_index name="deliverable.users"  /]
