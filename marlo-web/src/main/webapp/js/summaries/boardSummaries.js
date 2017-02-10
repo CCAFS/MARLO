@@ -62,7 +62,7 @@ function attachEvents() {
     }
   });
   // ADD TERM
-  $("#termsPopUp").find("input").on("keypress", function(event) {
+  $(".inputTerm").on("keypress", function(event) {
     if(event.keyCode === 10 || event.keyCode === 13) {
       addTerm();
     }
@@ -74,75 +74,27 @@ function attachEvents() {
   $('.generateReport').on('click', generateReport);
 
   // Clicking other report
-  $(".title-file , .pdfIcon , .excelIcon").on("click", function() {
+  $(".title-file , .description").on("click", function() {
     // $('.wordContent').empty();
-    $("input[name='projectID']").val("-1");
-    $("#selectProject").html("Click over me");
     var $this = $(this).parents(".summariesFiles");
     $(".summariesFiles").removeClass("selected");
     $(".extraOptions").fadeOut();
+    $(".generateReport").fadeOut();
     $('.extraOptions').find('select, input').attr('disabled', true);
     $($this).find('.extraOptions').fadeIn();
+    $($this).find('.generateReport').fadeIn();
     $($this).find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
     $($this).addClass("selected");
     updateUrl($this);
   });
 
-  /** Select a project * */
-  $('#selectProject').on('click', function() {
-    var $this = $(this).parents(".summariesFiles");
-    $("#projectsPopUp").dialog({
-        resizable: false,
-        closeText: "",
-        width: '40%',
-        title: 'Projects',
-        modal: true,
-        height: $(window).height() * 0.50,
-        show: {
-            effect: "blind",
-            duration: 500
-        },
-        hide: {
-            effect: "fadeOut",
-            duration: 500
-        },
-        open: function(event,ui) {
-        }
-    });
+  $('.close-dialog').on('click', function() {
+    $("#optionsPopUp").dialog("close");
   });
 
-  /** include terms * */
-  $('#includeTerms').on('click', function() {
-    var $this = $(this).parents(".summariesFiles");
-    $("#termsPopUp").dialog({
-        resizable: false,
-        closeText: "",
-        width: '30%',
-        height: '280',
-        title: 'Terms',
-        modal: true,
-        show: {
-            effect: "blind",
-            duration: 500
-        },
-        hide: {
-            effect: "fadeOut",
-            duration: 500
-        },
-        open: function(event,ui) {
-        }
-    });
-  });
-
-  $(".project").on("click", function() {
-    var report = $("#selectProject").parents(".summariesFiles");
-    // console.log(report);
-    $("input[name='projectID']").val($(this).attr("id"));
-    var v = $(this).text().length > 16 ? $(this).text().substr(0, 16) + ' ... ' : $(this).text();
-    $("#selectProject").attr("title", $(this).html());
-    $("#selectProject").html(v);
-    $('#projectsPopUp').dialog('close');
-    updateUrl(report);
+  $(".okButton a").on("click", function() {
+    var $selected = $('.selected');
+    reportTypes($selected);
   });
 }
 
@@ -164,7 +116,8 @@ function removeGenderTerms() {
 }
 
 function addTerm() {
-  var input = $("#termsPopUp").find(".inputTerm");
+  console.log("holi test");
+  var input = $(".inputTerm");
   var $list = $('.wordContent');
   var $item = $('#term').clone(true).removeAttr("id");
   if(validateInputTerms() == true) {
@@ -189,7 +142,7 @@ function removeTerm() {
 }
 
 function validateInputTerms() {
-  var input = $("#termsPopUp").find(".inputTerm");
+  var input = $(".inputTerm");
   if(input.val().length > 0) {
     if(/^\s+|\s+$/.test(input.val()) || /~#/g.test(input.val())) {
       return false
@@ -223,49 +176,76 @@ function selectSummariesSection(e) {
 }
 
 function generateReport(e) {
-  $("#termsPopUp").dialog("close");
+  e.preventDefault();
   var $selected = $('.selected');
-  if($selected.length == "0") {
-    e.preventDefault();
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'You must to select a report option';
-    noty(notyOptions);
-  } else {
-    // FULL REPORT
-    if($selected.find(".extraOptions").find("input[name='projectID']").val() == "-1") {
-      e.preventDefault();
+  if($selected.find(".extraOptions").exists()) {
+    var extraOption = $selected.find(".extraOptions");
+    console.log(extraOption);
+    // Validate full report
+    if(extraOption.find("#projectID").find("option:selected").val() != "-1") {
+      openDialog();
+    } else {
       var notyOptions = jQuery.extend({}, notyDefaultOptions);
       notyOptions.text = 'You must to select a project';
       noty(notyOptions);
     }
-    // TERMS
-    if($selected.find(".extraOptions").find("#includeTerms").length > 0) {
-      var url = "";
-      var $formOptions = $($selected).find('input[name=formOptions]');
-      var formOption = $formOptions.val() || 0;
-      if($(".wordContent").find(".terms").length > 0) {
-        $(".wordContent").find(".terms").each(function(i,e) {
-          termsArray.push($(e).find(".text").html());
-        });
-        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
-        var replace = url.replace(/ /g, "%20");
-        setUrl(replace);
-      } else {
-        url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
-        setUrl(url);
-      }
-      $('.wordContent').empty();
-      addGenderTerms();
-      termsArray = [];
-      $("#gender").prop('checked', true);
-      $("#gender").removeClass("view");
-      $("#gender").removeClass("notview");
-      $("#gender").addClass("view");
+  } else {
+    openDialog();
+  }
+}
 
-      // termsArray = genderArray;
-    }
+function openDialog() {
+  $("#optionsPopUp").dialog({
+      resizable: false,
+      width: 500,
+      height: 230,
+      modal: true,
+      dialogClass: 'dialog-searchUsers',
+      show: {
+          effect: "blind",
+          duration: 500
+      },
+      hide: {
+          effect: "fadeOut",
+          duration: 500
+      },
+      open: function(event,ui) {
+      }
+  });
+}
+
+function reportTypes($selected) {
+// FULL REPORT
+  if($selected.find(".extraOptions").find("#projectID").exists()) {
+    updateUrl($selected);
   }
 
+  // TERMS
+  if($selected.find(".extraOptions").find(".wordContent").exists()) {
+    var url = "";
+    var $formOptions = $($selected).find('input[name=formOptions]');
+    var formOption = $formOptions.val() || 0;
+    if($(".wordContent").find(".terms").length > 0) {
+      console.log("here");
+      $(".wordContent").find(".terms").each(function(i,e) {
+        termsArray.push($(e).find(".text").html());
+      });
+      url = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do" + "?keys=" + termsArray.join("~/");
+      var replace = url.replace(/ /g, "%20");
+      setUrl(replace);
+    } else {
+      updateUrl($selected);
+    }
+    $('.wordContent').empty();
+    addGenderTerms();
+    termsArray = [];
+    $("#gender").prop('checked', true);
+    $("#gender").removeClass("view");
+    $("#gender").removeClass("notview");
+    $("#gender").addClass("view");
+
+    // termsArray = genderArray;
+  }
 }
 
 function updateUrl(element) {
@@ -274,9 +254,11 @@ function updateUrl(element) {
   var formOption = $formOptions.val() || 0;
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
   if(formOption != 0) {
-    generateUrl = baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do";
+    generateUrl =
+        baseURL + "/projects/" + currentCrpSession + "/" + formOption + ".do?" + "cycle="
+            + $("input[name='cycle']:checked").val();
     if(extraOptions != 0) {
-      generateUrl += '?' + extraOptions;
+      generateUrl += '&' + extraOptions;
     }
 // console.log(reportYear);
     if($(element).find(".onlyYear").exists()) {
@@ -290,17 +272,18 @@ function updateUrl(element) {
     }
 // console.log(reportYear);
     generateUrl += '&year=' + reportYear;
-    setUrl(generateUrl);
+    setUrl(generateUrl, element);
   } else {
     setUrl('#');
   }
 }
 
-function setUrl(url) {
+function setUrl(url,$this) {
+  console.log(url);
   if(url == '#') {
     $('#generateReport').hide();
   } else {
-    $('.generateReport').attr('href', url).fadeIn();
+    $('.okButton a').attr('href', url).fadeIn();
   }
 }
 

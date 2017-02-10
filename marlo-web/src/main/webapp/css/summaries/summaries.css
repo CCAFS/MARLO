@@ -1,3 +1,22 @@
+.okButton{
+	padding-left: 117px;
+	border-radius: 5px;
+	margin-top: 29px;
+}
+
+.okButton a{
+	border-radius:5px;
+}
+.description{
+	font-size:0.9em;
+}
+.generateReport{
+	height: 30px;
+	border-radius:5px;
+}
+#generateProject{
+	 margin-top: 20px; 
+}
 .summariesButtons {
   width: 93%;
   margin: 0 auto;
@@ -41,7 +60,7 @@ color: #fff;font-weight: bold;}
 }
 
 .summariesOption {
-  margin: 11px 0px;
+  margin: 1px 0px;
 }
 
 .summariesOption .description {
@@ -58,8 +77,8 @@ vertical-align: middle;}
 .summariesOption label span{/* background-color: #f1f1f1; */font-size: 1em;padding: 0 7px;border-radius: 4px;}
 
 .extraOptions {
-  margin: 10px 16px;
-  /* width: 60.4%; */
+  /* padding-top: 70px; */
+  margin: 5px 16px;
 }
 
 /* Summaries Section icons*/
@@ -110,15 +129,15 @@ vertical-align: middle;}
 }
 
 .pdfIcon {
+    cursor: pointer;
     color: red;
-    text-align: center;
-    font-size: 4em;
-    margin: 15px 0;
+    font-size: 2em;
+    margin: 5px 0 0 3px;
 }
 
 .title-file {
-    text-align: center;
-    font-size: 1.2em;
+    /* text-align: center; */
+    font-size: 1.1em;
 }
 
 .title-file span {
@@ -126,16 +145,16 @@ vertical-align: middle;}
 }
 
 .summariesFiles {
-    margin: 10px 4%;
+    /* margin: 10px 4%; */
     cursor: pointer;
-    min-height: 154px;
+    /* min-height: 154px; */
 }
 
 .excelIcon {
+    cursor: pointer;
     color: #3c763d;
-    text-align: center;
-    font-size: 4em;
-    margin: 15px 0;
+    font-size: 2em;
+    margin: 5px 0 0 10px;
 }
 
 .info-file {
