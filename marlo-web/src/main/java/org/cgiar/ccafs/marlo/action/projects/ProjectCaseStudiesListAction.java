@@ -126,7 +126,8 @@ public class ProjectCaseStudiesListAction extends BaseAction {
   public boolean canEdit() {
     String params[] = {this.getCrpSession(), project.getId().toString()};
 
-    return (this.hasPermission(this.generatePermission(Permission.PROJECT_CASE_STUDY_PERMISSION, params)));
+    return (this.hasPermission(this.generatePermission(Permission.PROJECT_CASE_STUDY_PERMISSION, params)))
+      && (!this.isProjectSubmitted(projectID));
   }
 
   @Override
