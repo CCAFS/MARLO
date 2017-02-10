@@ -19,12 +19,22 @@ package org.cgiar.ccafs.marlo.action.publications;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableLeaderManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableLeader;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,43 +51,87 @@ public class PublicationListAction extends BaseAction {
   private CrpManager crpManager;
   private long deliverableID;
   private DeliverableManager deliverableManager;
+  private LiaisonUserManager liaisonUserManager;
+  private InstitutionManager institutionManager;
+  private DeliverableLeaderManager deliverableLeaderManager;
 
   @Inject
-  public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager) {
+  public PublicationListAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
+    InstitutionManager institutionManager, LiaisonUserManager liaisonUserManager,
+    DeliverableLeaderManager deliverableLeaderManager) {
 
     super(config);
     this.deliverableManager = deliverableManager;
     this.crpManager = crpManager;
-
+    this.liaisonUserManager = liaisonUserManager;
+    this.deliverableLeaderManager = deliverableLeaderManager;
+    this.institutionManager = institutionManager;
   }
 
 
   @Override
   public String add() {
+    String params[] = {loggedCrp.getAcronym()};
+    if (this.hasPermission(this.generatePermission(Permission.PUBLICATION_ADD, params))) {
+      Deliverable deliverable = new Deliverable();
+      deliverable.setYear(this.getCurrentCycleYear());
+      deliverable.setCreatedBy(this.getCurrentUser());
+      deliverable.setModifiedBy(this.getCurrentUser());
+      deliverable.setModificationJustification("New publication created");
+      deliverable.setActive(true);
+      deliverable.setActiveSince(new Date());
+      deliverable.setCrp(loggedCrp);
+      deliverable.setCreateDate(new Date());
+      deliverable.setIsPublication(true);
 
-    Deliverable deliverable = new Deliverable();
-    deliverable.setYear(this.getCurrentCycleYear());
-    deliverable.setCreatedBy(this.getCurrentUser());
-    deliverable.setModifiedBy(this.getCurrentUser());
-    deliverable.setModificationJustification("New publication created");
-    deliverable.setActive(true);
-    deliverable.setActiveSince(new Date());
-    deliverable.setCrp(loggedCrp);
-    deliverable.setCreateDate(new Date());
-    deliverable.setIsPublication(true);
+
+      deliverableID = deliverableManager.saveDeliverable(deliverable);
 
 
-    deliverableID = deliverableManager.saveDeliverable(deliverable);
+      LiaisonUser user = liaisonUserManager.getLiaisonUserByUserId(this.getCurrentUser().getId(), loggedCrp.getId());
+      if (user != null) {
+        LiaisonInstitution liaisonInstitution = user.getLiaisonInstitution();
+        try {
+          if (liaisonInstitution != null && liaisonInstitution.getInstitution() != null) {
+            Institution institution =
+              institutionManager.getInstitutionById(liaisonInstitution.getInstitution().getId());
 
-    if (deliverableID > 0) {
-      return SUCCESS;
+            DeliverableLeader deliverableLeader = new DeliverableLeader();
+            deliverableLeader.setDeliverable(deliverable);
+
+            deliverableLeader.setInstitution(institution);
+            deliverableLeaderManager.saveDeliverableLeader(deliverableLeader);
+          }
+        } catch (Exception e) {
+
+        }
+
+
+      }
+      this.clearPermissionsCache();
+
+      if (deliverableID > 0) {
+        return SUCCESS;
+      }
+      return INPUT;
+    } else {
+      return NOT_AUTHORIZED;
     }
 
-    return INPUT;
+
+  }
+
+
+  public boolean canEdit(long deliverableID) {
+    String params[] = {loggedCrp.getAcronym()};
+    String paramDeliverableID[] = {loggedCrp.getAcronym(), deliverableID + ""};
+    return this.hasPermission(this.generatePermission(Permission.PUBLICATION_FULL_PERMISSION, params))
+      || this.hasPermission(this.generatePermission(Permission.PUBLICATION_INSTITUTION, paramDeliverableID));
   }
 
   @Override
   public String delete() {
+
 
     Map<String, Object> parameters = this.getParameters();
     deliverableID =
@@ -86,21 +140,35 @@ public class PublicationListAction extends BaseAction {
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
 
+
     if (deliverable != null) {
       deliverableManager.deleteDeliverable(deliverableID);
       this.addActionMessage("message:" + this.getText("deleting.success"));
     }
     return SUCCESS;
-  }
 
+
+  }
 
   public long getDeliverableID() {
     return deliverableID;
   }
 
-
   public Crp getLoggedCrp() {
     return loggedCrp;
+  }
+
+
+  public List<Deliverable> getPublications(boolean permission) {
+
+    List<Deliverable> deliverables = new ArrayList<Deliverable>();
+
+    for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
+      if (this.canEdit(deliverable.getId().longValue()) == permission) {
+        deliverables.add(deliverable);
+      }
+    }
+    return deliverables;
   }
 
 

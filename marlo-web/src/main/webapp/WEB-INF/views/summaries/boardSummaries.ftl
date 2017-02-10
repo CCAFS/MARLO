@@ -286,7 +286,7 @@
   <div class="row">
   <div class="col-md-12">
     <div class="col-md-6">
-      [@customForm.select name="reportYears"   label=""  i18nkey="Select a specific year"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="reportYear"   multiple=false required=true   editable=true/]
+      [@customForm.select name="reportYears"   label=""  i18nkey="Select a specific year"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="reportYear"   multiple=false required=true   editable=true/]
     </div>
     <div class="col-md-6 okButton">
       <a style="" target="_blank" class=" addButton" style="" href="#">[@s.text name="Ok" /]</a>

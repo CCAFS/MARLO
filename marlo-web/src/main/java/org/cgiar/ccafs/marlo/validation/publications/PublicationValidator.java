@@ -88,18 +88,6 @@ public class PublicationValidator extends BaseValidator {
         if (deliverable.getDeliverableType().getId() == null || deliverable.getDeliverableType().getId() == -1) {
           this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
           action.getInvalidFields().put("input-deliverable.deliverableType.id", InvalidFieldsMessages.EMPTYFIELD);
-        } else {
-          if (deliverable.getDeliverableType().getDeliverableType() != null) {
-            if (deliverable.getDeliverableType().getDeliverableType().getId() == -1) {
-              this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-              action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          } else {
-            this.addMessage(action.getText("project.deliverable.generalInformation.type"));
-            action.getInvalidFields().put("input-deliverable.deliverableType.deliverableType.id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
         }
       } else {
         this.addMessage(action.getText("project.deliverable.generalInformation.subType"));
