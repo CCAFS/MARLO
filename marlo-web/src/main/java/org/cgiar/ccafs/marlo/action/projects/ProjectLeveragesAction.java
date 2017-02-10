@@ -288,8 +288,6 @@ public class ProjectLeveragesAction extends BaseAction {
         if (project.getLeverages() == null) {
 
           project.setLeverages(new ArrayList<ProjectLeverage>());
-        } else {
-          project.getLeverages().sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
         }
         this.setDraft(true);
       } else {
