@@ -83,6 +83,11 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
+  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
+    return ipIndicatorDAO.getProjectIndicators(year, indicator, program, midOutcome);
+  }
+
+  @Override
   public long saveIpIndicator(IpIndicator ipIndicator) {
 
     return ipIndicatorDAO.save(ipIndicator);

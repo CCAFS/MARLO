@@ -1,34 +1,6 @@
 [#ftl]
 [#assign canEdit = true /]
 [#assign editable = true /]
-[#assign midOutcomes = [] /]
-[#assign program = {
-  'flagshipProgram' : true
-} /]
-[#assign liaisonInstitutionID = 2 /]
-[#assign liaisonInstitutions = [
-  { 'id': 1, 'acronym': 'F1', 'name': 'Priorities and Policies for CSA'},
-  { 'id': 2, 'acronym': 'F2', 'name': 'Climate-Smart Technologies and Practices'},
-  { 'id': 3, 'acronym': 'F3', 'name': 'Low emissions development'},
-  { 'id': 4, 'acronym': 'F4', 'name': 'Climate services and safety nets'}
-] /]
-[#assign currentLiaisonInstitution = liaisonInstitutions[1] /]
-[#assign midOutcomes = [
-  { 'id': 1, 'composedId': 'Outcome 2022', 'description': '10 policy decisions taken (in part) based on engagement and information dissemination by CCAFS.'}
-] /]
-
-[#assign outcomeMilestones = [
-  { 'id': 1, 'year': '2017', 'description': 'Diagnosis on subnational policy and institutional frameworks analysis focusing on different options that can support the adoption of preferred CSA practices'},
-  { 'id': 2, 'year': '2017', 'srfTargetUnit': {'id':1, 'name':'Country profiles'}, 'description': '10 country profiles in SSA and South Asia developped strategic engagement with subnational government, capacity building and training plan co-developed with ACSAA workshops on climate smart local development planning.'}
-] /]
-
-[#assign projectMilestoneContributions = [
-  { 'id': 1, 'projectId': '56', 'target': '2', 'achieved': '2', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 2, 'projectId': '22', 'target': '5', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 3, 'projectId': '1', 'target': '1', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 4, 'projectId': '16',  'target': '3', 'achieved': '1', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'},
-  { 'id': 5, 'projectId': '23', 'target': '8', 'achieved': '2', 'narrativeTargets': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quisquam error eveniet quam praesentium quasi impedit cumque odio culpa omnis eos ab aspernatur expedita aperiam sunt illum adipisci nesciunt! Modi quas!'}
-] /]
 
 
 [#assign title = "Outcome Synthesis" /]
@@ -118,14 +90,14 @@
                     </div>
                     
                     [#-- Explain any discrepancy  --]
-                    [#if midOutcome.regionalProgramType]
+                    [#if program.regionalProgram]
                     <div class="fullPartBlock">
                       [@customForm.textArea name="synthesis[${index}].discrepancy" i18nkey="synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
                     </div>
                     [/#if]
                     
                     [#-- Regions/Global contributions --]
-                    [#if midOutcome.flagshipProgramType]
+                    [#if program.flagshipProgram]
                     <h6>[@s.text name="synthesis.outcomeSynthesis.regionalContributions" /]:</h6> 
                     <div class="fullPartBlock">
                       <div class="fullPartBlock synthesisContributions-block viewMore-block">
@@ -157,7 +129,7 @@
                     [/#if]
                     
                     [#-- Project Contributions --]
-                    [#if midOutcome.flagshipProgramType]
+                    [#if program.flagshipProgram]
                       <h6>[@s.text name="synthesis.outcomeSynthesis.globalProjectContributions" /]:</h6> 
                     [#else]
                       <h6>[@s.text name="synthesis.outcomeSynthesis.projectContributions" /]:</h6> 

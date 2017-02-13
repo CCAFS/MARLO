@@ -63,6 +63,8 @@ public interface IpIndicatorDAO {
 
   public List<IpIndicator> getIndicatorsFlagShips();
 
+  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
+
 
   /**
    * This method saves the information of the given ipIndicator
