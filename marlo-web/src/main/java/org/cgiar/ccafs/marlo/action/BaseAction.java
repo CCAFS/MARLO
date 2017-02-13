@@ -921,7 +921,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-              .collect(Collectors.toList());
+            .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1616,52 +1616,56 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public Boolean isI(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
-      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+    try {
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      this.loadDissemination(deliverableBD);
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
+        && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
 
-      String channel = deliverableBD.getDissemination().getDisseminationChannel();
-      String link = deliverableBD.getDissemination().getDisseminationUrl();
-      if (channel == null || channel.equals("-1")) {
-        return null;
-      }
-      if (link == null || link.equals("-1") || link.isEmpty()) {
-        return null;
-      }
+        String channel = deliverableBD.getDissemination().getDisseminationChannel();
+        String link = deliverableBD.getDissemination().getDisseminationUrl();
+        if (channel == null || channel.equals("-1")) {
+          return null;
+        }
+        if (link == null || link.equals("-1") || link.isEmpty()) {
+          return null;
+        }
 
-      switch (channel) {
-        case "cgspace":
-          if (!this.validURL(link)) {
-            return null;
-          }
-          if (!link.contains("cgspace.cgiar.org")) {
-            return null;
-          }
-          break;
-        case "dataverse":
-          if (!link.contains("dataverse.harvard.edu")) {
+        switch (channel) {
+          case "cgspace":
             if (!this.validURL(link)) {
               return null;
             }
+            if (!link.contains("cgspace.cgiar.org")) {
+              return null;
+            }
+            break;
+          case "dataverse":
+            if (!link.contains("dataverse.harvard.edu")) {
+              if (!this.validURL(link)) {
+                return null;
+              }
+              return null;
+            }
+            break;
+          case "other":
             return null;
-          }
-          break;
-        case "other":
-          return null;
 
-        default:
-          return null;
+          default:
+            return null;
 
+        }
+        return true;
       }
-      return true;
-    }
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+        return null;
+      }
+    } catch (Exception e) {
       return null;
     }
-
     return null;
+
 
   }
 
@@ -1788,7 +1792,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-        .collect(Collectors.toList());
+      .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
