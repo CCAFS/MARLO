@@ -60,7 +60,10 @@
           [#-- Flagship / Region --]
           <td class=""> 
             [#if deliverable.programs?has_content || deliverable.regions?has_content]
-              [#if deliverable.programs?has_content][#list deliverable.programs as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if deliverable.regions?has_content][#list deliverable.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
+              [#if deliverable.programs?has_content][#list deliverable.programs as element]
+              <span class="programTag" style="border-color:${(element.ipProgram.crpProgram.color)!'#fff'}">${element.ipProgram.acronym}</span>[/#list]
+              [/#if][#if deliverable.regions?has_content][#list deliverable.regions as element]
+              <span class="programTag" style="border-color:${(element.ipProgram.crpProgram.color)!'#fff'}">${element.ipProgram.acronym}</span>[/#list][/#if]
             [#else]
               [@s.text name="projectsList.none" /]
             [/#if]

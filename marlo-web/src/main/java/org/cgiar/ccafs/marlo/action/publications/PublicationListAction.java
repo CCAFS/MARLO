@@ -181,6 +181,13 @@ public class PublicationListAction extends BaseAction {
       loggedCrp.setDeliverablesList(loggedCrp.getDeliverables().stream()
         .filter(c -> c.getIsPublication() != null && c.getIsPublication().booleanValue() && c.isActive())
         .collect(Collectors.toList()));
+      for (Deliverable deliverable : loggedCrp.getDeliverablesList()) {
+        deliverable.setLeaders(deliverable.getDeliverableLeaders().stream().collect(Collectors.toList()));
+        deliverable.setPrograms(deliverable.getDeliverablePrograms().stream()
+          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 4).collect(Collectors.toList()));
+        deliverable.setRegions(deliverable.getDeliverablePrograms().stream()
+          .filter(c -> c.getIpProgram().getIpProgramType().getId().intValue() == 5).collect(Collectors.toList()));
+      }
     } catch (Exception e) {
 
     }
