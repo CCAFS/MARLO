@@ -26,6 +26,9 @@
 		<property name="regionId" type="java.lang.Long">
 			<column name="region_id" />
 		</property>
+		<property name="activeSince" type="timestamp">
+      <column name="active_since" length="19"/>
+    </property>
 		<set name="ipElements" table="ip_elements" inverse="true" lazy="true"
 			fetch="select">
 			<key>

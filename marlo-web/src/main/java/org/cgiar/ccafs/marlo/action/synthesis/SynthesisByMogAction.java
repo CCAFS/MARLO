@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -382,9 +383,10 @@ public class SynthesisByMogAction extends BaseAction {
 
 
     List<String> relationsName = new ArrayList<>();
-    relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
-    program = ipProgramManager.getIpProgramById(program.getId());
+    relationsName.add(APConstants.IPPROGRAM_MOGSYNTHESIS_RELATION);
 
+    program = ipProgramManager.getIpProgramById(program.getId());
+    program.setActiveSince(new Date());
 
     ipProgramManager.save(program, this.getActionName(), relationsName);
     Path path = this.getAutoSaveFilePath();
