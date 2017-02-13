@@ -64,6 +64,8 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   private List<MogSynthesy> synthesis;
 
+  private List<OutcomeSynthesy> synthesisOutcome;
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
 
@@ -71,6 +73,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public IpProgram() {
   }
+
 
   public IpProgram(IpProgramType ipProgramType) {
     this.ipProgramType = ipProgramType;
@@ -123,7 +126,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return builder.toString();
   }
 
-
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
@@ -132,6 +134,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
 
   public Set<IpElement> getIpElements() {
     return ipElements;
@@ -201,6 +204,10 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return synthesis;
   }
 
+  public List<OutcomeSynthesy> getSynthesisOutcome() {
+    return synthesisOutcome;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -208,7 +215,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
-
 
   @Override
   public boolean isActive() {
@@ -309,8 +315,13 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     this.sectionStatuses = sectionStatuses;
   }
 
+
   public void setSynthesis(List<MogSynthesy> synthesis) {
     this.synthesis = synthesis;
+  }
+
+  public void setSynthesisOutcome(List<OutcomeSynthesy> synthesisOutcome) {
+    this.synthesisOutcome = synthesisOutcome;
   }
 
 

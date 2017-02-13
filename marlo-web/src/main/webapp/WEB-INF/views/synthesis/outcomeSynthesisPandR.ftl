@@ -27,7 +27,7 @@
 <section class="container">
   <div class="row"> 
     <div class="col-md-12">
-      [@s.form action="outcomeSynthesis" method="POST" enctype="multipart/form-data" cssClass="pure-form"]
+      [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
     
         [#-- Program (Regions and Flagships) --]
         <ul id="liaisonInstitutions" class="horizontalSubMenu">
@@ -63,9 +63,9 @@
               <div class="fullPartBlock">
                 <label>[@s.text name="synthesis.outcomeSynthesis.indicators" /]:</label> 
                 [#if midOutcome.indicators?has_content]
-                
+                ${midOutcome.id}
                 [#list midOutcome.indicators as indicator]
-                  [#assign flagshipIndicator = (indicator.parent)!indicator /]
+                  [#assign flagshipIndicator = (indicator.ipIndicator)!indicator /]
                    [#assign index = action.getIndex(flagshipIndicator.id,midOutcome.id,program.id) /]
                
                   <div class="simpleBox">
@@ -74,25 +74,25 @@
                     </div>
                     [#-- Achieved target in current reporting period --]
                     <div class="fullPartBlock">
-                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]</div>
+                      <div class="thirdPartBlock">[@customForm.input name="program.synthesisOutcome[${index}].achieved" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchieved" className="isNumeric" help="form.message.numericValue" required=canEdit editable=editable /]</div>
                       <div class="thirdPartBlock"></div>
-                      <div class="thirdPartBlock">[@customForm.input name="synthesis[${index}].achievedExpectedText" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]</div>
+                      <div class="thirdPartBlock">[@customForm.input name="program.synthesisOutcome[${index}].achievedExpected" type="text" i18nkey="synthesis.outcomeSynthesis.targetAchievedExpected" className="isNumeric" help="form.message.numericValue" required=canEdit editable=false /]</div>
                     </div>
                     
                     [#-- Synthesis of annual progress towards this indicator --]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].synthesisAnual" i18nkey="synthesis.outcomeSynthesis.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
+                      [@customForm.textArea name="program.synthesisOutcome[${index}].synthesisAnual" i18nkey="synthesis.outcomeSynthesis.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
                     </div>
                     
                     [#-- Synthesis of annual progress gender and social inclusion contribution towards this indicator --]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesis.outcomeSynthesis.genderProgressIndicator" className="genderProgressIndicator limitWords-200" required=canEdit editable=editable /]
+                      [@customForm.textArea name="program.synthesisOutcome[${index}].synthesisGender" i18nkey="synthesis.outcomeSynthesis.genderProgressIndicator" className="genderProgressIndicator limitWords-200" required=canEdit editable=editable /]
                     </div>
                     
                     [#-- Explain any discrepancy  --]
                     [#if program.regionalProgram]
                     <div class="fullPartBlock">
-                      [@customForm.textArea name="synthesis[${index}].discrepancy" i18nkey="synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
+                      [@customForm.textArea name="program.synthesisOutcome[${index}].discrepancy" i18nkey="synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
                     </div>
                     [/#if]
                     
@@ -112,9 +112,12 @@
                             </tr>
                           </thead>
                           <tbody>
+                         
+                            [#assign flagshipIndicator = (indicator.ipIndicator)!indicator /]
+                            
                           [#list action.getRegionalSynthesis(flagshipIndicator.id,midOutcome.id) as syntesisReport]
                             <tr>
-                              <td class="center">${(syntesisReport.ipprogram.acronym)!'Prefilled when available'}</td>
+                              <td class="center">${(syntesisReport.iPprogram.acronym)!'Prefilled when available'}</td>
                               <td class="center">${(syntesisReport.achievedExpected)!'Prefilled when available'}</td>  
                               <td class="center">${(syntesisReport.achieved)!'Prefilled when available'}</td>
                               <td >${(syntesisReport.synthesisAnual)!'Prefilled when available'}</td>
@@ -181,10 +184,10 @@
               <div class="viewButton"><a href="[@s.url][@s.param name ="liaisonInstitutionID"]${liaisonInstitutionID}[/@s.param][/@s.url]#lessons">[@s.text name="form.buttons.unedit" /]</a></div>
             [/#if]
             <div class="fullBlock">
-              <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
-              <input type="hidden" name="projectLessons.year" value=${currentCycleYear} />
-              <input type="hidden" name="projectLessons.componentName" value="${actionName}">
-              [@customForm.textArea name="projectLessons.lessons" i18nkey="synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
+              <input type="hidden" name="program.projectComponentLesson.id" value=${(projectLessons.id)!"-1"} />
+              <input type="hidden" name="program.projectComponentLesson.year" value=${currentCycleYear} />
+              <input type="hidden" name="program.projectComponentLesson.componentName" value="${actionName}">
+              [@customForm.textArea name="program.projectComponentLesson.lessons" i18nkey="synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
             </div> 
           </div>  
         </div>

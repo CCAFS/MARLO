@@ -34,8 +34,13 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +69,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   private List<IpLiaisonInstitution> liaisonInstitutions;
   private IpLiaisonInstitution currentLiaisonInstitution;
   private List<IpElement> midOutcomes;
-  private List<OutcomeSynthesy> synthesis;
+
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
 
   private IpProgram program;
@@ -87,6 +92,14 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   }
 
+  private Path getAutoSaveFilePath() {
+    String composedClassName = program.getClass().getSimpleName();
+    String actionFile = this.getActionName().replace("/", "_");
+    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+
+    return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
   public IpLiaisonInstitution getCurrentLiaisonInstitution() {
     return currentLiaisonInstitution;
   }
@@ -96,16 +109,18 @@ public class OutcomeSynthesisAction extends BaseAction {
     synthe.setIpIndicator(ipIndicatorManager.getIpIndicatorById(indicator));
     synthe.setIpElement(ipElementManager.getIpElementById(midoutcome));
     synthe.setIpProgram(ipProgramManager.getIpProgramById(program));
+    synthe.setYear(this.getCurrentCycleYear());
 
-    int index = synthesis.indexOf(synthe);
+
+    int index = this.program.getSynthesisOutcome().indexOf(synthe);
     return index;
 
   }
 
+
   public long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
-
 
   public List<IpLiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -123,21 +138,18 @@ public class OutcomeSynthesisAction extends BaseAction {
     return ipIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
   }
 
+
   public List<OutcomeSynthesy> getRegionalSynthesis(long indicator, long midoutcome) {
     List<OutcomeSynthesy> list = outcomeSynthesisManager.findAll().stream()
       .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
-        && c.getYear() == this.getCurrentCycleYear() && c.getIpElement().getId().longValue() == midoutcome
-        && c.getIpIndicator().getId().longValue() == midoutcome && c.getIpProgram().isRegionalProgram())
+        && c.getYear() == this.getCurrentCycleYear() && c.getIpIndicator().getId().longValue() == indicator
+        && c.getIpProgram().isRegionalProgram())
       .collect(Collectors.toList());
 
     for (OutcomeSynthesy mogSynthesis : list) {
       mogSynthesis.setIpProgram(ipProgramManager.getIpProgramById(mogSynthesis.getIpProgram().getId()));
     }
     return list;
-  }
-
-  public List<OutcomeSynthesy> getSynthesis() {
-    return synthesis;
   }
 
   @Override
@@ -190,31 +202,74 @@ public class OutcomeSynthesisAction extends BaseAction {
 
     // Get Outcomes 2019 of current IPProgram
     midOutcomes = ipElementManager.getIPElementListForOutcomeSynthesis(program, APConstants.ELEMENT_TYPE_OUTCOME2019);
-    synthesis = outcomeSynthesisManager.findAll().stream()
+    this.program.setSynthesisOutcome(outcomeSynthesisManager.findAll().stream()
       .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
         && c.getYear() == this.getCurrentCycleYear())
-      .collect(Collectors.toList());
+      .collect(Collectors.toList()));
 
     for (IpElement midoutcome : midOutcomes) {
       midoutcome.setIndicators(ipIndicatorManager.getIndicatorsByElementID(midoutcome.getId().longValue()));
       for (IpIndicator indicator : midoutcome.getIndicators()) {
         long indicatorId = indicator.getId().longValue();
         if (indicator.getIpIndicator() != null) {
-          indicatorId = indicator.getIpIndicator().getId();
+          indicatorId = indicator.getIpIndicator().getId().longValue();
         }
         if (this.getIndex(indicatorId, midoutcome.getId(), program.getId()) == -1) {
           OutcomeSynthesy synthe = new OutcomeSynthesy();
+
           synthe.setIpIndicator(ipIndicatorManager.getIpIndicatorById(indicatorId));
           synthe.setIpElement(midoutcome);
           synthe.setIpProgram(program);
           synthe.setYear(this.getCurrentCycleYear());
           synthe.setId(null);
-          synthesis.add(synthe);
+          program.getSynthesisOutcome().add(synthe);
 
         }
 
       }
     }
+  }
+
+  @Override
+  public String save() {
+    for (OutcomeSynthesy synthe : program.getSynthesisOutcome()) {
+
+      outcomeSynthesisManager.saveOutcomeSynthesy(synthe);
+
+    }
+
+    if (this.isLessonsActive()) {
+      this.saveLessonsSynthesis(loggedCrp, program);
+    }
+
+
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.IPPROGRAM_OUTCOME_SYNTHESIS_RELATION);
+
+    program = ipProgramManager.getIpProgramById(program.getId());
+    program.setActiveSince(new Date());
+
+    ipProgramManager.save(program, this.getActionName(), relationsName);
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
+    }
+
+
+    Collection<String> messages = this.getActionMessages();
+    this.setInvalidFields(new HashMap<>());
+    if (!this.getInvalidFields().isEmpty()) {
+      this.setActionMessages(null);
+      List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
+      for (String key : keys) {
+        this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+      }
+
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
+    return SUCCESS;
   }
 
   public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
@@ -237,8 +292,5 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.program = program;
   }
 
-  public void setSynthesis(List<OutcomeSynthesy> synthesis) {
-    this.synthesis = synthesis;
-  }
 
 }
