@@ -97,6 +97,32 @@ public class IpElementMySQLDAO implements IpElementDAO {
   }
 
   @Override
+  public List<IpElement> getIPElementListForOutcomeSynthesis(long programID, long type) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT e.*");
+    query.append("FROM ip_elements e ");
+    query.append("INNER JOIN ip_element_types et ON e.element_type_id = et.id ");
+    query.append("INNER JOIN ip_programs pro ON e.ip_program_id = pro.id ");
+    query.append("WHERE pro.id = ");
+    query.append(programID);
+    query.append(" AND et.id = ");
+    query.append(type);
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+
+    List<IpElement> ipElements = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpElement ipElement = this.find(Long.parseLong(map.get("id").toString()));
+        ipElements.add(ipElement);
+      }
+    }
+
+    return ipElements;
+  }
+
+  @Override
   public List<IpElement> getIPElementListForSynthesisRegion(long programId) {
 
     StringBuilder query = new StringBuilder();

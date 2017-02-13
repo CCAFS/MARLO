@@ -66,6 +66,11 @@ public class IpIndicatorManagerImpl implements IpIndicatorManager {
   }
 
   @Override
+  public List<IpIndicator> getIndicatorsByElementID(long elementID) {
+    return ipIndicatorDAO.getIndicatorsByElementID(elementID);
+  }
+
+  @Override
   public List<IpIndicator> getIndicatorsFlagShips() {
 
     return ipIndicatorDAO.getIndicatorsFlagShips();

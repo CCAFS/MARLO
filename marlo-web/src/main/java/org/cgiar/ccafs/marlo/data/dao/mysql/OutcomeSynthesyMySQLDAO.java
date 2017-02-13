@@ -56,7 +56,7 @@ public class OutcomeSynthesyMySQLDAO implements OutcomeSynthesyDAO {
 
   @Override
   public List<OutcomeSynthesy> findAll() {
-    String query = "from " + OutcomeSynthesy.class.getName() + " where is_active=1";
+    String query = "from " + OutcomeSynthesy.class.getName() + "";
     List<OutcomeSynthesy> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;

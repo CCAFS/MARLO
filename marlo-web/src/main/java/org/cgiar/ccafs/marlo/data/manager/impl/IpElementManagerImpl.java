@@ -68,6 +68,11 @@ public class IpElementManagerImpl implements IpElementManager {
   }
 
   @Override
+  public List<IpElement> getIPElementListForOutcomeSynthesis(IpProgram program, long type) {
+    return ipElementDAO.getIPElementListForOutcomeSynthesis(program.getId().longValue(), type);
+  }
+
+  @Override
   public List<IpElement> getIPElementListForSynthesis(IpProgram _program) {
     // List<Map<String, String>> ipElementDataList;
     List<IpElement> elementsList = new ArrayList<>();

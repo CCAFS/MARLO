@@ -62,6 +62,8 @@ public interface IpElementManager {
   public IpElement getIpElementById(long ipElementID);
 
 
+  public List<IpElement> getIPElementListForOutcomeSynthesis(IpProgram programm, long type);
+
   /**
    * This method return all the impact pathways elements
    * setted with the basic information id, description,

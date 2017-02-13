@@ -68,6 +68,8 @@ public interface IpElementDAO {
 
   public List<IpElement> getIPElementByProgramIDSynthesis(long programID);
 
+  public List<IpElement> getIPElementListForOutcomeSynthesis(long programID, long type);
+
   /**
    * This method return a all the IP elements which belongs to the program
    * indicated by parameter regions.

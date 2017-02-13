@@ -27,14 +27,54 @@ public class OutcomeSynthesy implements java.io.Serializable, IAuditLog {
   private int year;
   @Expose
   private Double achieved;
+
   @Expose
   private String synthesisAnual;
+
+
   @Expose
   private String synthesisGender;
   @Expose
   private String discrepancy;
   @Expose
   private Double achievedExpected;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+
+    OutcomeSynthesy other = (OutcomeSynthesy) obj;
+    if (ipElement == null) {
+      if (other.ipElement != null) {
+        return false;
+      }
+    } else if (!ipElement.getId().equals(other.ipElement.getId())) {
+      return false;
+    }
+    if (ipIndicator == null) {
+      if (other.ipIndicator != null) {
+        return false;
+      }
+    } else if (!ipIndicator.getId().equals(other.ipIndicator.getId())) {
+      return false;
+    }
+    if (ipProgram == null) {
+      if (other.ipProgram != null) {
+        return false;
+      }
+    } else if (!ipProgram.getId().equals(other.ipProgram.getId())) {
+      return false;
+    }
+    if (year != other.year) {
+      return false;
+    }
+    return true;
+  }
 
   public Double getAchieved() {
     return achieved;
@@ -95,6 +135,17 @@ public class OutcomeSynthesy implements java.io.Serializable, IAuditLog {
 
   public int getYear() {
     return year;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((ipElement == null) ? 0 : ipElement.hashCode());
+    result = prime * result + ((ipIndicator == null) ? 0 : ipIndicator.hashCode());
+    result = prime * result + ((ipProgram == null) ? 0 : ipProgram.hashCode());
+    result = prime * result + year;
+    return result;
   }
 
   @Override

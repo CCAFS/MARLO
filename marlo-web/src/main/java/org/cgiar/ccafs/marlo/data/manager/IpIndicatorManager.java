@@ -55,6 +55,8 @@ public interface IpIndicatorManager {
 
   public List<IpIndicator> findOtherContributions(long projectID);
 
+  public List<IpIndicator> getIndicatorsByElementID(long elementID);
+
   public List<IpIndicator> getIndicatorsFlagShips();
 
   /**
@@ -74,6 +76,5 @@ public interface IpIndicatorManager {
    *         or -1 is some error occurred.
    */
   public long saveIpIndicator(IpIndicator ipIndicator);
-
 
 }

@@ -59,6 +59,8 @@ public interface IpIndicatorDAO {
 
   public List<IpIndicator> findOtherContributions(long projectID);
 
+  public List<IpIndicator> getIndicatorsByElementID(long elementID);
+
   public List<IpIndicator> getIndicatorsFlagShips();
 
 
