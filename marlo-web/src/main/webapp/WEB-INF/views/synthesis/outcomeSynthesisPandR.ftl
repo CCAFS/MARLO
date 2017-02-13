@@ -91,16 +91,16 @@
                     
                     [#-- Explain any discrepancy  --]
                     [#if program.regionalProgram]
-                    <div class="fullPartBlock">
+                    <div class="form-group">
                       [@customForm.textArea name="program.synthesisOutcome[${index}].discrepancy" i18nkey="synthesis.outcomeSynthesis.discrepancy" className="discrepancy limitWords-100" editable=editable /]
                     </div>
                     [/#if]
                     
                     [#-- Regions/Global contributions --]
                     [#if program.flagshipProgram]
-                    <h6>[@s.text name="synthesis.outcomeSynthesis.regionalContributions" /]:</h6> 
+                    <label>[@s.text name="synthesis.outcomeSynthesisPandR.regionalContributions" /]:</label> 
                     <div class="fullPartBlock">
-                      <div class="fullPartBlock synthesisContributions-block viewMore-block">
+                      <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
                         <table class="regionalContributions">
                           <thead>
                             <tr class="header">
@@ -126,19 +126,19 @@
                           [/#list]
                           </tbody>
                         </table>
-                        <div class="viewMore"></div>
+                        <div class="viewMoreSyntesis"></div>
                       </div>
                     </div>
                     [/#if]
                     
                     [#-- Project Contributions --]
                     [#if program.flagshipProgram]
-                      <h6>[@s.text name="synthesis.outcomeSynthesis.globalProjectContributions" /]:</h6> 
+                      <label>[@s.text name="synthesis.outcomeSynthesisPandR.globalProjectContributions" /]:</label> 
                     [#else]
-                      <h6>[@s.text name="synthesis.outcomeSynthesis.projectContributions" /]:</h6> 
+                      <label>[@s.text name="synthesis.outcomeSynthesisPandR.projectContributions" /]:</label> 
                     [/#if]
                     [#if (action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id))?has_content]
-                    <div class="fullPartBlock synthesisContributions-block viewMore-block">
+                    <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
                       <table class="projectContributions">
                         <thead>
                           <tr class="header">
@@ -152,7 +152,7 @@
                         <tbody>
                         [#list action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id) as projectIndicator]
                           <tr>
-                            <td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/reporting/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
+                            <td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
                             <td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="center" title="${(projectIndicator.archived)!''}" >[@utilities.wordCutter string=(projectIndicator.archived)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="">${(projectIndicator.narrativeTargets)!'Prefilled when available'} </td>
@@ -161,7 +161,7 @@
                         [/#list]
                         </tbody>
                       </table>
-                      <div class="viewMore"></div>
+                      <div class="viewMoreSyntesis"></div>
                     </div>
                     [#else]
                       <p>There is not project contributing to this indicator</p>

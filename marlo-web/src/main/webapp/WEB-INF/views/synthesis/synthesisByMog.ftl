@@ -3,7 +3,7 @@
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrl}/js/synthesis/synthesisByCoAs.js",
+  "${baseUrl}/js/synthesis/outcomeSynthesis.js",
   "${baseUrl}/js/global/autoSave.js",
   "${baseUrl}/js/global/fieldsValidation.js"
 ] /]
@@ -94,9 +94,9 @@
                 <tbody>
                 [#list action.getRegionalSynthesis(mog.id) as syntesisReport]
                   <tr>
-                    <td class="center"> ${(syntesisReport.ipProgam.acronym)!}</td>
-                    <td>${(syntesisReport.synthesisReport)!}</td>  
-                    <td>${(syntesisReport.synthesisGender)!}</td>
+                    <td class="center"> ${(syntesisReport.ipProgram.acronym)!}</td>
+                    <td class="">[#if syntesisReport.synthesisReport?has_content]${syntesisReport.synthesisReport}[#else][@s.text name="global.prefilledWhenAvailable" /][/#if]</td>
+                    <td class="">[#if syntesisReport.synthesisGender?has_content]${syntesisReport.synthesisGender}[#else][@s.text name="global.prefilledWhenAvailable" /][/#if]</td>
                   </tr>
                 [/#list]
                 </tbody>
@@ -122,8 +122,8 @@
                 [#list action.getProjectOutputOverviews(mog.id) as projectContribution]
                   <tr>
                     <td class="center"><a href="[@s.url action="outputs" namespace="/projects/${crpSession}"][@s.param name='projectID']${(projectContribution.project.id)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectContribution.project.id)!}</a></td>
-                    <td class="">${(projectContribution.briefSummary)!'Prefilled when available'} </td>
-                    <td class="">${(projectContribution.summaryGender)!'Prefilled when available'} </td>
+                    <td class="">[#if projectContribution.briefSummary?has_content]${projectContribution.briefSummary}[#else][@s.text name="global.prefilledWhenAvailable" /][/#if]</td>
+                    <td class="">[#if projectContribution.summaryGender?has_content]${projectContribution.summaryGender}[#else][@s.text name="global.prefilledWhenAvailable" /][/#if]</td>
                   </tr>
                 [/#list]
                 </tbody>
