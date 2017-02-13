@@ -177,7 +177,11 @@ public class AutoSaveWriterAction extends BaseAction {
         }
         status.put("status", true);
         SimpleDateFormat dt = new SimpleDateFormat("yyyyy-mm-dd hh:mm:ss");
-        status.put("modifiedBy", userManager.getUser(Long.parseLong(userModifiedBy)).getComposedCompleteName());
+        try {
+          status.put("modifiedBy", this.getCurrentUser().getComposedCompleteName());
+        } catch (Exception e) {
+          status.put("modifiedBy", "");
+        }
         status.put("activeSince", dt.format(generatedDate));
       } catch (IOException e) {
         status.put("status", false);

@@ -73,7 +73,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
 
     StringBuilder sb = new StringBuilder();
 
-    sb.append("    SELECT     distinct  I.*");
+    sb.append("    SELECT     distinct  i.*");
     sb.append("                          FROM       ip_indicators i ");
     sb.append("                          LEFT JOIN  ip_indicators p ");
     sb.append("                          ON         i.parent_id = p.id ");
