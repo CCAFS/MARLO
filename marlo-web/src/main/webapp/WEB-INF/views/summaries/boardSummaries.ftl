@@ -57,7 +57,7 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.projectPortfolio.description" /]</span>
             <div class="extraOptions col-md-12" style="display:none">
-              <span class="hidden fileTypes">pdf</span>
+              <span class="hidden fileTypes pdfType">reportingSummary</span>
               <div class="row">
                 <div class="col-md-9">
                   [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName="allProjects"  keyFieldName="id"  displayFieldName="composedName" className="allProjects"   multiple=false required=true   editable=true/]
@@ -77,7 +77,7 @@
             </div>
             <span class="description col-md-12">[@s.text name="summaries.board.report.genderContributionSummary.description" /] You can to add terms and generate the report, or simply generate the report without add terms.</span>
             <div class="extraOptions col-md-12" style="display:none">
-            <span class="hidden fileTypes">excel</span>
+            <span class="hidden fileTypes excelType">searchTermsSummary</span>
             [#-- predefined terms --]
             <label for="">Predefined terms:</label>
             <br />
@@ -111,7 +111,7 @@
               <label for="">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
             </div>
             <div class="extraOptions" style="display:none"> 
-            <span class="hidden fileTypes">excel</span>
+            <span class="hidden fileTypes excelType">OutcomesContributionsSummary</span>
             <div class="pull-right">
               <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
             </div>
@@ -125,8 +125,8 @@
               <label for="">[@s.text name="Project outcomes case studies" /]</label>
             </div>
               <div class="extraOptions" style="display:none">
-              <span class="hidden fileTypes">pdf</span>
-              <span class="hidden fileTypes">excel</span> 
+              <span class="hidden fileTypes pdfType">caseStudySummary</span>
+              <span class="hidden fileTypes excelType">caseStudiesByYearSummary</span> 
                 <div class="pull-right">
                   <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
                 </div>
@@ -278,11 +278,11 @@
     <div class="col-md-5">
       <h5 class="col-md-12">[@s.text name="Choose the type of file" /] <span class="red">*</span></h5>
       <div class="col-md-4 notChoose">
-      <span class="fa fa-file-pdf-o col-md-12 pdfIcon"></span>
+      <span class="fa fa-file-pdf-o col-md-12 pdfIcon file"></span>
       <span class="col-md-12">Pdf</span>
       </div>
       <div class="col-md-4 notChoose">
-      <span class="fa fa-file-excel-o col-md-12 excelIcon"></span>
+      <span class="fa fa-file-excel-o col-md-12 excelIcon file"></span>
       <span class="col-md-12">Excel</span>
       </div>
     </div>
@@ -291,7 +291,7 @@
   <div class="row">
   <div class="col-md-12">
     <div class="col-md-6">
-      [@customForm.select name="reportYears"   label=""  i18nkey="Select a specific year"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="reportYear"   multiple=false required=true   editable=true/]
+      [@customForm.select name="reportYears"   label=""  i18nkey="Select a specific year"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="reportYear"   multiple=false required=false   editable=true/]
     </div>
     <div class="col-md-6 okButton">
       <a style="" target="_blank" class=" addButton" style="" href="#">[@s.text name="Ok" /]</a>

@@ -102,7 +102,16 @@ function attachEvents() {
   $(".okButton a").on("click", function() {
     var $selected = $('.selected');
     reportTypes($selected);
+    $("#optionsPopUp").dialog("close");
   });
+
+  $(".file").on("click", function() {
+    $(".file").parent().removeClass("choose");
+    $(".file").parent().addClass("notChoose");
+    $(this).parent().addClass("choose");
+    $(this).parent().removeClass("notChoose");
+  });
+
 }
 
 function addGenderTerms() {
@@ -205,17 +214,19 @@ function generateReport(e) {
 
 function validateFileType($selected) {
   if($selected.find(".fileTypes").length <= 1) {
-    var type = $selected.find(".fileTypes").text();
-    if(type == "pdf") {
+    var type = $selected.find(".fileTypes");
+    if($(type).hasClass("pdfType")) {
       var file = $("#optionsPopUp").find(".excelIcon").parent();
+      $(file).removeClass("choose");
       file.hide();
       $("#optionsPopUp").find(".pdfIcon").parent().removeClass("notChoose");
-      $("#optionsPopUp").find(".excelIcon").parent().addClass("choose");
+      $("#optionsPopUp").find(".pdfIcon").parent().addClass("choose");
     } else {
       var file = $("#optionsPopUp").find(".pdfIcon").parent();
       file.hide();
+      $(file).removeClass("choose");
       $("#optionsPopUp").find(".excelIcon").parent().removeClass("notChoose");
-      $("#optionsPopUp").find(".pdfIcon").parent().addClass("choose");
+      $("#optionsPopUp").find(".excelIcon").parent().addClass("choose");
     }
   }
 }
@@ -244,10 +255,8 @@ function reportTypes($selected) {
 // FULL REPORT
   if($selected.find(".extraOptions").find("#projectID").exists()) {
     updateUrl($selected);
-  }
-
-  // TERMS
-  if($selected.find(".extraOptions").find(".wordContent").exists()) {
+  } else if($selected.find(".extraOptions").find(".wordContent").exists()) {
+    // TERMS
     var url = "";
     var $formOptions = $($selected).find('input[name=formOptions]');
     var formOption = $formOptions.val() || 0;
@@ -281,15 +290,28 @@ function reportTypes($selected) {
     $("#gender").removeClass("view");
     $("#gender").removeClass("notview");
     $("#gender").addClass("view");
-
-    // termsArray = genderArray;
+  } else {
+    console.log("adasddd");
+    updateUrl($selected);
   }
 }
 
 function updateUrl(element) {
   var generateUrl = "";
-  var $formOptions = $(element).find('input[name=formOptions]');
-  var formOption = $formOptions.val() || 0;
+  var formOption = "";
+  var type = $(element).find(".fileTypes").text().split("-")[0];
+  console.log($("#optionsPopUp").find(".choose").find(".pdfIcon"));
+  if($("#optionsPopUp").find(".pdfIcon").parent().hasClass("choose")) {
+    console.log("here1");
+    formOption = $(element).find(".pdfType").text();
+  } else if($("#optionsPopUp").find(".excelIcon").parent().hasClass("choose")) {
+    console.log("here2");
+    formOption = $(element).find(".excelType").text();
+  } else {
+    console.log("here3");
+    var $formOptions = $(element).find('input[name=formOptions]');
+    formOption = $formOptions.val() || 0;
+  }
   var extraOptions = $('form [name!="formOptions"]').serialize() || 0;
   if(formOption != 0) {
     generateUrl =

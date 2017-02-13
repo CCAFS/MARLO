@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.Permission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,8 +61,15 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    parameters = invocation.getInvocationContext().getParameters();
+    session = invocation.getInvocationContext().getSession();
+    crp = (Crp) session.get(APConstants.SESSION_CRP);
+    try {
+      this.setPermissionParameters(invocation);
+      return invocation.invoke();
+    } catch (Exception e) {
+      return BaseAction.NOT_FOUND;
+    }
   }
 
   void setPermissionParameters(ActionInvocation invocation) {
@@ -71,7 +79,6 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
     boolean canEdit = false;
     boolean hasPermissionToEdit = false;
     boolean editParameter = false;
-    boolean canSwitchProject = false;
     baseAction.setSession(session);
 
     long liaisonInstitutionID;
@@ -116,7 +123,39 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
     }
     IpProgram program = ipProgramManager.getIpProgramById(programID);
 
+    String params[] = {crp.getAcronym(), program.getId() + "",};
 
+    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+      canEdit = true;
+    } else {
+      if (baseAction.hasPermission(baseAction.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params))) {
+        if (baseAction.isReportingActive()) {
+          canEdit = true;
+        }
+      }
+
+      if (baseAction.isCrpClosed()) {
+        canEdit = false;
+      }
+    }
+
+    // TODO Validate is the project is new
+    if (parameters.get(APConstants.EDITABLE_REQUEST) != null) {
+      String stringEditable = ((String[]) parameters.get(APConstants.EDITABLE_REQUEST))[0];
+      editParameter = stringEditable.equals("true");
+      if (!editParameter) {
+        baseAction.setEditableParameter(hasPermissionToEdit);
+      }
+    }
+
+    // Check the permission if user want to edit or save the form
+    if (editParameter || parameters.get("save") != null) {
+      hasPermissionToEdit = ((baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin())) ? true
+        : baseAction.hasPermission(baseAction.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params));
+    }
+
+    baseAction.setEditableParameter(hasPermissionToEdit && canEdit);
+    baseAction.setCanEdit(canEdit);
   }
 
 }

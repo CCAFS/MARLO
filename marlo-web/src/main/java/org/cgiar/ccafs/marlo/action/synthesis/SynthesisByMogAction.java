@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.sythesis.SynthesisByMogValidator;
 
@@ -287,6 +288,9 @@ public class SynthesisByMogAction extends BaseAction {
       }
 
     }
+
+    String params[] = {loggedCrp.getAcronym(), program.getId() + ""};
+    this.setBasePermission(this.getText(Permission.SYNTHESIS_BY_MOG_BASE_PERMISSION, params));
   }
 
   @Override

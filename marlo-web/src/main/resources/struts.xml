@@ -18,9 +18,9 @@
 		</result-types>
 
 		<interceptors>
-    <!--  Interceptor to able the acces in Admin Sections  -->
-    <interceptor name="accessibleAdmin"
-        class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
+			<!-- Interceptor to able the acces in Admin Sections -->
+			<interceptor name="accessibleAdmin"
+				class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
 
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
@@ -65,11 +65,11 @@
 			<interceptor name="editDeliverable"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditDeliverableInterceptor" />
 
-      <interceptor name="editHighlight"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
+			<interceptor name="editHighlight"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditHighLightInterceptor" />
 
-    <interceptor name="editCaseStudy"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditCaseStudyInterceptor" />
+			<interceptor name="editCaseStudy"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditCaseStudyInterceptor" />
 
 
 			<interceptor name="editFunding"
@@ -78,9 +78,12 @@
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
 
-    <interceptor name="canEditPublication"
-        class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
- 
+			<interceptor name="canEditPublication"
+				class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
+
+			<interceptor name="canEditSynthesis"
+				class="org.cgiar.ccafs.marlo.interceptor.synthesis.CanEditSynthesisInterceptor" />
+
 			<!-- SuperAdmin interceptors -->
 			<interceptor name="superAdminValidation"
 				class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
@@ -103,7 +106,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
-				<interceptor-ref name="accessibleAdmin" />				
+				<interceptor-ref name="accessibleAdmin" />
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -156,18 +159,30 @@
 				<interceptor-ref name="trimInputs" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
-			
+
+			<interceptor-stack name="editSynthesisStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditSynthesis" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+
 			<interceptor-stack name="editPublicationStack">
-        <interceptor-ref name="i18nFile" />
-        <interceptor-ref name="validCrp" />
-        <interceptor-ref name="requireUser" />
-        <interceptor-ref name="validSessionCrp" />
-        <interceptor-ref name="canEditPublication" />
-        <interceptor-ref name="keepRedirectMessages" />
-        <interceptor-ref name="accessibleStage" />
-        <interceptor-ref name="trimInputs" />
-        <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditPublication" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 
 			<interceptor-stack name="editProjectListStack">
 				<interceptor-ref name="i18nFile" />
@@ -220,15 +235,15 @@
 		<action name="unhandledExceptionAction"
 			class="org.cgiar.ccafs.marlo.action.UnhandledExceptionAction">
 			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
-			 <result name="input">/WEB-INF/global/pages/error/404.ftl</result>
+			<result name="input">/WEB-INF/global/pages/error/404.ftl</result>
 			<result name="input">/WEB-INF/global/pages/error/500.ftl</result>
 		</action>
 
-		
-		
+
+
 		<action name="glossary" class="org.cgiar.ccafs.marlo.action.BaseAction">
-      <result name="input">/WEB-INF/global/pages/glossary.ftl</result>
-    </action>
+			<result name="input">/WEB-INF/global/pages/glossary.ftl</result>
+		</action>
 	</package>
 
 	<include file="struts-json.xml" />
@@ -239,7 +254,7 @@
 	<include file="struts-projects.xml" />
 	<include file="struts-fundingSources.xml" />
 	<include file="struts-summaries.xml" />
-  <include file="struts-synthesis.xml" />
-  <include file="struts-publications.xml" />
-  
+	<include file="struts-synthesis.xml" />
+	<include file="struts-publications.xml" />
+
 </struts>
