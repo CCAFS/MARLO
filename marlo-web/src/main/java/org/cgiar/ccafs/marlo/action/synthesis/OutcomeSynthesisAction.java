@@ -102,10 +102,10 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   }
 
-
   public long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
+
 
   public List<IpLiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
@@ -117,6 +117,23 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   public IpProgram getProgram() {
     return program;
+  }
+
+  public List<IpIndicator> getProjectIndicators(int year, long indicator, long midOutcome) {
+    return ipIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
+  }
+
+  public List<OutcomeSynthesy> getRegionalSynthesis(long indicator, long midoutcome) {
+    List<OutcomeSynthesy> list = outcomeSynthesisManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
+        && c.getYear() == this.getCurrentCycleYear() && c.getIpElement().getId().longValue() == midoutcome
+        && c.getIpIndicator().getId().longValue() == midoutcome && c.getIpProgram().isRegionalProgram())
+      .collect(Collectors.toList());
+
+    for (OutcomeSynthesy mogSynthesis : list) {
+      mogSynthesis.setIpProgram(ipProgramManager.getIpProgramById(mogSynthesis.getIpProgram().getId()));
+    }
+    return list;
   }
 
   public List<OutcomeSynthesy> getSynthesis() {
@@ -179,7 +196,8 @@ public class OutcomeSynthesisAction extends BaseAction {
       .collect(Collectors.toList());
 
     for (IpElement midoutcome : midOutcomes) {
-      for (IpIndicator indicator : ipIndicatorManager.getIndicatorsByElementID(midoutcome.getId().longValue())) {
+      midoutcome.setIndicators(ipIndicatorManager.getIndicatorsByElementID(midoutcome.getId().longValue()));
+      for (IpIndicator indicator : midoutcome.getIndicators()) {
         long indicatorId = indicator.getId().longValue();
         if (indicator.getIpIndicator() != null) {
           indicatorId = indicator.getIpIndicator().getId();

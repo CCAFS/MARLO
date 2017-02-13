@@ -75,6 +75,8 @@ public interface IpIndicatorManager {
    *         updated
    *         or -1 is some error occurred.
    */
+  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
+
   public long saveIpIndicator(IpIndicator ipIndicator);
 
 }

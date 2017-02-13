@@ -17,9 +17,14 @@
     </action>
     
     <!-- Outcomes Synthesis Planning and Reporting Vesion-->
-    <action name="{crp}/outcomeSynthesisPandR" class="org.cgiar.ccafs.marlo.action.BaseAction">
+    <action name="{crp}/outcomeSynthesisPandR" class="org.cgiar.ccafs.marlo.action.synthesis.OutcomeSynthesisAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/synthesis/outcomeSynthesisPandR.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/outcomeSynthesisPandR</param>
+        <param name="liaisonInstitutionID">${liaisonInstitutionID}</param>
+        <param name="edit">true</param>
+      </result>
     </action>
     
     <!-- Synthesis by MOGs -->
@@ -37,6 +42,7 @@
     <action name="{crp}/coasSynthesis" class="org.cgiar.ccafs.marlo.action.BaseAction">
       <interceptor-ref name="homeStack" />
       <result name="input">/WEB-INF/views/synthesis/coasSynthesis.ftl</result>
+      
     </action>
 
   </package>
