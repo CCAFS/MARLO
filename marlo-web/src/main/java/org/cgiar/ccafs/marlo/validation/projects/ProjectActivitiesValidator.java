@@ -155,7 +155,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
         cal.set(Calendar.YEAR, action.getCurrentCycleYear());
         cal.set(Calendar.MONTH, 11); // 11 = december
         cal.set(Calendar.DAY_OF_MONTH, 31); // new years eve
-        if (activity.getEndDate().compareTo(cal.getTime()) <= 0) {
+        if (activity.getEndDate() != null && activity.getEndDate().compareTo(cal.getTime()) <= 0) {
           this.addMessage(action.getText("activity.status", params));
           action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityStatus",
             InvalidFieldsMessages.EMPTYFIELD);
