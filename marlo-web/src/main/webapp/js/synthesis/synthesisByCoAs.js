@@ -43,6 +43,7 @@ function attachEvents() {
 }
 
 function expandViewMoreSyntesisBlock() {
+  console.log($(this));
   if($(this).hasClass("closed")) {
     $(this).parent().css({
       height: $(this).parent().find('.dataTables_wrapper').height() + $(this).height() + 5
@@ -62,12 +63,14 @@ function expandViewMoreSyntesisBlock() {
 
 function setViewMore() {
   $('.viewMoreSyntesis-block').each(function(i,element) {
+    console.log($(element));
     if($(element).height() < 225) {
       $(element).find('.viewMoreSyntesis').remove();
     } else {
       $(element).css({
         "height": 225
       })
+      $(element).find('.viewMoreSyntesis').addClass("closed");
       $(element).find('.viewMoreSyntesis').html('View More');
     }
   });

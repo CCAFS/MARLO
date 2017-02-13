@@ -3,7 +3,7 @@ $(document).ready(init);
 function init() {
 
   // Adding DataTable plugin
-  $(".projectContributions").dataTable({
+  $(".projectContributions, .regionalContributions").dataTable({
       "bPaginate": false, // This option enable the table pagination
       "bLengthChange": false, // This option disables the select table size option
       "bFilter": false, // This option enable the search
@@ -19,7 +19,7 @@ function init() {
         }
       ]
   });
-  $(".projectContributions").on('draw.dt', function() {
+  $(".projectContributions, .regionalContributions").on('draw.dt', function() {
     // List all blocks and removing buttons that have a height too small
     setViewMore();
   });
@@ -68,6 +68,7 @@ function setViewMore() {
       $(element).css({
         "height": 225
       })
+      $(element).find('.viewMoreSyntesis').addClass("closed");
       $(element).find('.viewMoreSyntesis').html('View More');
     }
   });
