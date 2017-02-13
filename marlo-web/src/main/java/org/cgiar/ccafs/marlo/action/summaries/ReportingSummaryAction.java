@@ -32,11 +32,16 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpParameter;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDataSharingFile;
+import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableFundingSource;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderLevel;
 import org.cgiar.ccafs.marlo.data.model.DeliverableGenderTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePartnershipTypeEnum;
+import org.cgiar.ccafs.marlo.data.model.DeliverableQualityCheck;
+import org.cgiar.ccafs.marlo.data.model.DeliverableUser;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
@@ -397,8 +402,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.fillSubreport((SubReport) hm.get("overview_by_mogs"), "overview_by_mogs", args);
         }
         // Subreport Deliverables
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
+        if (cycle.equals("Planning")) {
+          // Subreport Outcomes
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list", args);
+        } else {
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+        }
+
 
         // Subreport Activities
         args.clear();
@@ -520,6 +532,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       case "overview_by_mogs":
         model = this.getOverviewByMogsTableModel();
         break;
+      case "deliverables_list_reporting":
+        model = this.getDeliverablesReportingTableModel();
+        break;
 
 
     }
@@ -624,6 +639,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       }
     }
   }
+
 
   public ProjectBudgetsCluserActvity getBudgetbyCoa(Long activitiyId, int year, long type) {
 
@@ -777,7 +793,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   private TypedTableModel getBudgetSummaryTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"year", "w1w2", "w3", "bilateral", "centerfunds"},
       new Class[] {Integer.class, String.class, String.class, String.class, String.class}, 0);
@@ -799,13 +814,13 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
 
-
   private TypedTableModel getCaseStudiesTableModel() {
-    // TODO Code Author: Hermes Jimenez
+    // Code Author: Hermes Jimenez
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "outcomeStatement", "researchOutputs", "researchPartners", "activities",
         "nonResearchPartneres", "outputUsers", "evidenceOutcome", "outputUsed", "referencesCase",
@@ -871,15 +886,14 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
       for (CaseStudyIndicator caseStudyIndicator : studyIndicators) {
         if (caseStudyIndicator.isActive()) {
-          indicatorsS.append(caseStudyIndicator.getIpIndicator().getDescription() + "\n");
+          indicatorsS.append(caseStudyIndicator.getIpIndicator().getDescription() + "<br>");
         }
       }
 
       indicators = indicatorsS.toString();
 
       if (caseStudy.getFile() != null) {
-        anex = this.getCaseStudyUrl() + caseStudy.getFile().getFileName();
-
+        anex = this.getCaseStudyUrl(shared) + caseStudy.getFile().getFileName();
       }
 
 
@@ -892,18 +906,16 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-  private String getCaseStudyPath() {
-    return config.getUploadsBaseFolder() + File.separator + this.getCaseStudyUrlPath() + File.separator;
+
+  public String getCaseStudyUrl(String project) {
+    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
 
-  public String getCaseStudyUrl() {
-    return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath().replace('\\', '/');
+  public String getCaseStudyUrlPath(String project) {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
+      + File.separator;
   }
 
-  public String getCaseStudyUrlPath() {
-    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
-      + "caseStudy" + File.separator;
-  }
 
   private TypedTableModel getccafsOutcomesTableModel() {
 
@@ -1040,6 +1052,505 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   public String getCycle() {
     return cycle;
+  }
+
+  private TypedTableModel getDeliverablesReportingTableModel() {
+    // TODO: Auto-generated method stub
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
+        "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year",
+        "deliv_new_year_justification", "deliv_dissemination_channel", "deliv_dissemination_url", "deliv_open_access",
+        "deliv_license", "titleMetadata", "descriptionMetadata", "dateMetadata", "languageMetadata", "countryMetadata",
+        "keywordsMetadata", "citationMetadata", "HandleMetadata", "DOIMetadata", "creator_authors", "data_sharing",
+        "qualityAssurance", "dataDictionary", "tools", "showFAIR", "F", "A", "I", "R", "isDisseminated", "disseminated",
+        "restricted_access", "isRestricted", "restricted_date", "isLastTwoRestricted", "deliv_license_modifications",
+        "show_deliv_license_modifications"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        Boolean.class, String.class, String.class, String.class, String.class, Boolean.class, String.class,
+        String.class, Boolean.class, String.class, Boolean.class, String.class, Boolean.class},
+      0);
+    if (!project.getDeliverables().isEmpty()) {
+      for (Deliverable deliverable : project.getDeliverables().stream()
+        .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId())).filter(c -> c.isActive())
+        .collect(Collectors.toList())) {
+        String deliv_type = null;
+        String deliv_sub_type = null;
+        String deliv_status = deliverable.getStatusName();
+        String deliv_year = null;
+        String key_output = "";
+        String leader = null;
+        String institution = null;
+        String funding_sources = "";
+        Boolean showFAIR = false;
+
+        if (deliverable.getDeliverableType() != null) {
+          deliv_sub_type = deliverable.getDeliverableType().getName();
+          if (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 56
+            || deliverable.getDeliverableType().getId() == 57 || deliverable.getDeliverableType().getId() == 76
+            || deliverable.getDeliverableType().getId() == 54 || deliverable.getDeliverableType().getId() == 81
+            || deliverable.getDeliverableType().getId() == 82 || deliverable.getDeliverableType().getId() == 83
+            || deliverable.getDeliverableType().getId() == 55 || deliverable.getDeliverableType().getId() == 62
+            || deliverable.getDeliverableType().getId() == 53 || deliverable.getDeliverableType().getId() == 60
+            || deliverable.getDeliverableType().getId() == 59 || deliverable.getDeliverableType().getId() == 58
+            || deliverable.getDeliverableType().getId() == 77 || deliverable.getDeliverableType().getId() == 75
+            || deliverable.getDeliverableType().getId() == 78 || deliverable.getDeliverableType().getId() == 72
+            || deliverable.getDeliverableType().getId() == 73) {
+            showFAIR = true;
+          }
+
+          if (deliverable.getDeliverableType().getDeliverableType() != null) {
+            deliv_type = deliverable.getDeliverableType().getDeliverableType().getName();
+            // FAIR
+            if (deliverable.getDeliverableType().getDeliverableType().getId() == 49) {
+              showFAIR = true;
+            }
+          }
+        }
+        if (deliv_status.equals("")) {
+          deliv_status = null;
+        }
+        if (deliverable.getYear() != 0) {
+          deliv_year = "" + deliverable.getYear();
+        }
+        if (deliverable.getCrpClusterKeyOutput() != null) {
+
+          if (deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram() != null) {
+            key_output +=
+              deliverable.getCrpClusterKeyOutput().getCrpClusterOfActivity().getCrpProgram().getAcronym() + " - ";
+          }
+          key_output += deliverable.getCrpClusterKeyOutput().getKeyOutput();
+        }
+
+
+        // Get partner responsible and institution
+        // Set responible;
+        DeliverablePartnership responisble = this.responsiblePartner(deliverable);
+
+        if (responisble != null) {
+          if (responisble.getProjectPartnerPerson() != null) {
+            ProjectPartnerPerson responsibleppp = responisble.getProjectPartnerPerson();
+
+            leader =
+              responsibleppp.getUser().getComposedName() + "<br>&lt;" + responsibleppp.getUser().getEmail() + "&gt;";
+            if (responsibleppp.getInstitution() != null) {
+              institution = responsibleppp.getInstitution().getComposedName();
+            }
+          }
+        }
+
+        // Get funding sources if exist
+        for (DeliverableFundingSource dfs : deliverable.getDeliverableFundingSources().stream()
+          .filter(d -> d.isActive()).collect(Collectors.toList())) {
+          funding_sources += "● " + dfs.getFundingSource().getTitle() + "<br>";
+        }
+        if (funding_sources.isEmpty()) {
+          funding_sources = null;
+        }
+
+        // Get cross_cutting dimension
+        String cross_cutting = "";
+        if (deliverable.getCrossCuttingNa() != null) {
+          if (deliverable.getCrossCuttingNa() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp; N/A <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Gender <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingYouth() != null) {
+          if (deliverable.getCrossCuttingYouth() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Youth <br>";
+          }
+        }
+        if (deliverable.getCrossCuttingCapacity() != null) {
+          if (deliverable.getCrossCuttingCapacity() == true) {
+            cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● Capacity Development <br>";
+          }
+        }
+
+        if (deliverable.getCrossCuttingGender() != null) {
+          if (deliverable.getCrossCuttingGender() == true) {
+            if (deliverable.getDeliverableGenderLevels() == null
+              || deliverable.getDeliverableGenderLevels().isEmpty()) {
+              cross_cutting += "<br><b>Gender level(s):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;Not Defined&gt;";
+            } else {
+              cross_cutting += "<br><b>Gender level(s): </b><br>";
+              for (DeliverableGenderLevel dgl : deliverable.getDeliverableGenderLevels()) {
+                if (dgl.getGenderLevel() != 0.0) {
+                  cross_cutting += "&nbsp;&nbsp;&nbsp;&nbsp;● "
+                    + DeliverableGenderTypeEnum.getValue(dgl.getGenderLevel()).getValue() + "<br>";
+                }
+              }
+            }
+          }
+        }
+        if (cross_cutting.isEmpty()) {
+          cross_cutting = null;
+        }
+
+        if (key_output.isEmpty()) {
+          key_output = null;
+        }
+
+        // Reporting
+        Integer deliv_new_year = null;
+        String deliv_new_year_justification = null;
+
+        if (deliverable.getStatusName() != null) {
+          if (!deliverable.getStatusName().isEmpty()) {
+            if (deliverable.getStatusName().equals("Extended")) {
+              deliv_new_year = deliverable.getNewExpectedYear();
+              deliv_new_year_justification = deliverable.getStatusDescription();
+            }
+          }
+        }
+
+        String deliv_dissemination_channel = null;
+        String deliv_dissemination_url = null;
+        String deliv_open_access = null;
+        String deliv_license = null;
+        String deliv_license_modifications = null;
+        Boolean isDisseminated = false;
+        String disseminated = "No";
+        String restricted_access = null;
+        String restricted_date = null;
+        Boolean isRestricted = false;
+        Boolean isLastTwoRestricted = false;
+        Boolean show_deliv_license_modifications = false;
+
+        if (deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).size() > 0
+          && deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0) != null) {
+          // Get deliverable dissemination
+          DeliverableDissemination deliverableDissemination =
+            deliverable.getDeliverableDisseminations().stream().collect(Collectors.toList()).get(0);
+
+          if (deliverableDissemination.getAlreadyDisseminated() != null
+            && deliverableDissemination.getAlreadyDisseminated() == true) {
+            isDisseminated = true;
+            disseminated = "Yes";
+          }
+
+          if (deliverableDissemination.getDisseminationChannel() != null
+            && !deliverableDissemination.getDisseminationChannel().isEmpty()) {
+            deliv_dissemination_channel = deliverableDissemination.getDisseminationChannel();
+          }
+
+          if (deliverableDissemination.getDisseminationUrl() != null
+            && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
+            deliv_dissemination_url = deliverableDissemination.getDisseminationUrl();
+          }
+
+          if (deliverableDissemination.getIsOpenAccess() != null) {
+            if (deliverableDissemination.getIsOpenAccess() == true) {
+              deliv_open_access = "Yes";
+            } else {
+              // get the open access
+              deliv_open_access = "No";
+              isRestricted = true;
+              if (deliverableDissemination.getIntellectualProperty() != null
+                && deliverableDissemination.getIntellectualProperty() == true) {
+                restricted_access = "Intellectual Property Rights (confidential information)";
+              }
+
+              if (deliverableDissemination.getLimitedExclusivity() != null
+                && deliverableDissemination.getLimitedExclusivity() == true) {
+                restricted_access = "Limited Exclusivity Agreements";
+              }
+
+              if (deliverableDissemination.getRestrictedUseAgreement() != null
+                && deliverableDissemination.getRestrictedUseAgreement() == true) {
+                restricted_access = "Restricted Use Agreement - Restricted access (if so, what are these periods?)";
+                isLastTwoRestricted = true;
+                if (deliverableDissemination.getRestrictedAccessUntil() != null) {
+                  restricted_date =
+                    "<b>Restricted access until: </b>" + deliverableDissemination.getRestrictedAccessUntil();
+                } else {
+                  restricted_date = "<b>Restricted access until: </b>&lt;Not Defined&gt;";
+                }
+              }
+
+              if (deliverableDissemination.getEffectiveDateRestriction() != null
+                && deliverableDissemination.getEffectiveDateRestriction() == true) {
+                restricted_access = "Effective Date Restriction - embargoed periods (if so, what are these periods?)";
+                isLastTwoRestricted = true;
+                if (deliverableDissemination.getRestrictedEmbargoed() != null) {
+                  restricted_date =
+                    "<b>Restricted embargoed date: </b>" + deliverableDissemination.getRestrictedEmbargoed();
+                } else {
+                  restricted_date = "<b>Restricted embargoed date: </b>&lt;Not Defined&gt;";
+                }
+              }
+            }
+          }
+
+          if (deliverable.getAdoptedLicense() != null) {
+            if (deliverable.getAdoptedLicense() == true) {
+              deliv_license = deliverable.getLicense();
+              if (deliv_license.equals("OTHER")) {
+                deliv_license = deliverable.getOtherLicense();
+                show_deliv_license_modifications = true;
+                if (deliverable.getAllowModifications() != null && deliverable.getAllowModifications() == true) {
+                  deliv_license_modifications = "Yes";
+                } else {
+                  deliv_license_modifications = "No";
+                }
+              }
+            } else {
+              deliv_license = "No";
+            }
+          }
+        }
+
+        String titleMetadata = null;
+        String descriptionMetadata = null;
+        String dateMetadata = null;
+        String languageMetadata = null;
+        String countryMetadata = null;
+        String keywordsMetadata = null;
+        String citationMetadata = null;
+        String HandleMetadata = null;
+        String DOIMetadata = null;
+
+        for (DeliverableMetadataElement deliverableMetadataElement : deliverable.getDeliverableMetadataElements()
+          .stream().filter(dm -> dm.isActive() && dm.getMetadataElement() != null).collect(Collectors.toList())) {
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 1) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              titleMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 8) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              descriptionMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 17) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              dateMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 24) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              languageMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 28) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              countryMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 37) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              keywordsMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 22) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              citationMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 35) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              HandleMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+
+          if (deliverableMetadataElement.getMetadataElement().getId() == 36) {
+            if (deliverableMetadataElement.getElementValue() != null
+              && !deliverableMetadataElement.getElementValue().isEmpty()) {
+              DOIMetadata = deliverableMetadataElement.getElementValue();
+            }
+          }
+        }
+
+        String creator_authors = "";
+        for (DeliverableUser deliverableUser : deliverable.getDeliverableUsers().stream()
+          .collect(Collectors.toList())) {
+          creator_authors += "<br>";
+          if (!deliverableUser.getLastName().isEmpty()) {
+            creator_authors += deliverableUser.getLastName() + " - ";
+          }
+          if (!deliverableUser.getFirstName().isEmpty()) {
+            creator_authors += deliverableUser.getFirstName();
+          }
+          if (!deliverableUser.getElementId().isEmpty()) {
+            creator_authors += "&lt;" + deliverableUser.getElementId() + "&gt;";
+          }
+        }
+
+        if (creator_authors.isEmpty()) {
+          creator_authors = null;
+        }
+
+        String data_sharing = "";
+        for (DeliverableDataSharingFile deliverableDataSharingFile : deliverable.getDeliverableDataSharingFiles()
+          .stream().filter(ds -> ds.isActive()).collect(Collectors.toList())) {
+          if (deliverableDataSharingFile.getExternalFile() != null
+            && !deliverableDataSharingFile.getExternalFile().isEmpty()) {
+            data_sharing += deliverableDataSharingFile.getExternalFile() + "<br>";
+          }
+
+          if (deliverableDataSharingFile.getFile() != null && deliverableDataSharingFile.getFile().isActive()) {
+            data_sharing += deliverableDataSharingFile.getFile().getFileName();
+          }
+        }
+        if (data_sharing.isEmpty()) {
+          data_sharing = null;
+        }
+
+
+        String qualityAssurance = "";
+        String dataDictionary = "";
+        String tools = "";
+
+        if (deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
+          .size() > 0
+          && deliverable.getDeliverableQualityChecks().stream().filter(qc -> qc.isActive()).collect(Collectors.toList())
+            .get(0) != null) {
+          DeliverableQualityCheck deliverableQualityCheck = deliverable.getDeliverableQualityChecks().stream()
+            .filter(qc -> qc.isActive()).collect(Collectors.toList()).get(0);
+          // QualityAssurance
+          if (deliverableQualityCheck.getQualityAssurance() != null) {
+            if (deliverableQualityCheck.getQualityAssurance().getId() == 2) {
+              if (deliverableQualityCheck.getFileAssurance() != null
+                && deliverableQualityCheck.getFileAssurance().isActive()) {
+                qualityAssurance += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getFileAssurance().getFileName() + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkAssurance() != null
+                && !deliverableQualityCheck.getLinkAssurance().isEmpty()) {
+                qualityAssurance += "<br>Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkAssurance() + "</font>";
+              }
+            } else {
+              qualityAssurance = deliverableQualityCheck.getQualityAssurance().getName();
+            }
+          }
+
+          // Data dictionary
+          if (deliverableQualityCheck.getDataDictionary() != null) {
+            if (deliverableQualityCheck.getDataDictionary().getId() == 2) {
+              if (deliverableQualityCheck.getFileDictionary() != null
+                && deliverableQualityCheck.getFileDictionary().isActive()) {
+                dataDictionary += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getFileDictionary().getFileName() + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkDictionary() != null
+                && !deliverableQualityCheck.getLinkDictionary().isEmpty()) {
+                dataDictionary += "<br>Link: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getLinkDictionary() + "</font>";
+              }
+            } else {
+              dataDictionary = deliverableQualityCheck.getDataDictionary().getName();
+            }
+          }
+
+          // Tools
+          if (deliverableQualityCheck.getDataTools() != null) {
+            if (deliverableQualityCheck.getDataTools().getId() == 2) {
+              if (deliverableQualityCheck.getFileTools() != null && deliverableQualityCheck.getFileTools().isActive()) {
+                tools += "<br>File: <font size=2 face='Segoe UI' color='blue'>"
+                  + deliverableQualityCheck.getFileTools().getFileName() + "</font>";
+              }
+              if (deliverableQualityCheck.getLinkTools() != null && !deliverableQualityCheck.getLinkTools().isEmpty()) {
+                tools += "<br>Link: <font size=2 face='Segoe UI' color='blue'>" + deliverableQualityCheck.getLinkTools()
+                  + "</font>";
+              }
+            } else {
+              tools = deliverableQualityCheck.getDataTools().getName();
+            }
+          }
+        }
+
+        if (qualityAssurance.isEmpty()) {
+          qualityAssurance = null;
+        }
+        if (dataDictionary.isEmpty()) {
+          dataDictionary = null;
+        }
+        if (tools.isEmpty()) {
+          tools = null;
+        }
+
+
+        // FAIR
+        String F = "";
+        if (this.isF(deliverable.getId()) == null) {
+          F = "#a3a3a3";
+        } else {
+          if (this.isF(deliverable.getId()) == true) {
+            F = "#008000";
+          } else {
+            F = "#ca1010";
+          }
+        }
+
+        String A = "";
+
+        if (this.isA(deliverable.getId()) == null) {
+          A += "#a3a3a3";
+        } else {
+          if (this.isA(deliverable.getId()) == true) {
+            A += "#008000";
+          } else {
+            A += "#ca1010";
+          }
+        }
+
+        String I = "";
+
+        if (this.isI(deliverable.getId()) == null) {
+          I += "#a3a3a3";
+        } else {
+          if (this.isI(deliverable.getId()) == true) {
+            I += "#008000";
+          } else {
+            I += "#ca1010";
+          }
+        }
+
+        String R = "";
+        if (this.isR(deliverable.getId()) == null) {
+          R += "#a3a3a3";
+        } else {
+          if (this.isR(deliverable.getId()) == true) {
+            R += "#008000";
+          } else {
+            R += "#ca1010";
+          }
+        }
+
+        model.addRow(new Object[] {deliverable.getId(), deliverable.getTitle(), deliv_type, deliv_sub_type,
+          deliv_status, deliv_year, key_output, leader, institution, funding_sources, cross_cutting, deliv_new_year,
+          deliv_new_year_justification, deliv_dissemination_channel, deliv_dissemination_url, deliv_open_access,
+          deliv_license, titleMetadata, descriptionMetadata, dateMetadata, languageMetadata, countryMetadata,
+          keywordsMetadata, citationMetadata, HandleMetadata, DOIMetadata, creator_authors, data_sharing,
+          qualityAssurance, dataDictionary, tools, showFAIR, F, A, I, R, isDisseminated, disseminated,
+          restricted_access, isRestricted, restricted_date, isLastTwoRestricted, deliv_license_modifications,
+          show_deliv_license_modifications});
+      }
+    }
+    return model;
   }
 
   private TypedTableModel getDeliverablesTableModel() {
@@ -1416,9 +1927,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
       new String[] {"title", "center", "current_date", "project_submission", "cycle", "isNew", "isAdministrative",
-        "type", "isGlobal"},
+        "type", "isGlobal", "isPhaseOne"},
       new Class[] {String.class, String.class, String.class, String.class, String.class, Boolean.class, Boolean.class,
-        String.class, Boolean.class});
+        String.class, Boolean.class, Boolean.class});
 
     // Filling title
     String title = "";
@@ -1502,8 +2013,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     Boolean isNew = this.isProjectNew(projectID);
 
+
     model.addRow(new Object[] {title, centerAcry, current_date, submission, cycle, isNew, isAdministrative, type,
-      project.isLocationGlobal()});
+      project.isLocationGlobal(), this.isPhaseOne()});
     return model;
   }
 
@@ -1710,7 +2222,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     for (IpProjectContributionOverview ipProjectContributionOverview : project.getIpProjectContributionOverviews()
       .stream().sorted((co1, co2) -> co2.getYear() - co1.getYear()).filter(co -> co.isActive())
       .collect(Collectors.toList())) {
-      System.out.println(ipProjectContributionOverview.getYear());
+      // System.out.println(ipProjectContributionOverview.getYear());
       if (ipProjectContributionOverview.getYear() == APConstants.MID_OUTCOME_YEAR) {
         isMidOutcome = true;
       } else {
@@ -2114,6 +2626,8 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setYear(Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.YEAR_REQUEST))));
       this.setCycle(StringUtils.trim(this.getRequest().getParameter(APConstants.CYCLE)));
+      this.setCrpSession(loggedCrp.getAcronym());
+
     } catch (Exception e) {
 
     }

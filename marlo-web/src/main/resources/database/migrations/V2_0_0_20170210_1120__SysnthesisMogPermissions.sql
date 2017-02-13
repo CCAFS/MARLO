@@ -1,0 +1,1 @@
+INSERT INTO `permissions` VALUES ('464', 'crp:{0}:synthesisProgram:{1}:*', 'Synthesis by Mog Permission', '0');

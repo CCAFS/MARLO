@@ -34,7 +34,11 @@
 [#assign title = "Outcome Synthesis" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
-[#assign customJS = ["${baseUrl}/js/synthesis/outcomeSynthesis.js"] /]
+[#assign customJS = [
+  "${baseUrl}/js/synthesis/outcomeSynthesis.js",
+  "${baseUrl}/js/global/autoSave.js",
+  "${baseUrl}/js/global/fieldsValidation.js"
+] /]
 [#assign customCSS = ["${baseUrl}/css/synthesis/synthesisGlobal.css"] /]
 [#assign currentSection = "synthesis" /]
 [#assign currentStage = "outcomeSynthesis" /]
