@@ -6,8 +6,8 @@
       <p>[@s.text name="synthesis.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="synthesis.message.historyVersion" ]  
-          [@s.param]<span>${currentLiaisonInstitution.modifiedBy.composedName?html}</span>[/@s.param]
-          [@s.param]<span>${currentLiaisonInstitution.activeSince?datetime}</span>[/@s.param]
+          [@s.param]<span>${program.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${program.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][@s.param name="edit" value="true"/][/@s.url]">here</a>[/@s.param]
          [/@s.text]
       </p>

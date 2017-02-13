@@ -141,8 +141,7 @@ public class BaseValidator {
   protected void saveMissingFields(IpProgram program, String cycle, int year, String sectionName) {
     // Reporting missing fields into the database.
 
-    SectionStatus status =
-      sectionStatusManager.getSectionStatusByDeliverable(program.getId(), cycle, year, sectionName);
+    SectionStatus status = sectionStatusManager.getSectionStatusByIpProgram(program.getId(), cycle, year, sectionName);
     if (status == null) {
 
       status = new SectionStatus();

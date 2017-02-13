@@ -81,6 +81,11 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
   }
 
   @Override
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName) {
+    return sectionStatusDAO.getSectionStatusByIpProgram(ipProgramID, cycle, year, sectionName);
+  }
+
+  @Override
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName) {
     return sectionStatusDAO.getSectionStatusByProject(projectID, cycle, year, sectionName);
   }

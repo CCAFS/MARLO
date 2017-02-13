@@ -63,6 +63,8 @@ public interface SectionStatusDAO {
 
   public SectionStatus getSectionStatusByDeliverable(long deliverableID, String cycle, int year, String sectionName);
 
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName);
+
   public SectionStatus getSectionStatusByProject(long projectID, String cycle, int year, String sectionName);
 
   public SectionStatus getSectionStatusByProjectCofunded(long projectID, String cycle, int year, String sectionName);

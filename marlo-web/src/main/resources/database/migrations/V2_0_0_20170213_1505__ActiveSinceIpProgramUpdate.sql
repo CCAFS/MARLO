@@ -1,0 +1,1 @@
+update ip_programs set active_since = now();

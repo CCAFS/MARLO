@@ -90,6 +90,14 @@ public interface SectionStatusManager {
   /**
    * This method gets a sectionStatus object by a given sectionStatus identifier.
    * 
+   * @param ipProgramID is the IpProgram identifier.
+   * @return a SectionStatus object.
+   */
+  public SectionStatus getSectionStatusByIpProgram(long ipProgramID, String cycle, int year, String sectionName);
+
+  /**
+   * This method gets a sectionStatus object by a given sectionStatus identifier.
+   * 
    * @param projectID is the project identifier.
    * @return a SectionStatus object.
    */
