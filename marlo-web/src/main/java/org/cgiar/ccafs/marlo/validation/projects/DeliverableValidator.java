@@ -240,8 +240,8 @@ public class DeliverableValidator extends BaseValidator {
         }
 
         // Deliverable Quality Check
-        if (deliverable.getDeliverableType() != null
-          && (deliverable.getDeliverableType().getId() == 51 || deliverable.getDeliverableType().getId() == 74)) {
+        if (deliverable.getDeliverableType() != null && (deliverable.getDeliverableType().getId().intValue() == 51
+          || deliverable.getDeliverableType().getId().intValue() == 74)) {
           if (deliverable.getQualityCheck() != null) {
             if (deliverable.getQualityCheck().getQualityAssurance() == null) {
               this.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
