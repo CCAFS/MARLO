@@ -1,7 +1,6 @@
 [#ftl]
 [#-- History Message --]
 [#if transaction??]
-
   <div class="history-mode text-center animated flipInX">
     [#if transaction == "-1"]
       <p>[@s.text name="synthesis.message.historyNotFound" /]</p>

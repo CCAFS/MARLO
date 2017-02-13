@@ -3,7 +3,7 @@
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrl}/js/synthesis/synthesisByCoAs.js",
+  "${baseUrl}/js/synthesis/outcomeSynthesis.js",
   "${baseUrl}/js/global/autoSave.js",
   "${baseUrl}/js/global/fieldsValidation.js"
 ] /]
