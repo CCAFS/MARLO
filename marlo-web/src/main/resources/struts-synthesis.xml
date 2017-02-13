@@ -24,7 +24,7 @@
     
     <!-- Synthesis by MOGs -->
     <action name="{crp}/synthesisByMog" class="org.cgiar.ccafs.marlo.action.synthesis.SynthesisByMogAction">
-      <interceptor-ref name="homeStack" />
+      <interceptor-ref name="editSynthesisStack" />
       <result name="input">/WEB-INF/views/synthesis/synthesisByMog.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/synthesisByMog</param>
