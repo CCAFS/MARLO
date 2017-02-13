@@ -24,7 +24,6 @@
   <div class="row">
   
     <div class="col-md-12">
-    [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
     
     [#-- Program (Regions and Flagships) --]
     <ul id="liaisonInstitutions" class="horizontalSubMenu">
@@ -39,13 +38,14 @@
       [/#list]
     </ul>
     
+    [#-- Messages --]
+    [#include "/WEB-INF/views/synthesis/messages-synthesis.ftl" /]
+    
+    [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
+    
+    
+    
     <div class="fullContent">
-      [#-- Informing user that he/she doesn't have enough privileges to edit. See GrantProjectPlanningAccessInterceptor--]
-      [#if submission?has_content]
-        <p class="projectSubmitted">[@s.text name="submit.projectSubmitted" ][@s.param]${(submission.dateTime?date)?string.full}[/@s.param][/@s.text]</p>
-      [#elseif !canEdit ]
-        <p class="readPrivileges">[@s.text name="saving.read.privileges"][@s.param]${title}[/@s.param][/@s.text]</p>
-      [/#if]
       
       [#-- Title --]
       <h1 class="contentTitle">[@s.text name="synthesisByMog.title" ][@s.param]${(currentLiaisonInstitution.name)!}[/@s.param][/@s.text]</h1>
