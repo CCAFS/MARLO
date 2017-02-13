@@ -109,6 +109,27 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
   }
 
   @Override
+  public List<IpIndicator> getIndicatorsByElementID(long elementID) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT i.id, i.description, i.target, p.id as 'parent_id', p.description as 'parent_description' ");
+    query.append("FROM ip_indicators i ");
+    query.append("LEFT JOIN ip_indicators p ON i.parent_id = p.id ");
+    query.append("WHERE i.ip_element_id = ");
+    query.append(elementID);
+    List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
+    List<IpIndicator> ipIndicators = new ArrayList<>();
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        IpIndicator indicator = this.find(Long.parseLong(map.get("id").toString()));
+
+        ipIndicators.add(indicator);
+      }
+    }
+
+    return ipIndicators;
+  }
+
+  @Override
   public List<IpIndicator> getIndicatorsFlagShips() {
 
     StringBuilder query = new StringBuilder();

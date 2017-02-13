@@ -57,9 +57,7 @@ public class MogSynthesy implements java.io.Serializable, IAuditLog {
     if (obj == null) {
       return false;
     }
-    if (this.getClass() != obj.getClass()) {
-      return false;
-    }
+
     MogSynthesy other = (MogSynthesy) obj;
     if (ipElement == null) {
       if (other.ipElement != null) {

@@ -16,28 +16,42 @@
 package org.cgiar.ccafs.marlo.action.synthesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.OutcomeSynthesyManager;
+import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
+import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
+ * @author Christian Garcia- CIAT/CCAFS
  */
 public class OutcomeSynthesisAction extends BaseAction {
 
 
   private static final long serialVersionUID = -38851756215381752L;
+  private Crp loggedCrp;
+  private CrpManager crpManager;
 
   // private OutcomeSynthesisValidator validator;
   private LiaisonInstitutionManager liaisonInstitutionManager;
@@ -47,37 +61,53 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpIndicatorManager ipIndicatorManager;
 
   // Model for the front-end
-  private List<LiaisonInstitution> liaisonInstitutions;
-  private LiaisonInstitution currentLiaisonInstitution;
+  private List<IpLiaisonInstitution> liaisonInstitutions;
+  private IpLiaisonInstitution currentLiaisonInstitution;
   private List<IpElement> midOutcomes;
   private List<OutcomeSynthesy> synthesis;
+  private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
 
   private IpProgram program;
   private long liaisonInstitutionID;
 
   @Inject
   public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
-    IpProgramManager ipProgramManager, IpElementManager ipElementManager,
-    OutcomeSynthesyManager outcomeSynthesisManager, IpIndicatorManager ipIndicatorManager) {
+    IpProgramManager ipProgramManager, IpElementManager ipElementManager, CrpManager crpManager,
+    IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
+    IpIndicatorManager ipIndicatorManager) {
     super(config);
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.outcomeSynthesisManager = outcomeSynthesisManager;
     this.ipIndicatorManager = ipIndicatorManager;
+    this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
+    this.crpManager = crpManager;
 
 
   }
 
-  public LiaisonInstitution getCurrentLiaisonInstitution() {
+  public IpLiaisonInstitution getCurrentLiaisonInstitution() {
     return currentLiaisonInstitution;
   }
+
+  public int getIndex(long indicator, long midoutcome, long program) {
+    OutcomeSynthesy synthe = new OutcomeSynthesy();
+    synthe.setIpIndicator(ipIndicatorManager.getIpIndicatorById(indicator));
+    synthe.setIpElement(ipElementManager.getIpElementById(midoutcome));
+    synthe.setIpProgram(ipProgramManager.getIpProgramById(program));
+
+    int index = synthesis.indexOf(synthe);
+    return index;
+
+  }
+
 
   public long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
   }
 
-  public List<LiaisonInstitution> getLiaisonInstitutions() {
+  public List<IpLiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
 
@@ -93,7 +123,83 @@ public class OutcomeSynthesisAction extends BaseAction {
     return synthesis;
   }
 
-  public void setCurrentLiaisonInstitution(LiaisonInstitution currentLiaisonInstitution) {
+  @Override
+  public void prepare() throws Exception {
+    loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
+    loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+    try {
+      liaisonInstitutionID =
+        Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+    } catch (Exception e) {
+      if (this.getCurrentUser().getIpLiaisonUsers() != null || !this.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
+
+        List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
+
+        if (!liaisonUsers.isEmpty()) {
+          LiaisonUser liaisonUser = new LiaisonUser();
+          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
+          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+        } else {
+          liaisonInstitutionID = new Long(7);
+        }
+
+
+      } else {
+        liaisonInstitutionID = new Long(7);
+      }
+    }
+
+    // Get the list of liaison institutions.
+    liaisonInstitutions = IpLiaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
+
+    Collections.sort(liaisonInstitutions, (li1, li2) -> li1.getId().compareTo(li2.getId()));
+
+    // Get currentLiaisonInstitution
+    currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+
+
+    long programID;
+    try {
+      programID = Long.valueOf(currentLiaisonInstitution.getIpProgram());
+    } catch (Exception e) {
+      programID = 1;
+      liaisonInstitutionID = new Long(2);
+      currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+
+    }
+    program = ipProgramManager.getIpProgramById(programID);
+
+
+    // Get Outcomes 2019 of current IPProgram
+    midOutcomes = ipElementManager.getIPElementListForOutcomeSynthesis(program, APConstants.ELEMENT_TYPE_OUTCOME2019);
+    synthesis = outcomeSynthesisManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
+        && c.getYear() == this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+
+    for (IpElement midoutcome : midOutcomes) {
+      for (IpIndicator indicator : ipIndicatorManager.getIndicatorsByElementID(midoutcome.getId().longValue())) {
+        long indicatorId = indicator.getId().longValue();
+        if (indicator.getIpIndicator() != null) {
+          indicatorId = indicator.getIpIndicator().getId();
+        }
+        if (this.getIndex(indicatorId, midoutcome.getId(), program.getId()) == -1) {
+          OutcomeSynthesy synthe = new OutcomeSynthesy();
+          synthe.setIpIndicator(ipIndicatorManager.getIpIndicatorById(indicatorId));
+          synthe.setIpElement(midoutcome);
+          synthe.setIpProgram(program);
+          synthe.setYear(this.getCurrentCycleYear());
+          synthe.setId(null);
+          synthesis.add(synthe);
+
+        }
+
+      }
+    }
+  }
+
+  public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
     this.currentLiaisonInstitution = currentLiaisonInstitution;
   }
 
@@ -101,7 +207,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.liaisonInstitutionID = liaisonInstitutionID;
   }
 
-  public void setLiaisonInstitutions(List<LiaisonInstitution> liaisonInstitutions) {
+  public void setLiaisonInstitutions(List<IpLiaisonInstitution> liaisonInstitutions) {
     this.liaisonInstitutions = liaisonInstitutions;
   }
 
