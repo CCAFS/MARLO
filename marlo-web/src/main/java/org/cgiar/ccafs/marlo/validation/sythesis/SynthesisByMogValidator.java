@@ -106,7 +106,8 @@ public class SynthesisByMogValidator extends BaseValidator {
     int i) {
     if (!(this.isValidString(synthesisAnual) && this.wordCount(synthesisAnual) <= numberWords)) {
       this.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
-      action.getInvalidFields().put("input-synthesis[" + i + "].synthesisReport", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-program.synthesis[" + i + "].synthesisReport",
+        InvalidFieldsMessages.EMPTYFIELD);
 
     }
   }
@@ -115,7 +116,8 @@ public class SynthesisByMogValidator extends BaseValidator {
     int i) {
     if (!(this.isValidString(synthesisGender) && this.wordCount(synthesisGender) <= numberWords)) {
       this.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
-      action.getInvalidFields().put("input-synthesis[" + i + "].synthesisGender", InvalidFieldsMessages.EMPTYFIELD);
+      action.getInvalidFields().put("input-program.synthesis[" + i + "].synthesisGender",
+        InvalidFieldsMessages.EMPTYFIELD);
 
     }
   }

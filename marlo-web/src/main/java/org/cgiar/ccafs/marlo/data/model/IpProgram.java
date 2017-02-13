@@ -43,6 +43,8 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   @Expose
   private ProjectComponentLesson projectComponentLesson;
 
+  @Expose
+  private User modifiedBy;
 
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
@@ -64,9 +66,10 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   private List<MogSynthesy> synthesis;
 
+
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
-
+  @Expose
   private Date activeSince;
 
   public IpProgram() {
@@ -75,6 +78,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public IpProgram(IpProgramType ipProgramType) {
     this.ipProgramType = ipProgramType;
   }
+
 
   public IpProgram(Long id) {
     super();
@@ -123,7 +127,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return builder.toString();
   }
 
-
   public CrpProgram getCrpProgram() {
     return crpProgram;
   }
@@ -132,6 +135,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public Long getId() {
     return id;
   }
+
 
   public Set<IpElement> getIpElements() {
     return ipElements;
@@ -162,12 +166,14 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public User getModifiedBy() {
     User u = new User();
     u.setId(new Long(3));
-    return u;
+    modifiedBy = u;
+    return modifiedBy;
   }
 
   public Set<MogSynthesy> getMogSynthesis() {
     return mogSynthesis;
   }
+
 
   public String getName() {
     return name;
@@ -209,13 +215,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return result;
   }
 
-
   @Override
   public boolean isActive() {
 
     return true;
   }
-
 
   public boolean isFlagshipProgram() {
     if (ipProgramType != null) {
@@ -267,6 +271,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public void setIpProgramType(IpProgramType ipProgramType) {
     this.ipProgramType = ipProgramType;
+  }
+
+
+  public void setModifiedBy(User modifiedBy) {
+    this.modifiedBy = modifiedBy;
   }
 
 

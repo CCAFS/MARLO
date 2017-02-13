@@ -150,7 +150,8 @@ public class SynthesisByMogAction extends BaseAction {
   private Path getAutoSaveFilePath() {
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
-    String autoSaveFile = program.getId() + "_" + composedClassName + "_" + actionFile + ".json";
+    String autoSaveFile =
+      program.getId() + "_" + composedClassName + "_" + loggedCrp.getAcronym() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
@@ -387,8 +388,10 @@ public class SynthesisByMogAction extends BaseAction {
 
     program = ipProgramManager.getIpProgramById(program.getId());
     program.setActiveSince(new Date());
+    program.setModifiedBy(this.getCurrentUser());
 
     ipProgramManager.save(program, this.getActionName(), relationsName);
+
     Path path = this.getAutoSaveFilePath();
 
     if (path.toFile().exists()) {
