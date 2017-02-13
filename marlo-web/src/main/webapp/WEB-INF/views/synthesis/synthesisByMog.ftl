@@ -63,14 +63,18 @@
           </div>
           
           [#assign index = action.getIndex(mog.id,program.id) /]
-          <div class="form-group row">
+          <input type="hidden"  name="program.synthesis[${index}].id" value="${(program.synthesis[index].id)!}"/>
+          <input type="hidden"  name="program.synthesis[${index}].ipElement.id" value="${(program.synthesis[index].ipElement.id)!}"/>
+          <input type="hidden"  name="program.synthesis[${index}].ipProgram.id" value="${(program.synthesis[index].ipProgram.id)!}"/>
+          <input type="hidden"  name="program.synthesis[${index}].year" value="${(program.synthesis[index].year)!}"/>
+          <div class="form-group row">          
             [#-- Synthesis report for MOG --]
             <div class="col-md-12">
-              [@customForm.textArea name="synthesis[${index}].synthesisReport" i18nkey="synthesisByMog.synthesisReport" paramText="${mog.getComposedId()}" className="synthesisReport limitWords-${program.flagshipProgram?string('250','150')}" required=canEdit editable=editable /]
+              [@customForm.textArea name="program.synthesis[${index}].synthesisReport" i18nkey="synthesisByMog.synthesisReport" paramText="${mog.getComposedId()}" className="synthesisReport limitWords-${program.flagshipProgram?string('250','150')}" required=canEdit editable=editable /]
             </div>
             [#-- Gender synthesis report for MOG --]
             <div class="col-md-12">
-              [@customForm.textArea name="synthesis[${index}].synthesisGender" i18nkey="synthesisByMog.genderSynthesisReport" paramText="${mog.getComposedId()}" className="genderSynthesisReport limitWords-${program.flagshipProgram?string('150','100')}" required=canEdit editable=editable /]
+              [@customForm.textArea name="program.synthesis[${index}].synthesisGender" i18nkey="synthesisByMog.genderSynthesisReport" paramText="${mog.getComposedId()}" className="genderSynthesisReport limitWords-${program.flagshipProgram?string('150','100')}" required=canEdit editable=editable /]
             </div> 
           </div>
           

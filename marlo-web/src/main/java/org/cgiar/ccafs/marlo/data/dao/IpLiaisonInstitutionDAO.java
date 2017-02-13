@@ -58,6 +58,14 @@ public interface IpLiaisonInstitutionDAO {
    */
   public List<IpLiaisonInstitution> findAll();
 
+  /**
+   * This method gets a ipLiaisonInstitution object by a given ipprogram identifier.
+   * 
+   * @param ipProgramID is the ipprogram identifier.
+   * @return a IpLiaisonInstitution object.
+   */
+  public IpLiaisonInstitution findByIpProgram(long ipProgramID);
+
 
   /**
    * This method return all the center for crps in the database.

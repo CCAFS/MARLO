@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -46,13 +47,16 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   @Expose
   private CrpProgram crpProgram;
+
+
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
   private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
-
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
 
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
+
+  private List<MogSynthesy> synthesis;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
@@ -163,11 +167,9 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return ProjectComponentLesson;
   }
 
-
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
     return projectComponentLessons;
   }
-
 
   public Long getRegionId() {
     return regionId;
@@ -176,6 +178,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
+  }
+
+
+  public List<MogSynthesy> getSynthesis() {
+    return synthesis;
   }
 
 
@@ -272,8 +279,13 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     this.regionId = regionId;
   }
 
+
   public void setSectionStatuses(Set<SectionStatus> sectionStatuses) {
     this.sectionStatuses = sectionStatuses;
+  }
+
+  public void setSynthesis(List<MogSynthesy> synthesis) {
+    this.synthesis = synthesis;
   }
 
 

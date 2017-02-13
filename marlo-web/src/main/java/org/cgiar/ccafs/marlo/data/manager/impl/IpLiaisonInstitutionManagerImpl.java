@@ -62,6 +62,11 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
+  public IpLiaisonInstitution findByIpProgram(long ipProgramID) {
+    return ipLiaisonInstitutionDAO.findByIpProgram(ipProgramID);
+  }
+
+  @Override
   public IpLiaisonInstitution getIpLiaisonInstitutionById(long ipLiaisonInstitutionID) {
 
     return ipLiaisonInstitutionDAO.find(ipLiaisonInstitutionID);

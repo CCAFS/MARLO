@@ -57,13 +57,23 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
 
   @Override
   public List<IpLiaisonInstitution> findAll() {
-    String query = "from " + IpLiaisonInstitution.class.getName() + " where is_active=1";
+    String query = "from " + IpLiaisonInstitution.class.getName();
     List<IpLiaisonInstitution> list = dao.findAll(query);
     if (list.size() > 0) {
       return list;
     }
     return null;
 
+  }
+
+  @Override
+  public IpLiaisonInstitution findByIpProgram(long ipProgramID) {
+    String query = "from " + IpLiaisonInstitution.class.getName() + " where ip_program=" + ipProgramID;
+    List<IpLiaisonInstitution> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list.get(0);
+    }
+    return null;
   }
 
   @Override

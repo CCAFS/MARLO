@@ -1,10 +1,12 @@
 [#ftl]
 [#-- Project identifier --] 
 <input type="hidden"  name="liaisonInstitutionID" value="${(currentLiaisonInstitution.id)!}" />
-<input type="hidden"  name="className" value="${(currentLiaisonInstitution.class.name)!}"/>
-<input type="hidden"  name="id" value="${(currentLiaisonInstitution.id)!}"/>
+<input type="hidden"  name="className" value="${(program.class.name)!}"/>
+<input type="hidden"  name="id" value="${(program.id)!}"/>
 <input type="hidden"  name="modifiedBy.id" value="${(currentUser.id)!}"/>
 <input type="hidden"  name="actionName" value="${(actionName)!}"/>
+<input type="hidden"  name="program.crpProgram.id" value="${(program.crpProgram.id)!}"/>
+
 
 <input id="redirectionUrl" type="hidden" name="url" value="" />
 

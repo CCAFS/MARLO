@@ -55,6 +55,14 @@ public interface IpLiaisonInstitutionManager {
 
 
   /**
+   * This method gets a ipLiaisonInstitution object by a given ipprogram identifier.
+   * 
+   * @param ipProgramID is the ipprogram identifier.
+   * @return a IpLiaisonInstitution object.
+   */
+  public IpLiaisonInstitution findByIpProgram(long ipProgramID);
+
+  /**
    * This method gets a ipLiaisonInstitution object by a given ipLiaisonInstitution identifier.
    * 
    * @param ipLiaisonInstitutionID is the ipLiaisonInstitution identifier.

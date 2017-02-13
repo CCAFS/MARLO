@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
@@ -33,8 +34,11 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.validation.sythesis.SynthesisByMogValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -43,6 +47,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -60,22 +67,23 @@ public class SynthesisByMogAction extends BaseAction {
   private static Logger LOG = LoggerFactory.getLogger(SynthesisByMogAction.class);
 
   // Manager
-  // private MogSynthesisValidator validator;
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
 
 
   private IpProgramManager ipProgramManager;
-
 
   private IpElementManager ipElementManager;
 
 
   private IpProjectContributionOverviewManager overviewManager;
 
+
   private MogSynthesyManager mogSynthesisManager;
+
 
   private CrpManager crpManager;
 
+  private AuditLogManager auditLogManager;
 
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
@@ -91,15 +99,18 @@ public class SynthesisByMogAction extends BaseAction {
   private List<MogSynthesy> synthesis;
 
   private Long liaisonInstitutionID;
+
+
   private Crp loggedCrp;
 
   private SynthesisByMogValidator validator;
+  private String transaction;
 
   @Inject
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager,
-    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager,
-    CrpManager crpManager) {
+    IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager, CrpManager crpManager,
+    AuditLogManager auditLogManager) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
@@ -107,6 +118,7 @@ public class SynthesisByMogAction extends BaseAction {
     this.ipElementManager = ipElementManager;
     this.mogSynthesisManager = mogSynthesisManager;
     this.crpManager = crpManager;
+    this.auditLogManager = auditLogManager;
   }
 
   @Override
@@ -153,7 +165,7 @@ public class SynthesisByMogAction extends BaseAction {
     synthe.setIpProgram(ipProgramManager.getIpProgramById(program));
     synthe.setYear(this.getCurrentCycleYear());
 
-    int index = synthesis.indexOf(synthe);
+    int index = this.program.getSynthesis().indexOf(synthe);
     return index;
 
   }
@@ -210,6 +222,10 @@ public class SynthesisByMogAction extends BaseAction {
     return synthesis;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
   @Override
   public String next() {
     String result = this.save();
@@ -225,6 +241,13 @@ public class SynthesisByMogAction extends BaseAction {
 
     loggedCrp = (Crp) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getCrpById(loggedCrp.getId());
+
+    // Get the list of liaison institutions.
+    liaisonInstitutions = IpLiaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
+
+    Collections.sort(liaisonInstitutions, (li1, li2) -> li1.getId().compareTo(li2.getId()));
+
+    long programID = -1;
 
     try {
       liaisonInstitutionID =
@@ -248,31 +271,78 @@ public class SynthesisByMogAction extends BaseAction {
       }
     }
 
-    // Get the list of liaison institutions.
-    liaisonInstitutions = IpLiaisonInstitutionManager.getLiaisonInstitutionSynthesisByMog();
-
-    Collections.sort(liaisonInstitutions, (li1, li2) -> li1.getId().compareTo(li2.getId()));
-
     // Get currentLiaisonInstitution
     currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
 
 
-    long programID;
-    try {
-      programID = Long.valueOf(currentLiaisonInstitution.getIpProgram());
-    } catch (Exception e) {
-      programID = 1;
-      liaisonInstitutionID = new Long(2);
-      currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      IpProgram history = (IpProgram) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        program = history;
+        programID = program.getId();
+
+        program.setSynthesis(new ArrayList<>(program.getMogSynthesis()));
+
+        currentLiaisonInstitution = IpLiaisonInstitutionManager.findByIpProgram(programID);
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+
+      try {
+        programID = Long.valueOf(currentLiaisonInstitution.getIpProgram());
+      } catch (Exception e) {
+        programID = 1;
+        liaisonInstitutionID = new Long(2);
+        currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+      }
+
+      program = ipProgramManager.getIpProgramById(programID);
+
 
     }
-    program = ipProgramManager.getIpProgramById(programID);
+
+
+    if (program != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        program = (IpProgram) autoSaveReader.readFromJson(jReader);
+
+        programID = program.getId();
+
+        this.setDraft(true);
+
+      } else {
+        synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
+          .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+        program.setSynthesis(new ArrayList<>(synthesis));
+
+        this.setDraft(false);
+      }
+    }
 
     // Get all MOGs manually
-
     mogs = ipElementManager.getIPElementListForSynthesis(program);
-    synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
-      .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
 
     for (IpElement mog : mogs) {
 
@@ -283,7 +353,7 @@ public class SynthesisByMogAction extends BaseAction {
         synthe.setIpProgram(program);;
         synthe.setYear(this.getCurrentCycleYear());
         synthe.setId(null);
-        synthesis.add(synthe);
+        program.getSynthesis().add(synthe);
 
       }
 
@@ -296,7 +366,7 @@ public class SynthesisByMogAction extends BaseAction {
   @Override
   public String save() {
 
-    for (MogSynthesy synthe : synthesis) {
+    for (MogSynthesy synthe : program.getSynthesis()) {
 
       mogSynthesisManager.saveMogSynthesy(synthe);
 
@@ -304,6 +374,19 @@ public class SynthesisByMogAction extends BaseAction {
 
     if (this.isLessonsActive()) {
       this.saveLessonsSynthesis(loggedCrp, program);
+    }
+
+
+    List<String> relationsName = new ArrayList<>();
+    relationsName.add(APConstants.PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION);
+    program = ipProgramManager.getIpProgramById(program.getId());
+
+
+    ipProgramManager.save(program, this.getActionName(), relationsName);
+    Path path = this.getAutoSaveFilePath();
+
+    if (path.toFile().exists()) {
+      path.toFile().delete();
     }
 
     // this.saveProjectLessonsSynthesis(program.getId());
@@ -346,6 +429,10 @@ public class SynthesisByMogAction extends BaseAction {
 
   public void setSynthesis(List<MogSynthesy> synthesis) {
     this.synthesis = synthesis;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
   }
 
   @Override

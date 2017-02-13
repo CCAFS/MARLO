@@ -77,5 +77,15 @@ public class IpProgramMySQLDAO implements IpProgramDAO {
     return ipProgram.getId();
   }
 
+  @Override
+  public long save(IpProgram ipProgram, String section, List<String> relationsName) {
+    if (ipProgram.getId() == null) {
+      dao.save(ipProgram, section, relationsName);
+    } else {
+      dao.update(ipProgram, section, relationsName);
+    }
+    return ipProgram.getId();
+  }
+
 
 }

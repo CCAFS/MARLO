@@ -289,6 +289,9 @@ public final class APConstants {
   public static final String PROJECT_OUTCOME_LESSONS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.ProjectOutcome.projectComponentLessons)";
 
+  public static final String IPPROGRAM_MOGSYNTHESIS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpProgram.mogSynthesis)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }
