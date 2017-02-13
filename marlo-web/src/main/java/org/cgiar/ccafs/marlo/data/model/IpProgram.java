@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,15 +54,20 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
-  private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
 
+  private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
 
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
 
+
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
+
   private List<MogSynthesy> synthesis;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
+
+
+  private Date activeSince;
 
   public IpProgram() {
   }
@@ -101,6 +107,10 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return acronym;
   }
 
+  public Date getActiveSince() {
+    return activeSince;
+  }
+
   public String getComposedName() {
     StringBuilder builder = new StringBuilder();
     if (this.acronym != null) {
@@ -112,6 +122,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     }
     return builder.toString();
   }
+
 
   public CrpProgram getCrpProgram() {
     return crpProgram;
@@ -186,11 +197,9 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
     return sectionStatuses;
   }
 
-
   public List<MogSynthesy> getSynthesis() {
     return synthesis;
   }
-
 
   @Override
   public int hashCode() {
@@ -228,6 +237,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
+  }
+
+
+  public void setActiveSince(Date activeSince) {
+    this.activeSince = activeSince;
   }
 
 
