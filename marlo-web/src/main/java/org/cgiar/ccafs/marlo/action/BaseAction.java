@@ -1903,6 +1903,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  public void loadLessonsSynthesis(Crp crp, IpProgram program) {
+
+    if (this.isReportingActive()) {
+
+      List<ProjectComponentLesson> lessons = program.getProjectComponentLessons().stream()
+        .filter(
+          c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.REPORTING)
+            && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        program.setProjectComponentLesson(lessons.get(0));
+      }
+      List<ProjectComponentLesson> lessonsPreview = program.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getReportingYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessonsPreview.isEmpty()) {
+        program.setProjectComponentLessonPreview(lessonsPreview.get(0));
+      }
+    } else {
+
+      List<ProjectComponentLesson> lessons = program.getProjectComponentLessons().stream()
+        .filter(c -> c.isActive() && c.getYear() == this.getPlanningYear() && c.getCycle().equals(APConstants.PLANNING)
+          && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
+        .collect(Collectors.toList());
+      if (!lessons.isEmpty()) {
+        program.setProjectComponentLesson(lessons.get(0));
+      }
+    }
+  }
+
   public void loadQualityCheck(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableQualityChecks() != null) {

@@ -40,22 +40,25 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   private Long regionId;
 
   @Expose
-  private ProjectComponentLesson ProjectComponentLesson;
+  private ProjectComponentLesson projectComponentLesson;
 
 
   private Set<ProjectComponentLesson> projectComponentLessons = new HashSet<ProjectComponentLesson>(0);
 
+  private ProjectComponentLesson projectComponentLessonPreview;
+
+
   @Expose
   private CrpProgram crpProgram;
-
 
   private Set<IpElement> ipElements = new HashSet<IpElement>(0);
 
   private Set<OutcomeSynthesy> outcomeSynthesis = new HashSet<OutcomeSynthesy>(0);
+
+
   private Set<IpProgramElement> ipProgramElements = new HashSet<IpProgramElement>(0);
 
   private Set<MogSynthesy> mogSynthesis = new HashSet<MogSynthesy>(0);
-
   private List<MogSynthesy> synthesis;
 
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
@@ -164,7 +167,11 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   }
 
   public ProjectComponentLesson getProjectComponentLesson() {
-    return ProjectComponentLesson;
+    return projectComponentLesson;
+  }
+
+  public ProjectComponentLesson getProjectComponentLessonPreview() {
+    return projectComponentLessonPreview;
   }
 
   public Set<ProjectComponentLesson> getProjectComponentLessons() {
@@ -174,7 +181,6 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
   public Long getRegionId() {
     return regionId;
   }
-
 
   public Set<SectionStatus> getSectionStatuses() {
     return sectionStatuses;
@@ -266,7 +272,12 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
 
   public void setProjectComponentLesson(ProjectComponentLesson projectComponentLesson) {
-    ProjectComponentLesson = projectComponentLesson;
+    this.projectComponentLesson = projectComponentLesson;
+  }
+
+
+  public void setProjectComponentLessonPreview(ProjectComponentLesson projectComponentLessonPreview) {
+    this.projectComponentLessonPreview = projectComponentLessonPreview;
   }
 
 

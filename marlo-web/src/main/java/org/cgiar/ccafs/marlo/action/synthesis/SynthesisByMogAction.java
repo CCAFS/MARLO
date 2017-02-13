@@ -110,7 +110,7 @@ public class SynthesisByMogAction extends BaseAction {
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager,
     IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager, CrpManager crpManager,
-    AuditLogManager auditLogManager) {
+    AuditLogManager auditLogManager, SynthesisByMogValidator validator) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
@@ -119,6 +119,7 @@ public class SynthesisByMogAction extends BaseAction {
     this.mogSynthesisManager = mogSynthesisManager;
     this.crpManager = crpManager;
     this.auditLogManager = auditLogManager;
+    this.validator = validator;
   }
 
   @Override
@@ -305,6 +306,9 @@ public class SynthesisByMogAction extends BaseAction {
 
       program = ipProgramManager.getIpProgramById(programID);
 
+      if (this.isLessonsActive()) {
+        this.loadLessonsSynthesis(loggedCrp, program);
+      }
 
     }
 
@@ -438,7 +442,7 @@ public class SynthesisByMogAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, synthesis, program, true);
+      validator.validate(this, program.getSynthesis(), program, true);
     }
   }
 
