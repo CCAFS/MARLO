@@ -8,9 +8,10 @@ var termsArray = [];
 var reportYear = $("#reportYear").find("option:selected").val();
 
 function init() {
-  addGenderTerms();
+  // addGenderTerms();
   addSelect2();
   attachEvents();
+  $(".reportYear").attr("disabled", "true");
 }
 
 function attachEvents() {
@@ -38,14 +39,13 @@ function attachEvents() {
 
   $("input[name='cycle']").on("change", function() {
     if($(this).val() == "Planning") {
-      $(".reportingCycle").hide("");
-      reportYear = $(".planningYear").text();
+      $("select.reportYear").append("<option selected>2017</option>");
     } else {
-      $(".reportingCycle").show("");
-      reportYear = $(".reportingYear").text();
+      $("select.reportYear").append("<option selected>2016</option>");
 // console.log(reportYear);
     }
     updateUrl($(".summariesOptions").find(".selected"));
+    validateAllData();
   });
 
   $("#gender").on("change", function() {
@@ -97,12 +97,16 @@ function attachEvents() {
 
   $('.close-dialog').on('click', function() {
     $("#optionsPopUp").dialog("close");
+    $("#optionsPopUp").find(".okButton").prepend("<span class='blockButton'></span>");
+    $(".okButton a").css("opacity", "0.4");
   });
 
   $(".okButton a").on("click", function() {
     var $selected = $('.selected');
     reportTypes($selected);
     $("#optionsPopUp").dialog("close");
+    $("#optionsPopUp").find(".okButton").prepend("<span class='blockButton'></span>");
+    $(".okButton a").css("opacity", "0.4");
   });
 
   $(".file").on("click", function() {
@@ -110,6 +114,7 @@ function attachEvents() {
     $(".file").parent().addClass("notChoose");
     $(this).parent().addClass("choose");
     $(this).parent().removeClass("notChoose");
+    validateAllData();
   });
 
 }
@@ -193,7 +198,26 @@ function selectSummariesSection(e) {
 
 function generateReport(e) {
   e.preventDefault();
+  $("#optionsPopUp").find("#planning").removeAttr("disabled");
+  $("#optionsPopUp").find("#reporting").removeAttr("disabled");
   var $selected = $('.selected');
+// Check cycle summary
+  if($($selected).find(".forCycle").hasClass("forPlanningCycle")
+      && $($selected).find(".forCycle").hasClass("forReportingCycle")) {
+    // Planning and Reporing
+    $("#optionsPopUp").find("#planning").attr("checked", "checked");
+    $("#optionsPopUp").find("#reporting").removeAttr("disabled");
+  } else if($($selected).find(".forCycle").hasClass("forPlanningCycle")) {
+    // Planning
+    $("#optionsPopUp").find("#planning").attr("checked", true);
+    $("#optionsPopUp").find("#reporting").removeAttr("checked");
+    $("#optionsPopUp").find("#reporting").attr("disabled", true);
+  } else if($($selected).find(".forCycle").hasClass("forReportingCycle")) {
+    // Reporting
+    $("#optionsPopUp").find("#reporting").attr("checked", true);
+    $("#optionsPopUp").find("#planning").removeAttr("checked");
+    $("#optionsPopUp").find("#planning").attr("disabled", true);
+  }
   if($selected.find(".extraOptions").exists()) {
     var extraOption = $selected.find(".extraOptions");
     console.log(extraOption);
@@ -209,6 +233,25 @@ function generateReport(e) {
   } else {
     validateFileType($selected);
     openDialog();
+  }
+  validateAllData();
+}
+
+function validateAllData() {
+  console.log("validate");
+  var count = 0;
+  console.log($("input[name='cycle']:checked").val());
+  if($("input[name='cycle']:checked").val() != undefined) {
+    count++;
+  }
+  console.log(count);
+  if($("#optionsPopUp").find(".choose").exists()) {
+    count++;
+  }
+  console.log(count);
+  if(count == 2) {
+    $("#optionsPopUp").find(".blockButton").remove();
+    $(".okButton a").css("opacity", "1");
   }
 }
 
@@ -291,7 +334,6 @@ function reportTypes($selected) {
     $("#gender").removeClass("notview");
     $("#gender").addClass("view");
   } else {
-    console.log("adasddd");
     updateUrl($selected);
   }
 }
@@ -300,7 +342,7 @@ function updateUrl(element) {
   var generateUrl = "";
   var formOption = "";
   var type = $(element).find(".fileTypes").text().split("-")[0];
-  console.log($("#optionsPopUp").find(".choose").find(".pdfIcon"));
+// Check type of file
   if($("#optionsPopUp").find(".pdfIcon").parent().hasClass("choose")) {
     console.log("here1");
     formOption = $(element).find(".pdfType").text();

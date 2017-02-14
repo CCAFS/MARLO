@@ -2,10 +2,18 @@
 	padding-left: 117px;
 	margin-top: 29px;
 }
-
+.blockButton{
+	margin-top: -3px;
+	position: absolute;
+	width: 70px;
+	height: 27px;
+	z-index: 100;
+	/* background-color: red; */
+}
 .okButton a{
 	color: white;
 	border-radius:5px;
+	opacity: 0.4;
 }
 .description{
 	font-size:0.9em;
