@@ -67,6 +67,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }

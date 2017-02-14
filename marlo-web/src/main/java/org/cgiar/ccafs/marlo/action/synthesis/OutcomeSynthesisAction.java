@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.sythesis.SynthesisByOutcomeValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -75,7 +76,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpIndicatorManager ipIndicatorManager;
   private String transaction;
   private AuditLogManager auditLogManager;
-
+  private SynthesisByOutcomeValidator validator;
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
 
@@ -92,7 +93,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager, CrpManager crpManager,
     IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
-    AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager) {
+    SynthesisByOutcomeValidator validator, AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager) {
     super(config);
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
@@ -101,6 +102,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.ipIndicatorManager = ipIndicatorManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
     this.auditLogManager = auditLogManager;
+    this.validator = validator;
     this.crpManager = crpManager;
 
 
@@ -171,10 +173,10 @@ public class OutcomeSynthesisAction extends BaseAction {
     return liaisonInstitutionID;
   }
 
-
   public List<IpLiaisonInstitution> getLiaisonInstitutions() {
     return liaisonInstitutions;
   }
+
 
   public List<IpElement> getMidOutcomes() {
     return midOutcomes;
@@ -202,10 +204,10 @@ public class OutcomeSynthesisAction extends BaseAction {
     return list;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -339,7 +341,6 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.SYNTHESIS_BY_MOG_BASE_PERMISSION, params));
   }
 
-
   @Override
   public String save() {
     for (OutcomeSynthesy synthe : program.getSynthesisOutcome()) {
@@ -382,6 +383,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     return SUCCESS;
   }
 
+
   public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
     this.currentLiaisonInstitution = currentLiaisonInstitution;
   }
@@ -404,6 +406,13 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   public void setTransaction(String transaction) {
     this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, program.getSynthesisOutcome(), program, true);
+    }
   }
 
 
