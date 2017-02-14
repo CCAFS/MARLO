@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Jan 3, 2017 1:26:43 PM by Hibernate Tools 4.3.1.Final -->
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Feb 14, 2017 9:40:44 AM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
     <class name="org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport" table="crp_indicator_reports" optimistic-lock="version">
         <id name="id" type="java.lang.Long">
@@ -10,6 +10,9 @@
         </id>
         <many-to-one name="crpIndicator" class="org.cgiar.ccafs.marlo.data.model.CrpIndicator" fetch="select">
             <column name="indicator_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="ipLiaisonInstitution" class="org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution" fetch="select">
+            <column name="liaison_institution_id" />
         </many-to-one>
         <property name="target" type="string">
             <column name="target" length="65535" />
@@ -25,9 +28,6 @@
         </property>
         <property name="deviation" type="string">
             <column name="deviation" length="65535" />
-        </property>
-        <property name="liaisonInstitutionId" type="java.lang.Long">
-            <column name="liaison_institution_id" />
         </property>
         <property name="year" type="int">
             <column name="year" not-null="true" />
