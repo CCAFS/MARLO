@@ -73,6 +73,11 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
+  public List<IpLiaisonInstitution> getLiaisonInstitutionsCrpsIndicator() {
+    return ipLiaisonInstitutionDAO.getLiaisonInstitutionsCrpsIndicator();
+  }
+
+  @Override
   public List<IpLiaisonInstitution> getLiaisonInstitutionSynthesisByMog() {
     List<IpLiaisonInstitution> liaisonInstitutions = new ArrayList<>();
 

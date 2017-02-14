@@ -195,7 +195,7 @@ public class SynthesisByMogAction extends BaseAction {
 
   public List<IpProjectContributionOverview> getProjectOutputOverviews(long mogId) {
     List<IpProjectContributionOverview> lst = null;
-    switch (program.getId().intValue()) {
+    switch (program.getIpProgramType().getId().intValue()) {
       case 1:
       case 2:
       case 3:
@@ -205,8 +205,8 @@ public class SynthesisByMogAction extends BaseAction {
         break;
 
       default:
-        lst =
-          overviewManager.getProjectContributionOverviewsSytnhesis(mogId, this.getCurrentCycleYear(), program.getId());
+        lst = overviewManager.getProjectContributionOverviewsSytnhesis(mogId, this.getCurrentCycleYear(),
+          program.getCrpProgram().getId());
         break;
     }
     return lst;

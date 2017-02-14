@@ -1,6 +1,6 @@
 /*****************************************************************
- * This file is part of Managing Agricultural Research for Learning & 
- * Outcomes Platform (MARLO). 
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
  * MARLO is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -61,6 +61,15 @@ public interface CrpIndicatorReportManager {
    * @return a CrpIndicatorReport object.
    */
   public CrpIndicatorReport getCrpIndicatorReportById(long crpIndicatorReportID);
+
+  /**
+   * Get the list of indicator's reports made by the leader and corresponding
+   * to the given logframe.
+   * 
+   * @param leader
+   * @return a list of IndicatorReport objects with the information.
+   */
+  public List<CrpIndicatorReport> getIndicatorReportsList(long leader, int year);
 
   /**
    * This method saves the information of the given crpIndicatorReport

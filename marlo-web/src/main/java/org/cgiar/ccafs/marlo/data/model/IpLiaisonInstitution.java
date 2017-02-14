@@ -5,6 +5,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.annotations.Expose;
@@ -17,30 +18,36 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -418826851418998505L;
 
+
   @Expose
   private Long id;
+
+
   @Expose
   private Institution institution;
+
+
   @Expose
   private String name;
+
+
   @Expose
   private String acronym;
+
   @Expose
   private Integer ipProgram;
+  private Set<CrpIndicatorReport> crpIndicatorReportses = new HashSet<CrpIndicatorReport>(0);
 
-
+  private List<CrpIndicatorReport> indicatorReports;
   private Set<IpLiaisonUser> ipLiaisonUsers = new HashSet<IpLiaisonUser>(0);
-
 
   public IpLiaisonInstitution() {
   }
-
 
   public IpLiaisonInstitution(Institution institution, String name) {
     this.institution = institution;
     this.name = name;
   }
-
 
   public IpLiaisonInstitution(Institution institution, String name, String acronym, Integer ipProgram,
     Set<IpLiaisonUser> ipLiaisonUsers) {
@@ -57,14 +64,26 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
   }
 
 
+  public Set<CrpIndicatorReport> getCrpIndicatorReportses() {
+    return crpIndicatorReportses;
+  }
+
+
   @Override
   public Long getId() {
     return id;
   }
 
+
+  public List<CrpIndicatorReport> getIndicatorReports() {
+    return indicatorReports;
+  }
+
+
   public Institution getInstitution() {
     return institution;
   }
+
 
   public Set<IpLiaisonUser> getIpLiaisonUsers() {
     return ipLiaisonUsers;
@@ -105,13 +124,21 @@ public class IpLiaisonInstitution implements java.io.Serializable, IAuditLog {
     return true;
   }
 
-
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
 
+  public void setCrpIndicatorReportses(Set<CrpIndicatorReport> crpIndicatorReportses) {
+    this.crpIndicatorReportses = crpIndicatorReportses;
+  }
+
+
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public void setIndicatorReports(List<CrpIndicatorReport> indicatorReports) {
+    this.indicatorReports = indicatorReports;
   }
 
 

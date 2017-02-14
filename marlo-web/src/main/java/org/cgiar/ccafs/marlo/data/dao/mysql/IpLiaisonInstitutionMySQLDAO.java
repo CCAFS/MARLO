@@ -77,6 +77,16 @@ public class IpLiaisonInstitutionMySQLDAO implements IpLiaisonInstitutionDAO {
   }
 
   @Override
+  public List<IpLiaisonInstitution> getLiaisonInstitutionsCrpsIndicator() {
+    String query = "from " + IpLiaisonInstitution.class.getName() + " where where id not in(1)";
+    List<IpLiaisonInstitution> list = dao.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
   public List<Map<String, Object>> getLiaisonInstitutionSynthesisByMog() {
     String query = "select id FROM liaison_institutions li where id  in (2,3,4,5,6,7,8,9,10)";
     return dao.findCustomQuery(query);
