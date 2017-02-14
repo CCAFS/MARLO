@@ -63,14 +63,13 @@
               <div class="fullPartBlock">
                 <label>[@s.text name="synthesis.outcomeSynthesis.indicators" /]:</label> 
                 [#if midOutcome.indicators?has_content]
-                ${midOutcome.id}
                 [#list midOutcome.indicators as indicator]
                   [#assign flagshipIndicator = (indicator.ipIndicator)!indicator /]
                    [#assign index = action.getIndex(flagshipIndicator.id,midOutcome.id,program.id) /]
                
                   <div class="simpleBox">
                     <div class="fullPartBlock">
-                      <p>${flagshipIndicator.description}</p>
+                      <p>${flagshipIndicator.ipProgramElement.ipProgram.acronym} - ${flagshipIndicator.description}</p>
                     </div>
                     [#-- Achieved target in current reporting period --]
                     <div class="fullPartBlock">

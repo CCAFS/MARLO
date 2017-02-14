@@ -92,6 +92,24 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   }
 
+  public double getAchievedExpected(long indicatorID) {
+
+    double achievedExpected = 0;
+    List<OutcomeSynthesy> outcomeSynthesies = outcomeSynthesisManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
+        && c.getIpIndicator().getId().longValue() == indicatorID && c.getYear() < this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+
+    for (OutcomeSynthesy outcomeSynthesy : outcomeSynthesies) {
+      try {
+        achievedExpected = achievedExpected + outcomeSynthesy.getAchieved().doubleValue();
+      } catch (Exception e) {
+        achievedExpected = achievedExpected + 0;
+      }
+    }
+    return achievedExpected;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -103,6 +121,7 @@ public class OutcomeSynthesisAction extends BaseAction {
   public IpLiaisonInstitution getCurrentLiaisonInstitution() {
     return currentLiaisonInstitution;
   }
+
 
   public int getIndex(long indicator, long midoutcome, long program) {
     OutcomeSynthesy synthe = new OutcomeSynthesy();
@@ -116,7 +135,6 @@ public class OutcomeSynthesisAction extends BaseAction {
     return index;
 
   }
-
 
   public long getLiaisonInstitutionID() {
     return liaisonInstitutionID;
@@ -134,10 +152,10 @@ public class OutcomeSynthesisAction extends BaseAction {
     return program;
   }
 
+
   public List<IpIndicator> getProjectIndicators(int year, long indicator, long midOutcome) {
     return ipIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
   }
-
 
   public List<OutcomeSynthesy> getRegionalSynthesis(long indicator, long midoutcome) {
     List<OutcomeSynthesy> list = outcomeSynthesisManager.findAll()
@@ -150,6 +168,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     }
     return list;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -221,11 +240,17 @@ public class OutcomeSynthesisAction extends BaseAction {
           synthe.setIpProgram(program);
           synthe.setYear(this.getCurrentCycleYear());
           synthe.setId(null);
+
           program.getSynthesisOutcome().add(synthe);
 
         }
 
       }
+    }
+
+    for (OutcomeSynthesy outcomeSynthesy : program.getSynthesisOutcome()) {
+      outcomeSynthesy
+        .setAchievedExpected(this.getAchievedExpected(outcomeSynthesy.getIpIndicator().getId().longValue()));
     }
   }
 
