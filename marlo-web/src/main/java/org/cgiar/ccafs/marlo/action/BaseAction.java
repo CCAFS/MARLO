@@ -1590,17 +1590,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Boolean isF(long deliverableID) {
 
 
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
-      && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
-      return true;
-    }
-    if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+    try {
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      this.loadDissemination(deliverableBD);
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
+        && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
+        return true;
+      }
+      if (deliverableBD.getDissemination().getAlreadyDisseminated() == null) {
+        return null;
+      }
+
+      return false;
+    } catch (Exception e) {
       return null;
     }
-
-    return false;
 
   }
 
