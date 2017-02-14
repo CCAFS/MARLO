@@ -161,7 +161,7 @@ public class User implements java.io.Serializable, IAuditLog {
     if (this.id == null || this.id == -1) {
       return "";
     }
-    return this.lastName + ", " + this.firstName + " <" + this.email + ">";
+    return this.getLastName() + ", " + this.getFirstName() + " <" + this.getEmail() + ">";
   }
 
   public User getCreatedBy() {

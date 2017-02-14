@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.MogSynthesyManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
@@ -96,7 +97,7 @@ public class SynthesisByMogAction extends BaseAction {
 
   private IpProgram program;
 
-
+  private UserManager userManager;
   private List<MogSynthesy> synthesis;
 
   private Long liaisonInstitutionID;
@@ -109,12 +110,13 @@ public class SynthesisByMogAction extends BaseAction {
 
   @Inject
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
-    IpProgramManager ipProgramManager, IpElementManager ipElementManager,
+    UserManager userManager, IpProgramManager ipProgramManager, IpElementManager ipElementManager,
     IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager, CrpManager crpManager,
     AuditLogManager auditLogManager, SynthesisByMogValidator validator) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
+    this.userManager = userManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.mogSynthesisManager = mogSynthesisManager;
@@ -286,7 +288,7 @@ public class SynthesisByMogAction extends BaseAction {
       if (history != null) {
         program = history;
         programID = program.getId();
-
+        program.setModifiedBy(userManager.getUser(program.getModifiedBy().getId()));
         program.setSynthesis(new ArrayList<>(program.getMogSynthesis()));
 
         currentLiaisonInstitution = IpLiaisonInstitutionManager.findByIpProgram(programID);
@@ -336,7 +338,7 @@ public class SynthesisByMogAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-
+        reader.close();
       } else {
         synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
           .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
