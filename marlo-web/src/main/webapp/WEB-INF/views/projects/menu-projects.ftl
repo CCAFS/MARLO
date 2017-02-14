@@ -130,7 +130,7 @@
   [/#if]
   
   [#-- Unsubmit button --]
-  [#if (canUnSubmit && submission) && !crpClosed ]
+  [#if (canUnSubmit && submission) && !crpClosed && !reportingActive]
     <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][/@s.url]" >
       [@s.text name="form.buttons.unsubmit" /]
     </a>
