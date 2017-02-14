@@ -185,7 +185,7 @@
               <div class="viewButton"><a href="[@s.url][@s.param name ="liaisonInstitutionID"]${liaisonInstitutionID}[/@s.param][/@s.url]#lessons">[@s.text name="form.buttons.unedit" /]</a></div>
             [/#if]
             <div class="fullBlock">
-              <input type="hidden" name="program.projectComponentLesson.id" value=${(projectLessons.id)!"-1"} />
+              <input type="hidden" name="program.projectComponentLesson.id" value=${(program.projectComponentLesson.id)!"-1"} />
               <input type="hidden" name="program.projectComponentLesson.year" value=${currentCycleYear} />
               <input type="hidden" name="program.projectComponentLesson.componentName" value="${actionName}">
               [@customForm.textArea name="program.projectComponentLesson.lessons" i18nkey="synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]

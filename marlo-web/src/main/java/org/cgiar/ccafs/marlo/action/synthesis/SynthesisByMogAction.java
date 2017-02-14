@@ -31,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -263,9 +262,9 @@ public class SynthesisByMogAction extends BaseAction {
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }
@@ -387,6 +386,8 @@ public class SynthesisByMogAction extends BaseAction {
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPPROGRAM_MOGSYNTHESIS_RELATION);
+    relationsName.add(APConstants.IPPROGRAM_LESSONS_RELATION);
+
 
     program = ipProgramManager.getIpProgramById(program.getId());
     program.setActiveSince(new Date());

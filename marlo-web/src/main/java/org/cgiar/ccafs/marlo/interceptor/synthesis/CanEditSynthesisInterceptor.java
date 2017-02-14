@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -92,9 +91,9 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(baseAction.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(baseAction.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }

@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -47,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -223,9 +221,9 @@ public class OutcomeSynthesisAction extends BaseAction {
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }
@@ -305,6 +303,10 @@ public class OutcomeSynthesisAction extends BaseAction {
       } else {
         this.program.setSynthesisOutcome(program.getOutcomeSynthesis().stream()
           .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+        if (this.isLessonsActive()) {
+          this.loadLessonsSynthesis(loggedCrp, program);
+        }
         this.setDraft(false);
       }
     }
@@ -356,6 +358,8 @@ public class OutcomeSynthesisAction extends BaseAction {
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPPROGRAM_OUTCOME_SYNTHESIS_RELATION);
+    relationsName.add(APConstants.IPPROGRAM_LESSONS_RELATION);
+
 
     program = ipProgramManager.getIpProgramById(program.getId());
     program.setActiveSince(new Date());
@@ -369,7 +373,7 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
     Collection<String> messages = this.getActionMessages();
-    this.setInvalidFields(new HashMap<>());
+
     if (!this.getInvalidFields().isEmpty()) {
       this.setActionMessages(null);
       List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());

@@ -58,6 +58,15 @@ public class SynthesisByMogValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public void replaceAll(StringBuilder builder, String from, String to) {
+    int index = builder.indexOf(from);
+    while (index != -1) {
+      builder.replace(index, index + from.length(), to);
+      index += to.length(); // Move to the end of the replacement
+      index = builder.indexOf(from, index);
+    }
+  }
+
   public void validate(BaseAction action, List<MogSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
@@ -82,6 +91,12 @@ public class SynthesisByMogValidator extends BaseValidator {
         this.validateSynthesisGender(action, mogSynthesy.getSynthesisGender(), ipElement.getComposedId(), 100, index);
       }
 
+      this.validateLessonsLearn(action, ipProgram);
+      if (this.validationMessage.toString().contains("Lessons")) {
+        this.replaceAll(validationMessage, "Lessons",
+          "Lessons regarding partnerships and possible implications for the coming planning cycle");
+        action.getInvalidFields().put("input-program.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
+      }
       index++;
     }
 

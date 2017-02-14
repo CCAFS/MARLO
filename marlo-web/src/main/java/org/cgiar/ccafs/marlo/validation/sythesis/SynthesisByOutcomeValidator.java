@@ -58,6 +58,15 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
+  public void replaceAll(StringBuilder builder, String from, String to) {
+    int index = builder.indexOf(from);
+    while (index != -1) {
+      builder.replace(index, index + from.length(), to);
+      index += to.length(); // Move to the end of the replacement
+      index = builder.indexOf(from, index);
+    }
+  }
+
   public void validate(BaseAction action, List<OutcomeSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
@@ -78,6 +87,17 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
       this.validateSynthesisAnual(action, outcomeSynthesy.getSynthesisAnual(), ipElement.getComposedId(), 250, index);
       this.validateSynthesisGender(action, outcomeSynthesy.getSynthesisGender(), ipElement.getComposedId(), 200, index);
 
+      if (outcomeSynthesy.getAchieved() == null || outcomeSynthesy.getAchieved().doubleValue() < 0) {
+        this.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
+        action.getInvalidFields().put("input-program.synthesisOutcome[" + index + "].achieved",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      this.validateLessonsLearn(action, ipProgram);
+      if (this.validationMessage.toString().contains("Lessons")) {
+        this.replaceAll(validationMessage, "Lessons",
+          "Lessons regarding partnerships and possible implications for the coming planning cycle");
+        action.getInvalidFields().put("input-program.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
+      }
 
       index++;
     }
