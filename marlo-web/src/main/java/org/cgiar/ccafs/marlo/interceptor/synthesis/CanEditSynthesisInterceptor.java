@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 
@@ -35,7 +34,6 @@ import java.util.Map;
 import com.google.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -68,6 +66,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      e.printStackTrace();
       return BaseAction.NOT_FOUND;
     }
   }
@@ -84,8 +83,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
     long liaisonInstitutionID;
 
     try {
-      liaisonInstitutionID = Long
-        .parseLong(StringUtils.trim(baseAction.getRequest().getParameter(APConstants.LIAISON_INSTITUTION_REQUEST_ID)));
+      liaisonInstitutionID = Long.parseLong(((String[]) parameters.get(APConstants.LIAISON_INSTITUTION_REQUEST_ID))[0]);
     } catch (Exception e) {
       if (baseAction.getCurrentUser().getIpLiaisonUsers() != null
         || !baseAction.getCurrentUser().getIpLiaisonUsers().isEmpty()) {
@@ -93,9 +91,9 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(baseAction.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(baseAction.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }

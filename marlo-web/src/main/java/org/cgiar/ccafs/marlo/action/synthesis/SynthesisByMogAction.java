@@ -24,13 +24,13 @@ import org.cgiar.ccafs.marlo.data.manager.IpLiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProjectContributionOverviewManager;
 import org.cgiar.ccafs.marlo.data.manager.MogSynthesyManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -96,7 +96,7 @@ public class SynthesisByMogAction extends BaseAction {
 
   private IpProgram program;
 
-
+  private UserManager userManager;
   private List<MogSynthesy> synthesis;
 
   private Long liaisonInstitutionID;
@@ -109,12 +109,13 @@ public class SynthesisByMogAction extends BaseAction {
 
   @Inject
   public SynthesisByMogAction(APConfig config, IpLiaisonInstitutionManager IpLiaisonInstitutionManager,
-    IpProgramManager ipProgramManager, IpElementManager ipElementManager,
+    UserManager userManager, IpProgramManager ipProgramManager, IpElementManager ipElementManager,
     IpProjectContributionOverviewManager overviewManager, MogSynthesyManager mogSynthesisManager, CrpManager crpManager,
     AuditLogManager auditLogManager, SynthesisByMogValidator validator) {
     super(config);
     this.overviewManager = overviewManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
+    this.userManager = userManager;
     this.ipProgramManager = ipProgramManager;
     this.ipElementManager = ipElementManager;
     this.mogSynthesisManager = mogSynthesisManager;
@@ -261,9 +262,9 @@ public class SynthesisByMogAction extends BaseAction {
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }
@@ -286,7 +287,7 @@ public class SynthesisByMogAction extends BaseAction {
       if (history != null) {
         program = history;
         programID = program.getId();
-
+        program.setModifiedBy(userManager.getUser(program.getModifiedBy().getId()));
         program.setSynthesis(new ArrayList<>(program.getMogSynthesis()));
 
         currentLiaisonInstitution = IpLiaisonInstitutionManager.findByIpProgram(programID);
@@ -336,7 +337,7 @@ public class SynthesisByMogAction extends BaseAction {
         programID = program.getId();
 
         this.setDraft(true);
-
+        reader.close();
       } else {
         synthesis = new ArrayList<>(mogSynthesisManager.getMogSynthesis(programID).stream()
           .filter(sy -> sy.isActive() && sy.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
@@ -385,6 +386,8 @@ public class SynthesisByMogAction extends BaseAction {
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPPROGRAM_MOGSYNTHESIS_RELATION);
+    relationsName.add(APConstants.IPPROGRAM_LESSONS_RELATION);
+
 
     program = ipProgramManager.getIpProgramById(program.getId());
     program.setActiveSince(new Date());

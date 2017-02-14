@@ -166,9 +166,7 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   @Override
   public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    modifiedBy = u;
+
     return modifiedBy;
   }
 

@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.IpIndicatorDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,7 +161,7 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
   }
 
   @Override
-  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
+  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome) {
     StringBuilder query = new StringBuilder();
     query.append("SELECT ai.id,ai.project_id, ai.description, ai.gender, ai.target, ai.year, aip.id as 'parent_id', ");
     query.append("aip.description as 'parent_description', aip.target as 'parent_target', ");
@@ -173,10 +174,10 @@ public class IpIndicatorMySQLDAO implements IpIndicatorDAO {
       + program + " and ie.id=" + midOutcome);
 
     List<Map<String, Object>> rList = dao.findCustomQuery(query.toString());
-    List<IpIndicator> ipIndicators = new ArrayList<>();
+    List<IpProjectIndicator> ipIndicators = new ArrayList<>();
     if (rList != null) {
       for (Map<String, Object> map : rList) {
-        IpIndicator indicatorDB = this.find(Long.parseLong(map.get("id").toString()));
+        IpProjectIndicator indicatorDB = dao.find(IpProjectIndicator.class, Long.parseLong(map.get("id").toString()));
 
         ipIndicators.add(indicatorDB);
       }

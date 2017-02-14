@@ -317,6 +317,20 @@ public class BaseValidator {
     sectionStatusManager.saveSectionStatus(status);
   }
 
+  protected void validateLessonsLearn(BaseAction action, IpProgram program) {
+    if (program.getProjectComponentLesson() != null) {
+      ProjectComponentLesson lesson = program.getProjectComponentLesson();
+      if (!(this.isValidString(lesson.getLessons()) && this.wordCount(lesson.getLessons()) <= 100)) {
+        // Let them save.
+        this.addMessage("Lessons");
+
+        this.addMissingField("projectLessons.lessons");
+
+      }
+    }
+
+  }
+
   protected void validateLessonsLearn(BaseAction action, Project project) {
     if (project.getProjectComponentLesson() != null) {
       ProjectComponentLesson lesson = project.getProjectComponentLesson();

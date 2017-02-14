@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.dao.mysql.IpIndicatorMySQLDAO;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.List;
 
@@ -63,7 +64,7 @@ public interface IpIndicatorDAO {
 
   public List<IpIndicator> getIndicatorsFlagShips();
 
-  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
+  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
 
 
   /**

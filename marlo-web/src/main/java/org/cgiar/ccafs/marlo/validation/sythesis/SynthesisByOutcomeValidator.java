@@ -21,7 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.IpElement;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
+import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -36,7 +36,7 @@ import com.google.inject.Inject;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-public class SynthesisByMogValidator extends BaseValidator {
+public class SynthesisByOutcomeValidator extends BaseValidator {
 
   BaseAction action;
 
@@ -44,14 +44,14 @@ public class SynthesisByMogValidator extends BaseValidator {
   private CrpManager crpManager;
 
   @Inject
-  public SynthesisByMogValidator() {
+  public SynthesisByOutcomeValidator() {
     // TODO Auto-generated constructor stub
   }
 
   private Path getAutoSaveFilePath(IpProgram ipProgram, long crpID) {
     Crp crp = crpManager.getCrpById(crpID);
     String composedClassName = ipProgram.getClass().getSimpleName();
-    String actionFile = ProjectSectionStatusEnum.SYNTHESISMOG.getStatus().replace("/", "_");
+    String actionFile = ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus().replace("/", "_");
     String autoSaveFile =
       ipProgram.getId() + "_" + composedClassName + "_" + crp.getAcronym() + "_" + actionFile + ".json";
 
@@ -67,7 +67,7 @@ public class SynthesisByMogValidator extends BaseValidator {
     }
   }
 
-  public void validate(BaseAction action, List<MogSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
+  public void validate(BaseAction action, List<OutcomeSynthesy> synthesis, IpProgram ipProgram, boolean saving) {
 
     action.setInvalidFields(new HashMap<>());
     this.action = action;
@@ -81,22 +81,24 @@ public class SynthesisByMogValidator extends BaseValidator {
     }
 
     int index = 0;
-    for (MogSynthesy mogSynthesy : synthesis) {
-      IpElement ipElement = mogSynthesy.getIpElement();
-      if (ipProgram.isFlagshipProgram()) {
-        this.validateSynthesisAnual(action, mogSynthesy.getSynthesisReport(), ipElement.getComposedId(), 250, index);
-        this.validateSynthesisGender(action, mogSynthesy.getSynthesisGender(), ipElement.getComposedId(), 150, index);
-      } else {
-        this.validateSynthesisAnual(action, mogSynthesy.getSynthesisReport(), ipElement.getComposedId(), 150, index);
-        this.validateSynthesisGender(action, mogSynthesy.getSynthesisGender(), ipElement.getComposedId(), 100, index);
-      }
+    for (OutcomeSynthesy outcomeSynthesy : synthesis) {
+      IpElement ipElement = outcomeSynthesy.getIpElement();
 
+      this.validateSynthesisAnual(action, outcomeSynthesy.getSynthesisAnual(), ipElement.getComposedId(), 250, index);
+      this.validateSynthesisGender(action, outcomeSynthesy.getSynthesisGender(), ipElement.getComposedId(), 200, index);
+
+      if (outcomeSynthesy.getAchieved() == null || outcomeSynthesy.getAchieved().doubleValue() < 0) {
+        this.addMessage(action.getText("synthesisByMog.validator.achieved", ipElement.getComposedId()));
+        action.getInvalidFields().put("input-program.synthesisOutcome[" + index + "].achieved",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
       this.validateLessonsLearn(action, ipProgram);
       if (this.validationMessage.toString().contains("Lessons")) {
         this.replaceAll(validationMessage, "Lessons",
           "Lessons regarding partnerships and possible implications for the coming planning cycle");
         action.getInvalidFields().put("input-program.projectComponentLesson.lessons", InvalidFieldsMessages.EMPTYFIELD);
       }
+
       index++;
     }
 
@@ -121,7 +123,7 @@ public class SynthesisByMogValidator extends BaseValidator {
     int i) {
     if (!(this.isValidString(synthesisAnual) && this.wordCount(synthesisAnual) <= numberWords)) {
       this.addMessage(action.getText("synthesisByMog.validator.anual", midOutcome));
-      action.getInvalidFields().put("input-program.synthesis[" + i + "].synthesisReport",
+      action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisAnual",
         InvalidFieldsMessages.EMPTYFIELD);
 
     }
@@ -131,7 +133,7 @@ public class SynthesisByMogValidator extends BaseValidator {
     int i) {
     if (!(this.isValidString(synthesisGender) && this.wordCount(synthesisGender) <= numberWords)) {
       this.addMessage(action.getText("synthesisByMog.validator.gender", midOutcome));
-      action.getInvalidFields().put("input-program.synthesis[" + i + "].synthesisGender",
+      action.getInvalidFields().put("input-program.synthesisOutcome[" + i + "].synthesisGender",
         InvalidFieldsMessages.EMPTYFIELD);
 
     }

@@ -18,7 +18,7 @@
     
     <!-- Outcomes Synthesis Planning and Reporting Vesion-->
     <action name="{crp}/outcomeSynthesisPandR" class="org.cgiar.ccafs.marlo.action.synthesis.OutcomeSynthesisAction">
-      <interceptor-ref name="homeStack" />
+      <interceptor-ref name="editSynthesisStack" />
       <result name="input">/WEB-INF/views/synthesis/outcomeSynthesisPandR.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/outcomeSynthesisPandR</param>

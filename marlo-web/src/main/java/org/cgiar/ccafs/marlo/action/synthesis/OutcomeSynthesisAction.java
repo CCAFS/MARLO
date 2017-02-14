@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.synthesis;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpManager;
 import org.cgiar.ccafs.marlo.data.manager.IpElementManager;
 import org.cgiar.ccafs.marlo.data.manager.IpIndicatorManager;
@@ -30,20 +31,27 @@ import org.cgiar.ccafs.marlo.data.model.IpIndicator;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
-import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 import org.cgiar.ccafs.marlo.data.model.OutcomeSynthesy;
+import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.validation.sythesis.SynthesisByOutcomeValidator;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,22 +72,26 @@ public class OutcomeSynthesisAction extends BaseAction {
   private IpElementManager ipElementManager;
   private OutcomeSynthesyManager outcomeSynthesisManager;
   private IpIndicatorManager ipIndicatorManager;
-
+  private String transaction;
+  private AuditLogManager auditLogManager;
+  private SynthesisByOutcomeValidator validator;
   // Model for the front-end
   private List<IpLiaisonInstitution> liaisonInstitutions;
+
+
   private IpLiaisonInstitution currentLiaisonInstitution;
+
   private List<IpElement> midOutcomes;
-
   private IpLiaisonInstitutionManager IpLiaisonInstitutionManager;
-
   private IpProgram program;
+
   private long liaisonInstitutionID;
 
   @Inject
   public OutcomeSynthesisAction(APConfig config, LiaisonInstitutionManager liaisonInstitutionManager,
     IpProgramManager ipProgramManager, IpElementManager ipElementManager, CrpManager crpManager,
     IpLiaisonInstitutionManager IpLiaisonInstitutionManager, OutcomeSynthesyManager outcomeSynthesisManager,
-    IpIndicatorManager ipIndicatorManager) {
+    SynthesisByOutcomeValidator validator, AuditLogManager auditLogManager, IpIndicatorManager ipIndicatorManager) {
     super(config);
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.ipProgramManager = ipProgramManager;
@@ -87,6 +99,8 @@ public class OutcomeSynthesisAction extends BaseAction {
     this.outcomeSynthesisManager = outcomeSynthesisManager;
     this.ipIndicatorManager = ipIndicatorManager;
     this.IpLiaisonInstitutionManager = IpLiaisonInstitutionManager;
+    this.auditLogManager = auditLogManager;
+    this.validator = validator;
     this.crpManager = crpManager;
 
 
@@ -140,7 +154,6 @@ public class OutcomeSynthesisAction extends BaseAction {
     return currentLiaisonInstitution;
   }
 
-
   public int getIndex(long indicator, long midoutcome, long program) {
     OutcomeSynthesy synthe = new OutcomeSynthesy();
     synthe.setIpIndicator(ipIndicatorManager.getIpIndicatorById(indicator));
@@ -162,6 +175,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     return liaisonInstitutions;
   }
 
+
   public List<IpElement> getMidOutcomes() {
     return midOutcomes;
   }
@@ -170,8 +184,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     return program;
   }
 
-
-  public List<IpIndicator> getProjectIndicators(int year, long indicator, long midOutcome) {
+  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long midOutcome) {
     return ipIndicatorManager.getProjectIndicators(year, indicator, program.getId(), midOutcome);
   }
 
@@ -189,6 +202,10 @@ public class OutcomeSynthesisAction extends BaseAction {
     return list;
   }
 
+  public String getTransaction() {
+    return transaction;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -204,9 +221,9 @@ public class OutcomeSynthesisAction extends BaseAction {
         List<IpLiaisonUser> liaisonUsers = new ArrayList<>(this.getCurrentUser().getIpLiaisonUsers());
 
         if (!liaisonUsers.isEmpty()) {
-          LiaisonUser liaisonUser = new LiaisonUser();
-          liaisonUser = new ArrayList<>(this.getCurrentUser().getLiasonsUsers()).get(0);
-          liaisonInstitutionID = liaisonUser.getLiaisonInstitution().getId();
+          IpLiaisonUser liaisonUser = new IpLiaisonUser();
+          liaisonUser = liaisonUsers.get(0);
+          liaisonInstitutionID = liaisonUser.getIpLiaisonInstitution().getId();
         } else {
           liaisonInstitutionID = new Long(7);
         }
@@ -224,26 +241,76 @@ public class OutcomeSynthesisAction extends BaseAction {
 
     // Get currentLiaisonInstitution
     currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
-
-
     long programID;
-    try {
-      programID = Long.valueOf(currentLiaisonInstitution.getIpProgram());
-    } catch (Exception e) {
-      programID = 1;
-      liaisonInstitutionID = new Long(2);
-      currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
+      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+      IpProgram history = (IpProgram) auditLogManager.getHistory(transaction);
+
+      if (history != null) {
+        program = history;
+        programID = program.getId();
+
+        program.setSynthesisOutcome(new ArrayList<>(program.getOutcomeSynthesis()));
+
+        currentLiaisonInstitution = IpLiaisonInstitutionManager.findByIpProgram(programID);
+      } else {
+        this.transaction = null;
+
+        this.setTransaction("-1");
+      }
+
+    } else {
+
+
+      try {
+        programID = Long.valueOf(currentLiaisonInstitution.getIpProgram());
+      } catch (Exception e) {
+        programID = 1;
+        liaisonInstitutionID = new Long(2);
+        currentLiaisonInstitution = IpLiaisonInstitutionManager.getIpLiaisonInstitutionById(liaisonInstitutionID);
+
+      }
+      program = ipProgramManager.getIpProgramById(programID);
     }
-    program = ipProgramManager.getIpProgramById(programID);
-
 
     // Get Outcomes 2019 of current IPProgram
     midOutcomes = ipElementManager.getIPElementListForOutcomeSynthesis(program, APConstants.ELEMENT_TYPE_OUTCOME2019);
-    this.program.setSynthesisOutcome(outcomeSynthesisManager.findAll().stream()
-      .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
-        && c.getYear() == this.getCurrentCycleYear())
-      .collect(Collectors.toList()));
+
+
+    if (program != null) {
+      Path path = this.getAutoSaveFilePath();
+
+      if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+
+        BufferedReader reader = null;
+
+        reader = new BufferedReader(new FileReader(path.toFile()));
+
+        Gson gson = new GsonBuilder().create();
+
+
+        JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+
+        AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+        program = (IpProgram) autoSaveReader.readFromJson(jReader);
+
+        programID = program.getId();
+
+        this.setDraft(true);
+        reader.close();
+      } else {
+        this.program.setSynthesisOutcome(program.getOutcomeSynthesis().stream()
+          .filter(c -> c.getYear() == this.getCurrentCycleYear()).collect(Collectors.toList()));
+
+        if (this.isLessonsActive()) {
+          this.loadLessonsSynthesis(loggedCrp, program);
+        }
+        this.setDraft(false);
+      }
+    }
+
 
     for (IpElement midoutcome : midOutcomes) {
       midoutcome.setIndicators(ipIndicatorManager.getIndicatorsByElementID(midoutcome.getId().longValue()));
@@ -272,6 +339,8 @@ public class OutcomeSynthesisAction extends BaseAction {
       outcomeSynthesy
         .setAchievedExpected(this.getAchievedExpected(outcomeSynthesy.getIpIndicator().getId().longValue()));
     }
+    String params[] = {loggedCrp.getAcronym(), program.getId() + ""};
+    this.setBasePermission(this.getText(Permission.SYNTHESIS_BY_MOG_BASE_PERMISSION, params));
   }
 
   @Override
@@ -289,10 +358,12 @@ public class OutcomeSynthesisAction extends BaseAction {
 
     List<String> relationsName = new ArrayList<>();
     relationsName.add(APConstants.IPPROGRAM_OUTCOME_SYNTHESIS_RELATION);
+    relationsName.add(APConstants.IPPROGRAM_LESSONS_RELATION);
+
 
     program = ipProgramManager.getIpProgramById(program.getId());
     program.setActiveSince(new Date());
-
+    program.setModifiedBy(this.getCurrentUser());
     ipProgramManager.save(program, this.getActionName(), relationsName);
     Path path = this.getAutoSaveFilePath();
 
@@ -302,7 +373,7 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
     Collection<String> messages = this.getActionMessages();
-    this.setInvalidFields(new HashMap<>());
+
     if (!this.getInvalidFields().isEmpty()) {
       this.setActionMessages(null);
       List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
@@ -315,6 +386,7 @@ public class OutcomeSynthesisAction extends BaseAction {
     }
     return SUCCESS;
   }
+
 
   public void setCurrentLiaisonInstitution(IpLiaisonInstitution currentLiaisonInstitution) {
     this.currentLiaisonInstitution = currentLiaisonInstitution;
@@ -334,6 +406,17 @@ public class OutcomeSynthesisAction extends BaseAction {
 
   public void setProgram(IpProgram program) {
     this.program = program;
+  }
+
+  public void setTransaction(String transaction) {
+    this.transaction = transaction;
+  }
+
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, program.getSynthesisOutcome(), program, true);
+    }
   }
 
 

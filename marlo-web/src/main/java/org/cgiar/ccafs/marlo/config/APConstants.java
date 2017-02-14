@@ -296,6 +296,9 @@ public final class APConstants {
   public static final String IPPROGRAM_OUTCOME_SYNTHESIS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpProgram.outcomeSynthesis)";
 
+  public static final String IPPROGRAM_LESSONS_RELATION =
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.IpProgram.projectComponentLessons)";
+
   public static String getFilterBy() {
     return FILTER_BY;
   }

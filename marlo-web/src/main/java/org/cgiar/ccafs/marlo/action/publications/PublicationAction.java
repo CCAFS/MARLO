@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableUserManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.MetadataElementManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ChannelEnum;
 import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpPandr;
@@ -121,7 +122,7 @@ public class PublicationAction extends BaseAction {
   private DeliverableQualityCheckManager deliverableQualityCheckManager;
   private MetadataElementManager metadataElementManager;
 
-
+  private UserManager userManager;
   private InstitutionManager institutionManager;
   private List<DeliverableType> deliverableSubTypes;
 
@@ -131,8 +132,8 @@ public class PublicationAction extends BaseAction {
   public PublicationAction(APConfig config, CrpManager crpManager, DeliverableManager deliverableManager,
     DeliverableQualityCheckManager deliverableQualityCheckManager, AuditLogManager auditLogManager,
     DeliverableTypeManager deliverableTypeManager, MetadataElementManager metadataElementManager,
-    DeliverableDisseminationManager deliverableDisseminationManager, InstitutionManager institutionManager,
-    DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
+    UserManager userManager, DeliverableDisseminationManager deliverableDisseminationManager,
+    InstitutionManager institutionManager, DeliverablePublicationMetadataManager deliverablePublicationMetadataManager,
     DeliverableGenderLevelManager deliverableGenderLevelManager, DeliverableUserManager deliverableUserManager,
     CrpPandrManager crpPandrManager, DeliverableCrpManager deliverableCrpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, DeliverableProgramManager deliverableProgramManager,
@@ -159,7 +160,7 @@ public class PublicationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.ipProgramManager = ipProgramManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
-
+    this.userManager = userManager;
   }
 
   @Override
@@ -297,7 +298,7 @@ public class PublicationAction extends BaseAction {
 
       if (history != null) {
         deliverable = history;
-
+        deliverable.setModifiedBy(userManager.getUser(deliverable.getModifiedBy().getId()));
       } else {
         this.transaction = null;
 
@@ -328,6 +329,7 @@ public class PublicationAction extends BaseAction {
 
         deliverable = (Deliverable) autoSaveReader.readFromJson(jReader);
         this.setDraft(true);
+        reader.close();
         if (deliverable.getCrps() != null) {
           for (DeliverableCrp deliverableCrp : deliverable.getCrps()) {
             if (deliverableCrp != null) {
