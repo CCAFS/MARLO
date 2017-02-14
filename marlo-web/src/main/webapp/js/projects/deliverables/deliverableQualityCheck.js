@@ -129,7 +129,7 @@ function checkInteroperable() {
 
         // If CGSpace
         if((channelSelected == "cgspace")) {
-          if(inputURL.indexOf("cgspace") >= 0) {
+          if((inputURL.indexOf("cgspace") >= 0) || (inputURL.indexOf("hdl") >= 0) || (inputURL.indexOf("handle") >= 0)) {
             $fairCompliant.addClass('achieved');
           }
         }
