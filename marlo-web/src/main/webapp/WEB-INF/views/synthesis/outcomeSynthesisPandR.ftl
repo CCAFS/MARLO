@@ -1,8 +1,4 @@
 [#ftl]
-[#assign canEdit = true /]
-[#assign editable = true /]
-
-
 [#assign title = "Outcome Synthesis" /]
 [#assign currentSectionString = "synthesis-${actionName?replace('/','-')}-${liaisonInstitutionID}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
@@ -66,7 +62,13 @@
                 [#list midOutcome.indicators as indicator]
                   [#assign flagshipIndicator = (indicator.ipIndicator)!indicator /]
                    [#assign index = action.getIndex(flagshipIndicator.id,midOutcome.id,program.id) /]
-               
+                 <input type="hidden"  name="program.synthesisOutcome[${index}].id" value="${(program.synthesisOutcome[index].id)!}"/>
+                 <input type="hidden"  name="program.synthesisOutcome[${index}].ipElement.id" value="${(program.synthesisOutcome[index].ipElement.id)!}"/>
+                  <input type="hidden"  name="program.synthesisOutcome[${index}].ipProgram.id" value="${(program.synthesisOutcome[index].ipProgram.id)!}"/>
+                  <input type="hidden"  name="program.synthesisOutcome[${index}].ipIndicator.id" value="${(program.synthesisOutcome[index].ipIndicator.id)!}"/>
+                  
+                  <input type="hidden"  name="program.synthesisOutcome[${index}].year" value="${(program.synthesisOutcome[index].year)!}"/>
+        
                   <div class="simpleBox">
                     <div class="fullPartBlock">
                       <p>${flagshipIndicator.ipProgramElement.ipProgram.acronym} - ${flagshipIndicator.description}</p>
@@ -151,7 +153,7 @@
                         <tbody>
                         [#list action.getProjectIndicators(currentCycleYear, flagshipIndicator.id,midOutcome.id) as projectIndicator]
                           <tr>
-                            <td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/projects"][@s.param name='projectID']${(projectIndicator.projectId)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.projectId)!}</a></td>
+                            <td class="center"><a href="[@s.url action="ccafsOutcomes" namespace="/projects"][@s.param name='projectID']${(projectIndicator.project.id)!}[/@s.param][@s.param name='edit']true[/@s.param][/@s.url]">P${(projectIndicator.project.id)!}</a></td>
                             <td class="center" title="${(projectIndicator.target)!''}" >[@utilities.wordCutter string=(projectIndicator.target)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="center" title="${(projectIndicator.archived)!''}" >[@utilities.wordCutter string=(projectIndicator.archived)!'Prefilled when available' maxPos=25 /]</td>
                             <td class="">${(projectIndicator.narrativeTargets)!'Prefilled when available'} </td>

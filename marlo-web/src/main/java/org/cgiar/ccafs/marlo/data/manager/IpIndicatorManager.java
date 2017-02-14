@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.manager.impl.IpIndicatorManagerImpl;
 import org.cgiar.ccafs.marlo.data.model.IpIndicator;
+import org.cgiar.ccafs.marlo.data.model.IpProjectIndicator;
 
 import java.util.List;
 
@@ -75,7 +76,7 @@ public interface IpIndicatorManager {
    *         updated
    *         or -1 is some error occurred.
    */
-  public List<IpIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
+  public List<IpProjectIndicator> getProjectIndicators(int year, long indicator, long program, long midOutcome);
 
   public long saveIpIndicator(IpIndicator ipIndicator);
 

@@ -116,5 +116,14 @@
             </key>
             <one-to-many class="org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson" />
         </set>
+        
+        <set name="ipLiaisonUsers" order-by="id" table="ip_liaison_users" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="user_id" not-null="true">
+                    <comment>This field is a link to the table users</comment>
+                </column>
+            </key>
+            <one-to-many class="org.cgiar.ccafs.marlo.data.model.IpLiaisonUser" />
+        </set>
 	</class>
 </hibernate-mapping>
