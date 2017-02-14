@@ -1637,8 +1637,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (!this.validURL(link)) {
               return null;
             }
-            if ((!link.contains("cgspace")) || (!link.contains("hdl")) || (!link.contains("handle"))) {
-              return null;
+            if ((link.contains("cgspace")) || (link.contains("hdl")) || (link.contains("handle"))) {
+              return true;
             }
             break;
           case "dataverse":
