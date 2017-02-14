@@ -110,6 +110,24 @@ public class OutcomeSynthesisAction extends BaseAction {
     return achievedExpected;
   }
 
+  public double getAchievedExpected(long indicatorID, long programID) {
+
+    double achievedExpected = 0;
+    List<OutcomeSynthesy> outcomeSynthesies = outcomeSynthesisManager.findAll().stream()
+      .filter(c -> c.getIpProgram().getId().longValue() == programID
+        && c.getIpIndicator().getId().longValue() == indicatorID && c.getYear() < this.getCurrentCycleYear())
+      .collect(Collectors.toList());
+
+    for (OutcomeSynthesy outcomeSynthesy : outcomeSynthesies) {
+      try {
+        achievedExpected = achievedExpected + outcomeSynthesy.getAchieved().doubleValue();
+      } catch (Exception e) {
+        achievedExpected = achievedExpected + 0;
+      }
+    }
+    return achievedExpected;
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = program.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
@@ -165,6 +183,8 @@ public class OutcomeSynthesisAction extends BaseAction {
 
     for (OutcomeSynthesy mogSynthesis : list) {
       mogSynthesis.setIpProgram(ipProgramManager.getIpProgramById(mogSynthesis.getIpProgram().getId()));
+      mogSynthesis.setAchievedExpected(this.getAchievedExpected(mogSynthesis.getIpIndicator().getId().longValue(),
+        mogSynthesis.getIpProgram().getId().longValue()));
     }
     return list;
   }
