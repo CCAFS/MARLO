@@ -110,6 +110,7 @@
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="OutcomesContributionsSummary"/>
               <label for="">[@s.text name="summaries.board.report.impactPathwayContributionsSummary" /]</label>
             </div>
+            <span class="description col-md-12">[@s.text name="This report list projects with his impact pathways contribution, included Outcomes and Milestones with target values, narratives and gender narratives." /]</span>
             <div class="extraOptions" style="display:none"> 
             <span class="hidden fileTypes excelType">OutcomesContributionsSummary</span>
             <div class="pull-right">
@@ -124,6 +125,7 @@
               <input class="hidden" type="radio" name="formOptions" id="impactPathwayContributionsSummary" value="caseStudiesByYearSummary"/>
               <label for="">[@s.text name="Project outcomes case studies" /]</label>
             </div>
+            <span class="description col-md-12">[@s.text name="This report lists all the outcomes case studies annually reported." /]</span>
               <div class="extraOptions" style="display:none">
               <span class="hidden fileTypes pdfType">caseStudySummary</span>
               <span class="hidden fileTypes excelType">caseStudiesByYearSummary</span> 
@@ -220,12 +222,13 @@
               </div>
             </div>
           </div>
-          [#-- Budget Summary by MOGs --]
+          [#-- Budget Summary by CoA --]
           <div class="summariesFiles borderBox col-md-12">
             <div class="col-md-12 title-file">
               <input class="hidden" type="radio" name="formOptions" id="budgetByCoAsSummary" value="budgetByCoAsSummary"/>
               <label for="budgetByMOGsSummary">[@s.text name="summaries.board.report.powbMOG" /] <span>XLSx</span></label>
             </div>
+            <span class="description col-md-12">[@s.text name="This report summarizes the project budget that is allocated to each CoA by source of funding (e.g. W1/W2, W3 and Bilateral)." /]</span>
             <div class="extraOptions" style="display:none"> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
@@ -239,6 +242,7 @@
               <input class="hidden" type="radio" name="formOptions" id="budgetByCoAsSummary" value="FundingSourcesSummary"/>
               <label for="budgetByMOGsSummary">[@s.text name="Funding Sources Summary" /] <span>XLSx</span></label>
             </div>
+            <span class="description col-md-12">[@s.text name="This report provides a summary of the funding sources. The first tab lists each funding source, lead partner(s), project(s) to which it contributes, its annual budget, and allows you to see how much of the funding source budget has been allocated to projects. The second tab provides funding source information by managing partner. So in cases when more than one managing partner leads a funding source, this tab will show you how the funding source budget is allocated to the different managing partners." /]</span>
             <div class="extraOptions" style="display:none"> 
               <div class="pull-right">
                 <a style="display:none;" target="_blank" class="generateReport addButton pull-right" style="" href="#">[@s.text name="form.buttons.generate" /]</a>
