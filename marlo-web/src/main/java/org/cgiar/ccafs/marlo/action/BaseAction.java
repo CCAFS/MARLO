@@ -1761,7 +1761,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return false;
       } else {
         if (!(deliverableBD.getLicense().equals(LicensesTypeEnum.OTHER.getValue())
-          || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_NC.getValue())
+          || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_ND.getValue())
           || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_NC_ND.getValue()))) {
           return true;
         } else {
