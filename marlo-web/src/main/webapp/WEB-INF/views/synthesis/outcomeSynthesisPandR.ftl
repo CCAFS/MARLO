@@ -117,7 +117,7 @@
                             
                           [#list action.getRegionalSynthesis(flagshipIndicator.id,midOutcome.id) as syntesisReport]
                             <tr>
-                              <td class="center">${(syntesisReport.iPprogram.acronym)!'Prefilled when available'}</td>
+                              <td class="center">${(syntesisReport.ipProgram.acronym)!'Prefilled when available'}</td>
                               <td class="center">${(syntesisReport.achievedExpected)!'Prefilled when available'}</td>  
                               <td class="center">${(syntesisReport.achieved)!'Prefilled when available'}</td>
                               <td >${(syntesisReport.synthesisAnual)!'Prefilled when available'}</td>

@@ -66,11 +66,8 @@ public class IpProgram implements java.io.Serializable, IAuditLog {
 
   private List<MogSynthesy> synthesis;
 
-<<<<<<< HEAD
-  private List<OutcomeSynthesy> synthesisOutcome;
-=======
->>>>>>> branch 'dev' of https://github.com/CCAFS/MARLO.git
 
+  private List<OutcomeSynthesy> synthesisOutcome;
   private Set<SectionStatus> sectionStatuses = new HashSet<SectionStatus>(0);
 
   @Expose

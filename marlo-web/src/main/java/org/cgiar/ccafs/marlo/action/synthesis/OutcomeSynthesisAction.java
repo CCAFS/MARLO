@@ -140,10 +140,9 @@ public class OutcomeSynthesisAction extends BaseAction {
 
 
   public List<OutcomeSynthesy> getRegionalSynthesis(long indicator, long midoutcome) {
-    List<OutcomeSynthesy> list = outcomeSynthesisManager.findAll().stream()
-      .filter(c -> c.getIpProgram().getId().longValue() == program.getId().longValue()
-        && c.getYear() == this.getCurrentCycleYear() && c.getIpIndicator().getId().longValue() == indicator
-        && c.getIpProgram().isRegionalProgram())
+    List<OutcomeSynthesy> list = outcomeSynthesisManager.findAll()
+      .stream().filter(c -> c.getYear() == this.getCurrentCycleYear()
+        && c.getIpIndicator().getId().longValue() == indicator && c.getIpProgram().isRegionalProgram())
       .collect(Collectors.toList());
 
     for (OutcomeSynthesy mogSynthesis : list) {
