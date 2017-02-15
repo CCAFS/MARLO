@@ -510,7 +510,8 @@ function addPartnerEvent(e) {
 
   // Activate the select2 plugin for new partners created
   $newElement.find("select[class!='branchesSelect']").select2({
-    width: '100%'
+      templateResult: formatState,
+      width: '100%'
   });
 
   $newElement.find("select.branchesSelect ").select2({
