@@ -1761,31 +1761,36 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public Boolean isR(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    if (deliverableBD.getAdoptedLicense() == null) {
-      return null;
-    }
-    if (deliverableBD.getAdoptedLicense()) {
-      if (deliverableBD.getLicense() == null) {
-        return false;
-      } else {
-        if (!(deliverableBD.getLicense().equals(LicensesTypeEnum.OTHER.getValue())
-          || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_ND.getValue())
-          || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_NC_ND.getValue()))) {
-          return true;
-        } else {
-          if (deliverableBD.getAllowModifications() == null || !deliverableBD.getAllowModifications().booleanValue()) {
-            return false;
-          }
-          if (deliverableBD.getOtherLicense() == null || deliverableBD.getOtherLicense().isEmpty()) {
-            return false;
-          }
-          return true;
-        }
-
+    try {
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      if (deliverableBD.getAdoptedLicense() == null) {
+        return null;
       }
+      if (deliverableBD.getAdoptedLicense()) {
+        if (deliverableBD.getLicense() == null) {
+          return false;
+        } else {
+          if (!(deliverableBD.getLicense().equals(LicensesTypeEnum.OTHER.getValue())
+            || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_ND.getValue())
+            || deliverableBD.getLicense().equals(LicensesTypeEnum.CC_BY_NC_ND.getValue()))) {
+            return true;
+          } else {
+            if (deliverableBD.getAllowModifications() == null
+              || !deliverableBD.getAllowModifications().booleanValue()) {
+              return false;
+            }
+            if (deliverableBD.getOtherLicense() == null || deliverableBD.getOtherLicense().isEmpty()) {
+              return false;
+            }
+            return true;
+          }
+
+        }
+      }
+      return false;
+    } catch (Exception e) {
+      return false;
     }
-    return false;
   }
 
   public boolean isReportingActive() {
