@@ -83,7 +83,7 @@
                   <div class="fullPartBlock">
                     <div class="thirdPartBlock">[@customForm.input name="${customName}.target" type="text" i18nkey="synthesis.crpIndicators.target" className="isNumeric" help="form.message.numericValue" paramText="${reportingYear}" editable=false /]</div>
                     <div class="thirdPartBlock">[@customForm.input name="${customName}.actual" type="text" i18nkey="synthesis.crpIndicators.actual" className="isNumeric" help="form.message.numericValue" paramText="${reportingYear}" required=canEdit editable=editable /]</div>
-                    <div class="thirdPartBlock">[@customForm.input name="${customName}.nextYearTarget" type="text" i18nkey="synthesis.crpIndicators.nextYearTarget" className="isNumeric" help="form.message.numericValue" paramText="${reportingYear+1}" required=canEdit editable=editable /]</div>
+                    <div class="thirdPartBlock">[@customForm.input name="${customName}.nextTarget" type="text" i18nkey="synthesis.crpIndicators.nextYearTarget" className="isNumeric" help="form.message.numericValue" paramText="${reportingYear+1}" required=canEdit editable=editable /]</div>
                   </div>
                   [#-- Link to supporting databases --]
                   <div class="fullPartBlock">
