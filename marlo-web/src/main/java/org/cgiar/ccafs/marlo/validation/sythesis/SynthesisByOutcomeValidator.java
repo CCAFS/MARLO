@@ -111,10 +111,10 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
     } else {
       this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus());
+        ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus());
     }
 
   }
