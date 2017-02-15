@@ -1244,18 +1244,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public Boolean isA(long deliverableID) {
-    Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
-    this.loadDissemination(deliverableBD);
+    try {
+      Deliverable deliverableBD = deliverableManager.getDeliverableById(deliverableID);
+      this.loadDissemination(deliverableBD);
 
-    if (deliverableBD.getDissemination().getIsOpenAccess() != null
-      && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
-      return true;
-    }
+      if (deliverableBD.getDissemination().getIsOpenAccess() != null
+        && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
+        return true;
+      }
 
-    if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
+      if (deliverableBD.getDissemination().getIsOpenAccess() == null) {
+        return null;
+      }
+      return false;
+    } catch (Exception e) {
       return null;
     }
-    return false;
   }
 
   /**
@@ -1340,184 +1344,189 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isCompleteProject(long projectID) {
 
-    Project project = projectManager.getProjectById(projectID);
-    List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
-    int totalSections = 0;
-    int deliverableSection = 0;
-    int budgetCoASection = 0;
-    int outcomeSection = 0;
-    int caseStudySection = 0;
-    int highlightSection = 0;
+    try {
+      Project project = projectManager.getProjectById(projectID);
+      List<SectionStatus> sections = project.getSectionStatuses().stream().collect(Collectors.toList());
+      int totalSections = 0;
+      int deliverableSection = 0;
+      int budgetCoASection = 0;
+      int outcomeSection = 0;
+      int caseStudySection = 0;
+      int highlightSection = 0;
 
-    List<Deliverable> deliverables =
-      project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-    List<Deliverable> openA = deliverables.stream()
-      .filter(a -> a.isActive() && a.getYear() >= this.getCurrentCycleYear()
-        && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-            || a.getStatus().intValue() == 0))))
-      .collect(Collectors.toList());
+      List<Deliverable> deliverables =
+        project.getDeliverables().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+      List<Deliverable> openA = deliverables.stream()
+        .filter(a -> a.isActive() && a.getYear() >= this.getCurrentCycleYear()
+          && ((a.getStatus() == null || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+              || a.getStatus().intValue() == 0))))
+        .collect(Collectors.toList());
 
-    if (this.isReportingActive()) {
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-      openA.addAll(deliverables.stream()
-        .filter(d -> d.isActive() && d.getNewExpectedYear() != null
-          && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
-          && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-        .collect(Collectors.toList()));
-    }
+      if (this.isReportingActive()) {
+        openA.addAll(deliverables.stream()
+          .filter(d -> d.isActive() && d.getYear() == this.getCurrentCycleYear() && d.getStatus() != null
+            && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          .collect(Collectors.toList()));
+        openA.addAll(deliverables.stream()
+          .filter(d -> d.isActive() && d.getNewExpectedYear() != null
+            && d.getNewExpectedYear().intValue() == this.getCurrentCycleYear() && d.getStatus() != null
+            && d.getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
+          .collect(Collectors.toList()));
+      }
 
-    for (Deliverable deliverable : openA) {
-      deliverable = deliverableManager.getDeliverableById(deliverable.getId());
-    }
+      for (Deliverable deliverable : openA) {
+        deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+      }
 
-    for (SectionStatus sectionStatus : sections) {
-      if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-        && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+      for (SectionStatus sectionStatus : sections) {
+        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
 
-        if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
-          Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
+          if (sectionStatus.getSectionName().equals(ProjectSectionStatusEnum.DELIVERABLES.getStatus())) {
+            Deliverable a = deliverableManager.getDeliverableById(sectionStatus.getDeliverable().getId());
 
-          if (openA.contains(a)) {
+            if (openA.contains(a)) {
+              if (sectionStatus.getMissingFields().length() > 0) {
+                return false;
+              }
+            }
+
+          } else {
             if (sectionStatus.getMissingFields().length() > 0) {
               return false;
             }
           }
 
-        } else {
-          if (sectionStatus.getMissingFields().length() > 0) {
-            return false;
-          }
         }
 
       }
+      if (sections.size() == 0) {
+        return false;
+      }
+      if (this.isPlanningActive()) {
+        for (SectionStatus sectionStatus : sections) {
+          if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+            && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+            switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
 
-    }
-    if (sections.size() == 0) {
+              case DESCRIPTION:
+              case PARTNERS:
+              case LOCATIONS:
+              case BUDGET:
+              case ACTIVITIES:
+                totalSections++;
+                break;
+              case DELIVERABLES:
+                if (deliverableSection == 0) {
+                  deliverableSection = 1;
+                  totalSections++;
+                }
+                break;
+
+              case OUTCOMES:
+                if (outcomeSection == 0) {
+                  outcomeSection = 1;
+                  totalSections++;
+                }
+
+              case BUDGETBYCOA:
+                if (budgetCoASection == 0) {
+                  budgetCoASection = 1;
+                  totalSections++;
+                }
+                break;
+            }
+
+          }
+        }
+        if (budgetCoASection == 1) {
+          return totalSections == 8;
+        } else {
+
+          if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+            return totalSections == 7;
+          } else {
+            return totalSections == 6;
+          }
+
+        }
+      } else {
+
+        for (SectionStatus sectionStatus : sections) {
+          if (sectionStatus.getCycle().equals(this.getCurrentCycle())
+            && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
+            switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
+
+              case DESCRIPTION:
+              case PARTNERS:
+              case LOCATIONS:
+              case OUTCOMES_PANDR:
+              case CCAFSOUTCOMES:
+              case OUTPUTS:
+              case BUDGET:
+              case LEVERAGES:
+              case OTHERCONTRIBUTIONS:
+              case ACTIVITIES:
+                totalSections++;
+                break;
+              case DELIVERABLES:
+                if (deliverableSection == 0) {
+                  deliverableSection = 1;
+                  totalSections++;
+                }
+                break;
+
+              case HIGHLIGHT:
+                if (highlightSection == 0) {
+                  highlightSection = 1;
+                  totalSections++;
+                }
+
+              case CASESTUDIES:
+                if (caseStudySection == 0) {
+                  caseStudySection = 1;
+                  totalSections++;
+                }
+
+
+            }
+
+          }
+        }
+
+        project = projectManager.getProjectById(projectID);
+
+        List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
+          .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear())
+          .collect(Collectors.toList());
+        if (highlights.isEmpty()) {
+          totalSections++;
+        }
+
+        List<CaseStudyProject> caseStudyProjects =
+          project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
+        List<CaseStudy> caseStudies = new ArrayList<>();
+        for (CaseStudyProject caseStudyProject : caseStudyProjects) {
+          if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
+            caseStudies.add(caseStudyProject.getCaseStudy());
+          }
+
+
+        }
+        if (caseStudies.isEmpty() && !project.getAdministrative()) {
+          totalSections++;
+        }
+
+        if ((project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
+          return totalSections == 9;
+        } else {
+          return totalSections == 12;
+        }
+
+      }
+    } catch (Exception e) {
       return false;
-    }
-    if (this.isPlanningActive()) {
-      for (SectionStatus sectionStatus : sections) {
-        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-
-            case DESCRIPTION:
-            case PARTNERS:
-            case LOCATIONS:
-            case BUDGET:
-            case ACTIVITIES:
-              totalSections++;
-              break;
-            case DELIVERABLES:
-              if (deliverableSection == 0) {
-                deliverableSection = 1;
-                totalSections++;
-              }
-              break;
-
-            case OUTCOMES:
-              if (outcomeSection == 0) {
-                outcomeSection = 1;
-                totalSections++;
-              }
-
-            case BUDGETBYCOA:
-              if (budgetCoASection == 0) {
-                budgetCoASection = 1;
-                totalSections++;
-              }
-              break;
-          }
-
-        }
-      }
-      if (budgetCoASection == 1) {
-        return totalSections == 8;
-      } else {
-
-        if (!(project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-          return totalSections == 7;
-        } else {
-          return totalSections == 6;
-        }
-
-      }
-    } else {
-
-      for (SectionStatus sectionStatus : sections) {
-        if (sectionStatus.getCycle().equals(this.getCurrentCycle())
-          && sectionStatus.getYear().intValue() == this.getCurrentCycleYear()) {
-          switch (ProjectSectionStatusEnum.value(sectionStatus.getSectionName().toUpperCase())) {
-
-            case DESCRIPTION:
-            case PARTNERS:
-            case LOCATIONS:
-            case OUTCOMES_PANDR:
-            case CCAFSOUTCOMES:
-            case OUTPUTS:
-            case BUDGET:
-            case LEVERAGES:
-            case OTHERCONTRIBUTIONS:
-            case ACTIVITIES:
-              totalSections++;
-              break;
-            case DELIVERABLES:
-              if (deliverableSection == 0) {
-                deliverableSection = 1;
-                totalSections++;
-              }
-              break;
-
-            case HIGHLIGHT:
-              if (highlightSection == 0) {
-                highlightSection = 1;
-                totalSections++;
-              }
-
-            case CASESTUDIES:
-              if (caseStudySection == 0) {
-                caseStudySection = 1;
-                totalSections++;
-              }
-
-
-          }
-
-        }
-      }
-
-      project = projectManager.getProjectById(projectID);
-
-      List<ProjectHighlight> highlights = project.getProjectHighligths().stream()
-        .filter(d -> d.isActive() && d.getYear().intValue() == this.getCurrentCycleYear()).collect(Collectors.toList());
-      if (highlights.isEmpty()) {
-        totalSections++;
-      }
-
-      List<CaseStudyProject> caseStudyProjects =
-        project.getCaseStudyProjects().stream().filter(d -> d.isActive()).collect(Collectors.toList());
-      List<CaseStudy> caseStudies = new ArrayList<>();
-      for (CaseStudyProject caseStudyProject : caseStudyProjects) {
-        if (caseStudyProject.isCreated() && caseStudyProject.getCaseStudy().getYear() == this.getCurrentCycleYear()) {
-          caseStudies.add(caseStudyProject.getCaseStudy());
-        }
-
-
-      }
-      if (caseStudies.isEmpty() && !project.getAdministrative()) {
-        totalSections++;
-      }
-
-      if ((project.getAdministrative() != null && project.getAdministrative().booleanValue() == true)) {
-        return totalSections == 9;
-      } else {
-        return totalSections == 12;
-      }
-
     }
 
 
