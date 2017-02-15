@@ -425,7 +425,12 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
         // Subreport Activities
         args.clear();
-        this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
+        if (cycle.equals("Planning")) {
+
+          this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
+        } else {
+          this.fillSubreport((SubReport) hm.get("activities_reporting_list"), "activities_reporting_list", args);
+        }
         if (cycle.equals("Planning")) {
           // Subreport Budgets Summary
           args.clear();
@@ -511,6 +516,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
       case "activities_list":
         model = this.getActivitiesTableModel();
         break;
+      case "activities_reporting_list":
+        model = this.getActivitiesReportingTableModel();
+        break;
       case "budget_summary":
         model = this.getBudgetSummaryTableModel();
         break;
@@ -558,12 +566,63 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     subReport.setDataFactory(cdf);
   }
 
+  private TypedTableModel getActivitiesReportingTableModel() {
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
+        "status", "overall"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class},
+      0);
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+
+    if (!project.getActivities().isEmpty()) {
+      for (Activity activity : project.getActivities().stream().sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+        .filter(a -> a.isActive() && (a.getActivityStatus() == 2 || a.getActivityStatus() == 4))
+        .collect(Collectors.toList())) {
+        String institution = null;
+        String activity_leader = null;
+        String status = null;
+        String start_date = null;
+        String end_date = null;
+        String overall = null;
+
+        if (activity.getStartDate() != null) {
+          start_date = formatter.format(activity.getStartDate());
+        }
+
+        if (activity.getEndDate() != null) {
+          end_date = formatter.format(activity.getEndDate());
+        }
+
+        if (activity.getProjectPartnerPerson() != null) {
+          institution = activity.getProjectPartnerPerson().getProjectPartner().getInstitution().getComposedName();
+          activity_leader = activity.getProjectPartnerPerson().getUser().getComposedName() + "\n&lt;"
+            + activity.getProjectPartnerPerson().getUser().getEmail() + "&gt;";
+        }
+
+        status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
+
+        // Reporting
+        if (activity.getActivityProgress() != null && !activity.getActivityProgress().isEmpty()) {
+          overall = activity.getActivityProgress();
+        }
+
+
+        model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
+          end_date, institution, activity_leader, status, overall});
+      }
+    }
+
+    return model;
+  }
+
+
   private TypedTableModel getActivitiesTableModel() {
     TypedTableModel model = new TypedTableModel(
       new String[] {"activity_id", "title", "description", "start_date", "end_date", "institution", "activity_leader",
         "status"},
       new Class[] {Long.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class},
+        String.class, String.class},
       0);
     SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
 
@@ -592,6 +651,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         }
 
         status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
+
 
         model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), start_date,
           end_date, institution, activity_leader, status});
@@ -2549,7 +2609,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
 
   private TypedTableModel getProjectHighlightReportingTableModel() {
-    // TODO Adjust image
     TypedTableModel model = new TypedTableModel(
       new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
         "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
@@ -2641,9 +2700,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         // get Height and Width
         try {
           BufferedImage imageFile = null;
+          image = image.replace(" ", "%20");
           URL url = new URL(image);
           imageFile = ImageIO.read(url);
-          System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
+          // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
           if (imageFile.getWidth() >= imageFile.getHeight()) {
             imageWidth = pageWidth;
             imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
@@ -2651,7 +2711,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
             imageHeigth = pageHeigth;
             imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
           }
-          System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
+          // System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
           width = (int) imageWidth;
           heigth = (int) imageHeigth;
           // If successful, process the message

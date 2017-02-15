@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.validation.sythesis.CrpIndicatorsValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -77,13 +78,17 @@ public class CrpIndicatorsAction extends BaseAction {
 
   private Crp loggedCrp;
 
+  private CrpIndicatorsValidator validator;
+
   @Inject
   public CrpIndicatorsAction(APConfig config, CrpManager crpManager, CrpIndicatorReportManager indicatorsReportManager,
-    IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager) {
+    IpLiaisonInstitutionManager liaisonInstitutionManager, CrpIndicatorTypeManager crpIndicatorTypeManager,
+    CrpIndicatorsValidator validator) {
     super(config);
     crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.indicatorsReportManager = indicatorsReportManager;
+    this.validator = validator;
     this.crpIndicatorTypeManager = crpIndicatorTypeManager;
   }
 
@@ -303,4 +308,10 @@ public class CrpIndicatorsAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  @Override
+  public void validate() {
+    if (save) {
+      validator.validate(this, currentLiaisonInstitution.getIndicatorReports(), currentLiaisonInstitution, true);
+    }
+  }
 }

@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.Crp;
 import org.cgiar.ccafs.marlo.data.model.CrpIndicatorReport;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
@@ -73,6 +74,29 @@ public class CrpIndicatorsValidator extends BaseValidator {
 
     int index = 0;
     for (CrpIndicatorReport crpIndicatorReport : indicatorReports) {
+      try {
+        if (crpIndicatorReport.getTarget() == null || Double.parseDouble(crpIndicatorReport.getTarget()) < 0) {
+          this.addMessage(action.getText("crpIndicatorReport.validator.target",
+            crpIndicatorReport.getCrpIndicator().getId().toString()));
+          action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].target",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } catch (Exception e) {
+        action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].target",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
+      try {
+        if (crpIndicatorReport.getNextTarget() == null || Double.parseDouble(crpIndicatorReport.getNextTarget()) < 0) {
+          this.addMessage(action.getText("crpIndicatorReport.validator.nextTarget",
+            crpIndicatorReport.getCrpIndicator().getId().toString()));
+          action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+      } catch (Exception e) {
+        action.getInvalidFields().put("input-currentLiaisonInstitution.indicatorReports[" + index + "].nextTarget",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
       index++;
     }
 
@@ -84,10 +108,10 @@ public class CrpIndicatorsValidator extends BaseValidator {
     }
     if (action.isReportingActive()) {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.REPORTING, action.getReportingYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus());
+        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus());
     } else {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.PLANNING, action.getPlanningYear(),
-        ProjectSectionStatusEnum.SYNTHESISMOG.getStatus());
+        ProjectSectionStatusEnum.CRP_INDICATORS.getStatus());
     }
 
 
