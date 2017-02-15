@@ -57,7 +57,6 @@ public interface IpProgramDAO {
    */
   public List<IpProgram> findAll();
 
-
   /**
    * This method saves the information of the given ipProgram
    * 

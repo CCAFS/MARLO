@@ -33,7 +33,7 @@
         </div>
         
         <article class="form-group clearfix" id="crpIndicators">
-          [@s.form action="crpIndicators" method="POST" enctype="multipart/form-data" cssClass="pure-form"]
+          [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass="pure-form"]
           [#-- Program (Regions and Flagships) --]
           <ul id="liaisonInstitutions" class="horizontalSubMenu text-center">
             [#list liaisonInstitutions as institution]
