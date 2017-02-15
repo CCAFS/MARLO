@@ -60,6 +60,10 @@ import org.cgiar.ccafs.marlo.data.model.ProjectClusterActivity;
 import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectCrpContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
+import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectLocationElementType;
 import org.cgiar.ccafs.marlo.data.model.ProjectOtherContribution;
@@ -72,10 +76,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -93,6 +100,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import com.google.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
@@ -279,7 +288,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
           this.getClass().getResource("/pentaho/project-description(Reporting).prpt"), MasterReport.class);
       }
 
-
       // Get main report
       MasterReport masterReport = (MasterReport) reportResource.getResource();
 
@@ -411,22 +419,25 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         } else {
           args.clear();
           this.fillSubreport((SubReport) hm.get("deliverables"), "deliverables_list_reporting", args);
+          this.fillSubreport((SubReport) hm.get("project_highlight"), "project_highlight", args);
         }
 
 
         // Subreport Activities
         args.clear();
         this.fillSubreport((SubReport) hm.get("activities"), "activities_list", args);
+        if (cycle.equals("Planning")) {
+          // Subreport Budgets Summary
+          args.clear();
+          this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
 
-        // Subreport Budgets Summary
-        args.clear();
-        this.fillSubreport((SubReport) hm.get("budgets"), "budget_summary", args);
+          // Subreport BudgetsbyPartners
+          this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
 
-        // Subreport BudgetsbyPartners
-        this.fillSubreport((SubReport) hm.get("budgets_by_partners"), "budgets_by_partners_list", args);
+          // Subreport BudgetsbyCoas
+          this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
+        }
 
-        // Subreport BudgetsbyCoas
-        this.fillSubreport((SubReport) hm.get("budgets_by_coas"), "budgets_by_coas_list", args);
       }
 
       PdfReportUtil.createPDF(masterReport, os);
@@ -536,6 +547,9 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
         break;
       case "deliverables_list_reporting":
         model = this.getDeliverablesReportingTableModel();
+        break;
+      case "project_highlight":
+        model = this.getProjectHighlightReportingTableModel();
         break;
 
 
@@ -653,6 +667,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return null;
   }
+
 
   private TypedTableModel getBudgetsbyCoasTableModel() {
     DecimalFormat df = new DecimalFormat("###,###.00");
@@ -816,10 +831,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
+
 
   private TypedTableModel getCaseStudiesTableModel() {
     // Code Author: Hermes Jimenez
@@ -908,16 +923,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
-
   public String getCaseStudyUrl(String project) {
     return config.getDownloadURL() + "/" + this.getCaseStudyUrlPath(project).replace('\\', '/');
   }
+
 
   public String getCaseStudyUrlPath(String project) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project + File.separator + "caseStudy"
       + File.separator;
   }
-
 
   private TypedTableModel getccafsOutcomesTableModel() {
 
@@ -1042,6 +1056,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   @Override
   public int getContentLength() {
     return bytesPDF.length;
@@ -1067,7 +1082,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
   }
 
   private TypedTableModel getDeliverablesReportingTableModel() {
-    // TODO: Auto-generated method stub
     TypedTableModel model = new TypedTableModel(
       new String[] {"deliverable_id", "title", "deliv_type", "deliv_sub_type", "deliv_status", "deliv_year",
         "key_output", "leader", "institution", "funding_sources", "cross_cutting", "deliv_new_year",
@@ -1804,7 +1818,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return config.getDownloadURL() + "/" + this.getDeliverableUrlPath(fileType, deliverable).replace('\\', '/');
   }
 
-
   public String getDeliverableUrlPath(String fileType, Deliverable deliverable) {
     return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + deliverable.getId() + File.separator
       + "deliverable" + File.separator + fileType + File.separator;
@@ -1822,6 +1835,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
     return model;
   }
+
 
   private TypedTableModel getDescTableModel(ProjectPartner projectLeader, Boolean hasRegions) {
     TypedTableModel model = new TypedTableModel(
@@ -1990,6 +2004,15 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
   }
 
+  public String getHighlightsImagesUrl() {
+    return config.getDownloadURL() + "/" + this.getHighlightsImagesUrlPath().replace('\\', '/');
+  }
+
+  public String getHighlightsImagesUrlPath() {
+    return config.getProjectsBaseFolder(this.getCrpSession()) + File.separator + project.getId() + File.separator
+      + "hightlightsImage" + File.separator;
+  }
+
   @Override
   public InputStream getInputStream() {
     if (inputStream == null) {
@@ -2055,10 +2078,10 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
   }
 
+
   public Crp getLoggedCrp() {
     return loggedCrp;
   }
-
 
   private TypedTableModel getMasterTableModel(List<CrpProgram> flagships, List<CrpProgram> regions,
     ProjectPartner projectLeader) {
@@ -2157,6 +2180,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   public List<IpElement> getMidOutcomeOutputs(long midOutcomeID) {
     List<IpProjectContribution> ipProjectContributions =
       project.getIpProjectContributions().stream().filter(c -> c.isActive()).collect(Collectors.toList());
@@ -2196,7 +2220,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return outputs;
 
   }
-
 
   private TypedTableModel getOtherContributionsCrpsTableModel() {
     TypedTableModel model = new TypedTableModel(new String[] {"crp_name", "collaboration_description"},
@@ -2460,6 +2483,7 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     return model;
   }
 
+
   private TypedTableModel getPartnersOtherTableModel(ProjectPartner projectLeader) {
     TypedTableModel model = new TypedTableModel(new String[] {"instituttion", "pp_id", "leader_count"},
       new Class[] {String.class, Long.class, Integer.class}, 0);
@@ -2484,7 +2508,6 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
 
     return model;
   }
-
 
   private TypedTableModel getPartnersTableModel() {
     TypedTableModel model =
@@ -2520,6 +2543,145 @@ public class ReportingSummaryAction extends BaseAction implements Summary {
     }
 
     model.addRow(new Object[] {partnersSize, overall});
+
+    return model;
+  }
+
+
+  private TypedTableModel getProjectHighlightReportingTableModel() {
+    // TODO Adjust image
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"id", "title", "author", "subject", "publisher", "year_reported", "highlights_types",
+        "highlights_is_global", "start_date", "end_date", "keywords", "countries", "image", "highlight_desc",
+        "introduction", "results", "partners", "links", "width", "heigth"},
+      new Class[] {Long.class, String.class, String.class, String.class, String.class, Long.class, String.class,
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+        String.class, String.class, String.class, Integer.class, Integer.class},
+      0);
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    for (ProjectHighlight projectHighlight : project.getProjectHighligths().stream().filter(ph -> ph.isActive())
+      .collect(Collectors.toList())) {
+      String title = null, author = null, subject = null, publisher = null, highlights_types = "",
+        highlights_is_global = null, start_date = null, end_date = null, keywords = null, countries = "", image = "",
+        highlight_desc = null, introduction = null, results = null, partners = null, links = null;
+      Long year_reported = null;
+      int width = 0;
+      int heigth = 0;
+
+      if (projectHighlight.getTitle() != null && !projectHighlight.getTitle().isEmpty()) {
+        title = projectHighlight.getTitle();
+      }
+      if (projectHighlight.getAuthor() != null && !projectHighlight.getAuthor().isEmpty()) {
+        author = projectHighlight.getAuthor();
+      }
+      if (projectHighlight.getSubject() != null && !projectHighlight.getSubject().isEmpty()) {
+        subject = projectHighlight.getSubject();
+      }
+      if (projectHighlight.getPublisher() != null && !projectHighlight.getPublisher().isEmpty()) {
+        publisher = projectHighlight.getPublisher();
+      }
+      if (projectHighlight.getYear() != null) {
+        year_reported = projectHighlight.getYear();
+      }
+
+      for (ProjectHighlightType projectHighlightType : projectHighlight.getProjectHighligthsTypes().stream()
+        .filter(pht -> pht.isActive()).collect(Collectors.toList())) {
+        if (ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "") != null) {
+          highlights_types +=
+            "<br>" + ProjectHighligthsTypeEnum.getEnum(projectHighlightType.getIdType() + "").getDescription();
+        }
+      }
+      if (highlights_types.isEmpty()) {
+        highlights_types = null;
+      }
+      if (projectHighlight.isGlobal() == true) {
+        highlights_is_global = "Yes";
+      } else {
+        highlights_is_global = "No";
+      }
+
+      if (projectHighlight.getStartDate() != null) {
+        start_date = formatter.format(projectHighlight.getStartDate());
+      }
+
+      if (projectHighlight.getEndDate() != null) {
+        end_date = formatter.format(projectHighlight.getEndDate());
+      }
+      if (projectHighlight.getKeywords() != null && !projectHighlight.getKeywords().isEmpty()) {
+        keywords = projectHighlight.getKeywords();
+      }
+
+      int countriesFlag = 0;
+      for (ProjectHighlightCountry projectHighlightCountry : projectHighlight.getProjectHighligthCountries().stream()
+        .filter(phc -> phc.isActive()).collect(Collectors.toList())) {
+
+        if (projectHighlightCountry.getLocElement() != null) {
+          if (countriesFlag == 0) {
+            countries += projectHighlightCountry.getLocElement().getName();
+            countriesFlag++;
+          } else {
+            countries += ", " + projectHighlightCountry.getLocElement().getName();
+            countriesFlag++;
+          }
+        }
+      }
+
+      if (countries.isEmpty()) {
+        countries = null;
+      }
+
+      if (projectHighlight.getFile() != null) {
+        double pageWidth = 612 * 0.4;
+        double pageHeigth = 792 * 0.4;
+        double imageWidth = 0;
+        double imageHeigth = 0;
+        image = this.getHighlightsImagesUrl() + projectHighlight.getFile().getFileName();
+
+        // get Height and Width
+        try {
+          BufferedImage imageFile = null;
+          URL url = new URL(image);
+          imageFile = ImageIO.read(url);
+          System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
+          if (imageFile.getWidth() >= imageFile.getHeight()) {
+            imageWidth = pageWidth;
+            imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
+          } else {
+            imageHeigth = pageHeigth;
+            imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
+          }
+          System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
+          width = (int) imageWidth;
+          heigth = (int) imageHeigth;
+          // If successful, process the message
+        } catch (IOException e) {
+          System.out.println("Unable to retrieve Image!!!");
+          e.printStackTrace();
+        }
+      }
+
+      if (projectHighlight.getDescription() != null && !projectHighlight.getDescription().isEmpty()) {
+        highlight_desc = projectHighlight.getDescription();
+      }
+
+      if (projectHighlight.getObjectives() != null && !projectHighlight.getObjectives().isEmpty()) {
+        introduction = projectHighlight.getObjectives();
+      }
+      if (projectHighlight.getResults() != null && !projectHighlight.getResults().isEmpty()) {
+        results = projectHighlight.getResults();
+      }
+      if (projectHighlight.getPartners() != null && !projectHighlight.getPartners().isEmpty()) {
+        partners = projectHighlight.getPartners();
+      }
+      if (projectHighlight.getLinks() != null && !projectHighlight.getLinks().isEmpty()) {
+        links = projectHighlight.getLinks();
+      }
+
+      model.addRow(new Object[] {projectHighlight.getId(), title, author, subject, publisher, year_reported,
+        highlights_types, highlights_is_global, start_date, end_date, keywords, countries, image, highlight_desc,
+        introduction, results, partners, links, width, heigth});
+    }
 
     return model;
   }

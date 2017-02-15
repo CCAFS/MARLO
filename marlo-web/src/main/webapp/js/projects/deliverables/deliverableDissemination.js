@@ -446,11 +446,34 @@ function loadAndFillMetadata() {
 }
 
 function getIfpriMetadata(channel,url,uri) {
+  
+
+  // http://CdmServer.com:port/dmwebservices/index.php?q=dmGetItemInfo/alias/pointer/format
+  // alias is a collection alias
+  // pointer is the pointer to the item for which you want metadata
+  // format is either xml or json
+
+  // http://cdm15738.contentdm.oclc.org/cdm/dmwebservices/index.php?q=dmGetItemInfo/p15738coll2/127687/json
+  
+  // http://ebrary.ifpri.org/cdm/singleitem/collection/p15738coll5/id/5388/rec/1
+  
+  var pathArray = uri.path().split('/'); 
+  var itemInfo = {
+      collection: pathArray[pathArray.indexOf("collection")+1],
+      id: pathArray[pathArray.indexOf("id")+1]
+  }
+  
   var data = {
       pageID: "ifpri",
-      metadataID: "oai:cdm15738.contentdm.oclc.org:p15738coll2/" + uri.path().split('/')[6]
+      metadataID: "oai:cdm15738.contentdm.oclc.org:"+itemInfo.collection+"/" + itemInfo.id
   }
-
+  
+  console.log(itemInfo);
+  console.log(data);
+  
+  
+  return
+  
   // get data from url
   // Ajax to service
   $.ajax({

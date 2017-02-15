@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
+import org.cgiar.ccafs.marlo.data.manager.IpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectComponentLessonManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -228,6 +229,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private UserRoleManager userRoleManager;
+  @Inject
+  private IpProgramManager ipProgramManager;
 
   @Inject
   public BaseAction(APConfig config) {
@@ -921,7 +924,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     || a.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
                     || (a.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
                       || a.getStatus().intValue() == 0 || a.getStatus().intValue() == -1))))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         } else {
           openA = deliverables.stream()
             .filter(a -> a.isActive()
@@ -1206,6 +1209,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean hasPermissionSynthesis(long program) {
+    String params[] = {this.getCrpSession(), program + "",};
+    boolean permission =
+      this.hasPermissionNoBase(this.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params));
+    return permission;
+  }
 
   public boolean hasPersmissionSubmit(long projectId) {
     String permission = this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION,
@@ -1213,7 +1222,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
-
 
   public boolean hasPersmissionSubmitImpact() {
 
@@ -1227,6 +1235,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean permissions = this.securityContext.hasPermission(permission);
     return permissions;
   }
+
 
   public boolean hasPersmissionUnSubmitImpact(long programID) {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_UNSUBMISSION_PERMISSION,
@@ -1274,10 +1283,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return canEdit;
   }
 
-
   public boolean isCanSwitchProject() {
     return canSwitchProject;
   }
+
 
   public boolean isCompleteImpact(long crpProgramID) {
 
@@ -1530,6 +1539,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
 
+  }
+
+  public boolean isCompleteSynthesys(long program, int type) {
+
+    List<SectionStatus> sectionStatus = null;
+    IpProgram ipProgram = ipProgramManager.getIpProgramById(program);
+
+    switch (type) {
+      case 1:
+
+        sectionStatus = ipProgram.getSectionStatuses().stream()
+          .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus())
+            && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+          .collect(Collectors.toList());
+
+        break;
+      case 2:
+
+        sectionStatus = ipProgram.getSectionStatuses().stream()
+          .filter(c -> c.getSectionName().equals(ProjectSectionStatusEnum.SYNTHESISMOG.getStatus())
+            && c.getYear().intValue() == this.getCurrentCycleYear() && c.getCycle().equals(this.getCurrentCycle()))
+          .collect(Collectors.toList());
+
+        break;
+
+    }
+
+
+    for (SectionStatus sectionStatus2 : sectionStatus) {
+      if (sectionStatus2.getMissingFields().length() > 0) {
+        return false;
+      }
+    }
+
+    if (sectionStatus.isEmpty()) {
+      return false;
+    }
+    return true;
   }
 
   public boolean isCrpClosed() {
@@ -1810,7 +1857,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       project
         .getSubmissions().stream().filter(c -> c.getCycle().equals(this.getCurrentCycle())
           && c.getYear().intValue() == year && (c.isUnSubmit() == null || !c.isUnSubmit()))
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
     if (submissions.isEmpty()) {
       return false;
     }
